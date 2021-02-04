@@ -5,8 +5,7 @@
     "compatibilityLevel": "JAVA_8",
     "mixins": [
         "PlayerEntityMixin",
-        "PlayerManagerMixin",
-        "ServerPlayerEntityMixin"
+        "PlayerManagerMixin"
     ],
     "client": [
         "DoubleJumpMixin"

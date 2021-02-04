@@ -1,0 +1,32 @@
+{
+  "mappings": {
+    "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
+      "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
+    },
+    "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
+      "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+    },
+    "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
+      "writeCustomDataToTag": "Lnet/minecraft/class_1657;method_5652(Lnet/minecraft/class_2487;)V",
+      "readCustomDataFromTag": "Lnet/minecraft/class_1657;method_5749(Lnet/minecraft/class_2487;)V",
+      "tick": "Lnet/minecraft/class_1657;method_5773()V",
+      "dropSelectedItem": "Lnet/minecraft/class_1657;method_7290(Z)Z"
+    }
+  },
+  "data": {
+    "named:intermediary": {
+      "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
+        "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
+      },
+      "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
+        "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+      },
+      "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
+        "writeCustomDataToTag": "Lnet/minecraft/class_1657;method_5652(Lnet/minecraft/class_2487;)V",
+        "readCustomDataFromTag": "Lnet/minecraft/class_1657;method_5749(Lnet/minecraft/class_2487;)V",
+        "tick": "Lnet/minecraft/class_1657;method_5773()V",
+        "dropSelectedItem": "Lnet/minecraft/class_1657;method_7290(Z)Z"
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+mattonfire/dnd/classes/mixin/PlayerManagerMixin.java
+ mattonfire.dnd.classes.mixin.PlayerManagerMixin
+mattonfire/dnd/classes/PowerupKeybind/PowerUpEffect.java
+ mattonfire.dnd.classes.PowerupKeybind.PowerUpEffect
+mattonfire/dnd/classes/gui/GUI.java
+ mattonfire.dnd.classes.gui.GUI
+mattonfire/dnd/classes/MonkStaff.java
+ mattonfire.dnd.classes.MonkStaff
+mattonfire/dnd/classes/DoubleJump/DoublejumpClient.java
+ mattonfire.dnd.classes.DoubleJump.DoublejumpClient
+mattonfire/dnd/classes/gui/GUIClient.java
+ mattonfire.dnd.classes.gui.GUIClient
+mattonfire/dnd/classes/PowerupKeybind/PowerupKeybindClient.java
+ mattonfire.dnd.classes.PowerupKeybind.PowerupKeybindClient
+mattonfire/dnd/classes/ExtendedSwordItem.java
+ mattonfire.dnd.classes.ExtendedSwordItem
+ mattonfire.dnd.classes.ExtendedSwordItem$1
+mattonfire/dnd/classes/PlayerEntityExt.java
+ mattonfire.dnd.classes.PlayerEntityExt
+mattonfire/dnd/classes/SetClassAttributes.java
+ mattonfire.dnd.classes.SetClassAttributes
+mattonfire/dnd/classes/DoubleJump/DoubleJumpEffect.java
+ mattonfire.dnd.classes.DoubleJump.DoubleJumpEffect
+mattonfire/dnd/classes/gui/Screen.java
+ mattonfire.dnd.classes.gui.Screen
+mattonfire/dnd/classes/SetPlayerClass.java
+ mattonfire.dnd.classes.SetPlayerClass
+mattonfire/dnd/classes/mixin/PlayerEntityMixin.java
+ mattonfire.dnd.classes.mixin.PlayerEntityMixin
+mattonfire/dnd/classes/mixin/DoubleJumpMixin.java
+ mattonfire.dnd.classes.mixin.DoubleJumpMixin
+mattonfire/dnd/classes/ToolMaterialFabric.java
+ mattonfire.dnd.classes.ToolMaterialFabric
+mattonfire/dnd/classes/DnDClasses.java
+ mattonfire.dnd.classes.DnDClasses

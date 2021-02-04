@@ -1,9 +1,7 @@
 # gradle
 
 .gradle/
-build/
 out/
-classes/
 
 # eclipse
 
@@ -21,8 +19,6 @@ classes/
 .settings/
 .vscode/
 bin/
-.classpath
-.project
 
 # macos
 

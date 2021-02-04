@@ -1,0 +1,16 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "mattonfire.dnd.classes.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "mixins": [
+        "PlayerEntityMixin",
+        "PlayerManagerMixin"
+    ],
+    "client": [
+        "DoubleJumpMixin"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

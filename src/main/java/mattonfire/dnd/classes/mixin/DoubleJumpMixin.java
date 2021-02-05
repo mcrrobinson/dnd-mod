@@ -30,8 +30,7 @@ public abstract class DoubleJumpMixin {
     @Inject(method = "tickMovement", at = @At("HEAD"))
     private void tickMovement(CallbackInfo info) {
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
-        int classID = ((PlayerEntityExt)(PlayerEntity)player).dndClassExist();
-        if(classID==6){
+        if(((PlayerEntityExt)(PlayerEntity)player).dndClassExist()==6){
             if (player.isOnGround() || player.isClimbing()) {
                 jumpCount = 2;
             } else if (!jumpedLastTick && jumpCount > 0 && player.getVelocity().y < 0) {

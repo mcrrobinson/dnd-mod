@@ -4,6 +4,7 @@
     "package": "mattonfire.dnd.classes.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
+        "HostileEntityMixin",
         "PlayerEntityMixin",
         "PlayerManagerMixin"
     ],

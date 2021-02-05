@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.entity.player.PlayerEntity;
-
+import net.minecraft.server.network.ServerPlayerEntity;
 import blue.endless.jankson.annotation.Nullable;
 
 @Mixin(MobEntity.class)
@@ -21,8 +21,10 @@ public class HostileEntityMixin {
 		method = "setTarget"
 	)
     public void setTarget(@Nullable LivingEntity target, CallbackInfo info) {
-        if(target != null && ((PlayerEntityExt)(PlayerEntity)target).dndClassExist()==2){
+        if(target instanceof ServerPlayerEntity){
+            if(((PlayerEntityExt)(PlayerEntity)target).dndClassExist()==2){
                 this.target = null;
+            }
         }
      }
 }

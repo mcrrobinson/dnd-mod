@@ -11,26 +11,18 @@ public class GUIClient implements ClientModInitializer {
     public void onInitializeClient() {
         // Once server joined, if joined before it will set their old class.
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_CLASS_QUERY_PACKET_ID,(client, handler, buf, responseSender) -> {
-            
             int classID = buf.readInt();
-
-            // If run with no errors declare in the NBT.
-            ((PlayerEntityExt)(PlayerEntity)client.player).setDndClass(classID);
-            
             client.execute(()->{
+                ((PlayerEntityExt)(PlayerEntity)client.player).setDndClass(classID);
                 SetPlayerClass.setPlayerClass(client, client.player, classID);
             });
         });
 
         // Once a class is requested and approved this will set the player class.
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,(client, handler, buf, responseSender) -> {
-
-            int classID = buf.readInt();
-
-            // If run with no errors declare in the NBT.
-            ((PlayerEntityExt)(PlayerEntity)client.player).setDndClass(classID);
-            
+            int classID = buf.readInt();            
             client.execute(()->{
+                ((PlayerEntityExt)(PlayerEntity)client.player).setDndClass(classID);
                 SetPlayerClass.setPlayerClass(client, client.player, classID);
             });
         });

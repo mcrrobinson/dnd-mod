@@ -29,6 +29,10 @@ mattonfire/dnd/classes/mixin/PlayerEntityMixin.java
  mattonfire.dnd.classes.mixin.PlayerEntityMixin
 mattonfire/dnd/classes/mixin/DoubleJumpMixin.java
  mattonfire.dnd.classes.mixin.DoubleJumpMixin
+mattonfire/dnd/classes/mixin/StatusEffectMixin.java
+ mattonfire.dnd.classes.mixin.StatusEffectMixin
+mattonfire/dnd/classes/SuperStrengthStatusEffect.java
+ mattonfire.dnd.classes.SuperStrengthStatusEffect
 mattonfire/dnd/classes/ToolMaterialFabric.java
  mattonfire.dnd.classes.ToolMaterialFabric
 mattonfire/dnd/classes/DnDClasses.java

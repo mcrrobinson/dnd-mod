@@ -1,11 +1,14 @@
 package mattonfire.dnd.classes;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.PowerupKeybind.PowerUpEffect;
+
 import java.util.stream.Stream;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.server.PlayerStream;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -33,13 +36,13 @@ public class DnDClasses implements ModInitializer {
 
     // Queries whether or not the player has a class existing.
     public static final Identifier S2C_CLASS_QUERY_PACKET_ID = new Identifier("classpick", "class_query");
-    
 
 	@Override
 	public void onInitialize() {
 
         // Register staff entity.
         LOGGER.info("Registering Staffs...");
+        Registry.register(Registry.STATUS_EFFECT, new Identifier("dndclasses", "super_strength"), new SuperStrengthStatusEffect());
         Registry.register(Registry.ITEM, new Identifier("dndclasses", "staff_of_fire"), new ExtendedSwordItem(new ToolMaterialFabric(),  new Item.Settings().group(ItemGroup.TOOLS)));
         Registry.register(Registry.ITEM, new Identifier("dndclasses", "staff_of_lightning"), new ExtendedSwordItem(new ToolMaterialFabric(), new Item.Settings().group(ItemGroup.TOOLS)));
         Registry.register(Registry.ITEM, new Identifier("dndclasses", "staff_of_ice"), new ExtendedSwordItem(new ToolMaterialFabric(), new Item.Settings().group(ItemGroup.TOOLS)));
@@ -65,10 +68,9 @@ public class DnDClasses implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID, (server, player, handler, buf, responseSender) -> {
             PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
             passedData.writeUuid(buf.readUuid());
-            PlayerEntity entity = (PlayerEntity)player;
-            World world = entity.getEntityWorld();
+            System.out.println("Requested powerup...");
             server.execute(()->{
-                world.createExplosion(null, entity.getX(), entity.getY(), entity.getZ(), 10.F, true, DestructionType.BREAK);
+                PowerUpEffect.play(player, ((PlayerEntityExt)(PlayerEntity)player).dndClassExist());
             });
         });
 

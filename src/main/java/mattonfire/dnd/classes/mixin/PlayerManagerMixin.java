@@ -18,6 +18,25 @@ import mattonfire.dnd.classes.SetPlayerClass;
 
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
+	// IS THERE A WAY TO GET BOTH WORKING?
+	// @Inject(
+	// 	at = @At("RETURN"), 
+	// 	method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V"
+	// )
+	// public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
+	// 	PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+	// 	int classID = ((ServerPlayerEntityExt)player).dndClassExist();
+	// 	passedData.writeInt(classID);
+
+	// 	// On rejoin set the player class server side.
+	// 	if(classID!=0){
+	// 		SetPlayerClass.setPlayerClass(null, player, classID);
+	// 	}
+
+	// 	// Send the result to the client.
+	// 	ServerPlayNetworking.send(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, passedData);
+	// }
+
 	@Inject(
 		at = @At("RETURN"), 
 		method = "respawnPlayer"

@@ -33,3 +33,5 @@ mattonfire/dnd/classes/ToolMaterialFabric.java
  mattonfire.dnd.classes.ToolMaterialFabric
 mattonfire/dnd/classes/DnDClasses.java
  mattonfire.dnd.classes.DnDClasses
+mattonfire/dnd/classes/mixin/HostileEntityMixin.java
+ mattonfire.dnd.classes.mixin.HostileEntityMixin

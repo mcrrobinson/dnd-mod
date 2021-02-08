@@ -7,8 +7,14 @@
       "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
       "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
     },
+    "mattonfire/dnd/classes/mixin/BowItemMixin": {
+      "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;method_24919(Lnet/minecraft/class_1297;FFFFF)V"
+    },
     "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
       "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+    },
+    "mattonfire/dnd/classes/mixin/PreAbstractClientPlayerEntityMixin": {
+      "getSpeed()F": "Lnet/minecraft/class_742;method_3118()F"
     },
     "mattonfire/dnd/classes/mixin/HostileEntityMixin": {
       "setTarget": "Lnet/minecraft/class_1308;method_5980(Lnet/minecraft/class_1309;)V"
@@ -29,8 +35,14 @@
         "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
         "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
       },
+      "mattonfire/dnd/classes/mixin/BowItemMixin": {
+        "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;method_24919(Lnet/minecraft/class_1297;FFFFF)V"
+      },
       "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
         "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+      },
+      "mattonfire/dnd/classes/mixin/PreAbstractClientPlayerEntityMixin": {
+        "getSpeed()F": "Lnet/minecraft/class_742;method_3118()F"
       },
       "mattonfire/dnd/classes/mixin/HostileEntityMixin": {
         "setTarget": "Lnet/minecraft/class_1308;method_5980(Lnet/minecraft/class_1309;)V"

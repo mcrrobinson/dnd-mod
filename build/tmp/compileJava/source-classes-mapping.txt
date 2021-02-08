@@ -15,10 +15,14 @@ mattonfire/dnd/classes/PowerupKeybind/PowerupKeybindClient.java
 mattonfire/dnd/classes/ExtendedSwordItem.java
  mattonfire.dnd.classes.ExtendedSwordItem
  mattonfire.dnd.classes.ExtendedSwordItem$1
+mattonfire/dnd/classes/mixin/BowItemMixin.java
+ mattonfire.dnd.classes.mixin.BowItemMixin
 mattonfire/dnd/classes/PlayerEntityExt.java
  mattonfire.dnd.classes.PlayerEntityExt
 mattonfire/dnd/classes/SetClassAttributes.java
  mattonfire.dnd.classes.SetClassAttributes
+mattonfire/dnd/classes/mixin/PreAbstractClientPlayerEntityMixin.java
+ mattonfire.dnd.classes.mixin.PreAbstractClientPlayerEntityMixin
 mattonfire/dnd/classes/DoubleJump/DoubleJumpEffect.java
  mattonfire.dnd.classes.DoubleJump.DoubleJumpEffect
 mattonfire/dnd/classes/gui/Screen.java

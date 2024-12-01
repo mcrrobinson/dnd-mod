@@ -2,12 +2,12 @@ package mattonfire.dnd.classes;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
-import blue.endless.jankson.annotation.Nullable;
+import org.jetbrains.annotations.Nullable;
 import mattonfire.dnd.classes.gui.GUI;
 import mattonfire.dnd.classes.gui.Screen;
 
 public class SetPlayerClass {
-    public static void setPlayerClass(@Nullable MinecraftClient client, PlayerEntity player, int classID){
+    public static void setPlayerClass(@Nullable MinecraftClient client, PlayerEntity player, int classID) {
         SetClassAttributes playerClasses = new SetClassAttributes();
         playerClasses.resetToDefault(player);
         switch (classID) {

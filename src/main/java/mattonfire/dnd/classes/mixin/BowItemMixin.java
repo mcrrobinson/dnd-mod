@@ -13,16 +13,17 @@ import mattonfire.dnd.classes.PlayerEntityExt;
 
 @Mixin(BowItem.class)
 public class BowItemMixin {
-    @ModifyArgs(method = "Lnet/minecraft/item/BowItem;onStoppedUsing()V", 
-        at = @At(
-        value = "INVOKE", 
-        target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V")
-    )
-    private void injected(Args args) {
-        PlayerEntity playerEntity = args.get(0);
-        float a4 = args.get(4);
-        if(((PlayerEntityExt)playerEntity).dndClassExist()==8){
-            args.set(4, a4*3);
-        }
-    }
+    // @ModifyArgs(method = "Lnet/minecraft/item/BowItem;onStoppedUsing()V",
+    // at = @At(
+    // value = "INVOKE",
+    // target =
+    // "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V")
+    // )
+    // private void injected(Args args) {
+    // PlayerEntity playerEntity = args.get(0);
+    // float a4 = args.get(4);
+    // if(((PlayerEntityExt)playerEntity).dndClassExist()==8){
+    // args.set(4, a4*3);
+    // }
+    // }
 }

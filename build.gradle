@@ -1,22 +1,22 @@
 plugins {
-	id 'fabric-loom' version '0.5-SNAPSHOT'
+	id 'fabric-loom' version '1.9-SNAPSHOT'
 	id 'maven-publish'
 }
-
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
 group = project.maven_group
 
 repositories {
+	mavenCentral()
     maven { url "https://maven.jamieswhiteshirt.com/libs-release/"}
 	maven {
         name = "CottonMC"
         url = "https://server.bbkr.space/artifactory/libs-release"
     }
-    jcenter()
+	maven {
+        url "https://maven.architectury.dev/" // Replace with the actual URL
+    }
 }
 
 dependencies {
@@ -33,9 +33,10 @@ dependencies {
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
     include "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
 
-    include "me.sargunvohra.mcmods:autoconfig1u:3.3.1"
-    modApi("me.sargunvohra.mcmods:autoconfig1u:3.3.1") {
+    include "me.sargunvohra.mcmods:autoconfig1u:3.4.0"
+    modApi("me.sargunvohra.mcmods:autoconfig1u:3.4.0") {
         exclude(group: "net.fabricmc.fabric-api")
+        exclude(group: "net.fabricmc", module: "fabric-loader")
     }
 
 	modImplementation include("io.github.cottonmc:LibGui:3.3.2+1.16.4")
@@ -70,6 +71,9 @@ java {
 	// if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(23)
+    }
 }
 
 jar {

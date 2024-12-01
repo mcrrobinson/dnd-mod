@@ -6,7 +6,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.world.World;
 
@@ -28,8 +28,7 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         // TODO Auto-generated constructor stub
     }
 
-    public void setDndClass(int classID) 
-    {
+    public void setDndClass(int classID) {
         this.dndClass = classID;
         System.out.println(this.dndClass);
     }
@@ -39,13 +38,11 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     }
 
     @Inject(at = @At("HEAD"), method = "dropSelectedItem")
-    private void dropSelectedItem(boolean dropEntireStack, CallbackInfoReturnable info)
-    {
+    private void dropSelectedItem(boolean dropEntireStack, CallbackInfoReturnable info) {
         System.out.println("Item dropped");
-        if(this.selectedItem.getItem() instanceof ExtendedSwordItem)
-        {
+        if (this.selectedItem.getItem() instanceof ExtendedSwordItem) {
             System.out.println("Extended Dong dropped");
-            ((ExtendedSwordItem)this.selectedItem.getItem()).SetRange(false);
+            ((ExtendedSwordItem) this.selectedItem.getItem()).SetRange(false);
             ExtendedSwordItem.active = false;
         }
     }
@@ -53,27 +50,25 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     // Some creatures can't swim... here is that. Probably a better way of doing
     // it.
     @Inject(at = @At("HEAD"), method = "tick")
-    public void tick(CallbackInfo info)
-    {
+    public void tick(CallbackInfo info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if(((PlayerEntityExt)player).dndClassExist()==4) {
-            if(isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.abilities.flying)
-            {
+        if (((PlayerEntityExt) player).dndClassExist() == 4) {
+            if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.abilities.flying) {
                 System.out.println("start sinking...");
                 this.setVelocity(0.0D, -0.5, 0.0D);
             }
-        }        
+        }
     }
 
-    @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    public void writeCustomDataToTag(CompoundTag tag, CallbackInfo info)
-    {
-        tag.putInt("dndClass", this.dndClass);
-    }
+    // @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
+    // public void writeCustomDataToTag(NbtCompound tag, CallbackInfo info)
+    // {
+    // tag.putInt("dndClass", this.dndClass);
+    // }
 
-    @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-    public void readCustomDataFromTag(CompoundTag tag, CallbackInfo info)
-    {
-        dndClass = tag.getInt("dndClass");
-    }
+    // @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
+    // public void readCustomDataFromTag(NbtCompound tag, CallbackInfo info)
+    // {
+    // dndClass = tag.getInt("dndClass");
+    // }
 }

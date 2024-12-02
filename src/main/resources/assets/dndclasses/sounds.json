@@ -1,0 +1,34 @@
+{
+    "silent_footsteps": {
+        "sounds": [
+            {
+                "name": "dndclasses:silent_footsteps",
+                "stream": true
+            }
+        ]
+    },
+    "tooth_and_claw": {
+        "sounds": [
+            {
+                "name": "dndclasses:tooth_and_claw",
+                "stream": true
+            }
+        ]
+    },
+    "awake_cart": {
+        "sounds": [
+            {
+                "name": "dndclasses:awake_cart",
+                "stream": true
+            }
+        ]
+    },
+    "steel_on_steel": {
+        "sounds": [
+            {
+                "name": "dndclasses:steel_on_steel",
+                "stream": true
+            }
+        ]
+    }
+}

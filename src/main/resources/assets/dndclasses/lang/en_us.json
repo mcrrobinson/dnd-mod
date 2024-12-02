@@ -5,5 +5,13 @@
     "item.dndclasses.monk_staff": "Monk's Staff",
     "effect.dndclasses.super_strength": "Super Strength",
     "key.dnd-classes.power-up": "Power Up Abililty.",
-    "category.dnd-classes.dnd-classes": "D&D Classes"
+    "category.dnd-classes.dnd-classes": "D&D Classes",
+    "item.dndclasses.music_disc_steel_on_steel": "Steel on Steel",
+    "item.dndclasses.music_disc_awake_cart": "Awake Cart",
+    "item.dndclasses.music_disc_tooth_and_claw": "Tooth and Claw",
+    "item.dndclasses.music_disc_silent_footsteps": "Silent Footsteps",
+    "item.dndclasses.music_disc_steel_on_steel.desc": "A music disc that plays the song Steel on Steel.",
+    "item.dndclasses.music_disc_awake_cart.desc": "A music disc that plays the song Awake Cart.",
+    "item.dndclasses.music_disc_tooth_and_claw.desc": "A music disc that plays the song Tooth and Claw.",
+    "item.dndclasses.music_disc_silent_footsteps.desc": "A music disc that plays the song Silent Footsteps."
 }

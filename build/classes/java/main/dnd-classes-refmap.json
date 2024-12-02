@@ -1,5 +1,9 @@
 {
   "mappings": {
+    "mattonfire/dnd/classes/mixin/BowItemMixin": {
+      "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;method_24919(Lnet/minecraft/class_1297;FFFFF)V",
+      "onStoppedUsing": "Lnet/minecraft/class_1753;method_7840(Lnet/minecraft/class_1799;Lnet/minecraft/class_1937;Lnet/minecraft/class_1309;I)V"
+    },
     "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
       "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
     },
@@ -23,6 +27,10 @@
   },
   "data": {
     "named:intermediary": {
+      "mattonfire/dnd/classes/mixin/BowItemMixin": {
+        "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;method_24919(Lnet/minecraft/class_1297;FFFFF)V",
+        "onStoppedUsing": "Lnet/minecraft/class_1753;method_7840(Lnet/minecraft/class_1799;Lnet/minecraft/class_1937;Lnet/minecraft/class_1309;I)V"
+      },
       "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
         "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
       },

@@ -1,0 +1,10 @@
+{
+    "parent": "item/generated",
+    "texture_size": [
+        16,
+        16
+    ],
+    "textures": {
+        "layer0": "dndclasses:item/music_disc_steel_on_steel"
+    }
+}

@@ -8,6 +8,7 @@ import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 
 public class SetClassAttributes {
+
     public void resetToDefault(PlayerEntity player) {
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.D);
         player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.10000000149011612D);
@@ -18,10 +19,12 @@ public class SetClassAttributes {
     }
 
     public void sendPlayerMessage(PlayerEntity player, String className, String pros, String cons, String special) {
-        player.sendMessage((new TranslatableText("The " +className+"\n")).formatted(Formatting.UNDERLINE, Formatting.GOLD), false);
-        player.sendMessage((new TranslatableText("Pros: "+pros)).formatted(Formatting.GREEN), false);
-        player.sendMessage((new TranslatableText("Cons: "+cons)).formatted(Formatting.RED),false);
-        player.sendMessage((new TranslatableText("Special: "+special)).formatted(Formatting.DARK_PURPLE),false);
+        player.sendMessage(
+                (new TranslatableText("The " + className + "\n")).formatted(Formatting.UNDERLINE, Formatting.GOLD),
+                false);
+        player.sendMessage((new TranslatableText("Pros: " + pros)).formatted(Formatting.GREEN), false);
+        player.sendMessage((new TranslatableText("Cons: " + cons)).formatted(Formatting.RED), false);
+        player.sendMessage((new TranslatableText("Special: " + special)).formatted(Formatting.DARK_PURPLE), false);
     }
 
     public void typeBarbarian(PlayerEntity player) {
@@ -77,10 +80,9 @@ public class SetClassAttributes {
 
     public void typeRanger(PlayerEntity player) {
         System.out.println("Ranger...");
-        // 2x Zoom with a bow.
+        // 2x Zoom with a bow - found in BowItemMixin
         player.getAttributeInstance(EntityAttributes.GENERIC_LUCK).setBaseValue(5); // Default 0.0
-        // Can't use swords.
-        // Weak to fire.
+        // Can't use swords - in global callback listener
     }
 
     public void typeRogue(PlayerEntity player) {

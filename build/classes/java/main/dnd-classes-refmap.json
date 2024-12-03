@@ -10,6 +10,14 @@
     "mattonfire/dnd/classes/mixin/HostileEntityMixin": {
       "setTarget": "Lnet/minecraft/class_1308;method_5980(Lnet/minecraft/class_1309;)V"
     },
+    "mattonfire/dnd/classes/mixin/LavaDamageMixin": {
+      "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
+    },
+    "mattonfire/dnd/classes/mixin/MobEntityMixin": {
+      "readCustomDataFromNbt": "Lnet/minecraft/class_1308;method_5749(Lnet/minecraft/class_2487;)V",
+      "tick": "Lnet/minecraft/class_1308;method_5773()V",
+      "writeCustomDataToNbt": "Lnet/minecraft/class_1308;method_5652(Lnet/minecraft/class_2487;)V"
+    },
     "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
       "dropSelectedItem": "Lnet/minecraft/class_1657;method_7290(Z)Z",
       "tick": "Lnet/minecraft/class_1657;method_5773()V"
@@ -36,6 +44,14 @@
       },
       "mattonfire/dnd/classes/mixin/HostileEntityMixin": {
         "setTarget": "Lnet/minecraft/class_1308;method_5980(Lnet/minecraft/class_1309;)V"
+      },
+      "mattonfire/dnd/classes/mixin/LavaDamageMixin": {
+        "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
+      },
+      "mattonfire/dnd/classes/mixin/MobEntityMixin": {
+        "readCustomDataFromNbt": "Lnet/minecraft/class_1308;method_5749(Lnet/minecraft/class_2487;)V",
+        "tick": "Lnet/minecraft/class_1308;method_5773()V",
+        "writeCustomDataToNbt": "Lnet/minecraft/class_1308;method_5652(Lnet/minecraft/class_2487;)V"
       },
       "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
         "dropSelectedItem": "Lnet/minecraft/class_1657;method_7290(Z)Z",

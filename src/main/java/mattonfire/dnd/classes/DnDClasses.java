@@ -6,20 +6,36 @@ import mattonfire.dnd.classes.PowerupKeybind.PowerUpEffect;
 import java.util.stream.Stream;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.server.PlayerStream;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.item.MusicDiscItem;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.registry.Registry;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import com.mojang.brigadier.context.CommandContext;
 
 public class DnDClasses implements ModInitializer {
         public static final Logger LOGGER = LogManager.getLogger();
@@ -53,9 +69,55 @@ public class DnDClasses implements ModInitializer {
         public static final Item MUSIC_DISC_SILENT_FOOTSTEPS = registerMusicDisk("music_disc_silent_footsteps", 17,
                         Sound.SILENT_FOOTSTEPS);
 
+        public static final StatusEffect FREEZE_EFFECT = new FreezeEffect();
+
         @Override
         public void onInitialize() {
 
+                // Runs clientside right now.
+                // DisallowSwordServer.onInitializeServer();
+                Registry.register(Registry.STATUS_EFFECT, new Identifier("freeze", "freeze_effect"), FREEZE_EFFECT);
+                CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+                        dispatcher.register(CommandManager.literal("freeze")
+                                        .executes(context -> {
+                                                ServerCommandSource source = context.getSource();
+                                                if (source.getEntity() instanceof LivingEntity) {
+                                                        LivingEntity player = (LivingEntity) source.getEntity();
+                                                        HitResult hitResult = player.raycast(10, 0.5F, false); // Raycast
+                                                                                                               // to
+                                                                                                               // find a
+                                                                                                               // target
+
+                                                        if (hitResult instanceof EntityHitResult) {
+                                                                EntityHitResult entityHitResult = (EntityHitResult) hitResult;
+                                                                if (entityHitResult
+                                                                                .getEntity() instanceof LivingEntity) {
+                                                                        LivingEntity targetEntity = (LivingEntity) entityHitResult
+                                                                                        .getEntity();
+                                                                        targetEntity.addStatusEffect(
+                                                                                        new StatusEffectInstance(
+                                                                                                        DnDClasses.FREEZE_EFFECT,
+                                                                                                        200)); // Freeze
+                                                                                                               // for
+                                                                                                               // 200z
+                                                                                                               // ticks
+                                                                        source.sendFeedback(Text.of(
+                                                                                        "Entity frozen for 10 seconds!"),
+                                                                                        false);
+                                                                        return 1; // Success
+                                                                }
+                                                        } else if (hitResult instanceof BlockHitResult) {
+                                                                source.sendFeedback(Text.of(
+                                                                                "No entity in sight, block detected!"),
+                                                                                false);
+                                                        } else {
+                                                                source.sendFeedback(Text.of(
+                                                                                "No valid target detected!"), false);
+                                                        }
+                                                }
+                                                return 0; // Failure
+                                        }));
+                });
                 Sound.registerSounds();
 
                 // Register staff entity.

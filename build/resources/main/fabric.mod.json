@@ -2,7 +2,6 @@
     "schemaVersion": 1,
     "id": "dndclasses",
     "version": "0.0.1",
-
     "name": "DND Classes",
     "description": "Adds DND classes to minecraft.",
     "authors": [
@@ -11,10 +10,8 @@
     "contact": {
         "homepage": "https://github.io/mcrrobinson"
     },
-
     "license": "CC0-1.0",
     "icon": "assets/dndclasses/icon.png",
-
     "environment": "*",
     "entrypoints": {
         "main": [
@@ -23,13 +20,13 @@
         "client": [
             "mattonfire.dnd.classes.DoubleJump.DoublejumpClient",
             "mattonfire.dnd.classes.PowerupKeybind.PowerupKeybindClient",
-            "mattonfire.dnd.classes.gui.GUIClient"
+            "mattonfire.dnd.classes.gui.GUIClient",
+            "mattonfire.dnd.classes.DisallowSwordClient"
         ]
     },
     "mixins": [
         "dndclasses.mixins.json"
     ],
-
     "depends": {
         "fabricloader": ">=0.7.4",
         "fabric": "*",

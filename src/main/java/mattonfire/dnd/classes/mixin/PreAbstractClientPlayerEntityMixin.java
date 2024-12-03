@@ -1,10 +1,7 @@
 package mattonfire.dnd.classes.mixin;
 
-import java.util.Optional;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
-import net.minecraft.client.world.ClientWorld;
-import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.client.MinecraftClient;
@@ -13,19 +10,16 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import mattonfire.dnd.classes.PlayerEntityExt;
 
-import org.spongepowered.asm.mixin.injection.Slice;
-
 @Mixin(value = AbstractClientPlayerEntity.class, priority = 10)
 public abstract class PreAbstractClientPlayerEntityMixin extends PlayerEntity {
   private float ZOOM_MODIFIER = 3.f;
+
   public PreAbstractClientPlayerEntityMixin(World world, BlockPos pos, float yaw, GameProfile profile) {
     super(world, pos, yaw, profile);
     // TODO Auto-generated constructor stub
@@ -33,7 +27,7 @@ public abstract class PreAbstractClientPlayerEntityMixin extends PlayerEntity {
 
   @Inject(at = @At("TAIL"), method = "getSpeed()F", cancellable = true)
   private float getSpeed(CallbackInfoReturnable<Float> cb) {
-    PlayerEntity playerEntity = (PlayerEntity)(Object)this;
+    PlayerEntity playerEntity = (PlayerEntity) (Object) this;
 
     float modifier = 1.0F;
 
@@ -46,7 +40,7 @@ public abstract class PreAbstractClientPlayerEntityMixin extends PlayerEntity {
       } else {
         g *= g;
       }
-      if(((PlayerEntityExt)playerEntity).dndClassExist()==8){
+      if (((PlayerEntityExt) playerEntity).dndClassExist() == 8) {
         modifier *= 1.0F - g * 0.15F * ZOOM_MODIFIER;
       } else {
         modifier *= 1.0F - g * 0.15F;

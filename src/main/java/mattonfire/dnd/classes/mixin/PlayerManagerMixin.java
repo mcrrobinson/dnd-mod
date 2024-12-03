@@ -19,17 +19,14 @@ import mattonfire.dnd.classes.SetPlayerClass;
 
 @Mixin(PlayerManager.class)
 public class PlayerManagerMixin {
-	@Inject(
-		at = @At("RETURN"), 
-		method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V"
-	)
+	@Inject(at = @At("RETURN"), method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
 	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
 		PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-		int classID = ((PlayerEntityExt)player).dndClassExist();
+		int classID = ((PlayerEntityExt) player).dndClassExist();
 		passedData.writeInt(classID);
 
 		// On rejoin set the player class server side.
-		if(classID!=0){
+		if (classID != 0) {
 			SetPlayerClass.setPlayerClass(null, player, classID);
 		}
 
@@ -37,14 +34,10 @@ public class PlayerManagerMixin {
 		ServerPlayNetworking.send(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, passedData);
 	}
 
-	@Inject(
-		at = @At("RETURN"), 
-		method = "respawnPlayer"
-	)
-	public void respawnPlayer(ServerPlayerEntity player, boolean alive, CallbackInfoReturnable info)
-	{
-		if(!alive)
-		{
+	@Inject(at = @At("RETURN"), method = "respawnPlayer")
+	public void respawnPlayer(ServerPlayerEntity player, boolean alive,
+			CallbackInfoReturnable<ServerPlayerEntity> info) {
+		if (!alive) {
 			PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
 			passedData.writeInt(0);
 			ServerPlayNetworking.send(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, passedData);

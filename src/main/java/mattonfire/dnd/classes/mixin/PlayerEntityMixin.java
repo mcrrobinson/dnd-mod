@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.tag.FluidTags;
 import net.minecraft.world.World;
 
@@ -54,21 +53,8 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (((PlayerEntityExt) player).dndClassExist() == 4) {
             if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.abilities.flying) {
-                System.out.println("start sinking...");
                 this.setVelocity(0.0D, -0.5, 0.0D);
             }
         }
     }
-
-    // @Inject(method = "writeCustomDataToTag", at = @At("RETURN"))
-    // public void writeCustomDataToTag(NbtCompound tag, CallbackInfo info)
-    // {
-    // tag.putInt("dndClass", this.dndClass);
-    // }
-
-    // @Inject(method = "readCustomDataFromTag", at = @At("RETURN"))
-    // public void readCustomDataFromTag(NbtCompound tag, CallbackInfo info)
-    // {
-    // dndClass = tag.getInt("dndClass");
-    // }
 }

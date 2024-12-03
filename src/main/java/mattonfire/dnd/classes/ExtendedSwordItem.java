@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes;
 
+import java.util.List;
+
 import com.jamieswhiteshirt.reachentityattributes.ReachEntityAttributes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -8,10 +10,12 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
@@ -59,26 +63,26 @@ public class ExtendedSwordItem extends SwordItem {
         }
     }
 
-    public boolean validReplaceBlock(World world, BlockPos blockPosition){
+    public boolean validReplaceBlock(World world, BlockPos blockPosition) {
         BlockState blockState = world.getBlockState(blockPosition);
-        if(blockState != block_of_air && blockState != block_of_bedrock){
+        if (blockState != block_of_air && blockState != block_of_bedrock) {
             return true;
         }
         return false;
     }
 
-    public void setFireBlocks(World world, int rx, int blockPosY, int z, BlockState blockState, int radius){
-        if(world.getBlockState(new BlockPos(rx, blockPosY, z)).isAir()){
+    public void setFireBlocks(World world, int rx, int blockPosY, int z, BlockState blockState, int radius) {
+        if (world.getBlockState(new BlockPos(rx, blockPosY, z)).isAir()) {
             world.setBlockState(new BlockPos(rx, blockPosY, z), blockState);
         }
     }
 
-    public void setIceBlocks(World world, int rx, int blockPosY, int z, BlockState blockState, int radius){
+    public void setIceBlocks(World world, int rx, int blockPosY, int z, BlockState blockState, int radius) {
         boolean belowBlock = false;
         BlockPos blockPos = new BlockPos(rx, blockPosY, z);
         for (int i = 0; i < radius; i++) {
-            if(belowBlock!=true){
-                blockPos = new BlockPos(rx, blockPosY-i, z);
+            if (belowBlock != true) {
+                blockPos = new BlockPos(rx, blockPosY - i, z);
                 belowBlock = validReplaceBlock(world, blockPos);
             } else {
                 world.setBlockState(blockPos, blockState);
@@ -87,40 +91,54 @@ public class ExtendedSwordItem extends SwordItem {
         }
     }
 
-    public void setLightning(int posX, int posY, int posZ, World world){
+    public void setLightning(int posX, int posY, int posZ, World world) {
         LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
         lightningEntity.setPos(posX, posY, posZ);
         world.spawnEntity(lightningEntity);
     }
 
     public void startStaffAction(BlockPos pos, World world, boolean entityPlacement) {
-        if(!world.isClient){
+        if (!world.isClient) {
             int blockPosX = pos.getX();
             int blockPosZ = pos.getZ();
             int blockPosY = pos.getY();
-            if(entityPlacement) blockPosY -= 1;
+            if (entityPlacement)
+                blockPosY -= 1;
 
-            world.createExplosion((Entity) null, blockPosX, blockPosY+2, blockPosZ, blast_damage, Explosion.DestructionType.NONE);
-            if(this.toString()=="staff_of_lightning"){
+            world.createExplosion((Entity) null, blockPosX, blockPosY + 2, blockPosZ, blast_damage,
+                    Explosion.DestructionType.NONE);
+            if (this.toString() == "staff_of_lightning") {
                 setLightning(blockPosX, blockPosY, blockPosZ, world);
-            } else if (this.toString()=="staff_of_ice" || this.toString()=="staff_of_fire"){
-                int radius_sqr = sphere_radius*sphere_radius;
+            } else if (this.toString() == "staff_of_ice" || this.toString() == "staff_of_fire") {
+                int radius_sqr = sphere_radius * sphere_radius;
                 for (int x = -sphere_radius; x <= sphere_radius; x++) {
-                    int hh = (int)Math.sqrt(radius_sqr - x * x);
+                    int hh = (int) Math.sqrt(radius_sqr - x * x);
                     int rx = blockPosX + x;
                     int ph = blockPosZ + hh;
-    
-                    for (int z = blockPosZ-hh; z < ph; z++) {
-                        if(this.toString()=="staff_of_fire"){
-                            setFireBlocks(world, rx, blockPosY+1, z, fire, sphere_radius);
+
+                    for (int z = blockPosZ - hh; z < ph; z++) {
+                        if (this.toString() == "staff_of_fire") {
+                            setFireBlocks(world, rx, blockPosY + 1, z, fire, sphere_radius);
+
                         } else {
                             setIceBlocks(world, rx, blockPosY, z, block_of_ice, sphere_radius);
+
+                            // Retrieve entities in this block area
+                            List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class,
+                                    new Box(rx - 0.5, blockPosY, z - 0.5, rx + 0.5, blockPosY + 1, z + 0.5),
+                                    entity -> true); // Add filters here if necessary
+
+                            System.out.println(entities);
+                            for (LivingEntity entity : entities) {
+                                entity.addStatusEffect(new StatusEffectInstance(DnDClasses.FREEZE_EFFECT, 200));
+                            }
                         }
                     }
                 }
             }
         }
     }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         MinecraftClient client = MinecraftClient.getInstance();
@@ -133,11 +151,11 @@ public class ExtendedSwordItem extends SwordItem {
             case ENTITY:
                 startStaffAction(((EntityHitResult) hit).getEntity().getBlockPos(), world, true);
                 break;
-        
+
             default:
                 return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
         }
-        playerEntity.getItemCooldownManager().set(this, 50);       
+        playerEntity.getItemCooldownManager().set(this, 50);
         return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
     }
 }

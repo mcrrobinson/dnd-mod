@@ -8,7 +8,8 @@
         "StatusEffectMixin",
         "HostileEntityMixin",
         "PlayerEntityMixin",
-        "PlayerManagerMixin"
+        "PlayerManagerMixin",
+        "LavaDamageMixin"
     ],
     "client": [
         "PreAbstractClientPlayerEntityMixin",

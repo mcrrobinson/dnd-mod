@@ -1,7 +1,7 @@
 {
   "mappings": {
     "mattonfire/dnd/classes/mixin/BowItemMixin": {
-      "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;method_24919(Lnet/minecraft/class_1297;FFFFF)V",
+      "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;setProperties(Lnet/minecraft/class_1297;FFFFF)V",
       "onStoppedUsing": "Lnet/minecraft/class_1753;method_7840(Lnet/minecraft/class_1799;Lnet/minecraft/class_1937;Lnet/minecraft/class_1309;I)V"
     },
     "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
@@ -13,21 +13,13 @@
     "mattonfire/dnd/classes/mixin/LavaDamageMixin": {
       "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
     },
-    "mattonfire/dnd/classes/mixin/MobEntityMixin": {
-      "readCustomDataFromNbt": "Lnet/minecraft/class_1308;method_5749(Lnet/minecraft/class_2487;)V",
-      "tick": "Lnet/minecraft/class_1308;method_5773()V",
-      "writeCustomDataToNbt": "Lnet/minecraft/class_1308;method_5652(Lnet/minecraft/class_2487;)V"
-    },
     "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-      "dropSelectedItem": "Lnet/minecraft/class_1657;method_7290(Z)Z",
+      "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;": "Lnet/minecraft/class_1657;method_7328(Lnet/minecraft/class_1799;Z)Lnet/minecraft/class_1542;",
       "tick": "Lnet/minecraft/class_1657;method_5773()V"
     },
     "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
       "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
       "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
-    },
-    "mattonfire/dnd/classes/mixin/PreAbstractClientPlayerEntityMixin": {
-      "getSpeed()F": "Lnet/minecraft/class_742;method_3118()F"
     },
     "mattonfire/dnd/classes/mixin/StatusEffectMixin": {
       "applyUpdateEffect": "Lnet/minecraft/class_1291;method_5572(Lnet/minecraft/class_1309;I)V"
@@ -36,7 +28,7 @@
   "data": {
     "named:intermediary": {
       "mattonfire/dnd/classes/mixin/BowItemMixin": {
-        "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;method_24919(Lnet/minecraft/class_1297;FFFFF)V",
+        "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;setProperties(Lnet/minecraft/class_1297;FFFFF)V",
         "onStoppedUsing": "Lnet/minecraft/class_1753;method_7840(Lnet/minecraft/class_1799;Lnet/minecraft/class_1937;Lnet/minecraft/class_1309;I)V"
       },
       "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
@@ -48,21 +40,13 @@
       "mattonfire/dnd/classes/mixin/LavaDamageMixin": {
         "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
       },
-      "mattonfire/dnd/classes/mixin/MobEntityMixin": {
-        "readCustomDataFromNbt": "Lnet/minecraft/class_1308;method_5749(Lnet/minecraft/class_2487;)V",
-        "tick": "Lnet/minecraft/class_1308;method_5773()V",
-        "writeCustomDataToNbt": "Lnet/minecraft/class_1308;method_5652(Lnet/minecraft/class_2487;)V"
-      },
       "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-        "dropSelectedItem": "Lnet/minecraft/class_1657;method_7290(Z)Z",
+        "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;": "Lnet/minecraft/class_1657;method_7328(Lnet/minecraft/class_1799;Z)Lnet/minecraft/class_1542;",
         "tick": "Lnet/minecraft/class_1657;method_5773()V"
       },
       "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
         "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
         "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
-      },
-      "mattonfire/dnd/classes/mixin/PreAbstractClientPlayerEntityMixin": {
-        "getSpeed()F": "Lnet/minecraft/class_742;method_3118()F"
       },
       "mattonfire/dnd/classes/mixin/StatusEffectMixin": {
         "applyUpdateEffect": "Lnet/minecraft/class_1291;method_5572(Lnet/minecraft/class_1309;I)V"

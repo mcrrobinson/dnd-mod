@@ -30,16 +30,15 @@ dependencies {
 
     // PSA: Some older mods, compiled on Loom 0.2.1, might have outdated Maven POMs.
     // You may need to force-disable transitiveness on them.
-    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
-    include "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
+    modImplementation "com.jamieswhiteshirt:reach-entity-attributes:2.3.2"
+    include "com.jamieswhiteshirt:reach-entity-attributes:2.3.2"
 
-    include "me.sargunvohra.mcmods:autoconfig1u:3.4.0"
-    modApi("me.sargunvohra.mcmods:autoconfig1u:3.4.0") {
-        exclude(group: "net.fabricmc.fabric-api")
-        exclude(group: "net.fabricmc", module: "fabric-loader")
-    }
-
-	modImplementation include("io.github.cottonmc:LibGui:3.3.2+1.16.4")
+    // include "me.sargunvohra.mcmods:autoconfig1u:3.4.0"
+    // modApi("me.sargunvohra.mcmods:autoconfig1u:3.4.0") {
+    //     exclude(group: "net.fabricmc.fabric-api")
+    //     exclude(group: "net.fabricmc", module: "fabric-loader")
+    // }
+	modImplementation include("io.github.cottonmc:LibGui:7.1.1+1.19.4")
 }
 
 processResources {

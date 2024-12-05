@@ -4,17 +4,9 @@
     "package": "mattonfire.dnd.classes.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "BowItemMixin",
-        "StatusEffectMixin",
-        "HostileEntityMixin",
-        "PlayerEntityMixin",
-        "PlayerManagerMixin",
-        "LavaDamageMixin"
+        "PlayerEntityMixin"
     ],
-    "client": [
-        "PreAbstractClientPlayerEntityMixin",
-        "DoubleJumpMixin"
-    ],
+    "client": [],
     "injectors": {
         "defaultRequire": 1
     }

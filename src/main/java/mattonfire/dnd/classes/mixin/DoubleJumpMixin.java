@@ -30,26 +30,26 @@ public abstract class DoubleJumpMixin {
     @Inject(method = "tickMovement", at = @At("HEAD"))
     private void tickMovement(CallbackInfo info) {
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
-        if(((PlayerEntityExt)(PlayerEntity)player).dndClassExist()==6){
+        if (((PlayerEntityExt) (PlayerEntity) player).dndClassExist() == 6) {
             if (player.isOnGround() || player.isClimbing()) {
                 jumpCount = 2;
             } else if (!jumpedLastTick && jumpCount > 0 && player.getVelocity().y < 0) {
-                if (player.input.jumping && !player.abilities.flying) {
+                if (player.input.jumping && !player.getAbilities().allowFlying) {
                     if (canJump(player)) {
                         --jumpCount;
                         player.jump();
-    
+
                         DoubleJumpEffect.play(player);
-    
+
                         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                         passedData.writeUuid(player.getUuid());
-    
+
                         ClientPlayNetworking.send(DnDClasses.C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID, passedData);
                     }
                 }
             }
             jumpedLastTick = player.input.jumping;
-        }  
+        }
     }
 
     private boolean wearingUsableElytra(ClientPlayerEntity player) {

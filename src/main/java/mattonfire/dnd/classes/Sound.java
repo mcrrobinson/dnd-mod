@@ -2,7 +2,8 @@ package mattonfire.dnd.classes;
 
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 
 public class Sound {
     public static final SoundEvent STEEL_ON_STEEL = registerSoundEvent("steel_on_steel");
@@ -11,8 +12,8 @@ public class Sound {
     public static final SoundEvent SILENT_FOOTSTEPS = registerSoundEvent("silent_footsteps");
 
     private static SoundEvent registerSoundEvent(String name) {
-        Identifier id = new Identifier(DnDClasses.MOD_ID, name);
-        return Registry.register(Registry.SOUND_EVENT, id, new SoundEvent(id));
+        Identifier id = Identifier.of(DnDClasses.MOD_ID, name);
+        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 
     public static void registerSounds() {

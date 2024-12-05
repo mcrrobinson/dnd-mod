@@ -12,7 +12,7 @@ public class SetPlayerClass {
         playerClasses.resetToDefault(player);
         switch (classID) {
             case 0:
-                client.openScreen(new Screen(new GUI()));
+                client.setScreen(new Screen(new GUI()));
             case 1:
                 playerClasses.typeBarbarian(player);
                 break;

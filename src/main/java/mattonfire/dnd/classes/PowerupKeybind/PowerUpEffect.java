@@ -1,11 +1,7 @@
 package mattonfire.dnd.classes.PowerupKeybind;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.DragonFireballEntity;
-import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.explosion.Explosion.DestructionType;
+import net.minecraft.world.World.ExplosionSourceType;
 
 public class PowerUpEffect {
     public static void play(PlayerEntity player, int classID) {
@@ -16,7 +12,7 @@ public class PowerUpEffect {
                 break;
             case 12:
                 player.getEntityWorld().createExplosion(null, player.getX(), player.getY(), player.getZ(), 10.F, true,
-                        DestructionType.BREAK);
+                        ExplosionSourceType.TNT);
                 break;
             case 11:
                 // Vec3d aim = player.getVelocity();

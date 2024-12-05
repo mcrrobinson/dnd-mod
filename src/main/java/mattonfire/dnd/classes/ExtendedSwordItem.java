@@ -24,7 +24,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
-import net.minecraft.world.explosion.Explosion;
 
 public class ExtendedSwordItem extends SwordItem {
     public static double reach = 0;
@@ -48,7 +47,8 @@ public class ExtendedSwordItem extends SwordItem {
         if (active != (((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() == this)) {
             System.out.println("New enitiy reaching: " + entity);
             liver = (LivingEntity) entity;
-            SetRange(((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() == this);
+            // SetRange(((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() ==
+            // this);
         }
         active = ((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() == this;
     }
@@ -56,7 +56,8 @@ public class ExtendedSwordItem extends SwordItem {
     public void SetRange(boolean change_range) {
         if (change_range) {
             System.out.println("On");
-            liver.getAttributeInstance(ReachEntityAttributes.REACH).setBaseValue(reach);
+            liver.getAttributeInstance(ReachEntityAttributes.REACH)
+                    .setBaseValue(reach);
         } else {
             System.out.println("Off");
             liver.getAttributeInstance(ReachEntityAttributes.REACH).setBaseValue(0.0);
@@ -92,6 +93,8 @@ public class ExtendedSwordItem extends SwordItem {
     }
 
     public void setLightning(int posX, int posY, int posZ, World world) {
+
+        // TODO: Not sure if this is the fix.
         LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
         lightningEntity.setPos(posX, posY, posZ);
         world.spawnEntity(lightningEntity);
@@ -106,7 +109,7 @@ public class ExtendedSwordItem extends SwordItem {
                 blockPosY -= 1;
 
             world.createExplosion((Entity) null, blockPosX, blockPosY + 2, blockPosZ, blast_damage,
-                    Explosion.DestructionType.NONE);
+                    World.ExplosionSourceType.NONE);
             if (this.toString() == "staff_of_lightning") {
                 setLightning(blockPosX, blockPosY, blockPosZ, world);
             } else if (this.toString() == "staff_of_ice" || this.toString() == "staff_of_fire") {
@@ -153,7 +156,7 @@ public class ExtendedSwordItem extends SwordItem {
                 break;
 
             default:
-                return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
+                break;
         }
         playerEntity.getItemCooldownManager().set(this, 50);
         return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));

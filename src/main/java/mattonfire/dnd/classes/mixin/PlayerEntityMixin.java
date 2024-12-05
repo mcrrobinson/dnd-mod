@@ -4,9 +4,10 @@ import mattonfire.dnd.classes.ExtendedSwordItem;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -15,7 +16,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@SuppressWarnings("rawtypes")
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends Entity implements PlayerEntityExt {
     private ItemStack selectedItem;
@@ -36,12 +36,16 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         return this.dndClass;
     }
 
-    @Inject(at = @At("HEAD"), method = "dropSelectedItem")
-    private void dropSelectedItem(boolean dropEntireStack, CallbackInfoReturnable info) {
-        System.out.println("Item dropped");
-        if (this.selectedItem.getItem() instanceof ExtendedSwordItem) {
-            System.out.println("Extended Dong dropped");
-            ((ExtendedSwordItem) this.selectedItem.getItem()).SetRange(false);
+    @Inject(at = @At("HEAD"), method = "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;")
+    private void onDropItem(ItemStack stack, boolean throwRandomly, CallbackInfoReturnable<ItemEntity> info) {
+        System.out.println("Item dropped: " + stack.getItem());
+
+        // Check if the dropped item is of your specific type
+        if (stack.getItem() instanceof ExtendedSwordItem) {
+            System.out.println("Extended Sword dropped");
+
+            // Perform your custom logic
+            ((ExtendedSwordItem) stack.getItem()).SetRange(false);
             ExtendedSwordItem.active = false;
         }
     }
@@ -52,7 +56,8 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     public void tick(CallbackInfo info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (((PlayerEntityExt) player).dndClassExist() == 4) {
-            if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.abilities.flying) {
+            if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
+                    !player.getAbilities().flying) {
                 this.setVelocity(0.0D, -0.5, 0.0D);
             }
         }

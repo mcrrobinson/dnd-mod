@@ -4,7 +4,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 public class SetClassAttributes {
@@ -20,11 +20,18 @@ public class SetClassAttributes {
 
     public void sendPlayerMessage(PlayerEntity player, String className, String pros, String cons, String special) {
         player.sendMessage(
-                (new TranslatableText("The " + className + "\n")).formatted(Formatting.UNDERLINE, Formatting.GOLD),
+                Text.literal("The " + className + "\n").formatted(Formatting.UNDERLINE, Formatting.GOLD),
                 false);
-        player.sendMessage((new TranslatableText("Pros: " + pros)).formatted(Formatting.GREEN), false);
-        player.sendMessage((new TranslatableText("Cons: " + cons)).formatted(Formatting.RED), false);
-        player.sendMessage((new TranslatableText("Special: " + special)).formatted(Formatting.DARK_PURPLE), false);
+        player.sendMessage(
+                Text.literal("Pros: " + pros).formatted(Formatting.GREEN),
+                false);
+        player.sendMessage(
+                Text.literal("Cons: " + cons).formatted(Formatting.RED),
+                false);
+        player.sendMessage(
+                Text.literal("Special: " + special).formatted(Formatting.DARK_PURPLE),
+                false);
+
     }
 
     public void typeBarbarian(PlayerEntity player) {
@@ -44,9 +51,9 @@ public class SetClassAttributes {
     public void typeCleric(PlayerEntity player) {
         System.out.println("Cleric...");
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4); // -33%
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 20000, 2, false, false, true, null));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 20000, 2, false, false, true));
         player.addStatusEffect(
-                new StatusEffectInstance(StatusEffects.NIGHT_VISION, 20000, 2, false, false, true, null));
+                new StatusEffectInstance(StatusEffects.NIGHT_VISION, 20000, 2, false, false, true));
 
     }
 

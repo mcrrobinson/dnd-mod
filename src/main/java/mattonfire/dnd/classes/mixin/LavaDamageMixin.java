@@ -1,7 +1,6 @@
 package mattonfire.dnd.classes.mixin;
 
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,8 +24,9 @@ public abstract class LavaDamageMixin {
         // Check if the entity is in lava
 
         if (entity.isInLava() && !world.isClient && (((PlayerEntityExt) entity).dndClassExist() == 8)) {
-            // Apply custom damage
-            entity.damage(DamageSource.LAVA, 20.0F); // Example: 2 damage
+
+            // DONT KNOW IF THIS WORKS TODO:
+            entity.damage(null, 20.F);
         }
     }
 }

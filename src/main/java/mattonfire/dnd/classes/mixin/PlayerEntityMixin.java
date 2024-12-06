@@ -8,9 +8,11 @@ import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.util.Arm;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -33,20 +35,6 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
 
     public int dndClassExist() {
         return this.dndClass;
-    }
-
-    @Inject(at = @At("HEAD"), method = "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;")
-    private void onDropItem(ItemStack stack, boolean throwRandomly, CallbackInfoReturnable<ItemEntity> info) {
-        System.out.println("Item dropped: " + stack.getItem());
-
-        // Check if the dropped item is of your specific type
-        if (stack.getItem() instanceof ExtendedSwordItem) {
-            System.out.println("Extended Sword dropped");
-
-            // Perform your custom logic
-            ((ExtendedSwordItem) stack.getItem()).setRange(false);
-            ExtendedSwordItem.active = false;
-        }
     }
 
     // Some creatures can't swim... here is that. Probably a better way of doing

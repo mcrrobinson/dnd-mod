@@ -4,7 +4,6 @@ import java.util.List;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -19,11 +18,9 @@ import net.minecraft.world.World.ExplosionSourceType;
 public class CustomIceballEntity extends FireballEntity {
     private static final int explosionPower = 4; // Adjust explosion power (default is often 1 or 2)
     private static final int sphere_radius = 5;
-    private static final float blast_damage = 2.F;
     private static final BlockState block_of_ice = Blocks.ICE.getDefaultState();
     private static final BlockState block_of_air = Blocks.AIR.getDefaultState();
     private static final BlockState block_of_bedrock = Blocks.BEDROCK.getDefaultState();
-    private static final BlockState fire = Blocks.FIRE.getDefaultState();
 
     public CustomIceballEntity(EntityType<? extends FireballEntity> entityType, World world) {
         super(entityType, world);
@@ -65,14 +62,12 @@ public class CustomIceballEntity extends FireballEntity {
         world.spawnEntity(lightningEntity);
     }
 
-    public void startStaffAction(BlockPos pos, World world, boolean entityPlacement) {
+    public void setIceAction(BlockPos pos, World world, boolean entityPlacement) {
         int blockPosX = pos.getX();
         int blockPosZ = pos.getZ();
         int blockPosY = pos.getY();
         if (entityPlacement)
             blockPosY -= 1;
-
-        System.out.println("Starting staff action at " + blockPosX + ", " + blockPosY + ", " + blockPosZ);
 
         int radius_sqr = sphere_radius * sphere_radius;
         for (int x = -sphere_radius; x <= sphere_radius; x++) {
@@ -91,7 +86,6 @@ public class CustomIceballEntity extends FireballEntity {
                                                                                                  // base.
                         entity -> true); // Add filters here if necessary
 
-                System.out.println(entities);
                 for (LivingEntity entity : entities) {
                     entity.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, 200));
                 }
@@ -103,14 +97,12 @@ public class CustomIceballEntity extends FireballEntity {
     protected void onCollision(HitResult hitResult) {
         super.onCollision(hitResult);
 
-        System.out.println("Iceball collided with " + hitResult.getType());
-
         // Cause an explosion on impact
         if (!this.world.isClient) {
             world.createExplosion(this, this.getX(), this.getY(), this.getZ(), explosionPower,
                     ExplosionSourceType.NONE);
 
-            startStaffAction(new BlockPos((int) this.getX(), (int) this.getY(), (int) this.getZ()), world, false);
+            setIceAction(new BlockPos((int) this.getX(), (int) this.getY(), (int) this.getZ()), world, false);
             this.discard(); // Remove fireball after explosion
         }
     }

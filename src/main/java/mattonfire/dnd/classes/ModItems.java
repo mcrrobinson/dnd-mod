@@ -1,11 +1,6 @@
 package mattonfire.dnd.classes;
 
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.object.builder.v1.entity.FabricEntityTypeBuilder;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityDimensions;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnGroup;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;

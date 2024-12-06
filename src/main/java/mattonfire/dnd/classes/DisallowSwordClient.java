@@ -7,6 +7,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 
+@SuppressWarnings("unused")
 public class DisallowSwordClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {

@@ -5,6 +5,7 @@ import io.github.cottonmc.cotton.gui.widget.WButton;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.WSprite;
+import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.DnDClasses;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -23,6 +24,9 @@ public class GUI extends LightweightGuiDescription {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
         root.setSize(300, 300);
+
+        root.setInsets(Insets.ROOT_PANEL);
+        root.setInsets(new Insets(0, 20, 0, 20)); // Top, Left, Bottom, Right
 
         WLabel label = new WLabel(Text.literal("Classes"), 0xFFFFFF);
         root.add(label, 0, 0, 2, 1);

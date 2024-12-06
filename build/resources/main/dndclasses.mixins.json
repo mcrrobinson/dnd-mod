@@ -4,9 +4,13 @@
     "package": "mattonfire.dnd.classes.mixin",
     "compatibilityLevel": "JAVA_8",
     "mixins": [
-        "PlayerEntityMixin"
+        "PlayerEntityMixin",
+        "PlayerManagerMixin",
+        "LavaDamageMixin"
     ],
-    "client": [],
+    "client": [
+        "DoubleJumpMixin"
+    ],
     "injectors": {
         "defaultRequire": 1
     }

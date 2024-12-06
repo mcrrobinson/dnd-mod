@@ -1,11 +1,11 @@
 package mattonfire.dnd.classes;
 
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
-import net.minecraft.registry.Registry;
 
-public class Sound {
+public class ModSounds {
     public static final SoundEvent STEEL_ON_STEEL = registerSoundEvent("steel_on_steel");
     public static final SoundEvent AWAKE_CART = registerSoundEvent("awake_cart");
     public static final SoundEvent TOOTH_AND_CLAW = registerSoundEvent("tooth_and_claw");
@@ -17,7 +17,6 @@ public class Sound {
     }
 
     public static void registerSounds() {
-        // Register sounds
-
+        DnDClasses.LOGGER.info("Registering Mod Sounds for " + DnDClasses.MOD_ID);
     }
 }

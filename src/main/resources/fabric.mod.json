@@ -18,7 +18,7 @@
             "mattonfire.dnd.classes.DnDClasses"
         ],
         "client": [
-            "mattonfire.dnd.classes.DoubleJump.DoublejumpClient",
+            "mattonfire.dnd.classes.DoubleJump.DoubleJumpClient",
             "mattonfire.dnd.classes.PowerupKeybind.PowerupKeybindClient",
             "mattonfire.dnd.classes.gui.GUIClient",
             "mattonfire.dnd.classes.DisallowSwordClient"

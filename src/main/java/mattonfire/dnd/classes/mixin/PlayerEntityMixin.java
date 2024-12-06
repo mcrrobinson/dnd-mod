@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends Entity implements PlayerEntityExt {
-    private ItemStack selectedItem;
     boolean dropEntireStack;
     private int dndClass = 0;
 
@@ -45,7 +44,7 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
             System.out.println("Extended Sword dropped");
 
             // Perform your custom logic
-            ((ExtendedSwordItem) stack.getItem()).SetRange(false);
+            ((ExtendedSwordItem) stack.getItem()).setRange(false);
             ExtendedSwordItem.active = false;
         }
     }

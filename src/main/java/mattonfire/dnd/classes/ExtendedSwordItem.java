@@ -47,13 +47,12 @@ public class ExtendedSwordItem extends SwordItem {
         if (active != (((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() == this)) {
             System.out.println("New enitiy reaching: " + entity);
             liver = (LivingEntity) entity;
-            // SetRange(((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() ==
-            // this);
+            setRange(((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() == this);
         }
         active = ((LivingEntity) entity).getStackInHand(Hand.MAIN_HAND).getItem() == this;
     }
 
-    public void SetRange(boolean change_range) {
+    public void setRange(boolean change_range) {
         if (change_range) {
             System.out.println("On");
             liver.getAttributeInstance(ReachEntityAttributes.REACH)
@@ -128,12 +127,14 @@ public class ExtendedSwordItem extends SwordItem {
 
                             // Retrieve entities in this block area
                             List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class,
-                                    new Box(rx - 0.5, blockPosY, z - 0.5, rx + 0.5, blockPosY + 1, z + 0.5),
+                                    new Box(rx - 0.5, blockPosY, z - 0.5, rx + 0.5, blockPosY + 5, z + 0.5), // 5 blocks
+                                                                                                             // above
+                                                                                                             // base.
                                     entity -> true); // Add filters here if necessary
 
                             System.out.println(entities);
                             for (LivingEntity entity : entities) {
-                                entity.addStatusEffect(new StatusEffectInstance(DnDClasses.FREEZE_EFFECT, 200));
+                                entity.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, 200));
                             }
                         }
                     }

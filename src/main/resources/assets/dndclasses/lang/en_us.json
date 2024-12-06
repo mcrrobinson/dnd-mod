@@ -6,12 +6,14 @@
     "effect.dndclasses.super_strength": "Super Strength",
     "key.dnd-classes.power-up": "Power Up Abililty.",
     "category.dnd-classes.dnd-classes": "D&D Classes",
-    "item.dndclasses.music_disc_steel_on_steel": "Steel on Steel",
-    "item.dndclasses.music_disc_awake_cart": "Awake Cart",
-    "item.dndclasses.music_disc_tooth_and_claw": "Tooth and Claw",
-    "item.dndclasses.music_disc_silent_footsteps": "Silent Footsteps",
-    "item.dndclasses.music_disc_steel_on_steel.desc": "A music disc that plays the song Steel on Steel.",
-    "item.dndclasses.music_disc_awake_cart.desc": "A music disc that plays the song Awake Cart.",
-    "item.dndclasses.music_disc_tooth_and_claw.desc": "A music disc that plays the song Tooth and Claw.",
-    "item.dndclasses.music_disc_silent_footsteps.desc": "A music disc that plays the song Silent Footsteps."
+    "item.dndclasses.music_disc_steel_on_steel": "Music Disc",
+    "item.dndclasses.music_disc_awake_cart": "Music Disc",
+    "item.dndclasses.music_disc_tooth_and_claw": "Music Disc",
+    "item.dndclasses.music_disc_silent_footsteps": "Music Disc",
+    "item.dndclasses.music_disc_steel_on_steel.desc": "Steel on Steel - Skyrim",
+    "item.dndclasses.music_disc_awake_cart.desc": "Awake Cart - Skyrim",
+    "item.dndclasses.music_disc_tooth_and_claw.desc": "Tooth and Claw - Skyrim",
+    "item.dndclasses.music_disc_silent_footsteps.desc": "Silent Footsteps - Skyrim",
+    "itemgroup.dndclasses": "D&D Classes",
+    "effect.dndclasses.freeze": "Frozen"
 }

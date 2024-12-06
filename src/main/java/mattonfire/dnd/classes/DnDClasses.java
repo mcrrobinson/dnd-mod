@@ -1,33 +1,23 @@
 package mattonfire.dnd.classes;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.PowerupKeybind.PowerUpEffect;
-
-import java.util.stream.Stream;
-
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.server.PlayerStream;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
-import net.minecraft.item.MusicDiscItem;
-import net.minecraft.item.ToolMaterials;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+@SuppressWarnings("unused")
 public class DnDClasses implements ModInitializer {
-        public static final Logger LOGGER = LogManager.getLogger();
         public static final Identifier C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("doublejump",
                         "request_doublejump_effects");
         public static final Identifier S2C_DOUBLEJUMP_EFFECTS_PACKET_ID = Identifier.of("doublejump",
@@ -38,74 +28,25 @@ public class DnDClasses implements ModInitializer {
         public static final Identifier S2C_POWERUP_EFFECTS_PACKET_ID = Identifier.of("powerup",
                         "play_powerup_effects");
         public static final String MOD_ID = "dndclasses";
+        public static final Logger LOGGER = LogManager.getLogger("dndclasses");
 
-        // If the client has no class it returns 0 which prompts the screen where they
-        // pick. Once they pick a class.
-        // C2S sends packet with the class ID. If the class is approved the server will
-        // return the classID.
         public static final Identifier C2S_CLASS_PICK_PACKET_ID = Identifier.of("classpick", "class_pick");
+        public static final Identifier S2C_CLASS_QUERY_PACKET_ID = Identifier.of("classpick", "class_query");
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
                         "approve_class_pick");
-
-        // Queries whether or not the player has a class existing.
-        public static final Identifier S2C_CLASS_QUERY_PACKET_ID = Identifier.of("classpick", "class_query");
-        public static final Item MUSIC_DISC_STEEL_ON_STEEL = registerMusicDisk("music_disc_steel_on_steel", 14,
-                        Sound.STEEL_ON_STEEL);
-        public static final Item MUSIC_DISC_AWAKE_CART = registerMusicDisk("music_disc_awake_cart", 15,
-                        Sound.AWAKE_CART);
-        public static final Item MUSIC_DISC_TOOTH_AND_CLAW = registerMusicDisk("music_disc_tooth_and_claw", 16,
-                        Sound.TOOTH_AND_CLAW);
-        public static final Item MUSIC_DISC_SILENT_FOOTSTEPS = registerMusicDisk("music_disc_silent_footsteps", 17,
-                        Sound.SILENT_FOOTSTEPS);
-
-        public static final StatusEffect FREEZE_EFFECT = new FreezeEffect();
-
-        public static final Item STAFF_OF_LIGHTNING = Registry.register(
-                        Registries.ITEM,
-                        new Identifier(DnDClasses.MOD_ID, "staff_of_lightning"),
-                        new ExtendedSwordItem(ToolMaterials.DIAMOND, new FabricItemSettings()));
-
-        public static final Item STAFF_OF_ICE = Registry.register(
-                        Registries.ITEM,
-                        new Identifier(DnDClasses.MOD_ID, "staff_of_ice"),
-                        new ExtendedSwordItem(ToolMaterials.DIAMOND, new FabricItemSettings()));
-
-        public static final Item STAFF_OF_FIRE = Registry.register(
-                        Registries.ITEM,
-                        new Identifier(DnDClasses.MOD_ID, "staff_of_fire"),
-                        new ExtendedSwordItem(ToolMaterials.DIAMOND, new FabricItemSettings()));
-
-        public static final Item MONK_STAFF = Registry.register(
-                        Registries.ITEM,
-                        new Identifier(DnDClasses.MOD_ID, "monk_staff"),
-                        new MonkStaff(ToolMaterials.DIAMOND, new FabricItemSettings()));
 
         @Override
         public void onInitialize() {
 
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();
-                Registry.register(Registries.STATUS_EFFECT, Identifier.of("freeze", "freeze_effect"), FREEZE_EFFECT);
-                Sound.registerSounds();
-
-                // Register staff entity.
-                LOGGER.info("Registering Staffs...");
                 Registry.register(Registries.STATUS_EFFECT, Identifier.of(DnDClasses.MOD_ID, "super_strength"),
                                 new SuperStrengthStatusEffect());
 
-                ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
-                        entries.add(STAFF_OF_LIGHTNING);
-                        entries.add(STAFF_OF_ICE);
-                        entries.add(STAFF_OF_FIRE);
-                        entries.add(MONK_STAFF);
-                });
-
-                ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> {
-                        entries.add(MUSIC_DISC_STEEL_ON_STEEL);
-                        entries.add(MUSIC_DISC_AWAKE_CART);
-                        entries.add(MUSIC_DISC_TOOTH_AND_CLAW);
-                        entries.add(MUSIC_DISC_SILENT_FOOTSTEPS);
-                });
+                ModSounds.registerSounds();
+                ModItemGroup.registerItemGroups();
+                ModItems.registerModItems();
+                ModEffects.registerEffects();
 
                 // Register doublejump registry.
                 ServerPlayNetworking.registerGlobalReceiver(C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
@@ -114,15 +55,10 @@ public class DnDClasses implements ModInitializer {
                                         passedData.writeUuid(buf.readUuid());
                                         PlayerEntity entity = (PlayerEntity) player;
                                         server.execute(() -> {
-                                                Stream<PlayerEntity> watchingPlayers = PlayerStream.watching(
-                                                                entity.getEntityWorld(),
-                                                                entity.getBlockPos());
-                                                watchingPlayers.forEach(p -> {
-                                                        if (p != player) {
-                                                                ServerPlayNetworking.send((ServerPlayerEntity) p,
-                                                                                DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
-                                                                                passedData);
-                                                        }
+                                                PlayerLookup.tracking(entity).forEach(p -> {
+                                                        ServerPlayNetworking.send((ServerPlayerEntity) p,
+                                                                        DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
+                                                                        passedData);
                                                 });
                                         });
                                 });
@@ -308,17 +244,7 @@ public class DnDClasses implements ModInitializer {
 
                                 });
         }
-
-        // Helper method to register a music disk
-        private static Item registerMusicDisk(String name, int comparatorSignalStrength, SoundEvent soundEvent) {
-                Item musicDisk = new MusicDiscItem(7, soundEvent,
-                                new FabricItemSettings().maxCount(1), comparatorSignalStrength) {
-                };
-                Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), musicDisk);
-                return musicDisk;
-        }
 }
 
 // remove diamonds type create own again...
 // music disk no work
-// gui doesnt' appear on startup

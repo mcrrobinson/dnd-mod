@@ -19,6 +19,26 @@ public class ExtendedSwordItem extends SwordItem {
 
     private void spawnFireball(World world, Vec3d position, Vec3d direction) {
         // Create and configure the fireball entity
+        CustomFireballEntity fireball = new CustomFireballEntity(EntityType.FIREBALL, world);
+        fireball.setPosition(position.x, position.y, position.z);
+        fireball.setVelocity(direction.x, direction.y, direction.z, 6.0F, 0.25F);
+
+        // Add the fireball to the world
+        world.spawnEntity(fireball);
+    }
+
+    private void spawnLightningBall(World world, Vec3d position, Vec3d direction) {
+        // Create and configure the fireball entity
+        CustomLightningEntity fireball = new CustomLightningEntity(EntityType.FIREBALL, world);
+        fireball.setPosition(position.x, position.y, position.z);
+        fireball.setVelocity(direction.x, direction.y, direction.z, 6.0F, 0.25F);
+
+        // Add the fireball to the world
+        world.spawnEntity(fireball);
+    }
+
+    private void spawnIceball(World world, Vec3d position, Vec3d direction) {
+        // Create and configure the fireball entity
         CustomIceballEntity fireball = new CustomIceballEntity(EntityType.FIREBALL, world);
         fireball.setPosition(position.x, position.y, position.z);
         fireball.setVelocity(direction.x, direction.y, direction.z, 6.0F, 0.25F);
@@ -29,24 +49,20 @@ public class ExtendedSwordItem extends SwordItem {
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
-        // MinecraftClient client = MinecraftClient.getInstance();
-
-        spawnFireball(world, playerEntity.getPos(), playerEntity.getRotationVector());
-        // HitResult hit = client.crosshairTarget;
-        // HitResult.Type blockType = hit.getType();
-        // switch (blockType) {
-        // case BLOCK:
-        // startStaffAction(((BlockHitResult) hit).getBlockPos(), world, false);
-        // break;
-        // case ENTITY:
-        // startStaffAction(((EntityHitResult) hit).getEntity().getBlockPos(), world,
-        // true);
-        // break;
-
-        // default:
-        // break;
-        // }
-        // playerEntity.getItemCooldownManager().set(this, 50);
+        switch (this.toString()) {
+            case "staff_of_fire":
+                spawnFireball(world, playerEntity.getPos(), playerEntity.getRotationVector());
+                break;
+            case "staff_of_lightning":
+                spawnLightningBall(world, playerEntity.getPos(), playerEntity.getRotationVector());
+                break;
+            case "staff_of_ice":
+                spawnIceball(world, playerEntity.getPos(), playerEntity.getRotationVector());
+                break;
+            default:
+                System.out.println("No action for item: " + this.toString());
+                break;
+        }
         return new TypedActionResult<ItemStack>(ActionResult.SUCCESS, playerEntity.getStackInHand(hand));
     }
 }

@@ -14,7 +14,6 @@
       "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
     },
     "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-      "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;": "Lnet/minecraft/class_1657;method_7328(Lnet/minecraft/class_1799;Z)Lnet/minecraft/class_1542;",
       "tick": "Lnet/minecraft/class_1657;method_5773()V"
     },
     "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
@@ -41,7 +40,6 @@
         "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
       },
       "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-        "dropItem(Lnet/minecraft/item/ItemStack;Z)Lnet/minecraft/entity/ItemEntity;": "Lnet/minecraft/class_1657;method_7328(Lnet/minecraft/class_1799;Z)Lnet/minecraft/class_1542;",
         "tick": "Lnet/minecraft/class_1657;method_5773()V"
       },
       "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {

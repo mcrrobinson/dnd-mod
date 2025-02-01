@@ -1,5 +1,6 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Registry;
 
+import mattonfire.dnd.classes.DnDClasses;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.sound.SoundEvent;

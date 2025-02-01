@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Entities;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;

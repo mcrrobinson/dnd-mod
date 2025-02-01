@@ -1,5 +1,8 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Items;
 
+import mattonfire.dnd.classes.Entities.CustomFireballEntity;
+import mattonfire.dnd.classes.Entities.CustomIceballEntity;
+import mattonfire.dnd.classes.Entities.CustomLightningEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.entity.player.PlayerEntity;

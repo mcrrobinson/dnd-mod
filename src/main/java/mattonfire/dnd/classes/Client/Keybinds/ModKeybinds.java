@@ -1,13 +1,13 @@
-package mattonfire.dnd.classes.gui;
+package mattonfire.dnd.classes.Client.Keybinds;
 
 import org.lwjgl.glfw.GLFW;
 
 import io.github.cottonmc.cotton.gui.GuiDescription;
 import io.github.cottonmc.cotton.gui.client.CottonClientScreen;
 
-public class Screen extends CottonClientScreen {
+public class ModKeybinds extends CottonClientScreen {
 
-    public Screen(GuiDescription description) {
+    public ModKeybinds(GuiDescription description) {
         super(description);
     }
 

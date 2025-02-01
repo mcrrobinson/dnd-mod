@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Items;
 
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolMaterial;

@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Entities;
 
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;

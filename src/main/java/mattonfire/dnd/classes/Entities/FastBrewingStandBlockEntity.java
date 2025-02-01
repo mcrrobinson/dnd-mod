@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Entities;
 
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.inventory.SidedInventory;
@@ -26,6 +26,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.math.Direction;
 import org.jetbrains.annotations.Nullable;
+
+import mattonfire.dnd.classes.Registry.ModEntities;
 
 public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
     private static final int INPUT_SLOT_INDEX = 3;

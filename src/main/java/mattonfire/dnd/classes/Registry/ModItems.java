@@ -1,5 +1,8 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Registry;
 
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Items.ExtendedSwordItem;
+import mattonfire.dnd.classes.Items.MonkStaff;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;

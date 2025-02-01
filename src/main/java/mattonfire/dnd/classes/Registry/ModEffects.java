@@ -1,5 +1,7 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Registry;
 
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Effects.FreezeEffect;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 import net.minecraft.util.Identifier;

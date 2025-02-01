@@ -1,5 +1,6 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Registry;
 
+import mattonfire.dnd.classes.DnDClasses;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.potion.Potion;
 import net.minecraft.registry.Registries;

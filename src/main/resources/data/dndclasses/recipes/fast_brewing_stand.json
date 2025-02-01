@@ -1,0 +1,18 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "ABA"
+    ],
+    "key": {
+        "A": {
+            "item": "minecraft:blaze_rod"
+        },
+        "B": {
+            "item": "minecraft:brewing_stand"
+        }
+    },
+    "result": {
+        "item": "dndclasses:fast_brewing_stand",
+        "count": 1
+    }
+}

@@ -1,5 +1,6 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Registry;
 
+import mattonfire.dnd.classes.DnDClasses;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.item.ItemGroup;

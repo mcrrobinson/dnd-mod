@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.PowerupKeybind;
+package mattonfire.dnd.classes.Misc;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World.ExplosionSourceType;

@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.gui;
+package mattonfire.dnd.classes.Client.Hud;
 
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
@@ -13,14 +13,14 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 
-public class GUI extends LightweightGuiDescription {
+public class ClassSelectionHud extends LightweightGuiDescription {
     public void packetConstructor(int classID) {
         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
         passedData.writeInt(classID);
         ClientPlayNetworking.send(DnDClasses.C2S_CLASS_PICK_PACKET_ID, passedData);
     }
 
-    public GUI() {
+    public ClassSelectionHud() {
         WGridPanel root = new WGridPanel();
         setRootPanel(root);
         root.setSize(300, 300);

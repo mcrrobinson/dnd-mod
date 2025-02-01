@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes;
+package mattonfire.dnd.classes.Entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;

@@ -4,8 +4,17 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.netty.buffer.Unpooled;
-import mattonfire.dnd.classes.PowerupKeybind.PowerUpEffect;
+import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
+import mattonfire.dnd.classes.Misc.PowerUpEffect;
+import mattonfire.dnd.classes.Registry.ModBlocks;
+import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.classes.Registry.ModEntities;
+import mattonfire.dnd.classes.Registry.ModItemGroup;
+import mattonfire.dnd.classes.Registry.ModItems;
+import mattonfire.dnd.classes.Registry.ModPotions;
+import mattonfire.dnd.classes.Registry.ModSounds;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
@@ -20,6 +29,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.client.gui.screen.ingame.BrewingStandScreen;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;
@@ -61,6 +71,13 @@ public class DnDClasses implements ModInitializer {
                 ModPotions.registerPotions();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
+
+                AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
+                        if (((PlayerEntityExt) player).dndClassExist() == 8) {
+                                return ActionResult.FAIL;
+                        }
+                        return ActionResult.PASS;
+                });
 
                 FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Ingredient.ofItems(Items.ICE),
                                 ModPotions.FREEZE_POTION.value());

@@ -15,7 +15,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 @Mixin(MobEntity.class)
 public class HostileEntityMixin {
-    @SuppressWarnings("unused")
     private LivingEntity target;
 
     @Inject(at = @At("RETURN"), method = "setTarget")

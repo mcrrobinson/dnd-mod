@@ -7,6 +7,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
+import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.client.Hud.AchievementMenu;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -32,6 +33,17 @@ public class DndClassesClient implements ClientModInitializer {
         client.execute(() -> {
             ((PlayerEntityExt) (PlayerEntity) client.player).setDndClass(DndCharacter.fromValue(classID));
             SetPlayerClass.setPlayerClass(client, client.player, classID);
+        });
+    }
+
+    private static void sendDoubleJumpRequest(MinecraftClient client, ClientPlayNetworkHandler handler,
+            PacketByteBuf buf,
+            PacketSender responseSender) {
+        client.execute(() -> {
+            PlayerEntity effectPlayer = client.player.getEntityWorld().getPlayerByUuid(buf.readUuid());
+            if (effectPlayer != null) {
+                DoubleJumpEffect.play(effectPlayer, effectPlayer);
+            }
         });
     }
 
@@ -68,5 +80,8 @@ public class DndClassesClient implements ClientModInitializer {
                 ClientPlayNetworking.send(DnDClasses.C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID, passedData);
             }
         });
+
+        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
+                DndClassesClient::sendDoubleJumpRequest);
     }
 }

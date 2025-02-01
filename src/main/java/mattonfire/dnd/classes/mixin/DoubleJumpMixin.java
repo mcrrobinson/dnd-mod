@@ -3,8 +3,7 @@ package mattonfire.dnd.classes.mixin;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.DoubleJump.DoubleJumpEffect;
-
+import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import io.netty.buffer.Unpooled;
 
 import org.spongepowered.asm.mixin.Mixin;

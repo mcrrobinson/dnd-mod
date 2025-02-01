@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.DoubleJump;
+package mattonfire.dnd.classes.Misc;
 
 import net.minecraft.entity.player.PlayerEntity;
 
@@ -18,13 +18,15 @@ public class DoubleJumpEffect {
 
     public static void play(PlayerEntity localPlayer, PlayerEntity effectPlayer) {
         World world = localPlayer.getEntityWorld();
-        world.playSound(localPlayer, effectPlayer.getBlockPos(), SoundEvents.ENTITY_TURTLE_SHAMBLE, SoundCategory.PLAYERS, 0.4f, 1);
+        world.playSound(localPlayer, effectPlayer.getBlockPos(), SoundEvents.ENTITY_TURTLE_SHAMBLE,
+                SoundCategory.PLAYERS, 0.4f, 1);
 
-        for(int i = 0; i < 5; ++i) {
+        for (int i = 0; i < 5; ++i) {
             double d = random.nextGaussian() * 0.02D;
             double e = random.nextGaussian() * 0.02D;
             double f = random.nextGaussian() * 0.02D;
-            world.addParticle(ParticleTypes.CLOUD, effectPlayer.getParticleX(1.0D), effectPlayer.getY(), effectPlayer.getParticleZ(1.0D), d, e, f);
+            world.addParticle(ParticleTypes.CLOUD, effectPlayer.getParticleX(1.0D), effectPlayer.getY(),
+                    effectPlayer.getParticleZ(1.0D), d, e, f);
         }
     }
 }

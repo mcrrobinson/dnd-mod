@@ -9,6 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArgs;
 import org.spongepowered.asm.mixin.injection.invoke.arg.Args;
 
+import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 
 @Mixin(BowItem.class)
@@ -21,7 +22,7 @@ public class BowItemMixin {
             PlayerEntity playerEntity = (PlayerEntity) user;
 
             float speed = args.get(4); // Get the arrow speed
-            if (((PlayerEntityExt) playerEntity).dndClassExist() == 8) { // Custom logic
+            if (((PlayerEntityExt) playerEntity).getDndClass() == DndCharacter.RANGER) { // Custom logic
                 args.set(4, speed * 3); // Modify the speed argument
             }
         }

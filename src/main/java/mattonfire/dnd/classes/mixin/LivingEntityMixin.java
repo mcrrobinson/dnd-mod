@@ -26,16 +26,16 @@ public abstract class LivingEntityMixin extends Entity {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof PlayerEntity) {
             PlayerEntityExt playerEntity = (PlayerEntityExt) entity;
-            switch (playerEntity.dndClassExist()) {
-                case 7:
+            switch (playerEntity.getDndClass()) {
+                case PALADIN:
                     cir.setReturnValue(false); // Paladins are immune
                     break;
-                case 12:
+                case WIZARD:
                     if (effectInstance.getEffectType() == ModEffects.FREEZE) {
                         cir.setReturnValue(false); // Prevent the effect from being applied
                     }
                     break;
-                case 9:
+                case ROGUE:
                     if (effectInstance.getEffectType() == StatusEffects.POISON) {
                         cir.setReturnValue(false); // Prevent the effect from being applied
                     }

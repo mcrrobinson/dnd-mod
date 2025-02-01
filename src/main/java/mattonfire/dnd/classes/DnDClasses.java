@@ -14,6 +14,7 @@ import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -22,6 +23,7 @@ import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Ingredient;
@@ -73,7 +75,7 @@ public class DnDClasses implements ModInitializer {
                 ModBlocks.registerBlocks();
 
                 AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
-                        if (((PlayerEntityExt) player).dndClassExist() == 8) {
+                        if (((PlayerEntityExt) player).getDndClass() == DndCharacter.RANGER) {
                                 return ActionResult.FAIL;
                         }
                         return ActionResult.PASS;
@@ -105,7 +107,7 @@ public class DnDClasses implements ModInitializer {
                                         System.out.println("Requested powerup...");
                                         server.execute(() -> {
                                                 PowerUpEffect.play(player, ((PlayerEntityExt) (PlayerEntity) player)
-                                                                .dndClassExist());
+                                                                .getDndClass());
                                         });
                                 });
 
@@ -273,7 +275,8 @@ public class DnDClasses implements ModInitializer {
                                                                 passedData);
 
                                                 // If run with no errors declare in the NBT.
-                                                ((PlayerEntityExt) (PlayerEntity) player).setDndClass(bufferInteger);
+                                                ((PlayerEntityExt) (PlayerEntity) player)
+                                                                .setDndClass(DndCharacter.fromValue(bufferInteger));
                                         });
 
                                 });

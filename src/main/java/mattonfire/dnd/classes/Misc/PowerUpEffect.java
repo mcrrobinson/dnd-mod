@@ -1,20 +1,21 @@
 package mattonfire.dnd.classes.Misc;
 
+import mattonfire.dnd.classes.DndCharacter;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World.ExplosionSourceType;
 
 public class PowerUpEffect {
-    public static void play(PlayerEntity player, int classID) {
-        System.out.println("Starting powerup on: " + Integer.toString(classID));
-        switch (classID) {
-            case 8:
+    public static void play(PlayerEntity player, DndCharacter character) {
+        System.out.println("Starting powerup on: " + character.toString());
+        switch (character) {
+            case RANGER:
                 // Make the bow shoot faster
                 break;
-            case 12:
+            case WIZARD:
                 player.getEntityWorld().createExplosion(null, player.getX(), player.getY(), player.getZ(), 10.F, true,
                         ExplosionSourceType.TNT);
                 break;
-            case 11:
+            case BARBARIAN:
                 // Vec3d aim = player.getVelocity();
                 // FireballEntity fireball = new FireballEntity(player.world, player, 1, 1, 1);
                 // fireball.refreshPositionAndAngles(player.getX() + aim.x * 1.50, player.getY()

@@ -13,7 +13,7 @@ public class HungerManagerMixin {
     @Inject(method = "update", at = @At("HEAD"), cancellable = true)
     private void disableHungerDepreciation(PlayerEntity player, CallbackInfo ci) {
         // Get the player's name
-        String playerName = player.getName().getString();
+        // String playerName = player.getName().getString();
 
         // Print to console for debugging (optional)
         // System.out.println("Hunger update called for player: " + playerName);

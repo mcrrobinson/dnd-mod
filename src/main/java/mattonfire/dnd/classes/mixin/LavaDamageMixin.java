@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 
 @Mixin(Entity.class)
@@ -24,7 +25,7 @@ public abstract class LavaDamageMixin {
 
         // Check if the entity is in lava
 
-        if (entity.isInLava() && !world.isClient && (((PlayerEntityExt) entity).dndClassExist() == 8)) {
+        if (entity.isInLava() && !world.isClient && (((PlayerEntityExt) entity).getDndClass() == DndCharacter.RANGER)) {
 
             DamageSources damageSources = world.getDamageSources();
 

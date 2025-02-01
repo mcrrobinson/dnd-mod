@@ -14,6 +14,11 @@
     "item.dndclasses.music_disc_awake_cart.desc": "Awake Cart - Skyrim",
     "item.dndclasses.music_disc_tooth_and_claw.desc": "Tooth and Claw - Skyrim",
     "item.dndclasses.music_disc_silent_footsteps.desc": "Silent Footsteps - Skyrim",
+    "item.minecraft.potion.effect.freeze": "Freeze Potion",
+    "item.minecraft.splash_potion.effect.freeze": "Splash Freeze Potion",
+    "item.minecraft.lingering_potion.effect.freeze": "Lingering Freeze Potion",
     "itemgroup.dndclasses": "D&D Classes",
-    "effect.dndclasses.freeze": "Frozen"
+    "effect.dndclasses.freeze": "Frozen",
+    "block.dndclasses.fast_brewing_stand": "Fast Brewing Stand",
+    "block.dndclasses.fast_brewing_stand.desc": "Brewing stand that can only be used by an alchemist."
 }

@@ -8,13 +8,21 @@ import mattonfire.dnd.classes.PowerupKeybind.PowerUpEffect;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
+import net.fabricmc.fabric.api.screenhandler.v1.ScreenHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.potion.Potions;
+import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.screen.ScreenHandlerType;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.client.gui.screen.ingame.BrewingStandScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 
 @SuppressWarnings("unused")
 public class DnDClasses implements ModInitializer {
@@ -35,6 +43,9 @@ public class DnDClasses implements ModInitializer {
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
                         "approve_class_pick");
 
+        public static final Identifier CUSTOM_TEXTURE = new Identifier(DnDClasses.MOD_ID,
+                        "textures/gui/alchemist_brewing_stand.png");
+
         @Override
         public void onInitialize() {
 
@@ -47,6 +58,12 @@ public class DnDClasses implements ModInitializer {
                 ModItemGroup.registerItemGroups();
                 ModItems.registerModItems();
                 ModEffects.registerEffects();
+                ModPotions.registerPotions();
+                ModEntities.registerBlockEntities();
+                ModBlocks.registerBlocks();
+
+                FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Ingredient.ofItems(Items.ICE),
+                                ModPotions.FREEZE_POTION.value());
 
                 // Register doublejump registry.
                 ServerPlayNetworking.registerGlobalReceiver(C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
@@ -248,3 +265,6 @@ public class DnDClasses implements ModInitializer {
 
 // remove diamonds type create own again...
 // music disk no work
+// Change shade of the potion
+// Make the fireball no damage to caster.
+// Custom projectile for the staffs

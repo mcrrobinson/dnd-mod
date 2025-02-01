@@ -17,47 +17,65 @@ public class ExtendedSwordItem extends SwordItem {
         super(toolMaterial, 10, 1.2F, settings);
     }
 
-    private void spawnFireball(World world, Vec3d position, Vec3d direction) {
+    private void spawnFireball(World world, PlayerEntity player) {
         // Create and configure the fireball entity
         CustomFireballEntity fireball = new CustomFireballEntity(EntityType.FIREBALL, world);
+
+        // Set the position and velocity of the fireball
+        Vec3d position = player.getPos().add(0, 1, 0);
+        Vec3d direction = player.getRotationVector().normalize();
+
         fireball.setPosition(position.x, position.y, position.z);
-        fireball.setVelocity(direction.x, direction.y, direction.z, 6.0F, 0.25F);
+        fireball.setVelocity(direction.x, direction.y, direction.z, 3.0F, 0);
 
         // Add the fireball to the world
         world.spawnEntity(fireball);
     }
 
-    private void spawnLightningBall(World world, Vec3d position, Vec3d direction) {
+    private void spawnLightningBall(World world, PlayerEntity player) {
         // Create and configure the fireball entity
         CustomLightningEntity fireball = new CustomLightningEntity(EntityType.FIREBALL, world);
+
+        // Set the position and velocity of the fireball
+        Vec3d position = player.getPos().add(0, 1, 0);
+        Vec3d direction = player.getRotationVector().normalize();
+
         fireball.setPosition(position.x, position.y, position.z);
-        fireball.setVelocity(direction.x, direction.y, direction.z, 6.0F, 0.25F);
+        fireball.setVelocity(direction.x, direction.y, direction.z, 3.0F, 0);
 
         // Add the fireball to the world
         world.spawnEntity(fireball);
     }
 
-    private void spawnIceball(World world, Vec3d position, Vec3d direction) {
-        // Create and configure the fireball entity
+    private void spawnIceball(World world, PlayerEntity player) {
+
+        // Create the fireball entity
         CustomIceballEntity fireball = new CustomIceballEntity(EntityType.FIREBALL, world);
+
+        // Set the position and velocity of the fireball
+        Vec3d position = player.getPos().add(0, 1, 0);
+        Vec3d direction = player.getRotationVector().normalize();
+
         fireball.setPosition(position.x, position.y, position.z);
-        fireball.setVelocity(direction.x, direction.y, direction.z, 6.0F, 0.25F);
+        fireball.setVelocity(direction.x, direction.y, direction.z, 3.0F, 0);
 
         // Add the fireball to the world
-        world.spawnEntity(fireball);
+        if (!world.isClient) {
+            world.spawnEntity(fireball);
+        }
     }
 
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity playerEntity, Hand hand) {
         switch (this.toString()) {
             case "staff_of_fire":
-                spawnFireball(world, playerEntity.getPos(), playerEntity.getRotationVector());
+                spawnFireball(world, playerEntity);
                 break;
             case "staff_of_lightning":
-                spawnLightningBall(world, playerEntity.getPos(), playerEntity.getRotationVector());
+                spawnLightningBall(world, playerEntity);
                 break;
             case "staff_of_ice":
-                spawnIceball(world, playerEntity.getPos(), playerEntity.getRotationVector());
+                spawnIceball(world, playerEntity);
                 break;
             default:
                 System.out.println("No action for item: " + this.toString());

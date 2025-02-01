@@ -81,7 +81,8 @@ public class SetClassAttributes {
         System.out.println("Paladin...");
         // Natural smite...
         player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(25); // Default 20
-        // No potions.
+
+        // Disallow potion effects - in living entity mixin
         // Weak in nether.
     }
 
@@ -94,8 +95,8 @@ public class SetClassAttributes {
 
     public void typeRogue(PlayerEntity player) {
         System.out.println("Rogue...");
-        // No poison.
-        // No hunger.
+        // No poison - in living entity mixin
+        // No hunger -
         // Nether mobs are alies.
         // ALL Overworld mobs will always attack.
     }

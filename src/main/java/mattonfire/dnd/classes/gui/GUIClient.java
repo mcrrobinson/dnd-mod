@@ -1,16 +1,20 @@
 package mattonfire.dnd.classes.gui;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.ModEntities;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.rendereregistry.v1.BlockEntityRendererRegistry;
+import net.minecraft.client.gui.screen.ingame.HandledScreens;
 import net.minecraft.entity.player.PlayerEntity;
 
-@SuppressWarnings("unused")
 public class GUIClient implements ClientModInitializer {
+
     @Override
     public void onInitializeClient() {
+
         // Once server joined, if joined before it will set their old class.
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_CLASS_QUERY_PACKET_ID,
                 (client, handler, buf, responseSender) -> {

@@ -1,15 +1,13 @@
 {
   "mappings": {
-    "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
-      "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
-      "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
+    "mattonfire/dnd/classes/mixin/LivingEntityMixin": {
+      "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z"
     }
   },
   "data": {
     "named:intermediary": {
-      "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
-        "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
-        "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
+      "mattonfire/dnd/classes/mixin/LivingEntityMixin": {
+        "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z"
       }
     }
   }

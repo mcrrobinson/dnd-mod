@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 
@@ -22,11 +23,16 @@ public class PlayerManagerMixin {
 	@Inject(at = @At("RETURN"), method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
 	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
 		PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-		int classID = ((PlayerEntityExt) player).dndClassExist();
+		DndCharacter playerClass = ((PlayerEntityExt) player).getDndClass();
+		if (playerClass == null) {
+			playerClass = DndCharacter.NONE;
+		}
+
+		int classID = playerClass.getValue();
 		passedData.writeInt(classID);
 
 		// On rejoin set the player class server side.
-		if (classID != 0) {
+		if (playerClass != DndCharacter.NONE) {
 			SetPlayerClass.setPlayerClass(null, player, classID);
 		}
 

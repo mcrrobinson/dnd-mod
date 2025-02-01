@@ -1,7 +1,5 @@
 package mattonfire.dnd.classes.Entities;
 
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.projectile.FireballEntity;
 import net.minecraft.util.hit.HitResult;

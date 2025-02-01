@@ -1,7 +1,11 @@
 package mattonfire.dnd.classes;
 
 public interface PlayerEntityExt {
-	void setDndClass(int classID);
+	void setDndClass(DndCharacter classID);
 
-	int dndClassExist();
+	int addProgress(DndCharacter character, int amount);
+
+	int getProgress(DndCharacter character);
+
+	DndCharacter getDndClass();
 }

@@ -1,5 +1,8 @@
 package mattonfire.dnd.classes.Entities;
 
+import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.PlayerEntityExt;
+
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemStack;
@@ -30,8 +33,6 @@ import org.jetbrains.annotations.Nullable;
 import mattonfire.dnd.classes.Registry.ModEntities;
 
 public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity implements SidedInventory {
-    private static final int INPUT_SLOT_INDEX = 3;
-    private static final int FUEL_SLOT_INDEX = 4;
     private static final int SPEED_MODIFIER = 10; // 10 times faster than the default brewing stand
     private static final int[] TOP_SLOTS = new int[] { 3 };
     private static final int[] BOTTOM_SLOTS = new int[] { 0, 1, 2, 3 };
@@ -87,8 +88,12 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
         return this.inventory.size();
     }
 
+    public DefaultedList<ItemStack> getItems() {
+        return this.inventory;
+    }
+
     public boolean isEmpty() {
-        Iterator var1 = this.inventory.iterator();
+        Iterator<ItemStack> var1 = this.inventory.iterator();
 
         ItemStack itemStack;
         do {
@@ -233,6 +238,14 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
     }
 
     public boolean canPlayerUse(PlayerEntity player) {
+        // Check the class of the player
+        if (player instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            if (playerEntity.getDndClass() != DndCharacter.ALCHEMIST) {
+                return false;
+            }
+        }
+
         return Inventory.canPlayerUse(this, player);
     }
 

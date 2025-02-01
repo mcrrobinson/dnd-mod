@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.Client.Hud;
+package mattonfire.dnd.classes.client.Hud;
 
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;

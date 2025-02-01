@@ -4,8 +4,8 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
 
-import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
-import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
+import mattonfire.dnd.classes.client.Hud.ClassSelectionHud;
+import mattonfire.dnd.classes.client.Keybinds.ModKeybinds;
 
 public class SetPlayerClass {
     public static void setPlayerClass(@Nullable MinecraftClient client, PlayerEntity player, int classID) {

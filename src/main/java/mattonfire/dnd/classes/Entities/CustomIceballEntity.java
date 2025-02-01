@@ -2,7 +2,6 @@ package mattonfire.dnd.classes.Entities;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -14,7 +13,6 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.projectile.FireballEntity;
-import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -101,7 +99,7 @@ public class CustomIceballEntity extends FireballEntity {
                 // Retrieve entities in this block area and apply freeze effect
                 List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class,
                         new Box(rx - 0.5, blockPosY, z - 0.5, rx + 0.5, blockPosY + 5, z + 0.5),
-                        entity -> true);
+                        LivingEntity::isAttackable);
 
                 for (LivingEntity entity : entities) {
                     entity.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, 200));

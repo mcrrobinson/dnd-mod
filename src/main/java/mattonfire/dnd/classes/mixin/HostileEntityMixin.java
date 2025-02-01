@@ -6,6 +6,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -20,7 +21,7 @@ public class HostileEntityMixin {
     @Inject(at = @At("RETURN"), method = "setTarget")
     public void setTarget(@Nullable LivingEntity target, CallbackInfo info) {
         if (target instanceof ServerPlayerEntity) {
-            if (((PlayerEntityExt) (PlayerEntity) target).dndClassExist() == 2) {
+            if (((PlayerEntityExt) (PlayerEntity) target).getDndClass() == DndCharacter.BARD) {
                 this.target = null;
             }
         }

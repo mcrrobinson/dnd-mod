@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.mixin;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.DoubleJump.DoubleJumpEffect;
 
@@ -30,7 +31,7 @@ public abstract class DoubleJumpMixin {
     @Inject(method = "tickMovement", at = @At("HEAD"))
     private void tickMovement(CallbackInfo info) {
         ClientPlayerEntity player = (ClientPlayerEntity) (Object) this;
-        if (((PlayerEntityExt) (PlayerEntity) player).dndClassExist() == 6) {
+        if (((PlayerEntityExt) (PlayerEntity) player).getDndClass() == DndCharacter.MONK) {
             if (player.isOnGround() || player.isClimbing()) {
                 jumpCount = 2;
             } else if (!jumpedLastTick && jumpCount > 0 && player.getVelocity().y < 0) {

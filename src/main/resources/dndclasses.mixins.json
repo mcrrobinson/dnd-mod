@@ -12,7 +12,9 @@
         "ModEntityDataSaverMixin",
         "EnchantmentScreenHandlerInvoker",
         "EnchantmentScreenHandlerAccessor",
-        "EnchantingTableMixin"
+        "EnchantingTableMixin",
+        "MobEntityAccessor",
+        "HostileEntityMixin"
     ],
     "client": [
         "DoubleJumpMixin",

@@ -29,9 +29,9 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Class**| **Pros**|**Cons**|**Special Ability**|
 |-|-|-|-|
 | **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision, Moves very slowly | Inspired by *One Punch Man* |
-| **Bard** | Unnoticed by mobs, Fast, Can jump further than a gymnast | Less health, Cannot use anything higher than Diamond | Passive animals briefly defend and attack enemies |
-| **Cleric** | High mining speed, Night vision | Shorter viewing distance, Slightly reduced attack damage | Heals players in the area |
-| **Druid** | Gains extra hearts from tamed animals (up to 5), Regenerates in light | Cannot swim, Gets hungry in dark environments | Can temporarily transform into killed animals |
+| **Bard** | Generate an aura making friendlies invisible to hostile mobs | Less health | Instantly tame tameable animals |
+<!-- | **Cleric** | High mining speed, Night vision | Shorter viewing distance, Slightly reduced attack damage | Heals players in the area | -->
+| **Druid** | Gains extra hearts from tamed animals (up to 5), Regenerates in light | Cannot swim | Can temporarily transform into killed animals |
 | **Fighter** | High health, High strength, Attracts mobs | Cannot use bows, No potions | Super regeneration |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output, Can only use a staff to attack | Can jump infinitely, Unrivaled attack speed |
 | **Paladin** | High health, Fire resistance | Cannot use potions, Very weak in the Nether | Massive health boost, Fire tank |

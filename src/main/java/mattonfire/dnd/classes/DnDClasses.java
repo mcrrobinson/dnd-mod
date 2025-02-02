@@ -1,5 +1,8 @@
 package mattonfire.dnd.classes;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
@@ -17,6 +20,7 @@ import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -28,6 +32,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
@@ -35,6 +40,7 @@ import net.minecraft.registry.Registry;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -81,7 +87,6 @@ public class DnDClasses implements ModInitializer {
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                 passedData.writeUuid(buf.readUuid());
-                System.out.println("Requested powerup...");
                 server.execute(() -> {
                         PowerUpEffect.play(player, ((PlayerEntityExt) (PlayerEntity) player)
                                         .getDndClass());
@@ -131,6 +136,7 @@ public class DnDClasses implements ModInitializer {
                                                         "Every taimed animal adds a heart (capped at 5). Regen in the light.",
                                                         "Druids cannot swim & get hungry in dark enviroments.",
                                                         "Once an animal is killed you can turn into it for a short amount of time.");
+
                                         playerClasses.typeDruid(player);
                                         break;
                                 case 5:
@@ -256,6 +262,20 @@ public class DnDClasses implements ModInitializer {
                 });
         }
 
+        private static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
+                for (int i = 0; i < particleCount; i++) {
+                        double time = world.getTime() % 360;
+                        double angle = 2 * Math.PI * i / particleCount + time * 0.01;
+                        double x = center.x + radius * Math.cos(angle);
+                        double z = center.z + radius * Math.sin(angle);
+                        double y = center.y + 0.1; // Slightly above the player's feet
+
+                        world.spawnParticles(ParticleTypes.ENCHANTED_HIT, x, y, z, 1, 0, 0, 0, 0);
+                }
+        }
+
+        public static final Map<UUID, Long> effectTimestamps = new HashMap<>();
+
         @Override
         public void onInitialize() {
 
@@ -272,6 +292,33 @@ public class DnDClasses implements ModInitializer {
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
                 ModEnchantments.registerEnchantments();
+
+                ServerTickEvents.END_WORLD_TICK.register(world -> {
+                        if (world instanceof ServerWorld serverWorld) {
+                                long currentTick = serverWorld.getServer().getTicks();
+
+                                // Iterate and remove expired players
+                                Iterator<Map.Entry<UUID, Long>> iterator = DnDClasses.effectTimestamps.entrySet()
+                                                .iterator();
+                                while (iterator.hasNext()) {
+                                        Map.Entry<UUID, Long> entry = iterator.next();
+                                        UUID playerId = entry.getKey();
+                                        long startTick = entry.getValue();
+
+                                        // If 5 seconds (100 ticks) passed, remove effect
+                                        if (currentTick - startTick >= 100) {
+                                                iterator.remove();
+                                        } else {
+                                                // Player is still affected, show particles
+                                                ServerPlayerEntity player = serverWorld.getServer().getPlayerManager()
+                                                                .getPlayer(playerId);
+                                                if (player != null) {
+                                                        createParticleRing(serverWorld, player.getPos(), 16, 100);
+                                                }
+                                        }
+                                }
+                        }
+                });
 
                 AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
                         if (((PlayerEntityExt) player).getDndClass() == DndCharacter.RANGER) {

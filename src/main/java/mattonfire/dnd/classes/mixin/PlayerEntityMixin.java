@@ -5,9 +5,14 @@ import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.text.Text;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -58,6 +63,23 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
                 this.setVelocity(0.0D, -0.5, 0.0D);
             }
         }
+    }
+
+    @Inject(method = "tickMovement", at = @At("HEAD"))
+    private void onTickMovement(CallbackInfo info) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+
+        if (entity instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) entity;
+
+            // Custom Healing Mechanic for "mattonfire"
+            if (playerEntity.getDndClass() == DndCharacter.DRUID && world.isDay()) {
+                if (entity.getHealth() < entity.getMaxHealth() && this.age % 20 == 0) {
+                    entity.heal(0.5F); // Heal even without food requirement
+                }
+            }
+        }
+
     }
 
 }

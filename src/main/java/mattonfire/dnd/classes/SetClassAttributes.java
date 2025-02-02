@@ -1,11 +1,19 @@
 package mattonfire.dnd.classes;
 
+import java.util.Objects;
+
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.TypeFilter;
+import net.minecraft.util.math.Box;
 
 public class SetClassAttributes {
 
@@ -58,6 +66,26 @@ public class SetClassAttributes {
     }
 
     public void typeDruid(PlayerEntity player) {
+
+        final int range = 10; // 10 blocks
+
+        Box searchBox = new Box(
+                player.getX() - range, player.getY() - range, player.getZ() - range,
+                player.getX() + range, player.getY() + range, player.getZ() + range);
+
+        System.out.println("Search box" + searchBox.toString());
+
+        // Get the number of tamed animals this player has
+        int tamedAnimals = (int) player.getWorld()
+                .getEntitiesByClass(Entity.class, searchBox, entity -> true).size();
+
+        // TODO: THIS IS GETTING ALL ENTITIES, NOT THE ONES YOU TAMED
+
+        // AND THE HEALTH ISNT WORKING PROPERLY IT WONT BE ABOVE THE MAX HEALTH.. MAYBE
+        // CUZ ITS NOT STATIC?
+        float health = player.getMaxHealth() + (tamedAnimals * 2);
+        player.setHealth(health);
+        System.out.println(tamedAnimals);
         System.out.println("Druid...");
     }
 

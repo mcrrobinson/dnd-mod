@@ -1,7 +1,17 @@
-# dnd-mod
-DnD classes in Minecraft
+# Dungeons and Dragons Mod
 
-## Running with VSCode
+## Table of Contents
+- [Building](#building)
+- [Features](#features)
+  - [Player Classes Overview](#player-classes-overview)
+  - [Armour](#armour)
+  - [Enchantments (made by an Artificer)](#enchantments-made-by-a-artificer)
+  - [Music](#music)
+  - [Mobs](#mobs)
+    - [Goblins](#goblins)
+    - [Dragons](#dragons)
+
+## Building
 Navigate to the root directory of the project and type the following...
 
 1. `gradlew genSources`
@@ -10,9 +20,9 @@ Navigate to the root directory of the project and type the following...
 
 That will build the latest edition of Minecraft I have got working with the mod.
 
-# Features
+## Features
 
-# Player Classes Overview
+### Player Classes Overview
 
 Each class in the game comes with its own unique strengths, weaknesses, and special abilities.
 
@@ -34,10 +44,10 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Blood Hunter**| Fire aspect applied to all swords, Double damage at night | Cannot drop swords, Half damage during the day | Can take control of any mob within 30m |
 | **Alchemist** | Can craft special potions exclusive to the class | Potions can backfire, Requires knowledge of potion mechanics | All potions are buffed by two tiers for a period of time |
 
-## Armour
+### Armour
 There is armour for each class, however the armour benefits are increased depending on whether or not you match the class and wearing a full set.
 
-## Enchantments (made by a Artificer)
+### Enchantments (made by a Artificer)
 
 | Enchantment | Description | Class |
 |-|-|-|
@@ -46,11 +56,14 @@ There is armour for each class, however the armour benefits are increased depend
 | **Tree Feller** | Can dismantle trees | Axe |
 | **Grid Miner** | Can mine blocks in a grid pattern | Pickaxe & Shovel |
 
-## Music
+### Music
 
 Custom music will randomly play during different events in the game. There are currently **four** different music tracks:
 
-## Mobs
+### Mobs
 
-### Goblins
+#### Goblins
 - **Goblin Warrior**: A goblin warrior is a strong and tough mob that has a low attack speed but high health. It can be found near the entrance of the Nether Fortress.
+
+#### Dragons 
+- **Dragon**: A dragon is a large, green, and powerful creature that can be found in the Nether. It has a high attack speed and low health.

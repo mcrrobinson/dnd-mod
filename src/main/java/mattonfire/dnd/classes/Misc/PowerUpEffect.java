@@ -1,10 +1,55 @@
 package mattonfire.dnd.classes.Misc;
 
+import java.util.List;
+
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.mixin.MobEntityAccessor;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.RevengeGoal;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.HostileEntity;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.passive.PassiveEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World.ExplosionSourceType;
 
 public class PowerUpEffect {
+
+    public static void bardEffect(PlayerEntity player) {
+        List<LivingEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
+                LivingEntity.class,
+                player.getBoundingBox().expand(10), // 10-block radius
+                entity -> entity instanceof PassiveEntity && !(entity instanceof PlayerEntity));
+
+        for (LivingEntity entity : nearbyEntities) {
+            if (entity instanceof PassiveEntity passiveMob) {
+
+                // If it's a tameable entity (e.g., wolf, cat, etc.), make it follow the player
+                if (passiveMob instanceof TameableEntity tameable) {
+                    if (!tameable.isTamed()) {
+                        tameable.setOwner(player);
+                    }
+                }
+
+                // Modify AI Goals using Mixin Accessor
+                if (passiveMob instanceof MobEntity) {
+                    MobEntityAccessor accessor = (MobEntityAccessor) passiveMob;
+                    accessor.getTargetSelector().add(1, new ActiveTargetGoal<>(
+                            passiveMob, HostileEntity.class, true));
+                }
+            }
+        }
+
+        // Make player unseen by hostile mobs
+        List<HostileEntity> hostileEntities = player.getEntityWorld().getEntitiesByClass(
+                HostileEntity.class,
+                player.getBoundingBox().expand(10), // 10-block radius
+                entity -> true);
+    }
+
     public static void play(PlayerEntity player, DndCharacter character) {
         System.out.println("Starting powerup on: " + character.toString());
         switch (character) {
@@ -16,11 +61,12 @@ public class PowerUpEffect {
                         ExplosionSourceType.TNT);
                 break;
             case BARBARIAN:
-                // Vec3d aim = player.getVelocity();
-                // FireballEntity fireball = new FireballEntity(player.world, player, 1, 1, 1);
-                // fireball.refreshPositionAndAngles(player.getX() + aim.x * 1.50, player.getY()
-                // + aim.y * 1.50, player.getZ() + aim.z * 1.50, 0.F, 0.F);
-                // player.world.spawnEntity(fireball);
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
+                break;
+            case BARD:
+                bardEffect(player);
+                break;
+            case CLERIC:
 
             default:
                 break;

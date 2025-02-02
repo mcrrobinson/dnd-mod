@@ -10,27 +10,29 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
-import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.client.Hud.AchievementMenu;
+import mattonfire.dnd.classes.client.Render.RenderUtils;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
-import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
+import mattonfire.dnd.classes.client.Render.Line;
+import mattonfire.dnd.classes.client.Render.Color;
 
 public class DndClassesClient implements ClientModInitializer {
+    public static final MinecraftClient MC = MinecraftClient.getInstance();
+    public static Color chestESPColor = new Color(1, 1, 0, 1);
 
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.achievement_menu.open", GLFW.GLFW_KEY_O, "category.achievement_menu"));
@@ -70,13 +72,27 @@ public class DndClassesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
-        net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_MENU_KEY.wasPressed()) {
                 if (client.currentScreen == null) {
                     client.setScreen(new AchievementMenu());
                 }
             }
         });
+
+        // WorldRenderEvents.END.register(context -> {
+        // for (Line line : RenderUtils.lineToRenderList) {
+        // line.Draw(context);
+        // }
+        // });
+
+        // ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        // if (client.player != null) {
+        // Vec3d pos = client.player.getEyePos();
+        // RenderUtils.lineToRenderList.clear();
+        // RenderUtils.drawCircleAtPos(pos, chestESPColor, 3, 36);
+        // }
+        // });
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_CLASS_QUERY_PACKET_ID,
                 DndClassesClient::handleClassQuery);

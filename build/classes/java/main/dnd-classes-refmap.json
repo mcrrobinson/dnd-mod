@@ -36,12 +36,20 @@
       "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V": "Lnet/minecraft/class_583;method_2828(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;IIFFFF)V",
       "render": "Lnet/minecraft/class_922;method_4054(Lnet/minecraft/class_1309;FFLnet/minecraft/class_4587;Lnet/minecraft/class_4597;I)V"
     },
+    "mattonfire/dnd/classes/mixin/MobEntityAccessor": {
+      "goalSelector": "field_6201:Lnet/minecraft/class_1355;",
+      "targetSelector": "field_6185:Lnet/minecraft/class_1355;"
+    },
     "mattonfire/dnd/classes/mixin/ModEntityDataSaverMixin": {
       "readNbt": "Lnet/minecraft/class_1297;method_5651(Lnet/minecraft/class_2487;)V",
       "writeNbt": "Lnet/minecraft/class_1297;method_5647(Lnet/minecraft/class_2487;)Lnet/minecraft/class_2487;"
     },
+    "mattonfire/dnd/classes/mixin/PlayerEntityAccessor": {
+      "hungerManager": "field_7493:Lnet/minecraft/class_1702;"
+    },
     "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-      "tick": "Lnet/minecraft/class_1657;method_5773()V"
+      "tick": "Lnet/minecraft/class_1657;method_5773()V",
+      "tickMovement": "Lnet/minecraft/class_1657;method_6007()V"
     },
     "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
       "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
@@ -89,12 +97,20 @@
         "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V": "Lnet/minecraft/class_583;method_2828(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;IIFFFF)V",
         "render": "Lnet/minecraft/class_922;method_4054(Lnet/minecraft/class_1309;FFLnet/minecraft/class_4587;Lnet/minecraft/class_4597;I)V"
       },
+      "mattonfire/dnd/classes/mixin/MobEntityAccessor": {
+        "goalSelector": "field_6201:Lnet/minecraft/class_1355;",
+        "targetSelector": "field_6185:Lnet/minecraft/class_1355;"
+      },
       "mattonfire/dnd/classes/mixin/ModEntityDataSaverMixin": {
         "readNbt": "Lnet/minecraft/class_1297;method_5651(Lnet/minecraft/class_2487;)V",
         "writeNbt": "Lnet/minecraft/class_1297;method_5647(Lnet/minecraft/class_2487;)Lnet/minecraft/class_2487;"
       },
+      "mattonfire/dnd/classes/mixin/PlayerEntityAccessor": {
+        "hungerManager": "field_7493:Lnet/minecraft/class_1702;"
+      },
       "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-        "tick": "Lnet/minecraft/class_1657;method_5773()V"
+        "tick": "Lnet/minecraft/class_1657;method_5773()V",
+        "tickMovement": "Lnet/minecraft/class_1657;method_6007()V"
       },
       "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
         "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",

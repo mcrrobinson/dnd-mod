@@ -30,5 +30,13 @@
                 "stream": true
             }
         ]
+    },
+    "music_box": {
+        "sounds": [
+            {
+                "name": "dndclasses:music_box",
+                "stream": true
+            }
+        ]
     }
 }

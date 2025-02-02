@@ -22,12 +22,10 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
 
     public PlayerEntityMixin(EntityType<?> type, World world) {
         super(type, world);
-        // TODO Auto-generated constructor stub
     }
 
     public void setDndClass(DndCharacter dndClass) {
         this.dndClass = dndClass;
-        System.out.println(this.dndClass);
     }
 
     public DndCharacter getDndClass() {

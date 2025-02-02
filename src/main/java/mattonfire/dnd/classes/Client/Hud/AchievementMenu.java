@@ -44,7 +44,7 @@ public class AchievementMenu extends Screen {
         int closeButtonX = screenWidth / 2 - closeButtonWidth / 2;
         int closeButtonY = startGridY + totalGridHeight + titleSpacing; // Use titleSpacing for consistent gap
 
-        this.addDrawableChild(ButtonWidget.builder(Text.of("Close"), _ -> {
+        this.addDrawableChild(ButtonWidget.builder(Text.of("Close"), event -> {
             this.client.setScreen(null);
         }).size(closeButtonWidth, closeButtonHeight).position(closeButtonX, closeButtonY).build());
     }

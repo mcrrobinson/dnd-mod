@@ -12,6 +12,8 @@ public class ModSounds {
     public static final SoundEvent TOOTH_AND_CLAW = registerSoundEvent("tooth_and_claw");
     public static final SoundEvent SILENT_FOOTSTEPS = registerSoundEvent("silent_footsteps");
 
+    public static final SoundEvent MUSIC_BOX = registerSoundEvent("music_box");
+
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = new Identifier(DnDClasses.MOD_ID, name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));

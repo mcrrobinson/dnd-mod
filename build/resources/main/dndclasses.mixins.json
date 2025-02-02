@@ -9,7 +9,10 @@
         "LavaDamageMixin",
         "LivingEntityMixin",
         "HungerManagerMixin",
-        "ModEntityDataSaverMixin"
+        "ModEntityDataSaverMixin",
+        "EnchantmentScreenHandlerInvoker",
+        "EnchantmentScreenHandlerAccessor",
+        "EnchantingTableMixin"
     ],
     "client": [
         "DoubleJumpMixin",

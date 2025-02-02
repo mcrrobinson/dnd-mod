@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes.client;
 
+import java.util.UUID;
+
 import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
@@ -8,19 +10,25 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
+import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.client.Hud.AchievementMenu;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Vec3d;
 
 public class DndClassesClient implements ClientModInitializer {
 
@@ -36,13 +44,25 @@ public class DndClassesClient implements ClientModInitializer {
         });
     }
 
-    private static void sendDoubleJumpRequest(MinecraftClient client, ClientPlayNetworkHandler handler,
+    private static void receiveDoubleJumpEffectsRequest(MinecraftClient client, ClientPlayNetworkHandler handler,
             PacketByteBuf buf,
             PacketSender responseSender) {
         client.execute(() -> {
             PlayerEntity effectPlayer = client.player.getEntityWorld().getPlayerByUuid(buf.readUuid());
             if (effectPlayer != null) {
-                DoubleJumpEffect.play(effectPlayer, effectPlayer);
+                DoubleJumpEffect.play(client.player, effectPlayer);
+            }
+        });
+    }
+
+    private static void receiveLungeEffectsRequest(MinecraftClient client, ClientPlayNetworkHandler handler,
+            PacketByteBuf buf,
+            PacketSender responseSender) {
+        UUID effectPlayerUuid = buf.readUuid();
+        client.execute(() -> {
+            PlayerEntity effectPlayer = client.player.getEntityWorld().getPlayerByUuid(effectPlayerUuid);
+            if (effectPlayer != null) {
+                DoubleJumpEffect.play(client.player, effectPlayer);
             }
         });
     }
@@ -81,7 +101,12 @@ public class DndClassesClient implements ClientModInitializer {
             }
         });
 
+        // The response from the server to make the special effects.
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
-                DndClassesClient::sendDoubleJumpRequest);
+                DndClassesClient::receiveDoubleJumpEffectsRequest);
+
+        // The response from the server to make the special effects.
+        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
+                DndClassesClient::receiveLungeEffectsRequest);
     }
 }

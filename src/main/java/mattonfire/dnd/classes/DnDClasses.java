@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes;
 
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -8,18 +10,23 @@ import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
 import mattonfire.dnd.classes.Misc.PowerUpEffect;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.Registry.ModEntities;
 import mattonfire.dnd.classes.Registry.ModItemGroup;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.potion.Potions;
@@ -31,6 +38,8 @@ import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Vec3d;
 
 public class DnDClasses implements ModInitializer {
         public static final Identifier C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("doublejump",
@@ -42,6 +51,11 @@ public class DnDClasses implements ModInitializer {
                         "request_powerup_effects");
         public static final Identifier S2C_POWERUP_EFFECTS_PACKET_ID = Identifier.of("powerup",
                         "play_powerup_effects");
+
+        public static final Identifier C2S_LUNGE_REQUEST_PACKET_ID = Identifier.of("lunge",
+                        "request_lunge_effects");
+        public static final Identifier S2C_LUNGE_EFFECTS_PACKET_ID = Identifier.of("lunge", "play_lunge_effects");
+
         public static final String MOD_ID = "dndclasses";
         public static final Logger LOGGER = LogManager.getLogger("dndclasses");
 
@@ -57,12 +71,9 @@ public class DnDClasses implements ModInitializer {
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                 passedData.writeUuid(buf.readUuid());
-                PlayerEntity entity = (PlayerEntity) player;
                 server.execute(() -> {
-                        PlayerLookup.tracking(entity).forEach(p -> {
-                                ServerPlayNetworking.send((ServerPlayerEntity) p,
-                                                DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
-                                                passedData);
+                        PlayerLookup.tracking(player).forEach(p -> {
+                                ServerPlayNetworking.send(p, DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID, passedData);
                         });
                 });
         }
@@ -261,12 +272,59 @@ public class DnDClasses implements ModInitializer {
                 ModPotions.registerPotions();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
+                ModEnchantments.registerEnchantments();
 
                 AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
                         if (((PlayerEntityExt) player).getDndClass() == DndCharacter.RANGER) {
                                 return ActionResult.FAIL;
                         }
                         return ActionResult.PASS;
+                });
+
+                UseItemCallback.EVENT.register((player, world, hand) -> {
+                        ItemStack stack = player.getStackInHand(hand);
+                        if (!world.isClient) {
+
+                                // Get the level
+                                int level = EnchantmentHelper.getLevel(ModEnchantments.LUNGE_ENCHANTMENT, stack);
+                                if (level > 0) {
+
+                                        if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
+                                                return TypedActionResult.fail(stack);
+                                        }
+
+                                        // Perform the lunge movement
+                                        Vec3d lookVec = player.getRotationVec(1.0F);
+                                        double lungeStrength = 1 * level;
+
+                                        Vec3d lungeMotion = new Vec3d(lookVec.x * lungeStrength, 0.3,
+                                                        lookVec.z * lungeStrength);
+                                        player.addVelocity(lungeMotion.x, lungeMotion.y, lungeMotion.z);
+                                        player.velocityModified = true;
+
+                                        player.getItemCooldownManager().set(stack.getItem(), 100);
+
+                                        // Show effects to all players.
+                                        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+                                        passedData.writeUuid(player.getUuid());
+
+                                        // Send effects to the current player.
+                                        ServerPlayNetworking.send((ServerPlayerEntity) player,
+                                                        DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
+                                                        passedData);
+
+                                        // Send effects to all players in vicinity
+                                        PlayerLookup.tracking(player).forEach(p -> {
+                                                ServerPlayNetworking.send(p, DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
+                                                                passedData);
+                                        });
+
+                                        return TypedActionResult.success(stack);
+                                }
+
+                        }
+                        return TypedActionResult.pass(stack);
+
                 });
 
                 FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Ingredient.ofItems(Items.ICE),
@@ -282,11 +340,18 @@ public class DnDClasses implements ModInitializer {
 
                 // Register classpick registry.
                 ServerPlayNetworking.registerGlobalReceiver(C2S_CLASS_PICK_PACKET_ID, DnDClasses::sendClassPickPacket);
+
+                // tree feller enchantment
+                TreeFeller.register();
+
+                GridMiner.register();
+
+                Invulnerability.register();
+
         }
 }
 
 // remove diamonds type create own again...
-// music disk no work
 // Change shade of the potion
 // Make the fireball no damage to caster.
 // Custom projectile for the staffs

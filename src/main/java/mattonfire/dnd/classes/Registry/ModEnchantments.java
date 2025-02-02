@@ -1,0 +1,32 @@
+package mattonfire.dnd.classes.Registry;
+
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentTarget;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.util.Identifier;
+
+public class ModEnchantments {
+
+        public static final Enchantment LUNGE_ENCHANTMENT = registerEnchantment("lunge",
+                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+
+        public static final Enchantment GRID_MINER_ENCHANTMENT = registerEnchantment("grid_miner",
+                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.DIGGER));
+
+        public static final Enchantment TREE_FELLER_ENCHANTMENT = registerEnchantment("tree_feller",
+                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+
+        public static final Enchantment INVULNERABILITY_ENCHANTMENT = registerEnchantment("invulnerability",
+                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+
+        private static Enchantment registerEnchantment(String name, Enchantment enchantment) {
+                return Registry.register(Registries.ENCHANTMENT, new Identifier(DnDClasses.MOD_ID, name), enchantment);
+        }
+
+        public static void registerEnchantments() {
+                DnDClasses.LOGGER.info("Registering Mod Enchantments for " + DnDClasses.MOD_ID);
+        }
+}

@@ -14,11 +14,21 @@
     "item.dndclasses.music_disc_awake_cart.desc": "Awake Cart - Skyrim",
     "item.dndclasses.music_disc_tooth_and_claw.desc": "Tooth and Claw - Skyrim",
     "item.dndclasses.music_disc_silent_footsteps.desc": "Silent Footsteps - Skyrim",
+    "item.dndclasses.music_box_music_disc": "Music Box",
+    "item.dndclasses.music_box_music_disc.desc": "Music Box by DRFX",
     "item.minecraft.potion.effect.freeze": "Freeze Potion",
     "item.minecraft.splash_potion.effect.freeze": "Splash Freeze Potion",
     "item.minecraft.lingering_potion.effect.freeze": "Lingering Freeze Potion",
-    "itemgroup.dndclasses": "D&D Classes",
     "effect.dndclasses.freeze": "Frozen",
+    "item.dndclasses.potion.effect.invulnerability": "Invulnerability",
+    "item.dndclasses.splash_potion.effect.invulnerability": "Splash Invulnerability",
+    "item.dndclasses.lingering_potion.effect.invulnerability": "Lingering Invulnerability",
+    "effect.dndclasses.invulnerability": "Invulnerable",
+    "itemgroup.dndclasses": "D&D Classes",
     "block.dndclasses.fast_brewing_stand": "Fast Brewing Stand",
-    "block.dndclasses.fast_brewing_stand.desc": "Brewing stand that can only be used by an alchemist."
+    "block.dndclasses.fast_brewing_stand.desc": "Brewing stand that can only be used by an alchemist.",
+    "enchantment.dndclasses.lunge": "Lunge",
+    "enchantment.dndclasses.grid_miner": "Grid Miner",
+    "enchantment.dndclasses.tree_feller": "Tree Feller",
+    "enchantment.dndclasses.invulnerability": "Invulnerability"
 }

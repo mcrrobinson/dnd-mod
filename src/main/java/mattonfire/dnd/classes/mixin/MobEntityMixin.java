@@ -11,30 +11,35 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 @Mixin(MobEntity.class)
-public class HostileEntityMixin {
-    private LivingEntity target;
+public class MobEntityMixin {
 
     @Inject(at = @At("RETURN"), method = "setTarget")
     public void setTarget(@Nullable LivingEntity target, CallbackInfo info) {
         if (target instanceof ServerPlayerEntity) {
             ServerPlayerEntity player = (ServerPlayerEntity) target;
+            if (player instanceof PlayerEntityExt) {
 
-            if (((PlayerEntityExt) player).getDndClass() == DndCharacter.BARD) {
-                UUID playerId = player.getUuid();
+                // Null check because the other mod does changes to MobEntity
+                if (((PlayerEntityExt) player).getDndClass() != null) {
+                    if (((PlayerEntityExt) player).getDndClass() == DndCharacter.CLERIC
+                            && player.hasStatusEffect(ModEffects.MOB_REPEL)) {
+                        UUID playerId = player.getUuid();
 
-                // If player is NOT already affected, add them
-                if (!DnDClasses.effectTimestamps.containsKey(playerId)) {
-                    DnDClasses.effectTimestamps.put(playerId, (long) player.getServer().getTicks());
+                        // If player is NOT already affected, add them
+                        if (!DnDClasses.effectTimestamps.containsKey(playerId)) {
+                            DnDClasses.effectTimestamps.put(playerId, (long) player.getServer().getTicks());
+                        }
+
+                        target = null;
+                    }
                 }
 
-                this.target = null;
             }
         }
     }

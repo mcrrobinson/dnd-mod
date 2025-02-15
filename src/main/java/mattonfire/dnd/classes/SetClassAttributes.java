@@ -1,18 +1,12 @@
 package mattonfire.dnd.classes;
 
-import java.util.Objects;
-
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.TypeFilter;
 import net.minecraft.util.math.Box;
 
 public class SetClassAttributes {
@@ -134,7 +128,9 @@ public class SetClassAttributes {
         // Attack attacked take wither debuff.
         // Not attacked by undead.
         // Less health
+        player.setHealth(5);
         // Less attack damage.
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5); // Default 1.0
     }
 
     public void typeWarlock(PlayerEntity player) {

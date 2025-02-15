@@ -54,56 +54,59 @@ public class AchievementMenu extends Screen {
         this.renderBackground(matrices);
 
         PlayerEntity player = this.client.player;
-        PlayerEntityExt playerExt = (PlayerEntityExt) player;
 
-        DndCharacter[] characters = DndCharacter.values();
-        int totalCharacters = characters.length;
+        if (player instanceof PlayerEntityExt) {
+            PlayerEntityExt playerExt = (PlayerEntityExt) player;
 
-        int screenWidth = this.width;
-        int screenHeight = this.height;
+            DndCharacter[] characters = DndCharacter.values();
+            int totalCharacters = characters.length;
 
-        int columns = 3;
-        int cellWidth = screenWidth / columns - 20;
-        int cellHeight = 25;
+            int screenWidth = this.width;
+            int screenHeight = this.height;
 
-        int titleSpacing = (int) (screenHeight * 0.05); // Scale title spacing dynamically
+            int columns = 3;
+            int cellWidth = screenWidth / columns - 20;
+            int cellHeight = 25;
 
-        int startGridX = (screenWidth - (columns * cellWidth)) / 2;
-        int startGridY = (screenHeight / 5) + titleSpacing;
+            int titleSpacing = (int) (screenHeight * 0.05); // Scale title spacing dynamically
 
-        int barWidth = (int) (screenWidth * 0.2);
-        int barHeight = 6;
+            int startGridX = (screenWidth - (columns * cellWidth)) / 2;
+            int startGridY = (screenHeight / 5) + titleSpacing;
 
-        // Draw title centered at the top, spaced dynamically
-        drawCenteredTextWithShadow(matrices, this.textRenderer, "Character Progress", screenWidth / 2,
-                (screenHeight / 8), 0xFFFFFF);
+            int barWidth = (int) (screenWidth * 0.2);
+            int barHeight = 6;
 
-        // Draw progress grid
-        for (int i = 0; i < totalCharacters; i++) {
-            DndCharacter character = characters[i];
+            // Draw title centered at the top, spaced dynamically
+            drawCenteredTextWithShadow(matrices, this.textRenderer, "Character Progress", screenWidth / 2,
+                    (screenHeight / 8), 0xFFFFFF);
 
-            int row = i / columns;
-            int col = i % columns;
+            // Draw progress grid
+            for (int i = 0; i < totalCharacters; i++) {
+                DndCharacter character = characters[i];
 
-            int cellX = startGridX + (col * cellWidth);
-            int cellY = startGridY + (row * cellHeight);
+                int row = i / columns;
+                int col = i % columns;
 
-            int achievedCount = playerExt.getProgress(character);
-            int filledWidth = (int) ((achievedCount / (float) totalAchievements) * barWidth);
+                int cellX = startGridX + (col * cellWidth);
+                int cellY = startGridY + (row * cellHeight);
 
-            String text = character + ": " + achievedCount + "/" + totalAchievements;
-            int textX = cellX + (cellWidth / 2);
-            int textY = cellY;
+                int achievedCount = playerExt.getProgress(character);
+                int filledWidth = (int) ((achievedCount / (float) totalAchievements) * barWidth);
 
-            drawCenteredTextWithShadow(matrices, this.textRenderer, text, textX, textY, 0xFFFFFF);
+                String text = character + ": " + achievedCount + "/" + totalAchievements;
+                int textX = cellX + (cellWidth / 2);
+                int textY = cellY;
 
-            int barX1 = textX - (barWidth / 2);
-            int barY1 = textY + 10;
-            int barX2 = barX1 + barWidth;
-            int barY2 = barY1 + barHeight;
+                drawCenteredTextWithShadow(matrices, this.textRenderer, text, textX, textY, 0xFFFFFF);
 
-            fill(matrices, barX1, barY1, barX2, barY2, 0xFF000000);
-            fill(matrices, barX1, barY1, barX1 + filledWidth, barY2, 0xFF00FF00);
+                int barX1 = textX - (barWidth / 2);
+                int barY1 = textY + 10;
+                int barX2 = barX1 + barWidth;
+                int barY2 = barY1 + barHeight;
+
+                fill(matrices, barX1, barY1, barX2, barY2, 0xFF000000);
+                fill(matrices, barX1, barY1, barX1 + filledWidth, barY2, 0xFF00FF00);
+            }
         }
 
         super.render(matrices, mouseX, mouseY, delta);

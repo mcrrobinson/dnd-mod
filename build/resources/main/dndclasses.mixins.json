@@ -13,8 +13,10 @@
         "EnchantmentScreenHandlerInvoker",
         "EnchantmentScreenHandlerAccessor",
         "EnchantingTableMixin",
+        "ActiveTargetGoalMixin",
+        "TrackTargetGoalMixin",
         "MobEntityAccessor",
-        "HostileEntityMixin"
+        "SlotMixin"
     ],
     "client": [
         "DoubleJumpMixin",

@@ -25,24 +25,32 @@ public abstract class LivingEntityMixin extends Entity {
     private void onAddStatusEffect(StatusEffectInstance effectInstance, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof PlayerEntity) {
-            PlayerEntityExt playerEntity = (PlayerEntityExt) entity;
-            switch (playerEntity.getDndClass()) {
-                case PALADIN:
-                    cir.setReturnValue(false); // Paladins are immune
-                    break;
-                case WIZARD:
-                    if (effectInstance.getEffectType() == ModEffects.FREEZE) {
-                        cir.setReturnValue(false); // Prevent the effect from being applied
-                    }
-                    break;
-                case ROGUE:
-                    if (effectInstance.getEffectType() == StatusEffects.POISON) {
-                        cir.setReturnValue(false); // Prevent the effect from being applied
-                    }
-                    break;
+            if (entity instanceof PlayerEntityExt) {
+                PlayerEntityExt playerEntity = (PlayerEntityExt) entity;
 
-                default:
-                    break;
+                // TODO: This isn't a permanant solution. We should never really allow the user
+                // to spawn without a DND Class.
+                if (playerEntity.getDndClass() == null) {
+                    return;
+                }
+                switch (playerEntity.getDndClass()) {
+                    case PALADIN:
+                        cir.setReturnValue(false); // Paladins are immune
+                        break;
+                    case WIZARD:
+                        if (effectInstance.getEffectType() == ModEffects.FREEZE) {
+                            cir.setReturnValue(false); // Prevent the effect from being applied
+                        }
+                        break;
+                    case ROGUE:
+                        if (effectInstance.getEffectType() == StatusEffects.POISON) {
+                            cir.setReturnValue(false); // Prevent the effect from being applied
+                        }
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
     }

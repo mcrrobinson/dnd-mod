@@ -22,8 +22,10 @@ public class BowItemMixin {
             PlayerEntity playerEntity = (PlayerEntity) user;
 
             float speed = args.get(4); // Get the arrow speed
-            if (((PlayerEntityExt) playerEntity).getDndClass() == DndCharacter.RANGER) { // Custom logic
-                args.set(4, speed * 3); // Modify the speed argument
+            if (playerEntity instanceof PlayerEntityExt) {
+                if (((PlayerEntityExt) playerEntity).getDndClass() == DndCharacter.RANGER) { // Custom logic
+                    args.set(4, speed * 3); // Modify the speed argument
+                }
             }
         }
     }

@@ -1,12 +1,10 @@
 package mattonfire.dnd.classes.client.Render;
 
 import net.minecraft.client.render.*;
-import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Vec3d;
 import com.mojang.blaze3d.systems.RenderSystem;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL11;
-import mattonfire.dnd.classes.client.DndClassesClient;
 
 /*
  * Draws a line. Called by Line.Draw(). Line.Draw() is called in HaxTestClient

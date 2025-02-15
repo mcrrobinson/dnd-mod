@@ -8,15 +8,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.PlayerEntityExt;
+
 @Mixin(HungerManager.class)
 public class HungerManagerMixin {
     @Inject(method = "update", at = @At("HEAD"), cancellable = true)
     private void disableHungerDepreciation(PlayerEntity player, CallbackInfo ci) {
-        // Get the player's name
-        // String playerName = player.getName().getString();
-
-        // Print to console for debugging (optional)
-        // System.out.println("Hunger update called for player: " + playerName);
-
+        if (player instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            if (playerEntity.getDndClass() == DndCharacter.ROGUE) {
+                ci.cancel();
+            }
+        }
     }
 }

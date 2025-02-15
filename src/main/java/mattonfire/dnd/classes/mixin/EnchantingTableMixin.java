@@ -1,9 +1,7 @@
 package mattonfire.dnd.classes.mixin;
 
 import net.minecraft.advancement.criterion.Criteria;
-import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.enchantment.Enchantment;
-import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
@@ -25,7 +23,6 @@ import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -151,9 +148,13 @@ public class EnchantingTableMixin {
     @Inject(method = "onButtonClick", at = @At("HEAD"), cancellable = true)
     private void modifyGenerateEnchantments(PlayerEntity player, int id,
             CallbackInfoReturnable<Boolean> cir) {
-        // Get private fields using the accessor mixin
-        PlayerEntityExt playerEntity = (PlayerEntityExt) player;
-        boolean isPowerfulUser = playerEntity.getDndClass() == DndCharacter.ARTIFICER;
+
+        boolean isPowerfulUser = false;
+        if (player instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            isPowerfulUser = playerEntity.getDndClass() == DndCharacter.ARTIFICER;
+
+        }
 
         boolean buttonClick = onButtonClick(player, id, isPowerfulUser);
 

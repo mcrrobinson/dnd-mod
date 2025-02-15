@@ -7,16 +7,17 @@ import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.client.Hud.AchievementMenu;
-import mattonfire.dnd.classes.client.Render.RenderUtils;
+import mattonfire.dnd.classes.client.Hud.PowerupOverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
@@ -24,10 +25,6 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.text.Text;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Vec3d;
-import mattonfire.dnd.classes.client.Render.Line;
 import mattonfire.dnd.classes.client.Render.Color;
 
 public class DndClassesClient implements ClientModInitializer {
@@ -41,8 +38,11 @@ public class DndClassesClient implements ClientModInitializer {
             PacketSender responseSender) {
         int classID = buf.readInt();
         client.execute(() -> {
-            ((PlayerEntityExt) (PlayerEntity) client.player).setDndClass(DndCharacter.fromValue(classID));
-            SetPlayerClass.setPlayerClass(client, client.player, classID);
+            if (client.player instanceof PlayerEntityExt) {
+                ((PlayerEntityExt) (PlayerEntity) client.player).setDndClass(DndCharacter.fromValue(classID));
+                SetPlayerClass.setPlayerClass(client, client.player, classID);
+            }
+
         });
     }
 
@@ -69,6 +69,27 @@ public class DndClassesClient implements ClientModInitializer {
         });
     }
 
+    private static void setMana(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
+            PacketSender responseSender) {
+        int amount = buf.readInt();
+
+        client.execute(() -> { // Ensure this runs on the main client thread
+            if (client.player != null) {
+                System.out.println("Setting mana to " + amount);
+                ((IEntityDataSaver) client.player).getPersistentData().putInt("mana", amount);
+            } else {
+                System.out.println("Player is not yet initialized, deferring mana update...");
+            }
+        });
+    }
+
+    private static void removeManor(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
+            PacketSender responseSender) {
+        if (client.player != null) {
+            ((IEntityDataSaver) client.player).getPersistentData().putInt("mana", 0);
+        }
+    }
+
     @Override
     public void onInitializeClient() {
 
@@ -78,6 +99,9 @@ public class DndClassesClient implements ClientModInitializer {
                     client.setScreen(new AchievementMenu());
                 }
             }
+
+            // Increase their manor
+
         });
 
         // WorldRenderEvents.END.register(context -> {
@@ -110,7 +134,8 @@ public class DndClassesClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
-                client.player.sendMessage(Text.literal("Imagine Anime power up noises..."), false);
+
+                // Power effect request
                 PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                 passedData.writeUuid(client.player.getUuid());
                 ClientPlayNetworking.send(DnDClasses.C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID, passedData);
@@ -124,5 +149,14 @@ public class DndClassesClient implements ClientModInitializer {
         // The response from the server to make the special effects.
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
                 DndClassesClient::receiveLungeEffectsRequest);
+
+        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_SYNC_MANA,
+                DndClassesClient::setMana);
+
+        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
+                DndClassesClient::removeManor);
+
+        HudRenderCallback.EVENT.register(new PowerupOverlay());
     }
+
 }

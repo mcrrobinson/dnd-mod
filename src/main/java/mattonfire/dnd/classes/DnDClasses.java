@@ -10,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
+import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
 import mattonfire.dnd.classes.Misc.PowerUpEffect;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -19,15 +20,23 @@ import mattonfire.dnd.classes.Registry.ModItemGroup;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
+import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -41,6 +50,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
@@ -60,6 +70,14 @@ public class DnDClasses implements ModInitializer {
         public static final Identifier C2S_LUNGE_REQUEST_PACKET_ID = Identifier.of("lunge",
                         "request_lunge_effects");
         public static final Identifier S2C_LUNGE_EFFECTS_PACKET_ID = Identifier.of("lunge", "play_lunge_effects");
+
+        public static final Identifier S2C_SYNC_MANA = Identifier.of("mana",
+                        "sync_mana");
+
+        public static int MANA_FULL_SECONDS = 18; // Should be 2 seconds per increment
+        public static int MANA_ICONS = 9;
+        public static int MANA_TICKS_PER_INCREMENT = Math.round(MANA_FULL_SECONDS / MANA_ICONS) * 20; // Ticks per
+                                                                                                      // second;
 
         public static final String MOD_ID = "dndclasses";
         public static final Logger LOGGER = LogManager.getLogger("dndclasses");
@@ -87,10 +105,24 @@ public class DnDClasses implements ModInitializer {
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                 passedData.writeUuid(buf.readUuid());
+
+                if (!ManaManager.hasFullMana(player)) {
+                        return;
+                }
+
                 server.execute(() -> {
-                        PowerUpEffect.play(player, ((PlayerEntityExt) (PlayerEntity) player)
-                                        .getDndClass());
+                        if (player instanceof PlayerEntityExt) {
+                                PowerUpEffect.play(player, ((PlayerEntityExt) (PlayerEntity) player)
+                                                .getDndClass());
+                        }
                 });
+
+                PacketByteBuf returnData = new PacketByteBuf(Unpooled.buffer());
+                ServerPlayNetworking.send(player,
+                                DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
+                                returnData);
+
+                ManaManager.resetMana(player);
         }
 
         private static void sendClassPickPacket(MinecraftServer server, ServerPlayerEntity player,
@@ -257,8 +289,9 @@ public class DnDClasses implements ModInitializer {
                                         passedData);
 
                         // If run with no errors declare in the NBT.
-                        ((PlayerEntityExt) (PlayerEntity) player)
-                                        .setDndClass(DndCharacter.fromValue(bufferInteger));
+                        if (player instanceof PlayerEntityExt) {
+                                ((PlayerEntityExt) player).setDndClass(DndCharacter.fromValue(bufferInteger));
+                        }
                 });
         }
 
@@ -293,9 +326,35 @@ public class DnDClasses implements ModInitializer {
                 ModBlocks.registerBlocks();
                 ModEnchantments.registerEnchantments();
 
+                AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+                        if (player instanceof PlayerEntityExt) {
+                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) player;
+                                DndCharacter dndCharacter = playerEntityExt.getDndClass();
+                                if (dndCharacter == DndCharacter.NECROMANCER) {
+                                        // Apply wither to the enemy
+                                        if (entity instanceof LivingEntity) {
+                                                LivingEntity livingEntity = (LivingEntity) entity;
+                                                livingEntity.addStatusEffect(new StatusEffectInstance(
+                                                                StatusEffects.WITHER,
+                                                                5,
+                                                                0));
+                                        }
+                                }
+                        }
+                        System.out.println(entity.getName().getString() + " was attacked by "
+                                        + player.getName().getString() + " in melee!");
+                        return ActionResult.PASS;
+                });
+
                 ServerTickEvents.END_WORLD_TICK.register(world -> {
                         if (world instanceof ServerWorld serverWorld) {
                                 long currentTick = serverWorld.getServer().getTicks();
+
+                                if (currentTick % MANA_TICKS_PER_INCREMENT == 0) {
+                                        for (ServerPlayerEntity player : world.getPlayers()) {
+                                                ManaManager.regenerateMana(player);
+                                        }
+                                }
 
                                 // Iterate and remove expired players
                                 Iterator<Map.Entry<UUID, Long>> iterator = DnDClasses.effectTimestamps.entrySet()
@@ -321,13 +380,40 @@ public class DnDClasses implements ModInitializer {
                 });
 
                 AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
-                        if (((PlayerEntityExt) player).getDndClass() == DndCharacter.RANGER) {
-                                return ActionResult.FAIL;
+                        if (entity instanceof PlayerEntityExt) {
+                                if (((PlayerEntityExt) player).getDndClass() == DndCharacter.RANGER) {
+                                        return ActionResult.FAIL;
+                                }
                         }
+
                         return ActionResult.PASS;
                 });
 
+                // Register event listener
                 UseItemCallback.EVENT.register((player, world, hand) -> {
+                        if (player instanceof ServerPlayerEntity serverPlayer) {
+                                if (serverPlayer instanceof PlayerEntityExt) {
+                                        PlayerEntityExt playerEntityExt = (PlayerEntityExt) serverPlayer;
+                                        if (playerEntityExt.getDndClass() == DndCharacter.PALADIN) {
+                                                ItemStack itemStack = player.getStackInHand(hand);
+
+                                                // Check if the item is a potion
+                                                if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
+                                                                || itemStack.isOf(Items.LINGERING_POTION)) {
+                                                        // Prevent the player from using it
+                                                        player.sendMessage(Text
+                                                                        .of("You are not allowed to drink potions!"),
+                                                                        true);
+                                                        return TypedActionResult.fail(itemStack);
+                                                }
+                                        }
+                                }
+                        }
+                        return TypedActionResult.pass(player.getStackInHand(hand));
+                });
+
+                UseItemCallback.EVENT.register((player, world, hand) -> {
+
                         ItemStack stack = player.getStackInHand(hand);
                         if (!world.isClient) {
 
@@ -393,6 +479,34 @@ public class DnDClasses implements ModInitializer {
                 GridMiner.register();
 
                 Invulnerability.register();
+
+                if (FabricLoader.getInstance().isModLoaded("identity")) {
+                        System.out.println("Identity Mod is loaded!");
+                        // Safely use Identity's API here
+                } else {
+                        System.out.println("Identity Mod is NOT loaded!");
+                }
+
+                ServerEntityEvents.ENTITY_LOAD.register((entity, serverWorld) -> {
+                        if (entity instanceof MobEntity mob) {
+                                MobEntityAccessor accessor = (MobEntityAccessor) mob;
+
+                                accessor.getTargetSelector().add(2,
+                                                new PriorityPlayerTargetGoal<>(mob, PlayerEntity.class));
+                        }
+                });
+
+                ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+                        ServerPlayerEntity player = handler.getPlayer();
+
+                        int mana = ManaManager.getMana(player);
+                        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+                        passedData.writeInt(mana);
+                        System.out.println("sending packet update" + Integer.toString(mana));
+                        ServerPlayNetworking.send((ServerPlayerEntity) player,
+                                        DnDClasses.S2C_SYNC_MANA,
+                                        passedData);
+                });
 
         }
 }

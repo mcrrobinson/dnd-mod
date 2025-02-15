@@ -23,6 +23,10 @@ public class PlayerManagerMixin {
 	@Inject(at = @At("RETURN"), method = "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V")
 	public void onPlayerConnect(ClientConnection connection, ServerPlayerEntity player, CallbackInfo info) {
 		PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+		if (!(player instanceof PlayerEntityExt)) {
+			return;
+		}
+
 		DndCharacter playerClass = ((PlayerEntityExt) player).getDndClass();
 		if (playerClass == null) {
 			playerClass = DndCharacter.NONE;

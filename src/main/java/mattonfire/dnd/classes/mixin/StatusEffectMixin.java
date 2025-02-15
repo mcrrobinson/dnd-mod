@@ -20,12 +20,15 @@ public class StatusEffectMixin {
             System.out.println("Poisoned...");
             if (entity instanceof PlayerEntity) {
                 System.out.println("Player was poisoned...");
-                if (((PlayerEntityExt) (PlayerEntity) entity).getDndClass() == DndCharacter.BARD) {
-                    System.out.println("Player with the right class was poisoned...");
-                    if (entity.getHealth() < entity.getMaxHealth()) {
-                        entity.heal(1.f);
+                if (entity instanceof PlayerEntityExt) {
+
+                    if (((PlayerEntityExt) (PlayerEntity) entity).getDndClass() == DndCharacter.BARD) {
+                        System.out.println("Player with the right class was poisoned...");
+                        if (entity.getHealth() < entity.getMaxHealth()) {
+                            entity.heal(1.f);
+                        }
+                        info.cancel();
                     }
-                    info.cancel();
                 }
             }
         }

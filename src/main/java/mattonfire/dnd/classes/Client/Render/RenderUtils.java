@@ -2,7 +2,6 @@ package mattonfire.dnd.classes.client.Render;
 
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import mattonfire.dnd.classes.client.DndClassesClient;
 
 import java.util.ArrayList;
 

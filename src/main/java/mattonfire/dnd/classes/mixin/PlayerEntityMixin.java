@@ -6,13 +6,9 @@ import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.HungerManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.FluidTags;
-import net.minecraft.text.Text;
-import net.minecraft.world.Difficulty;
-import net.minecraft.world.GameRules;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -52,17 +48,27 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         return nbt.getInt(character.toString());
     }
 
+    public void setMana(int amount) {
+        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
+        NbtCompound nbt = player.getPersistentData();
+        nbt.putInt("mana", Math.min(amount, 100));
+    }
+
     // Some creatures can't swim... here is that. Probably a better way of doing
     // it.
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if (((PlayerEntityExt) player).getDndClass() == DndCharacter.DRUID) {
-            if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
-                    !player.getAbilities().flying) {
-                this.setVelocity(0.0D, -0.5, 0.0D);
+        if (player instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            if (playerEntity.getDndClass() == DndCharacter.DRUID) {
+                if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
+                        !player.getAbilities().flying) {
+                    this.setVelocity(0.0D, -0.5, 0.0D);
+                }
             }
         }
+
     }
 
     @Inject(method = "tickMovement", at = @At("HEAD"))

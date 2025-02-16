@@ -42,7 +42,6 @@ public class DndClassesClient implements ClientModInitializer {
                 ((PlayerEntityExt) (PlayerEntity) client.player).setDndClass(DndCharacter.fromValue(classID));
                 SetPlayerClass.setPlayerClass(client, client.player, classID);
             }
-
         });
     }
 

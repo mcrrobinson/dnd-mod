@@ -1,15 +1,159 @@
 {
   "mappings": {
+    "mattonfire/dnd/classes/mixin/ActiveTargetGoalMixin": {
+      "start": "Lnet/minecraft/class_1400;method_6269()V"
+    },
+    "mattonfire/dnd/classes/mixin/BowItemMixin": {
+      "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;setProperties(Lnet/minecraft/class_1297;FFFFF)V",
+      "onStoppedUsing": "Lnet/minecraft/class_1753;method_7840(Lnet/minecraft/class_1799;Lnet/minecraft/class_1937;Lnet/minecraft/class_1309;I)V"
+    },
+    "mattonfire/dnd/classes/mixin/BrewingStandAccessor": {
+      "brewTime": "field_11878:I"
+    },
+    "mattonfire/dnd/classes/mixin/BrewingStandBlockEntityMixin": {
+      "tick": "Lnet/minecraft/class_2589;method_31665(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_2680;Lnet/minecraft/class_2589;)V"
+    },
+    "mattonfire/dnd/classes/mixin/BrewingStandBlockMixin": {
+      "onUse": "Lnet/minecraft/class_2260;method_9534(Lnet/minecraft/class_2680;Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;Lnet/minecraft/class_3965;)Lnet/minecraft/class_1269;"
+    },
+    "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
+      "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+    },
+    "mattonfire/dnd/classes/mixin/EnchantingTableMixin": {
+      "onButtonClick": "Lnet/minecraft/class_1718;method_7604(Lnet/minecraft/class_1657;I)Z"
+    },
+    "mattonfire/dnd/classes/mixin/EnchantmentScreenHandlerAccessor": {
+      "context": "field_7813:Lnet/minecraft/class_3914;",
+      "enchantmentPower": "field_7808:[I",
+      "inventory": "field_7809:Lnet/minecraft/class_1263;",
+      "random": "field_7811:Lnet/minecraft/class_5819;",
+      "seed": "field_7814:Lnet/minecraft/class_3915;"
+    },
+    "mattonfire/dnd/classes/mixin/EnchantmentScreenHandlerInvoker": {
+      "onContentChanged": "method_7609(Lnet/minecraft/class_1263;)V"
+    },
+    "mattonfire/dnd/classes/mixin/EntityMixin": {
+      "onRemoved": "Lnet/minecraft/class_1297;method_36209()V"
+    },
+    "mattonfire/dnd/classes/mixin/HungerManagerMixin": {
+      "update": "Lnet/minecraft/class_1702;method_7588(Lnet/minecraft/class_1657;)V"
+    },
+    "mattonfire/dnd/classes/mixin/LavaDamageMixin": {
+      "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
+    },
+    "mattonfire/dnd/classes/mixin/LivingEntityMixin": {
+      "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z"
+    },
+    "mattonfire/dnd/classes/mixin/LivingEntityRendererMixin": {
+      "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V": "Lnet/minecraft/class_583;method_2828(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;IIFFFF)V",
+      "render": "Lnet/minecraft/class_922;method_4054(Lnet/minecraft/class_1309;FFLnet/minecraft/class_4587;Lnet/minecraft/class_4597;I)V"
+    },
+    "mattonfire/dnd/classes/mixin/MobEntityAccessor": {
+      "goalSelector": "field_6201:Lnet/minecraft/class_1355;",
+      "targetSelector": "field_6185:Lnet/minecraft/class_1355;"
+    },
+    "mattonfire/dnd/classes/mixin/MobEntityMixin": {
+      "setTarget": "Lnet/minecraft/class_1308;method_5980(Lnet/minecraft/class_1309;)V"
+    },
+    "mattonfire/dnd/classes/mixin/ModEntityDataSaverMixin": {
+      "readNbt": "Lnet/minecraft/class_1297;method_5651(Lnet/minecraft/class_2487;)V",
+      "writeNbt": "Lnet/minecraft/class_1297;method_5647(Lnet/minecraft/class_2487;)Lnet/minecraft/class_2487;"
+    },
+    "mattonfire/dnd/classes/mixin/PlayerEntityAccessor": {
+      "hungerManager": "field_7493:Lnet/minecraft/class_1702;"
+    },
     "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-      "tick": "Lnet/minecraft/class_1657;tick()V",
-      "tickMovement": "Lnet/minecraft/class_1657;tickMovement()V"
+      "tick": "Lnet/minecraft/class_1657;method_5773()V",
+      "tickMovement": "Lnet/minecraft/class_1657;method_6007()V"
+    },
+    "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
+      "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
+      "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
+    },
+    "mattonfire/dnd/classes/mixin/StatusEffectMixin": {
+      "applyUpdateEffect": "Lnet/minecraft/class_1291;method_5572(Lnet/minecraft/class_1309;I)V"
+    },
+    "mattonfire/dnd/classes/mixin/TrackTargetGoalMixin": {
+      "shouldContinue": "Lnet/minecraft/class_1405;method_6266()Z"
     }
   },
   "data": {
     "named:intermediary": {
+      "mattonfire/dnd/classes/mixin/ActiveTargetGoalMixin": {
+        "start": "Lnet/minecraft/class_1400;method_6269()V"
+      },
+      "mattonfire/dnd/classes/mixin/BowItemMixin": {
+        "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setProperties(Lnet/minecraft/entity/Entity;FFFFF)V": "Lnet/minecraft/class_1665;setProperties(Lnet/minecraft/class_1297;FFFFF)V",
+        "onStoppedUsing": "Lnet/minecraft/class_1753;method_7840(Lnet/minecraft/class_1799;Lnet/minecraft/class_1937;Lnet/minecraft/class_1309;I)V"
+      },
+      "mattonfire/dnd/classes/mixin/BrewingStandAccessor": {
+        "brewTime": "field_11878:I"
+      },
+      "mattonfire/dnd/classes/mixin/BrewingStandBlockEntityMixin": {
+        "tick": "Lnet/minecraft/class_2589;method_31665(Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_2680;Lnet/minecraft/class_2589;)V"
+      },
+      "mattonfire/dnd/classes/mixin/BrewingStandBlockMixin": {
+        "onUse": "Lnet/minecraft/class_2260;method_9534(Lnet/minecraft/class_2680;Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;Lnet/minecraft/class_3965;)Lnet/minecraft/class_1269;"
+      },
+      "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
+        "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
+      },
+      "mattonfire/dnd/classes/mixin/EnchantingTableMixin": {
+        "onButtonClick": "Lnet/minecraft/class_1718;method_7604(Lnet/minecraft/class_1657;I)Z"
+      },
+      "mattonfire/dnd/classes/mixin/EnchantmentScreenHandlerAccessor": {
+        "context": "field_7813:Lnet/minecraft/class_3914;",
+        "enchantmentPower": "field_7808:[I",
+        "inventory": "field_7809:Lnet/minecraft/class_1263;",
+        "random": "field_7811:Lnet/minecraft/class_5819;",
+        "seed": "field_7814:Lnet/minecraft/class_3915;"
+      },
+      "mattonfire/dnd/classes/mixin/EnchantmentScreenHandlerInvoker": {
+        "onContentChanged": "method_7609(Lnet/minecraft/class_1263;)V"
+      },
+      "mattonfire/dnd/classes/mixin/EntityMixin": {
+        "onRemoved": "Lnet/minecraft/class_1297;method_36209()V"
+      },
+      "mattonfire/dnd/classes/mixin/HungerManagerMixin": {
+        "update": "Lnet/minecraft/class_1702;method_7588(Lnet/minecraft/class_1657;)V"
+      },
+      "mattonfire/dnd/classes/mixin/LavaDamageMixin": {
+        "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
+      },
+      "mattonfire/dnd/classes/mixin/LivingEntityMixin": {
+        "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z"
+      },
+      "mattonfire/dnd/classes/mixin/LivingEntityRendererMixin": {
+        "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V": "Lnet/minecraft/class_583;method_2828(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;IIFFFF)V",
+        "render": "Lnet/minecraft/class_922;method_4054(Lnet/minecraft/class_1309;FFLnet/minecraft/class_4587;Lnet/minecraft/class_4597;I)V"
+      },
+      "mattonfire/dnd/classes/mixin/MobEntityAccessor": {
+        "goalSelector": "field_6201:Lnet/minecraft/class_1355;",
+        "targetSelector": "field_6185:Lnet/minecraft/class_1355;"
+      },
+      "mattonfire/dnd/classes/mixin/MobEntityMixin": {
+        "setTarget": "Lnet/minecraft/class_1308;method_5980(Lnet/minecraft/class_1309;)V"
+      },
+      "mattonfire/dnd/classes/mixin/ModEntityDataSaverMixin": {
+        "readNbt": "Lnet/minecraft/class_1297;method_5651(Lnet/minecraft/class_2487;)V",
+        "writeNbt": "Lnet/minecraft/class_1297;method_5647(Lnet/minecraft/class_2487;)Lnet/minecraft/class_2487;"
+      },
+      "mattonfire/dnd/classes/mixin/PlayerEntityAccessor": {
+        "hungerManager": "field_7493:Lnet/minecraft/class_1702;"
+      },
       "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
-        "tick": "Lnet/minecraft/class_1657;tick()V",
-        "tickMovement": "Lnet/minecraft/class_1657;tickMovement()V"
+        "tick": "Lnet/minecraft/class_1657;method_5773()V",
+        "tickMovement": "Lnet/minecraft/class_1657;method_6007()V"
+      },
+      "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
+        "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
+        "respawnPlayer": "Lnet/minecraft/class_3324;method_14556(Lnet/minecraft/class_3222;Z)Lnet/minecraft/class_3222;"
+      },
+      "mattonfire/dnd/classes/mixin/StatusEffectMixin": {
+        "applyUpdateEffect": "Lnet/minecraft/class_1291;method_5572(Lnet/minecraft/class_1309;I)V"
+      },
+      "mattonfire/dnd/classes/mixin/TrackTargetGoalMixin": {
+        "shouldContinue": "Lnet/minecraft/class_1405;method_6266()Z"
       }
     }
   }

@@ -34,7 +34,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Druid** | Gains extra hearts from tamed animals (up to 5 (not working)), Regenerates in light | Cannot swim | Can temporarily transform into killed animals |
 | **Fighter** | High health, High strength, Attracts mobs (needs to be tested) | Cannot use bows, No potions | Super regeneration |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output, Can only use a staff to attack | Can triple jump, Unrivaled attack speed |
-| **Paladin** | High health, circle of healing | Cannot craft (to test) or use potions (to test), Very weak in the Nether (not implemented) | Instantly heal everyone in your vicinity (needs to be tested) |
+| **Paladin** | High health, circle of healing | Cannot craft anything or craft potions, Very weak in the Nether (not implemented) | Instantly heal everyone in your vicinity (needs to be tested) |
 | **Ranger** | Can zoom in with bow, Natural looting | Cannot pick up swords, Weak to fire | Bow fires instantly, No reload required |
 | **Rogue** | No poison damage (done), No need to eat (to be tested) | Low health (need to do) | Temporary invisibility |
 | **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Can spawn allied undead to attack enemies (done) |
@@ -42,7 +42,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Wizard** | Can wield elemental staffs | Greatly reduced health, Can only wear Iron armor or lower | Creates a massive explosion and becomes invulnerable for a few seconds |
 | **Artificer** | Increased movement speed, Auto-enchanting chance | Deals less damage, Unaffected by potions (except abilities) | Temporarily buffs all armor |
 | **Blood Hunter**| Fire aspect applied to all swords, Double damage at night | Cannot drop swords, Half damage during the day | Can take control of any mob within 30m |
-| **Alchemist** | Can craft special potions exclusive to the class (done) | Potions can backfire (not implemented) | Instantly buff all potions to max level (done) |
+| **Alchemist** | Can craft special potions exclusive to the class (done), Brewing don't explode (wait, brewing explodes?) | Cannot enchant | Instantly buff all potions to max level (done) |
 
 ### Armour
 There is armour for each class, however the armour benefits are increased depending on whether or not you match the class and wearing a full set.

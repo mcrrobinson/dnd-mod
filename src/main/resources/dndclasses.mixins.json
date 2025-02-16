@@ -16,7 +16,9 @@
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",
-        "SlotMixin"
+        "BrewingStandAccessor",
+        "BrewingStandBlockEntityMixin",
+        "BrewingStandBlockMixin"
     ],
     "client": [
         "DoubleJumpMixin",

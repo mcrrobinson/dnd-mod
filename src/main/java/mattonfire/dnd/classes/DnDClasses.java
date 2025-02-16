@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
 import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
 import mattonfire.dnd.classes.Misc.PowerUpEffect;
@@ -22,6 +23,7 @@ import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -40,7 +42,10 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
+import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Ingredient;
@@ -52,6 +57,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
@@ -89,6 +95,8 @@ public class DnDClasses implements ModInitializer {
 
         public static final Identifier CUSTOM_TEXTURE = new Identifier(DnDClasses.MOD_ID,
                         "textures/gui/alchemist_brewing_stand.png");
+
+        public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
         private static void sendDoubleJumpPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
@@ -129,170 +137,183 @@ public class DnDClasses implements ModInitializer {
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 SetClassAttributes playerClasses = new SetClassAttributes();
                 int bufferInteger = buf.readInt();
-                server.execute(() -> {
-                        playerClasses.resetToDefault(player);
-                        switch (bufferInteger) {
-                                case 1:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Barbarian",
-                                                        "Strength is highly buffed & your health rivals dragons.",
-                                                        "You can't see very far & you move like a slug.",
-                                                        "You watch the one punch man anime... yeah.");
-                                        playerClasses.typeBarbarian(player);
-                                        player.setHealth(25);
-                                        break;
-                                case 2:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Bard",
-                                                        "Unnoticed by mobs, fast and can jump further than an gymnist.",
-                                                        "You have less health & cannot use anything higher than Diamond.",
-                                                        "Passive animals briefly defend you & attack the entity.");
-                                        playerClasses.typeBard(player);
-                                        player.setHealth(15);
-                                        break;
-                                case 3:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Cleric",
-                                                        "Mining is no challenge for you with high mining speed & night vision.",
-                                                        "Viweing distance is shorter & attack damage is slightly reduced.",
-                                                        "You significantly heal players in your area.");
-                                        playerClasses.typeCleric(player);
-                                        break;
-                                case 4:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Druid",
-                                                        "Every taimed animal adds a heart (capped at 5). Regen in the light.",
-                                                        "Druids cannot swim & get hungry in dark enviroments.",
-                                                        "Once an animal is killed you can turn into it for a short amount of time.");
+                playerClasses.resetToDefault(player);
+                switch (bufferInteger) {
+                        case 1:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Barbarian",
+                                                "Strength is highly buffed & your health rivals dragons.",
+                                                "You can't see very far & you move like a slug.",
+                                                "You watch the one punch man anime... yeah.");
+                                playerClasses.typeBarbarian(player);
+                                player.setHealth(25);
+                                break;
+                        case 2:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Bard",
+                                                "Unnoticed by mobs, fast and can jump further than an gymnist.",
+                                                "You have less health & cannot use anything higher than Diamond.",
+                                                "Passive animals briefly defend you & attack the entity.");
+                                playerClasses.typeBard(player);
+                                player.setHealth(15);
+                                break;
+                        case 3:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Cleric",
+                                                "Mining is no challenge for you with high mining speed & night vision.",
+                                                "Viweing distance is shorter & attack damage is slightly reduced.",
+                                                "You significantly heal players in your area.");
+                                playerClasses.typeCleric(player);
+                                break;
+                        case 4:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Druid",
+                                                "Every taimed animal adds a heart (capped at 5). Regen in the light.",
+                                                "Druids cannot swim & get hungry in dark enviroments.",
+                                                "Once an animal is killed you can turn into it for a short amount of time.");
 
-                                        playerClasses.typeDruid(player);
-                                        break;
-                                case 5:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Fighter",
-                                                        "High health. High Strength. Attracts mobs.",
-                                                        "Can't use bows. No potions.",
-                                                        "Super regen.");
-                                        playerClasses.typeFighter(player);
-                                        player.setHealth(25);
-                                        break;
-                                case 6:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Monk",
-                                                        "Your mobility & attack speed highly increased.",
-                                                        "Decreases your damage output. You're also unable to use anything but a staff to attack.",
-                                                        "You can jump infinitly and your attack speed is unrivaled.");
-                                        playerClasses.typeMonk(player);
-                                        break;
-                                case 7:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Paladin",
-                                                        "The power of christ compelles, your high health also helps...",
-                                                        "You can't use potions & you're very weak in the nether.",
-                                                        "You get an enormous boost to health. Tank's fire!");
-                                        playerClasses.typePaladin(player);
-                                        player.setHealth(25);
-                                        break;
-                                case 8:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Ranger",
-                                                        "You can zoom in with your bow seeing far into the distance. You also get natural looting.",
-                                                        "You can't pickup swords and you're weak to fire.",
-                                                        "Your bow fires instantly, no need to reload.");
-                                        playerClasses.typeRanger(player);
-                                        break;
-                                case 9:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Rogue",
-                                                        "You don't take poison damage nor do you need to eat.",
-                                                        "Nether mobs are alies but all overworld mobs will attempt to kill. So be careful!",
-                                                        "You become invisible for a short period of time.");
-                                        playerClasses.typeRogue(player);
-                                        break;
-                                case 10:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Necromancer",
-                                                        "Wither debuff to all attacked & not attacked by the undead.",
-                                                        "You have slightly less health & deal significantly less damage.",
-                                                        "You spawn allied undead that attack your enemies!");
-                                        playerClasses.typeNecromancer(player);
-                                        break;
-                                case 11:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Warlock",
-                                                        "With an empty hand, the ability to throw fireballs & resistant to both fire and lava.",
-                                                        "Decreases your damage output. You're also unable to use anything but a staff to attack.",
-                                                        "You breathe fire by holding your special key.");
-                                        playerClasses.typeWarlock(player);
-                                        break;
-                                case 12:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Wizard",
-                                                        "Able to wield elemental staffs scattered over the map.",
-                                                        "Your health is greatly reduced & you're only able to weild Iron armor or lower.",
-                                                        "You create a massive explosion on your person and invulnerable for a few seconds.");
-                                        playerClasses.typeWizard(player);
-                                        player.setHealth(10);
-                                        break;
-                                case 13:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Artificer",
-                                                        "Greater movement speed & automatic enchanting chance or Armor upgrade.",
-                                                        "You deal less damage & you are unaffected by all potions (unless a characters ability)",
-                                                        "All armor is buffed for a period of time.");
-                                        playerClasses.typeArtificer(player);
-                                        break;
-                                case 14:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Blood Hunter",
-                                                        "Fire aspect is applied to all swords & x2 Damage during Night.",
-                                                        "Swords cannot be dropped & 1/2 Damage is dealt during the Day.",
-                                                        "Ability to take control of ANY mob within 30m");
-                                        playerClasses.typeBloodHunter(player);
-                                        break;
-                                case 15:
-                                        playerClasses.sendPlayerMessage(
-                                                        player,
-                                                        "Alchemist",
-                                                        "The ability to craft special potions. That only alchemists can wield!",
-                                                        "A potion can backfire so be very careful, revisit to the guide for more information.",
-                                                        "All potions are buffed by II tiers for a period of time.");
-                                        playerClasses.typeAlchemist(player);
-                                        break;
-                                default:
-                                        break;
-                        }
-                        ;
+                                playerClasses.typeDruid(player);
+                                break;
+                        case 5:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Fighter",
+                                                "High health. High Strength. Attracts mobs.",
+                                                "Can't use bows. No potions.",
+                                                "Super regen.");
+                                playerClasses.typeFighter(player);
+                                player.setHealth(25);
+                                break;
+                        case 6:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Monk",
+                                                "Your mobility & attack speed highly increased.",
+                                                "Decreases your damage output. You're also unable to use anything but a staff to attack.",
+                                                "You can jump infinitly and your attack speed is unrivaled.");
+                                playerClasses.typeMonk(player);
+                                break;
+                        case 7:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Paladin",
+                                                "The power of christ compelles, your high health also helps...",
+                                                "You can't use potions & you're very weak in the nether.",
+                                                "You get an enormous boost to health. Tank's fire!");
+                                playerClasses.typePaladin(player);
+                                player.setHealth(25);
+                                break;
+                        case 8:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Ranger",
+                                                "You can zoom in with your bow seeing far into the distance. You also get natural looting.",
+                                                "You can't pickup swords and you're weak to fire.",
+                                                "Your bow fires instantly, no need to reload.");
+                                playerClasses.typeRanger(player);
+                                break;
+                        case 9:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Rogue",
+                                                "You don't take poison damage nor do you need to eat.",
+                                                "Nether mobs are alies but all overworld mobs will attempt to kill. So be careful!",
+                                                "You become invisible for a short period of time.");
+                                playerClasses.typeRogue(player);
+                                break;
+                        case 10:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Necromancer",
+                                                "Wither debuff to all attacked & not attacked by the undead.",
+                                                "You have slightly less health & deal significantly less damage.",
+                                                "You spawn allied undead that attack your enemies!");
+                                playerClasses.typeNecromancer(player);
+                                break;
+                        case 11:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Warlock",
+                                                "With an empty hand, the ability to throw fireballs & resistant to both fire and lava.",
+                                                "Decreases your damage output. You're also unable to use anything but a staff to attack.",
+                                                "You breathe fire by holding your special key.");
+                                playerClasses.typeWarlock(player);
+                                break;
+                        case 12:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Wizard",
+                                                "Able to wield elemental staffs scattered over the map.",
+                                                "Your health is greatly reduced & you're only able to weild Iron armor or lower.",
+                                                "You create a massive explosion on your person and invulnerable for a few seconds.");
+                                playerClasses.typeWizard(player);
+                                player.setHealth(10);
+                                break;
+                        case 13:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Artificer",
+                                                "Greater movement speed & automatic enchanting chance or Armor upgrade.",
+                                                "You deal less damage & you are unaffected by all potions (unless a characters ability)",
+                                                "All armor is buffed for a period of time.");
+                                playerClasses.typeArtificer(player);
+                                break;
+                        case 14:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Blood Hunter",
+                                                "Fire aspect is applied to all swords & x2 Damage during Night.",
+                                                "Swords cannot be dropped & 1/2 Damage is dealt during the Day.",
+                                                "Ability to take control of ANY mob within 30m");
+                                playerClasses.typeBloodHunter(player);
+                                break;
+                        case 15:
+                                playerClasses.sendPlayerMessage(
+                                                player,
+                                                "Alchemist",
+                                                "The ability to craft special potions. That only alchemists can wield!",
+                                                "A potion can backfire so be very careful, revisit to the guide for more information.",
+                                                "All potions are buffed by II tiers for a period of time.");
+                                playerClasses.typeAlchemist(player);
+                                break;
+                        default:
+                                break;
+                }
+                ;
 
-                        // Close the user's class pick GUI.
-                        player.closeHandledScreen();
+                // Close the user's class pick GUI.
+                player.closeHandledScreen();
 
-                        // Create a new pool to pass the int.
-                        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                        passedData.writeInt(bufferInteger);
-                        ServerPlayNetworking.send(player,
-                                        DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,
-                                        passedData);
+                // Create a new pool to pass the int.
+                PacketByteBuf approveClassBuf = new PacketByteBuf(Unpooled.buffer());
+                approveClassBuf.writeInt(bufferInteger);
+                ServerPlayNetworking.send(player,
+                                DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,
+                                approveClassBuf);
 
-                        // If run with no errors declare in the NBT.
-                        if (player instanceof PlayerEntityExt) {
-                                ((PlayerEntityExt) player).setDndClass(DndCharacter.fromValue(bufferInteger));
-                        }
-                });
+                // If run with no errors declare in the NBT.
+                if (player instanceof PlayerEntityExt) {
+                        ((PlayerEntityExt) player).setDndClass(DndCharacter.fromValue(bufferInteger));
+                }
+
+                String message = DnDClasses.respawnMessage.get(player.getUuidAsString());
+                if (message == null) {
+                        return;
+                }
+                Text titleText = Text.literal("Subtle hint").formatted(Formatting.BOLD, Formatting.GOLD);
+                Text subtitleText = Text.literal(message).formatted(Formatting.ITALIC, Formatting.YELLOW);
+
+                TitleS2CPacket packet = new TitleS2CPacket(titleText);
+                SubtitleS2CPacket subtitlePacket = new SubtitleS2CPacket(subtitleText);
+                // Send the title packet
+                player.networkHandler.sendPacket(packet);
+
+                // Send the subtitle packet
+                player.networkHandler.sendPacket(subtitlePacket);
         }
 
         private static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
@@ -341,9 +362,18 @@ public class DnDClasses implements ModInitializer {
                                         }
                                 }
                         }
-                        System.out.println(entity.getName().getString() + " was attacked by "
-                                        + player.getName().getString() + " in melee!");
                         return ActionResult.PASS;
+                });
+
+                ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
+                        if (damageSource.getTypeRegistryEntry().getKey()
+                                        .orElse(null) == ModDamageTypes.CUSTOM_DAMAGE_SOURCE) {
+                                DnDClasses.respawnMessage.put(entity.getUuidAsString(),
+                                                "Maybe get a alchamist to brew next time...");
+
+                        } else {
+                                System.out.println("Different log.");
+                        }
                 });
 
                 ServerTickEvents.END_WORLD_TICK.register(world -> {
@@ -494,6 +524,7 @@ public class DnDClasses implements ModInitializer {
                                 accessor.getTargetSelector().add(2,
                                                 new PriorityPlayerTargetGoal<>(mob, PlayerEntity.class));
                         }
+
                 });
 
                 ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {

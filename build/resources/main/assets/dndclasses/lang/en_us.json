@@ -30,5 +30,6 @@
     "enchantment.dndclasses.lunge": "Lunge",
     "enchantment.dndclasses.grid_miner": "Grid Miner",
     "enchantment.dndclasses.tree_feller": "Tree Feller",
-    "enchantment.dndclasses.invulnerability": "Invulnerability"
+    "enchantment.dndclasses.invulnerability": "Invulnerability",
+    "death.attack.brewing_stand_explosion": "%1$s got blown up by a brewing stand HAHAHAHAHAHAHAHA!"
 }

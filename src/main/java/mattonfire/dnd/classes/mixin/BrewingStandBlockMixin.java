@@ -2,13 +2,16 @@ package mattonfire.dnd.classes.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
+import mattonfire.dnd.classes.BrewingStandAccess;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Entities.FastBrewingStandBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -22,21 +25,20 @@ import org.spongepowered.asm.mixin.injection.At;
 public class BrewingStandBlockMixin {
 
     @Inject(method = "onUse", at = @At("HEAD"))
-    public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
-            BlockHitResult hit) {
+    private void onUseMixin(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
+            BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
         if (!world.isClient) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof FastBrewingStandBlockEntity) {
+            if (blockEntity instanceof BrewingStandBlockEntity) {
+                BrewingStandAccess access = (BrewingStandAccess) blockEntity;
+
+                // Set the ID of the class
                 if (player instanceof PlayerEntityExt) {
-                    PlayerEntityExt playerExt = (PlayerEntityExt) player;
-                    if (playerExt.getDndClass() != DndCharacter.PALADIN) {
-                        return ActionResult.FAIL;
-                    }
+                    PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+                    access.setLastPlayer(playerEntity.getDndClass());
                 }
 
-                player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
             }
         }
-        return ActionResult.SUCCESS;
     }
 }

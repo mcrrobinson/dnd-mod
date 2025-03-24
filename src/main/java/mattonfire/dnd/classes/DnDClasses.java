@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Config.FAConfig;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
 import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
@@ -36,13 +37,13 @@ import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
@@ -61,6 +62,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.Vec3d;
+import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
 
 public class DnDClasses implements ModInitializer {
         public static final Identifier C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("doublejump",
@@ -333,10 +335,19 @@ public class DnDClasses implements ModInitializer {
         @Override
         public void onInitialize() {
 
+                if(FAConfig.exists()) {
+			FAConfig.load();
+		} else {
+			FAConfig.save();
+		}
+
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();
                 Registry.register(Registries.STATUS_EFFECT, Identifier.of(DnDClasses.MOD_ID, "super_strength"),
                                 new SuperStrengthStatusEffect());
+
+                FAArmorEffectHandler.register();
+
 
                 ModSounds.registerSounds();
                 ModItemGroup.registerItemGroups();
@@ -367,7 +378,7 @@ public class DnDClasses implements ModInitializer {
 
                 ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
                         if (damageSource.getTypeRegistryEntry().getKey()
-                                        .orElse(null) == ModDamageTypes.CUSTOM_DAMAGE_SOURCE) {
+                                        .orElse(null) == ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE) {
                                 DnDClasses.respawnMessage.put(entity.getUuidAsString(),
                                                 "Maybe get a alchamist to brew next time...");
 
@@ -411,8 +422,18 @@ public class DnDClasses implements ModInitializer {
 
                 AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
                         if (entity instanceof PlayerEntityExt) {
-                                if (((PlayerEntityExt) player).getDndClass() == DndCharacter.RANGER) {
-                                        return ActionResult.FAIL;
+
+                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) entity;
+                                switch (playerEntityExt.getDndClass()) {
+                                        case RANGER:
+                                                return ActionResult.FAIL;
+                                        case BLOODHUNTER:
+
+                                                // DamageSource customExplosionSource = ModDamageTypes.of(world, ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
+                                                // hitResult.damage()
+                                                break;
+                                        default:
+                                                break;
                                 }
                         }
 

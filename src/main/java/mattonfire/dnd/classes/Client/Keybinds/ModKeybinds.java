@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.client.Keybinds;
+package mattonfire.dnd.classes.Client.Keybinds;
 
 import org.lwjgl.glfw.GLFW;
 

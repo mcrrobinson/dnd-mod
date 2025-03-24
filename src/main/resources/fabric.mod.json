@@ -18,7 +18,7 @@
             "mattonfire.dnd.classes.DnDClasses"
         ],
         "client": [
-            "mattonfire.dnd.classes.client.DndClassesClient"
+            "mattonfire.dnd.classes.Client.DndClassesClient"
         ]
     },
     "mixins": [

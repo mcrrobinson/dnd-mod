@@ -5,9 +5,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import mattonfire.dnd.classes.BrewingStandAccess;
-import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.Entities.FastBrewingStandBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.block.entity.BlockEntity;

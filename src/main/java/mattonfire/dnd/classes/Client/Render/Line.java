@@ -1,6 +1,6 @@
-package mattonfire.dnd.classes.client.Render;
+package mattonfire.dnd.classes.Client.Render;
 
-import mattonfire.dnd.classes.client.DndClassesClient;
+import mattonfire.dnd.classes.Client.DndClassesClient;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.util.math.Vec3d;
 

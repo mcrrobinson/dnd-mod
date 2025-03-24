@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.client.Render;
+package mattonfire.dnd.classes.Client.Render;
 
 public class Color {
     public float r;

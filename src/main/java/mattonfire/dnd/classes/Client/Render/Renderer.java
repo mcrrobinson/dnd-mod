@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.client.Render;
+package mattonfire.dnd.classes.Client.Render;
 
 import net.minecraft.client.render.*;
 import net.minecraft.util.math.Vec3d;

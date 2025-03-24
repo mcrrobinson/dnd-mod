@@ -42,7 +42,9 @@
       "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
     },
     "mattonfire/dnd/classes/mixin/LivingEntityMixin": {
-      "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z"
+      "Lnet/minecraft/entity/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V": "Lnet/minecraft/class_1309;method_6074(Lnet/minecraft/class_1282;F)V",
+      "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z",
+      "damage": "Lnet/minecraft/class_1309;method_5643(Lnet/minecraft/class_1282;F)Z"
     },
     "mattonfire/dnd/classes/mixin/LivingEntityRendererMixin": {
       "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V": "Lnet/minecraft/class_583;method_2828(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;IIFFFF)V",
@@ -65,6 +67,10 @@
     "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
       "tick": "Lnet/minecraft/class_1657;method_5773()V",
       "tickMovement": "Lnet/minecraft/class_1657;method_6007()V"
+    },
+    "mattonfire/dnd/classes/mixin/PlayerEntityRendererMixin": {
+      "Lnet/minecraft/client/renderer/entity/PlayerEntityRenderer;render(Lnet/minecraft/world/entity/PlayerEntityRenderer;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/renderer/VertexConsumerProvider;I)V": "Lnet/minecraft/client/renderer/entity/PlayerEntityRenderer;render(Lnet/minecraft/world/entity/PlayerEntityRenderer;FFLnet/minecraft/class_4587;Lnet/minecraft/client/renderer/VertexConsumerProvider;I)V",
+      "render": "Lnet/minecraft/class_1007;method_4215(Lnet/minecraft/class_742;FFLnet/minecraft/class_4587;Lnet/minecraft/class_4597;I)V"
     },
     "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
       "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",
@@ -121,7 +127,9 @@
         "baseTick": "Lnet/minecraft/class_1297;method_5670()V"
       },
       "mattonfire/dnd/classes/mixin/LivingEntityMixin": {
-        "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z"
+        "Lnet/minecraft/entity/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V": "Lnet/minecraft/class_1309;method_6074(Lnet/minecraft/class_1282;F)V",
+        "addStatusEffect": "Lnet/minecraft/class_1309;method_6092(Lnet/minecraft/class_1293;)Z",
+        "damage": "Lnet/minecraft/class_1309;method_5643(Lnet/minecraft/class_1282;F)Z"
       },
       "mattonfire/dnd/classes/mixin/LivingEntityRendererMixin": {
         "Lnet/minecraft/client/render/entity/model/EntityModel;render(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/render/VertexConsumer;IIFFFF)V": "Lnet/minecraft/class_583;method_2828(Lnet/minecraft/class_4587;Lnet/minecraft/class_4588;IIFFFF)V",
@@ -144,6 +152,10 @@
       "mattonfire/dnd/classes/mixin/PlayerEntityMixin": {
         "tick": "Lnet/minecraft/class_1657;method_5773()V",
         "tickMovement": "Lnet/minecraft/class_1657;method_6007()V"
+      },
+      "mattonfire/dnd/classes/mixin/PlayerEntityRendererMixin": {
+        "Lnet/minecraft/client/renderer/entity/PlayerEntityRenderer;render(Lnet/minecraft/world/entity/PlayerEntityRenderer;FFLnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/client/renderer/VertexConsumerProvider;I)V": "Lnet/minecraft/client/renderer/entity/PlayerEntityRenderer;render(Lnet/minecraft/world/entity/PlayerEntityRenderer;FFLnet/minecraft/class_4587;Lnet/minecraft/client/renderer/VertexConsumerProvider;I)V",
+        "render": "Lnet/minecraft/class_1007;method_4215(Lnet/minecraft/class_742;FFLnet/minecraft/class_4587;Lnet/minecraft/class_4597;I)V"
       },
       "mattonfire/dnd/classes/mixin/PlayerManagerMixin": {
         "onPlayerConnect(Lnet/minecraft/network/ClientConnection;Lnet/minecraft/server/network/ServerPlayerEntity;)V": "Lnet/minecraft/class_3324;method_14570(Lnet/minecraft/class_2535;Lnet/minecraft/class_3222;)V",

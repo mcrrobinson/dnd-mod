@@ -12,9 +12,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
 public class ModDamageTypes {
-    public static final Identifier CUSTOM_DAMAGE_TYPE = new Identifier(DnDClasses.MOD_ID, "brewing_stand_explosion");
-    public static final RegistryKey<DamageType> CUSTOM_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
-            CUSTOM_DAMAGE_TYPE);
+    public static final Identifier BREWING_STAND_DAMAGE = new Identifier(DnDClasses.MOD_ID, "brewing_stand_explosion");
+    public static final RegistryKey<DamageType> BREWING_STAND_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            BREWING_STAND_DAMAGE);
+    
+    public static final Identifier BLOOD_HUNTER_DAMAGE = new Identifier(DnDClasses.MOD_ID, "blood_hunter");
+    public static final RegistryKey<DamageType> BLOOD_HUNTER_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            BLOOD_HUNTER_DAMAGE);
 
     public static DamageSource of(World world, RegistryKey<DamageType> key) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));

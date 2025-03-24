@@ -31,5 +31,18 @@
     "enchantment.dndclasses.grid_miner": "Grid Miner",
     "enchantment.dndclasses.tree_feller": "Tree Feller",
     "enchantment.dndclasses.invulnerability": "Invulnerability",
-    "death.attack.brewing_stand_explosion": "%1$s got blown up by a brewing stand HAHAHAHAHAHAHAHA!"
+    "death.attack.brewing_stand_explosion": "%1$s got blown up by a brewing stand HAHAHAHAHAHAHAHA!",
+    "item.dndclasses.pink_garnet_helmet": "Pink Garnet Helmet",
+    "item.dndclasses.pink_garnet_chestplate": "Pink Garnet Chestplate",
+    "item.dndclasses.pink_garnet_leggings": "Pink Garnet Leggings",
+    "item.dndclasses.pink_garnet_boots": "Pink Garnet Boots",
+    "itemgroup.dndclasses.pink_garnet_items": "Pink Garnet Items",
+    "item.dndclasses.thief_helmet": "Thief Helmet",
+    "item.dndclasses.thief_chestplate": "Thief Chestplate",
+    "item.dndclasses.thief_leggings": "Thief Leggings",
+    "item.dndclasses.thief_boots": "Thief Boots",
+    "item.dndclasses.wizard_helmet": "Wizard Helmet",
+    "item.dndclasses.wizard_chestplate": "Wizard Chestplate",
+    "item.dndclasses.wizard_leggings": "Wizard Leggings",
+    "item.dndclasses.wizard_boots": "Wizard Boots"
 }

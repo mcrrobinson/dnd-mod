@@ -57,7 +57,7 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
                 }
 
                 // Define a custom damage source
-                DamageSource customExplosionSource = ModDamageTypes.of(world, ModDamageTypes.CUSTOM_DAMAGE_SOURCE);
+                DamageSource customExplosionSource = ModDamageTypes.of(world, ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
 
                 // Create an explosion using the custom damage source
                 world.createExplosion(null, customExplosionSource, null,

@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.client.Hud;
+package mattonfire.dnd.classes.Client.Hud;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;

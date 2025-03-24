@@ -1,4 +1,4 @@
-package mattonfire.dnd.classes.client;
+package mattonfire.dnd.classes.Client;
 
 import java.util.UUID;
 
@@ -11,8 +11,8 @@ import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
-import mattonfire.dnd.classes.client.Hud.AchievementMenu;
-import mattonfire.dnd.classes.client.Hud.PowerupOverlay;
+import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
+import mattonfire.dnd.classes.Client.Hud.PowerupOverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -25,7 +25,7 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
-import mattonfire.dnd.classes.client.Render.Color;
+import mattonfire.dnd.classes.Client.Render.Color;
 
 public class DndClassesClient implements ClientModInitializer {
     public static final MinecraftClient MC = MinecraftClient.getInstance();

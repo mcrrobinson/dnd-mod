@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "immersive_armors:item/robe_helmet",
-    "layer1": "immersive_armors:item/robe_helmet_overlay"
+    "layer0": "dndclasses:item/robe_helmet",
+    "layer1": "dndclasses:item/robe_helmet_overlay"
   }
 }

@@ -2,6 +2,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "immersive_armors:item/steampunk_helmet"
+    "layer0": "dndclasses:item/steampunk_helmet"
   }
 }

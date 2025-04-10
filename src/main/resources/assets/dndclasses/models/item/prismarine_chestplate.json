@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "immersive_armors:item/prismarine_chestplate"
+    "layer0": "dndclasses:item/prismarine_chestplate"
   }
 }

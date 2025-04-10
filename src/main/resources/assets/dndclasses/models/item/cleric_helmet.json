@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "dndclasses:item/silver_knight_helmet"
+    "layer0": "dndclasses:item/cleric_helmet"
   }
 }

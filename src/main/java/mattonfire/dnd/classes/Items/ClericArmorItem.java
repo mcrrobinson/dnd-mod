@@ -13,8 +13,8 @@ import mattonfire.dnd.classes.Items.lib.FAArmorRenderer;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 
 
-public class SilverKnightArmorItem extends FAArmorItem {
-    public SilverKnightArmorItem(Type type, FAArmorAttributes armorAttributes) {
+public class ClericArmorItem extends FAArmorItem {
+    public ClericArmorItem(Type type, FAArmorAttributes armorAttributes) {
         super(type, armorAttributes);
     }
 
@@ -30,8 +30,8 @@ public class SilverKnightArmorItem extends FAArmorItem {
     @Environment(EnvType.CLIENT)
     protected GeoArmorRenderer<? extends FAArmorItem> createArmorRenderer() {
         return new FAArmorRenderer<>(new FAArmorModel<>(
-                "geo/silver_knight_armor.geo.json",
-                "textures/models/armor/silver_knight_armor.png"
+                "geo/cleric_armor.geo.json",
+                "textures/models/armor/cleric_armor.png"
         ));
     }
 }

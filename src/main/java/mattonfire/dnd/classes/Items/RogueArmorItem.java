@@ -13,8 +13,8 @@ import mattonfire.dnd.classes.Items.lib.FAArmorRenderer;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 
 
-public class RogueArmourItem extends FAArmorItem {
-    public RogueArmourItem(Type type, FAArmorAttributes armorAttributes) {
+public class RogueArmorItem extends FAArmorItem {
+    public RogueArmorItem(Type type, FAArmorAttributes armorAttributes) {
         super(type, armorAttributes);
     }
 
@@ -30,8 +30,8 @@ public class RogueArmourItem extends FAArmorItem {
     @Environment(EnvType.CLIENT)
     protected GeoArmorRenderer<? extends FAArmorItem> createArmorRenderer() {
         return new FAArmorRenderer<>(new FAArmorModel<>(
-                "geo/rogue_armour.geo.json",
-                "textures/models/armor/rogue_armour.png"
+                "geo/rogue_armor.geo.json",
+                "textures/models/armor/rogue_armor.png"
         ));
     }
 }

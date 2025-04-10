@@ -13,8 +13,8 @@ import mattonfire.dnd.classes.Items.lib.FAArmorRenderer;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 
 
-public class BloodHunterArmourItem extends FAArmorItem {
-    public BloodHunterArmourItem(Type type, FAArmorAttributes armorAttributes) {
+public class BloodHunterArmorItem extends FAArmorItem {
+    public BloodHunterArmorItem(Type type, FAArmorAttributes armorAttributes) {
         super(type, armorAttributes);
     }
 

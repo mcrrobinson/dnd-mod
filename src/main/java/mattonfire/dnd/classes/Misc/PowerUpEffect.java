@@ -167,7 +167,7 @@ public class PowerUpEffect {
                 // Breathes fire
                 break;
             case ARTIFICER:
-                // temporary buff to armour
+                // temporary buff to armor
                 break;
             case BLOODHUNTER:
                 // temporarily take control of mobs

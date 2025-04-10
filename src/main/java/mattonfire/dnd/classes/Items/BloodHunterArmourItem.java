@@ -13,8 +13,8 @@ import mattonfire.dnd.classes.Items.lib.FAArmorRenderer;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 
 
-public class ThiefArmorItem extends FAArmorItem {
-    public ThiefArmorItem(Type type, FAArmorAttributes armorAttributes) {
+public class BloodHunterArmourItem extends FAArmorItem {
+    public BloodHunterArmourItem(Type type, FAArmorAttributes armorAttributes) {
         super(type, armorAttributes);
     }
 
@@ -30,8 +30,8 @@ public class ThiefArmorItem extends FAArmorItem {
     @Environment(EnvType.CLIENT)
     protected GeoArmorRenderer<? extends FAArmorItem> createArmorRenderer() {
         return new FAArmorRenderer<>(new FAArmorModel<>(
-                "geo/thief_armor.geo.json",
-                "textures/models/armor/thief_armor.png"
+                "geo/blood_hunter_armor.geo.json",
+                "textures/models/armor/blood_hunter_armor.png"
         ));
     }
 }

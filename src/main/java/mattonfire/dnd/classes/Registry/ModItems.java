@@ -1,12 +1,12 @@
 package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.classes.Items.DarkLordArmorItem;
+import mattonfire.dnd.classes.Items.BloodHunterArmourItem;
 import mattonfire.dnd.classes.Items.ExtendedSwordItem;
 import mattonfire.dnd.classes.Items.ModArmorMaterials;
 import mattonfire.dnd.classes.Items.MonkStaff;
 import mattonfire.dnd.classes.Items.SilverKnightArmorItem;
-import mattonfire.dnd.classes.Items.ThiefArmorItem;
+import mattonfire.dnd.classes.Items.RogueArmourItem;
 import mattonfire.dnd.classes.Items.WizardArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -39,20 +39,7 @@ public class ModItems {
         public static final Item MUSIC_BOX_MUSIC_DISC = registerItem("music_box_music_disc",
                 new MusicDiscItem(6, ModSounds.MUSIC_BOX, new FabricItemSettings().maxCount(1), 16));
 
-        public static final Item PINK_GARNET_HELMET = registerItem("pink_garnet_helmet",
-                new ArmorItem(ModArmorMaterials.PINK_GARNET, ArmorItem.Type.HELMET, new Item.Settings()
-                        .maxDamage(ModArmorMaterials.PINK_GARNET.getDurability(ArmorItem.Type.HELMET))));
-        public static final Item PINK_GARNET_CHESTPLATE = registerItem("pink_garnet_chestplate",
-                new ArmorItem(ModArmorMaterials.PINK_GARNET, ArmorItem.Type.CHESTPLATE, new Item.Settings()
-                        .maxDamage(ModArmorMaterials.PINK_GARNET.getDurability(ArmorItem.Type.CHESTPLATE))));
-        public static final Item PINK_GARNET_LEGGINGS = registerItem("pink_garnet_leggings",
-                new ArmorItem(ModArmorMaterials.PINK_GARNET, ArmorItem.Type.LEGGINGS, new Item.Settings()
-                        .maxDamage(ModArmorMaterials.PINK_GARNET.getDurability(ArmorItem.Type.LEGGINGS))));
-        public static final Item PINK_GARNET_BOOTS = registerItem("pink_garnet_boots",
-                new ArmorItem(ModArmorMaterials.PINK_GARNET, ArmorItem.Type.BOOTS, new Item.Settings()
-                        .maxDamage(ModArmorMaterials.PINK_GARNET.getDurability(ArmorItem.Type.BOOTS))));
-
-        public static final Item THIEF_HELMET = registerItem("thief_helmet", new ThiefArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+        public static final Item ROGUE_HELMET = registerItem("rogue_helmet", new RogueArmourItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -61,7 +48,7 @@ public class ModItems {
                 .luck(1.0)
                 .build()));
 
-        public static final Item THIEF_CHESTPLATE = registerItem("thief_chestplate", new ThiefArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+        public static final Item ROGUE_CHESTPLATE = registerItem("rogue_chestplate", new RogueArmourItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
                 .armor(8.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -69,7 +56,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item THIEF_LEGGINGS = registerItem("thief_leggings", new ThiefArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+        public static final Item ROGUE_LEGGINGS = registerItem("rogue_leggings", new RogueArmourItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
                 .armor(6.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -77,7 +64,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item THIEF_BOOTS = registerItem("thief_boots", new ThiefArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+        public static final Item ROGUE_BOOTS = registerItem("rogue_boots", new RogueArmourItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -151,7 +138,7 @@ public class ModItems {
                 .attackSpeed(0.05)
                 .build()));
 
-        public static final Item DARK_LORD_HELMET = registerItem("dark_lord_helmet", new DarkLordArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+        public static final Item blood_hunter_HELMET = registerItem("blood_hunter_helmet", new BloodHunterArmourItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -160,7 +147,7 @@ public class ModItems {
                 .luck(1.0)
                 .build()));
 
-        public static final Item DARK_LORD_CHESTPLATE = registerItem("dark_lord_chestplate", new DarkLordArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+        public static final Item blood_hunter_CHESTPLATE = registerItem("blood_hunter_chestplate", new BloodHunterArmourItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
                 .armor(8.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -168,7 +155,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item DARK_LORD_LEGGINGS = registerItem("dark_lord_leggings", new DarkLordArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+        public static final Item blood_hunter_LEGGINGS = registerItem("blood_hunter_leggings", new BloodHunterArmourItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
                 .armor(6.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -176,7 +163,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item DARK_LORD_BOOTS = registerItem("dark_lord_boots", new DarkLordArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+        public static final Item blood_hunter_BOOTS = registerItem("blood_hunter_boots", new BloodHunterArmourItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)

@@ -16,10 +16,5 @@ public class ModItemTagProvider extends FabricTagProvider.ItemTagProvider {
 
     @Override
     protected void configure(RegistryWrapper.WrapperLookup wrapperLookup) {
-        getOrCreateTagBuilder(ItemTags.TRIMMABLE_ARMOR)
-                .add(ModItems.PINK_GARNET_HELMET)
-                .add(ModItems.PINK_GARNET_CHESTPLATE)
-                .add(ModItems.PINK_GARNET_LEGGINGS)
-                .add(ModItems.PINK_GARNET_BOOTS);
     }
 }

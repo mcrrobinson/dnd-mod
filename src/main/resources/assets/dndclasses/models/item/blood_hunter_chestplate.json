@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "dndclasses:item/thief_helmet"
+    "layer0": "dndclasses:item/blood_hunter_chestplate"
   }
 }

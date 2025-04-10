@@ -4,7 +4,7 @@
 - [Building](#building)
 - [Features](#features)
   - [Player Classes Overview](#player-classes-overview)
-  - [Armour](#armour)
+  - [Armor](#armor)
   - [Enchantments (made by an Artificer)](#enchantments-made-by-a-artificer)
   - [Music](#music)
   - [Mobs](#mobs)
@@ -44,8 +44,8 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Blood Hunter**| Fire aspect applied to all swords, Double damage at night (done) | Half damage during the day (done) | Can take control of any mob within 30m |
 | **Alchemist** | Can craft special potions exclusive to the class (done), Brewing don't explode (wait, brewing explodes?) | Cannot enchant | Instantly buff all potions to max level (done) |
 
-### Armour
-There is armour for each class, however the armour benefits are increased depending on whether or not you match the class and wearing a full set.
+### Armor
+There is armor for each class, however the armor benefits are increased depending on whether or not you match the class and wearing a full set.
 
 ### Enchantments (made by a Artificer)
 

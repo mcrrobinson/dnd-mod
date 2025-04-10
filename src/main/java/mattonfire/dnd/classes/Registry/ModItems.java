@@ -1,12 +1,12 @@
 package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.classes.Items.BloodHunterArmourItem;
+import mattonfire.dnd.classes.Items.BloodHunterArmorItem;
 import mattonfire.dnd.classes.Items.ExtendedSwordItem;
 import mattonfire.dnd.classes.Items.ModArmorMaterials;
 import mattonfire.dnd.classes.Items.MonkStaff;
-import mattonfire.dnd.classes.Items.SilverKnightArmorItem;
-import mattonfire.dnd.classes.Items.RogueArmourItem;
+import mattonfire.dnd.classes.Items.ClericArmorItem;
+import mattonfire.dnd.classes.Items.RogueArmorItem;
 import mattonfire.dnd.classes.Items.WizardArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -39,7 +39,7 @@ public class ModItems {
         public static final Item MUSIC_BOX_MUSIC_DISC = registerItem("music_box_music_disc",
                 new MusicDiscItem(6, ModSounds.MUSIC_BOX, new FabricItemSettings().maxCount(1), 16));
 
-        public static final Item ROGUE_HELMET = registerItem("rogue_helmet", new RogueArmourItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+        public static final Item ROGUE_HELMET = registerItem("rogue_helmet", new RogueArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -48,7 +48,7 @@ public class ModItems {
                 .luck(1.0)
                 .build()));
 
-        public static final Item ROGUE_CHESTPLATE = registerItem("rogue_chestplate", new RogueArmourItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+        public static final Item ROGUE_CHESTPLATE = registerItem("rogue_chestplate", new RogueArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
                 .armor(8.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -56,7 +56,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item ROGUE_LEGGINGS = registerItem("rogue_leggings", new RogueArmourItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+        public static final Item ROGUE_LEGGINGS = registerItem("rogue_leggings", new RogueArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
                 .armor(6.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -64,7 +64,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item ROGUE_BOOTS = registerItem("rogue_boots", new RogueArmourItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+        public static final Item ROGUE_BOOTS = registerItem("rogue_boots", new RogueArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -105,7 +105,7 @@ public class ModItems {
                 .attackSpeed(0.05)
                 .build()));
 
-        public static final Item SILVER_KNIGHT_HELMET = registerItem("silver_knight_helmet", new SilverKnightArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+        public static final Item CLERIC_HELMET = registerItem("cleric_helmet", new ClericArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -114,7 +114,7 @@ public class ModItems {
                 .luck(1.0)
                 .build()));
 
-        public static final Item SILVER_KNIGHT_CHESTPLATE = registerItem("silver_knight_chestplate", new SilverKnightArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+        public static final Item CLERIC_CHESTPLATE = registerItem("cleric_chestplate", new ClericArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
                 .armor(8.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -122,7 +122,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item SILVER_KNIGHT_LEGGINGS = registerItem("silver_knight_leggings", new SilverKnightArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+        public static final Item CLERIC_LEGGINGS = registerItem("cleric_leggings", new ClericArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
                 .armor(6.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -130,7 +130,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item SILVER_KNIGHT_BOOTS = registerItem("silver_knight_boots", new SilverKnightArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+        public static final Item CLERIC_BOOTS = registerItem("cleric_boots", new ClericArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -138,7 +138,7 @@ public class ModItems {
                 .attackSpeed(0.05)
                 .build()));
 
-        public static final Item blood_hunter_HELMET = registerItem("blood_hunter_helmet", new BloodHunterArmourItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+        public static final Item blood_hunter_HELMET = registerItem("blood_hunter_helmet", new BloodHunterArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -147,7 +147,7 @@ public class ModItems {
                 .luck(1.0)
                 .build()));
 
-        public static final Item blood_hunter_CHESTPLATE = registerItem("blood_hunter_chestplate", new BloodHunterArmourItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+        public static final Item blood_hunter_CHESTPLATE = registerItem("blood_hunter_chestplate", new BloodHunterArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
                 .armor(8.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -155,7 +155,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item blood_hunter_LEGGINGS = registerItem("blood_hunter_leggings", new BloodHunterArmourItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+        public static final Item blood_hunter_LEGGINGS = registerItem("blood_hunter_leggings", new BloodHunterArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
                 .armor(6.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)
@@ -163,7 +163,7 @@ public class ModItems {
                 .attackSpeed(0.1)
                 .build()));
 
-        public static final Item blood_hunter_BOOTS = registerItem("blood_hunter_boots", new BloodHunterArmourItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+        public static final Item blood_hunter_BOOTS = registerItem("blood_hunter_boots", new BloodHunterArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
                 .armor(3.0)
                 .armorToughness(3.0)
                 .knockbackResistance(0.1)

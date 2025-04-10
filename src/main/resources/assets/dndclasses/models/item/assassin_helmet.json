@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "epicpaladins:item/assassin_helmet"
+    "layer0": "dndclasses:item/assassin_helmet"
   }
 }

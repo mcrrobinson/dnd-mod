@@ -7,7 +7,6 @@ import mattonfire.dnd.classes.Items.ExtendedSwordItem;
 import mattonfire.dnd.classes.Items.GoldenHornsArmorItem;
 import mattonfire.dnd.classes.Items.HolyArmorArmorItem;
 import mattonfire.dnd.classes.Items.KnightArmorItem;
-import mattonfire.dnd.classes.Items.ModArmorMaterials;
 import mattonfire.dnd.classes.Items.MonkStaff;
 import mattonfire.dnd.classes.Items.PrismarineArmorItem;
 import mattonfire.dnd.classes.Items.RobeArmorItem;

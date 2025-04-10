@@ -30,8 +30,8 @@ public class AssassinArmorItem extends FAArmorItem {
     @Environment(EnvType.CLIENT)
     protected GeoArmorRenderer<? extends FAArmorItem> createArmorRenderer() {
         return new FAArmorRenderer<>(new FAArmorModel<>(
-                "geo/blood_hunter_armor.geo.json",
-                "textures/models/armor/blood_hunter_armor.png"
+                "geo/assassin_armor.geo.json",
+                "textures/models/armor/assassin_armor.png"
         ));
     }
 }

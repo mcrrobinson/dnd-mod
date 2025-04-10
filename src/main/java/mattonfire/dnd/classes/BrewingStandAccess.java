@@ -1,7 +1,5 @@
 package mattonfire.dnd.classes;
 
-import java.util.UUID;
-
 public interface BrewingStandAccess {
     DndCharacter getLastPlayer();
 

@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "epicpaladins:item/knight_boots"
+    "layer0": "dndclasses:item/knight_boots"
   }
 }

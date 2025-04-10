@@ -44,5 +44,13 @@
     "item.dndclasses.wizard_helmet": "Wizard Helmet",
     "item.dndclasses.wizard_chestplate": "Wizard Chestplate",
     "item.dndclasses.wizard_leggings": "Wizard Leggings",
-    "item.dndclasses.wizard_boots": "Wizard Boots"
+    "item.dndclasses.wizard_boots": "Wizard Boots",
+    "item.dndclasses.silver_knight_helmet": "Silver Knight Helmet",
+    "item.dndclasses.silver_knight_chestplate": "Silver Knight Chestplate",
+    "item.dndclasses.silver_knight_leggings": "Silver Knight Leggings",
+    "item.dndclasses.silver_knight_boots": "Silver Knight Boots",
+    "item.dndclasses.dark_lord_helmet": "Dark Lord Helmet",
+    "item.dndclasses.dark_lord_chestplate": "Dark Lord Chestplate",
+    "item.dndclasses.dark_lord_leggings": "Dark Lord Leggings",
+    "item.dndclasses.dark_lord_boots": "Dark Lord Boots"
 }

@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "fantasy_armor:item/golden_horns_boots"
+    "layer0": "dndclasses:item/golden_horns_boots"
   }
 }

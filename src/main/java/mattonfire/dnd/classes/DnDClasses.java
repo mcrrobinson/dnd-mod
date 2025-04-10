@@ -37,7 +37,6 @@ import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -382,8 +381,6 @@ public class DnDClasses implements ModInitializer {
                                 DnDClasses.respawnMessage.put(entity.getUuidAsString(),
                                                 "Maybe get a alchamist to brew next time...");
 
-                        } else {
-                                System.out.println("Different log.");
                         }
                 });
 

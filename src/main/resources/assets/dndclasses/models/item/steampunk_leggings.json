@@ -1,6 +1,6 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "immersive_armors:item/steampunk_leggings"
+    "layer0": "dndclasses:item/steampunk_leggings"
   }
 }

@@ -6,11 +6,12 @@ import java.util.List;
 
 import mattonfire.dnd.classes.Items.lib.DndArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
+import mattonfire.dnd.classes.Items.lib.ModArmorMaterials;
 
 
 public class WarriorArmorItem extends DndArmorItem {
     public WarriorArmorItem(Type type, FAArmorAttributes armorAttributes) {
-        super(type, armorAttributes);
+        super(ModArmorMaterials.WARRIOR, type, armorAttributes);
     }
 
     @Override

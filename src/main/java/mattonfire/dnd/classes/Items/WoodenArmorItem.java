@@ -10,13 +10,14 @@ import java.util.List;
 import mattonfire.dnd.classes.Items.lib.FAArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorModel;
 import mattonfire.dnd.classes.Items.lib.FAArmorRenderer;
+import mattonfire.dnd.classes.Items.lib.ModArmorMaterials;
 import mattonfire.dnd.classes.Items.lib.DndArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 
 
 public class WoodenArmorItem extends DndArmorItem {
     public WoodenArmorItem(Type type, FAArmorAttributes armorAttributes) {
-        super(type, armorAttributes);
+        super(ModArmorMaterials.WOODEN, type, armorAttributes);
     }
 
     @Override

@@ -509,6 +509,7 @@ public class ModItems {
                 .movementSpeed(0.1)
                 .attackSpeed(0.05)
                 .build()));
+                
 
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);

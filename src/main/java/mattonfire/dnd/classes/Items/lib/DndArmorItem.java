@@ -1,34 +1,35 @@
 package mattonfire.dnd.classes.Items.lib;
-
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
 import mattonfire.dnd.classes.Config.FAConfig;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
-import net.minecraft.client.item.TooltipContext;
-import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.attribute.EntityAttribute;
-import net.minecraft.entity.attribute.EntityAttributeModifier;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.font.TextRenderer;
+import net.minecraft.client.item.TooltipContext;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.attribute.EntityAttribute;
+
 import java.util.List;
 import java.util.UUID;
+import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.effect.StatusEffectInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+
 
 public abstract class DndArmorItem extends ArmorItem {
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
-    protected DndArmorItem(Type type, FAArmorAttributes armorAttributes) {
-        super(ArmorMaterials.NETHERITE, type, new Item.Settings().maxCount(1));
+    protected DndArmorItem(ArmorMaterial material, Type type, FAArmorAttributes armorAttributes) {
+        super(material, type, new Item.Settings().maxCount(1));
         ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 
         if (armorAttributes.armor() > 0) {
@@ -62,8 +63,60 @@ public abstract class DndArmorItem extends ArmorItem {
         if (armorAttributes.luck() > 0) {
             builder.put(EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(UUID.randomUUID(), "Armor luck", armorAttributes.luck(), EntityAttributeModifier.Operation.ADDITION));
         }
-
         attributeModifiers = builder.build();
+
+    }
+
+    @Override
+    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+        if (FAConfig.getValues().showDescriptions()) {
+            super.appendTooltip(stack, world, tooltip, context);
+
+            String translationKey = this.getTranslationKey() + ".tooltip";
+            String translatedText = Text.translatable(translationKey).getString();
+
+            int maxWidth;
+            if (FAConfig.getValues().descrtiptionsLength() < 20 || FAConfig.getValues().descrtiptionsLength() > 1000) {
+                maxWidth = 250;
+            }
+            else {
+                maxWidth = FAConfig.getValues().descrtiptionsLength();
+            }
+
+            // Grab the TextRenderer (Fabric's equivalent to Forge's Font/FontRenderer)
+            TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
+
+            String[] lines = translatedText.split("\n");
+
+            for (String line : lines) {
+                StringBuilder currentLine = new StringBuilder();
+                String[] words = line.split(" ");
+
+                for (String word : words) {
+                    // Check if adding this word would exceed maxWidth
+                    if (textRenderer.getWidth(currentLine + word) > maxWidth) {
+                        // Add the line so far to the tooltip
+                        tooltip.add(Text.literal(currentLine.toString()));
+                        // Reset the line, prefixed with color code
+                        currentLine = new StringBuilder("§7");
+                    }
+
+                    // Insert space (and color code) if we're not at the very start
+                    if (currentLine.length() > 2) {
+                        currentLine.append(" ");
+                        currentLine.append("§7");
+                    }
+
+                    currentLine.append(word);
+                }
+
+                // If something remains in currentLine, add it as well
+                if (currentLine.length() > 0) {
+                    tooltip.add(Text.literal(currentLine.toString()));
+                }
+            }
+
+        }
     }
 
     @Override
@@ -76,47 +129,12 @@ public abstract class DndArmorItem extends ArmorItem {
                 builder.putAll(modifiers);
             }
             builder.putAll(this.attributeModifiers);
+
             return builder.build();
         }
 
         return modifiers;
     }
 
-    @Override
-    public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
-        if (FAConfig.getValues().showDescriptions()) {
-            super.appendTooltip(stack, world, tooltip, context);
-
-            String translationKey = this.getTranslationKey() + ".tooltip";
-            String translatedText = Text.translatable(translationKey).getString();
-
-            int maxWidth = FAConfig.getValues().descrtiptionsLength();
-            if (maxWidth < 20 || maxWidth > 1000) maxWidth = 250;
-
-            TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-            String[] lines = translatedText.split("\n");
-
-            for (String line : lines) {
-                StringBuilder currentLine = new StringBuilder("§7");
-                String[] words = line.split(" ");
-
-                for (String word : words) {
-                    if (textRenderer.getWidth(currentLine + word) > maxWidth) {
-                        tooltip.add(Text.literal(currentLine.toString()));
-                        currentLine = new StringBuilder("§7" + word);
-                    } else {
-                        if (currentLine.length() > 2) currentLine.append(" ");
-                        currentLine.append(word);
-                    }
-                }
-
-                if (currentLine.length() > 0) {
-                    tooltip.add(Text.literal(currentLine.toString()));
-                }
-            }
-        }
-    }
-
-    // Implement this in subclasses
     public abstract List<StatusEffectInstance> getFullSetEffects();
 }

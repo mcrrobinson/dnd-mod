@@ -35,6 +35,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -334,11 +335,11 @@ public class DnDClasses implements ModInitializer {
         @Override
         public void onInitialize() {
 
-                if(FAConfig.exists()) {
-			FAConfig.load();
-		} else {
-			FAConfig.save();
-		}
+                if (FAConfig.exists()) {
+                        FAConfig.load();
+                } else {
+                        FAConfig.save();
+                }
 
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();
@@ -346,7 +347,6 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
-
 
                 ModSounds.registerSounds();
                 ModItemGroup.registerItemGroups();
@@ -426,7 +426,8 @@ public class DnDClasses implements ModInitializer {
                                                 return ActionResult.FAIL;
                                         case BLOODHUNTER:
 
-                                                // DamageSource customExplosionSource = ModDamageTypes.of(world, ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
+                                                // DamageSource customExplosionSource = ModDamageTypes.of(world,
+                                                // ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
                                                 // hitResult.damage()
                                                 break;
                                         default:
@@ -544,6 +545,31 @@ public class DnDClasses implements ModInitializer {
                         }
 
                 });
+
+                // Speeds up
+                ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"),
+                                (stack, world, entity, seed) -> {
+                                        if (entity == null)
+                                                return 0.0F;
+
+                                        int useTicks = entity.getItemUseTimeLeft();
+                                        int maxUseTicks = stack.getMaxUseTime();
+                                        float drawSpeed = 20.0F;
+
+                                        // Instead of dividing by 20 (default), divide by 5 (your faster draw)
+
+                                        if (entity instanceof PlayerEntityExt playerEntityExt) {
+                                                drawSpeed = playerEntityExt.getDndClass() == DndCharacter.RANGER ? 3
+                                                                : 20;
+                                        }
+                                        float pull = (float) (maxUseTicks - useTicks) / drawSpeed;
+
+                                        if (pull > 1.0F) {
+                                                pull = 1.0F;
+                                        }
+
+                                        return pull;
+                                });
 
                 ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
                         ServerPlayerEntity player = handler.getPlayer();

@@ -5,11 +5,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.IntStream;
 
-import mattonfire.dnd.classes.Entities.CustomIceballEntity;
-import mattonfire.dnd.classes.Entities.CustomLightningEntity;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
@@ -113,7 +110,8 @@ public class ExtendedSwordItem extends SwordItem {
                 float hardness = blockState.getHardness(serverWorld, pos);
 
                 // Ignores air and bedrock blocks
-                if (blockState.getMaterial().isReplaceable() || hardness < 0 || hardness > 49.f)
+                if (blockState.getMaterial().isReplaceable() || hardness < 0 || hardness > 49.f) // Ignore bedrock and
+                                                                                                 // obsidian
                     return;
 
                 savedBlocks.put(pos.toImmutable(), blockState);
@@ -178,7 +176,7 @@ public class ExtendedSwordItem extends SwordItem {
     }
 }
 
-// TODO: THIS
+// TODO: Whats most efficient?
 // int blockPosX = pos.getX();
 // int blockPosZ = pos.getZ();
 // int blockPosY = pos.getY();

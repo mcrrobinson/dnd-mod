@@ -4,6 +4,7 @@
     "package": "mattonfire.dnd.classes.mixin",
     "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "BowItemMixin",
         "PlayerEntityMixin",
         "PlayerManagerMixin",
         "LavaDamageMixin",

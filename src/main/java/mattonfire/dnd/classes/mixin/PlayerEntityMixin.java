@@ -3,10 +3,13 @@ package mattonfire.dnd.classes.mixin;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.world.World;
@@ -54,6 +57,16 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         nbt.putInt("mana", Math.min(amount, 100));
     }
 
+    private float getCustomPullProgress(int useTicks) {
+        float f = (float) useTicks / 3.0F;
+        f = (f * f + f * 2.0F) / 3.0F;
+        if (f > 1.0F) {
+            f = 1.0F;
+        }
+
+        return f;
+    }
+
     // Some creatures can't swim... here is that. Probably a better way of doing
     // it.
     @Inject(at = @At("HEAD"), method = "tick")
@@ -69,6 +82,35 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
             }
         }
 
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (self.hasStatusEffect(ModEffects.ARROW_STORM)) {
+
+            if (!self.isUsingItem())
+                return;
+
+            ItemStack activeItem = self.getActiveItem();
+            if (!(activeItem.getItem() instanceof BowItem))
+                return;
+
+            int useTicks = self.getItemUseTime();
+
+            // change this if its the ranger class
+            float progress;
+            if (self instanceof PlayerEntityExt playerEntity) {
+                if (playerEntity.getDndClass() == DndCharacter.RANGER) {
+                    progress = getCustomPullProgress(useTicks);
+                } else {
+                    progress = BowItem.getPullProgress(useTicks);
+                }
+            } else {
+                progress = BowItem.getPullProgress(useTicks);
+            }
+
+            if (progress >= 1.0F) {
+                // Auto-release the bow
+                self.stopUsingItem(); // Triggers BowItem#onStoppedUsing
+            }
+        }
     }
 
     @Inject(method = "tickMovement", at = @At("HEAD"))

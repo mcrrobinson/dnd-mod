@@ -35,7 +35,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Fighter** | High health, High strength, Attracts mobs (needs to be tested) | Cannot use bows, No potions | Super regeneration |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output, Can only use a staff to attack | Can triple jump, Unrivaled attack speed |
 | **Paladin** | High health, circle of healing | Cannot craft anything or craft potions, Very weak in the Nether (not implemented) | Instantly heal everyone in your vicinity (needs to be tested) |
-| **Ranger** | Can zoom in with bow, Natural looting | Cannot pick up swords, Weak to fire | Bow fires instantly, No reload required |
+| **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords, Weak to fire | Hold right click to spam fire (no ammo consumed) |
 | **Rogue** | No poison damage (done), No need to eat (to be tested) | Low health (need to do) | Temporary invisibility |
 | **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Can spawn allied undead to attack enemies (done) |
 | **Warlock** | Can throw fireballs, Resistant to fire and lava | Reduced damage output, Can only use a staff to attack | Can breathe fire by holding a special key |

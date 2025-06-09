@@ -1,11 +1,11 @@
 package mattonfire.dnd.classes.Items.lib;
+
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
 import mattonfire.dnd.classes.Config.FAConfig;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
-import net.minecraft.item.ArmorMaterials;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
@@ -23,7 +23,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 
-
 public abstract class DndArmorItem extends ArmorItem {
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
@@ -33,35 +32,47 @@ public abstract class DndArmorItem extends ArmorItem {
         ImmutableMultimap.Builder<EntityAttribute, EntityAttributeModifier> builder = ImmutableMultimap.builder();
 
         if (armorAttributes.armor() > 0) {
-            builder.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(UUID.randomUUID(), "Armor", armorAttributes.armor(), EntityAttributeModifier.Operation.ADDITION));
+            builder.put(EntityAttributes.GENERIC_ARMOR, new EntityAttributeModifier(UUID.randomUUID(), "Armor",
+                    armorAttributes.armor(), EntityAttributeModifier.Operation.ADDITION));
         }
 
         if (armorAttributes.armorToughness() > 0) {
-            builder.put(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(UUID.randomUUID(), "Armor toughness", armorAttributes.armorToughness(), EntityAttributeModifier.Operation.ADDITION));
+            builder.put(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, new EntityAttributeModifier(UUID.randomUUID(),
+                    "Armor toughness", armorAttributes.armorToughness(), EntityAttributeModifier.Operation.ADDITION));
         }
 
         if (armorAttributes.knockbackResistance() > 0) {
-            builder.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, new EntityAttributeModifier(UUID.randomUUID(), "Armor knockback resistance", armorAttributes.knockbackResistance(), EntityAttributeModifier.Operation.ADDITION));
+            builder.put(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE,
+                    new EntityAttributeModifier(UUID.randomUUID(), "Armor knockback resistance",
+                            armorAttributes.knockbackResistance(), EntityAttributeModifier.Operation.ADDITION));
         }
 
         if (armorAttributes.movementSpeed() > 0) {
-            builder.put(EntityAttributes.GENERIC_MOVEMENT_SPEED, new EntityAttributeModifier(UUID.randomUUID(), "Armor movement speed", armorAttributes.movementSpeed(), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            builder.put(EntityAttributes.GENERIC_MOVEMENT_SPEED,
+                    new EntityAttributeModifier(UUID.randomUUID(), "Armor movement speed",
+                            armorAttributes.movementSpeed(), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
         }
 
         if (armorAttributes.maxHealth() > 0) {
-            builder.put(EntityAttributes.GENERIC_MAX_HEALTH, new EntityAttributeModifier(UUID.randomUUID(), "Armor health gain", armorAttributes.maxHealth(), EntityAttributeModifier.Operation.ADDITION));
+            builder.put(EntityAttributes.GENERIC_MAX_HEALTH, new EntityAttributeModifier(UUID.randomUUID(),
+                    "Armor health gain", armorAttributes.maxHealth(), EntityAttributeModifier.Operation.ADDITION));
         }
 
         if (armorAttributes.attackDamage() > 0) {
-            builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE, new EntityAttributeModifier(UUID.randomUUID(), "Armor attack damage", armorAttributes.attackDamage(), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            builder.put(EntityAttributes.GENERIC_ATTACK_DAMAGE,
+                    new EntityAttributeModifier(UUID.randomUUID(), "Armor attack damage",
+                            armorAttributes.attackDamage(), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
         }
 
         if (armorAttributes.attackSpeed() > 0) {
-            builder.put(EntityAttributes.GENERIC_ATTACK_SPEED, new EntityAttributeModifier(UUID.randomUUID(), "Armor attack speed", armorAttributes.attackSpeed(), EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
+            builder.put(EntityAttributes.GENERIC_ATTACK_SPEED,
+                    new EntityAttributeModifier(UUID.randomUUID(), "Armor attack speed", armorAttributes.attackSpeed(),
+                            EntityAttributeModifier.Operation.MULTIPLY_TOTAL));
         }
 
         if (armorAttributes.luck() > 0) {
-            builder.put(EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(UUID.randomUUID(), "Armor luck", armorAttributes.luck(), EntityAttributeModifier.Operation.ADDITION));
+            builder.put(EntityAttributes.GENERIC_LUCK, new EntityAttributeModifier(UUID.randomUUID(), "Armor luck",
+                    armorAttributes.luck(), EntityAttributeModifier.Operation.ADDITION));
         }
         attributeModifiers = builder.build();
 
@@ -78,8 +89,7 @@ public abstract class DndArmorItem extends ArmorItem {
             int maxWidth;
             if (FAConfig.getValues().descrtiptionsLength() < 20 || FAConfig.getValues().descrtiptionsLength() > 1000) {
                 maxWidth = 250;
-            }
-            else {
+            } else {
                 maxWidth = FAConfig.getValues().descrtiptionsLength();
             }
 
@@ -120,7 +130,8 @@ public abstract class DndArmorItem extends ArmorItem {
     }
 
     @Override
-    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(ItemStack stack, EquipmentSlot slot) {
+    public Multimap<EntityAttribute, EntityAttributeModifier> getAttributeModifiers(ItemStack stack,
+            EquipmentSlot slot) {
         Multimap<EntityAttribute, EntityAttributeModifier> modifiers = super.getAttributeModifiers(stack, slot);
 
         if (slot == this.type.getEquipmentSlot()) {

@@ -1,13 +1,10 @@
 package mattonfire.dnd.classes.Damages;
 
 import mattonfire.dnd.classes.DnDClasses;
-import net.minecraft.entity.damage.DamageScaling;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
-import net.minecraft.registry.Registerable;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 
@@ -15,7 +12,7 @@ public class ModDamageTypes {
     public static final Identifier BREWING_STAND_DAMAGE = new Identifier(DnDClasses.MOD_ID, "brewing_stand_explosion");
     public static final RegistryKey<DamageType> BREWING_STAND_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
             BREWING_STAND_DAMAGE);
-    
+
     public static final Identifier BLOOD_HUNTER_DAMAGE = new Identifier(DnDClasses.MOD_ID, "blood_hunter");
     public static final RegistryKey<DamageType> BLOOD_HUNTER_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
             BLOOD_HUNTER_DAMAGE);

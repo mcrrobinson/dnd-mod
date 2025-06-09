@@ -14,6 +14,7 @@ public class ModEffects {
     public static StatusEffect FREEZE;
     public static StatusEffect INVULNERABILITY;
     public static StatusEffect MOB_REPEL;
+    public static StatusEffect ARROW_STORM;
 
     public static StatusEffect registerStatusEffect(String name, StatusEffect effect) {
         return Registry.register(Registries.STATUS_EFFECT, new Identifier(DnDClasses.MOD_ID, name),
@@ -25,5 +26,7 @@ public class ModEffects {
         INVULNERABILITY = registerStatusEffect("invulnerability",
                 new InvulnerabilityEffect(StatusEffectCategory.BENEFICIAL, 0xFFD700));
         MOB_REPEL = registerStatusEffect("mob_repel", new MobRepelEffect(StatusEffectCategory.BENEFICIAL, 0x5555FF));
+        ARROW_STORM = registerStatusEffect("arrow_storm",
+                new mattonfire.dnd.classes.Effects.ArrowStorm(StatusEffectCategory.BENEFICIAL, 0x00FF00));
     }
 }

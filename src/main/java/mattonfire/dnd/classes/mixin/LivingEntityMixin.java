@@ -4,6 +4,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import mattonfire.dnd.classes.DndCharacter;
@@ -16,6 +17,8 @@ import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.world.World;
 
@@ -26,23 +29,25 @@ public abstract class LivingEntityMixin extends Entity {
     }
 
     /**
-     * Intercept the second argument ("float amount") whenever LivingEntity.applyDamage(...) is called
-     * inside LivingEntity.damage(...). We then modify the amount based on our conditions.
+     * Intercept the second argument ("float amount") whenever
+     * LivingEntity.applyDamage(...) is called
+     * inside LivingEntity.damage(...). We then modify the amount based on our
+     * conditions.
      */
-    @ModifyArg(
-        method = "damage", 
-        at = @At(
-            value = "INVOKE",
-            target = "Lnet/minecraft/entity/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"
-        ),
-        index = 1 // float amount is the second parameter (index=1)
+    @ModifyArg(method = "damage", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/LivingEntity;applyDamage(Lnet/minecraft/entity/damage/DamageSource;F)V"), index = 1 // float
+                                                                                                                                                                                 // amount
+                                                                                                                                                                                 // is
+                                                                                                                                                                                 // the
+                                                                                                                                                                                 // second
+                                                                                                                                                                                 // parameter
+                                                                                                                                                                                 // (index=1)
     )
     private float modifyDamageAmount(DamageSource source, float originalAmount) {
         Entity attacker = source.getAttacker();
         if (attacker instanceof PlayerEntity player) {
 
-            if(attacker instanceof PlayerEntityExt playerEntity) {
-                if(playerEntity.getDndClass() != DndCharacter.BLOODHUNTER) {
+            if (attacker instanceof PlayerEntityExt playerEntity) {
+                if (playerEntity.getDndClass() != DndCharacter.BLOODHUNTER) {
                     return originalAmount;
                 }
             }
@@ -52,8 +57,8 @@ public abstract class LivingEntityMixin extends Entity {
             boolean isNight = time >= 13000 && time <= 23000;
 
             // Check if using a sword
-            if(player.getMainHandStack().getItem() instanceof SwordItem) {
-                if(isNight){
+            if (player.getMainHandStack().getItem() instanceof SwordItem) {
+                if (isNight) {
                     return originalAmount * 1.5F;
                 } else {
                     return originalAmount * 0.5F;

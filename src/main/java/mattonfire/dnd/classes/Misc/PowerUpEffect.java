@@ -127,7 +127,7 @@ public class PowerUpEffect {
         System.out.println("Starting powerup on: " + character.toString());
         switch (character) {
             case RANGER:
-                // Make the bow shoot faster
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM, 300, 1));
                 break;
             case WIZARD:
                 player.getEntityWorld().createExplosion(null, player.getX(), player.getY(), player.getZ(), 10.F, true,

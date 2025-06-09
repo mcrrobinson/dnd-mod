@@ -1,4 +1,5 @@
 package mattonfire.dnd.classes.Items.lib;
+
 import org.jetbrains.annotations.Nullable;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
@@ -65,7 +66,7 @@ public class FAArmorRenderer<T extends FAArmorItem> extends GeoArmorRenderer<T> 
     protected void applyBoneVisibilityBySlot(EquipmentSlot currentSlot) {
         super.applyBoneVisibilityBySlot(currentSlot);
 
-        if(currentSlot == EquipmentSlot.CHEST) {
+        if (currentSlot == EquipmentSlot.CHEST) {
             setBoneVisible(cape, true);
             setBoneVisible(frontCape, true);
             setBoneVisible(leftLegCloth, true);
@@ -78,32 +79,37 @@ public class FAArmorRenderer<T extends FAArmorItem> extends GeoArmorRenderer<T> 
     public void applyBoneVisibilityByPart(EquipmentSlot currentSlot, ModelPart currentPart, BipedEntityModel<?> model) {
         super.applyBoneVisibilityByPart(currentSlot, currentPart, model);
 
-        if(currentPart == model.body) {
-            if (cape != null) cape.setHidden(false);
-            if (frontCape != null) frontCape.setHidden(false);
-            if (leftLegCloth != null) leftLegCloth.setHidden(false);
-            if (rightLegCloth != null) rightLegCloth.setHidden(false);
+        if (currentPart == model.body) {
+            if (cape != null)
+                cape.setHidden(false);
+            if (frontCape != null)
+                frontCape.setHidden(false);
+            if (leftLegCloth != null)
+                leftLegCloth.setHidden(false);
+            if (rightLegCloth != null)
+                rightLegCloth.setHidden(false);
         } else if (currentSlot == EquipmentSlot.HEAD) {
-            if (braid != null) braid.setHidden(false);
+            if (braid != null)
+                braid.setHidden(false);
         }
     }
 
-@Override
-public void preRender(MatrixStack matrices, T animatable, BakedGeoModel model,
-                      @Nullable VertexConsumerProvider vertexConsumers,
-                      @Nullable VertexConsumer vertexConsumer,
-                      boolean isReRender, float tickDelta, int light, int overlay,
-                      float red, float green, float blue, float alpha) {
+    @Override
+    public void preRender(MatrixStack matrices, T animatable, BakedGeoModel model,
+            @Nullable VertexConsumerProvider vertexConsumers,
+            @Nullable VertexConsumer vertexConsumer,
+            boolean isReRender, float tickDelta, int light, int overlay,
+            float red, float green, float blue, float alpha) {
 
-    super.preRender(matrices, animatable, model, vertexConsumers, vertexConsumer,
-                    isReRender, tickDelta, light, overlay, red, green, blue, alpha);
+        super.preRender(matrices, animatable, model, vertexConsumers, vertexConsumer,
+                isReRender, tickDelta, light, overlay, red, green, blue, alpha);
 
-        if(frontCape != null) {
+        if (frontCape != null) {
             FARenderUtils.setFrontLegCapeAngle(this, frontCape);
         }
 
-        if(cape != null) {
-            if(currentEntity instanceof AbstractClientPlayerEntity player) {
+        if (cape != null) {
+            if (currentEntity instanceof AbstractClientPlayerEntity player) {
                 FARenderUtils.applyCapeRotation(player, cape, tickDelta);
             } else {
                 cape.updateRotation((float) -Math.toRadians(5.0F), 0.0F, 0.0F);
@@ -119,26 +125,26 @@ public void preRender(MatrixStack matrices, T animatable, BakedGeoModel model,
     protected void applyBaseTransformations(BipedEntityModel<?> baseModel) {
         super.applyBaseTransformations(baseModel);
 
-        if(cape != null) {
+        if (cape != null) {
             ModelPart bodyPart = baseModel.body;
 
             cape.updatePosition(bodyPart.pivotX, 1 - bodyPart.pivotY, bodyPart.pivotZ);
         }
 
-        if(frontCape != null) {
+        if (frontCape != null) {
             ModelPart leftLegPart = baseModel.leftLeg;
 
             frontCape.updatePosition(leftLegPart.pivotX - 1.95f, 13 - leftLegPart.pivotY, leftLegPart.pivotZ - 0.1f);
         }
 
-        if(leftLegCloth != null) {
+        if (leftLegCloth != null) {
             ModelPart leftLegPart = baseModel.leftLeg;
 
             RenderUtils.matchModelPartRot(leftLegPart, leftLegCloth);
             leftLegCloth.updatePosition(leftLegPart.pivotX - 2, 12 - leftLegPart.pivotY, leftLegPart.pivotZ);
         }
 
-        if(rightLegCloth != null) {
+        if (rightLegCloth != null) {
             ModelPart rightLegPart = baseModel.rightLeg;
 
             RenderUtils.matchModelPartRot(rightLegPart, rightLegCloth);

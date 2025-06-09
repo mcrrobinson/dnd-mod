@@ -3,7 +3,6 @@ package mattonfire.dnd.classes.Misc;
 import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -28,7 +27,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.Registries;

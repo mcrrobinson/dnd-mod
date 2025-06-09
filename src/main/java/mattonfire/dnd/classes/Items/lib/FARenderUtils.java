@@ -15,7 +15,8 @@ import software.bernie.geckolib.renderer.GeoArmorRenderer;
 public final class FARenderUtils {
 
     /**
-     * Applies a "cape-like" rotation to the provided {@code bone} by replicating the logic from the
+     * Applies a "cape-like" rotation to the provided {@code bone} by replicating
+     * the logic from the
      * vanilla CapeFeatureRenderer in 1.19.4.
      */
     public static void applyCapeRotation(AbstractClientPlayerEntity player, GeoBone bone, float tickDelta) {
@@ -49,7 +50,8 @@ public final class FARenderUtils {
         float stride = player.prevStrideDistance
                 + (player.strideDistance - player.prevStrideDistance) * tickDelta;
 
-        // The "walkDist" equivalent in 1.19.4 is the player's horizontalSpeed fields (limb usage).
+        // The "walkDist" equivalent in 1.19.4 is the player's horizontalSpeed fields
+        // (limb usage).
         float horizontalSpeed = player.prevHorizontalSpeed
                 + (player.horizontalSpeed - player.prevHorizontalSpeed) * tickDelta;
 
@@ -64,8 +66,7 @@ public final class FARenderUtils {
         bone.updateRotation(
                 (float) -Math.toRadians(6.0F + f2 / 2.0F + f1),
                 (float) Math.toRadians(f3 / 2.0F),
-                (float) Math.toRadians(f3 / 2.0F)
-        );
+                (float) Math.toRadians(f3 / 2.0F));
     }
 
     /**
@@ -75,12 +76,15 @@ public final class FARenderUtils {
         if (renderer.getLeftLegBone() == null || renderer.getRightLegBone() == null) {
             return;
         }
+
+        @SuppressWarnings("null")
         float legRot = Math.min(renderer.getLeftLegBone().getRotX(), renderer.getRightLegBone().getRotX());
         bone.setRotX((legRot > 0 ? 0 : legRot) * -1.2f);
     }
 
     /**
-     * Same logic as {@link #applyCapeRotation}, but for a braid bone. Additional pitch checks to limit rotation.
+     * Same logic as {@link #applyCapeRotation}, but for a braid bone. Additional
+     * pitch checks to limit rotation.
      */
     public static void applyBraidRotation(AbstractClientPlayerEntity player, GeoBone braid, float tickDelta) {
         applyCapeRotation(player, braid, tickDelta);

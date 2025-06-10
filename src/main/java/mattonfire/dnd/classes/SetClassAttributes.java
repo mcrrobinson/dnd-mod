@@ -86,7 +86,7 @@ public class SetClassAttributes {
     public void typeFighter(PlayerEntity player) {
         System.out.println("Fighter...");
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(6);
-        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(25);
+        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(26);
         // player.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(1);
         // player.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).setBaseValue(64);
     }
@@ -102,7 +102,7 @@ public class SetClassAttributes {
     public void typePaladin(PlayerEntity player) {
         System.out.println("Paladin...");
         // Natural smite...
-        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(25); // Default 20
+        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(26); // Default 20
 
         // Disallow potion effects - in living entity mixin
         // Weak in nether.
@@ -117,6 +117,9 @@ public class SetClassAttributes {
 
     public void typeRogue(PlayerEntity player) {
         System.out.println("Rogue...");
+
+        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(14);
+
         // No poison - in living entity mixin
         // No hunger -
         // Nether mobs are alies.

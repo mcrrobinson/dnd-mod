@@ -1,7 +1,7 @@
 package mattonfire.dnd.classes.Misc;
 
 import java.util.List;
-
+import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
@@ -162,7 +162,10 @@ public class PowerUpEffect {
                 // Spawn undead enemies
                 break;
             case WARLOCK:
-                // Breathes fire
+                // For 20 seconds breathe fire.
+                DnDClasses.WARLOCK_FIREBREATH.put(player.getUuid(),
+                        player.getWorld().getTime() + DnDClasses.FIREBREATH_DURATION_TICKS);
+
                 break;
             case ARTIFICER:
                 // temporary buff to armor

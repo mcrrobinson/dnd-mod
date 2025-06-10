@@ -2,6 +2,8 @@ package mattonfire.dnd.classes.Client;
 
 import java.util.UUID;
 
+import org.joml.Vector3f;
+import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
@@ -11,12 +13,15 @@ import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
+import mattonfire.dnd.particle.ModParticles;
+import mattonfire.dnd.particle.TranslucentFlameParticle;
 import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
 import mattonfire.dnd.classes.Client.Hud.PowerupOverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -25,12 +30,17 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.particle.DustParticleEffect;
+import net.minecraft.util.ModStatus;
+import net.minecraft.util.math.Vec3d;
 import mattonfire.dnd.classes.Client.Render.Color;
 
 public class DndClassesClient implements ClientModInitializer {
     public static final MinecraftClient MC = MinecraftClient.getInstance();
     public static Color chestESPColor = new Color(1, 1, 0, 1);
 
+    private boolean isBreathingFire = false;
+    private long fireBreathEndTick = 0;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.achievement_menu.open", GLFW.GLFW_KEY_O, "category.achievement_menu"));
 
@@ -89,6 +99,17 @@ public class DndClassesClient implements ClientModInitializer {
         }
     }
 
+    private void handleFireBreathPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
+            PacketSender responseSender) {
+        boolean active = buf.readBoolean();
+        if (active) {
+            fireBreathEndTick = buf.readLong();
+            isBreathingFire = true;
+        } else {
+            isBreathingFire = false;
+        }
+    }
+
     @Override
     public void onInitializeClient() {
 
@@ -124,6 +145,8 @@ public class DndClassesClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,
                 DndClassesClient::handleClassQuery);
 
+        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WARLOCK_FIREBREATH, this::handleFireBreathPacket);
+
         KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.dnd-classes.power-up", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
@@ -156,6 +179,27 @@ public class DndClassesClient implements ClientModInitializer {
                 DndClassesClient::removeManor);
 
         HudRenderCallback.EVENT.register(new PowerupOverlay());
+
+        ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.player != null && isBreathingFire(client.player)) {
+                // Example: spawn a semi-transparent red particle in front of the player
+                Vec3d look = client.player.getRotationVec(1.0F);
+                Vec3d start = client.player.getPos().add(0, client.player.getStandingEyeHeight(), 0);
+                for (int i = 1; i <= 5; i++) {
+                    Vec3d pos = start.add(look.multiply(i));
+                    client.world.addParticle(ModParticles.TRANSLUCENT_FLAME, pos.x, pos.y, pos.z, 0, 0, 0);
+                }
+            }
+        });
+
+        ParticleFactoryRegistry.getInstance().register(
+                ModParticles.TRANSLUCENT_FLAME,
+                TranslucentFlameParticle.Factory::new);
+
+    }
+
+    private boolean isBreathingFire(PlayerEntity player) {
+        return isBreathingFire && (player.age < fireBreathEndTick);
     }
 
 }

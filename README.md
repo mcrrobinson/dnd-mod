@@ -35,11 +35,11 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Fighter** | High health, High strength, Attracts mobs (needs to be tested) | Cannot use bows, No potions | Super regeneration |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output, Can only use a staff to attack | Can triple jump, Unrivaled attack speed |
 | **Paladin** | High health, circle of healing | Cannot craft anything or craft potions, Very weak in the Nether (not implemented) | Instantly heal everyone in your vicinity (needs to be tested) |
-| **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords, Weak to fire | Hold right click to spam fire (no ammo consumed) |
-| **Rogue** | No poison damage (done), No need to eat (to be tested) | Low health (need to do) | Temporary invisibility |
+| **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords (done), Weak to fire (done) | Hold right click to spam fire (no ammo consumed) (done) |
+| **Rogue** | No poison damage (done), No need to eat (to be tested) | Low health (done) | Temporary invisibility (done) |
 | **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Can spawn allied undead to attack enemies (done) |
-| **Warlock** | Can throw fireballs, Resistant to fire and lava | Reduced damage output, Can only use a staff to attack | Can breathe fire by holding a special key |
-| **Wizard** | Can wield elemental staffs | Greatly reduced health, Can only wear Iron armor or lower | Creates a massive explosion and becomes invulnerable for a few seconds |
+| **Warlock** | Can throw fireballs, Resistant to fire and lava | Reduced damage output, Can only use a staff to attack | Can breathe fire by holding a special key (done) |
+| **Wizard** | Can wield elemental staffs (done) | Greatly reduced health (done) | Creates a massive explosion and becomes invulnerable for a few seconds |
 | **Artificer** | Increased movement speed, Auto-enchanting chance | Deals less damage, Unaffected by potions (except abilities) | Temporarily buffs all armor |
 | **Blood Hunter**| Fire aspect applied to all swords, Double damage at night (done) | Half damage during the day (done) | Can take control of any mob within 30m |
 | **Alchemist** | Can craft special potions exclusive to the class (done), Brewing don't explode (wait, brewing explodes?) | Cannot enchant | Instantly buff all potions to max level (done) |

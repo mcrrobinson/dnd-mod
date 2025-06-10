@@ -13,6 +13,7 @@ import mattonfire.dnd.classes.Config.FAConfig;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
 import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
+import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
 import mattonfire.dnd.classes.Misc.PowerUpEffect;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -23,6 +24,7 @@ import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
+import mattonfire.dnd.particle.ModParticles;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -61,10 +63,14 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
 
 public class DnDClasses implements ModInitializer {
+
+        public static final Map<UUID, Long> WARLOCK_FIREBREATH = new HashMap<>();
+        public static final int FIREBREATH_DURATION_TICKS = 20 * 20; // 20 seconds
+
         public static final Identifier C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("doublejump",
                         "request_doublejump_effects");
         public static final Identifier S2C_DOUBLEJUMP_EFFECTS_PACKET_ID = Identifier.of("doublejump",
@@ -90,6 +96,7 @@ public class DnDClasses implements ModInitializer {
         public static final String MOD_ID = "dndclasses";
         public static final Logger LOGGER = LogManager.getLogger("dndclasses");
 
+        public static final Identifier S2C_WARLOCK_FIREBREATH = Identifier.of(MOD_ID, "warlock_firebreath");
         public static final Identifier C2S_CLASS_PICK_PACKET_ID = Identifier.of("classpick", "class_pick");
         public static final Identifier S2C_CLASS_QUERY_PACKET_ID = Identifier.of("classpick", "class_query");
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
@@ -356,6 +363,7 @@ public class DnDClasses implements ModInitializer {
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
                 ModEnchantments.registerEnchantments();
+                ModParticles.registerParticles();
 
                 AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
                         if (player instanceof PlayerEntityExt) {
@@ -382,6 +390,71 @@ public class DnDClasses implements ModInitializer {
                                                 "Maybe get a alchamist to brew next time...");
 
                         }
+                });
+
+                ServerTickEvents.END_WORLD_TICK.register(world -> {
+                        if (!(world instanceof ServerWorld serverWorld))
+                                return;
+                        long now = serverWorld.getTime();
+
+                        DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
+                                UUID uuid = entry.getKey();
+                                long endTick = entry.getValue();
+                                ServerPlayerEntity player = serverWorld.getServer().getPlayerManager().getPlayer(uuid);
+
+                                if (now > endTick) {
+                                        // When ending fire breath:
+                                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                                        buf.writeBoolean(false);
+                                        ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
+                                        return true; // Remove expired
+                                }
+
+                                if (player == null)
+                                        return true;
+
+                                // TODO: Not sure if this is where it goes
+                                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                                buf.writeBoolean(true);
+                                buf.writeLong(endTick);
+                                ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
+
+                                // Fire breath logic
+                                Vec3d look = player.getRotationVec(1.0F);
+                                Vec3d start = player.getPos().add(0, player.getStandingEyeHeight(), 0);
+
+                                // Beam: 5 blocks long, 1 block wide
+                                for (int i = 1; i <= 5; i++) {
+                                        Vec3d pos = start.add(look.multiply(i));
+
+                                        for (ServerPlayerEntity otherPlayer : serverWorld.getPlayers()) {
+                                                if (!otherPlayer.getUuid().equals(player.getUuid())) {
+
+                                                        System.out.println("Spawning particles for player: "
+                                                                        + otherPlayer.getName().getString());
+                                                        serverWorld.spawnParticles(
+                                                                        otherPlayer,
+                                                                        ParticleTypes.FLAME,
+                                                                        false, // longDistance
+                                                                        pos.x, pos.y, pos.z,
+                                                                        8, 0.2, 0.2, 0.2, 0.01);
+                                                }
+                                        }
+
+                                        // serverWorld.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 8, 0.2,
+                                        // 0.2, 0.2, 0.01);
+
+                                        // Damage entities in the beam
+                                        Box box = new Box(pos.x - 0.5, pos.y - 0.5, pos.z - 0.5, pos.x + 0.5,
+                                                        pos.y + 0.5, pos.z + 0.5);
+                                        for (LivingEntity entity : serverWorld.getEntitiesByClass(LivingEntity.class,
+                                                        box, e -> e != player)) {
+                                                entity.setOnFireFor(2);
+                                                entity.damage(serverWorld.getDamageSources().magic(), 2.0F);
+                                        }
+                                }
+                                return false;
+                        });
                 });
 
                 ServerTickEvents.END_WORLD_TICK.register(world -> {
@@ -455,6 +528,11 @@ public class DnDClasses implements ModInitializer {
                                                                         true);
                                                         return TypedActionResult.fail(itemStack);
                                                 }
+                                        } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
+                                                // if (player.getStackInHand(hand).isEmpty()) {
+
+                                                // }
+
                                         }
                                 }
                         }

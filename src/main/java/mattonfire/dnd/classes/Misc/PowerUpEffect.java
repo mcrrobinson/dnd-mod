@@ -1,15 +1,25 @@
 package mattonfire.dnd.classes.Misc;
 
+import java.util.Iterator;
 import java.util.List;
+
+import dev.architectury.event.events.common.ExplosionEvent;
+import dev.architectury.hooks.level.fabric.ExplosionHooksImpl.ExplosionExtensions;
+import draylar.identity.impl.PlayerDataProvider;
+import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.BloodhunterIdentityData;
 import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -23,17 +33,27 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.Team;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World.ExplosionSourceType;
+import net.minecraft.world.explosion.Explosion;
 
 public class PowerUpEffect {
 
@@ -122,7 +142,7 @@ public class PowerUpEffect {
                 entity -> true);
     }
 
-    public static void play(PlayerEntity player, DndCharacter character) {
+    public static boolean play(MinecraftServer server, PlayerEntity player, DndCharacter character) {
 
         System.out.println("Starting powerup on: " + character.toString());
         switch (character) {
@@ -130,8 +150,46 @@ public class PowerUpEffect {
                 player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM, 300, 1));
                 break;
             case WIZARD:
-                player.getEntityWorld().createExplosion(null, player.getX(), player.getY(), player.getZ(), 10.F, true,
-                        ExplosionSourceType.TNT);
+
+                // TODO: This code comes from ServerWorld for create explosion
+                // thought that extracting this would make it easier to make a
+                // custom explosion. But we need to know the ExplosionS2CPacket
+                // handler
+                ServerWorld world = (ServerWorld) player.getEntityWorld();
+                double playerX = player.getX();
+                double playerY = player.getY();
+                double playerZ = player.getZ();
+                float radius = 10.F;
+
+                DamageSource damageSource = world.getDamageSources()
+                        .create(ModDamageTypes.WIZARD_EXPLOSION_DAMAGE_SOURCE, player);
+
+                Explosion explosion = new Explosion(world, player, damageSource, null,
+                        playerX,
+                        playerY, playerZ, radius, false,
+                        Explosion.DestructionType.KEEP);
+
+                explosion.collectBlocksAndDamageEntities();
+                explosion.affectWorld(true);
+
+                if (!explosion.shouldDestroy()) {
+                    explosion.clearAffectedBlocks();
+                }
+
+                Iterator<? extends LivingEntity> var14 = world.getPlayers().iterator();
+                while (var14.hasNext()) {
+                    ServerPlayerEntity serverPlayerEntity = (ServerPlayerEntity) var14.next();
+                    if (serverPlayerEntity.squaredDistanceTo(playerX, playerY, playerZ) < 4096.0) {
+                        serverPlayerEntity.networkHandler
+                                .sendPacket(new ExplosionS2CPacket(playerX, playerY, playerZ, radius,
+                                        explosion.getAffectedBlocks(),
+                                        (Vec3d) explosion.getAffectedPlayers().get(serverPlayerEntity)));
+                    }
+                }
+
+                ServerPlayerEntity serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
+                ServerPlayNetworking.send(serverPlayer, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
+                        new PacketByteBuf(Unpooled.buffer()));
                 break;
             case BARBARIAN:
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
@@ -170,9 +228,56 @@ public class PowerUpEffect {
             case ARTIFICER:
                 // temporary buff to armor
                 break;
-            case BLOODHUNTER:
-                // temporarily take control of mobs
+            case BLOODHUNTER: {
+                Vec3d vec3d = player.getCameraPosVec(1.0F);
+                Vec3d vec3d3 = vec3d.add(player.getRotationVec(1.0F).multiply(20.0D));
+                Box box = player.getBoundingBox()
+                        .stretch(player.getRotationVec(1.0F).multiply(20.0D)).expand(1.0D, 1.0D, 1.0D);
+
+                EntityHitResult entityHitResult = ProjectileUtil.raycast(player, vec3d, vec3d3, box, (entityx) -> {
+                    return entityx instanceof LivingEntity && entityx != player;
+                }, 20.0D);
+
+                if (entityHitResult == null) {
+                    return false; // No target found
+                }
+
+                // Update the player's identity to the target entity
+                LivingEntity livingTarget = (LivingEntity) entityHitResult.getEntity();
+
+                // Duplicate it
+                EntityType<?> type = livingTarget.getType();
+                LivingEntity duplicateEntity = (LivingEntity) type.create(player.getWorld());
+                if (duplicateEntity != null) {
+                    // Copy NBT data from the original entity
+                    NbtCompound nbt = new NbtCompound();
+                    livingTarget.writeNbt(nbt);
+
+                    // Remove UUID to avoid conflicts
+                    nbt.remove("UUID");
+
+                    duplicateEntity.readNbt(nbt);
+                }
+
+                // Also teleport the player to the target entity's position
+                // this doesn't work?
+                player.refreshPositionAndAngles(livingTarget.getX(), livingTarget.getY(), livingTarget.getZ(),
+                        player.getYaw(), player.getPitch());
+
+                ((PlayerDataProvider) player).setIdentity(duplicateEntity);
+
+                if (player.getWorld() instanceof ServerWorld serverWorld) {
+                    DnDClasses.BLOODHUNTER_IDENTITY_EXPIRY.put(player.getUuid(),
+                            new BloodhunterIdentityData(
+                                    serverWorld.getTime() + 400,
+                                    duplicateEntity));
+                }
+
+                // It's duplicate gets spawned in later.
+                livingTarget.discard();
+
                 break;
+            }
             case ALCHEMIST:
                 // buffs all potions in inventory
                 // Get all the things in the players inventory
@@ -185,7 +290,7 @@ public class PowerUpEffect {
 
                         Potion potion = PotionUtil.getPotion(stack);
                         if (potion == null) {
-                            return;
+                            return false;
                         }
                         // Get potion effects
                         Potion maxPotion = potion;
@@ -236,6 +341,9 @@ public class PowerUpEffect {
                 break;
             default:
                 break;
+
         }
+        return true; // Indicate that the power-up was successfully applied
+
     }
 }

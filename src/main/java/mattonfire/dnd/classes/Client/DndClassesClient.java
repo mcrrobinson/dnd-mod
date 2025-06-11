@@ -2,8 +2,6 @@ package mattonfire.dnd.classes.Client;
 
 import java.util.UUID;
 
-import org.joml.Vector3f;
-import org.joml.Vector3i;
 import org.lwjgl.glfw.GLFW;
 
 import io.netty.buffer.Unpooled;
@@ -13,28 +11,36 @@ import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
+import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
 import mattonfire.dnd.particle.TranslucentFlameParticle;
 import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
 import mattonfire.dnd.classes.Client.Hud.PowerupOverlay;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.api.Environment;
+import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
-import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.util.ModStatus;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import mattonfire.dnd.classes.Client.Render.Color;
+import mattonfire.dnd.classes.Client.Render.RenderUtils;
 
+@Environment(EnvType.CLIENT)
 public class DndClassesClient implements ClientModInitializer {
     public static final MinecraftClient MC = MinecraftClient.getInstance();
     public static Color chestESPColor = new Color(1, 1, 0, 1);
@@ -110,6 +116,26 @@ public class DndClassesClient implements ClientModInitializer {
         }
     }
 
+    private void handleWizardPowerupPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
+            PacketSender responseSender) {
+        MySphereRenderState.shouldRenderSphere = true;
+        MySphereRenderState.spherePos = client.player.getPos().add(0,
+                client.player.getStandingEyeHeight() / 2.0, 0);
+        MySphereRenderState.startTick = client.world.getTime();
+        client.execute(() -> {
+            if (client.world != null && client.player != null) {
+                client.world.playSound(
+                        client.player.getPos().getX(), client.player.getPos().getY(), client.player.getPos().getZ(),
+                        ModSounds.WIZARD_EXPLOSION,
+                        SoundCategory.BLOCKS,
+                        4.0F,
+                        1.0F,
+                        false);
+            }
+
+        });
+    }
+
     @Override
     public void onInitializeClient() {
 
@@ -119,24 +145,31 @@ public class DndClassesClient implements ClientModInitializer {
                     client.setScreen(new AchievementMenu());
                 }
             }
-
-            // Increase their manor
-
         });
 
-        // WorldRenderEvents.END.register(context -> {
-        // for (Line line : RenderUtils.lineToRenderList) {
-        // line.Draw(context);
-        // }
-        // });
-
-        // ClientTickEvents.END_CLIENT_TICK.register(client -> {
-        // if (client.player != null) {
-        // Vec3d pos = client.player.getEyePos();
-        // RenderUtils.lineToRenderList.clear();
-        // RenderUtils.drawCircleAtPos(pos, chestESPColor, 3, 36);
-        // }
-        // });
+        WorldRenderEvents.END.register(context -> {
+            if (MySphereRenderState.shouldRenderSphere) {
+                long now = MinecraftClient.getInstance().world.getTime();
+                float progress = (now - MySphereRenderState.startTick) / (float) MySphereRenderState.DURATION_TICKS;
+                if (progress >= 1.0f) {
+                    MySphereRenderState.shouldRenderSphere = false;
+                    return;
+                }
+                float radius = 0.1f + progress * 9.9f; // Expands from 1 to 5 blocks
+                int baseColor = 0xFFffec64;
+                int originalAlpha = 0xFF;
+                int newAlpha = (int) ((1.0f - progress) * originalAlpha);
+                int color = (newAlpha << 24) | (baseColor & 0x00FFFFFF);
+                RenderUtils.renderSolidSphere(
+                        context.matrixStack(),
+                        MySphereRenderState.spherePos,
+                        radius,
+                        color,
+                        context.camera().getPos(),
+                        24,
+                        32);
+            }
+        });
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_CLASS_QUERY_PACKET_ID,
                 DndClassesClient::handleClassQuery);
@@ -146,6 +179,8 @@ public class DndClassesClient implements ClientModInitializer {
                 DndClassesClient::handleClassQuery);
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WARLOCK_FIREBREATH, this::handleFireBreathPacket);
+        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
+                this::handleWizardPowerupPacket);
 
         KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.dnd-classes.power-up", // The translation key of the keybinding's name
@@ -156,7 +191,6 @@ public class DndClassesClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (keyBinding.wasPressed()) {
-
                 // Power effect request
                 PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                 passedData.writeUuid(client.player.getUuid());
@@ -196,10 +230,32 @@ public class DndClassesClient implements ClientModInitializer {
                 ModParticles.TRANSLUCENT_FLAME,
                 TranslucentFlameParticle.Factory::new);
 
+        ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"),
+                (stack, world, entity, seed) -> {
+                    if (entity == null)
+                        return 0.0F;
+
+                    int useTicks = entity.getItemUseTimeLeft();
+                    int maxUseTicks = stack.getMaxUseTime();
+                    float drawSpeed = 20.0F;
+
+                    // Instead of dividing by 20 (default), divide by 5 (your faster draw)
+
+                    if (entity instanceof PlayerEntityExt playerEntityExt) {
+                        drawSpeed = playerEntityExt.getDndClass() == DndCharacter.RANGER ? 3
+                                : 20;
+                    }
+                    float pull = (float) (maxUseTicks - useTicks) / drawSpeed;
+
+                    if (pull > 1.0F) {
+                        pull = 1.0F;
+                    }
+
+                    return pull;
+                });
     }
 
     private boolean isBreathingFire(PlayerEntity player) {
         return isBreathingFire && (player.age < fireBreathEndTick);
     }
-
 }

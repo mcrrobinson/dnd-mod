@@ -14,6 +14,8 @@ public class ModSounds {
 
     public static final SoundEvent MUSIC_BOX = registerSoundEvent("music_box");
 
+    public static final SoundEvent WIZARD_EXPLOSION = registerSoundEvent("wizard_explosion");
+
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = new Identifier(DnDClasses.MOD_ID, name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));

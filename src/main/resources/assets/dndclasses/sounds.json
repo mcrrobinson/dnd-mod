@@ -38,5 +38,13 @@
                 "stream": true
             }
         ]
+    },
+    "wizard_explosion": {
+        "sounds": [
+            {
+                "name": "dndclasses:wizard_explosion",
+                "stream": true
+            }
+        ]
     }
 }

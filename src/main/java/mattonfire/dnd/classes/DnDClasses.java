@@ -37,7 +37,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -68,6 +67,7 @@ import net.minecraft.util.math.Vec3d;
 
 public class DnDClasses implements ModInitializer {
 
+        public static final Map<UUID, BloodhunterIdentityData> BLOODHUNTER_IDENTITY_EXPIRY = new HashMap<>();
         public static final Map<UUID, Long> WARLOCK_FIREBREATH = new HashMap<>();
         public static final int FIREBREATH_DURATION_TICKS = 20 * 20; // 20 seconds
 
@@ -97,6 +97,8 @@ public class DnDClasses implements ModInitializer {
         public static final Logger LOGGER = LogManager.getLogger("dndclasses");
 
         public static final Identifier S2C_WARLOCK_FIREBREATH = Identifier.of(MOD_ID, "warlock_firebreath");
+        public static final Identifier S2C_WIZARD_EFFECTS_PACKET_ID = Identifier.of(MOD_ID, "wizard_powerup");
+
         public static final Identifier C2S_CLASS_PICK_PACKET_ID = Identifier.of("classpick", "class_pick");
         public static final Identifier S2C_CLASS_QUERY_PACKET_ID = Identifier.of("classpick", "class_query");
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
@@ -129,17 +131,21 @@ public class DnDClasses implements ModInitializer {
 
                 server.execute(() -> {
                         if (player instanceof PlayerEntityExt) {
-                                PowerUpEffect.play(player, ((PlayerEntityExt) (PlayerEntity) player)
-                                                .getDndClass());
+
+                                boolean success = PowerUpEffect.play(server, player,
+                                                ((PlayerEntityExt) (PlayerEntity) player)
+                                                                .getDndClass());
+                                if (success) {
+                                        PacketByteBuf returnData = new PacketByteBuf(Unpooled.buffer());
+                                        ServerPlayNetworking.send(player,
+                                                        DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
+                                                        returnData);
+
+                                        ManaManager.resetMana(player);
+                                }
                         }
                 });
 
-                PacketByteBuf returnData = new PacketByteBuf(Unpooled.buffer());
-                ServerPlayNetworking.send(player,
-                                DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
-                                returnData);
-
-                ManaManager.resetMana(player);
         }
 
         private static void sendClassPickPacket(MinecraftServer server, ServerPlayerEntity player,
@@ -397,6 +403,42 @@ public class DnDClasses implements ModInitializer {
                                 return;
                         long now = serverWorld.getTime();
 
+                        Iterator<Map.Entry<UUID, BloodhunterIdentityData>> it = BLOODHUNTER_IDENTITY_EXPIRY.entrySet()
+                                        .iterator();
+                        while (it.hasNext()) {
+                                Map.Entry<UUID, BloodhunterIdentityData> entry = it.next();
+                                BloodhunterIdentityData identityData = entry.getValue();
+                                if (now >= identityData.expiryTick) {
+                                        ServerPlayerEntity player = (ServerPlayerEntity) serverWorld
+                                                        .getPlayerByUuid(entry.getKey());
+                                        if (player != null) {
+                                                // Move the entity to the player's current position before spawning
+                                                identityData.entity.refreshPositionAndAngles(
+                                                                player.getX(),
+                                                                player.getY(),
+                                                                player.getZ(),
+                                                                identityData.entity.getYaw(),
+                                                                identityData.entity.getPitch());
+
+                                                // TODO: There are bugs with the entity when copying it. This
+                                                // resets some properties. There is probably a better way to do
+                                                // this. Either copy it properly or don't do the copy at all and find
+                                                // why I slide when I become an entity.
+
+                                                identityData.entity.setNoGravity(false);
+                                                identityData.entity.setInvulnerable(false);
+                                                identityData.entity.setSprinting(false);
+
+                                                draylar.identity.api.PlayerIdentity.updateIdentity(player, null, null);
+                                                serverWorld.spawnEntity(identityData.entity);
+
+                                        }
+
+                                        // Spawn the old entity back
+                                        it.remove();
+                                }
+                        }
+
                         DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
                                 UUID uuid = entry.getKey();
                                 long endTick = entry.getValue();
@@ -624,31 +666,6 @@ public class DnDClasses implements ModInitializer {
 
                 });
 
-                // Speeds up
-                ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"),
-                                (stack, world, entity, seed) -> {
-                                        if (entity == null)
-                                                return 0.0F;
-
-                                        int useTicks = entity.getItemUseTimeLeft();
-                                        int maxUseTicks = stack.getMaxUseTime();
-                                        float drawSpeed = 20.0F;
-
-                                        // Instead of dividing by 20 (default), divide by 5 (your faster draw)
-
-                                        if (entity instanceof PlayerEntityExt playerEntityExt) {
-                                                drawSpeed = playerEntityExt.getDndClass() == DndCharacter.RANGER ? 3
-                                                                : 20;
-                                        }
-                                        float pull = (float) (maxUseTicks - useTicks) / drawSpeed;
-
-                                        if (pull > 1.0F) {
-                                                pull = 1.0F;
-                                        }
-
-                                        return pull;
-                                });
-
                 ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
                         ServerPlayerEntity player = handler.getPlayer();
 
@@ -662,6 +679,7 @@ public class DnDClasses implements ModInitializer {
                 });
 
         }
+
 }
 
 // remove diamonds type create own again...

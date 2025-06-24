@@ -17,6 +17,9 @@
     "mattonfire/dnd/classes/mixin/BrewingStandBlockMixin": {
       "onUse": "Lnet/minecraft/class_2260;method_9534(Lnet/minecraft/class_2680;Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;Lnet/minecraft/class_3965;)Lnet/minecraft/class_1269;"
     },
+    "mattonfire/dnd/classes/mixin/CraftingResultSlotMixin": {
+      "onTakeItem": "Lnet/minecraft/class_1734;method_7667(Lnet/minecraft/class_1657;Lnet/minecraft/class_1799;)V"
+    },
     "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
       "tickMovement": "Lnet/minecraft/class_746;method_6007()V"
     },
@@ -102,6 +105,9 @@
       },
       "mattonfire/dnd/classes/mixin/BrewingStandBlockMixin": {
         "onUse": "Lnet/minecraft/class_2260;method_9534(Lnet/minecraft/class_2680;Lnet/minecraft/class_1937;Lnet/minecraft/class_2338;Lnet/minecraft/class_1657;Lnet/minecraft/class_1268;Lnet/minecraft/class_3965;)Lnet/minecraft/class_1269;"
+      },
+      "mattonfire/dnd/classes/mixin/CraftingResultSlotMixin": {
+        "onTakeItem": "Lnet/minecraft/class_1734;method_7667(Lnet/minecraft/class_1657;Lnet/minecraft/class_1799;)V"
       },
       "mattonfire/dnd/classes/mixin/DoubleJumpMixin": {
         "tickMovement": "Lnet/minecraft/class_746;method_6007()V"

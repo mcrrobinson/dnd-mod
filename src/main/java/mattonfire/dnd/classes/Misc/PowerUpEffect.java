@@ -159,7 +159,7 @@ public class PowerUpEffect {
                 double playerX = player.getX();
                 double playerY = player.getY();
                 double playerZ = player.getZ();
-                float radius = 10.F;
+                float radius = 40.F;
 
                 DamageSource damageSource = world.getDamageSources()
                         .create(ModDamageTypes.WIZARD_EXPLOSION_DAMAGE_SOURCE, player);
@@ -184,12 +184,12 @@ public class PowerUpEffect {
                                 .sendPacket(new ExplosionS2CPacket(playerX, playerY, playerZ, radius,
                                         explosion.getAffectedBlocks(),
                                         (Vec3d) explosion.getAffectedPlayers().get(serverPlayerEntity)));
+
+                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
+                                new PacketByteBuf(Unpooled.buffer()));
                     }
                 }
 
-                ServerPlayerEntity serverPlayer = server.getPlayerManager().getPlayer(player.getUuid());
-                ServerPlayNetworking.send(serverPlayer, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
-                        new PacketByteBuf(Unpooled.buffer()));
                 break;
             case BARBARIAN:
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));

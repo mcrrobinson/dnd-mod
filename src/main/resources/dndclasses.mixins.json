@@ -19,7 +19,8 @@
         "MobEntityAccessor",
         "BrewingStandAccessor",
         "BrewingStandBlockEntityMixin",
-        "BrewingStandBlockMixin"
+        "BrewingStandBlockMixin",
+        "CraftingResultSlotMixin"
     ],
     "client": [
         "DoubleJumpMixin",

@@ -5,8 +5,14 @@
     "compatibilityLevel": "JAVA_8",
     "mixins": [
         "BowItemMixin",
+<<<<<<< Updated upstream
         "StatusEffectMixin",
         "HostileEntityMixin",
+=======
+        "PlayerEntityRendererMixin",
+        "AbstractClientPlayerEntityMixin",
+        "LivingEntityRendererAccessor",
+>>>>>>> Stashed changes
         "PlayerEntityMixin",
         "PlayerManagerMixin",
         "LavaDamageMixin"

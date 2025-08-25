@@ -8,7 +8,12 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
-	mavenCentral()
+
+    mavenCentral()
+
+	flatDir {
+        dirs 'libs'
+    }
     maven { url "https://maven.jamieswhiteshirt.com/libs-release/"}
 	maven {
         name = "CottonMC"
@@ -33,13 +38,14 @@ dependencies {
     modImplementation "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
     include "com.jamieswhiteshirt:reach-entity-attributes:1.0.1"
 
-    include "me.sargunvohra.mcmods:autoconfig1u:3.4.0"
-    modApi("me.sargunvohra.mcmods:autoconfig1u:3.4.0") {
-        exclude(group: "net.fabricmc.fabric-api")
-        exclude(group: "net.fabricmc", module: "fabric-loader")
-    }
-
-	modImplementation include("io.github.cottonmc:LibGui:3.3.2+1.16.4")
+    // include "me.sargunvohra.mcmods:autoconfig1u:3.4.0"
+    // modApi("me.sargunvohra.mcmods:autoconfig1u:3.4.0") {
+    //     exclude(group: "net.fabricmc.fabric-api")
+    //     exclude(group: "net.fabricmc", module: "fabric-loader")
+    // }
+	modImplementation include("io.github.cottonmc:LibGui:7.1.1+1.19.4")
+	modImplementation name: 'omega-config-base-1.2.3-1.18.1'  // No .jar extension
+    modImplementation name: 'geckolib-fabric-1.19.4-4.2'      // Again, just the name
 }
 
 processResources {

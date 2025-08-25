@@ -1,3 +1,4 @@
+// ...existing code...
 pluginManagement {
     repositories {
         maven {
@@ -7,3 +8,43 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
+
+
+def setJavaHomeFromEnvOrDefault() {
+    def envJava = System.getenv('JAVA_HOME')
+    if (envJava) {
+        if (file(envJava).exists()) {
+            println "gradle settings: using JAVA_HOME from environment: ${envJava}"
+            System.setProperty('org.gradle.java.home', file(envJava).absolutePath)
+            try { gradle.startParameter.setJavaHome(file(envJava)) } catch (Exception e) { /* ignore */ }
+            return
+        } else {
+            println "gradle settings: JAVA_HOME set in environment but path doesn't exist: ${envJava}"
+        }
+    }
+
+    def os = System.properties['os.name']?.toLowerCase() ?: ''
+    if (os.contains('win')) {
+        def winPath = 'C:\\Program Files\\Java\\jdk-21'
+        if (file(winPath).exists()) {
+            println "gradle settings: no valid JAVA_HOME; using Windows fallback: ${winPath}"
+            System.setProperty('org.gradle.java.home', file(winPath).absolutePath)
+            try { gradle.startParameter.setJavaHome(file(winPath)) } catch (Exception e) { /* ignore */ }
+        } else {
+            println "gradle settings: Windows fallback not found: ${winPath}"
+        }
+    } else if (os.contains('mac')) {
+        def macPath = '/Library/Java/JavaVirtualMachines/jdk-21.jdk/Contents/Home'
+        if (file(macPath).exists()) {
+            println "gradle settings: no valid JAVA_HOME; using macOS fallback: ${macPath}"
+            System.setProperty('org.gradle.java.home', file(macPath).absolutePath)
+            try { gradle.startParameter.setJavaHome(file(macPath)) } catch (Exception e) { /* ignore */ }
+        } else {
+            println "gradle settings: macOS fallback not found: ${macPath}"
+        }
+    } else {
+        println "gradle settings: no JAVA_HOME and unknown OS (${os}); not setting java home."
+    }
+}
+
+setJavaHomeFromEnvOrDefault()

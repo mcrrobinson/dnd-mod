@@ -24,6 +24,7 @@
     "mixins": [
         "dndclasses.mixins.json"
     ],
+    "accessWidener": "dndclasses.accesswidener",
     "depends": {
         "fabricloader": ">=0.7.4",
         "fabric": "*",

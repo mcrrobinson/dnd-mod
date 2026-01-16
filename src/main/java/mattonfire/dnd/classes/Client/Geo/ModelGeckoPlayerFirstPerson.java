@@ -5,6 +5,8 @@ import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.Identifier;
+import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.DndCharacter;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;
@@ -163,11 +165,17 @@ public class ModelGeckoPlayerFirstPerson extends GeoModel<GeoAnimatable> {
 
     @Override
     public Identifier getModelResource(GeoAnimatable entity) {
+        if (entity instanceof PlayerEntityExt player) {
+            return GeoModelHelper.getModelLocation(player.getDndClass());
+        }
         return new Identifier("dndclasses", "geo/wizard_armor.geo.json");
     }
 
     @Override
     public Identifier getTextureResource(GeoAnimatable entity) {
+        if (entity instanceof PlayerEntityExt player) {
+            return GeoModelHelper.getTextureLocation(player.getDndClass());
+        }
         return new Identifier("dndclasses", "textures/models/armor/wizard_armor.png");
     }
 }

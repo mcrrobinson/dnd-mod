@@ -354,6 +354,9 @@ public class DnDClasses implements ModInitializer {
                         FAConfig.save();
                 }
 
+                mattonfire.dnd.entity.ModEntityTypes.registerEntityTypes();
+                mattonfire.dnd.world.gen.ModSpawns.addSpawns();
+
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();
                 Registry.register(Registries.STATUS_EFFECT, Identifier.of(DnDClasses.MOD_ID, "super_strength"),

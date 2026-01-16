@@ -9,12 +9,15 @@ import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
+import net.minecraft.util.math.MathHelper;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
+import software.bernie.geckolib.core.animatable.GeoAnimatable;
 
 public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
     private final GeoEntityRenderer geoRenderer;
     private final ModelGeckoPlayerFirstPerson geoModel;
 
+    @SuppressWarnings("unchecked")
     public GeoPlayerFeature(PlayerEntityRenderer renderer, EntityRendererFactory.Context context) {
         
        super(renderer);
@@ -34,10 +37,8 @@ public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity
                        float headYaw,
                        float headPitch) {
 
-        // Get vanilla model and ensure it has current animations
+        // Get vanilla model - it already has the correct animations/pose from the parent renderer
         PlayerEntityModel<AbstractClientPlayerEntity> vanilla = this.getContextModel();
-        vanilla.animateModel(player, limbSwing, limbSwingAmount, partialTicks);
-        vanilla.setAngles(player, limbSwing, limbSwingAmount, age, headYaw, headPitch);
         
         // Pass vanilla model to GeckoLib model for bone copying
         geoModel.setVanillaModel(vanilla);
@@ -49,11 +50,6 @@ public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity
 
         // then move origin down to player's feet (adjust this value if needed)
         matrices.translate(0.0d, -1.5d, 0.0d);
-
-        // rotate model to match player body yaw
-        float yawDegrees = player.getYaw(partialTicks);
-        float yawRad = (float) Math.toRadians(yawDegrees);
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotation(yawRad));
         
         // hide vanilla player parts
         vanilla.head.visible = false;
@@ -62,16 +58,43 @@ public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity
         vanilla.rightArm.visible = false;
         vanilla.leftLeg.visible = false;
         vanilla.rightLeg.visible = false;
+        vanilla.hat.visible = false;
+        vanilla.jacket.visible = false;
+        vanilla.leftSleeve.visible = false;
+        vanilla.rightSleeve.visible = false;
+        vanilla.leftPants.visible = false;
+        vanilla.rightPants.visible = false;
+        
+        // Counter-act the extra rotation that GeoEntityRenderer will apply.
+        // We are already in the player's body-rotated matrix stack.
+        // GeoEntityRenderer applies (180 - bodyYaw). We apply simply bodyYaw to flip it 180 degrees relative to that.
+        float bodyYaw = MathHelper.lerp(partialTicks, player.prevBodyYaw, player.bodyYaw);
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(bodyYaw));
 
         // delegate everything to Geckolib
+        // We cast to GeoAnimatable to handle the raw type call safely, relying on Mixin at runtime
         geoRenderer.render(
             player,
-            limbSwing,
-            limbSwingAmount,
+            0f,
+            partialTicks,
             matrices,
             vertexConsumers,
             light
         );
+
+        // Restore visibility so we don't break other renderers or the next frame
+        vanilla.head.visible = true;
+        vanilla.body.visible = true;
+        vanilla.leftArm.visible = true;
+        vanilla.rightArm.visible = true;
+        vanilla.leftLeg.visible = true;
+        vanilla.rightLeg.visible = true;
+        vanilla.hat.visible = true;
+        vanilla.jacket.visible = true;
+        vanilla.leftSleeve.visible = true;
+        vanilla.rightSleeve.visible = true;
+        vanilla.leftPants.visible = true;
+        vanilla.rightPants.visible = true;
 
         matrices.pop();
     }

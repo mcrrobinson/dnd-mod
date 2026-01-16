@@ -1,6 +1,6 @@
-package mattonfire.dnd.classes.Render;
+package mattonfire.dnd.classes.Client.Render;
 
-import mattonfire.dnd.classes.Geo.PlayerGeoAnimatedModel;
+import mattonfire.dnd.classes.Client.Geo.ModelGeckoPlayerFirstPerson;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -13,11 +13,13 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
     private final GeoEntityRenderer geoRenderer;
+    private final ModelGeckoPlayerFirstPerson geoModel;
 
     public GeoPlayerFeature(PlayerEntityRenderer renderer, EntityRendererFactory.Context context) {
         
        super(renderer);
-       this.geoRenderer = new GeoEntityRenderer(context, new PlayerGeoAnimatedModel());
+       this.geoModel = new ModelGeckoPlayerFirstPerson();
+       this.geoRenderer = new GeoEntityRenderer(context, geoModel);
     }
 
     @Override
@@ -32,6 +34,14 @@ public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity
                        float headYaw,
                        float headPitch) {
 
+        // Get vanilla model and ensure it has current animations
+        PlayerEntityModel<AbstractClientPlayerEntity> vanilla = this.getContextModel();
+        vanilla.animateModel(player, limbSwing, limbSwingAmount, partialTicks);
+        vanilla.setAngles(player, limbSwing, limbSwingAmount, age, headYaw, headPitch);
+        
+        // Pass vanilla model to GeckoLib model for bone copying
+        geoModel.setVanillaModel(vanilla);
+        
         matrices.push();
 
         // flip model upright for Geckolib coordinate system FIRST
@@ -46,7 +56,6 @@ public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity
         matrices.multiply(RotationAxis.POSITIVE_Y.rotation(yawRad));
         
         // hide vanilla player parts
-        PlayerEntityModel<AbstractClientPlayerEntity> vanilla = this.getContextModel();
         vanilla.head.visible = false;
         vanilla.body.visible = false;
         vanilla.leftArm.visible = false;

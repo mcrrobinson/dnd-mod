@@ -1,11 +1,10 @@
-// ...existing code...
-package mattonfire.dnd.classes.Geo;
+package mattonfire.dnd.classes.Client.Geo;
 
 import net.minecraft.util.Identifier;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
 
-public class PlayerGeoAnimatedModel extends GeoModel<GeoAnimatable> {
+public class ModelGeckoBiped extends GeoModel<GeoAnimatable> {
     @Override
     public Identifier getAnimationResource(GeoAnimatable entity) {
         throw new UnsupportedOperationException("Animation resource not supported");

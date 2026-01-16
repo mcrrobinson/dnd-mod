@@ -16,8 +16,6 @@ import mattonfire.dnd.particle.ModParticles;
 import mattonfire.dnd.particle.TranslucentFlameParticle;
 import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
 import mattonfire.dnd.classes.Client.Hud.PowerupOverlay;
-import mattonfire.dnd.classes.Client.Model.HybridPlayerRenderer;
-import mattonfire.dnd.classes.Client.Model.WizardPlayerRenderer;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
@@ -33,7 +31,6 @@ import net.minecraft.client.item.ModelPredicateProviderRegistry;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
@@ -42,7 +39,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import mattonfire.dnd.classes.Client.Render.Color;
 import mattonfire.dnd.classes.Client.Render.RenderUtils;
-import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
 @Environment(EnvType.CLIENT)
 public class DndClassesClient implements ClientModInitializer {

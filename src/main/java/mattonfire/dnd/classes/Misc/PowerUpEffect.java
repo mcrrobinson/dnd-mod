@@ -3,8 +3,6 @@ package mattonfire.dnd.classes.Misc;
 import java.util.Iterator;
 import java.util.List;
 
-import dev.architectury.event.events.common.ExplosionEvent;
-import dev.architectury.hooks.level.fabric.ExplosionHooksImpl.ExplosionExtensions;
 import draylar.identity.impl.PlayerDataProvider;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.BloodhunterIdentityData;
@@ -52,7 +50,6 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World.ExplosionSourceType;
 import net.minecraft.world.explosion.Explosion;
 
 public class PowerUpEffect {

@@ -11,7 +11,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.MathHelper;
 import software.bernie.geckolib.renderer.GeoEntityRenderer;
-import software.bernie.geckolib.core.animatable.GeoAnimatable;
 
 public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
     private final GeoEntityRenderer geoRenderer;

@@ -77,14 +77,16 @@ public class MagmamuncherEntity extends TameableEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+        AnimationController<MagmamuncherEntity> controller = new AnimationController<>(this, "controller", 0, this::predicate);
+        controller.setSoundKeyframeHandler(event -> {});
+        controllers.add(controller);
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {
         if (tAnimationState.isMoving()) {
-            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("animation.magmamuncher.walk"));
+            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("walk"));
         }
-        return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("animation.magmamuncher.idle"));
+        return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("idle"));
     }
 
     @Override

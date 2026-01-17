@@ -69,14 +69,16 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity {
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        controllers.add(new AnimationController<>(this, "controller", 0, this::predicate));
+        AnimationController<RiverPikehornEntity> controller = new AnimationController<>(this, "controller", 0, this::predicate);
+        controller.setSoundKeyframeHandler(event -> {});
+        controllers.add(controller);
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {
         if (tAnimationState.isMoving()) {
-            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("animation.river_pikehorn.walk"));
+            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("walk"));
         }
-        return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("animation.river_pikehorn.idle"));
+        return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("idle"));
     }
 
     @Override

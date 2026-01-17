@@ -12,7 +12,7 @@ public class MagmamuncherModel extends GeoModel<MagmamuncherEntity> {
 
     @Override
     public Identifier getTextureResource(MagmamuncherEntity object) {
-        return new Identifier("dndclasses", "textures/entity/magmamuncher/magmamuncher.png");
+        return new Identifier("dndclasses", "textures/entity/magmamuncher/magma.png");
     }
 
     @Override

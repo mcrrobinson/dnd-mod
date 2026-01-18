@@ -30,6 +30,14 @@ repositories {
 
 loom {
     accessWidenerPath = file("src/main/resources/dndclasses.accesswidener")
+	runs {
+        client {
+            client()
+            name "Minecraft Client"
+            // Add this line:
+            programArgs "--quickPlaySingleplayer", "New World"
+        }
+    }
 }
 
 dependencies {

@@ -38,9 +38,12 @@ public class WyvernEntity extends TameableEntity implements GeoEntity {
         this.moveControl = new FlightMoveControl(this, 10, false);
     }
 
-    @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, net.minecraft.entity.damage.DamageSource damageSource) {
-        return false;
+    public void switchToFlightMode() {
+        this.moveControl = new FlightMoveControl(this, 10, false);
+        BirdNavigation birdNav = new BirdNavigation(this, this.world);
+        birdNav.setCanPathThroughDoors(false);
+        birdNav.setCanSwim(true);
+        this.navigation = birdNav;
     }
 
     @Override
@@ -95,8 +98,8 @@ public class WyvernEntity extends TameableEntity implements GeoEntity {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new WyvernAttackGoal(this));
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
-        this.goalSelector.add(4, new WanderAroundGoal(this, 1.0D));
-        this.goalSelector.add(5, new WyvernFlyRandomlyGoal(this));
+        this.goalSelector.add(4, new WyvernFlyRandomlyGoal(this));
+        this.goalSelector.add(5, new WanderAroundGoal(this, 1.0D));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
         

@@ -39,6 +39,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import mattonfire.dnd.classes.Client.Render.Color;
 import mattonfire.dnd.classes.Client.Render.RenderUtils;
+import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
 @Environment(EnvType.CLIENT)
 public class DndClassesClient implements ClientModInitializer {

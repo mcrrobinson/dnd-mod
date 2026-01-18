@@ -2,7 +2,6 @@ package mattonfire.dnd.classes.Client.Geo;
 
 import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.DndCharacter;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.model.GeoModel;
 

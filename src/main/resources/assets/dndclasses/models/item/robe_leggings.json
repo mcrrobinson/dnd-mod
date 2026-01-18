@@ -1,0 +1,7 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "dndclasses:item/robe_leggings",
+    "layer1": "dndclasses:item/robe_leggings_overlay"
+  }
+}

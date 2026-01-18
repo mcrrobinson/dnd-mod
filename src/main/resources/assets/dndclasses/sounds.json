@@ -30,5 +30,21 @@
                 "stream": true
             }
         ]
+    },
+    "music_box": {
+        "sounds": [
+            {
+                "name": "dndclasses:music_box",
+                "stream": true
+            }
+        ]
+    },
+    "wizard_explosion": {
+        "sounds": [
+            {
+                "name": "dndclasses:wizard_explosion",
+                "stream": true
+            }
+        ]
     }
 }

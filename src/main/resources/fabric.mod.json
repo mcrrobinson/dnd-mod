@@ -18,19 +18,18 @@
             "mattonfire.dnd.classes.DnDClasses"
         ],
         "client": [
-            "mattonfire.dnd.classes.DoubleJump.DoublejumpClient",
-            "mattonfire.dnd.classes.PowerupKeybind.PowerupKeybindClient",
-            "mattonfire.dnd.classes.gui.GUIClient",
-            "mattonfire.dnd.classes.DisallowSwordClient"
+            "mattonfire.dnd.classes.Client.DndClassesClient"
         ]
     },
     "mixins": [
         "dndclasses.mixins.json"
     ],
+    "accessWidener": "dndclasses.accesswidener",
     "depends": {
         "fabricloader": ">=0.7.4",
         "fabric": "*",
-        "minecraft": "1.16.x"
+        "minecraft": "1.19.4",
+        "identity": ">=2.7.0-1.19.4"
     },
     "suggests": {
         "another-mod": "*"

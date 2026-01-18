@@ -1,11 +1,13 @@
 package mattonfire.dnd.classes;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.math.Box;
 
 public class SetClassAttributes {
 
@@ -20,11 +22,18 @@ public class SetClassAttributes {
 
     public void sendPlayerMessage(PlayerEntity player, String className, String pros, String cons, String special) {
         player.sendMessage(
-                (new TranslatableText("The " + className + "\n")).formatted(Formatting.UNDERLINE, Formatting.GOLD),
+                Text.literal("The " + className + "\n").formatted(Formatting.UNDERLINE, Formatting.GOLD),
                 false);
-        player.sendMessage((new TranslatableText("Pros: " + pros)).formatted(Formatting.GREEN), false);
-        player.sendMessage((new TranslatableText("Cons: " + cons)).formatted(Formatting.RED), false);
-        player.sendMessage((new TranslatableText("Special: " + special)).formatted(Formatting.DARK_PURPLE), false);
+        player.sendMessage(
+                Text.literal("Pros: " + pros).formatted(Formatting.GREEN),
+                false);
+        player.sendMessage(
+                Text.literal("Cons: " + cons).formatted(Formatting.RED),
+                false);
+        player.sendMessage(
+                Text.literal("Special: " + special).formatted(Formatting.DARK_PURPLE),
+                false);
+
     }
 
     public void typeBarbarian(PlayerEntity player) {
@@ -44,20 +53,40 @@ public class SetClassAttributes {
     public void typeCleric(PlayerEntity player) {
         System.out.println("Cleric...");
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4); // -33%
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 20000, 2, false, false, true, null));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 20000, 2, false, false, true));
         player.addStatusEffect(
-                new StatusEffectInstance(StatusEffects.NIGHT_VISION, 20000, 2, false, false, true, null));
+                new StatusEffectInstance(StatusEffects.NIGHT_VISION, 20000, 2, false, false, true));
 
     }
 
     public void typeDruid(PlayerEntity player) {
+
+        final int range = 10; // 10 blocks
+
+        Box searchBox = new Box(
+                player.getX() - range, player.getY() - range, player.getZ() - range,
+                player.getX() + range, player.getY() + range, player.getZ() + range);
+
+        System.out.println("Search box" + searchBox.toString());
+
+        // Get the number of tamed animals this player has
+        int tamedAnimals = (int) player.getWorld()
+                .getEntitiesByClass(Entity.class, searchBox, entity -> true).size();
+
+        // TODO: THIS IS GETTING ALL ENTITIES, NOT THE ONES YOU TAMED
+
+        // AND THE HEALTH ISNT WORKING PROPERLY IT WONT BE ABOVE THE MAX HEALTH.. MAYBE
+        // CUZ ITS NOT STATIC?
+        float health = player.getMaxHealth() + (tamedAnimals * 2);
+        player.setHealth(health);
+        System.out.println(tamedAnimals);
         System.out.println("Druid...");
     }
 
     public void typeFighter(PlayerEntity player) {
         System.out.println("Fighter...");
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(6);
-        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(25);
+        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(26);
         // player.getAttributeInstance(EntityAttributes.ZOMBIE_SPAWN_REINFORCEMENTS).setBaseValue(1);
         // player.getAttributeInstance(EntityAttributes.GENERIC_FOLLOW_RANGE).setBaseValue(64);
     }
@@ -73,8 +102,9 @@ public class SetClassAttributes {
     public void typePaladin(PlayerEntity player) {
         System.out.println("Paladin...");
         // Natural smite...
-        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(25); // Default 20
-        // No potions.
+        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(26); // Default 20
+
+        // Disallow potion effects - in living entity mixin
         // Weak in nether.
     }
 
@@ -87,8 +117,11 @@ public class SetClassAttributes {
 
     public void typeRogue(PlayerEntity player) {
         System.out.println("Rogue...");
-        // No poison.
-        // No hunger.
+
+        player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(14);
+
+        // No poison - in living entity mixin
+        // No hunger -
         // Nether mobs are alies.
         // ALL Overworld mobs will always attack.
     }
@@ -98,7 +131,9 @@ public class SetClassAttributes {
         // Attack attacked take wither debuff.
         // Not attacked by undead.
         // Less health
+        player.setHealth(5);
         // Less attack damage.
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5); // Default 1.0
     }
 
     public void typeWarlock(PlayerEntity player) {

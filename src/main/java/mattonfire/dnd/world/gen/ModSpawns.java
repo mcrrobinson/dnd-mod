@@ -1,7 +1,6 @@
 package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.entity.ModEntityTypes;
-import mattonfire.dnd.entity.WyvernEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.entity.SpawnGroup;

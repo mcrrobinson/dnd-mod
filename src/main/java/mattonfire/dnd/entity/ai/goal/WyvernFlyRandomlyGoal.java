@@ -19,9 +19,8 @@ public class WyvernFlyRandomlyGoal extends Goal {
     @Override
     public boolean canStart() {
         if (this.wyvern.isOnGround()) {
-            // Much lower chance to take off if on ground (1/200 ticks = ~10 seconds avg)
-            // Combined with WanderAroundFarGoal (1/120), this allows walking to occur frequently
-            return this.wyvern.getNavigation().isIdle() && this.wyvern.getRandom().nextInt(200) == 0;
+            // Increased chance to take off if on ground (1/100 ticks = ~5 seconds avg), regardless of current navigation state
+            return this.wyvern.getRandom().nextInt(100) == 0;
         }
         // Normal fly chance if already in air
         return this.wyvern.getNavigation().isIdle() && this.wyvern.getRandom().nextInt(50) == 0;
@@ -34,6 +33,10 @@ public class WyvernFlyRandomlyGoal extends Goal {
 
     @Override
     public void start() {
+        // Switch to flight controls and navigation immediately for takeoff
+        if (this.wyvern.isOnGround()) {
+            this.wyvern.switchToFlightMode();
+        }
         Vec3d vec3d = this.getRandomLocation();
         if (vec3d != null) {
             this.wyvern.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);

@@ -9,7 +9,9 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
+import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -31,10 +33,55 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class LightningChaserEntity extends TameableEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+    private String currentFlyAnimation = "fly.idle";
+    private int flyAnimationTimer = 0;
+    private int ticksSinceLastGround = 0;
+    private static final int FLY_ANIMATION_DURATION = 20; // ticks
 
     public LightningChaserEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
+    }
+
+    public void switchToFlightMode() {
+        this.moveControl = new FlightMoveControl(this, 10, false);
+        BirdNavigation birdNav = new BirdNavigation(this, this.world);
+        birdNav.setCanPathThroughDoors(false);
+        birdNav.setCanSwim(true);
+        this.navigation = birdNav;
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.isOnGround()) {
+            this.ticksSinceLastGround = 0;
+            // Use ground movement control when on ground
+            if (!(this.moveControl instanceof MoveControl)) {
+                this.moveControl = new MoveControl(this);
+            }
+            // Use ground navigation when on ground
+            if (!(this.getNavigation() instanceof MobNavigation)) {
+                this.navigation = new MobNavigation(this, this.world);
+            }
+        } else {
+            this.ticksSinceLastGround++;
+            // Use flight movement control when in air
+            if (!(this.moveControl instanceof FlightMoveControl)) {
+                this.moveControl = new FlightMoveControl(this, 10, false);
+            }
+            // Use bird navigation when in air
+            if (!(this.getNavigation() instanceof BirdNavigation)) {
+                BirdNavigation birdNav = new BirdNavigation(this, this.world);
+                birdNav.setCanPathThroughDoors(false);
+                birdNav.setCanSwim(true);
+                this.navigation = birdNav;
+            }
+        }
+
+        if (!this.world.isClient && !this.isOnGround() && this.getVelocity().y < 0.0D) {
+            this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
+        }
     }
 
     @Override
@@ -67,9 +114,9 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new SitGoal(this));
-        this.goalSelector.add(3, new LightningChaserAttackGoal(this));
-        this.goalSelector.add(4, new LightningChaserFlyRandomlyGoal(this));
+        this.goalSelector.add(2, new LightningChaserAttackGoal(this));
+        this.goalSelector.add(3, new LightningChaserFlyRandomlyGoal(this));
+        this.goalSelector.add(4, new WanderAroundGoal(this, 1.0D));
         this.goalSelector.add(5, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -104,13 +151,20 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity {
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {
-        if (!this.isOnGround()) {
-            if (tAnimationState.isMoving()) {
-                // Using "fly.straight" from animation file but it might need to match generic "fly" if mapped in geo
-                // but usually raw animation name is used.
-                return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("fly.straight"));
+        boolean isFlying = !this.isOnGround() && this.ticksSinceLastGround > 5; // Must be airborne for >5 ticks to be considered flying
+
+        if (isFlying) {
+            String desiredAnimation = tAnimationState.isMoving() ? "fly.straight" : "fly.idle";
+            if (!desiredAnimation.equals(currentFlyAnimation)) {
+                flyAnimationTimer++;
+                if (flyAnimationTimer >= FLY_ANIMATION_DURATION) {
+                    currentFlyAnimation = desiredAnimation;
+                    flyAnimationTimer = 0;
+                }
+            } else {
+                flyAnimationTimer = 0;
             }
-            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("fly.idle"));
+            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop(currentFlyAnimation));
         }
         if (tAnimationState.isMoving()) {
             return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("walk"));

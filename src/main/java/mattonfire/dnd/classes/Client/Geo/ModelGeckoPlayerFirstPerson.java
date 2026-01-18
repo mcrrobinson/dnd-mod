@@ -6,7 +6,6 @@ import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.DndCharacter;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;

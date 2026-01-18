@@ -12,7 +12,6 @@ import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.SetPlayerClass;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.Registry.ModSounds;
-import mattonfire.dnd.classes.render.GeoPlayerFeature;
 import mattonfire.dnd.particle.ModParticles;
 import mattonfire.dnd.particle.TranslucentFlameParticle;
 import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
@@ -29,14 +28,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.ModelPredicateProviderRegistry;
-import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
 import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.render.entity.EntityRenderDispatcher;
-import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.render.entity.PlayerEntityRenderer;
 import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
@@ -145,6 +139,11 @@ public class DndClassesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, mattonfire.dnd.client.renderer.RiverPikehornRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MAGMAMUNCHER, mattonfire.dnd.client.renderer.MagmamuncherRenderer::new);
+
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_MENU_KEY.wasPressed()) {
                 if (client.currentScreen == null) {

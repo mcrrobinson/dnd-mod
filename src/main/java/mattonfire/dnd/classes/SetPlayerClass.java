@@ -3,8 +3,9 @@ package mattonfire.dnd.classes;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
-import mattonfire.dnd.classes.gui.GUI;
-import mattonfire.dnd.classes.gui.Screen;
+
+import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
+import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
 
 public class SetPlayerClass {
     public static void setPlayerClass(@Nullable MinecraftClient client, PlayerEntity player, int classID) {
@@ -12,7 +13,7 @@ public class SetPlayerClass {
         playerClasses.resetToDefault(player);
         switch (classID) {
             case 0:
-                client.openScreen(new Screen(new GUI()));
+                client.setScreen(new ModKeybinds(new ClassSelectionHud()));
             case 1:
                 playerClasses.typeBarbarian(player);
                 break;

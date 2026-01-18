@@ -2,18 +2,34 @@
     "required": true,
     "minVersion": "0.8",
     "package": "mattonfire.dnd.classes.mixin",
-    "compatibilityLevel": "JAVA_8",
+    "compatibilityLevel": "JAVA_17",
     "mixins": [
+        "AbstractClientPlayerEntityMixin",
+        "LivingEntityRendererAccessor",
+        "LivingEntityRendererMixin",
+        "PlayerEntityRendererMixin",
         "BowItemMixin",
-        "StatusEffectMixin",
-        "HostileEntityMixin",
         "PlayerEntityMixin",
         "PlayerManagerMixin",
-        "LavaDamageMixin"
+        "LavaDamageMixin",
+        "LivingEntityMixin",
+        "HungerManagerMixin",
+        "ModEntityDataSaverMixin",
+        "EnchantmentScreenHandlerInvoker",
+        "EnchantmentScreenHandlerAccessor",
+        "EnchantingTableMixin",
+        "ActiveTargetGoalMixin",
+        "TrackTargetGoalMixin",
+        "MobEntityAccessor",
+        "BrewingStandAccessor",
+        "BrewingStandBlockEntityMixin",
+        "BrewingStandBlockMixin",
+        "CraftingResultSlotMixin"
     ],
     "client": [
-        "PreAbstractClientPlayerEntityMixin",
-        "DoubleJumpMixin"
+        "DoubleJumpMixin",
+        "LivingEntityMixin",
+        "LivingEntityRendererMixin"
     ],
     "injectors": {
         "defaultRequire": 1

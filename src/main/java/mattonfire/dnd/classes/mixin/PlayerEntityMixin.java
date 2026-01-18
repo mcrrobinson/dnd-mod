@@ -1,49 +1,70 @@
 package mattonfire.dnd.classes.mixin;
 
-import mattonfire.dnd.classes.ExtendedSwordItem;
+import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tag.FluidTags;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@SuppressWarnings("rawtypes")
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends Entity implements PlayerEntityExt {
-    private ItemStack selectedItem;
     boolean dropEntireStack;
-    private int dndClass = 0;
+    private DndCharacter dndClass;
 
     public PlayerEntityMixin(EntityType<?> type, World world) {
         super(type, world);
-        // TODO Auto-generated constructor stub
     }
 
-    public void setDndClass(int classID) {
-        this.dndClass = classID;
-        System.out.println(this.dndClass);
+    public void setDndClass(DndCharacter dndClass) {
+        this.dndClass = dndClass;
     }
 
-    public int dndClassExist() {
+    public DndCharacter getDndClass() {
         return this.dndClass;
     }
 
-    @Inject(at = @At("HEAD"), method = "dropSelectedItem")
-    private void dropSelectedItem(boolean dropEntireStack, CallbackInfoReturnable info) {
-        System.out.println("Item dropped");
-        if (this.selectedItem.getItem() instanceof ExtendedSwordItem) {
-            System.out.println("Extended Dong dropped");
-            ((ExtendedSwordItem) this.selectedItem.getItem()).SetRange(false);
-            ExtendedSwordItem.active = false;
+    public int addProgress(DndCharacter character, int amount) {
+        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
+        NbtCompound nbt = player.getPersistentData();
+        int progress = nbt.getInt(character.toString());
+        progress += amount;
+        nbt.putInt(character.toString(), progress);
+        return progress;
+    }
+
+    public int getProgress(DndCharacter character) {
+        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
+        NbtCompound nbt = player.getPersistentData();
+        return nbt.getInt(character.toString());
+    }
+
+    public void setMana(int amount) {
+        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
+        NbtCompound nbt = player.getPersistentData();
+        nbt.putInt("mana", Math.min(amount, 100));
+    }
+
+    private float getCustomPullProgress(int useTicks) {
+        float f = (float) useTicks / 3.0F;
+        f = (f * f + f * 2.0F) / 3.0F;
+        if (f > 1.0F) {
+            f = 1.0F;
         }
+
+        return f;
     }
 
     // Some creatures can't swim... here is that. Probably a better way of doing
@@ -51,10 +72,62 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     @Inject(at = @At("HEAD"), method = "tick")
     public void tick(CallbackInfo info) {
         PlayerEntity player = (PlayerEntity) (Object) this;
-        if (((PlayerEntityExt) player).dndClassExist() == 4) {
-            if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.abilities.flying) {
-                this.setVelocity(0.0D, -0.5, 0.0D);
+        if (player instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            if (playerEntity.getDndClass() == DndCharacter.DRUID) {
+                if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
+                        !player.getAbilities().flying) {
+                    this.setVelocity(0.0D, -0.5, 0.0D);
+                }
+            }
+        }
+
+        LivingEntity self = (LivingEntity) (Object) this;
+        if (self.hasStatusEffect(ModEffects.ARROW_STORM)) {
+
+            if (!self.isUsingItem())
+                return;
+
+            ItemStack activeItem = self.getActiveItem();
+            if (!(activeItem.getItem() instanceof BowItem))
+                return;
+
+            int useTicks = self.getItemUseTime();
+
+            // change this if its the ranger class
+            float progress;
+            if (self instanceof PlayerEntityExt playerEntity) {
+                if (playerEntity.getDndClass() == DndCharacter.RANGER) {
+                    progress = getCustomPullProgress(useTicks);
+                } else {
+                    progress = BowItem.getPullProgress(useTicks);
+                }
+            } else {
+                progress = BowItem.getPullProgress(useTicks);
+            }
+
+            if (progress >= 1.0F) {
+                // Auto-release the bow
+                self.stopUsingItem(); // Triggers BowItem#onStoppedUsing
             }
         }
     }
+
+    @Inject(method = "tickMovement", at = @At("HEAD"))
+    private void onTickMovement(CallbackInfo info) {
+        LivingEntity entity = (LivingEntity) (Object) this;
+
+        if (entity instanceof PlayerEntityExt) {
+            PlayerEntityExt playerEntity = (PlayerEntityExt) entity;
+
+            // Custom Healing Mechanic for "mattonfire"
+            if (playerEntity.getDndClass() == DndCharacter.DRUID && world.isDay()) {
+                if (entity.getHealth() < entity.getMaxHealth() && this.age % 20 == 0) {
+                    entity.heal(0.5F); // Heal even without food requirement
+                }
+            }
+        }
+
+    }
+
 }

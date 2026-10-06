@@ -20,6 +20,15 @@ Navigate to the root directory of the project and type the following...
 
 That will build the latest edition of Minecraft I have got working with the mod.
 
+### Linux (Debian/Ubuntu)
+Install JDK 21, then use the `./gradlew` wrapper:
+
+```sh
+sudo apt install openjdk-21-jdk
+./gradlew genSources
+./gradlew runClient
+```
+
 ## Features
 
 ### Player Classes Overview

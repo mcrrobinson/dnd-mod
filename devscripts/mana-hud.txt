@@ -1,0 +1,20 @@
+# Checks the mana bar layers like health/food: chat draws over it and it hides in spectator.
+# Run: ./gradlew runClient -PdevScript=devscripts/mana-hud.txt
+# Output: run/screenshots/mana-nochat.png, mana-survival.png, mana-spectator.png
+wait 40
+closescreen
+/gamemode survival
+/tp @s 0 150 0 0 0
+/effect give @s minecraft:levitation 30 255 true
+wait 10
+screenshot mana-nochat
+/say aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+/say bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+/say cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc
+wait 10
+screenshot mana-survival
+/gamemode spectator
+wait 10
+screenshot mana-spectator
+/gamemode survival
+quit

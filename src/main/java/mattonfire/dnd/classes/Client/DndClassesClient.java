@@ -15,7 +15,6 @@ import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
 import mattonfire.dnd.particle.TranslucentFlameParticle;
 import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
-import mattonfire.dnd.classes.Client.Hud.PowerupOverlay;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
@@ -23,7 +22,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.MinecraftClient;
@@ -221,8 +219,6 @@ public class DndClassesClient implements ClientModInitializer {
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
                 DndClassesClient::removeManor);
-
-        HudRenderCallback.EVENT.register(new PowerupOverlay());
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null && isBreathingFire(client.player)) {

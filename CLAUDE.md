@@ -27,3 +27,45 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
 5. Start the client in the background from the worktree (`./gradlew runClient`) so the user can test, and wait for their feedback before calling it done.
 6. Once the user is happy, commit, push the branch and open a PR to `main`. Move the card to Done when it's merged.
 7. Clean up with `git worktree remove ../dnd-mod-<branch-slug>` after merging.
+
+## Testing in the dev client
+
+- `./gradlew runClient` loads straight into the dev world `run/saves/New World` (`DevScript` auto-join; pick another world with `-PdevWorld=<folder>`). Minecraft 1.19.4 ignores `--quickPlaySingleplayer`, which only exists from 1.20.
+- **Scripted, unattended runs**: `timeout 300 ./gradlew runClient -PdevScript=devscripts/<script>.txt`. The client joins, runs the script and quits on its own. Steps are documented in `DevScript.java`:
+  - `/command`
+  - `wait <ticks>`
+  - `screenshot <name>`
+  - `hitboxes on|off` (F3+B)
+  - `hud on|off` (F1)
+  - `closescreen`
+  - `quit`
+
+  See `devscripts/dragon-hitboxes.txt` for an example.
+- Check results yourself:
+  - Read `run/screenshots/<name>.png` with the Read tool.
+  - Grep `run/logs/latest.log` for `[DevScript]` steps, and for `[CHAT]` command feedback such as "Unknown or incomplete command".
+- Script tips:
+  - The class picker opens a couple of seconds after joining: `wait 40` then `closescreen`.
+  - For repeatable shots, use absolute coordinates high in the air (e.g. y=150) and freeze mobs with `{NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}`.
+  - Hitbox rendering also draws dragon part shapes as green boxes.
+- Stopping a client:
+  - End scripts with `quit`, or use the pause menu (Save and Quit).
+  - Don't `pkill -f <pattern>`: the pattern matches your own shell, which then dies (exit 144).
+- Manual fallback for driving a running client:
+  - The game runs under XWayland. `xdotool search --name Minecraft` finds the window.
+  - `xdotool key slash` + `xdotool type "..."` + `xdotool key Return` runs commands.
+  - `xwd -id <window> -out f.xwd && ffmpeg -i f.xwd f.png` captures the window, including menus where F2 doesn't work.
+
+## Reading Minecraft / library code
+
+- Minecraft sources aren't decompiled. Inspect the named jar with `javap -p -c`: `.gradle/loom-cache/minecraftMaven/net/minecraft/minecraft-merged-*/**/minecraft-merged-*.jar`.
+- GeckoLib ships sources: `.gradle/loom-cache/remapped_mods/**/geckolib-fabric-1.19.4-4.2-sources.jar`.
+- GeckoLib 4.2 bug: `GeoBone.getLocalSpaceMatrix()` and `getWorldSpaceMatrix()` have an extra identity matrix added (`RenderUtils.translateMatrix`). Subtract it before use (see `DragonRenderer`).
+
+## Repo notes
+
+- `build/` is tracked in git, so builds show changes under it. Don't commit them.
+- Big GeckoLib mobs get extra hit shapes through `MultipartDragon`:
+  - Implement it and list the model's bone groups in a `DragonPartLayout`.
+  - Render the mob with a `DragonRenderer`.
+  - Parts follow the animated model on the client and the rest pose on the server.

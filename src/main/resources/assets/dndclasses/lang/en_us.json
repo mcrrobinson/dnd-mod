@@ -48,5 +48,11 @@
     "item.dndclasses.blood_hunter_helmet": "Blood Hunter Helmet",
     "item.dndclasses.blood_hunter_chestplate": "Blood Hunter Chestplate",
     "item.dndclasses.blood_hunter_leggings": "Blood Hunter Leggings",
-    "item.dndclasses.blood_hunter_boots": "Blood Hunter Boots"
+    "item.dndclasses.blood_hunter_boots": "Blood Hunter Boots",
+    "entity.dndclasses.wyvern": "Wyvern",
+    "entity.dndclasses.lightning_chaser": "Lightning Chaser",
+    "entity.dndclasses.river_pikehorn": "River Pikehorn",
+    "entity.dndclasses.magmamuncher": "Magmamuncher",
+    "advancements.dndclasses.dragon_slayer.title": "Dragon Slayer",
+    "advancements.dndclasses.dragon_slayer.description": "Slay a dragon"
 }

@@ -3,6 +3,7 @@ package mattonfire.dnd.entity;
 import java.util.UUID;
 import mattonfire.dnd.entity.ai.goal.WyvernAttackGoal;
 import mattonfire.dnd.entity.ai.goal.WyvernFlyRandomlyGoal;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.FlightMoveControl;
@@ -13,10 +14,13 @@ import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -53,6 +57,12 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
             .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
                     "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
     private final DragonPart[] parts;
+
+    // Shown like the ender dragon's bar to players near a wild wyvern that is fighting a player.
+    // The dragon music flag tells the client to play the dragon fight music (EventMusic).
+    private static final double BOSS_BAR_RANGE = 64.0;
+    private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(),
+            BossBar.Color.RED, BossBar.Style.PROGRESS).setDragonMusic(true);
 
     public WyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
@@ -121,6 +131,49 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         if (!this.world.isClient && !this.isOnGround() && this.getVelocity().y < 0.0D) {
             this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
         }
+
+        if (!this.world.isClient) {
+            this.updateBossBar();
+        }
+    }
+
+    private boolean isFightingPlayer() {
+        return this.isAlive() && !this.isTamed()
+                && (this.getTarget() instanceof PlayerEntity || this.getAttacker() instanceof PlayerEntity);
+    }
+
+    private boolean inBossBarRange(ServerPlayerEntity player) {
+        return player.world == this.world && player.isAlive() && !player.isSpectator()
+                && player.squaredDistanceTo(this) < BOSS_BAR_RANGE * BOSS_BAR_RANGE;
+    }
+
+    private void updateBossBar() {
+        this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
+        this.bossBar.setName(this.getDisplayName());
+
+        boolean fighting = this.isFightingPlayer();
+        for (ServerPlayerEntity player : java.util.List.copyOf(this.bossBar.getPlayers())) {
+            if (!fighting || !this.inBossBarRange(player)) {
+                this.bossBar.removePlayer(player);
+            }
+        }
+        if (fighting) {
+            for (ServerPlayerEntity player : ((ServerWorld) this.world).getPlayers(this::inBossBarRange)) {
+                this.bossBar.addPlayer(player);
+            }
+        }
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        super.onStoppedTrackingBy(player);
+        this.bossBar.removePlayer(player);
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
+        this.bossBar.clearPlayers();
     }
 
     @Override

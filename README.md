@@ -67,7 +67,15 @@ There is armor for each class, however the armor benefits are increased dependin
 
 ### Music
 
-Custom music will randomly play during different events in the game. There are currently **four** different music tracks:
+Custom music plays during different events in the game. There are **five** music tracks, each also available as a music disc:
+
+| Track | When it plays |
+|-------|---------------|
+| **Tooth and Claw** | Straight away when a dragon fight starts, looping until it ends |
+| **Silent Footsteps** | In dungeons (near a mob spawner, or inside a stronghold, mineshaft, ancient city, fortress, bastion, mansion, ocean monument or temple) and at night, mixed with the vanilla music |
+| **Awake Cart** | While travelling (about 80 blocks covered in 30 seconds), mixed with the vanilla music |
+| **Steel on Steel** | Music disc only |
+| **Music Box** | Music disc only |
 
 ### Mobs
 

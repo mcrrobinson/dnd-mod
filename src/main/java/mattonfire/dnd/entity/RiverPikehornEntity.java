@@ -22,11 +22,44 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RiverPikehornEntity extends TameableEntity implements GeoEntity {
+public class RiverPikehornEntity extends TameableEntity implements GeoEntity, MultipartDragon {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
+
+    // Head, tail and wings stick out past the 1-block hitbox; each part wraps a group of model bones.
+    // It never flies, so there is no flight pose.
+    private static final DragonPartLayout PART_LAYOUT = new DragonPartLayout("river_pikehorn", 0, 0)
+            .part("body", "body_front", "body_back")
+            .part("head", "neck", "head", "jaw")
+            .part("tail", "tail1", "tail2")
+            .pair("wing", "wing_left", "wing_membrane_left", "wing_cont_left");
+    private final DragonPart[] parts;
 
     public RiverPikehornEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
+        this.parts = PART_LAYOUT.createParts(this);
+        this.setId(DragonPartLayout.reserveIds(this.parts));
+    }
+
+    @Override
+    public DragonPart[] getParts() {
+        return this.parts;
+    }
+
+    @Override
+    public DragonPartLayout getPartLayout() {
+        return PART_LAYOUT;
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        DragonPartLayout.assignIds(this.parts, id);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        PART_LAYOUT.update(this, this.parts, false);
     }
 
     @Override

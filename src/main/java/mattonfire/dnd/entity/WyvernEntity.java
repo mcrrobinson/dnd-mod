@@ -26,16 +26,59 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class WyvernEntity extends TameableEntity implements GeoEntity {
+public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private String currentFlyAnimation = "fly.idle";
     private int flyAnimationTimer = 0;
     private int ticksSinceLastGround = 0;
     private static final int FLY_ANIMATION_DURATION = 20; // ticks - reduced from 120 for responsiveness
 
+    // The model is ~12 blocks wide but the entity hitbox is only 1.5, so wings, neck, head and tail
+    // get their own hittable parts (like the ender dragon), each wrapping a group of model bones.
+    // Root bone sits 11px lower on the ground and 34.5px lower in flight (wyvern.animation.json).
+    private static final DragonPartLayout PART_LAYOUT = new DragonPartLayout("wyvern", -11 / 16.0, -34.5 / 16.0)
+            .part("body", "front", "back")
+            .part("neck_base", "neck1", "neck2")
+            .part("neck_mid", "neck3", "neck4")
+            .part("neck_top", "neck5")
+            .part("head", "head", "jaw_low")
+            .part("tail_base", "tail1", "tail2")
+            .part("tail_tip", "tail3", "tail4", "tail5")
+            .pair("wing", "wing_left", "membrane_shoulder_left", "wing_wart_left", "membrane_wart1_left", "membrane_wart2_left")
+            .pair("wing_arm", "shoulder_arm_left", "membrane_shoulder_arm_left")
+            .pair("wing_finger1", "wing_finger1_left", "membrane_wing_finger1_left")
+            .pair("wing_finger2", "wing_finger2_left", "membrane_wing_finger2_left")
+            .pair("wing_finger3", "wing_finger3_left", "membrane_wing_finger3_left", "wing_finger4_left")
+            // Legs hang below the main hitbox in flight
+            .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
+                    "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
+    private final DragonPart[] parts;
+
     public WyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
+        this.parts = PART_LAYOUT.createParts(this);
+        this.setId(DragonPartLayout.reserveIds(this.parts));
+    }
+
+    @Override
+    public DragonPart[] getParts() {
+        return this.parts;
+    }
+
+    @Override
+    public DragonPartLayout getPartLayout() {
+        return PART_LAYOUT;
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        DragonPartLayout.assignIds(this.parts, id);
+    }
+
+    private boolean isFlying() {
+        return !this.isOnGround() && this.ticksSinceLastGround > 5;
     }
 
     public void switchToFlightMode() {
@@ -49,6 +92,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        PART_LAYOUT.update(this, this.parts, this.isFlying());
         if (this.isOnGround()) {
             this.ticksSinceLastGround = 0;
             // Use ground movement control when on ground
@@ -147,7 +191,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
         AnimationController<WyvernEntity> controller = new AnimationController<>(this, "controller", 0, event -> {
-            boolean isFlying = !this.isOnGround() && this.ticksSinceLastGround > 5; // Must be airborne for >5 ticks (0.25s) to be considered flying
+            boolean isFlying = this.isFlying(); // Must be airborne for >5 ticks (0.25s) to be considered flying
 
             if (isFlying) {
                 String desiredAnimation = event.isMoving() ? "fly.straight" : "fly.idle";

@@ -24,10 +24,14 @@
         "BrewingStandAccessor",
         "BrewingStandBlockEntityMixin",
         "BrewingStandBlockMixin",
-        "CraftingResultSlotMixin"
+        "CraftingResultSlotMixin",
+        "WorldMixin",
+        "ServerWorldMixin",
+        "ProjectileUtilMixin"
     ],
     "client": [
         "DoubleJumpMixin",
+        "EntityRenderDispatcherMixin",
         "LivingEntityMixin",
         "LivingEntityRendererMixin"
     ],

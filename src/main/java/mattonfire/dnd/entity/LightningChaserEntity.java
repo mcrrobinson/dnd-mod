@@ -31,16 +31,60 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class LightningChaserEntity extends TameableEntity implements GeoEntity {
+public class LightningChaserEntity extends TameableEntity implements GeoEntity, MultipartDragon {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private String currentFlyAnimation = "fly.idle";
     private int flyAnimationTimer = 0;
     private int ticksSinceLastGround = 0;
     private static final int FLY_ANIMATION_DURATION = 20; // ticks
 
+    // The model's wingspan is ~18 blocks but the entity hitbox is only 1.5, so wings, neck, head and
+    // tail get their own hittable parts, each wrapping a group of model bones. Root bone sits 4.25px
+    // higher on the ground and 18.75px lower in flight (lightning_chaser.animation.json).
+    private static final DragonPartLayout PART_LAYOUT = new DragonPartLayout("lightning_chaser", 4.25 / 16.0, -18.75 / 16.0)
+            .part("body", "front", "back")
+            .part("neck_base", "neck1")
+            .part("neck_mid", "neck2")
+            .part("neck_top", "neck3")
+            .part("head", "head", "jaw")
+            .part("tail_base", "tail1")
+            .part("tail_mid", "tail2")
+            .part("tail_tip", "tail3", "tail4")
+            .pair("wing", "wing_left", "membrane_shoulder_left", "membrane1_elbow_left", "membrane2_elbow_left")
+            .pair("wing_arm", "shoulder_arm_left", "membrane_shoulder_arm_left", "fingers_left", "wing_finger4_left", "wing_finger5_left")
+            .pair("wing_finger1", "wing_finger1_left", "membrane_wing_finger1_left")
+            .pair("wing_finger2", "wing_finger2_left", "membrane_wing_finger2_left")
+            .pair("wing_finger3", "wing_finger3_left", "membrane_wing_finger3_left")
+            // Legs hang below the main hitbox in flight
+            .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
+                    "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
+    private final DragonPart[] parts;
+
     public LightningChaserEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
+        this.parts = PART_LAYOUT.createParts(this);
+        this.setId(DragonPartLayout.reserveIds(this.parts));
+    }
+
+    @Override
+    public DragonPart[] getParts() {
+        return this.parts;
+    }
+
+    @Override
+    public DragonPartLayout getPartLayout() {
+        return PART_LAYOUT;
+    }
+
+    @Override
+    public void setId(int id) {
+        super.setId(id);
+        DragonPartLayout.assignIds(this.parts, id);
+    }
+
+    private boolean isFlying() {
+        return !this.isOnGround() && this.ticksSinceLastGround > 5;
     }
 
     public void switchToFlightMode() {
@@ -54,6 +98,7 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity {
     @Override
     public void tick() {
         super.tick();
+        PART_LAYOUT.update(this, this.parts, this.isFlying());
         if (this.isOnGround()) {
             this.ticksSinceLastGround = 0;
             // Use ground movement control when on ground
@@ -151,7 +196,7 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity {
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {
-        boolean isFlying = !this.isOnGround() && this.ticksSinceLastGround > 5; // Must be airborne for >5 ticks to be considered flying
+        boolean isFlying = this.isFlying(); // Must be airborne for >5 ticks to be considered flying
 
         if (isFlying) {
             String desiredAnimation = tAnimationState.isMoving() ? "fly.straight" : "fly.idle";

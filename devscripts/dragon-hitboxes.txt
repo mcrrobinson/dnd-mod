@@ -1,0 +1,45 @@
+# Screenshots each multipart dragon's hit shapes (F3+B green boxes) from the side and from above.
+# Run: ./gradlew runClient -PdevScript=devscripts/dragon-hitboxes.txt
+# Output: run/screenshots/dragon-*.png. Everything happens high in the air at x=0 z=0 so terrain
+# doesn't get in the way; NoAI/NoGravity freezes each dragon in its flying pose.
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:wyvern]
+/kill @e[type=dndclasses:lightning_chaser]
+/kill @e[type=dndclasses:river_pikehorn]
+hitboxes on
+hud off
+# The class picker opens shortly after joining
+wait 40
+closescreen
+
+# Lightning Chaser
+/tp @s 14 150 0 90 10
+/summon dndclasses:lightning_chaser 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 40
+screenshot dragon-lightning_chaser-side
+/tp @s 0 163 0 0 90
+wait 40
+screenshot dragon-lightning_chaser-top
+/kill @e[type=dndclasses:lightning_chaser]
+
+# Wyvern
+/tp @s 12 150 0 90 10
+/summon dndclasses:wyvern 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 40
+screenshot dragon-wyvern-side
+/tp @s 0 160 0 0 90
+wait 40
+screenshot dragon-wyvern-top
+/kill @e[type=dndclasses:wyvern]
+
+# River Pikehorn
+/tp @s 4 150 0 90 10
+/summon dndclasses:river_pikehorn 0 149 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 40
+screenshot dragon-river_pikehorn-side
+/kill @e[type=dndclasses:river_pikehorn]
+
+hud on
+quit

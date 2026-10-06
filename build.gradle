@@ -34,8 +34,13 @@ loom {
         client {
             client()
             name "Minecraft Client"
-            // Add this line:
-            programArgs "--quickPlaySingleplayer", "New World"
+            // Load straight into the dev world, skipping the title screen (see DevScript; 1.19.4
+            // has no --quickPlaySingleplayer). Override with -PdevWorld=<name>, or -PdevWorld= to disable.
+            vmArg "-Ddnd.autojoin=${project.findProperty('devWorld') ?: 'New World'}"
+            // Scripted testing: ./gradlew runClient -PdevScript=devscripts/<script>.txt (see DevScript)
+            if (project.hasProperty('devScript')) {
+                vmArg "-Ddnd.devscript=${file(project.property('devScript')).absolutePath}"
+            }
         }
     }
 }

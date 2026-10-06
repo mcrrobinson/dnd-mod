@@ -33,7 +33,9 @@
         "DoubleJumpMixin",
         "EntityRenderDispatcherMixin",
         "LivingEntityMixin",
-        "LivingEntityRendererMixin"
+        "LivingEntityRendererMixin",
+        "MinecraftClientMusicMixin",
+        "MusicTrackerAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

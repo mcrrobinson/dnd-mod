@@ -46,5 +46,49 @@
                 "stream": true
             }
         ]
+    },
+    "music.dragon_fight": {
+        "sounds": [
+            {
+                "name": "dndclasses:tooth_and_claw",
+                "stream": true
+            }
+        ]
+    },
+    "music.dungeon": {
+        "sounds": [
+            {
+                "name": "dndclasses:silent_footsteps",
+                "stream": true
+            }
+        ]
+    },
+    "music.night": {
+        "sounds": [
+            {
+                "name": "dndclasses:silent_footsteps",
+                "stream": true,
+                "weight": 2
+            },
+            {
+                "name": "minecraft:music.game",
+                "type": "event",
+                "weight": 1
+            }
+        ]
+    },
+    "music.travel": {
+        "sounds": [
+            {
+                "name": "dndclasses:awake_cart",
+                "stream": true,
+                "weight": 2
+            },
+            {
+                "name": "minecraft:music.game",
+                "type": "event",
+                "weight": 1
+            }
+        ]
     }
 }

@@ -384,6 +384,7 @@ public class DnDClasses implements ModInitializer {
                 FAArmorEffectHandler.register();
 
                 ModSounds.registerSounds();
+                mattonfire.dnd.classes.Music.DungeonMusic.register();
                 ModItemGroup.registerItemGroups();
                 ModItems.registerModItems();
                 ModEffects.registerEffects();

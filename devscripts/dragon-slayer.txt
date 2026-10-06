@@ -1,0 +1,20 @@
+# Kills a wyvern as the player and screenshots the "Dragon Slayer" advancement toast.
+# Run: ./gradlew runClient -PdevScript=devscripts/dragon-slayer.txt
+# Check: run/screenshots/dragon-slayer-toast.png, and "Dragon Slayer" in run/logs/latest.log
+/advancement revoke @s only dndclasses:dragon_slayer
+/time set day
+/weather clear
+/gamemode survival
+/effect give @s minecraft:resistance 60 4 true
+/kill @e[type=dndclasses:wyvern]
+wait 40
+closescreen
+/tp @s 12 150 0 90 10
+/summon dndclasses:wyvern 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 20
+/damage @e[type=dndclasses:wyvern,limit=1] 100 minecraft:player_attack by @s
+wait 30
+screenshot dragon-slayer-toast
+/gamemode creative
+wait 20
+quit

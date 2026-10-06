@@ -1,0 +1,98 @@
+# Exercises the event music triggers and the Wyvern boss bar.
+# Run: ./gradlew runClient -PdevScript=devscripts/event-music.txt
+# Check: run/screenshots/wyvern-boss-bar.png, and "[EventMusic]" lines in run/logs/latest.log
+# (expect DRAGON_FIGHT, then NONE, NIGHT, DUNGEON, TRAVEL as each trigger starts and stops).
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:wyvern]
+wait 40
+closescreen
+
+# Dragon fight: hurting a wild wyvern as a player shows the boss bar and starts the fight music
+/tp @s 12 150 0 90 10
+/summon dndclasses:wyvern 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 20
+/damage @e[type=dndclasses:wyvern,limit=1] 10 minecraft:player_attack by @s
+wait 20
+screenshot wyvern-boss-bar
+# The fight ends 5 seconds after the last hit (attacker memory)
+wait 140
+/kill @e[type=dndclasses:wyvern]
+wait 20
+
+# Night
+/time set midnight
+wait 40
+/time set day
+wait 40
+
+# Dungeon: a mob spawner within 16 blocks
+/setblock 0 147 0 minecraft:spawner
+wait 60
+/setblock 0 147 0 minecraft:air
+wait 60
+
+# Travelling: 4 blocks a second for 30 seconds
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+/tp @s ~4 ~ ~
+wait 20
+wait 20
+quit

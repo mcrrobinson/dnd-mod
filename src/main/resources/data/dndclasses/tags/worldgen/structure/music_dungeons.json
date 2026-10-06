@@ -1,0 +1,15 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:stronghold",
+        "minecraft:mineshaft",
+        "minecraft:mineshaft_mesa",
+        "minecraft:ancient_city",
+        "minecraft:fortress",
+        "minecraft:bastion_remnant",
+        "minecraft:mansion",
+        "minecraft:monument",
+        "minecraft:jungle_pyramid",
+        "minecraft:desert_pyramid"
+    ]
+}

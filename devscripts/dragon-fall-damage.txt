@@ -1,0 +1,29 @@
+# Lands each flying dragon with 20 blocks of fall distance built up, then prints its health.
+# Run: ./gradlew runClient -PdevScript=devscripts/dragon-fall-damage.txt
+# Check run/logs/latest.log for the [CHAT] lines: both should stay at max health (Wyvern 40, Lightning Chaser 50).
+# Spectator mode keeps the dragons from targeting the player (the Lightning Chaser's bolts can hit itself).
+/time set day
+/gamemode spectator
+/kill @e[type=dndclasses:wyvern]
+/kill @e[type=dndclasses:lightning_chaser]
+wait 40
+closescreen
+# Stone platform high in the air (landing in water would reset fall distance)
+/fill -8 150 -8 8 150 8 minecraft:stone
+/tp @s 0 160 12 180 30
+
+/summon dndclasses:wyvern 0 152 0 {FallDistance:20f}
+wait 2
+/data get entity @e[type=dndclasses:wyvern,limit=1] FallDistance
+wait 38
+/data get entity @e[type=dndclasses:wyvern,limit=1] Health
+/kill @e[type=dndclasses:wyvern]
+
+/summon dndclasses:lightning_chaser 0 152 0 {FallDistance:20f}
+wait 40
+/data get entity @e[type=dndclasses:lightning_chaser,limit=1] Health
+/kill @e[type=dndclasses:lightning_chaser]
+/fill -8 150 -8 8 150 8 minecraft:air
+
+/gamemode creative
+quit

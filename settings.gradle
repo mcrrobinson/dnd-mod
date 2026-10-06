@@ -42,6 +42,16 @@ def setJavaHomeFromEnvOrDefault() {
         } else {
             println "gradle settings: macOS fallback not found: ${macPath}"
         }
+    } else if (os.contains('linux')) {
+        // Debian/Ubuntu `openjdk-21-jdk` installs to /usr/lib/jvm/java-21-openjdk-<arch>
+        def linuxPath = file('/usr/lib/jvm').listFiles()?.find { it.name.startsWith('java-21-openjdk') }
+        if (linuxPath?.exists()) {
+            println "gradle settings: no valid JAVA_HOME; using Linux fallback: ${linuxPath}"
+            System.setProperty('org.gradle.java.home', linuxPath.absolutePath)
+            try { gradle.startParameter.setJavaHome(linuxPath) } catch (Exception e) { /* ignore */ }
+        } else {
+            println "gradle settings: Linux fallback not found under /usr/lib/jvm (install openjdk-21-jdk)"
+        }
     } else {
         println "gradle settings: no JAVA_HOME and unknown OS (${os}); not setting java home."
     }

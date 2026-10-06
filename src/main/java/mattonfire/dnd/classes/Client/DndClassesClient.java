@@ -146,6 +146,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
+        mattonfire.dnd.classes.Client.Music.EventMusic.register();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_MENU_KEY.wasPressed()) {

@@ -14,6 +14,12 @@ public class ModSounds {
 
     public static final SoundEvent MUSIC_BOX = registerSoundEvent("music_box");
 
+    // Event music pools (sounds.json); night and travel mix in vanilla game music
+    public static final SoundEvent MUSIC_DRAGON_FIGHT = registerSoundEvent("music.dragon_fight");
+    public static final SoundEvent MUSIC_DUNGEON = registerSoundEvent("music.dungeon");
+    public static final SoundEvent MUSIC_NIGHT = registerSoundEvent("music.night");
+    public static final SoundEvent MUSIC_TRAVEL = registerSoundEvent("music.travel");
+
     public static final SoundEvent WIZARD_EXPLOSION = registerSoundEvent("wizard_explosion");
 
     private static SoundEvent registerSoundEvent(String name) {

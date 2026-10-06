@@ -176,6 +176,12 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         this.bossBar.clearPlayers();
     }
 
+    // Flying creature: landing after a flight (or a dive) shouldn't hurt it
+    @Override
+    public boolean handleFallDamage(float fallDistance, float damageMultiplier, net.minecraft.entity.damage.DamageSource damageSource) {
+        return false;
+    }
+
     @Override
     protected EntityNavigation createNavigation(World world) {
         BirdNavigation birdNavigation = new BirdNavigation(this, world);

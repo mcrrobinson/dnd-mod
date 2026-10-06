@@ -25,7 +25,9 @@ import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.particle.ModParticles;
+import mattonfire.dnd.classes.Commands.DndClassCommand;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -150,8 +152,33 @@ public class DnDClasses implements ModInitializer {
 
         private static void sendClassPickPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                SetClassAttributes playerClasses = new SetClassAttributes();
                 int bufferInteger = buf.readInt();
+                applyClass(player, DndCharacter.fromValue(bufferInteger));
+
+                String message = DnDClasses.respawnMessage.get(player.getUuidAsString());
+                if (message == null) {
+                        return;
+                }
+                Text titleText = Text.literal("Subtle hint").formatted(Formatting.BOLD, Formatting.GOLD);
+                Text subtitleText = Text.literal(message).formatted(Formatting.ITALIC, Formatting.YELLOW);
+
+                TitleS2CPacket packet = new TitleS2CPacket(titleText);
+                SubtitleS2CPacket subtitlePacket = new SubtitleS2CPacket(subtitleText);
+                // Send the title packet
+                player.networkHandler.sendPacket(packet);
+
+                // Send the subtitle packet
+                player.networkHandler.sendPacket(subtitlePacket);
+        }
+
+        /**
+         * Switches a player to the given class on the server and tells their client.
+         * Every class only sets attribute base values, so resetting to default first
+         * means switching back and forth never stacks anything.
+         */
+        public static void applyClass(ServerPlayerEntity player, DndCharacter dndClass) {
+                SetClassAttributes playerClasses = new SetClassAttributes();
+                int bufferInteger = dndClass.getValue();
                 playerClasses.resetToDefault(player);
                 switch (bufferInteger) {
                         case 1:
@@ -310,25 +337,15 @@ public class DnDClasses implements ModInitializer {
                                 DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,
                                 approveClassBuf);
 
+                // A lower max health doesn't lower current health on its own.
+                if (player.getHealth() > player.getMaxHealth()) {
+                        player.setHealth(player.getMaxHealth());
+                }
+
                 // If run with no errors declare in the NBT.
                 if (player instanceof PlayerEntityExt) {
-                        ((PlayerEntityExt) player).setDndClass(DndCharacter.fromValue(bufferInteger));
+                        ((PlayerEntityExt) player).setDndClass(dndClass);
                 }
-
-                String message = DnDClasses.respawnMessage.get(player.getUuidAsString());
-                if (message == null) {
-                        return;
-                }
-                Text titleText = Text.literal("Subtle hint").formatted(Formatting.BOLD, Formatting.GOLD);
-                Text subtitleText = Text.literal(message).formatted(Formatting.ITALIC, Formatting.YELLOW);
-
-                TitleS2CPacket packet = new TitleS2CPacket(titleText);
-                SubtitleS2CPacket subtitlePacket = new SubtitleS2CPacket(subtitleText);
-                // Send the title packet
-                player.networkHandler.sendPacket(packet);
-
-                // Send the subtitle packet
-                player.networkHandler.sendPacket(subtitlePacket);
         }
 
         private static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
@@ -646,6 +663,9 @@ public class DnDClasses implements ModInitializer {
 
                 // Register classpick registry.
                 ServerPlayNetworking.registerGlobalReceiver(C2S_CLASS_PICK_PACKET_ID, DnDClasses::sendClassPickPacket);
+
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
 
                 // tree feller enchantment
                 TreeFeller.register();

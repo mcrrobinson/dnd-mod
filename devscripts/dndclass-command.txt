@@ -1,0 +1,24 @@
+wait 40
+closescreen
+wait 10
+/dndclass set @s barbarian
+wait 10
+/dndclass get @s
+/attribute @s minecraft:generic.max_health get
+/attribute @s minecraft:generic.movement_speed base get
+wait 10
+/dndclass set @s wizard
+wait 10
+/attribute @s minecraft:generic.max_health get
+/attribute @s minecraft:generic.movement_speed base get
+/dndclass set @s barbarian
+wait 10
+/attribute @s minecraft:generic.max_health get
+/dndclass set @s notaclass
+wait 10
+screenshot dndclass-command
+/dndclass set @s none
+wait 20
+screenshot dndclass-none
+closescreen
+quit

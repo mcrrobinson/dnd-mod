@@ -31,6 +31,7 @@
         "SpawnHelperMixin"
     ],
     "client": [
+        "BackgroundRendererMixin",
         "DoubleJumpMixin",
         "EntityRenderDispatcherMixin",
         "LivingEntityMixin",

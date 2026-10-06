@@ -43,10 +43,20 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<GoblinWarriorEntity> GOBLIN_WARRIOR = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "goblin_warrior"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, GoblinWarriorEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.8f, 1.5f))
+                    .fireImmune()
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
+        FabricDefaultAttributeRegistry.register(GOBLIN_WARRIOR, GoblinWarriorEntity.createGoblinWarriorAttributes());
     }
 }

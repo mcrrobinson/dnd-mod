@@ -229,7 +229,9 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         return TameableEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.3)
-                .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6);
+                .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6)
+                // tryAttack reads it; without it the server crashes on the first melee hit
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
     }
 
     @Override

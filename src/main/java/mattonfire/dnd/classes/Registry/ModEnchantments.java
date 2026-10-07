@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Enchantments.FeatherfallEnchantment;
 import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
@@ -22,11 +23,15 @@ public class ModEnchantments {
         public static final Enchantment INVULNERABILITY_ENCHANTMENT = registerEnchantment("invulnerability",
                         new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
 
+        public static final Enchantment FEATHERFALL_ENCHANTMENT = registerEnchantment("featherfall",
+                        new FeatherfallEnchantment(Enchantment.Rarity.UNCOMMON));
+
         private static Enchantment registerEnchantment(String name, Enchantment enchantment) {
                 return Registry.register(Registries.ENCHANTMENT, new Identifier(DnDClasses.MOD_ID, name), enchantment);
         }
 
         public static void registerEnchantments() {
                 DnDClasses.LOGGER.info("Registering Mod Enchantments for " + DnDClasses.MOD_ID);
+                mattonfire.dnd.classes.Featherfall.register();
         }
 }

@@ -26,7 +26,7 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
     @Unique
     private DndCharacter lastPlayer;
 
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private static void onBrewComplete(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity,
             CallbackInfo ci) {
         if (!world.isClient) { // Ensure this runs only on the server
@@ -49,6 +49,12 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
                 world.createExplosion(null, customExplosionSource, null,
                         blockEntity.getPos().toCenterPos(),
                         10.0F, false, ExplosionSourceType.TNT);
+
+                // The explosion removed the stand. Skip the rest of the vanilla tick, which
+                // would finish the brew and setBlockState the stand back into the crater.
+                if (blockEntity.isRemoved()) {
+                    ci.cancel();
+                }
             }
         }
     }

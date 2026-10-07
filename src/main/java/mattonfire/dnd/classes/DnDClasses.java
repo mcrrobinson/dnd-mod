@@ -580,43 +580,42 @@ public class DnDClasses implements ModInitializer {
                 });
 
                 // Register event listener
+                // Runs on both sides, so the client refuses before starting the drink or draw animation
                 UseItemCallback.EVENT.register((player, world, hand) -> {
-                        if (player instanceof ServerPlayerEntity serverPlayer) {
-                                if (serverPlayer instanceof PlayerEntityExt) {
-                                        PlayerEntityExt playerEntityExt = (PlayerEntityExt) serverPlayer;
-                                        if (playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
-                                                ItemStack itemStack = player.getStackInHand(hand);
-                                                if (itemStack.getItem() instanceof BowItem
-                                                                || itemStack.getItem() instanceof CrossbowItem) {
-                                                        player.sendMessage(Text.of("Fighters cannot use bows!"), true);
-                                                        return TypedActionResult.fail(itemStack);
-                                                }
+                        if (player instanceof PlayerEntityExt) {
+                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) player;
+                                if (playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                        ItemStack itemStack = player.getStackInHand(hand);
+                                        if (itemStack.getItem() instanceof BowItem
+                                                        || itemStack.getItem() instanceof CrossbowItem) {
+                                                player.sendMessage(Text.of("Fighters cannot use bows!"), true);
+                                                return TypedActionResult.fail(itemStack);
                                         }
-                                        if (playerEntityExt.getDndClass() == DndCharacter.ARTIFICER
-                                                        && player.getStackInHand(hand).isOf(Items.POTION)) {
-                                                // Drinking would waste it; splash/lingering can still be thrown at others
-                                                player.sendMessage(Text.of("Potions have no effect on you!"), true);
-                                                return TypedActionResult.fail(player.getStackInHand(hand));
+                                }
+                                if (playerEntityExt.getDndClass() == DndCharacter.ARTIFICER
+                                                && player.getStackInHand(hand).isOf(Items.POTION)) {
+                                        // Drinking would waste it; splash/lingering can still be thrown at others
+                                        player.sendMessage(Text.of("Potions have no effect on you!"), true);
+                                        return TypedActionResult.fail(player.getStackInHand(hand));
+                                }
+                                if (playerEntityExt.getDndClass() == DndCharacter.PALADIN
+                                                || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                        ItemStack itemStack = player.getStackInHand(hand);
+
+                                        // Check if the item is a potion
+                                        if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
+                                                        || itemStack.isOf(Items.LINGERING_POTION)) {
+                                                // Prevent the player from using it
+                                                player.sendMessage(Text
+                                                                .of("You are not allowed to drink potions!"),
+                                                                true);
+                                                return TypedActionResult.fail(itemStack);
                                         }
-                                        if (playerEntityExt.getDndClass() == DndCharacter.PALADIN
-                                                        || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
-                                                ItemStack itemStack = player.getStackInHand(hand);
+                                } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
+                                        // if (player.getStackInHand(hand).isEmpty()) {
 
-                                                // Check if the item is a potion
-                                                if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
-                                                                || itemStack.isOf(Items.LINGERING_POTION)) {
-                                                        // Prevent the player from using it
-                                                        player.sendMessage(Text
-                                                                        .of("You are not allowed to drink potions!"),
-                                                                        true);
-                                                        return TypedActionResult.fail(itemStack);
-                                                }
-                                        } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
-                                                // if (player.getStackInHand(hand).isEmpty()) {
+                                        // }
 
-                                                // }
-
-                                        }
                                 }
                         }
                         return TypedActionResult.pass(player.getStackInHand(hand));

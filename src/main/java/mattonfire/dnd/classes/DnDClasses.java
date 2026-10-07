@@ -277,8 +277,8 @@ public class DnDClasses implements ModInitializer {
                                 playerClasses.sendPlayerMessage(
                                                 player,
                                                 "Warlock",
-                                                "With an empty hand, the ability to throw fireballs & resistant to both fire and lava.",
-                                                "Decreases your damage output. You're also unable to use anything but a staff to attack.",
+                                                "Right click with an empty hand to throw fireballs. Fire and lava can't hurt you.",
+                                                "You deal less damage and water and rain burn you.",
                                                 "You breathe fire by holding your special key.");
                                 playerClasses.typeWarlock(player);
                                 break;
@@ -594,9 +594,7 @@ public class DnDClasses implements ModInitializer {
                                                         return TypedActionResult.fail(itemStack);
                                                 }
                                         } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
-                                                // if (player.getStackInHand(hand).isEmpty()) {
-
-                                                // }
+                                                // Empty-hand fireballs are handled in Warlock (client mixin + C2S packet).
 
                                         }
                                 }
@@ -675,6 +673,7 @@ public class DnDClasses implements ModInitializer {
 
                 Invulnerability.register();
 
+                Warlock.register();
                 Druid.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
@@ -712,5 +711,4 @@ public class DnDClasses implements ModInitializer {
 
 // remove diamonds type create own again...
 // Change shade of the potion
-// Make the fireball no damage to caster.
 // Custom projectile for the staffs

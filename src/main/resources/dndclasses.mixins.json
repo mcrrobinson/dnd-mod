@@ -42,7 +42,8 @@
         "LivingEntityMixin",
         "LivingEntityRendererMixin",
         "MinecraftClientMusicMixin",
-        "MusicTrackerAccessor"
+        "MusicTrackerAccessor",
+        "WarlockFireballMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -1,7 +1,9 @@
 package mattonfire.dnd.entity;
 
 import java.util.UUID;
+import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -11,7 +13,11 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
+import net.minecraft.world.WorldView;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -35,6 +41,43 @@ public class MagmamuncherEntity extends TameableEntity implements GeoEntity {
     @Override
     public boolean isFireImmune() {
         return true;
+    }
+
+    /** Highest y a natural spawn may stand at: keeps them off the bedrock roof of the Nether. */
+    private static final int NETHER_ROOF_Y = 127;
+
+    /**
+     * Spawn restriction for the Nether: any solid ground (netherrack, basalt, blackstone, soul soil/sand)
+     * or magma, in any light, but never on top of the Nether roof. Spawners and spawn eggs skip the checks.
+     */
+    public static boolean canSpawnInNether(EntityType<MagmamuncherEntity> type, ServerWorldAccess world,
+                                           SpawnReason reason, BlockPos pos, Random random) {
+        if (reason == SpawnReason.SPAWNER) {
+            return true;
+        }
+        if (pos.getY() >= NETHER_ROOF_Y) {
+            return false;
+        }
+        // Magma only lets fire-immune entity types spawn on it, and the type isn't flagged as such.
+        return world.getBlockState(pos.down()).isOf(Blocks.MAGMA_BLOCK)
+                || MobEntity.canMobSpawn(type, world, reason, pos, random);
+    }
+
+    /** AnimalEntity prefers bright grass, which made every dark Nether spot fail {@code canSpawn}. */
+    @Override
+    public float getPathfindingFavor(BlockPos pos, WorldView world) {
+        return 0.0F;
+    }
+
+    /** Wild ones despawn like other Nether mobs (they're in the MONSTER group); tamed ones never do. */
+    @Override
+    public boolean canImmediatelyDespawn(double distanceSquared) {
+        return !this.isTamed();
+    }
+
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || this.isTamed() || this.isLeashed();
     }
 
     @Override

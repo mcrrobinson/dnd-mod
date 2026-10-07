@@ -42,7 +42,8 @@
         "PotionImmunityMixin",
         "PotionInstantEffectMixin",
         "ActiveTargetGoalAccessor",
-        "PaladinAuraMixin"
+        "PaladinAuraMixin",
+        "ArtificerItemStackMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

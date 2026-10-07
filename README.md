@@ -40,7 +40,7 @@ sudo apt install openjdk-21-jdk
 
 Each class in the game comes with its own unique strengths, weaknesses, and special abilities.
 
-Every player gets a **Class Guidebook** on their first join and whenever their class changes (if they don't already carry one). Right click it to read the pros, cons and special ability of your current class, and which key fires the special (Power Up, `Z` by default). Lost it? Craft a new one from a book and a lapis lazuli.
+Every player gets a **Class Guidebook** on first join and on class change, explaining their class and its special-ability key. See [docs/systems/class-guidebook.md](docs/systems/class-guidebook.md).
 
 <!-- class-table:start - generated from src/main/resources/data/dndclasses/class_info.json, the same data the guidebook uses. Edit that file and run ./gradlew generateClassReadme -->
 | **Class**| **Pros**|**Cons**|**Special Ability**|

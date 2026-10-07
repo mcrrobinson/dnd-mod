@@ -28,6 +28,7 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
 6. Once the user is happy, commit, push the branch and open a PR to `main`. Move the card to Done when it's merged.
    - Include the screenshots you took while testing in the PR description. Don't commit them to the feature branch; push them to the orphan branch `pr-screenshots` under `<branch-slug>/` and embed them with `![name](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/<branch-slug>/<name>.png)`.
    - To push them without touching your worktree: `git worktree add ../dnd-mod-pr-screenshots pr-screenshots` (first time: `git worktree add --orphan -b pr-screenshots ../dnd-mod-pr-screenshots`), copy the PNGs in, commit, push, then `git worktree remove ../dnd-mod-pr-screenshots`.
+   - `gh pr edit` fails here with a "Projects (classic) is being deprecated" GraphQL error. To change a PR description, use `gh api -X PATCH repos/mcrrobinson/dnd-mod/pulls/<n> -F body=@<file>.md`.
 7. Clean up with `git worktree remove ../dnd-mod-<branch-slug>` after merging.
 
 ## Testing in the dev client

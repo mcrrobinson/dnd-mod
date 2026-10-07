@@ -81,7 +81,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         this.setId(DragonPartLayout.reserveIds(this.parts));
         this.bossFight = new BossFight(this, BossBar.Color.RED, BossBar.Style.PROGRESS)
                 .range(64.0)
-                .activeWhen(() -> !this.isTamed())
+                .activeWhen(() -> this.hasBossFight() && !this.isTamed())
                 .music(ModSounds.MUSIC_DRAGON_FIGHT)
                 .advancement(DRAGON_SLAYER);
     }
@@ -155,6 +155,26 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
 
         this.bossFight.tick();
         this.fireBreath.tick();
+    }
+
+    /** Whether a fight shows the boss bar and plays the fight music (not for the common Ember Wyvern). */
+    protected boolean hasBossFight() {
+        return true;
+    }
+
+    /** The model texture; variants override it. */
+    public Identifier getTexture() {
+        return new Identifier(DnDClasses.MOD_ID, "textures/entity/wyvern/green.png");
+    }
+
+    /** Ticks between bites. */
+    public int getMeleeCooldown() {
+        return 20;
+    }
+
+    /** Ticks after a fire breath ends before the next attack. */
+    public int getBreathCooldown() {
+        return 60;
     }
 
     @Override

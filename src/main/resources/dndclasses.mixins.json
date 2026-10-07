@@ -18,6 +18,7 @@
         "EnchantmentScreenHandlerInvoker",
         "EnchantmentScreenHandlerAccessor",
         "EnchantingTableMixin",
+        "AnvilScreenHandlerMixin",
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",

@@ -42,6 +42,7 @@ import net.minecraft.screen.slot.SlotActionType;
  * <li>{@code hitboxes on|off} toggles hitbox rendering (F3+B)</li>
  * <li>{@code hud on|off} toggles the HUD (F1)</li>
  * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join)</li>
+ * <li>{@code respawn} respawns the player if it's dead (a world saved mid-death loads dead)</li>
  * <li>{@code quit} closes the game cleanly</li>
  * </ul>
  * Input steps act inside the game, so they work while the window is hidden or unfocused:
@@ -175,6 +176,12 @@ public final class DevScript {
             case "hitboxes" -> client.getEntityRenderDispatcher().setRenderHitboxes(argument.equals("on"));
             case "hud" -> client.options.hudHidden = argument.equals("off");
             case "closescreen" -> client.setScreen(null);
+            case "respawn" -> {
+                if (client.player.isDead()) {
+                    client.player.requestRespawn();
+                    client.setScreen(null);
+                }
+            }
             case "quit" -> client.scheduleStop();
             case "look" -> {
                 String[] angles = argument.split("\\s+");

@@ -72,6 +72,7 @@ Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and pres
 - [Armor](docs/items/armor.md): 14 class-themed sets. A full set gives a bonus to anyone, boosted for the classes it's made for.
 - [Staffs](docs/items/staffs.md): Staffs of Fire, Ice and Lightning, and the Monk Staff.
 - [Potions and brewing](docs/items/potions-and-brewing.md): the Alchemist's Fast Brewing Stand, the Potion of Freezing, and brewing stands that explode for non-Alchemists.
+- [Bard instruments](docs/items/bard-instruments.md): the Lute, War Drum and Flute. When a Bard plays one, every player within 16 blocks gets Regeneration, Strength or Speed for 30 seconds.
 
 ### Enchantments
 Lunge, Invulnerability, Tree Feller, Grid Miner, Returning, Vampiric, Smite Dragons and Featherfall, which only an Artificer can roll at an enchanting table. See [Enchantments](docs/enchantments/README.md).

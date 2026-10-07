@@ -3,8 +3,10 @@ package mattonfire.dnd.classes.Client.Music;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Music.InstrumentSongs;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.sound.AbstractSoundInstance;
 import net.minecraft.client.sound.SoundInstance;
@@ -14,6 +16,7 @@ import net.minecraft.sound.SoundEvent;
 /**
  * Plays a short musical sting when the player's class special fires, and ducks the background music
  * under it (SoundSystemMusicDuckMixin) so the track carries on quietly instead of being cut off.
+ * Bard instrument songs (InstrumentItem) duck the music the same way.
  */
 public class MusicStings {
     // The sting files are at most 4 s long
@@ -27,6 +30,11 @@ public class MusicStings {
 
     public static void register() {
         ClientTickEvents.END_CLIENT_TICK.register(MusicStings::tick);
+        // A Bard instrument song started in earshot: duck the music under it like a sting
+        ClientPlayNetworking.registerGlobalReceiver(InstrumentSongs.S2C_INSTRUMENT_SONG, (client, handler, buf, sender) -> {
+            int ticks = buf.readVarInt();
+            client.execute(() -> duck(ticks));
+        });
     }
 
     /** Called when the server confirms the player's special fired. */
@@ -41,7 +49,12 @@ public class MusicStings {
         }
         DnDClasses.LOGGER.info("[EventMusic] sting {} for {}", sting.getId(), dndClass);
         client.getSoundManager().play(new StingSoundInstance(sting));
-        duckTicksLeft = STING_TICKS;
+        duck(STING_TICKS);
+    }
+
+    /** Turns the background music down for the next {@code ticks} ticks. */
+    public static void duck(int ticks) {
+        duckTicksLeft = Math.max(duckTicksLeft, ticks);
     }
 
     private static SoundEvent stingFor(DndCharacter dndClass) {

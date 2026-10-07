@@ -69,7 +69,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Armor](items/armor.md): 14 class sets with full-set and matching-class bonuses
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
-- [Bard instruments](items/bard-instruments.md): lute, drum and flute (PR #61)
+- [Bard instruments](items/bard-instruments.md): lute, drum and flute
 
 ## Music
 - [Music](music.md): event music, class stings and music discs

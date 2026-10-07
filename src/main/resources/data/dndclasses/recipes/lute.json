@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "  T",
+        "PST",
+        "PP "
+    ],
+    "key": {
+        "P": {
+            "tag": "minecraft:planks"
+        },
+        "S": {
+            "item": "minecraft:string"
+        },
+        "T": {
+            "item": "minecraft:stick"
+        }
+    },
+    "result": {
+        "item": "dndclasses:lute",
+        "count": 1
+    }
+}

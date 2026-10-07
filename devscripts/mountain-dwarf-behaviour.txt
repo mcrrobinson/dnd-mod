@@ -1,0 +1,30 @@
+# Checks the Mountain Dwarf is neutral: leaves a survival player alone, kills a nearby husk,
+# and only attacks the player after being hit.
+# Run: ./gradlew runClient -PdevScript=devscripts/mountain-dwarf-behaviour.txt
+# Check "[CHAT]" lines in run/logs/latest.log: the first Health is 20, the husk check says "Test failed"
+# (none left), and the dwarf then fights the player (Health drops, or "slain by").
+/time set 6000
+/gamerule doDaylightCycle false
+/difficulty normal
+wait 40
+closescreen
+/fill 20 149 -6 32 149 6 minecraft:polished_deepslate
+/fill 20 150 -6 32 152 6 minecraft:air
+/kill @e[type=dndclasses:mountain_dwarf]
+/gamemode survival
+/effect clear @s
+/tp @s 26 150 0 0 0
+/summon dndclasses:mountain_dwarf 26 150 2
+wait 200
+/data get entity @s Health
+/gamemode creative
+/summon minecraft:husk 30 150 -4
+wait 300
+/execute if entity @e[type=minecraft:husk]
+/tp @s 26 150 0 0 0
+/gamemode survival
+/damage @e[type=dndclasses:mountain_dwarf,limit=1] 1 minecraft:player_attack by @s
+wait 100
+/data get entity @s Health
+/gamemode creative
+quit

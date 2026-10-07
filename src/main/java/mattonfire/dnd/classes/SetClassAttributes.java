@@ -92,11 +92,9 @@ public class SetClassAttributes {
     }
 
     public void typeMonk(PlayerEntity player) {
-        // Weakness on anything but a staff.
+        // Staff/fist-only attacks and the armor-scaled damage penalty live in MonkHandler.
         player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.12); // Default 0.1
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED).setBaseValue(6.0); // Default 4.0
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-                .setBaseValue(10 * (1 / (player.getArmor() + 1)));
     }
 
     public void typePaladin(PlayerEntity player) {

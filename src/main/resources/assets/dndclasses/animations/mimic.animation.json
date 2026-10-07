@@ -1,0 +1,200 @@
+{
+ "format_version": "1.8.0",
+ "animations": {
+  "dormant": {
+   "loop": true,
+   "bones": {
+    "lid": {
+     "rotation": [
+      0,
+      0,
+      0
+     ]
+    },
+    "tongue": {
+     "rotation": [
+      0,
+      0,
+      0
+     ]
+    },
+    "mimic": {
+     "position": [
+      0,
+      0,
+      0
+     ]
+    }
+   }
+  },
+  "awake": {
+   "loop": true,
+   "animation_length": 2.0,
+   "bones": {
+    "lid": {
+     "rotation": [
+      "-14-math.sin(query.anim_time*180)*6",
+      0,
+      0
+     ]
+    },
+    "tongue": {
+     "rotation": [
+      "-6-math.sin(query.anim_time*360)*6",
+      "math.sin(query.anim_time*180)*10",
+      0
+     ]
+    }
+   }
+  },
+  "walk": {
+   "loop": true,
+   "animation_length": 0.5,
+   "bones": {
+    "mimic": {
+     "position": [
+      0,
+      "math.abs(math.sin(query.anim_time*360))*3",
+      0
+     ]
+    },
+    "lid": {
+     "rotation": [
+      "-8-math.abs(math.sin(query.anim_time*360))*30",
+      0,
+      0
+     ]
+    },
+    "tongue": {
+     "rotation": [
+      "0-math.abs(math.sin(query.anim_time*360))*15",
+      0,
+      0
+     ]
+    }
+   }
+  },
+  "wake": {
+   "loop": false,
+   "animation_length": 0.6,
+   "bones": {
+    "lid": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.1": [
+       -80,
+       0,
+       0
+      ],
+      "0.4": [
+       -65,
+       0,
+       0
+      ],
+      "0.6": [
+       -16,
+       0,
+       0
+      ]
+     }
+    },
+    "tongue": {
+     "rotation": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.15": [
+       -35,
+       0,
+       0
+      ],
+      "0.45": [
+       -20,
+       0,
+       0
+      ],
+      "0.6": [
+       -6,
+       0,
+       0
+      ]
+     }
+    },
+    "mimic": {
+     "position": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.1": [
+       0,
+       4,
+       0
+      ],
+      "0.3": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  },
+  "bite": {
+   "loop": false,
+   "animation_length": 0.4,
+   "bones": {
+    "lid": {
+     "rotation": {
+      "0.0": [
+       -20,
+       0,
+       0
+      ],
+      "0.12": [
+       -85,
+       0,
+       0
+      ],
+      "0.22": [
+       0,
+       0,
+       0
+      ],
+      "0.4": [
+       -14,
+       0,
+       0
+      ]
+     }
+    },
+    "mimic": {
+     "position": {
+      "0.0": [
+       0,
+       0,
+       0
+      ],
+      "0.12": [
+       0,
+       2,
+       0
+      ],
+      "0.22": [
+       0,
+       0,
+       0
+      ]
+     }
+    }
+   }
+  }
+ }
+}

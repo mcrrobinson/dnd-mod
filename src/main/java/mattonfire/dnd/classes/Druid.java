@@ -2,6 +2,7 @@ package mattonfire.dnd.classes;
 
 import java.util.UUID;
 
+import mattonfire.dnd.classes.Progression.Progression;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
@@ -18,6 +19,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -33,6 +36,7 @@ public class Druid {
     // Extra hearts from tamed animals.
     public static final UUID ANIMAL_HEARTS_UUID = UUID.fromString("5f6c1f0e-3a2b-4d8e-9a71-0d4b3c2e1a77");
     public static final int MAX_ANIMAL_HEARTS = 5;
+    public static final int BEAST_BOND_MAX_ANIMAL_HEARTS = 10;
 
     // Light: regen at or above this light level, hunger at or below the dark one.
     public static final int REGEN_LIGHT_LEVEL = 10;
@@ -44,11 +48,14 @@ public class Druid {
     private static final int MAX_RECORDED_ANIMALS = 16;
     private static final String KILLED_ANIMALS_KEY = "druidKilledAnimals";
     private static final String FORM_EXPIRY_KEY = "druidFormExpiry";
+    /** Creatures besides animals whose form a druid learns by killing one (the Owlbear). */
+    public static final TagKey<EntityType<?>> DRUID_FORMS = TagKey.of(RegistryKeys.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "druid_forms"));
 
     public static void register() {
-        // Remember every animal a druid kills.
+        // Remember every animal (and wild beast like the Owlbear) a druid kills.
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-            if (!(entity instanceof AnimalEntity))
+            if (!(entity instanceof AnimalEntity) && !entity.getType().isIn(DRUID_FORMS))
                 return;
             Entity attacker = damageSource.getAttacker();
             if (attacker instanceof ServerPlayerEntity player && isDruid(player)) {
@@ -100,7 +107,9 @@ public class Druid {
     }
 
     public static void updateAnimalHearts(ServerPlayerEntity player) {
-        int hearts = Math.min(countTamedAnimals(player), MAX_ANIMAL_HEARTS);
+        int maxHearts = Progression.hasPassive(player, "druid.beast_bond") ? BEAST_BOND_MAX_ANIMAL_HEARTS
+                : MAX_ANIMAL_HEARTS;
+        int hearts = Math.min(countTamedAnimals(player), maxHearts);
         EntityAttributeInstance attribute = player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
         if (attribute == null)
             return;
@@ -143,12 +152,20 @@ public class Druid {
             if (player.getHealth() < player.getMaxHealth()) {
                 player.heal(0.5F); // Heal even without food requirement
             }
+            // Photosynthesis: half a drumstick every 3 seconds.
+            if (player.age % 60 < 20 && Progression.hasPassive(player, "druid.photosynthesis")) {
+                player.getHungerManager().add(1, 0.5F);
+            }
         } else if (light <= DARK_LIGHT_LEVEL) {
             player.addExhaustion(DARK_EXHAUSTION_PER_SECOND);
         }
     }
 
     // ---- Animal form ----
+
+    public static boolean isTransformed(PlayerEntity player) {
+        return ((IEntityDataSaver) player).getPersistentData().contains(FORM_EXPIRY_KEY);
+    }
 
     private static void recordKill(ServerPlayerEntity player, EntityType<?> type) {
         String id = Registries.ENTITY_TYPE.getId(type).toString();

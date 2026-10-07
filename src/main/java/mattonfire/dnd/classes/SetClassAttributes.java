@@ -20,20 +20,24 @@ public class SetClassAttributes {
         Druid.onClassReset(player);
     }
 
-    public void sendPlayerMessage(PlayerEntity player, String className, String pros, String cons, String special) {
+    /** Tells the player what their new class does, from the same data as the guidebook and README. */
+    public void sendPlayerMessage(PlayerEntity player, ClassInfo info) {
         player.sendMessage(
-                Text.literal("The " + className + "\n").formatted(Formatting.UNDERLINE, Formatting.GOLD),
+                Text.literal("The " + info.name() + "\n").formatted(Formatting.UNDERLINE, Formatting.GOLD),
                 false);
         player.sendMessage(
-                Text.literal("Pros: " + pros).formatted(Formatting.GREEN),
+                Text.literal("Pros: " + ClassInfo.joinForGame(info.pros())).formatted(Formatting.GREEN),
                 false);
         player.sendMessage(
-                Text.literal("Cons: " + cons).formatted(Formatting.RED),
+                Text.literal("Cons: " + ClassInfo.joinForGame(info.cons())).formatted(Formatting.RED),
                 false);
         player.sendMessage(
-                Text.literal("Special: " + special).formatted(Formatting.DARK_PURPLE),
+                Text.literal("Special: " + ClassInfo.joinForGame(info.special())).formatted(Formatting.DARK_PURPLE),
                 false);
-
+        player.sendMessage(
+                Text.literal("Read your Class Guidebook for the details.").formatted(Formatting.GRAY,
+                        Formatting.ITALIC),
+                false);
     }
 
     public void typeBarbarian(PlayerEntity player) {

@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Classes.PaladinSkills;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -19,7 +21,8 @@ import net.minecraft.world.World;
  * half armor and move 20% slower. Status effects can't be used because
  * Paladins are immune to them (LivingEntityMixin), so this uses temporary
  * attribute modifiers that are re-checked every tick and dropped as soon as the
- * player leaves the Nether or stops being a Paladin.
+ * player leaves the Nether or stops being a Paladin. The Hellforged skill
+ * switches it off.
  */
 public class PaladinNetherWeakness {
     private static final UUID ATTACK_UUID = UUID.fromString("5b3c1d2e-7a41-4f0e-9c6b-0a1d2e3f4a51");
@@ -38,7 +41,8 @@ public class PaladinNetherWeakness {
     private static void update(ServerPlayerEntity player) {
         boolean weak = player instanceof PlayerEntityExt ext
                 && ext.getDndClass() == DndCharacter.PALADIN
-                && player.getWorld().getRegistryKey() == World.NETHER;
+                && player.getWorld().getRegistryKey() == World.NETHER
+                && !Progression.hasPassive(player, PaladinSkills.HELLFORGED);
 
         EntityAttributeInstance attack = player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE);
         boolean applied = attack != null && attack.getModifier(ATTACK_UUID) != null;

@@ -17,6 +17,9 @@ import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
 import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
 import mattonfire.dnd.classes.Misc.BloodHunterControl;
 import mattonfire.dnd.classes.Misc.PowerUpEffect;
+import mattonfire.dnd.classes.Progression.Abilities;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
@@ -125,27 +128,24 @@ public class DnDClasses implements ModInitializer {
 
         private static void sendPowerupPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                passedData.writeUuid(buf.readUuid());
-
-                if (!ManaManager.hasFullMana(player)) {
-                        return;
-                }
-
                 server.execute(() -> {
-                        if (player instanceof PlayerEntityExt) {
+                        // The equipped active skill; classes without a tree yet use their power-up at full mana.
+                        SkillNode skill = Progression.current(player).activeNode();
+                        int cost = skill == null ? MANA_ICONS : skill.manaCost();
+                        int mana = ManaManager.getMana(player);
+                        if (mana < cost) {
+                                return;
+                        }
 
-                                boolean success = PowerUpEffect.play(server, player,
-                                                ((PlayerEntityExt) (PlayerEntity) player)
-                                                                .getDndClass());
-                                if (success) {
-                                        PacketByteBuf returnData = new PacketByteBuf(Unpooled.buffer());
-                                        ServerPlayNetworking.send(player,
-                                                        DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
-                                                        returnData);
-
-                                        ManaManager.resetMana(player);
-                                }
+                        boolean success = skill == null
+                                        ? PowerUpEffect.play(server, player, Progression.classOf(player))
+                                        : Abilities.activate(player, skill);
+                        if (success) {
+                                ManaManager.setMana(player, mana - cost);
+                                ManaManager.sync(player);
+                                ServerPlayNetworking.send(player,
+                                                DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
+                                                new PacketByteBuf(Unpooled.buffer()));
                         }
                 });
 
@@ -266,6 +266,7 @@ public class DnDClasses implements ModInitializer {
                 if (dndClass != DndCharacter.NONE) {
                         ClassGuidebook.giveIfMissing(player);
                 }
+                Progression.sync(player);
         }
 
         public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
@@ -577,6 +578,7 @@ public class DnDClasses implements ModInitializer {
                 BloodHunterControl.register();
                 Warlock.register();
                 Druid.register();
+                Progression.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

@@ -49,6 +49,7 @@ public class ModEntityTypes {
             new Identifier(DnDClasses.MOD_ID, "magmamuncher"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MagmamuncherEntity::new)
                     .dimensions(EntityDimensions.fixed(1.5f, 1.5f))
+                    .fireImmune()
                     .build()
     );
 

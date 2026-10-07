@@ -62,7 +62,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Grid Miner](enchantments/grid-miner.md): mine out connected blocks
 - [Returning](enchantments/returning.md): thrown tridents, snowballs, eggs and pearls come back
 - [Vampiric](enchantments/vampiric.md): melee hits heal you for part of the damage dealt
-- [Smite Dragons](enchantments/smite-dragons.md) (PR #62)
+- [Smite Dragons](enchantments/smite-dragons.md): extra melee damage against dragons
 - [Featherfall](enchantments/featherfall.md): boots enchantment (PR #66)
 
 ## Items

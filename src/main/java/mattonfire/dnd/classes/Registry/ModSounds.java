@@ -19,6 +19,25 @@ public class ModSounds {
     public static final SoundEvent MUSIC_DUNGEON = registerSoundEvent("music.dungeon");
     public static final SoundEvent MUSIC_NIGHT = registerSoundEvent("music.night");
     public static final SoundEvent MUSIC_TRAVEL = registerSoundEvent("music.travel");
+    public static final SoundEvent MUSIC_LOW_HEALTH = registerSoundEvent("music.low_health");
+    public static final SoundEvent MUSIC_NETHER_FORTRESS = registerSoundEvent("music.nether_fortress");
+
+    // Short synthesized stings (tools/music-gen) played when a class special fires, one per class
+    public static final SoundEvent STING_BARBARIAN = registerSoundEvent("sting.barbarian");
+    public static final SoundEvent STING_BARD = registerSoundEvent("sting.bard");
+    public static final SoundEvent STING_CLERIC = registerSoundEvent("sting.cleric");
+    public static final SoundEvent STING_DRUID = registerSoundEvent("sting.druid");
+    public static final SoundEvent STING_FIGHTER = registerSoundEvent("sting.fighter");
+    public static final SoundEvent STING_MONK = registerSoundEvent("sting.monk");
+    public static final SoundEvent STING_PALADIN = registerSoundEvent("sting.paladin");
+    public static final SoundEvent STING_RANGER = registerSoundEvent("sting.ranger");
+    public static final SoundEvent STING_ROGUE = registerSoundEvent("sting.rogue");
+    public static final SoundEvent STING_NECROMANCER = registerSoundEvent("sting.necromancer");
+    public static final SoundEvent STING_WARLOCK = registerSoundEvent("sting.warlock");
+    public static final SoundEvent STING_WIZARD = registerSoundEvent("sting.wizard");
+    public static final SoundEvent STING_ARTIFICER = registerSoundEvent("sting.artificer");
+    public static final SoundEvent STING_BLOODHUNTER = registerSoundEvent("sting.bloodhunter");
+    public static final SoundEvent STING_ALCHEMIST = registerSoundEvent("sting.alchemist");
 
     public static final SoundEvent WIZARD_EXPLOSION = registerSoundEvent("wizard_explosion");
 

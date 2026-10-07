@@ -102,6 +102,8 @@ public class DndClassesClient implements ClientModInitializer {
         if (client.player != null) {
             ((IEntityDataSaver) client.player).getPersistentData().putInt("mana", 0);
         }
+        // The server only sends this when the special actually fired
+        client.execute(() -> mattonfire.dnd.classes.Client.Music.MusicStings.onSpecialFired(client));
     }
 
     private void handleFireBreathPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
@@ -150,6 +152,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
+        mattonfire.dnd.classes.Client.Music.MusicStings.register();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_MENU_KEY.wasPressed()) {

@@ -73,7 +73,8 @@ public class EnchantingTableMixin {
                 } while (!powerfulUser && (enchantment == ModEnchantments.LUNGE_ENCHANTMENT ||
                         enchantment == ModEnchantments.GRID_MINER_ENCHANTMENT ||
                         enchantment == ModEnchantments.TREE_FELLER_ENCHANTMENT ||
-                        enchantment == ModEnchantments.INVULNERABILITY_ENCHANTMENT));
+                        enchantment == ModEnchantments.INVULNERABILITY_ENCHANTMENT ||
+                        enchantment == ModEnchantments.VAMPIRIC_ENCHANTMENT));
 
                 for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                     if (power >= enchantment.getMinPower(i) && power <= enchantment.getMaxPower(i)) {

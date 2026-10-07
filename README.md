@@ -60,22 +60,8 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Alchemist** | Can craft special potions exclusive to the class (done), Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done) | Cannot enchant (enchanting table or enchanted books on an anvil) (done) | Instantly buff all potions to max level (done) |
 
 ### Parties
-Players can group up with `/party` (no op needed):
-
-| Command | |
-|---|---|
-| `/party create` | Start a party (you're the leader, marked with a star) |
-| `/party invite <player>` | Invite someone (creates a party if you're not in one). They get a clickable **[Accept]**; invites expire after 60s |
-| `/party accept [inviter]` | Join the party of the latest (or named) invite |
-| `/party leave` | Leave; if the leader leaves, the next member leads |
-| `/party list` | Members, health and who's offline |
-| `/party kick <player>` | Leader only |
-
-- Up to 8 players. Parties are saved with the world.
-- **Shared XP**: XP orbs are split evenly between the collector and party members within 48 blocks in the same dimension (after Mending takes its share).
-- **No friendly fire**: party members (and their tamed pets) can't hurt each other, including with arrows, fireballs and potions.
-- **Party HUD**: the other members' names and health bars in the top-left corner (gold strip = absorption, grey name = out of XP range).
-- **Paladin and Cleric** powers reach party members further away and give them extra buffs (see the class table).
+`/party` lets players group up: shared XP, no friendly fire, a party health HUD and party-aware Paladin/Cleric powers.
+See [docs/systems/party.md](docs/systems/party.md).
 
 ### Armor
 There is armor for each class, however the armor benefits are increased depending on whether or not you match the class and wearing a full set.

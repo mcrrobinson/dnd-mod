@@ -108,9 +108,6 @@ public class DnDClasses implements ModInitializer {
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
                         "approve_class_pick");
 
-        public static final Identifier CUSTOM_TEXTURE = new Identifier(DnDClasses.MOD_ID,
-                        "textures/gui/alchemist_brewing_stand.png");
-
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
         private static void sendDoubleJumpPacket(MinecraftServer server, ServerPlayerEntity player,
@@ -282,8 +279,8 @@ public class DnDClasses implements ModInitializer {
                                 playerClasses.sendPlayerMessage(
                                                 player,
                                                 "Warlock",
-                                                "With an empty hand, the ability to throw fireballs & resistant to both fire and lava.",
-                                                "Decreases your damage output. You're also unable to use anything but a staff to attack.",
+                                                "Right click with an empty hand to throw fireballs. Fire and lava can't hurt you.",
+                                                "You deal less damage and water and rain burn you.",
                                                 "You breathe fire by holding your special key.");
                                 playerClasses.typeWarlock(player);
                                 break;
@@ -350,7 +347,7 @@ public class DnDClasses implements ModInitializer {
                 }
         }
 
-        private static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
+        public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
                 for (int i = 0; i < particleCount; i++) {
                         double time = world.getTime() % 360;
                         double angle = 2 * Math.PI * i / particleCount + time * 0.01;
@@ -385,6 +382,9 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                mattonfire.dnd.classes.Misc.ArtificerDamage.register();
+                mattonfire.dnd.classes.Misc.ClericHandler.register();
+                MonkHandler.register();
 
                 ModSounds.registerSounds();
                 mattonfire.dnd.classes.Music.DungeonMusic.register();
@@ -612,10 +612,7 @@ public class DnDClasses implements ModInitializer {
                                                 return TypedActionResult.fail(itemStack);
                                         }
                                 } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
-                                        // if (player.getStackInHand(hand).isEmpty()) {
-
-                                        // }
-
+                                        // Empty-hand fireballs are handled in Warlock (client mixin + C2S packet).
                                 }
                         }
                         return TypedActionResult.pass(player.getStackInHand(hand));
@@ -692,6 +689,9 @@ public class DnDClasses implements ModInitializer {
 
                 Invulnerability.register();
 
+                Warlock.register();
+                Druid.register();
+
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");
                         // Safely use Identity's API here
@@ -725,5 +725,4 @@ public class DnDClasses implements ModInitializer {
 
 // remove diamonds type create own again...
 // Change shade of the potion
-// Make the fireball no damage to caster.
 // Custom projectile for the staffs

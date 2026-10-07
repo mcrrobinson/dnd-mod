@@ -21,6 +21,7 @@ public class ModSounds {
     public static final SoundEvent MUSIC_TRAVEL = registerSoundEvent("music.travel");
     public static final SoundEvent MUSIC_LOW_HEALTH = registerSoundEvent("music.low_health");
     public static final SoundEvent MUSIC_NETHER_FORTRESS = registerSoundEvent("music.nether_fortress");
+    public static final SoundEvent MUSIC_LICH_FIGHT = registerSoundEvent("music.lich_fight");
 
     // Short synthesized stings (tools/music-gen) played when a class special fires, one per class
     public static final SoundEvent STING_BARBARIAN = registerSoundEvent("sting.barbarian");

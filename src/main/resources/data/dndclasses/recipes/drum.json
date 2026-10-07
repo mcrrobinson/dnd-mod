@@ -1,0 +1,23 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "LLL",
+        "PSP",
+        "PPP"
+    ],
+    "key": {
+        "L": {
+            "item": "minecraft:leather"
+        },
+        "P": {
+            "tag": "minecraft:planks"
+        },
+        "S": {
+            "item": "minecraft:string"
+        }
+    },
+    "result": {
+        "item": "dndclasses:drum",
+        "count": 1
+    }
+}

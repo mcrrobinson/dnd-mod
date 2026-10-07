@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes.Items;
 
+import mattonfire.dnd.classes.DndCharacter;
+import java.util.Set;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 
@@ -18,5 +20,15 @@ public class WoodenArmorItem extends DndArmorItem {
     public List<StatusEffectInstance> getFullSetEffects() {
         return List.of(
                 new StatusEffectInstance(StatusEffects.JUMP_BOOST, 239));
+    }
+
+    @Override
+    public Set<DndCharacter> getMatchingClasses() {
+        return Set.of(DndCharacter.DRUID);
+    }
+
+    @Override
+    public List<StatusEffectInstance> getMatchingClassEffects() {
+        return List.of(new StatusEffectInstance(StatusEffects.HASTE, 239));
     }
 }

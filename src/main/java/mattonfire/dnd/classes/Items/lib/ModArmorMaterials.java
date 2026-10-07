@@ -4,6 +4,7 @@ import net.minecraft.item.ArmorItem.Type;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 
 public enum ModArmorMaterials implements ArmorMaterial {
     PRISMARINE("prismarine"),
@@ -30,8 +31,9 @@ public enum ModArmorMaterials implements ArmorMaterial {
         return 0;
     }
 
+    @Override
     public SoundEvent getEquipSound() {
-        return null;
+        return SoundEvents.ITEM_ARMOR_EQUIP_GENERIC;
     }
 
     @Override

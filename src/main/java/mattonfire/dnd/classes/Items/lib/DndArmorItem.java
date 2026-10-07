@@ -23,7 +23,7 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 
-public abstract class DndArmorItem extends ArmorItem {
+public abstract class DndArmorItem extends ArmorItem implements SetBonusArmor {
 
     private final Multimap<EntityAttribute, EntityAttributeModifier> attributeModifiers;
 
@@ -147,5 +147,6 @@ public abstract class DndArmorItem extends ArmorItem {
         return modifiers;
     }
 
+    @Override
     public abstract List<StatusEffectInstance> getFullSetEffects();
 }

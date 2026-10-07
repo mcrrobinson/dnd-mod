@@ -1,0 +1,49 @@
+# Full armor set bonus, matching vs non-matching class.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/armor-class-bonus.txt
+# Expect in latest.log: Thief set as rogue -> Jump Boost amp 1 + Speed; as wizard -> Jump Boost amp 0, no Speed.
+# Robe set as monk -> Jump Boost amp 1 + Speed; as rogue -> Jump Boost amp 0 only.
+wait 40
+closescreen
+/gamemode creative
+/tp @s 0.5 150 0.5 0 0
+/clear @s
+/effect clear @s
+/dndclass set @s rogue
+wait 10
+closescreen
+/item replace entity @s armor.head with dndclasses:rogue_helmet
+/item replace entity @s armor.chest with dndclasses:rogue_chestplate
+/item replace entity @s armor.legs with dndclasses:rogue_leggings
+/item replace entity @s armor.feet with dndclasses:rogue_boots
+wait 20
+/say MATCH thief+rogue
+/data get entity @s ActiveEffects
+/effect clear @s
+/dndclass set @s wizard
+wait 10
+closescreen
+/effect clear @s
+wait 20
+/say MISMATCH thief+wizard
+/data get entity @s ActiveEffects
+/effect clear @s
+/dndclass set @s monk
+wait 10
+closescreen
+/effect clear @s
+/item replace entity @s armor.head with dndclasses:robe_helmet
+/item replace entity @s armor.chest with dndclasses:robe_chestplate
+/item replace entity @s armor.legs with dndclasses:robe_leggings
+/item replace entity @s armor.feet with dndclasses:robe_boots
+wait 20
+/say MATCH robe+monk
+/data get entity @s ActiveEffects
+screenshot armor-class-bonus
+/dndclass set @s rogue
+wait 10
+closescreen
+/effect clear @s
+wait 20
+/say MISMATCH robe+rogue
+/data get entity @s ActiveEffects
+quit

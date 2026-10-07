@@ -6,6 +6,7 @@ import mattonfire.dnd.classes.Items.BloodHunterArmorItem;
 import mattonfire.dnd.classes.Items.ExtendedSwordItem;
 import mattonfire.dnd.classes.Items.GoldenHornsArmorItem;
 import mattonfire.dnd.classes.Items.HolyArmorArmorItem;
+import mattonfire.dnd.classes.Items.InstrumentItem;
 import mattonfire.dnd.classes.Items.KnightArmorItem;
 import mattonfire.dnd.classes.Items.MonkStaff;
 import mattonfire.dnd.classes.Items.PrismarineArmorItem;
@@ -19,6 +20,7 @@ import mattonfire.dnd.classes.Items.WizardArmorItem;
 import mattonfire.dnd.classes.Items.WoodenArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -47,6 +49,14 @@ public class ModItems {
                 new MusicDiscItem(6, ModSounds.SILENT_FOOTSTEPS, new FabricItemSettings().maxCount(1), 170));
         public static final Item MUSIC_BOX_MUSIC_DISC = registerItem("music_box_music_disc",
                 new MusicDiscItem(6, ModSounds.MUSIC_BOX, new FabricItemSettings().maxCount(1), 16));
+
+        // Bard instruments: the song buffs nearby players when a Bard plays it (InstrumentItem)
+        public static final Item LUTE = registerItem("lute",
+                new InstrumentItem(ModSounds.SONG_LUTE, StatusEffects.REGENERATION, new FabricItemSettings().maxCount(1)));
+        public static final Item DRUM = registerItem("drum",
+                new InstrumentItem(ModSounds.SONG_DRUM, StatusEffects.STRENGTH, new FabricItemSettings().maxCount(1)));
+        public static final Item FLUTE = registerItem("flute",
+                new InstrumentItem(ModSounds.SONG_FLUTE, StatusEffects.SPEED, new FabricItemSettings().maxCount(1)));
 
         public static final Item ROGUE_HELMET = registerItem("rogue_helmet", new RogueArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
@@ -523,8 +533,20 @@ public class ModItems {
         public static final Item MOUNTAIN_DWARF_SPAWN_EGG = registerItem("mountain_dwarf_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, 0x5A5F66, 0x9C4A1E, new FabricItemSettings()));
 
+        public static final Item MIMIC_SPAWN_EGG = registerItem("mimic_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MIMIC, 0xA0692B, 0x3A2A1A, new FabricItemSettings()));
+
         public static final Item EMBER_WYVERN_SPAWN_EGG = registerItem("ember_wyvern_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, 0x2A0E0C, 0xFF7A1A, new FabricItemSettings()));
+
+        public static final Item CLASS_GUIDEBOOK = registerItem("class_guidebook",
+                        new mattonfire.dnd.classes.Items.ClassGuidebookItem(new FabricItemSettings().maxCount(1)));
+
+        public static final Item OWLBEAR_SPAWN_EGG = registerItem("owlbear_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, 0x5C3A20, 0xE6D6AE, new FabricItemSettings()));
+
+        public static final Item LICH_SPAWN_EGG = registerItem("lich_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.LICH, 0x2A1838, 0x7FE0FF, new FabricItemSettings()));
 
         public static final Item BEHOLDER_SPAWN_EGG = registerItem("beholder_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, 0x7A4860, 0x5AC850, new FabricItemSettings()));

@@ -96,6 +96,47 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<MimicEntity> MIMIC = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "mimic"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MimicEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.875f, 0.875f))
+                    .build()
+    );
+
+    public static final EntityType<OwlbearEntity> OWLBEAR = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "owlbear"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, OwlbearEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.4f, 1.9f))
+                    .build()
+    );
+
+    public static final EntityType<GelatinousCubeEntity> GELATINOUS_CUBE = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "gelatinous_cube"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, GelatinousCubeEntity::new)
+                    .dimensions(EntityDimensions.fixed(2.0f, 2.0f))
+                    .build()
+    );
+
+    public static final EntityType<LichEntity> LICH = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "lich"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, LichEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.9f, 2.5f))
+                    .build()
+    );
+
+    public static final EntityType<PhylacteryEntity> PHYLACTERY = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "phylactery"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MISC, PhylacteryEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.8f, 1.25f))
+                    .fireImmune()
+                    .build()
+    );
+
     public static final EntityType<BeholderEntity> BEHOLDER = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "beholder"),
@@ -115,6 +156,12 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(GOBLIN_WARLORD, GoblinWarlordEntity.createGoblinWarlordAttributes());
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
         FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
+        FabricDefaultAttributeRegistry.register(MIMIC, MimicEntity.createMimicAttributes());
+        FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
+        FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
+        FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());
+        FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
+        LichEntity.registerEvents();
         FabricDefaultAttributeRegistry.register(BEHOLDER, BeholderEntity.createBeholderAttributes());
     }
 }

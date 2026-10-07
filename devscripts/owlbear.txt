@@ -1,0 +1,51 @@
+# Owlbear look and behaviour check.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/owlbear.txt
+# Screenshots: owlbear-front, owlbear-side (frozen model), owlbear-fight-1..4 (it charges a survival player).
+# "[CHAT]" Health lines in run/logs/latest.log drop once it reaches the player (Resistance keeps them alive).
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/difficulty normal
+wait 40
+closescreen
+respawn
+wait 20
+/fill 10 149 -10 42 149 22 minecraft:grass_block
+/fill 10 150 -10 42 154 22 minecraft:air
+/kill @e[type=dndclasses:owlbear,distance=..60]
+/gamemode creative
+hud off
+/tp @s 26 150.5 -1 0 10
+/summon dndclasses:owlbear 26 150 4 {NoAI:1b,Rotation:[180f,0f]}
+wait 40
+screenshot owlbear-front
+/tp @s 21 151 4 -90 10
+wait 20
+screenshot owlbear-side
+/tp @s 23 152 1 -45 25
+wait 20
+screenshot owlbear-angle
+/kill @e[type=dndclasses:owlbear,distance=..60]
+/tp @s 26 150 0 0 0
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:resistance 60 3
+/effect give @s minecraft:instant_health 1 10
+wait 10
+/data get entity @s Health
+/summon dndclasses:owlbear 26 150 12 {Rotation:[180f,0f]}
+wait 18
+screenshot owlbear-fight-1
+wait 12
+screenshot owlbear-fight-2
+wait 20
+screenshot owlbear-fight-3
+/data get entity @s Health
+wait 60
+screenshot owlbear-fight-4
+/data get entity @s Health
+wait 100
+/data get entity @s Health
+/gamemode creative
+/kill @e[type=dndclasses:owlbear,distance=..60]
+quit

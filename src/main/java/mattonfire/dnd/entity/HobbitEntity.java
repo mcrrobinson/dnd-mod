@@ -158,8 +158,18 @@ public class HobbitEntity extends PathAwareEntity {
     // Stay near home: the whole village by day, indoors at night.
     private void updateRange() {
         if (this.home != null) {
-            this.setPositionTarget(this.home, this.world.isDay() ? DAY_RANGE : NIGHT_RANGE);
+            this.setPositionTarget(this.home, this.world.isDay() ? this.dayRange() : this.nightRange());
         }
+    }
+
+    /** How far from home this hobbit roams by day. */
+    protected int dayRange() {
+        return DAY_RANGE;
+    }
+
+    /** How far from home this hobbit roams at night. */
+    protected int nightRange() {
+        return NIGHT_RANGE;
     }
 
     private void nibble() {

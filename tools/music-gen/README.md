@@ -1,5 +1,5 @@
 # music-gen
 
-Synthesizes the class-special stings (`sting_<class>.ogg`) and the low-health / Nether Fortress loops into `src/main/resources/assets/dndclasses/sounds/`. Pure Python standard library plus `ffmpeg` (libvorbis); output is seeded, so it's reproducible.
+Synthesizes the class-special stings (`sting_<class>.ogg`), the d20 skill check sounds (`dice_*.ogg`), the low-health / Nether Fortress loops, the Lich fight theme (`lich_fight`) and the Bard instrument songs (`song_lute`, `song_drum`, `song_flute`) into `src/main/resources/assets/dndclasses/sounds/`. Pure Python standard library plus `ffmpeg` (libvorbis); output is seeded, so it's reproducible.
 
 Regenerate everything with `python3 tools/music-gen/music_gen.py`, or only some sounds with e.g. `python3 tools/music-gen/music_gen.py fighter low_health` (takes about 30 s for all).

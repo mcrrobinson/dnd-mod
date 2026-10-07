@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -26,6 +28,7 @@ import net.minecraft.util.math.Vec3d;
 /**
  * Warlock class abilities:
  * - Right click with an empty main hand to throw a slow small fireball
+ * (cooldown halved by the Infernal Fireballs skill)
  * (client sends C2S_WARLOCK_FIREBALL, see WarlockFireballMixin).
  * - Immune to fire, lava and fireball damage (DamageTypeTags.IS_FIRE).
  * - Hurt by water and rain (1 damage every 4s, never below 2 health).
@@ -98,7 +101,10 @@ public class Warlock {
         if (readyTick != null && now < readyTick) {
             return;
         }
-        FIREBALL_READY_TICK.put(player.getUuid(), now + FIREBALL_COOLDOWN_TICKS);
+        int cooldown = Progression.hasPassive(player, WarlockSkills.INFERNAL_FIREBALLS)
+                ? FIREBALL_COOLDOWN_TICKS / 2
+                : FIREBALL_COOLDOWN_TICKS;
+        FIREBALL_READY_TICK.put(player.getUuid(), now + cooldown);
 
         Vec3d look = player.getRotationVec(1.0F);
         SmallFireballEntity fireball = new SmallFireballEntity(player.getWorld(), player, look.x, look.y, look.z);

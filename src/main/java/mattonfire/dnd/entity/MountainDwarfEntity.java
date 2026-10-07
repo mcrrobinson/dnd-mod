@@ -123,7 +123,9 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, MobEntity.class, 5, true, false,
-                entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)));
+                entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)
+                        // A sleeping mimic passes for a chest, even to a dwarf.
+                        && !(entity instanceof MimicEntity mimic && mimic.isDormant())));
     }
 
     @Override

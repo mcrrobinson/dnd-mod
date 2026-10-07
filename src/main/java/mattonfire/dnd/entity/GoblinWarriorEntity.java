@@ -93,8 +93,13 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<>(this, "controller", 4, this::movementPredicate));
-        controllers.add(new AnimationController<>(this, "attack_controller", 0, state -> PlayState.STOP)
-                .triggerableAnim("attack", ATTACK));
+        controllers.add(this.createActionController());
+    }
+
+    /** One-shot animations started with {@code triggerAnim("attack_controller", name)}. */
+    protected AnimationController<GoblinWarriorEntity> createActionController() {
+        return new AnimationController<GoblinWarriorEntity>(this, "attack_controller", 0, state -> PlayState.STOP)
+                .triggerableAnim("attack", ATTACK);
     }
 
     private PlayState movementPredicate(AnimationState<GoblinWarriorEntity> state) {

@@ -1,0 +1,55 @@
+# Checks the Goblin Warlord boss: looks, warcry summons and enrage. Fortress placement: goblin-warlord-fortress.txt.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/goblin-warlord.txt
+# Output: run/screenshots/warlord-*.png. In latest.log, the "Test passed, count" lines give the goblin counts,
+# and the attack_damage lines go 15 -> 20 on enrage.
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+/fill -12 149 -12 12 149 12 glass
+/fill -12 150 -12 12 156 12 air
+wait 40
+closescreen
+
+# Size next to a Goblin Warrior
+hud off
+/summon dndclasses:goblin_warlord 0 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/summon dndclasses:goblin_warrior 2 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/tp @s 1 151.5 5 180 15
+wait 40
+screenshot warlord-front
+/tp @s 5 151.5 -1 90 10
+wait 20
+screenshot warlord-side
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+hud on
+
+# Fight: it should roar, summon two goblins and show a yellow boss bar
+/effect give @s resistance 120 4 true
+/effect give @s regeneration 120 4 true
+/gamemode survival
+/tp @s 0 150 6 180 10
+/summon dndclasses:goblin_warlord 0 150 -6 {Rotation:[0f,0f]}
+wait 10
+screenshot warlord-warcry
+wait 25
+screenshot warlord-wave
+/execute if entity @e[type=dndclasses:goblin_warrior]
+/attribute @e[type=dndclasses:goblin_warlord,limit=1] minecraft:generic.attack_damage get
+# Below half health it enrages (red bar, +5 damage) and roars for three more
+/data merge entity @e[type=dndclasses:goblin_warlord,limit=1] {Health:100f}
+wait 10
+/attribute @e[type=dndclasses:goblin_warlord,limit=1] minecraft:generic.attack_damage get
+wait 30
+screenshot warlord-enraged
+/execute if entity @e[type=dndclasses:goblin_warrior]
+/gamemode creative
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+/effect clear @s
+
+/execute in minecraft:overworld run tp @s 0 151 0
+wait 10
+quit

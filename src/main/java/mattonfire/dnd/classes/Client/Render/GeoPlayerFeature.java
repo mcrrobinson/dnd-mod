@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Client.Render;
 
 import mattonfire.dnd.classes.Client.Geo.ModelGeckoPlayerFirstPerson;
+import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRendererFactory;
@@ -35,6 +36,11 @@ public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity
                        float age,
                        float headYaw,
                        float headPitch) {
+
+        // Other players' classes reach this client a moment after they appear; draw them vanilla until then
+        if (((PlayerEntityExt) player).getDndClass() == null) {
+            return;
+        }
 
         // Get vanilla model - it already has the correct animations/pose from the parent renderer
         PlayerEntityModel<AbstractClientPlayerEntity> vanilla = this.getContextModel();

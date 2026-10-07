@@ -1,0 +1,28 @@
+# Checks Magmamunchers spawn naturally in the Nether.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/magmamuncher-nether-spawns.txt
+# Expect in latest.log: the magmamuncher counts ("Test passed, count: N") grow as time passes,
+# alongside the usual zombified piglins.
+wait 40
+closescreen
+/difficulty normal
+/gamerule doMobSpawning true
+/gamemode creative
+# 3000 100 3000 in the dev world's Nether is Nether Wastes (the locate below should say 0 blocks away).
+/execute in minecraft:the_nether run tp @s 3001.5 100 3001.5 0 30
+wait 100
+/locate biome minecraft:nether_wastes
+/kill @e[type=!player]
+wait 200
+/execute if entity @e[type=dndclasses:magmamuncher,distance=..128]
+/execute if entity @e[type=minecraft:zombified_piglin,distance=..128]
+wait 400
+/execute if entity @e[type=dndclasses:magmamuncher,distance=..128]
+/execute if entity @e[type=minecraft:zombified_piglin,distance=..128]
+wait 600
+/execute if entity @e[type=dndclasses:magmamuncher,distance=..128]
+/execute if entity @e[type=minecraft:zombified_piglin,distance=..128]
+/execute as @e[type=dndclasses:magmamuncher,distance=..128,limit=5,sort=nearest] run data get entity @s Pos
+/execute as @e[type=dndclasses:magmamuncher,limit=1,sort=nearest] at @s run tp @p ~-5 ~3 ~ facing entity @s
+wait 20
+screenshot magmamuncher-nether
+quit

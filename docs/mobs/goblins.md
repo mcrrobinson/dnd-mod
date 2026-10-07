@@ -9,6 +9,7 @@ Heavily built goblins that infest Nether Fortresses, led by a [Goblin Warlord](.
 
 ## Where to find it / How to get it
 - Spawns in Nether Fortresses alongside blazes and wither skeletons (weight 6, groups of 1-3, in the dark).
+- Garrison [Goblin Camps](../structures/goblin-camps.md) in Overworld forests and plains.
 - The Goblin Warlord also summons them in waves.
 
 ## Commands

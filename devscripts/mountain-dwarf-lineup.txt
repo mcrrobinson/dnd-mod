@@ -1,0 +1,32 @@
+# Lines up the six Mountain Dwarf skins (and a villager for scale) in the air and screenshots them.
+# Run: ./gradlew runClient -PdevScript=devscripts/mountain-dwarf-lineup.txt
+# Check: run/screenshots/dwarf-front.png, dwarf-side.png, dwarf-back.png, dwarf-close.png
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+wait 40
+closescreen
+/fill -2 149 -2 12 149 2 minecraft:polished_deepslate
+/summon dndclasses:mountain_dwarf 0 150 0 {Variant:0,NoAI:1b,Rotation:[0f,0f],HandItems:[{id:"minecraft:iron_axe",Count:1b},{}],ArmorItems:[{},{},{},{id:"minecraft:iron_helmet",Count:1b}]}
+/summon dndclasses:mountain_dwarf 2 150 0 {Variant:1,NoAI:1b,Rotation:[0f,0f],HandItems:[{id:"minecraft:golden_axe",Count:1b},{}]}
+/summon dndclasses:mountain_dwarf 4 150 0 {Variant:2,NoAI:1b,Rotation:[0f,0f],HandItems:[{id:"minecraft:iron_pickaxe",Count:1b},{}]}
+/summon dndclasses:mountain_dwarf 6 150 0 {Variant:3,NoAI:1b,Rotation:[0f,0f],HandItems:[{id:"minecraft:diamond_axe",Count:1b},{}],ArmorItems:[{},{},{id:"minecraft:iron_chestplate",Count:1b},{id:"minecraft:golden_helmet",Count:1b}]}
+/summon dndclasses:mountain_dwarf 8 150 0 {Variant:4,NoAI:1b,Rotation:[0f,0f],HandItems:[{id:"minecraft:iron_axe",Count:1b},{}],ArmorItems:[{},{},{},{id:"minecraft:chainmail_helmet",Count:1b}]}
+/summon dndclasses:mountain_dwarf 10 150 0 {Variant:5,NoAI:1b,Rotation:[0f,0f],HandItems:[{id:"minecraft:netherite_axe",Count:1b},{}]}
+/summon minecraft:villager 12 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/gamemode spectator
+hud off
+/tp @s 6 151.2 6.5 180 8
+wait 100
+screenshot dwarf-front
+/tp @s -3 151 0.5 -90 5
+wait 60
+screenshot dwarf-side
+/tp @s 6 151.2 -6 0 8
+wait 60
+screenshot dwarf-back
+/tp @s 4.5 151 2.9 180 5
+wait 60
+screenshot dwarf-close
+hud on
+quit

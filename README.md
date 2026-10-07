@@ -11,6 +11,7 @@
     - [Goblins](#goblins)
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
+    - [Mountain Dwarves](#mountain-dwarves)
   - [Hobbit Villages](#hobbit-villages)
 
 ## Building
@@ -89,6 +90,9 @@ Custom music plays during different events in the game. There are **five** music
 
 #### Hobbits
 - **Hobbit**: A small, peaceful halfling that lives in hobbit villages. Hobbits wander their village by day, head home at night, keep away from monsters and are always nibbling something. Right-click one with an empty hand and it shares some of its food (once every few minutes).
+
+#### Mountain Dwarves
+- **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`).
 
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:

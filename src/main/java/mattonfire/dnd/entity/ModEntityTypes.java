@@ -60,6 +60,14 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<MountainDwarfEntity> MOUNTAIN_DWARF = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "mountain_dwarf"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, MountainDwarfEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.7f, 1.4f))
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
@@ -67,5 +75,6 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
         FabricDefaultAttributeRegistry.register(GOBLIN_WARRIOR, GoblinWarriorEntity.createGoblinWarriorAttributes());
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
+        FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
     }
 }

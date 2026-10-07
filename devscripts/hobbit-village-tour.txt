@@ -1,0 +1,31 @@
+# Flies over a naturally generated hobbit village and screenshots it.
+# Run: ./gradlew runClient -PdevScript=devscripts/hobbit-village-tour.txt
+# Find a village first with hobbit-locate.txt and put its x/z below (dev world: 200, 1352).
+# Check: run/screenshots/hobbit-*.png, and the hobbit count in "[CHAT]" lines of run/logs/latest.log.
+/gamemode spectator
+/time set 1000
+/gamerule doDaylightCycle false
+/weather clear
+wait 40
+closescreen
+hud off
+/tp @s 200 150 1352 0 90
+wait 600
+screenshot hobbit-top
+/tp @s 200 105 1317 0 35
+wait 200
+screenshot hobbit-north
+/tp @s 236 100 1352 90 30
+wait 200
+screenshot hobbit-east
+/tp @s 200 100 1387 180 30
+wait 200
+screenshot hobbit-south
+/tp @s 164 100 1352 -90 30
+wait 200
+screenshot hobbit-west
+/execute if entity @e[type=dndclasses:hobbit,distance=..120]
+/execute if entity @e[type=minecraft:item_frame,distance=..120]
+wait 20
+hud on
+quit

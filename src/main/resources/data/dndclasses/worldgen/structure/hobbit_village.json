@@ -1,0 +1,19 @@
+{
+  "type": "dndclasses:hobbit_village",
+  "biomes": "#dndclasses:has_structure/hobbit_village",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {
+    "creature": {
+      "bounding_box": "piece",
+      "spawns": [
+        {
+          "type": "dndclasses:hobbit",
+          "weight": 1,
+          "minCount": 1,
+          "maxCount": 2
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " B ",
+    "LCL",
+    "AAA"
+  ],
+  "key": {
+    "B": { "item": "minecraft:book" },
+    "L": { "item": "minecraft:lapis_lazuli" },
+    "C": { "item": "minecraft:crafting_table" },
+    "A": { "item": "minecraft:amethyst_shard" }
+  },
+  "result": { "item": "dndclasses:attunement_table" }
+}

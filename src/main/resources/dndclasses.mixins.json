@@ -36,6 +36,7 @@
         "SpawnHelperMixin",
         "NetherFortressStartMixin",
         "PotionItemMixin",
+        "AlchemistPotionMixin",
         "PotionEntityMixin",
         "AreaEffectCloudEntityMixin",
         "ArrowEntityMixin",

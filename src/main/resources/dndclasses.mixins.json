@@ -41,7 +41,9 @@
         "ArrowEntityMixin",
         "PotionImmunityMixin",
         "PotionInstantEffectMixin",
-        "ActiveTargetGoalAccessor"
+        "ActiveTargetGoalAccessor",
+        "TridentEntityMixin",
+        "ProjectileEntityMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

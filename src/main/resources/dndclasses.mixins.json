@@ -46,7 +46,8 @@
         "PaladinAuraMixin",
         "ArtificerItemStackMixin",
         "TridentEntityMixin",
-        "ProjectileEntityMixin"
+        "ProjectileEntityMixin",
+        "VampiricMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

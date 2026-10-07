@@ -1,0 +1,9 @@
+{
+    "replace": false,
+    "values": [
+        "dndclasses:wyvern",
+        "dndclasses:ember_wyvern",
+        "dndclasses:lightning_chaser",
+        "dndclasses:river_pikehorn"
+    ]
+}

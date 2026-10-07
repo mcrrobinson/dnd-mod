@@ -1,0 +1,19 @@
+# Checks that a Lightning Chaser spawned inside a lair (other than by the lair itself) finds its lair.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/lightning-chaser-lair-lookup.txt
+# Dev world lair centre: 13092 190 11524 (see dragon-lair-survey.txt).
+# Check "[CHAT]" lines in run/logs/latest.log: the dragon in the lair has Lair {X:13092,Y:190,Z:11524},
+# the one outside has no Lair ("Found no elements matching Lair").
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 13092 215 11498 0 40
+wait 400
+# /summon only runs initialize() without NBT, so the dragons are found by position right away.
+/summon dndclasses:lightning_chaser 13092 195 11524
+/data get entity @e[type=dndclasses:lightning_chaser,x=13092,y=195,z=11524,distance=..2,limit=1] Lair
+/kill @e[type=dndclasses:lightning_chaser,x=13092,y=195,z=11524,distance=..2,limit=1]
+/summon dndclasses:lightning_chaser 13092 230 11450
+/data get entity @e[type=dndclasses:lightning_chaser,x=13092,y=230,z=11450,distance=..2,limit=1] Lair
+/kill @e[type=dndclasses:lightning_chaser,x=13092,y=230,z=11450,distance=..2,limit=1]
+wait 20
+quit

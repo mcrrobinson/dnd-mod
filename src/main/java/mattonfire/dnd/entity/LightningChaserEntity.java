@@ -5,6 +5,18 @@ import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.ai.goal.LightningChaserAttackGoal;
 import mattonfire.dnd.entity.ai.goal.LightningChaserFlyRandomlyGoal;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityData;
+import net.minecraft.entity.SpawnReason;
+import mattonfire.dnd.world.gen.lair.LairPiece;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Identifier;
+import net.minecraft.world.LocalDifficulty;
+import net.minecraft.world.ServerWorldAccess;
+import net.minecraft.world.gen.structure.Structure;
+import mattonfire.dnd.classes.DnDClasses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -107,6 +119,29 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
 
     public void setLair(@Nullable BlockPos lair) {
         this.lair = lair;
+    }
+
+    private static final RegistryKey<Structure> LAIR_STRUCTURE =
+            RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "dragon_lair"));
+
+    // The lair's first dragons get their lair from LairPiece; the ones its spawn_overrides send later
+    // (and any summoned inside one) look it up here, so they circle back to it too.
+    @Override
+    public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
+                                 @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
+        if (this.lair == null && spawnReason != SpawnReason.STRUCTURE) {
+            StructureStart start = world.toServerWorld().getStructureAccessor()
+                    .getStructureContaining(this.getBlockPos(), LAIR_STRUCTURE);
+            if (start.hasChildren()) {
+                for (StructurePiece piece : start.getChildren()) {
+                    if (piece instanceof LairPiece lairPiece) {
+                        this.lair = lairPiece.getCenter();
+                        break;
+                    }
+                }
+            }
+        }
+        return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
     @Override

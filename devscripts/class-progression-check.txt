@@ -1,0 +1,44 @@
+# Checks class progression. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-progression-check.txt
+# Expect in latest.log: progress lines from /dndclass, zombie ActiveEffects with Weakness (id 18) after War Cry.
+# Screenshots: progression-tree (O screen), progression-attune (attunement table), progression-warcry (mana underline).
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s barbarian
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 0
+/dndclass xp @s add 260
+/dndclass unlock @s barbarian.bloodlust
+/dndclass unlock @s barbarian.war_cry
+/dndclass unlock @s barbarian.thick_skin
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+press key.dnd-classes.skill-tree
+wait 10
+screenshot progression-tree
+closescreen
+/setblock 4 150 6 dndclasses:attunement_table
+/tp @s 4.5 150 3.5 0 30
+wait 10
+use
+wait 10
+screenshot progression-attune
+closescreen
+/dndclass equip @s barbarian.war_cry
+/dndclass progress @s
+/setblock 4 150 6 minecraft:air
+/summon minecraft:zombie 4.5 150 6.5 {NoAI:1b,Rotation:[180f,0f]}
+wait 200
+press key.dnd-classes.power-up
+wait 10
+/data get entity @e[type=minecraft:zombie,limit=1,sort=nearest] ActiveEffects
+screenshot progression-warcry
+/kill @e[type=minecraft:zombie]
+quit

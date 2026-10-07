@@ -90,6 +90,7 @@ Set bonuses can be turned off with `applyArmorEffects` in `config/dndclasses/dnd
 | **Invulnerability** | The player will be invulnerable for a short duration | Attack Weapons |
 | **Tree Feller** | Can dismantle trees | Axe |
 | **Grid Miner** | Can mine blocks in a grid pattern | Pickaxe & Shovel |
+| **Featherfall** (I-III) | Cuts fall damage by 50% / 70% / 90% (more than Feather Falling IV, which it replaces). At II and III you slow-fall once you've dropped 8 / 3 blocks, until you land; sneak to drop normally | Boots |
 
 ### Music
 

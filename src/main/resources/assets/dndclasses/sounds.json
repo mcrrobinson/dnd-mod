@@ -90,5 +90,63 @@
                 "weight": 1
             }
         ]
+    },
+    "sting.steel_on_steel": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_steel_on_steel"
+            }
+        ]
+    },
+    "sting.tooth_and_claw": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_tooth_and_claw"
+            }
+        ]
+    },
+    "sting.awake_cart": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_awake_cart"
+            }
+        ]
+    },
+    "sting.silent_footsteps": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_silent_footsteps"
+            }
+        ]
+    },
+    "sting.music_box": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_music_box"
+            }
+        ]
+    },
+    "music.low_health": {
+        "sounds": [
+            {
+                "name": "dndclasses:steel_on_steel",
+                "stream": true
+            }
+        ]
+    },
+    "music.nether_fortress": {
+        "sounds": [
+            {
+                "name": "dndclasses:silent_footsteps",
+                "stream": true,
+                "pitch": 0.85,
+                "weight": 2
+            },
+            {
+                "name": "minecraft:music.nether.basalt_deltas",
+                "type": "event",
+                "weight": 1
+            }
+        ]
     }
 }

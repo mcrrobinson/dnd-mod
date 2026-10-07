@@ -90,5 +90,126 @@
                 "weight": 1
             }
         ]
+    },
+    "music.low_health": {
+        "sounds": [
+            {
+                "name": "dndclasses:low_health",
+                "stream": true
+            }
+        ]
+    },
+    "music.nether_fortress": {
+        "sounds": [
+            {
+                "name": "dndclasses:nether_fortress",
+                "stream": true
+            }
+        ]
+    },
+    "sting.barbarian": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_barbarian"
+            }
+        ]
+    },
+    "sting.bard": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_bard"
+            }
+        ]
+    },
+    "sting.cleric": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_cleric"
+            }
+        ]
+    },
+    "sting.druid": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_druid"
+            }
+        ]
+    },
+    "sting.fighter": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_fighter"
+            }
+        ]
+    },
+    "sting.monk": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_monk"
+            }
+        ]
+    },
+    "sting.paladin": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_paladin"
+            }
+        ]
+    },
+    "sting.ranger": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_ranger"
+            }
+        ]
+    },
+    "sting.rogue": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_rogue"
+            }
+        ]
+    },
+    "sting.necromancer": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_necromancer"
+            }
+        ]
+    },
+    "sting.warlock": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_warlock"
+            }
+        ]
+    },
+    "sting.wizard": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_wizard"
+            }
+        ]
+    },
+    "sting.artificer": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_artificer"
+            }
+        ]
+    },
+    "sting.bloodhunter": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_bloodhunter"
+            }
+        ]
+    },
+    "sting.alchemist": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_alchemist"
+            }
+        ]
     }
 }

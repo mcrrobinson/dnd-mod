@@ -14,15 +14,19 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.sound.MusicType;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.mob.Monster;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * Picks the mod's music for game events, in priority order: boss fight, dungeon, travelling, night.
+ * Picks the mod's music for game events, in priority order: boss fight, low health, dungeon,
+ * Nether Fortress, travelling, night.
  * Hooked into MinecraftClient.getMusicType() by MinecraftClientMusicMixin.
  */
 public class EventMusic {
@@ -30,7 +34,10 @@ public class EventMusic {
         NONE(null),
         // The boss's own track (see BossFight.music), started straight away and looped while the fight lasts
         BOSS_FIGHT(null),
+        // Like the fight music: straight away, looping until the player recovers or dies
+        LOW_HEALTH(new MusicSound(entry(ModSounds.MUSIC_LOW_HEALTH), 0, 0, true)),
         DUNGEON(new MusicSound(entry(ModSounds.MUSIC_DUNGEON), 600, 2400, false)),
+        NETHER_FORTRESS(new MusicSound(entry(ModSounds.MUSIC_NETHER_FORTRESS), 200, 1200, false)),
         TRAVEL(new MusicSound(entry(ModSounds.MUSIC_TRAVEL), 1200, 6000, false)),
         NIGHT(new MusicSound(entry(ModSounds.MUSIC_NIGHT), 1200, 6000, false));
 
@@ -51,13 +58,29 @@ public class EventMusic {
     // Quiet gap after a boss fight ends before other music can start
     private static final int AFTER_FIGHT_SILENCE_TICKS = 400;
 
+    // Low health: starts below LOW_HEALTH_START of max health while in combat, and keeps going until
+    // health is back above LOW_HEALTH_STOP, the player dies, or there's been no combat for a while
+    private static final float LOW_HEALTH_START = 0.25F;
+    private static final float LOW_HEALTH_STOP = 0.4F;
+    // In combat: hurt in the last COMBAT_HURT_TICKS, or a monster within COMBAT_MONSTER_RANGE blocks
+    private static final int COMBAT_HURT_TICKS = 200;
+    private static final double COMBAT_MONSTER_RANGE = 12.0;
+    private static final int LOW_HEALTH_OUT_OF_COMBAT_TICKS = 600;
+    // Quiet gap after the low health music ends before other music can start
+    private static final int AFTER_LOW_HEALTH_SILENCE_TICKS = 100;
+
     private static final Vec3d[] positions = new Vec3d[TRAVEL_WINDOW_SECONDS + 1];
     private static int positionCount = 0;
     private static int nextPosition = 0;
     private static World lastWorld = null;
 
     private static boolean inDungeon = false;
+    private static boolean nearFortress = false;
     private static boolean travelling = false;
+    private static boolean lowHealth = false;
+    private static float lastHealth = -1;
+    private static int ticksSinceHurt = Integer.MAX_VALUE;
+    private static int ticksSinceCombat = Integer.MAX_VALUE;
     private static Event current = Event.NONE;
     // Fight track of each boss bar the server says this player can see, in the order they appeared
     private static final Map<UUID, MusicSound> bossTracks = new LinkedHashMap<>();
@@ -74,6 +97,11 @@ public class EventMusic {
                     boolean value = buf.readBoolean();
                     client.execute(() -> inDungeon = value);
                 });
+        ClientPlayNetworking.registerGlobalReceiver(DungeonMusic.S2C_NEAR_FORTRESS,
+                (client, handler, buf, sender) -> {
+                    boolean value = buf.readBoolean();
+                    client.execute(() -> nearFortress = value);
+                });
         ClientPlayNetworking.registerGlobalReceiver(BossMusic.S2C_BOSS_MUSIC,
                 (client, handler, buf, sender) -> {
                     UUID bar = buf.readUuid();
@@ -88,7 +116,9 @@ public class EventMusic {
                 });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             inDungeon = false;
+            nearFortress = false;
             bossTracks.clear();
+            resetLowHealth();
             resetTravel();
         });
         ClientTickEvents.END_CLIENT_TICK.register(EventMusic::tick);
@@ -106,6 +136,7 @@ public class EventMusic {
         if (player.age % 20 == 0) {
             sampleTravel(player.getPos());
         }
+        updateLowHealth(player);
 
         Event previous = current;
         MusicSound previousBossMusic = bossMusic;
@@ -118,6 +149,11 @@ public class EventMusic {
                 client.getMusicTracker().stop();
                 ((MusicTrackerAccessor) client.getMusicTracker()).setTimeUntilNextSong(AFTER_FIGHT_SILENCE_TICKS);
             }
+            // Same for the low health music once the player recovers or dies
+            if (previous == Event.LOW_HEALTH && client.getMusicTracker().isPlayingType(previous.music)) {
+                client.getMusicTracker().stop();
+                ((MusicTrackerAccessor) client.getMusicTracker()).setTimeUntilNextSong(AFTER_LOW_HEALTH_SILENCE_TICKS);
+            }
         }
     }
 
@@ -126,8 +162,14 @@ public class EventMusic {
         if (!bossTracks.isEmpty()) {
             return Event.BOSS_FIGHT;
         }
+        if (lowHealth) {
+            return Event.LOW_HEALTH;
+        }
         if (inDungeon) {
             return Event.DUNGEON;
+        }
+        if (nearFortress) {
+            return Event.NETHER_FORTRESS;
         }
         if (player.world.getRegistryKey() != World.OVERWORLD) {
             return Event.NONE;
@@ -154,6 +196,50 @@ public class EventMusic {
             return null;
         }
         return current == Event.BOSS_FIGHT ? bossMusic : current.music;
+    }
+
+    private static void updateLowHealth(ClientPlayerEntity player) {
+        float health = player.getHealth();
+        if (lastHealth >= 0 && health < lastHealth) {
+            ticksSinceHurt = 0;
+        } else if (ticksSinceHurt < Integer.MAX_VALUE) {
+            ticksSinceHurt++;
+        }
+        lastHealth = health;
+
+        boolean monsterNearby = player.age % 10 == 0 ? isMonsterNearby(player) : ticksSinceCombat == 0;
+        boolean inCombat = ticksSinceHurt < COMBAT_HURT_TICKS || monsterNearby;
+        if (inCombat) {
+            ticksSinceCombat = 0;
+        } else if (ticksSinceCombat < Integer.MAX_VALUE) {
+            ticksSinceCombat++;
+        }
+
+        if (player.isDead() || player.isCreative() || player.isSpectator()) {
+            lowHealth = false;
+            return;
+        }
+        float fraction = health / player.getMaxHealth();
+        boolean was = lowHealth;
+        lowHealth = lowHealth
+                ? fraction < LOW_HEALTH_STOP && ticksSinceCombat < LOW_HEALTH_OUT_OF_COMBAT_TICKS
+                : fraction < LOW_HEALTH_START && inCombat;
+        if (lowHealth != was) {
+            DnDClasses.LOGGER.info("[EventMusic] low health {} ({}/{})", lowHealth, health, player.getMaxHealth());
+        }
+    }
+
+    private static boolean isMonsterNearby(ClientPlayerEntity player) {
+        Box box = player.getBoundingBox().expand(COMBAT_MONSTER_RANGE);
+        return !player.world.getEntitiesByClass(LivingEntity.class, box,
+                entity -> entity instanceof Monster && entity.isAlive()).isEmpty();
+    }
+
+    private static void resetLowHealth() {
+        lowHealth = false;
+        lastHealth = -1;
+        ticksSinceHurt = Integer.MAX_VALUE;
+        ticksSinceCombat = Integer.MAX_VALUE;
     }
 
     private static void sampleTravel(Vec3d pos) {

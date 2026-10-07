@@ -1,0 +1,44 @@
+# Exercises the sting, low health and Nether Fortress music triggers.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/music-events.txt
+# Check "[EventMusic]" lines in run/logs/latest.log: a "sting dndclasses:sting.steel_on_steel for FIGHTER",
+# "low health true", NONE -> LOW_HEALTH, "low health false" + LOW_HEALTH -> NONE after healing,
+# and NETHER_FORTRESS at the fortress (coordinates from goblin-warlord-fortress.txt).
+/time set day
+/weather clear
+wait 40
+closescreen
+/gamemode survival
+/effect clear @s
+/tp @s 0 150 0 0 0
+/setblock 0 149 0 minecraft:glass
+
+# Sting: Fighter special once the mana is full (18 seconds)
+/dndclass set @s fighter
+wait 400
+press key.dnd-classes.power-up
+wait 100
+
+# Low health: hurt down below 25% with a monster nearby, then heal
+/effect clear @s
+/summon minecraft:zombie 4 150 0 {NoAI:1b,NoGravity:1b,Silent:1b}
+/setblock 4 149 0 minecraft:glass
+/damage @s 22 minecraft:generic
+wait 60
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3
+wait 40
+/data get entity @s Health
+/kill @e[type=minecraft:zombie]
+/setblock 4 149 0 minecraft:air
+/setblock 0 149 0 minecraft:air
+
+# Nether Fortress
+/gamemode creative
+/execute in minecraft:the_nether run tp @s 30121 90 29929
+/execute in minecraft:the_nether run locate structure minecraft:fortress
+wait 200
+/execute in minecraft:overworld run tp @s 0 151 0
+wait 60
+/dndclass set @s none
+wait 10
+quit

@@ -91,45 +91,10 @@
             }
         ]
     },
-    "sting.steel_on_steel": {
-        "sounds": [
-            {
-                "name": "dndclasses:sting_steel_on_steel"
-            }
-        ]
-    },
-    "sting.tooth_and_claw": {
-        "sounds": [
-            {
-                "name": "dndclasses:sting_tooth_and_claw"
-            }
-        ]
-    },
-    "sting.awake_cart": {
-        "sounds": [
-            {
-                "name": "dndclasses:sting_awake_cart"
-            }
-        ]
-    },
-    "sting.silent_footsteps": {
-        "sounds": [
-            {
-                "name": "dndclasses:sting_silent_footsteps"
-            }
-        ]
-    },
-    "sting.music_box": {
-        "sounds": [
-            {
-                "name": "dndclasses:sting_music_box"
-            }
-        ]
-    },
     "music.low_health": {
         "sounds": [
             {
-                "name": "dndclasses:steel_on_steel",
+                "name": "dndclasses:low_health",
                 "stream": true
             }
         ]
@@ -137,15 +102,113 @@
     "music.nether_fortress": {
         "sounds": [
             {
-                "name": "dndclasses:silent_footsteps",
-                "stream": true,
-                "pitch": 0.85,
-                "weight": 2
-            },
+                "name": "dndclasses:nether_fortress",
+                "stream": true
+            }
+        ]
+    },
+    "sting.barbarian": {
+        "sounds": [
             {
-                "name": "minecraft:music.nether.basalt_deltas",
-                "type": "event",
-                "weight": 1
+                "name": "dndclasses:sting_barbarian"
+            }
+        ]
+    },
+    "sting.bard": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_bard"
+            }
+        ]
+    },
+    "sting.cleric": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_cleric"
+            }
+        ]
+    },
+    "sting.druid": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_druid"
+            }
+        ]
+    },
+    "sting.fighter": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_fighter"
+            }
+        ]
+    },
+    "sting.monk": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_monk"
+            }
+        ]
+    },
+    "sting.paladin": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_paladin"
+            }
+        ]
+    },
+    "sting.ranger": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_ranger"
+            }
+        ]
+    },
+    "sting.rogue": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_rogue"
+            }
+        ]
+    },
+    "sting.necromancer": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_necromancer"
+            }
+        ]
+    },
+    "sting.warlock": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_warlock"
+            }
+        ]
+    },
+    "sting.wizard": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_wizard"
+            }
+        ]
+    },
+    "sting.artificer": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_artificer"
+            }
+        ]
+    },
+    "sting.bloodhunter": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_bloodhunter"
+            }
+        ]
+    },
+    "sting.alchemist": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_alchemist"
             }
         ]
     }

@@ -10,6 +10,8 @@
   - [Mobs](#mobs)
     - [Goblins](#goblins)
     - [Dragons](#dragons)
+    - [Hobbits](#hobbits)
+  - [Hobbit Villages](#hobbit-villages)
 
 ## Building
 Navigate to the root directory of the project and type the following...
@@ -84,3 +86,15 @@ Custom music plays during different events in the game. There are **five** music
 
 #### Dragons 
 - **Dragon**: A dragon is a large, green, and powerful creature that can be found in the Nether. It has a high attack speed and low health.
+
+#### Hobbits
+- **Hobbit**: A small, peaceful halfling that lives in hobbit villages. Hobbits wander their village by day, head home at night, keep away from monsters and are always nibbling something. Right-click one with an empty hand and it shares some of its food (once every few minutes).
+
+### Hobbit Villages
+Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:
+- **Smials** (hobbit holes) dug into grassy hills, with round green (or red, or yellow) doors, round windows, chimneys and fenced front gardens. Inside: a fireplace, a kitchen, a table laid with food, and in the bigger ones a pantry stacked with barrels and a bedroom.
+- **The Green Dragon** inn with a thatched roof, a bar backed by ale casks, and tables of food.
+- **The party green** round the party tree, with long tables of cakes and plates, a striped pavilion, ale and a bonfire.
+- **Gardens, orchards, market stalls and ponds**, joined by winding lanes with lamp posts.
+
+Barrels and chests are full of food (`chests/hobbit_pantry`, `hobbit_larder`, `hobbit_harvest`, `hobbit_ale`), and the plates and hams in item frames can be taken. Find one with `/locate structure dndclasses:hobbit_village`.

@@ -54,6 +54,8 @@
     "entity.dndclasses.river_pikehorn": "River Pikehorn",
     "entity.dndclasses.magmamuncher": "Magmamuncher",
     "entity.dndclasses.goblin_warrior": "Goblin Warrior",
+    "entity.dndclasses.hobbit": "Hobbit",
+    "item.dndclasses.hobbit_spawn_egg": "Hobbit Spawn Egg",
     "advancements.dndclasses.dragon_slayer.title": "Dragon Slayer",
     "advancements.dndclasses.dragon_slayer.description": "Slay a dragon"
 }

@@ -39,12 +39,12 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 
 | **Class**| **Pros**|**Cons**|**Special Ability**|
 |-|-|-|-|
-| **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision, Moves very slowly | Inspired by *One Punch Man* |
+| **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Inspired by *One Punch Man* |
 | **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
-| **Cleric (not working)** | High mining speed, Night vision | Shorter viewing distance, Slightly reduced attack damage | Circle of ignoring mobs |
+| **Cleric (not working)** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs |
 | **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed for 30s |
 | **Fighter** | High health, High strength, Attracts mobs (needs to be tested) | Cannot use bows, No potions | Super regeneration |
-| **Monk** | Increased mobility, Increased attack speed | Reduced damage output, Can only use a staff to attack | Can triple jump, Unrivaled attack speed |
+| **Monk** | Increased mobility, Increased attack speed | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Can triple jump, Unrivaled attack speed |
 | **Paladin** | High health, circle of healing | Cannot craft anything or craft potions, Very weak in the Nether (not implemented) | Instantly heal everyone in your vicinity (needs to be tested) |
 | **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords (done), Weak to fire (done) | Hold right click to spam fire (no ammo consumed) (done) |
 | **Rogue** | No poison damage (done), No need to eat (to be tested) | Low health (done) | Temporary invisibility (done) |
@@ -53,7 +53,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Wizard** | Can wield elemental staffs (done) | Greatly reduced health (done) | Creates a massive explosion and becomes invulnerable for a few seconds (done) |
 | **Artificer** | Increased movement speed (done), Auto-enchanting chance | Deals less damage, Unaffected by potions (except abilities) | Temporarily buffs all armor |
 | **Blood Hunter**| Fire aspect applied to all swords, Double damage at night (done) | Half damage during the day (done) | Can take control of any mob within 30m |
-| **Alchemist** | Can craft special potions exclusive to the class (done), Brewing don't explode (wait, brewing explodes?) | Cannot enchant | Instantly buff all potions to max level (done) |
+| **Alchemist** | Can craft special potions exclusive to the class (done), Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done) | Cannot enchant (enchanting table or enchanted books on an anvil) (done) | Instantly buff all potions to max level (done) |
 
 ### Armor
 There is armor for each class, however the armor benefits are increased depending on whether or not you match the class and wearing a full set.

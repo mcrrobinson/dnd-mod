@@ -8,6 +8,7 @@ import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.BloodhunterIdentityData;
 import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
@@ -211,6 +212,10 @@ public class PowerUpEffect {
             case ROGUE:
                 // Make the player immune to poison
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 300, 0));
+                break;
+            case DRUID:
+                if (!(player instanceof ServerPlayerEntity serverPlayer) || !Druid.transform(serverPlayer))
+                    return false; // Nothing to transform into, keep the mana
                 break;
             case NECROMANCER:
                 spawnUndead(player);

@@ -6,11 +6,14 @@ import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
@@ -164,6 +167,12 @@ public class DragonPart extends Entity {
             return false;
         }
         return this.owner.damage(source, amount);
+    }
+
+    /** Right-clicks on a part (taming, sitting, leads) go to the dragon. */
+    @Override
+    public ActionResult interact(PlayerEntity player, Hand hand) {
+        return this.owner.interact(player, hand);
     }
 
     @Override

@@ -14,8 +14,12 @@ import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Registry.ModSounds;
+import mattonfire.dnd.entity.boss.Boss;
+import mattonfire.dnd.entity.boss.BossFight;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
@@ -24,6 +28,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -33,7 +38,7 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather {
+public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather, Boss {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private String currentFlyAnimation = "fly.idle";
     private int flyAnimationTimer = 0;
@@ -64,11 +69,9 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
     private final FireBreath fireBreath;
 
-    // Shown like the ender dragon's bar to players near a wild wyvern that is fighting a player.
-    // The dragon music flag tells the client to play the dragon fight music (EventMusic).
-    private static final double BOSS_BAR_RANGE = 64.0;
-    private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(),
-            BossBar.Color.RED, BossBar.Style.PROGRESS).setDragonMusic(true);
+    // Boss bar and fight music for players near a wild wyvern that is fighting a player.
+    private static final Identifier DRAGON_SLAYER = new Identifier(DnDClasses.MOD_ID, "dragon_slayer");
+    private final BossFight bossFight;
 
     public WyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
@@ -76,6 +79,11 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         this.parts = PART_LAYOUT.createParts(this);
         this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, 12.0, 4.0F);
         this.setId(DragonPartLayout.reserveIds(this.parts));
+        this.bossFight = new BossFight(this, BossBar.Color.RED, BossBar.Style.PROGRESS)
+                .range(64.0)
+                .activeWhen(() -> !this.isTamed())
+                .music(ModSounds.MUSIC_DRAGON_FIGHT)
+                .advancement(DRAGON_SLAYER);
     }
 
     @Override
@@ -145,9 +153,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
             this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
         }
 
-        if (!this.world.isClient) {
-            this.updateBossBar();
-        }
+        this.bossFight.tick();
         this.fireBreath.tick();
     }
 
@@ -156,43 +162,27 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         return this.fireBreath;
     }
 
-    private boolean isFightingPlayer() {
-        return this.isAlive() && !this.isTamed()
-                && (this.getTarget() instanceof PlayerEntity || this.getAttacker() instanceof PlayerEntity);
-    }
-
-    private boolean inBossBarRange(ServerPlayerEntity player) {
-        return player.world == this.world && player.isAlive() && !player.isSpectator()
-                && player.squaredDistanceTo(this) < BOSS_BAR_RANGE * BOSS_BAR_RANGE;
-    }
-
-    private void updateBossBar() {
-        this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
-        this.bossBar.setName(this.getDisplayName());
-
-        boolean fighting = this.isFightingPlayer();
-        for (ServerPlayerEntity player : java.util.List.copyOf(this.bossBar.getPlayers())) {
-            if (!fighting || !this.inBossBarRange(player)) {
-                this.bossBar.removePlayer(player);
-            }
-        }
-        if (fighting) {
-            for (ServerPlayerEntity player : ((ServerWorld) this.world).getPlayers(this::inBossBarRange)) {
-                this.bossBar.addPlayer(player);
-            }
-        }
+    @Override
+    public BossFight getBossFight() {
+        return this.bossFight;
     }
 
     @Override
     public void onStoppedTrackingBy(ServerPlayerEntity player) {
         super.onStoppedTrackingBy(player);
-        this.bossBar.removePlayer(player);
+        this.bossFight.onStoppedTrackingBy(player);
     }
 
     @Override
     public void remove(Entity.RemovalReason reason) {
         super.remove(reason);
-        this.bossBar.clearPlayers();
+        this.bossFight.onRemoved();
+    }
+
+    @Override
+    public void onDeath(DamageSource source) {
+        this.bossFight.onDeath();
+        super.onDeath(source);
     }
 
     // Flying creature: landing after a flight (or a dive) shouldn't hurt it

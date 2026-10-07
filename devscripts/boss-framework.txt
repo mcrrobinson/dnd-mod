@@ -1,0 +1,36 @@
+# Smoke test for the shared boss framework (BossFight): boss bars, phase, music, kill advancement.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/boss-framework.txt
+# Check: run/screenshots/boss-bars.png (red wyvern bar + yellow warlord bar), boss-bars-enraged.png (warlord bar red),
+# latest.log: "[EventMusic] NONE -> BOSS_FIGHT", warlord attack_damage 15 -> 20, "Dragon Slayer", "BOSS_FIGHT -> NONE".
+/advancement revoke @s only dndclasses:dragon_slayer
+/time set day
+/weather clear
+/gamemode survival
+/effect give @s minecraft:resistance 120 4 true
+/kill @e[type=dndclasses:wyvern]
+/kill @e[type=dndclasses:goblin_warlord]
+/fill -12 149 -12 12 149 12 glass
+/fill -12 150 -12 12 160 12 air
+wait 40
+closescreen
+/tp @s 0 150 8 180 10
+/summon dndclasses:wyvern -4 150 -4 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+/summon dndclasses:goblin_warlord 4 150 -4 {NoAI:1b,Rotation:[0f,0f]}
+wait 10
+/damage @e[type=dndclasses:wyvern,limit=1] 5 minecraft:player_attack by @s
+/damage @e[type=dndclasses:goblin_warlord,limit=1] 20 minecraft:player_attack by @s
+wait 20
+screenshot boss-bars
+/attribute @e[type=dndclasses:goblin_warlord,limit=1] minecraft:generic.attack_damage get
+/damage @e[type=dndclasses:goblin_warlord,limit=1] 150 minecraft:player_attack by @s
+wait 20
+screenshot boss-bars-enraged
+/attribute @e[type=dndclasses:goblin_warlord,limit=1] minecraft:generic.attack_damage get
+/data get entity @e[type=dndclasses:goblin_warlord,limit=1] BossPhase
+/damage @e[type=dndclasses:wyvern,limit=1] 100 minecraft:player_attack by @s
+wait 30
+screenshot boss-dragon-slayer
+/kill @e[type=dndclasses:goblin_warlord]
+wait 60
+/gamemode creative
+quit

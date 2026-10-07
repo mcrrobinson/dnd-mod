@@ -91,6 +91,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 ### Structures
 - [Dragon Lairs](docs/structures/dragon-lairs.md) on mountain summits (`/locate structure dndclasses:dragon_lair`).
 - [Hobbit Villages](docs/structures/hobbit-villages.md) in plains and meadows (`dndclasses:hobbit_village`).
+- [Hobbit Tavern](docs/structures/hobbit-tavern.md): every village inn has an innkeeper who trades food and ale, and a bounty board with daily hunts and expeditions.
 - [Goblin Camps](docs/structures/goblin-camps.md): palisaded war camps in forests and plains (`dndclasses:goblin_camp`).
 - [Dwarven Fortresses](docs/structures/dwarven-fortresses.md) carved into mountainsides (`dndclasses:dwarven_fortress`).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.

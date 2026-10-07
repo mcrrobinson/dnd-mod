@@ -1,0 +1,160 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "notice_0": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_0",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "notice_1": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_1",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "notice_2": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_2",
+        "y": 0
+      }
+    },
+    {
+      "when": {
+        "facing": "east"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "notice_0": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "notice_1": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "notice_2": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "notice_0": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "notice_1": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "notice_2": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "notice_0": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "notice_1": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "notice_2": "true"
+      },
+      "apply": {
+        "model": "dndclasses:block/bounty_board_notice_2",
+        "y": 270
+      }
+    }
+  ]
+}

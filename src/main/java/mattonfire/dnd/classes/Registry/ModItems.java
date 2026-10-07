@@ -6,6 +6,7 @@ import mattonfire.dnd.classes.Items.BloodHunterArmorItem;
 import mattonfire.dnd.classes.Items.ExtendedSwordItem;
 import mattonfire.dnd.classes.Items.GoldenHornsArmorItem;
 import mattonfire.dnd.classes.Items.HolyArmorArmorItem;
+import mattonfire.dnd.classes.Items.InstrumentItem;
 import mattonfire.dnd.classes.Items.KnightArmorItem;
 import mattonfire.dnd.classes.Items.MonkStaff;
 import mattonfire.dnd.classes.Items.PrismarineArmorItem;
@@ -19,6 +20,7 @@ import mattonfire.dnd.classes.Items.WizardArmorItem;
 import mattonfire.dnd.classes.Items.WoodenArmorItem;
 import mattonfire.dnd.classes.Items.lib.FAArmorAttributes;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
@@ -47,6 +49,14 @@ public class ModItems {
                 new MusicDiscItem(6, ModSounds.SILENT_FOOTSTEPS, new FabricItemSettings().maxCount(1), 170));
         public static final Item MUSIC_BOX_MUSIC_DISC = registerItem("music_box_music_disc",
                 new MusicDiscItem(6, ModSounds.MUSIC_BOX, new FabricItemSettings().maxCount(1), 16));
+
+        // Bard instruments: the song buffs nearby players when a Bard plays it (InstrumentItem)
+        public static final Item LUTE = registerItem("lute",
+                new InstrumentItem(ModSounds.SONG_LUTE, StatusEffects.REGENERATION, new FabricItemSettings().maxCount(1)));
+        public static final Item DRUM = registerItem("drum",
+                new InstrumentItem(ModSounds.SONG_DRUM, StatusEffects.STRENGTH, new FabricItemSettings().maxCount(1)));
+        public static final Item FLUTE = registerItem("flute",
+                new InstrumentItem(ModSounds.SONG_FLUTE, StatusEffects.SPEED, new FabricItemSettings().maxCount(1)));
 
         public static final Item ROGUE_HELMET = registerItem("rogue_helmet", new RogueArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
                 .armor(3.0)
@@ -528,6 +538,9 @@ public class ModItems {
 
         public static final Item EMBER_WYVERN_SPAWN_EGG = registerItem("ember_wyvern_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, 0x2A0E0C, 0xFF7A1A, new FabricItemSettings()));
+
+        public static final Item CLASS_GUIDEBOOK = registerItem("class_guidebook",
+                        new mattonfire.dnd.classes.Items.ClassGuidebookItem(new FabricItemSettings().maxCount(1)));
 
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);

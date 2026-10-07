@@ -4,6 +4,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -38,21 +39,6 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         return this.dndClass;
     }
 
-    public int addProgress(DndCharacter character, int amount) {
-        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
-        NbtCompound nbt = player.getPersistentData();
-        int progress = nbt.getInt(character.toString());
-        progress += amount;
-        nbt.putInt(character.toString(), progress);
-        return progress;
-    }
-
-    public int getProgress(DndCharacter character) {
-        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
-        NbtCompound nbt = player.getPersistentData();
-        return nbt.getInt(character.toString());
-    }
-
     public void setMana(int amount) {
         IEntityDataSaver player = (IEntityDataSaver) (Object) this;
         NbtCompound nbt = player.getPersistentData();
@@ -79,7 +65,8 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
             if (!world.isClient && this.age % 20 == 0 && player instanceof ServerPlayerEntity serverPlayer) {
                 Druid.serverTick(serverPlayer);
             }
-            if (playerEntity.getDndClass() == DndCharacter.DRUID) {
+            if (playerEntity.getDndClass() == DndCharacter.DRUID
+                    && !Progression.hasPassive(player, "druid.tidecaller")) {
                 if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
                         !player.getAbilities().flying) {
                     this.setVelocity(0.0D, -0.5, 0.0D);

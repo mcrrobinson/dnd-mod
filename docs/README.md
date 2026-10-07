@@ -36,7 +36,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
 - [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
-- [Owlbear](mobs/owlbear.md) (PR #68)
+- [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
 - [Gelatinous Cube](mobs/gelatinous-cube.md) (PR #70)
 
 ## Bosses

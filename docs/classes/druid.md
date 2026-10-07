@@ -5,7 +5,7 @@ A nature class that grows stronger with tamed animals and sunlight, and can take
 - **Animal hearts:** +1 heart (2 health) of max health for each living tamed animal you own in your current world, up to 5 hearts. It's recounted every second.
 - **Light:** in light level 10 or higher you regenerate 0.5 health a second, even on an empty stomach. In light level 4 or lower you get hungry (0.1 exhaustion a second, about half a drumstick every 40 seconds).
 - **Can't swim:** fully submerged in water, you sink (pulled down at 0.5 blocks a tick) unless you're in creative or flying.
-- **Special (power-up key, full mana):** turn into a random animal from the last 16 kinds of animal you've killed, for 30 seconds. If you haven't killed an animal yet, nothing happens and you keep your mana.
+- **Special (power-up key, full mana):** turn into a random animal from the last 16 kinds of animal you've killed (an [Owlbear](../mobs/owlbear.md) counts once you've killed one), for 30 seconds. If you haven't killed an animal yet, nothing happens and you keep your mana.
 
 ## Known limitations
 - Animal forms need the optional **Identity** mod. Without it the special does nothing and your mana is kept.

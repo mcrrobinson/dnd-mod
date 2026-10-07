@@ -104,6 +104,14 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<OwlbearEntity> OWLBEAR = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "owlbear"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, OwlbearEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.4f, 1.9f))
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
@@ -116,5 +124,6 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
         FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
         FabricDefaultAttributeRegistry.register(MIMIC, MimicEntity.createMimicAttributes());
+        FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
     }
 }

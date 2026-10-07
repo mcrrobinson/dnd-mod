@@ -37,7 +37,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
 - [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
-- [Gelatinous Cube](mobs/gelatinous-cube.md) (PR #70)
+- [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases and rewards

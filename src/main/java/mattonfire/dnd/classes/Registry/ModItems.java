@@ -517,6 +517,9 @@ public class ModItems {
         public static final Item GOBLIN_WARLORD_SPAWN_EGG = registerItem("goblin_warlord_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARLORD, 0x4A6B2A, 0xE0A82E, new FabricItemSettings()));
 
+        public static final Item MAGMAMUNCHER_ALPHA_SPAWN_EGG = registerItem("magmamuncher_alpha_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MAGMAMUNCHER_ALPHA, 0x3A1A12, 0xFF6A00, new FabricItemSettings()));
+
         public static final Item MOUNTAIN_DWARF_SPAWN_EGG = registerItem("mountain_dwarf_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, 0x5A5F66, 0x9C4A1E, new FabricItemSettings()));
 

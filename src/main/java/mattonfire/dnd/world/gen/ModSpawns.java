@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.LightningChaserEntity;
+import mattonfire.dnd.entity.MagmamuncherAlphaEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -23,6 +24,7 @@ import net.minecraft.world.biome.BiomeKeys;
 public class ModSpawns {
     private static final int MAX_HOBBITS_NEARBY = 16;
     private static final int MAX_DWARVES_NEARBY = 24;
+    private static final double MAX_ALPHA_DISTANCE = 96.0D;
 
     public static void addSpawns() {
         // Wyverns in plains/mountains
@@ -36,6 +38,9 @@ public class ModSpawns {
         // Magmamunchers in Nether
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.BASALT_DELTAS, BiomeKeys.NETHER_WASTES),
                 SpawnGroup.MONSTER, ModEntityTypes.MAGMAMUNCHER, 8, 1, 3);
+        // Rarely, a Magmamuncher Alpha (a boss) instead; at most one in a wide area.
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.BASALT_DELTAS, BiomeKeys.NETHER_WASTES),
+                SpawnGroup.MONSTER, ModEntityTypes.MAGMAMUNCHER_ALPHA, 1, 1, 1);
 
 
         SpawnRestriction.register(ModEntityTypes.WYVERN, SpawnRestriction.Location.ON_GROUND,
@@ -48,6 +53,9 @@ public class ModSpawns {
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
         SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn); // Or Monster::isValidSpawn? Magmamuncher is Tameable but spawns in Nether.
+
+        SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER_ALPHA, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canMagmamuncherAlphaSpawn);
 
         // Goblin Warriors join the Nether Fortress spawn pool (see SpawnHelperMixin)
         SpawnRestriction.register(ModEntityTypes.GOBLIN_WARRIOR, SpawnRestriction.Location.ON_GROUND,
@@ -70,6 +78,17 @@ public class ModSpawns {
         }
         return reason != SpawnReason.NATURAL
                 || world.getEntitiesByClass(LightningChaserEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty();
+    }
+
+    private static boolean canMagmamuncherAlphaSpawn(EntityType<MagmamuncherAlphaEntity> type, ServerWorldAccess world,
+                                                     SpawnReason reason, BlockPos pos, Random random) {
+        if (!HostileEntity.canSpawnIgnoreLightLevel(type, world, reason, pos, random)) {
+            return false;
+        }
+        // Natural spawns: a 1 in 4 roll on top of the low weight, and never near another alpha.
+        return reason != SpawnReason.NATURAL
+                || (random.nextInt(4) == 0
+                && world.getEntitiesByClass(MagmamuncherAlphaEntity.class, new Box(pos).expand(MAX_ALPHA_DISTANCE), e -> true).isEmpty());
     }
 
     private static boolean canDwarfSpawn(EntityType<MountainDwarfEntity> type, ServerWorldAccess world, SpawnReason reason,

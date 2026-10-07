@@ -48,6 +48,13 @@ public class ModSounds {
 
     public static final SoundEvent WIZARD_EXPLOSION = registerSoundEvent("wizard_explosion");
 
+    // d20 skill checks (tools/music-gen): the dice rattling, then how the roll turned out
+    public static final SoundEvent DICE_ROLL = registerSoundEvent("dice.roll");
+    public static final SoundEvent DICE_SUCCESS = registerSoundEvent("dice.success");
+    public static final SoundEvent DICE_FAILURE = registerSoundEvent("dice.failure");
+    public static final SoundEvent DICE_CRITICAL = registerSoundEvent("dice.critical");
+    public static final SoundEvent DICE_FUMBLE = registerSoundEvent("dice.fumble");
+
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = new Identifier(DnDClasses.MOD_ID, name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));

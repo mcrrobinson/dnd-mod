@@ -50,6 +50,7 @@ import net.minecraft.screen.slot.SlotActionType;
  * <li>{@code look <yaw> <pitch>} turns the player (yaw 0 = south)</li>
  * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
+ * <li>{@code sneak on|off} holds or releases the sneak key</li>
  * <li>{@code press <key>} presses a key binding once, by translation key (e.g. {@code key.dnd-classes.power-up})</li>
  * <li>{@code perspective first|back|front} sets the camera (F5)</li>
  * <li>{@code slot <index> [action] [button]} clicks a slot of the open screen; action is a
@@ -190,6 +191,7 @@ public final class DevScript {
             }
             case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
+            case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
             case "hotbar" -> client.player.getInventory().selectedSlot = Integer.parseInt(argument);
             case "press" -> press(client, argument, lineNumber);
             case "perspective" -> client.options.setPerspective(switch (argument) {

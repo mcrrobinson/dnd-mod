@@ -51,7 +51,7 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
   - Several clients can run at once. Each one needs its own run directory, because a world can only be open once: copy `run/` to `run-2/` (skip `run/logs`) and pass `-PdevRunDir=run-2`. Each client uses about 2-3 GB of RAM, so check `free -g` first.
 - DevScript steps (documented in `DevScript.java`):
   - `/command`, `wait <ticks>`, `screenshot <name>`, `hitboxes on|off` (F3+B), `hud on|off` (F1), `closescreen`, `respawn` (if the saved player is dead), `quit`
-  - Input, simulated inside the game: `look <yaw> <pitch>`, `use` (right click), `attack` (left click), `hotbar <0-8>`, `press <key binding translation key>` (e.g. `key.dnd-classes.power-up`), `perspective first|back|front` (F5)
+  - Input, simulated inside the game: `look <yaw> <pitch>`, `use` (right click), `attack` (left click), `hotbar <0-8>`, `press <key binding translation key>` (e.g. `key.dnd-classes.power-up`), `perspective first|back|front` (F5), `sneak on|off`
   - Screens: `slot <index> [action] [button]` clicks a slot of the open screen (`pickup` by default, `quick_move` = shift-click, `swap <0-8>` = number key, `throw` = Q), `button <id>` (e.g. enchanting option 0-2), `rename <text>` (anvil), `slots` logs every non-empty slot so you can check results in the log.
 
   See `devscripts/headless-input-check.txt` (enchants a sword and attacks a zombie) and `devscripts/dragon-hitboxes.txt`.

@@ -251,5 +251,45 @@
                 "name": "dndclasses:song_flute"
             }
         ]
+    },
+    "dice.roll": {
+        "subtitle": "subtitles.dndclasses.dice.roll",
+        "sounds": [
+            {
+                "name": "dndclasses:dice_roll"
+            }
+        ]
+    },
+    "dice.success": {
+        "subtitle": "subtitles.dndclasses.dice.success",
+        "sounds": [
+            {
+                "name": "dndclasses:dice_success"
+            }
+        ]
+    },
+    "dice.failure": {
+        "subtitle": "subtitles.dndclasses.dice.failure",
+        "sounds": [
+            {
+                "name": "dndclasses:dice_failure"
+            }
+        ]
+    },
+    "dice.critical": {
+        "subtitle": "subtitles.dndclasses.dice.critical",
+        "sounds": [
+            {
+                "name": "dndclasses:dice_critical"
+            }
+        ]
+    },
+    "dice.fumble": {
+        "subtitle": "subtitles.dndclasses.dice.fumble",
+        "sounds": [
+            {
+                "name": "dndclasses:dice_fumble"
+            }
+        ]
     }
 }

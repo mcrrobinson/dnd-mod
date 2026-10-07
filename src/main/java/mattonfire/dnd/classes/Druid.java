@@ -110,7 +110,8 @@ public class Druid {
         if (current != null && current.getValue() == bonus)
             return;
 
-        attribute.tryRemoveModifier(ANIMAL_HEARTS_UUID);
+        // removeModifier, not tryRemoveModifier: the latter only removes persistent modifiers.
+        attribute.removeModifier(ANIMAL_HEARTS_UUID);
         if (bonus > 0) {
             // Temporary so it isn't saved; it is recomputed every second instead.
             attribute.addTemporaryModifier(new EntityAttributeModifier(ANIMAL_HEARTS_UUID,
@@ -121,7 +122,8 @@ public class Druid {
 
     public static void removeAnimalHearts(PlayerEntity player) {
         EntityAttributeInstance attribute = player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
-        if (attribute != null && attribute.tryRemoveModifier(ANIMAL_HEARTS_UUID)) {
+        if (attribute != null && attribute.getModifier(ANIMAL_HEARTS_UUID) != null) {
+            attribute.removeModifier(ANIMAL_HEARTS_UUID);
             clampHealth(player);
         }
     }

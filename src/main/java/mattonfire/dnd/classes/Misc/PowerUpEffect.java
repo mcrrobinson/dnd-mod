@@ -136,6 +136,8 @@ public class PowerUpEffect {
     }
 
     public static boolean play(MinecraftServer server, PlayerEntity player, DndCharacter character) {
+        if (character == null || character == DndCharacter.NONE)
+            return false; // No class picked yet, keep the mana
 
         System.out.println("Starting powerup on: " + character.toString());
         switch (character) {

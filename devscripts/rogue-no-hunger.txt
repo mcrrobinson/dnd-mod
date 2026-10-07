@@ -1,0 +1,50 @@
+# Rogues don't need to eat: HungerManagerMixin cancels HungerManager.update for Rogues,
+# so food never drains and they never starve (side effect: no natural regen from food either).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/rogue-no-hunger.txt
+# Check run/logs/latest.log ([CHAT] lines, in order):
+#  1. Rogue under Hunger 255: foodLevel stays 20.
+#  2. Fighter under Hunger 255: foodLevel drops to 0, then Health drops (starving on hard).
+#  3. Rogue at foodLevel 0: Health stays the same (no starvation).
+wait 40
+closescreen
+/gamemode survival
+/difficulty hard
+/time set day
+wait 20
+/effect give @s minecraft:saturation 1 255 true
+/effect give @s minecraft:instant_health 1 10 true
+wait 10
+# 1. Rogue: heavy hunger effect, food must stay at 20
+/dndclass set @s rogue
+wait 10
+/data get entity @s foodLevel
+/effect give @s minecraft:hunger 10 255
+wait 220
+/data get entity @s foodLevel
+/data get entity @s foodSaturationLevel
+# 2. Fighter: same effect drains food to 0, then starves
+/dndclass set @s fighter
+wait 10
+/effect give @s minecraft:hunger 10 255
+wait 220
+/effect clear @s minecraft:hunger
+/data get entity @s foodLevel
+/data get entity @s Health
+wait 200
+/data get entity @s Health
+# 3. Rogue again at food 0: no starvation damage
+/dndclass set @s rogue
+wait 10
+/data get entity @s Health
+wait 200
+/data get entity @s foodLevel
+/data get entity @s Health
+screenshot rogue-no-hunger
+# Restore
+/effect clear @s
+/effect give @s minecraft:saturation 1 255 true
+/effect give @s minecraft:instant_health 1 10 true
+/dndclass set @s none
+/difficulty normal
+wait 20
+quit

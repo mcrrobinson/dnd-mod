@@ -26,6 +26,8 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
 4. Implement the change and make sure `./gradlew build` passes.
 5. Start the client in the background from the worktree (`./gradlew runClient`) so the user can test, and wait for their feedback before calling it done.
 6. Once the user is happy, commit, push the branch and open a PR to `main`. Move the card to Done when it's merged.
+   - Include the screenshots you took while testing in the PR description. Don't commit them to the feature branch; push them to the orphan branch `pr-screenshots` under `<branch-slug>/` and embed them with `![name](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/<branch-slug>/<name>.png)`.
+   - To push them without touching your worktree: `git worktree add ../dnd-mod-pr-screenshots pr-screenshots` (first time: `git worktree add --orphan -b pr-screenshots ../dnd-mod-pr-screenshots`), copy the PNGs in, commit, push, then `git worktree remove ../dnd-mod-pr-screenshots`.
 7. Clean up with `git worktree remove ../dnd-mod-<branch-slug>` after merging.
 
 ## Testing in the dev client

@@ -27,10 +27,12 @@
         "CraftingResultSlotMixin",
         "WorldMixin",
         "ServerWorldMixin",
-        "ProjectileUtilMixin"
+        "ProjectileUtilMixin",
+        "SpawnHelperMixin"
     ],
     "client": [
         "DoubleJumpMixin",
+        "InGameHudMixin",
         "EntityRenderDispatcherMixin",
         "LivingEntityMixin",
         "LivingEntityRendererMixin",

@@ -1,0 +1,62 @@
+# Screenshots the Goblin Warrior from the front, side and back, then lets one chase and swing at the player.
+# Run: ./gradlew runClient -PdevScript=devscripts/goblin-warrior.txt
+# Output: run/screenshots/goblin-*.png. Everything happens on a glass platform at y=149.
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:goblin_warrior]
+/fill -8 149 -8 8 149 8 glass
+hud off
+# The class picker opens shortly after joining
+wait 40
+closescreen
+
+/summon dndclasses:goblin_warrior 0 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/tp @s 0 151 3.5 180 15
+wait 40
+screenshot goblin-front
+/tp @s 3.5 151 0 90 15
+wait 20
+screenshot goblin-side
+/tp @s 0 151 -3.5 0 15
+wait 20
+screenshot goblin-back
+/kill @e[type=dndclasses:goblin_warrior]
+
+# Chase and attack
+/effect give @s resistance 60 4 true
+/gamemode survival
+/tp @s 2.5 150 3 135 10
+/summon dndclasses:goblin_warrior 0 150 -5
+wait 12
+screenshot goblin-walk
+# Wait until the goblin is next to the player, then catch a full swing
+wait 50
+wait 3
+screenshot goblin-attack-1
+wait 3
+screenshot goblin-attack-2
+wait 3
+screenshot goblin-attack-3
+wait 3
+screenshot goblin-attack-4
+wait 3
+screenshot goblin-attack-5
+wait 3
+screenshot goblin-attack-6
+wait 3
+screenshot goblin-attack-7
+wait 3
+screenshot goblin-attack-8
+wait 3
+screenshot goblin-attack-9
+wait 3
+screenshot goblin-attack-10
+wait 3
+screenshot goblin-attack-11
+wait 3
+screenshot goblin-attack-12
+/gamemode creative
+/kill @e[type=dndclasses:goblin_warrior]
+hud on
+quit

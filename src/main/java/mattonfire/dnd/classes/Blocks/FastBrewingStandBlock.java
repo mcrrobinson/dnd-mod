@@ -74,6 +74,7 @@ public class FastBrewingStandBlock extends BrewingStandBlock {
                     }
                 }
 
+                ((FastBrewingStandBlockEntity) blockEntity).setBrewer(player.getUuid());
                 player.openHandledScreen(state.createScreenHandlerFactory(world, pos));
             }
         }

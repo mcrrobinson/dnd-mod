@@ -1,6 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import net.minecraft.block.BedBlock;
@@ -54,6 +55,9 @@ import org.jetbrains.annotations.Nullable;
  * A piece is built once per chunk it overlaps, so all of its randomness comes from its own seed.
  */
 public abstract class FortressPiece extends StructurePiece {
+    /** Chance that a chest in a fortress is really a mimic. */
+    private static final float MIMIC_CHANCE = 0.1F;
+
     protected static final Direction OUT = Direction.SOUTH;
     protected static final Direction IN = Direction.NORTH;
 
@@ -398,7 +402,24 @@ public abstract class FortressPiece extends StructurePiece {
         }
 
         void chest(int x, int y, int z, Direction facing, Identifier lootTable) {
+            if (this.chance(MIMIC_CHANCE)) {
+                this.mimic(x, y, z, facing, lootTable);
+                return;
+            }
             this.container(x, y, z, facing(Blocks.CHEST, facing), lootTable);
+        }
+
+        /** A mimic sitting where a chest would be, holding that chest's loot. */
+        void mimic(int x, int y, int z, Direction facing, Identifier lootTable) {
+            this.set(x, y, z, Blocks.AIR);
+            BlockPos pos = this.pos(x, y, z);
+            if (!this.chunkBox.contains(pos)) {
+                return;
+            }
+            MimicEntity mimic = MimicEntity.disguised(this.world.toServerWorld(), pos, this.dir(facing), lootTable);
+            if (mimic != null) {
+                this.world.spawnEntity(mimic);
+            }
         }
 
         void barrel(int x, int y, int z, Direction facing, Identifier lootTable) {

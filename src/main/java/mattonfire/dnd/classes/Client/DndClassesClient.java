@@ -14,7 +14,9 @@ import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
 import mattonfire.dnd.particle.TranslucentFlameParticle;
-import mattonfire.dnd.classes.Client.Hud.AchievementMenu;
+import mattonfire.dnd.classes.Client.Hud.SkillTreeScreen;
+import mattonfire.dnd.classes.Progression.ClassProgress;
+import mattonfire.dnd.classes.Progression.Progression;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
@@ -47,7 +49,7 @@ public class DndClassesClient implements ClientModInitializer {
     private boolean isBreathingFire = false;
     private long fireBreathEndTick = 0;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
-            new KeyBinding("key.achievement_menu.open", GLFW.GLFW_KEY_O, "category.achievement_menu"));
+            new KeyBinding("key.dnd-classes.skill-tree", GLFW.GLFW_KEY_O, "category.dnd-classes.dnd-classes"));
 
     private static void handleClassQuery(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
@@ -99,9 +101,7 @@ public class DndClassesClient implements ClientModInitializer {
 
     private static void removeManor(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
-        if (client.player != null) {
-            ((IEntityDataSaver) client.player).getPersistentData().putInt("mana", 0);
-        }
+        // The server syncs the mana left separately.
         // The server only sends this when the special actually fired
         client.execute(() -> mattonfire.dnd.classes.Client.Music.MusicStings.onSpecialFired(client));
     }
@@ -139,6 +139,7 @@ public class DndClassesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        mattonfire.dnd.classes.Items.ClassGuidebookItem.clientOpener = mattonfire.dnd.classes.Client.Hud.ClassGuidebookScreen::open;
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, mattonfire.dnd.client.renderer.EmberWyvernRenderer::new);
@@ -149,17 +150,20 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARLORD, mattonfire.dnd.client.renderer.GoblinWarlordRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.HOBBIT, mattonfire.dnd.client.renderer.HobbitRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, mattonfire.dnd.client.renderer.MountainDwarfRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIMIC, mattonfire.dnd.client.renderer.MimicRenderer::new);
+        mattonfire.dnd.client.MimicTexture.register();
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
+        mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (OPEN_MENU_KEY.wasPressed()) {
                 if (client.currentScreen == null) {
-                    client.setScreen(new AchievementMenu());
+                    client.setScreen(new SkillTreeScreen(false));
                 }
             }
         });
@@ -222,6 +226,13 @@ public class DndClassesClient implements ClientModInitializer {
         // The response from the server to make the special effects.
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
                 DndClassesClient::receiveLungeEffectsRequest);
+
+        ClientPlayNetworking.registerGlobalReceiver(Progression.S2C_SYNC, (client, handler, buf, sender) -> {
+            ClassProgress progress = ClassProgress.read(buf);
+            client.execute(() -> ClassProgress.client = progress);
+        });
+        ClientPlayNetworking.registerGlobalReceiver(Progression.S2C_OPEN_ATTUNEMENT,
+                (client, handler, buf, sender) -> client.execute(() -> client.setScreen(new SkillTreeScreen(true))));
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_SYNC_MANA,
                 DndClassesClient::setMana);

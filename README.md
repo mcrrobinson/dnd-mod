@@ -138,22 +138,7 @@ A Lightning Chaser's lair sits on the very summit of a jagged, frozen or stony p
 - **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`). Dwarves guard their fortress like piglins guard gold: open a chest or barrel, or break a gold block, where one can see you and they all turn on you.
 
 #### Lich
-A late-game undead caster boss (300 health, 10 armour, 4 toughness) that haunts every **stronghold library**, standing in the open row at the back (also a spawn egg, or `/summon dndclasses:lich`). It keeps 6-14 blocks from you and casts:
-
-| Spell | What it does |
-|-|-|
-| **Wither Bolt** | A wither skull from its staff (every 2.5 s). Its blast hurts but never breaks blocks |
-| **Ray of Frost** | A beam of frost: 7 damage, Slowness III for 5 s and the powder-snow freeze (every 4.5 s, up to 20 blocks) |
-| **Frost Nova** | When you get within 4 blocks: 8 damage, Slowness IV, freezing and a big shove to everyone around it (every 7 s) |
-| **Raise Dead** | Zombies, husks and skeletons rise round it (2 per wave, up to 4 at once, every 20 s). They crumble when the Lich dies |
-
-It is undead (Smite works, healing potions hurt), immune to wither, poison and freezing, never despawns, and its bolts, blasts and minions never hurt each other or the Lich.
-
-- **Phases** (purple boss bar, 48 blocks): below 60% health the bar turns blue, it raises a wave at once, waves grow to 3 (up to 6 at once, every 15 s) and include strays and wither skeletons. Below 30% the bar turns red: it moves 25% faster, its spell cooldowns are 40% shorter, waves grow to 4 (up to 8 at once), it fires three bolts at a time (one a blue skull), novas at once, and 40% of the time blinks 6-10 blocks away when hit in melee.
-- **Phylactery**: on its first tick the Lich places its phylactery (a soul vessel on a carved plinth, 60 health, 8 armour) a few blocks away, or in the middle row of a stronghold library. While it stands, the Lich heals 1 health a second, a thread of soul fire links them, and a Lich that dies **flees into it** (no loot or XP) and reforms there 30 seconds later at full health. Hit the phylactery and the Lich comes back to defend it; lure the Lich more than 28 blocks away and it blinks home. Smash the phylactery first, then kill the Lich for good. Smash it while the Lich is reforming and that's the Lich's end too: the phylactery drops the Lich's rewards. `{NoPhylactery:1b}` summons one without a phylactery.
-- **Necromancer rivalry**: the Lich goes for Necromancers first and taunts them by name, its raised dead ignore the truce undead normally keep with Necromancers, and Necromancers deal 50% more damage to the Lich and its phylactery. A Necromancer who lands the killing blow gets a parting line.
-- **Rewards** (`entities/lich`): 4-10 bones and 3-8 bottles o' enchanting; when a player kills it, also 150 XP, 3-6 diamonds, two treasure-enchanted books (level 30), a 50% chance of a totem of undying, 35% of a wither skeleton skull, 25% of 1-2 netherite scrap (+ Looting), and the **Lichbane** advancement (challenge, 150 XP). The phylactery itself drops 2-5 amethyst shards and sometimes an echo shard.
-- **Music**: the Lich theme (120 bpm D minor: drums, a dark choir, a harpsichord ostinato and a funeral bell) plays for everyone who can see the boss bar.
+A late-game undead caster boss that haunts stronghold libraries: it casts wither and frost spells, raises the dead, reforms from its phylactery until that's smashed, and has a rivalry with Necromancers. See [docs/bosses/lich.md](docs/bosses/lich.md).
 
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:

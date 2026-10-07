@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.Entities;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
 
 import net.minecraft.block.entity.LockableContainerBlockEntity;
 import net.minecraft.inventory.SidedInventory;
@@ -14,6 +15,7 @@ import net.minecraft.world.World;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.UUID;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
 import net.minecraft.entity.player.PlayerEntity;
@@ -46,6 +48,9 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
     private boolean[] slotsEmptyLastTick;
     private Item itemBrewing;
     int fuel;
+    /** The last player to open the stand; gets the brewing XP. */
+    @Nullable
+    private UUID brewer;
     protected final PropertyDelegate propertyDelegate;
 
     public FastBrewingStandBlockEntity(BlockPos pos, BlockState state) {
@@ -122,7 +127,7 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
             blockEntity.brewTime = blockEntity.brewTime - SPEED_MODIFIER;
             boolean bl3 = blockEntity.brewTime == 0;
             if (bl3 && bl) {
-                craft(world, pos, blockEntity.inventory);
+                craft(world, pos, blockEntity.inventory, blockEntity.brewer);
                 markDirty(world, pos, state);
             } else if (!bl || !itemStack2.isOf(blockEntity.itemBrewing)) {
                 blockEntity.brewTime = 0;
@@ -182,11 +187,18 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
         }
     }
 
-    private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots) {
+    private static void craft(World world, BlockPos pos, DefaultedList<ItemStack> slots, @Nullable UUID brewer) {
+        boolean saveIngredient = AlchemistSkills.onBrew(world, brewer, slots);
         ItemStack itemStack = (ItemStack) slots.get(3);
 
         for (int i = 0; i < 3; ++i) {
             slots.set(i, BrewingRecipeRegistry.craft(itemStack, (ItemStack) slots.get(i)));
+        }
+
+        if (saveIngredient) {
+            slots.set(3, itemStack);
+            world.syncWorldEvent(1035, pos, 0);
+            return;
         }
 
         itemStack.decrement(1);
@@ -209,6 +221,7 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
         Inventories.readNbt(nbt, this.inventory);
         this.brewTime = nbt.getShort("BrewTime");
         this.fuel = nbt.getByte("Fuel");
+        this.brewer = nbt.containsUuid("Brewer") ? nbt.getUuid("Brewer") : null;
     }
 
     protected void writeNbt(NbtCompound nbt) {
@@ -216,6 +229,14 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
         nbt.putShort("BrewTime", (short) this.brewTime);
         Inventories.writeNbt(nbt, this.inventory);
         nbt.putByte("Fuel", (byte) this.fuel);
+        if (this.brewer != null) {
+            nbt.putUuid("Brewer", this.brewer);
+        }
+    }
+
+    public void setBrewer(UUID brewer) {
+        this.brewer = brewer;
+        this.markDirty();
     }
 
     public ItemStack getStack(int slot) {

@@ -67,5 +67,14 @@
     "entity.dndclasses.mountain_dwarf": "Mountain Dwarf",
     "item.dndclasses.mountain_dwarf_spawn_egg": "Mountain Dwarf Spawn Egg",
     "advancements.dndclasses.dragon_slayer.title": "Dragon Slayer",
-    "advancements.dndclasses.dragon_slayer.description": "Slay a dragon"
+    "advancements.dndclasses.dragon_slayer.description": "Slay a dragon",
+    "item.dndclasses.lute": "Lute",
+    "item.dndclasses.drum": "War Drum",
+    "item.dndclasses.flute": "Flute",
+    "item.dndclasses.instrument.tooltip": "Bard song: %s (%ss) for players within %s blocks",
+    "message.dndclasses.instrument.bard": "Your song grants %1$s to %2$s player(s)",
+    "message.dndclasses.instrument.not_bard": "A pleasant tune, but only a Bard's song inspires",
+    "subtitles.dndclasses.instrument.lute": "Lute plays",
+    "subtitles.dndclasses.instrument.drum": "War drum beats",
+    "subtitles.dndclasses.instrument.flute": "Flute plays"
 }

@@ -10,6 +10,7 @@
         "PlayerEntityRendererMixin",
         "BowItemMixin",
         "PlayerEntityMixin",
+        "SmiteDragonsMixin",
         "PlayerManagerMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",

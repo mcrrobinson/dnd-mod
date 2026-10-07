@@ -1,0 +1,20 @@
+# Fighter-owned brewing stand finishes a brew and explodes. The stand must stay gone.
+wait 40
+closescreen
+wait 10
+/gamemode creative
+/tp @s 30 160 25 180 20
+wait 20
+/fill 20 140 -5 40 160 15 minecraft:air
+/fill 25 149 0 35 149 10 minecraft:stone
+/setblock 30 150 5 minecraft:brewing_stand{DndLastPlayerClass:5,Fuel:20,Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:water"}},{Slot:3b,id:"minecraft:nether_wart",Count:1b}]}
+wait 20
+/data get block 30 150 5 BrewTime
+wait 400
+/execute if block 30 150 5 minecraft:brewing_stand
+/execute if block 30 149 5 minecraft:stone
+wait 200
+/execute if block 30 150 5 minecraft:brewing_stand
+/execute if block 30 149 5 minecraft:stone
+screenshot brewing-explosion
+quit

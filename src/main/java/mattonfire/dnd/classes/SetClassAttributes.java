@@ -1,13 +1,12 @@
 package mattonfire.dnd.classes;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
-import net.minecraft.util.math.Box;
 
 public class SetClassAttributes {
 
@@ -18,6 +17,7 @@ public class SetClassAttributes {
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED).setBaseValue(4.0D);
         player.getAttributeInstance(EntityAttributes.GENERIC_LUCK).setBaseValue(0.0D);
         player.clearStatusEffects();
+        Druid.onClassReset(player);
     }
 
     public void sendPlayerMessage(PlayerEntity player, String className, String pros, String cons, String special) {
@@ -52,35 +52,17 @@ public class SetClassAttributes {
 
     public void typeCleric(PlayerEntity player) {
         System.out.println("Cleric...");
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4); // -33%
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 20000, 2, false, false, true));
-        player.addStatusEffect(
-                new StatusEffectInstance(StatusEffects.NIGHT_VISION, 20000, 2, false, false, true));
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.67); // -33%, Default 1.0
+        // Haste and Night Vision are kept up every tick - in ClericHandler
 
     }
 
     public void typeDruid(PlayerEntity player) {
-
-        final int range = 10; // 10 blocks
-
-        Box searchBox = new Box(
-                player.getX() - range, player.getY() - range, player.getZ() - range,
-                player.getX() + range, player.getY() + range, player.getZ() + range);
-
-        System.out.println("Search box" + searchBox.toString());
-
-        // Get the number of tamed animals this player has
-        int tamedAnimals = (int) player.getWorld()
-                .getEntitiesByClass(Entity.class, searchBox, entity -> true).size();
-
-        // TODO: THIS IS GETTING ALL ENTITIES, NOT THE ONES YOU TAMED
-
-        // AND THE HEALTH ISNT WORKING PROPERLY IT WONT BE ABOVE THE MAX HEALTH.. MAYBE
-        // CUZ ITS NOT STATIC?
-        float health = player.getMaxHealth() + (tamedAnimals * 2);
-        player.setHealth(health);
-        System.out.println(tamedAnimals);
         System.out.println("Druid...");
+        // Extra hearts from tamed animals are kept up to date by Druid.serverTick.
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            Druid.updateAnimalHearts(serverPlayer);
+        }
     }
 
     public void typeFighter(PlayerEntity player) {
@@ -92,11 +74,9 @@ public class SetClassAttributes {
     }
 
     public void typeMonk(PlayerEntity player) {
-        // Weakness on anything but a staff.
+        // Staff/fist-only attacks and the armor-scaled damage penalty live in MonkHandler.
         player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.12); // Default 0.1
         player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_SPEED).setBaseValue(6.0); // Default 4.0
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE)
-                .setBaseValue(10 * (1 / (player.getArmor() + 1)));
     }
 
     public void typePaladin(PlayerEntity player) {
@@ -138,9 +118,8 @@ public class SetClassAttributes {
 
     public void typeWarlock(PlayerEntity player) {
         System.out.println("Warlock...");
-        // Slow fireball.
-        // Resistant to fire and lava.
-        // Fire tick in water and rain.
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5); // Default 1
+        // Slow fireball, fire/lava immunity and water/rain damage live in Warlock.
     }
 
     public void typeWizard(PlayerEntity player) {

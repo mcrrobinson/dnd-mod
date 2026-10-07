@@ -45,6 +45,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
@@ -582,7 +584,22 @@ public class DnDClasses implements ModInitializer {
                         if (player instanceof ServerPlayerEntity serverPlayer) {
                                 if (serverPlayer instanceof PlayerEntityExt) {
                                         PlayerEntityExt playerEntityExt = (PlayerEntityExt) serverPlayer;
-                                        if (playerEntityExt.getDndClass() == DndCharacter.PALADIN) {
+                                        if (playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                                ItemStack itemStack = player.getStackInHand(hand);
+                                                if (itemStack.getItem() instanceof BowItem
+                                                                || itemStack.getItem() instanceof CrossbowItem) {
+                                                        player.sendMessage(Text.of("Fighters cannot use bows!"), true);
+                                                        return TypedActionResult.fail(itemStack);
+                                                }
+                                        }
+                                        if (playerEntityExt.getDndClass() == DndCharacter.ARTIFICER
+                                                        && player.getStackInHand(hand).isOf(Items.POTION)) {
+                                                // Drinking would waste it; splash/lingering can still be thrown at others
+                                                player.sendMessage(Text.of("Potions have no effect on you!"), true);
+                                                return TypedActionResult.fail(player.getStackInHand(hand));
+                                        }
+                                        if (playerEntityExt.getDndClass() == DndCharacter.PALADIN
+                                                        || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
                                                 ItemStack itemStack = player.getStackInHand(hand);
 
                                                 // Check if the item is a potion
@@ -685,10 +702,8 @@ public class DnDClasses implements ModInitializer {
 
                 ServerEntityEvents.ENTITY_LOAD.register((entity, serverWorld) -> {
                         if (entity instanceof MobEntity mob) {
-                                MobEntityAccessor accessor = (MobEntityAccessor) mob;
-
-                                accessor.getTargetSelector().add(2,
-                                                new PriorityPlayerTargetGoal<>(mob, PlayerEntity.class));
+                                // Fighters attract mobs that already hunt players
+                                PriorityPlayerTargetGoal.attach(mob);
                         }
 
                 });

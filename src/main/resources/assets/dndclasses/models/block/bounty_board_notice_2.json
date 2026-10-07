@@ -1,0 +1,46 @@
+{
+  "textures": {
+    "particle": "dndclasses:block/bounty_notice",
+    "notice": "dndclasses:block/bounty_notice"
+  },
+  "elements": [
+    {
+      "from": [
+        2.75,
+        4,
+        14.5
+      ],
+      "to": [
+        5.75,
+        12,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#notice",
+          "uv": [
+            2,
+            1,
+            14,
+            15
+          ]
+        },
+        "south": {
+          "texture": "#notice"
+        },
+        "east": {
+          "texture": "#notice"
+        },
+        "west": {
+          "texture": "#notice"
+        },
+        "up": {
+          "texture": "#notice"
+        },
+        "down": {
+          "texture": "#notice"
+        }
+      }
+    }
+  ]
+}

@@ -50,6 +50,13 @@ public class WyvernAttackGoal extends Goal {
             this.entity.getLookControl().lookAt(target, 30.0F, 30.0F);
         }
 
+        if (this.entity.getFireBreath().isBreathing()) {
+            // Hold position and keep facing the target while breathing
+            this.entity.getNavigation().stop();
+            this.entity.getLookControl().lookAt(target, 30.0F, 30.0F);
+            return;
+        }
+
         this.entity.getNavigation().startMovingTo(target, 1.0);
 
         if (this.cooldown > 0) {
@@ -57,9 +64,14 @@ public class WyvernAttackGoal extends Goal {
         }
 
         if (this.cooldown <= 0 && this.seeTime >= 10 && distanceSq <= this.maxAttackDistance()) {
-             if (distanceSq > 25.0) { // Range attack (> 5 blocks)
-                 this.entity.shoot(target);
-                 this.cooldown = 60; // 3 seconds cooldown for ranged
+             if (distanceSq > 25.0) { // Fire breath (> 5 blocks)
+                 // Starts a bit inside the flame's reach, since the target keeps moving
+                 double breathRange = this.entity.getFireBreath().range - 2.0;
+                 if (distanceSq <= breathRange * breathRange) {
+                     this.entity.getFireBreath().start(target);
+                     // The cooldown starts once the breath is over (ticking pauses while breathing)
+                     this.cooldown = 60;
+                 }
              } else { // Melee
                  this.entity.tryAttack(target);
                  this.cooldown = 20;

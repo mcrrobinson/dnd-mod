@@ -18,6 +18,9 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -28,6 +31,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -38,7 +42,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class LightningChaserEntity extends TameableEntity implements GeoEntity, MultipartDragon {
+public class LightningChaserEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private String currentFlyAnimation = "fly.idle";
     private int flyAnimationTimer = 0;
@@ -66,6 +70,9 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
             .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
                     "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
     private final DragonPart[] parts;
+    private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(LightningChaserEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(LightningChaserEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+    private final FireBreath fireBreath;
 
     private static final double BOSS_BAR_RANGE = 64.0;
     private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(),
@@ -83,6 +90,7 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
         this.parts = PART_LAYOUT.createParts(this);
+        this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, 12.0, 4.0F);
         this.setId(DragonPartLayout.reserveIds(this.parts));
         this.experiencePoints = 80;
     }
@@ -108,6 +116,17 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.lair = nbt.contains("Lair") ? NbtHelper.toBlockPos(nbt.getCompound("Lair")) : null;
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
+    }
+
+    @Override
+    public FireBreath getFireBreath() {
+        return this.fireBreath;
     }
 
     @Override
@@ -174,6 +193,7 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         if (!this.world.isClient) {
             this.updateBossBar();
         }
+        this.fireBreath.tick();
     }
 
     private boolean isFightingPlayer() {
@@ -305,6 +325,7 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         AnimationController<LightningChaserEntity> controller = new AnimationController<>(this, "controller", 0, this::predicate);
         controller.setSoundKeyframeHandler(event -> {});
         controllers.add(controller);
+        controllers.add(this.fireBreath.createAnimationController(this));
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {

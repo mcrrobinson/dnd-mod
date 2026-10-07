@@ -159,7 +159,7 @@ public class DragonPart extends Entity {
         if (this.isInvulnerableTo(source)) {
             return false;
         }
-        // Its own fireballs start inside its head
+        // Its own attacks (fire breath) start inside its head
         if (source.getAttacker() == this.owner) {
             return false;
         }

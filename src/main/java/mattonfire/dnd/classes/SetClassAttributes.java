@@ -129,7 +129,7 @@ public class SetClassAttributes {
 
     public void typeArtificer(PlayerEntity player) {
         player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED).setBaseValue(0.12); // Default 0.1
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(1.5);
+        // Reduced damage: -25% modifier applied every tick in ArtificerDamage.
         // No potion buffs.
         // Automatic random enchantment chance...
     }

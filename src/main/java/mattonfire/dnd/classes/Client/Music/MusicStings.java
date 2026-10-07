@@ -16,7 +16,7 @@ import net.minecraft.sound.SoundEvent;
  * under it (SoundSystemMusicDuckMixin) so the track carries on quietly instead of being cut off.
  */
 public class MusicStings {
-    // The sting files are 4 s long (fade out over the last 1.5 s)
+    // The sting files are at most 4 s long
     private static final int STING_TICKS = 80;
     private static final float DUCKED_VOLUME = 0.3F;
     private static final float DUCK_DOWN_PER_TICK = 0.14F; // ~5 ticks to duck
@@ -49,11 +49,21 @@ public class MusicStings {
             return null;
         }
         return switch (dndClass) {
-            case FIGHTER, PALADIN, ARTIFICER -> ModSounds.STING_STEEL_ON_STEEL;
-            case BARBARIAN, WARLOCK, WIZARD, DRUID -> ModSounds.STING_TOOTH_AND_CLAW;
-            case RANGER, MONK -> ModSounds.STING_AWAKE_CART;
-            case ROGUE, NECROMANCER, BLOODHUNTER -> ModSounds.STING_SILENT_FOOTSTEPS;
-            case BARD, CLERIC, ALCHEMIST -> ModSounds.STING_MUSIC_BOX;
+            case BARBARIAN -> ModSounds.STING_BARBARIAN;
+            case BARD -> ModSounds.STING_BARD;
+            case CLERIC -> ModSounds.STING_CLERIC;
+            case DRUID -> ModSounds.STING_DRUID;
+            case FIGHTER -> ModSounds.STING_FIGHTER;
+            case MONK -> ModSounds.STING_MONK;
+            case PALADIN -> ModSounds.STING_PALADIN;
+            case RANGER -> ModSounds.STING_RANGER;
+            case ROGUE -> ModSounds.STING_ROGUE;
+            case NECROMANCER -> ModSounds.STING_NECROMANCER;
+            case WARLOCK -> ModSounds.STING_WARLOCK;
+            case WIZARD -> ModSounds.STING_WIZARD;
+            case ARTIFICER -> ModSounds.STING_ARTIFICER;
+            case BLOODHUNTER -> ModSounds.STING_BLOODHUNTER;
+            case ALCHEMIST -> ModSounds.STING_ALCHEMIST;
             default -> null;
         };
     }

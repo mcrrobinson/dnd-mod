@@ -147,24 +147,8 @@ Cozy, Shire-style villages that generate in plains, sunflower plains and meadows
 Barrels and chests are full of food (`chests/hobbit_pantry`, `hobbit_larder`, `hobbit_harvest`, `hobbit_ale`), and the plates and hams in item frames can be taken. Find one with `/locate structure dndclasses:hobbit_village`.
 
 #### The Tavern
-- **Innkeeper**: a hobbit who keeps to the bar with a mug of ale in hand. Right-click for the trade screen: food and drink for emeralds (Mugs of Ale, bread, roast chicken, pies, cookies, honey, rabbit stew, cake), and emeralds for the kitchen's produce (wheat, potatoes, carrots, brown mushrooms, pumpkins). Stock refills every morning.
-- **Mug of Ale**: drink for 3 hunger and a few seconds of Regeneration, with a 1 in 4 chance of Nausea.
-- **Bounty board**: three notices pinned to a framed board. Right-click a notice (left, middle or right) to take it as a **Bounty Notice**; sneak-right-click with an empty hand to read the whole board in chat. Taken notices are gone until fresh ones go up the next morning.
-- **Bounty Notices** track themselves while anywhere in your inventory: hunts count your kills (including with arrows), expeditions complete when you step inside the structure. The tooltip shows the job, progress and reward, and a finished notice glows. Hand it in by right-clicking a bounty board or an innkeeper with it for emeralds, spoils (`gameplay/bounty_minor` or `gameplay/bounty_major`), vanilla XP and class XP.
-
-| Bounty | Job | Reward |
-|---|---|---|
-| Goblin Trouble | Slay 10 goblins (`#dndclasses:goblins`) | 8 emeralds, minor spoils, 30 XP, 50 class XP |
-| The Goblin Warlord | Slay a Goblin Warlord | 16 emeralds, major spoils, 60 XP, 150 class XP |
-| Wyvern Hunt | Slay a wyvern (`#dndclasses:wyverns`) | 12 emeralds, major spoils, 50 XP, 120 class XP |
-| The Storm Dragon | Slay a Lightning Chaser | 24 emeralds, major spoils, 100 XP, 250 class XP |
-| Spiders in the Woods | Slay 8 spiders | 5 emeralds, minor spoils, 20 XP, 30 class XP |
-| The Restless Dead | Slay 15 undead | 6 emeralds, minor spoils, 25 XP, 40 class XP |
-| Brigands on the Road | Defeat 5 illagers | 10 emeralds, minor spoils, 30 XP, 60 class XP |
-| Under the Mountain | Find a dwarven fortress | 10 emeralds, major spoils, 40 XP, 100 class XP |
-| The Dragon's Lair | Find a dragon lair | 14 emeralds, major spoils, 50 XP, 120 class XP |
-
-Which creatures count is data: the `#dndclasses:goblins`, `#dndclasses:wyverns` and `#dndclasses:bounty/*` entity type tags. Class XP is paid once class progression is in the mod.
+Every village's inn has an innkeeper who trades food and ale, and bounty boards that post daily hunts and expeditions for emeralds, loot and XP.
+See [docs/structures/hobbit-tavern.md](docs/structures/hobbit-tavern.md).
 
 ### Dwarven Fortresses
 Luxurious dwarven fortresses carved into mountainsides (meadows, groves, slopes, peaks and windswept hills), laid out differently every time:

@@ -211,5 +211,29 @@
                 "name": "dndclasses:sting_alchemist"
             }
         ]
+    },
+    "instrument.lute": {
+        "subtitle": "subtitles.dndclasses.instrument.lute",
+        "sounds": [
+            {
+                "name": "dndclasses:song_lute"
+            }
+        ]
+    },
+    "instrument.drum": {
+        "subtitle": "subtitles.dndclasses.instrument.drum",
+        "sounds": [
+            {
+                "name": "dndclasses:song_drum"
+            }
+        ]
+    },
+    "instrument.flute": {
+        "subtitle": "subtitles.dndclasses.instrument.flute",
+        "sounds": [
+            {
+                "name": "dndclasses:song_flute"
+            }
+        ]
     }
 }

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:goblin_warrior",
+    "dndclasses:goblin_warlord"
+  ]
+}

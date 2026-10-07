@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -25,7 +26,9 @@ public class ClericHandler {
     // Night vision starts flickering under 200 ticks, so refresh before that.
     private static final int REFRESH_BELOW = 220;
     private static final int EFFECT_DURATION = 400;
-    private static final double REPEL_RADIUS = 16;
+    public static final double REPEL_RADIUS = 16;
+    private static final int BASE_HASTE = 2;
+    private static final int DEEP_DELVER_HASTE = 3;
 
     public static void register() {
         ServerTickEvents.END_WORLD_TICK.register(ClericHandler::onWorldTick);
@@ -35,36 +38,55 @@ public class ClericHandler {
         return entity instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.CLERIC;
     }
 
-    /** True if mobs should ignore this entity (a Cleric with MOB_REPEL). */
+    /**
+     * True if mobs should ignore this entity: a player with MOB_REPEL (a Cleric
+     * using their power, or a party member inside their circle).
+     */
     public static boolean isRepellingMobs(@Nullable LivingEntity entity) {
-        return isCleric(entity) && entity.hasStatusEffect(ModEffects.MOB_REPEL);
+        return entity instanceof PlayerEntity && entity.hasStatusEffect(ModEffects.MOB_REPEL);
     }
 
     private static void onWorldTick(ServerWorld world) {
         for (ServerPlayerEntity player : world.getPlayers()) {
+            if (!isCleric(player) && isRepellingMobs(player) && player.isAlive()) {
+                // Party member sharing a Cleric's circle
+                clearTargets(world, player);
+            }
             if (!isCleric(player) || !player.isAlive()) {
                 continue;
             }
 
-            refreshEffect(player, StatusEffects.HASTE, 2);
+            // Deep Delver (skill tree) raises Haste III to Haste IV.
+            int haste = Progression.hasPassive(player, "cleric.deep_delver") ? DEEP_DELVER_HASTE : BASE_HASTE;
+            refreshEffect(player, StatusEffects.HASTE, haste);
             refreshEffect(player, StatusEffects.NIGHT_VISION, 0);
 
             if (player.hasStatusEffect(ModEffects.MOB_REPEL)) {
                 DnDClasses.createParticleRing(world, player.getPos(), REPEL_RADIUS, 100);
 
-                // Mobs already chasing the Cleric lose interest.
-                if (world.getTime() % 10 == 0) {
-                    for (MobEntity mob : world.getEntitiesByClass(MobEntity.class,
-                            player.getBoundingBox().expand(REPEL_RADIUS * 2), mob -> mob.getTarget() == player)) {
-                        mob.setTarget(null);
-                    }
-                }
+                clearTargets(world, player);
+            }
+        }
+    }
+
+    // Mobs already chasing the player lose interest.
+    private static void clearTargets(ServerWorld world, ServerPlayerEntity player) {
+        if (world.getTime() % 10 == 0) {
+            for (MobEntity mob : world.getEntitiesByClass(MobEntity.class,
+                    player.getBoundingBox().expand(REPEL_RADIUS * 2), mob -> mob.getTarget() == player)) {
+                mob.setTarget(null);
             }
         }
     }
 
     private static void refreshEffect(PlayerEntity player, StatusEffect effect, int amplifier) {
         StatusEffectInstance existing = player.getStatusEffect(effect);
+        if (existing != null && existing.getAmplifier() != amplifier && !existing.isAmbient()
+                && !existing.shouldShowParticles()) {
+            // Our own effect at the wrong level (Deep Delver changed): replace it.
+            player.removeStatusEffect(effect);
+            existing = null;
+        }
         if (existing == null || existing.getDuration() < REFRESH_BELOW) {
             player.addStatusEffect(new StatusEffectInstance(effect, EFFECT_DURATION, amplifier, false, false, true));
         }

@@ -1,11 +1,11 @@
 package mattonfire.dnd.entity;
 
 import java.util.UUID;
-import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
+import net.minecraft.entity.ai.pathing.PathNodeType;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -33,14 +33,10 @@ public class MagmamuncherEntity extends TameableEntity implements GeoEntity {
 
     public MagmamuncherEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
-        // Explicitly set fire immune in constructor as requested, though builder below handles attributes
-        // TameableEntity doesn't expose setFireImmune directly, usually handled by EntityType builder .fireImmune()
-        // But if needed in code we can override isFireImmune()
-    }
-
-    @Override
-    public boolean isFireImmune() {
-        return true;
+        // The type is fireImmune, so fire and lava don't hurt it: no reason to steer around them.
+        this.setPathfindingPenalty(PathNodeType.LAVA, 8.0F);
+        this.setPathfindingPenalty(PathNodeType.DANGER_FIRE, 0.0F);
+        this.setPathfindingPenalty(PathNodeType.DAMAGE_FIRE, 0.0F);
     }
 
     /** Highest y a natural spawn may stand at: keeps them off the bedrock roof of the Nether. */
@@ -48,19 +44,13 @@ public class MagmamuncherEntity extends TameableEntity implements GeoEntity {
 
     /**
      * Spawn restriction for the Nether: any solid ground (netherrack, basalt, blackstone, soul soil/sand)
-     * or magma, in any light, but never on top of the Nether roof. Spawners and spawn eggs skip the checks.
+     * or magma (allowed because the type is fireImmune), in any light, but never on top of the Nether roof.
+     * Spawners and spawn eggs skip the checks.
      */
     public static boolean canSpawnInNether(EntityType<MagmamuncherEntity> type, ServerWorldAccess world,
                                            SpawnReason reason, BlockPos pos, Random random) {
-        if (reason == SpawnReason.SPAWNER) {
-            return true;
-        }
-        if (pos.getY() >= NETHER_ROOF_Y) {
-            return false;
-        }
-        // Magma only lets fire-immune entity types spawn on it, and the type isn't flagged as such.
-        return world.getBlockState(pos.down()).isOf(Blocks.MAGMA_BLOCK)
-                || MobEntity.canMobSpawn(type, world, reason, pos, random);
+        return reason == SpawnReason.SPAWNER
+                || (pos.getY() < NETHER_ROOF_Y && MobEntity.canMobSpawn(type, world, reason, pos, random));
     }
 
     /** AnimalEntity prefers bright grass, which made every dark Nether spot fail {@code canSpawn}. */

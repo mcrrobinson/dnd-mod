@@ -90,7 +90,7 @@ Set bonuses can be turned off with `applyArmorEffects` in `config/dndclasses/dnd
 | **Invulnerability** | The player will be invulnerable for a short duration | Attack Weapons |
 | **Tree Feller** | Can dismantle trees | Axe |
 | **Grid Miner** | Can mine blocks in a grid pattern | Pickaxe & Shovel |
-| **Smite Dragons** | Extra melee damage against dragons and wyverns (the `#dndclasses:dragons` tag, same as Dragon Slayer): +2.5 per level, up to V. Can't be combined with Sharpness, Smite or Bane of Arthropods | Sword & Axe |
+| **Smite Dragons** | +2.5 melee damage per level (I-V) against dragons and wyverns. See [docs/enchantments/smite-dragons.md](docs/enchantments/smite-dragons.md). | Sword & Axe |
 
 ### Music
 

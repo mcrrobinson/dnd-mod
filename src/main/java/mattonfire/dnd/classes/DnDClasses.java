@@ -659,7 +659,6 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Druid.register();
                 Progression.register();
-                Abilities.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

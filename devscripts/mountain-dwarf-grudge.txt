@@ -7,9 +7,11 @@
 /gamerule doDaylightCycle false
 wait 40
 closescreen
+respawn
+wait 20
 /fill 40 149 -6 52 149 6 minecraft:polished_deepslate
 /fill 40 150 -6 52 154 6 minecraft:air
-/kill @e[type=dndclasses:mountain_dwarf]
+/kill @e[type=dndclasses:mountain_dwarf,x=40,y=149,z=-8,dx=12,dy=6,dz=14]
 /setblock 46 150 2 minecraft:chest[facing=north]
 /summon dndclasses:mountain_dwarf 49 150 4 {NoAI:1b,CustomName:'"Watcher"'}
 /fill 40 150 -6 52 154 -6 minecraft:polished_deepslate

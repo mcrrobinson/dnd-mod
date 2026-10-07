@@ -9,6 +9,7 @@ public class LightningChaserAttackGoal extends Goal {
     private final LightningChaserEntity entity;
     private int cooldown;
     private int seeTime;
+    private boolean breatheNext = true;
 
     public LightningChaserAttackGoal(LightningChaserEntity entity) {
         this.entity = entity;
@@ -50,6 +51,13 @@ public class LightningChaserAttackGoal extends Goal {
             this.entity.getLookControl().lookAt(target, 30.0F, 30.0F);
         }
 
+        if (this.entity.getFireBreath().isBreathing()) {
+            // Hold position and keep facing the target while breathing
+            this.entity.getNavigation().stop();
+            this.entity.getLookControl().lookAt(target, 30.0F, 30.0F);
+            return;
+        }
+
         this.entity.getNavigation().startMovingTo(target, 1.0);
 
         if (this.cooldown > 0) {
@@ -57,8 +65,18 @@ public class LightningChaserAttackGoal extends Goal {
         }
 
         if (this.cooldown <= 0 && this.seeTime >= 10 && distanceSq <= this.maxAttackDistance()) {
-             if (distanceSq > 25.0) { // Range attack
-                 this.entity.shoot(target);
+             if (distanceSq > 25.0) { // Range attack (> 5 blocks): fire breath and lightning storm in turn
+                 // Starts a bit inside the flame's reach, since the target keeps moving
+                 double breathRange = this.entity.getFireBreath().range - 2.0;
+                 if (this.breatheNext && distanceSq <= breathRange * breathRange) {
+                     this.entity.getFireBreath().start(target);
+                     this.breatheNext = false;
+                 } else {
+                     // Out of the flame's reach the storm comes down instead, and the breath waits its turn
+                     this.entity.shoot(target);
+                     this.breatheNext = true;
+                 }
+                 // For a breath the cooldown starts once it's over (ticking pauses while breathing)
                  this.cooldown = 60;
              } else { // Melee
                  this.entity.tryAttack(target);

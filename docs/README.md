@@ -60,7 +60,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Invulnerability](enchantments/invulnerability.md): right-click for 2 s of invulnerability
 - [Tree Feller](enchantments/tree-feller.md): fell a whole tree at once
 - [Grid Miner](enchantments/grid-miner.md): mine out connected blocks
-- [Returning](enchantments/returning.md) (PR #58)
+- [Returning](enchantments/returning.md): thrown tridents, snowballs, eggs and pearls come back
 - [Vampiric](enchantments/vampiric.md) (PR #59)
 - [Smite Dragons](enchantments/smite-dragons.md) (PR #62)
 - [Featherfall](enchantments/featherfall.md): boots enchantment (PR #66)

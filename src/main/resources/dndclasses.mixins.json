@@ -44,7 +44,9 @@
         "PotionInstantEffectMixin",
         "ActiveTargetGoalAccessor",
         "PaladinAuraMixin",
-        "ArtificerItemStackMixin"
+        "ArtificerItemStackMixin",
+        "TridentEntityMixin",
+        "ProjectileEntityMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

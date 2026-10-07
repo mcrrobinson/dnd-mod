@@ -66,6 +66,13 @@
     "item.dndclasses.hobbit_spawn_egg": "Hobbit Spawn Egg",
     "entity.dndclasses.mountain_dwarf": "Mountain Dwarf",
     "item.dndclasses.mountain_dwarf_spawn_egg": "Mountain Dwarf Spawn Egg",
+    "entity.dndclasses.beholder": "Beholder",
+    "item.dndclasses.beholder_spawn_egg": "Beholder Spawn Egg",
+    "effect.dndclasses.anti_magic": "Anti-Magic",
+    "effect.dndclasses.anti_magic.blocked": "Your magic fizzles in the Beholder's anti-magic cone!",
+    "effect.dndclasses.frightened": "Frightened",
+    "advancements.dndclasses.beholder_slayer.title": "An Eye for an Eye",
+    "advancements.dndclasses.beholder_slayer.description": "Slay a Beholder in its lair",
     "advancements.dndclasses.dragon_slayer.title": "Dragon Slayer",
     "advancements.dndclasses.dragon_slayer.description": "Slay a dragon"
 }

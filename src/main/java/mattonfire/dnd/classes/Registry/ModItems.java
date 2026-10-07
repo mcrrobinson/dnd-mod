@@ -526,6 +526,9 @@ public class ModItems {
         public static final Item EMBER_WYVERN_SPAWN_EGG = registerItem("ember_wyvern_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, 0x2A0E0C, 0xFF7A1A, new FabricItemSettings()));
 
+        public static final Item BEHOLDER_SPAWN_EGG = registerItem("beholder_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, 0x7A4860, 0x5AC850, new FabricItemSettings()));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

@@ -166,6 +166,9 @@ public class DragonPart extends Entity {
         if (source.getAttacker() == this.owner) {
             return false;
         }
+        if (this.owner instanceof MultipartDragon dragon) {
+            return dragon.damagePart(this, source, amount);
+        }
         return this.owner.damage(source, amount);
     }
 

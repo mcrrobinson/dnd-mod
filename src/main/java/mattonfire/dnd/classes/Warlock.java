@@ -89,6 +89,9 @@ public class Warlock {
                 || !player.getMainHandStack().isEmpty()) {
             return;
         }
+        if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)) {
+            return;
+        }
 
         int now = server.getTicks();
         Integer readyTick = FIREBALL_READY_TICK.get(player.getUuid());

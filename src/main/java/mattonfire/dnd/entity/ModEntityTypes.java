@@ -96,6 +96,14 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<BeholderEntity> BEHOLDER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "beholder"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BeholderEntity::new)
+                    .dimensions(EntityDimensions.fixed(2.25f, 2.4f))
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
@@ -107,5 +115,6 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(GOBLIN_WARLORD, GoblinWarlordEntity.createGoblinWarlordAttributes());
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
         FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
+        FabricDefaultAttributeRegistry.register(BEHOLDER, BeholderEntity.createBeholderAttributes());
     }
 }

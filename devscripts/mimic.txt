@@ -1,0 +1,40 @@
+# Mimic check. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/mimic.txt
+# Expect: mimic-disguise shows a real chest (left) and a mimic (right) looking identical; mimic-awake shows an
+# awake mimic with its lid ajar, teeth and tongue; mimic-bite catches the bite; the player's Health drops,
+# the mimic's Dormant goes 1b -> 0b, and killing it drops loot (item count > 0).
+wait 40
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -2 149 0 10 149 12 minecraft:stone
+/fill -2 150 0 10 155 12 minecraft:air
+/kill @e[type=!minecraft:player]
+/effect give @s minecraft:resistance 60 2 true
+/setblock 2 150 5 minecraft:chest[facing=north]
+/summon dndclasses:mimic 4.5 150 5.5 {Rotation:[180f,0f]}
+/summon dndclasses:mimic 7.5 150 5.5 {Rotation:[180f,0f],Dormant:0b,NoAI:1b}
+/tp @s 4.5 151.2 1.5 0 25
+wait 30
+hud off
+screenshot mimic-disguise
+hud on
+/data get entity @e[type=dndclasses:mimic,limit=1,sort=nearest] Dormant
+/tp @s 7.5 150.6 3.0 0 30
+wait 10
+screenshot mimic-awake
+/tp @s 4.5 150 3.5 0 30
+wait 5
+/data get entity @s Health
+use
+wait 3
+screenshot mimic-bite
+wait 20
+/data get entity @e[type=dndclasses:mimic,limit=1,sort=nearest] Dormant
+/data get entity @s Health
+/kill @e[type=dndclasses:mimic,limit=1,sort=nearest]
+wait 30
+/execute if entity @e[type=minecraft:item]
+quit

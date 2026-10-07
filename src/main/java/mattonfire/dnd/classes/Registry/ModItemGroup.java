@@ -89,6 +89,7 @@ public class ModItemGroup {
             entries.add(ModItems.GOBLIN_WARLORD_SPAWN_EGG);
             entries.add(ModItems.MAGMAMUNCHER_ALPHA_SPAWN_EGG);
             entries.add(ModItems.EMBER_WYVERN_SPAWN_EGG);
+            entries.add(ModItems.MIMIC_SPAWN_EGG);
         });
     }
 }

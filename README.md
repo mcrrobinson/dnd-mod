@@ -12,6 +12,7 @@
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
     - [Mountain Dwarves](#mountain-dwarves)
+    - [Mimics](#mimics)
   - [Dragon Lairs](#dragon-lairs)
   - [Hobbit Villages](#hobbit-villages)
   - [Dwarven Fortresses](#dwarven-fortresses)
@@ -135,6 +136,10 @@ A Lightning Chaser's lair sits on the very summit of a jagged, frozen or stony p
 
 #### Mountain Dwarves
 - **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`). Dwarves guard their fortress like piglins guard gold: open a chest or barrel, or break a gold block, where one can see you and they all turn on you.
+
+#### Mimics
+- **Mimic**: A chest that isn't. A sleeping mimic is drawn with the real chest texture (so it matches your resource pack), sits square on the block grid, makes no sound, casts no shadow and can't be pushed (you can even stand on it). Open it (right-click) or hit it and it wakes: it bites (6 damage) and grabs you in its jaws for 1.5 seconds, dragging you back and slowing you, then hops after you (30 HP, 4 armour). If it loses you for 10 seconds it shuts its lid, squares itself to the grid and pretends to be a chest again. When it dies it drops the loot of the chest it replaced (plus 10 XP); a spawn-egg mimic drops dungeon loot (`entities/mimic`). Mountain dwarves don't notice a sleeping one either.
+- **Where**: 1 in 5 dungeon (monster room) chests is a mimic with the dungeon loot; half of all [dragon lairs](#dragon-lairs) have a second "chest" beside the hoard, holding hoard loot; and 1 in 10 [dwarven fortress](#dwarven-fortresses) chests is a mimic with that room's loot.
 
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:

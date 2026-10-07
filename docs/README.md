@@ -43,7 +43,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases and rewards
 - [Goblin Warlord](bosses/goblin-warlord.md): Nether Fortress boss that summons goblin waves
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
-- [Lich](bosses/lich.md) (PR #71)
+- [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery
 - [Beholder](bosses/beholder.md) (PR #73)
 
 ## Structures

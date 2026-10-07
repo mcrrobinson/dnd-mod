@@ -1,0 +1,48 @@
+# Lich boss + phylactery. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/lich.txt
+# Expect in latest.log: a phylactery appears next to the Lich; /kill on the Lich prints "My soul is beyond
+# your reach" and the phylactery reforms it; after the phylactery is smashed the next death is final.
+wait 40
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobLoot true
+/time set midnight
+/kill @e[type=!minecraft:player]
+/fill -2 149 -2 22 149 22 minecraft:polished_deepslate
+/fill -2 150 -2 22 156 22 minecraft:air
+/tp @s 10.5 150 3.5 0 10
+/summon dndclasses:lich 10.5 150 10.5 {Rotation:[180f,0f]}
+wait 20
+/execute if entity @e[type=dndclasses:phylactery]
+/data get entity @e[type=dndclasses:lich,limit=1] PhylacteryState
+hud off
+screenshot lich-idle
+hud on
+/kill @e[type=dndclasses:lich]
+wait 10
+/data get entity @e[type=dndclasses:phylactery,limit=1] ReformTicks
+screenshot lich-reforming
+/data merge entity @e[type=dndclasses:phylactery,limit=1] {ReformTicks:20}
+wait 40
+/execute if entity @e[type=dndclasses:lich]
+/kill @e[type=dndclasses:phylactery]
+wait 5
+/execute if entity @e[type=dndclasses:phylactery]
+/kill @e[type=dndclasses:lich]
+wait 30
+/execute if entity @e[type=dndclasses:lich]
+/execute if entity @e[type=dndclasses:phylactery]
+/kill @e[type=minecraft:item]
+/gamemode survival
+/effect give @s minecraft:resistance 200 4 true
+/effect give @s minecraft:regeneration 200 4 true
+/summon dndclasses:lich 10.5 150 16.5 {Rotation:[180f,0f]}
+wait 120
+screenshot lich-fight
+wait 100
+/data get entity @e[type=dndclasses:lich,limit=1] Health
+/execute if entity @e[tag=dndclasses.lich_minion]
+screenshot lich-fight-2
+/gamemode creative
+/kill @e[type=!minecraft:player]
+quit

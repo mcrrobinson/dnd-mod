@@ -545,6 +545,9 @@ public class ModItems {
         public static final Item OWLBEAR_SPAWN_EGG = registerItem("owlbear_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, 0x5C3A20, 0xE6D6AE, new FabricItemSettings()));
 
+        public static final Item LICH_SPAWN_EGG = registerItem("lich_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.LICH, 0x2A1838, 0x7FE0FF, new FabricItemSettings()));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

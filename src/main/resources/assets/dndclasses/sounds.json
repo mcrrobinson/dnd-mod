@@ -107,6 +107,14 @@
             }
         ]
     },
+    "music.lich_fight": {
+        "sounds": [
+            {
+                "name": "dndclasses:lich_fight",
+                "stream": true
+            }
+        ]
+    },
     "music.nether_fortress": {
         "sounds": [
             {

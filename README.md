@@ -79,7 +79,7 @@ Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and pres
 Lunge, Invulnerability, Tree Feller, Grid Miner, Returning, Vampiric, Smite Dragons and Featherfall, which only an Artificer can roll at an enchanting table. See [Enchantments](docs/enchantments/README.md).
 
 ### Music
-Event music for boss fights, goblin raids, low health, dungeons, Nether Fortresses, travelling and night, a sting when you use your special, and five music discs. See [Music](docs/music.md).
+Event music for boss fights, goblin raids, low health, dungeons, Nether Fortresses, travelling and night, a sting when you use your special, five music discs, and a Lich fight theme. See [Music](docs/music.md).
 
 ### Mobs and Bosses
 - [Dragons](docs/mobs/dragons.md): the Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn. They breathe fire, have hittable wings and tails, and killing any of them earns **Dragon Slayer**.
@@ -87,7 +87,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Mimic](docs/mobs/mimic.md): a chest that isn't. It bites and grabs whoever opens or hits it, and hides in dungeons, dragon lairs and dwarven fortresses.
 - [Owlbear](docs/mobs/owlbear.md): a hostile owl-headed bear in dark and old-growth forests that charges and bear-hugs. Druids who kill one can take its form.
 - [Gelatinous Cube](docs/mobs/gelatinous-cube.md): a slow jelly cube in dark caves and dungeons that engulfs whatever it touches and soaks up items.
-- Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md) and the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md). See [Boss fights](docs/bosses/boss-fights.md).
+- Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md), the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md) and the [Lich](docs/bosses/lich.md), an undead caster in stronghold libraries that reforms from its phylactery until that's smashed. See [Boss fights](docs/bosses/boss-fights.md).
 
 ### Structures
 - [Dragon Lairs](docs/structures/dragon-lairs.md) on mountain summits (`/locate structure dndclasses:dragon_lair`).

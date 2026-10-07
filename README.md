@@ -14,6 +14,7 @@
     - [Mountain Dwarves](#mountain-dwarves)
   - [Dragon Lairs](#dragon-lairs)
   - [Hobbit Villages](#hobbit-villages)
+  - [Goblin Camps](#goblin-camps)
   - [Dwarven Fortresses](#dwarven-fortresses)
 
 ## Building
@@ -106,7 +107,7 @@ Custom music plays during different events in the game. There are **five** music
 ### Mobs
 
 #### Goblins
-- **Goblin Warrior**: A goblin warrior is a strong and tough mob that has a low attack speed but high health. It can be found near the entrance of the Nether Fortress.
+- **Goblin Warrior**: A goblin warrior is a strong and tough mob that has a low attack speed but high health. It can be found near the entrance of the Nether Fortress, and in goblin camps in the Overworld (see [Goblin Camps](#goblin-camps)).
 
 #### Dragons
 Dragons live in the Overworld and the Nether. Their wings, neck, head, tail and legs can all be hit (like the ender dragon's), they take no fall damage, and they breathe fire: after a growl and a rear back, a 12-block cone of flame for 2 seconds (4 damage a hit and sets you alight) that slowly swings after its target, so you can dodge it by moving sideways. They can't breathe fire underwater.
@@ -144,6 +145,15 @@ Cozy, Shire-style villages that generate in plains, sunflower plains and meadows
 - **Gardens, orchards, market stalls and ponds**, joined by winding lanes with lamp posts.
 
 Barrels and chests are full of food (`chests/hobbit_pantry`, `hobbit_larder`, `hobbit_harvest`, `hobbit_ale`), and the plates and hams in item frames can be taken. Find one with `/locate structure dndclasses:hobbit_village`.
+
+### Goblin Camps
+Goblin war camps generate on dry, fairly level ground in forests, flower forests, birch forests, dark forests, plains and sunflower plains (kept a few chunks away from villages). Each camp is a levelled clearing about 29 blocks across, laid out differently every time:
+- **A crude palisade** of spruce and oak logs and fence stakes, with gaps where it's fallen down, the odd torch, and a skull-topped gate with a dirt track leading out.
+- **A campfire** in a cobblestone fire pit, ringed by log seats.
+- **Three hide tents** (wool A-frames in goblin browns, greens and greys, with patches) on every side but the gate's, with straw beds. The **chief's tent**, facing the gate, has a red rug, a block of gold and the loot chest (`chests/goblin_camp`: iron, gold, emeralds, arrows, leather, enchanted iron weapons, a saddle or crossbow, and sometimes a diamond, name tag or horse armour); the others may hold a barrel of supplies (`chests/goblin_camp_supplies`).
+- **Corners** with trophy poles hung with skulls, woodpiles, bone heaps or a crude workshop.
+
+Each camp starts with 3-5 Goblin Warriors, and a 30% chance of a **Goblin Warlord** (with its boss bar) standing in front of the chief's tent. They never despawn and stay within about 10 blocks of the fire unless chasing something. Find one with `/locate structure dndclasses:goblin_camp`.
 
 ### Dwarven Fortresses
 Luxurious dwarven fortresses carved into mountainsides (meadows, groves, slopes, peaks and windswept hills), laid out differently every time:

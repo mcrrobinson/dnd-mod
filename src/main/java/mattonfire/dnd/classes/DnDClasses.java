@@ -45,6 +45,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
@@ -578,26 +580,39 @@ public class DnDClasses implements ModInitializer {
                 });
 
                 // Register event listener
+                // Runs on both sides, so the client refuses before starting the drink or draw animation
                 UseItemCallback.EVENT.register((player, world, hand) -> {
-                        if (player instanceof ServerPlayerEntity serverPlayer) {
-                                if (serverPlayer instanceof PlayerEntityExt) {
-                                        PlayerEntityExt playerEntityExt = (PlayerEntityExt) serverPlayer;
-                                        if (playerEntityExt.getDndClass() == DndCharacter.PALADIN) {
-                                                ItemStack itemStack = player.getStackInHand(hand);
-
-                                                // Check if the item is a potion
-                                                if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
-                                                                || itemStack.isOf(Items.LINGERING_POTION)) {
-                                                        // Prevent the player from using it
-                                                        player.sendMessage(Text
-                                                                        .of("You are not allowed to drink potions!"),
-                                                                        true);
-                                                        return TypedActionResult.fail(itemStack);
-                                                }
-                                        } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
-                                                // Empty-hand fireballs are handled in Warlock (client mixin + C2S packet).
-
+                        if (player instanceof PlayerEntityExt) {
+                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) player;
+                                if (playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                        ItemStack itemStack = player.getStackInHand(hand);
+                                        if (itemStack.getItem() instanceof BowItem
+                                                        || itemStack.getItem() instanceof CrossbowItem) {
+                                                player.sendMessage(Text.of("Fighters cannot use bows!"), true);
+                                                return TypedActionResult.fail(itemStack);
                                         }
+                                }
+                                if (playerEntityExt.getDndClass() == DndCharacter.ARTIFICER
+                                                && player.getStackInHand(hand).isOf(Items.POTION)) {
+                                        // Drinking would waste it; splash/lingering can still be thrown at others
+                                        player.sendMessage(Text.of("Potions have no effect on you!"), true);
+                                        return TypedActionResult.fail(player.getStackInHand(hand));
+                                }
+                                if (playerEntityExt.getDndClass() == DndCharacter.PALADIN
+                                                || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                        ItemStack itemStack = player.getStackInHand(hand);
+
+                                        // Check if the item is a potion
+                                        if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
+                                                        || itemStack.isOf(Items.LINGERING_POTION)) {
+                                                // Prevent the player from using it
+                                                player.sendMessage(Text
+                                                                .of("You are not allowed to drink potions!"),
+                                                                true);
+                                                return TypedActionResult.fail(itemStack);
+                                        }
+                                } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
+                                        // Empty-hand fireballs are handled in Warlock (client mixin + C2S packet).
                                 }
                         }
                         return TypedActionResult.pass(player.getStackInHand(hand));
@@ -686,10 +701,8 @@ public class DnDClasses implements ModInitializer {
 
                 ServerEntityEvents.ENTITY_LOAD.register((entity, serverWorld) -> {
                         if (entity instanceof MobEntity mob) {
-                                MobEntityAccessor accessor = (MobEntityAccessor) mob;
-
-                                accessor.getTargetSelector().add(2,
-                                                new PriorityPlayerTargetGoal<>(mob, PlayerEntity.class));
+                                // Fighters attract mobs that already hunt players
+                                PriorityPlayerTargetGoal.attach(mob);
                         }
 
                 });

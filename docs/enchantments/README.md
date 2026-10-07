@@ -8,6 +8,7 @@ The mod's own enchantments. At an enchanting table they only come up for an [Art
 | [Tree Feller](tree-feller.md) | II | Swords (works on axes) | Breaking a log fells the connected logs |
 | [Grid Miner](grid-miner.md) | II | Digging tools (works on pickaxes and shovels) | Breaking a block mines the connected blocks the tool can mine |
 | [Returning](returning.md) | I | Tridents (snowballs, eggs and ender pearls by anvil) | Thrown items go back to the thrower's inventory when they land |
+| [Vampiric](vampiric.md) | III | Swords and axes | Melee hits heal you for 10% of the damage dealt per level |
 
 Pages for enchantments in open PRs are listed in the [docs index](../README.md#enchantments).
 

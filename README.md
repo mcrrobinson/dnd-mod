@@ -119,9 +119,11 @@ Dragons live in the Overworld and the Nether. Their wings, neck, head, tail and 
 | **Speed** | 0.3 walking, 0.6 flying | 0.35 walking, 0.75 flying | 0.35 walking, 0.6 flying |
 | **Attacks** | Hunts players on sight. Bites up close (once a second), breathes fire from further off (every 3 seconds) | Hunts players on sight. Bites twice a second up close, breathes fire from further off (every 2 seconds). Immune to fire and lava | Hunts players on sight. Bites up close (once a second); from further off, every 3 seconds, it takes turns breathing fire and calling down a storm of three lightning bolts round you. Immune to lightning |
 | **Boss fight** | Red boss bar | None (no bar or music) | Yellow boss bar |
-| **Rewards** | **Dragon Slayer** advancement (challenge, 100 XP) | 1-3 magma cream and 0-2 blaze powder (+ Looting); when a player kills it, also 10 XP, 2-6 gold nuggets, a 5% chance (+2% per Looting level) of a netherite scrap, and **Dragon Slayer** | 2-5 phantom membranes and 1-3 copper blocks; when a player kills it, also 80 XP, 2-5 diamonds and a 15% chance (+5% per Looting level) of a **Staff of Lightning** |
+| **Rewards** | **Dragon Slayer** | 1-3 magma cream and 0-2 blaze powder (+ Looting); when a player kills it, also 10 XP, 2-6 gold nuggets, a 5% chance (+2% per Looting level) of a netherite scrap, and **Dragon Slayer** | 2-5 phantom membranes and 1-3 copper blocks; when a player kills it, also 80 XP, 2-5 diamonds, a 15% chance (+5% per Looting level) of a **Staff of Lightning**, and **Dragon Slayer** |
 
 In a fight with a player, a wild Wyvern or Lightning Chaser shows its boss bar to everyone within 64 blocks and **Tooth and Claw** plays for them until the fight ends. The Ember Wyvern is the Wyvern charred black and red, with molten wings and eyes that glow in the dark.
+
+Killing any dragon (Wyvern, Ember Wyvern, Lightning Chaser or River Pikehorn) earns the **Dragon Slayer** advancement (challenge, 100 XP). Every dragon is in the `#dndclasses:dragons` entity type tag, which the advancement checks, so a new dragon only needs adding there.
 
 - **River Pikehorn**: a small fire-breathing drake (20 HP, 2 damage bite, a 7-block flame doing 2 damage) in rivers, swamps and mangrove swamps (weight 15, groups of 2-4). It's passive and keeps to itself.
 

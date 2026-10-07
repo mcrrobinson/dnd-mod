@@ -1,0 +1,60 @@
+# Checks every dragon grants Dragon Slayer when a player kills it, and a non-dragon doesn't.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dragon-slayer-all.txt
+# Output: run/screenshots/dragon-slayer-<type>.png (toast). In latest.log, per dragon: "Test failed" before
+# the kill, "Test passed" after it; for the zombie control both are "Test failed".
+/time set day
+/weather clear
+/gamerule announceAdvancements true
+/effect give @s minecraft:resistance 120 4 true
+wait 40
+closescreen
+/gamemode survival
+/tp @s 12 150 0 90 10
+/advancement revoke @s only dndclasses:dragon_slayer
+/summon minecraft:zombie 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 10
+/damage @e[type=minecraft:zombie,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 20
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+/advancement revoke @s only dndclasses:dragon_slayer
+wait 10
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+/summon dndclasses:wyvern 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 20
+/damage @e[type=dndclasses:wyvern,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 30
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+screenshot dragon-slayer-wyvern
+wait 100
+/advancement revoke @s only dndclasses:dragon_slayer
+wait 10
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+/summon dndclasses:ember_wyvern 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 20
+/damage @e[type=dndclasses:ember_wyvern,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 30
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+screenshot dragon-slayer-ember_wyvern
+wait 100
+/advancement revoke @s only dndclasses:dragon_slayer
+wait 10
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+/summon dndclasses:lightning_chaser 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 20
+/damage @e[type=dndclasses:lightning_chaser,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 30
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+screenshot dragon-slayer-lightning_chaser
+wait 100
+/advancement revoke @s only dndclasses:dragon_slayer
+wait 10
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+/summon dndclasses:river_pikehorn 0 148 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 20
+/damage @e[type=dndclasses:river_pikehorn,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 30
+/execute if entity @s[advancements={dndclasses:dragon_slayer=true}]
+screenshot dragon-slayer-river_pikehorn
+wait 100
+/gamemode creative
+quit

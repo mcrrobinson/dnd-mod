@@ -70,7 +70,6 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     private final FireBreath fireBreath;
 
     // Boss bar and fight music for players near a wild wyvern that is fighting a player.
-    private static final Identifier DRAGON_SLAYER = new Identifier(DnDClasses.MOD_ID, "dragon_slayer");
     private final BossFight bossFight;
 
     public WyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
@@ -82,8 +81,8 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         this.bossFight = new BossFight(this, BossBar.Color.RED, BossBar.Style.PROGRESS)
                 .range(64.0)
                 .activeWhen(() -> this.hasBossFight() && !this.isTamed())
-                .music(ModSounds.MUSIC_DRAGON_FIGHT)
-                .advancement(DRAGON_SLAYER);
+                .music(ModSounds.MUSIC_DRAGON_FIGHT);
+        // Dragon Slayer comes from the advancement's player_killed_entity criterion (#dndclasses:dragons).
     }
 
     @Override

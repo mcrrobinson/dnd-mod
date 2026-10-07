@@ -36,6 +36,7 @@
         "ProjectileUtilMixin",
         "SpawnHelperMixin",
         "NetherFortressStartMixin",
+        "StrongholdLibraryMixin",
         "PotionItemMixin",
         "AlchemistPotionMixin",
         "PotionEntityMixin",

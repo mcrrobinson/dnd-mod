@@ -2,8 +2,10 @@ package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
+import mattonfire.dnd.classes.Enchantments.ReturningEnchantment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -21,6 +23,9 @@ public class ModEnchantments {
 
         public static final Enchantment INVULNERABILITY_ENCHANTMENT = registerEnchantment("invulnerability",
                         new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+
+        public static final Enchantment RETURNING_ENCHANTMENT = registerEnchantment("returning",
+                        new ReturningEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
 
         private static Enchantment registerEnchantment(String name, Enchantment enchantment) {
                 return Registry.register(Registries.ENCHANTMENT, new Identifier(DnDClasses.MOD_ID, name), enchantment);

@@ -1,0 +1,33 @@
+# Checks the Returning enchantment. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/returning-check.txt
+# Expect in latest.log: "Found 1 matching item" for the snowball and the egg after each throw (it came back).
+# The last check also finds 1 snowball: the returned enchanted one, while the plain snowball is used up (see `slots`).
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/time set noon
+/fill 0 149 0 6 149 12 minecraft:stone
+/fill 0 150 0 6 154 12 minecraft:air
+/fill 0 150 12 6 154 12 minecraft:stone
+/clear @s
+/give @s minecraft:snowball{Enchantments:[{id:"dndclasses:returning",lvl:1}]} 1
+/give @s minecraft:egg{Enchantments:[{id:"dndclasses:returning",lvl:1}]} 1
+/give @s minecraft:snowball 1
+/tp @s 3.5 150 3.5 0 0
+wait 10
+hotbar 0
+use
+wait 30
+/clear @s minecraft:snowball{Enchantments:[{id:"dndclasses:returning",lvl:1}]} 0
+hotbar 1
+use
+wait 30
+/clear @s minecraft:egg 0
+hotbar 2
+use
+wait 30
+/clear @s minecraft:snowball 0
+slots
+screenshot returning-check
+/kill @e[type=minecraft:chicken]
+quit

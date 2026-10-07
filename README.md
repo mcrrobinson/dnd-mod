@@ -11,7 +11,9 @@
     - [Goblins](#goblins)
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
+    - [Mountain Dwarves](#mountain-dwarves)
   - [Hobbit Villages](#hobbit-villages)
+  - [Dwarven Fortresses](#dwarven-fortresses)
 
 ## Building
 Navigate to the root directory of the project and type the following...
@@ -90,6 +92,9 @@ Custom music plays during different events in the game. There are **five** music
 #### Hobbits
 - **Hobbit**: A small, peaceful halfling that lives in hobbit villages. Hobbits wander their village by day, head home at night, keep away from monsters and are always nibbling something. Right-click one with an empty hand and it shares some of its food (once every few minutes).
 
+#### Mountain Dwarves
+- **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`). Dwarves guard their fortress like piglins guard gold: open a chest or barrel, or break a gold block, where one can see you and they all turn on you.
+
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:
 - **Smials** (hobbit holes) dug into grassy hills, with round green (or red, or yellow) doors, round windows, chimneys and fenced front gardens. Inside: a fireplace, a kitchen, a table laid with food, and in the bigger ones a pantry stacked with barrels and a bedroom.
@@ -98,3 +103,12 @@ Cozy, Shire-style villages that generate in plains, sunflower plains and meadows
 - **Gardens, orchards, market stalls and ponds**, joined by winding lanes with lamp posts.
 
 Barrels and chests are full of food (`chests/hobbit_pantry`, `hobbit_larder`, `hobbit_harvest`, `hobbit_ale`), and the plates and hams in item frames can be taken. Find one with `/locate structure dndclasses:hobbit_village`.
+
+### Dwarven Fortresses
+Luxurious dwarven fortresses carved into mountainsides (meadows, groves, slopes, peaks and windswept hills), laid out differently every time:
+- **The great gate**: a towering deepslate facade with a gold crest, gilded doorway and raised portcullis, flanked by gold-capped pillars and banners, opening onto a terrace with braziers and guards.
+- **The great hall**: a long pillared hall with chandeliers, banners, feasting tables and a red carpet, with two or three doorways down each side.
+- **The throne room**, where the Dwarf King (gold crown, netherite axe, double health) sits on a gold throne on a stepped dais, and behind the throne the **treasury**, heaped with gold.
+- **Side rooms**: forges with lava channels, barracks with bunks and armour stands, mead halls with long tables of food, and working mines with ore, amethyst and an ore cart. Every fortress has a forge and barracks.
+
+The halls are buried in the mountain: where the rock is too thin, the fortress piles more on top. Dwarves live in every room and keep turning up inside; monsters never spawn there. Chests and barrels use `chests/dwarven_fortress_treasury`, `_forge`, `_barracks`, `_brewhall` and `_mine`. Find one with `/locate structure dndclasses:dwarven_fortress`.

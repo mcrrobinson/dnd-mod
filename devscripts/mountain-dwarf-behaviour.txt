@@ -1,0 +1,42 @@
+# Checks the Mountain Dwarf is neutral: leaves a survival player alone, kills a nearby husk,
+# and only attacks the player after being hit. The arena is walled so nothing gets knocked off.
+# Run: ./gradlew runClient -PdevScript=devscripts/mountain-dwarf-behaviour.txt
+# Check "[CHAT]" lines in run/logs/latest.log: Health is the same before and after the 200-tick wait,
+# the husk check says "Test failed" (none left), and the dwarf then fights the player: Health drops (Resistance keeps the tester alive).
+/time set 6000
+/gamerule doDaylightCycle false
+/difficulty normal
+wait 40
+closescreen
+respawn
+wait 20
+/fill 20 149 -6 32 149 6 minecraft:polished_deepslate
+/fill 20 150 -6 32 152 6 minecraft:air
+/fill 19 150 -7 33 152 -7 minecraft:glass
+/fill 19 150 7 33 152 7 minecraft:glass
+/fill 19 150 -7 19 152 7 minecraft:glass
+/fill 33 150 -7 33 152 7 minecraft:glass
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:instant_health 1 10
+/tp @s 26 150 0 0 0
+/kill @e[type=dndclasses:mountain_dwarf,distance=..30]
+/kill @e[type=minecraft:husk,distance=..30]
+wait 20
+/data get entity @s Health
+/attribute @s minecraft:generic.max_health get
+/summon dndclasses:mountain_dwarf 26 150 2
+wait 200
+/data get entity @s Health
+/gamemode creative
+/summon minecraft:husk 30 150 -4
+wait 300
+/execute if entity @e[type=minecraft:husk]
+/tp @s 26 150 0 0 0
+/gamemode survival
+/effect give @s minecraft:resistance 30 2
+/damage @e[type=dndclasses:mountain_dwarf,limit=1] 1 minecraft:player_attack by @s
+wait 60
+/data get entity @s Health
+/gamemode creative
+quit

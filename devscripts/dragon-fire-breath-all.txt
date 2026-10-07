@@ -1,0 +1,58 @@
+# A wild Wyvern and Lightning Chaser (slowed so they stay put) breathe fire at the player, seen
+# head-on in first person so the head and jaw animation are in view.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dragon-fire-breath-all.txt
+# Output: run/screenshots/<dragon>-breath-*.png; the log shows the player's Fire after each breath.
+/time set day
+/weather clear
+/kill @e[type=dndclasses:wyvern]
+/kill @e[type=dndclasses:lightning_chaser]
+respawn
+wait 40
+closescreen
+/fill -20 149 -20 20 149 26 stone
+/fill -20 150 -20 20 164 26 air
+/gamemode survival
+/effect give @s resistance 600 3 true
+/effect give @s regeneration 600 4 true
+hud off
+
+# wyvern
+/tp @s 0 150 6 180 -12
+/summon dndclasses:wyvern 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 20
+screenshot wyvern-breath-0
+wait 8
+screenshot wyvern-breath-1
+wait 8
+screenshot wyvern-breath-2
+wait 8
+screenshot wyvern-breath-3
+wait 15
+screenshot wyvern-breath-4
+wait 30
+/data get entity @s Fire
+/kill @e[type=dndclasses:wyvern]
+wait 40
+
+# lightning_chaser
+/tp @s 0 150 6 180 -12
+/summon dndclasses:lightning_chaser 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 20
+screenshot lightning_chaser-breath-0
+wait 8
+screenshot lightning_chaser-breath-1
+wait 8
+screenshot lightning_chaser-breath-2
+wait 8
+screenshot lightning_chaser-breath-3
+wait 15
+screenshot lightning_chaser-breath-4
+wait 30
+/data get entity @s Fire
+/kill @e[type=dndclasses:lightning_chaser]
+wait 40
+
+/gamemode creative
+/effect clear @s
+hud on
+quit

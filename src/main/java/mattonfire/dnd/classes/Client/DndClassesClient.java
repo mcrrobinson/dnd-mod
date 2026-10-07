@@ -152,6 +152,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, mattonfire.dnd.client.renderer.MountainDwarfRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIMIC, mattonfire.dnd.client.renderer.MimicRenderer::new);
         mattonfire.dnd.client.MimicTexture.register();
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();

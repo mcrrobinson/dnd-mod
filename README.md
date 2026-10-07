@@ -49,7 +49,7 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 | **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Strength III for 15 seconds, inspired by *One Punch Man* |
 | **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
 | **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s) |
-| **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed for 30s |
+| **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed (or an Owlbear, once it has killed one) for 30s |
 | **Fighter** | High health, High strength, Attracts mobs: hostile mobs prefer a Fighter over other players (done) | Cannot use bows or crossbows (done), No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done) | Super regeneration: Regeneration V for 10s (done) |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Can triple jump, Unrivaled attack speed |
 | **Paladin** | High health, circle of healing, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Instantly heals everyone within 10 blocks to full, and party members within 24 blocks to full plus Absorption I for 30s (done) |
@@ -85,6 +85,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Dragons](docs/mobs/dragons.md): the Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn. They breathe fire, have hittable wings and tails, and killing any of them earns **Dragon Slayer**.
 - [Goblins](docs/mobs/goblins.md), [Magmamunchers](docs/mobs/magmamunchers.md), [Hobbits](docs/mobs/hobbits.md) and [Mountain Dwarves](docs/mobs/mountain-dwarves.md).
 - [Mimic](docs/mobs/mimic.md): a chest that isn't. It bites and grabs whoever opens or hits it, and hides in dungeons, dragon lairs and dwarven fortresses.
+- [Owlbear](docs/mobs/owlbear.md): a hostile owl-headed bear in dark and old-growth forests that charges and bear-hugs. Druids who kill one can take its form.
 - Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md) and the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md). See [Boss fights](docs/bosses/boss-fights.md).
 
 ### Structures

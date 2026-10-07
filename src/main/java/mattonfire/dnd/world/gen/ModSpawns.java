@@ -48,6 +48,12 @@ public class ModSpawns {
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.BASALT_DELTAS, BiomeKeys.NETHER_WASTES),
                 SpawnGroup.MONSTER, ModEntityTypes.MAGMAMUNCHER_ALPHA, 1, 1, 1);
 
+        // Owlbears prowl the dark and old-growth forests (monsters: in the dark, so under the dark
+        // forest canopy by day and anywhere in those woods at night).
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.DARK_FOREST, BiomeKeys.OLD_GROWTH_BIRCH_FOREST,
+                        BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
+                SpawnGroup.MONSTER, ModEntityTypes.OWLBEAR, 12, 1, 1);
+
 
         // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
         // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.
@@ -66,6 +72,9 @@ public class ModSpawns {
 
         SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER_ALPHA, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canMagmamuncherAlphaSpawn);
+
+        SpawnRestriction.register(ModEntityTypes.OWLBEAR, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
 
         // Goblin Warriors join the Nether Fortress spawn pool (see SpawnHelperMixin)
         SpawnRestriction.register(ModEntityTypes.GOBLIN_WARRIOR, SpawnRestriction.Location.ON_GROUND,

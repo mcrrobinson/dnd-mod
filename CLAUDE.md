@@ -32,6 +32,15 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
    - `gh pr edit` fails here with a "Projects (classic) is being deprecated" GraphQL error. To change a PR description, use `gh api -X PATCH repos/mcrrobinson/dnd-mod/pulls/<n> -F body=@<file>.md`.
 7. Clean up with `git worktree remove ../dnd-mod-<branch-slug>` after merging.
 
+## Docs
+
+`docs/` is the detailed reference, one page per feature; `docs/README.md` is the index.
+
+- Every feature ticket adds or updates its page under `docs/<area>/` (classes, systems, mobs, bosses, structures, enchantments, items, dev), using the template in `docs/README.md`. Take numbers from the code.
+- Add or update the page's line in `docs/README.md`: `- [Feature](area/page.md): one-line summary`.
+- The root README keeps only a short overview that links to the page. Don't add detail there.
+- When a feature PR merges, drop its " (PR #n)" suffix from `docs/README.md`.
+
 ## Testing in the dev client
 
 - `./gradlew runClient` loads straight into the dev world `run/saves/New World` (`DevScript` auto-join; pick another world with `-PdevWorld=<folder>`). Minecraft 1.19.4 ignores `--quickPlaySingleplayer`, which only exists from 1.20.

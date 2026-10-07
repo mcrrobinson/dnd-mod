@@ -8,6 +8,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.ProgressionEvents;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -40,6 +41,7 @@ public abstract class LivingEntityMixin extends Entity {
                                                                                                                                                                                  // (index=1)
     )
     private float modifyDamageAmount(DamageSource source, float originalAmount) {
+        originalAmount = ProgressionEvents.modifyDamage((LivingEntity) (Object) this, source, originalAmount);
         Entity attacker = source.getAttacker();
         if (attacker instanceof PlayerEntity player) {
 

@@ -576,6 +576,60 @@ def sting_alchemist(rng):
     return finish_sting(out, 3.0, wet=0.4, room=0.86)
 
 
+# ---------------------------------------------------------------- bard instrument songs
+
+def flute_note(sec, freq, rng, attack=0.04, vib=(5.5, 0.006)):
+    fl = partials(sec, freq, [(1, 1, 99), (2, 0.18, 99), (3, 0.06, 99)], attack=attack, vibrato=vib)
+    br = svf(noise(sec, rng), freq * 2, 3, "band")
+    fl = [a + 0.22 * b for a, b in zip(fl, br)]
+    return apply(fl, env_points(len(fl), [(0, 0), (attack, 1), (max(attack, sec - 0.06), 0.8), (sec, 0)]))
+
+
+def song_lute(rng):
+    # Gentle lute air in D major: a plucked melody over rolled chords (the regeneration song)
+    out = buf(4.4)
+    beat = 0.36
+    chords = [[38, 45, 50, 54, 57], [43, 50, 55, 59, 62], [45, 52, 57, 61, 64], [38, 45, 50, 54, 62]]
+    for c, chord in enumerate(chords):
+        for k, m in enumerate(chord):
+            mix(out, pluck(2.0, hz(m), rng, decay=0.996, bright=0.5), c * beat * 3 + k * 0.025, 0.22)
+    melody = [(0, 66), (1, 69), (2, 74), (3, 71), (4, 67), (5, 71), (6, 73), (7, 69), (8, 76), (9, 74), (10, 73), (12, 74)]
+    for step, m in melody:
+        mix(out, pluck(1.2, hz(m), rng, decay=0.993, bright=0.75), 0.05 + step * beat * 0.75 * 1.2, 0.3)
+    return finish_sting(out, 4.0, wet=0.35, room=0.86)
+
+
+def song_drum(rng):
+    # War drums: a driving tom rhythm building to a big double hit (the strength song)
+    out = buf(4.4)
+    beat = 0.22
+    pattern = [1, 0, 0.6, 0, 1, 0, 0.6, 0.6, 1, 0, 0.6, 0, 1, 0.7, 0.8, 0.9]
+    for k, v in enumerate(pattern):
+        if v:
+            mix(out, drum(0.7, 110, 62, 0.03, 0.22, click=0.4, rng=rng), k * beat, v)
+        if k % 4 == 2:
+            s = svf(noise(0.2, rng), 3000, 1.2, "band")
+            mix(out, apply(s, env_ar(len(s), 0.001, 0.05)), k * beat, 0.35)
+    end = len(pattern) * beat
+    for at in (end, end + 0.18):
+        mix(out, drum(1.2, 80, 38, 0.05, 0.5, click=0.6, rng=rng), at, 1.2)
+    return finish_sting(out, 4.0, wet=0.25, room=0.8)
+
+
+def song_flute(rng):
+    # Quick, skipping flute jig in G (the speed song)
+    out = buf(4.2)
+    step = 0.16
+    notes = [67, 71, 74, 79, 78, 76, 74, 71, 72, 76, 79, 76, 74, 71, 67, 71, 74, 76, 78, 79]
+    for k, m in enumerate(notes):
+        d = step * (2 if k == len(notes) - 1 else 1)
+        mix(out, flute_note(d + 0.04, hz(m), rng, attack=0.02), 0.05 + k * step, 0.4)
+    mix(out, flute_note(0.9, hz(79), rng, attack=0.03), 0.05 + len(notes) * step, 0.45)
+    for k in range(0, len(notes) + 4, 2):
+        mix(out, drum(0.3, 140, 90, 0.02, 0.08, click=0.3, rng=rng), 0.05 + k * step, 0.25)
+    return finish_sting(out, 4.0, wet=0.35, room=0.86)
+
+
 # ---------------------------------------------------------------- loops
 
 def loop_low_health(rng):
@@ -655,6 +709,9 @@ SOUNDS = {
     "sting_alchemist": sting_alchemist,
     "low_health": loop_low_health,
     "nether_fortress": loop_nether_fortress,
+    "song_lute": song_lute,
+    "song_drum": song_drum,
+    "song_flute": song_flute,
 }
 
 

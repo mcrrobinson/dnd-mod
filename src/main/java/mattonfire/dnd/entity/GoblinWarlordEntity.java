@@ -11,11 +11,11 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
+import mattonfire.dnd.entity.boss.Boss;
+import mattonfire.dnd.entity.boss.BossFight;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
@@ -35,7 +35,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
  * crossing and bellows for goblin reinforcements during a fight. Below half health it enrages,
  * hitting harder, moving faster and calling bigger waves.
  */
-public class GoblinWarlordEntity extends GoblinWarriorEntity {
+public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
     private static final RawAnimation WARCRY = RawAnimation.begin().thenPlay("warcry");
 
     /** Ticks from starting the warcry to the minions appearing; matches the "warcry" animation. */
@@ -54,18 +54,19 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
     private static final UUID ENRAGE_SPEED_ID = UUID.fromString("5b0a7f3e-6c1d-4a59-9f8e-2d3c1b7a9e41");
     private static final UUID ENRAGE_DAMAGE_ID = UUID.fromString("a3e4c2d1-8b7f-4e60-b5a9-1c2d3e4f5a62");
 
-    private static final double BOSS_BAR_RANGE = 48.0;
-    private final ServerBossBar bossBar = new ServerBossBar(this.getDisplayName(),
-            BossBar.Color.YELLOW, BossBar.Style.NOTCHED_10);
+    // Boss bar for players near a warlord that is fighting a player; turns red when it enrages.
+    private final BossFight bossFight;
 
-    private boolean enraged;
     private long nextSummonTime;
     private long summonTime = -1;
     private int pendingWave;
 
     public GoblinWarlordEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
-        this.experiencePoints = 60;
+        this.bossFight = new BossFight(this, BossBar.Color.YELLOW, BossBar.Style.NOTCHED_10)
+                .range(48.0)
+                .phase(0.5F, BossBar.Color.RED, this::enrage)
+                .xp(60);
     }
 
     public static DefaultAttributeContainer.Builder createGoblinWarlordAttributes() {
@@ -103,12 +104,6 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
         long now = this.world.getTime();
         LivingEntity target = this.getTarget();
 
-        if (!this.enraged && this.getHealth() < this.getMaxHealth() / 2.0F) {
-            this.enrage();
-            // Answer the first big wound with a wave straight away.
-            this.nextSummonTime = now;
-        }
-
         if (this.summonTime >= 0) {
             // Stand still and roar until the wave arrives.
             this.getNavigation().stop();
@@ -120,10 +115,10 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
                 this.summonWave(target);
             }
         } else if (target != null && target.isAlive() && now >= this.nextSummonTime
-                && this.nearbyGoblins().size() < (this.enraged ? ENRAGED_MAX_MINIONS : MAX_MINIONS)) {
-            this.pendingWave = this.enraged ? ENRAGED_WAVE_SIZE : WAVE_SIZE;
+                && this.nearbyGoblins().size() < (this.isEnraged() ? ENRAGED_MAX_MINIONS : MAX_MINIONS)) {
+            this.pendingWave = this.isEnraged() ? ENRAGED_WAVE_SIZE : WAVE_SIZE;
             this.summonTime = now + WARCRY_WIND_UP;
-            this.nextSummonTime = now + (this.enraged ? ENRAGED_SUMMON_COOLDOWN : SUMMON_COOLDOWN);
+            this.nextSummonTime = now + (this.isEnraged() ? ENRAGED_SUMMON_COOLDOWN : SUMMON_COOLDOWN);
             this.triggerAnim("attack_controller", "warcry");
             this.playSound(SoundEvents.ENTITY_RAVAGER_ROAR, 2.0F, 1.3F);
         }
@@ -132,13 +127,20 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
     @Override
     public void tick() {
         super.tick();
-        if (!this.world.isClient) {
-            this.updateBossBar();
-        }
+        this.bossFight.tick();
+    }
+
+    @Override
+    public BossFight getBossFight() {
+        return this.bossFight;
+    }
+
+    /** Below half health: hits harder, moves faster and calls bigger waves. */
+    private boolean isEnraged() {
+        return this.bossFight.getPhase() >= 1;
     }
 
     private void enrage() {
-        this.enraged = true;
         addModifier(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED),
                 new EntityAttributeModifier(ENRAGE_SPEED_ID, "Warlord enrage speed", 0.25D,
                         EntityAttributeModifier.Operation.MULTIPLY_BASE));
@@ -148,6 +150,8 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
         this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_ANGRY, 2.0F, 0.8F);
         ((ServerWorld) this.world).spawnParticles(ParticleTypes.ANGRY_VILLAGER,
                 this.getX(), this.getBodyY(0.9D), this.getZ(), 6, 0.6D, 0.4D, 0.6D, 0.0D);
+        // Answer the first big wound with a wave straight away.
+        this.nextSummonTime = this.world.getTime();
     }
 
     private static void addModifier(EntityAttributeInstance attribute, EntityAttributeModifier modifier) {
@@ -240,7 +244,7 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putBoolean("Enraged", this.enraged);
+        this.bossFight.writeNbt(nbt);
         if (this.hasPositionTarget()) {
             nbt.put("GuardPos", NbtHelper.fromBlockPos(this.getPositionTarget()));
         }
@@ -249,53 +253,27 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity {
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.enraged = nbt.getBoolean("Enraged");
+        this.bossFight.readNbt(nbt);
         if (nbt.contains("GuardPos")) {
             this.setGuardPos(NbtHelper.toBlockPos(nbt.getCompound("GuardPos")));
-        }
-        if (this.hasCustomName()) {
-            this.bossBar.setName(this.getDisplayName());
-        }
-    }
-
-    // Boss bar for players near a warlord that is fighting a player, like the Wyvern's.
-
-    private boolean isFightingPlayer() {
-        return this.isAlive() && (this.getTarget() instanceof PlayerEntity || this.getAttacker() instanceof PlayerEntity);
-    }
-
-    private boolean inBossBarRange(ServerPlayerEntity player) {
-        return player.world == this.world && player.isAlive() && !player.isSpectator()
-                && player.squaredDistanceTo(this) < BOSS_BAR_RANGE * BOSS_BAR_RANGE;
-    }
-
-    private void updateBossBar() {
-        this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
-        this.bossBar.setName(this.getDisplayName());
-        this.bossBar.setColor(this.enraged ? BossBar.Color.RED : BossBar.Color.YELLOW);
-
-        boolean fighting = this.isFightingPlayer();
-        for (ServerPlayerEntity player : List.copyOf(this.bossBar.getPlayers())) {
-            if (!fighting || !this.inBossBarRange(player)) {
-                this.bossBar.removePlayer(player);
-            }
-        }
-        if (fighting) {
-            for (ServerPlayerEntity player : ((ServerWorld) this.world).getPlayers(this::inBossBarRange)) {
-                this.bossBar.addPlayer(player);
-            }
         }
     }
 
     @Override
     public void onStoppedTrackingBy(ServerPlayerEntity player) {
         super.onStoppedTrackingBy(player);
-        this.bossBar.removePlayer(player);
+        this.bossFight.onStoppedTrackingBy(player);
     }
 
     @Override
     public void remove(Entity.RemovalReason reason) {
         super.remove(reason);
-        this.bossBar.clearPlayers();
+        this.bossFight.onRemoved();
+    }
+
+    @Override
+    public void onDeath(DamageSource source) {
+        this.bossFight.onDeath();
+        super.onDeath(source);
     }
 }

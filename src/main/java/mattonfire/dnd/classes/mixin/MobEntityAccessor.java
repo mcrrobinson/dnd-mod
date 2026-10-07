@@ -13,4 +13,7 @@ public interface MobEntityAccessor {
 
     @Accessor("goalSelector")
     GoalSelector getGoalSelector();
+
+    @Accessor("experiencePoints")
+    void setExperiencePoints(int experiencePoints);
 }

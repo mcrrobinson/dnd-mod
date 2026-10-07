@@ -35,7 +35,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 
 
-public abstract class FAArmorItem extends ArmorItem implements GeoItem {
+public abstract class FAArmorItem extends ArmorItem implements GeoItem, SetBonusArmor {
 
     private final AnimatableInstanceCache cache = new SingletonAnimatableInstanceCache(this);
 
@@ -187,5 +187,6 @@ public abstract class FAArmorItem extends ArmorItem implements GeoItem {
     @Environment(EnvType.CLIENT)
     protected abstract GeoArmorRenderer<? extends FAArmorItem> createArmorRenderer();
 
+    @Override
     public abstract List<StatusEffectInstance> getFullSetEffects();
 }

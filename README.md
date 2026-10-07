@@ -49,7 +49,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Can triple jump, Unrivaled attack speed |
 | **Paladin** | High health, circle of healing, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Instantly heals everyone within 10 blocks to full (done) |
 | **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords (done), Weak to fire (done) | Hold right click to spam fire (no ammo consumed) (done) |
-| **Rogue** | No poison damage (done), No need to eat (to be tested) | Low health (done) | Temporary invisibility (done) |
+| **Rogue** | No poison damage (done), No need to eat: food never drains and no starvation, but no natural regen from food either (done) | Low health (done) | Temporary invisibility (done) |
 | **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Can spawn allied undead to attack enemies (done) |
 | **Warlock** | Can throw fireballs with an empty hand (done), Immune to fire and lava (done) | Reduced damage output (done), Hurt by water and rain, 1 damage every 4s but never below 1 heart (done) | Can breathe fire by holding a special key (done) |
 | **Wizard** | Can wield elemental staffs (done) | Greatly reduced health (done) | Creates a massive explosion and becomes invulnerable for a few seconds (done) |
@@ -59,6 +59,27 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 
 ### Armor
 There is armor for each class, however the armor benefits are increased depending on whether or not you match the class and wearing a full set.
+
+Wearing a full set (all four pieces) gives its set bonus to anyone. If your class is one the set is made for, the bonus is boosted: every set effect goes up one level, and you also get the set's class effect. (done)
+
+| Set | Set bonus (anyone) | Made for | Boosted bonus (matching class) |
+|-|-|-|-|
+| **Thief** | Jump Boost I | Rogue | Jump Boost II + Speed I |
+| **Assassin** | Jump Boost I | Ranger | Jump Boost II + Night Vision |
+| **Wizard** | Jump Boost I | Wizard | Jump Boost II + Fire Resistance |
+| **Cleric** | Jump Boost I | Cleric | Jump Boost II + Resistance I |
+| **Blood Hunter** | Jump Boost I | Blood Hunter | Jump Boost II + Strength I |
+| **Golden Horns** | Jump Boost I | Barbarian, Bard | Jump Boost II + Strength I |
+| **Holy Armor** | Jump Boost I | Paladin | Jump Boost II + Fire Resistance |
+| **Knight** | Jump Boost I | Fighter | Jump Boost II + Resistance I |
+| **Warrior** | Jump Boost I | Barbarian, Fighter | Jump Boost II + Haste I |
+| **Prismarine** | Water Breathing | Druid | Water Breathing + Dolphin's Grace |
+| **Wooden** | Jump Boost I | Druid | Jump Boost II + Haste I |
+| **Robe** | Jump Boost I | Monk, Alchemist | Jump Boost II + Speed I |
+| **Steampunk** | Jump Boost I | Artificer | Jump Boost II + Haste I |
+| **Wither** | Jump Boost I | Warlock, Necromancer | Jump Boost II + Strength I |
+
+Set bonuses can be turned off with `applyArmorEffects` in `config/dndclasses/dndclasses.json`.
 
 ### Enchantments (made by a Artificer)
 

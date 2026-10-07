@@ -4,6 +4,10 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Music.DungeonMusic;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.mixin.MusicTrackerAccessor;
+import mattonfire.dnd.entity.boss.BossMusic;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -15,20 +19,21 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.sound.MusicSound;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 /**
- * Picks the mod's music for game events, in priority order: dragon fight, low health, dungeon,
+ * Picks the mod's music for game events, in priority order: boss fight, low health, dungeon,
  * Nether Fortress, travelling, night.
  * Hooked into MinecraftClient.getMusicType() by MinecraftClientMusicMixin.
  */
 public class EventMusic {
     public enum Event {
         NONE(null),
-        // Starts straight away over whatever is playing, and loops while the fight lasts
-        DRAGON_FIGHT(new MusicSound(entry(ModSounds.MUSIC_DRAGON_FIGHT), 0, 0, true)),
+        // The boss's own track (see BossFight.music), started straight away and looped while the fight lasts
+        BOSS_FIGHT(null),
         // Like the fight music: straight away, looping until the player recovers or dies
         LOW_HEALTH(new MusicSound(entry(ModSounds.MUSIC_LOW_HEALTH), 0, 0, true)),
         DUNGEON(new MusicSound(entry(ModSounds.MUSIC_DUNGEON), 600, 2400, false)),
@@ -50,7 +55,7 @@ public class EventMusic {
     private static final double TRAVEL_STOP_DISTANCE = 30.0;
     // A jump bigger than this in one second is a teleport, not travel
     private static final double TELEPORT_DISTANCE = 100.0;
-    // Quiet gap after a dragon fight ends before other music can start
+    // Quiet gap after a boss fight ends before other music can start
     private static final int AFTER_FIGHT_SILENCE_TICKS = 400;
 
     // Low health: starts below LOW_HEALTH_START of max health while in combat, and keeps going until
@@ -77,6 +82,10 @@ public class EventMusic {
     private static int ticksSinceHurt = Integer.MAX_VALUE;
     private static int ticksSinceCombat = Integer.MAX_VALUE;
     private static Event current = Event.NONE;
+    // Fight track of each boss bar the server says this player can see, in the order they appeared
+    private static final Map<UUID, MusicSound> bossTracks = new LinkedHashMap<>();
+    // Track playing for the boss fight this tick
+    private static MusicSound bossMusic = null;
 
     private static RegistryEntry<SoundEvent> entry(SoundEvent sound) {
         return RegistryEntry.of(sound);
@@ -93,9 +102,22 @@ public class EventMusic {
                     boolean value = buf.readBoolean();
                     client.execute(() -> nearFortress = value);
                 });
+        ClientPlayNetworking.registerGlobalReceiver(BossMusic.S2C_BOSS_MUSIC,
+                (client, handler, buf, sender) -> {
+                    UUID bar = buf.readUuid();
+                    Identifier track = buf.readBoolean() ? buf.readIdentifier() : null;
+                    client.execute(() -> {
+                        if (track == null) {
+                            bossTracks.remove(bar);
+                        } else {
+                            bossTracks.put(bar, new MusicSound(entry(SoundEvent.of(track)), 0, 0, true));
+                        }
+                    });
+                });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             inDungeon = false;
             nearFortress = false;
+            bossTracks.clear();
             resetLowHealth();
             resetTravel();
         });
@@ -117,11 +139,13 @@ public class EventMusic {
         updateLowHealth(player);
 
         Event previous = current;
+        MusicSound previousBossMusic = bossMusic;
         current = pick(client);
+        bossMusic = current == Event.BOSS_FIGHT ? bossTracks.values().iterator().next() : null;
         if (current != previous) {
             DnDClasses.LOGGER.info("[EventMusic] {} -> {}", previous, current);
             // Fight music would otherwise play to the end of the track after the fight
-            if (previous == Event.DRAGON_FIGHT && client.getMusicTracker().isPlayingType(previous.music)) {
+            if (previous == Event.BOSS_FIGHT && client.getMusicTracker().isPlayingType(previousBossMusic)) {
                 client.getMusicTracker().stop();
                 ((MusicTrackerAccessor) client.getMusicTracker()).setTimeUntilNextSong(AFTER_FIGHT_SILENCE_TICKS);
             }
@@ -135,9 +159,8 @@ public class EventMusic {
 
     private static Event pick(MinecraftClient client) {
         ClientPlayerEntity player = client.player;
-        // Wyvern boss bars set the dragon music flag; vanilla only uses it in the End
-        if (player.world.getRegistryKey() != World.END && client.inGameHud.getBossBarHud().shouldPlayDragonMusic()) {
-            return Event.DRAGON_FIGHT;
+        if (!bossTracks.isEmpty()) {
+            return Event.BOSS_FIGHT;
         }
         if (lowHealth) {
             return Event.LOW_HEALTH;
@@ -169,10 +192,10 @@ public class EventMusic {
         // Keep vanilla's underwater, menu, credits and End music, except during a fight
         boolean vanillaSpecial = vanilla == MusicType.UNDERWATER || vanilla == MusicType.MENU
                 || vanilla == MusicType.CREDITS || vanilla == MusicType.END || vanilla == MusicType.DRAGON;
-        if (vanillaSpecial && current != Event.DRAGON_FIGHT) {
+        if (vanillaSpecial && current != Event.BOSS_FIGHT) {
             return null;
         }
-        return current.music;
+        return current == Event.BOSS_FIGHT ? bossMusic : current.music;
     }
 
     private static void updateLowHealth(ClientPlayerEntity player) {

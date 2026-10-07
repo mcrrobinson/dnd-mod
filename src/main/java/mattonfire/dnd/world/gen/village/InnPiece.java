@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.village;
 
+import mattonfire.dnd.tavern.Tavern;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
@@ -16,7 +17,8 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * The Green Dragon: a thatched inn with a round green door, a roaring fire, a bar backed by ale
- * casks and tables laid for supper.
+ * casks and tables laid for supper. The innkeeper tends the bar (food and drink for emeralds) and
+ * a bounty board on the east wall posts jobs for adventurers.
  */
 public class InnPiece extends HobbitPiece {
     private static final int WIDTH = 15;
@@ -144,9 +146,13 @@ public class InnPiece extends HobbitPiece {
         b.set(3, 4, 7, lantern(true));
         b.set(11, 4, 7, lantern(true));
 
-        b.hobbit(6, 1, 7);
+        b.hobbit(6, 1, 7, Tavern.INNKEEPER);
         b.hobbit(3, 1, 5);
         b.hobbit(9, 1, 4);
+
+        // The bounty board: two boards side by side on the east wall, past the end of the bar.
+        b.set(12, 2, 7, facing(Tavern.BOUNTY_BOARD, Direction.WEST));
+        b.set(12, 2, 8, facing(Tavern.BOUNTY_BOARD, Direction.WEST));
     }
 
     private void frontage(Builder b) {

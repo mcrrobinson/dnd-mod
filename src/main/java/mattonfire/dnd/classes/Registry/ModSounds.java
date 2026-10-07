@@ -21,6 +21,7 @@ public class ModSounds {
     public static final SoundEvent MUSIC_TRAVEL = registerSoundEvent("music.travel");
     public static final SoundEvent MUSIC_LOW_HEALTH = registerSoundEvent("music.low_health");
     public static final SoundEvent MUSIC_NETHER_FORTRESS = registerSoundEvent("music.nether_fortress");
+    public static final SoundEvent MUSIC_GOBLIN_RAID = registerSoundEvent("music.goblin_raid");
     public static final SoundEvent MUSIC_LICH_FIGHT = registerSoundEvent("music.lich_fight");
 
     // Short synthesized stings (tools/music-gen) played when a class special fires, one per class
@@ -39,6 +40,11 @@ public class ModSounds {
     public static final SoundEvent STING_ARTIFICER = registerSoundEvent("sting.artificer");
     public static final SoundEvent STING_BLOODHUNTER = registerSoundEvent("sting.bloodhunter");
     public static final SoundEvent STING_ALCHEMIST = registerSoundEvent("sting.alchemist");
+
+    // Bard instrument songs (tools/music-gen), played by the lute, drum and flute
+    public static final SoundEvent SONG_LUTE = registerSoundEvent("instrument.lute");
+    public static final SoundEvent SONG_DRUM = registerSoundEvent("instrument.drum");
+    public static final SoundEvent SONG_FLUTE = registerSoundEvent("instrument.flute");
 
     public static final SoundEvent WIZARD_EXPLOSION = registerSoundEvent("wizard_explosion");
 

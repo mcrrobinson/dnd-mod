@@ -1,0 +1,22 @@
+# Class guidebook: a class change hands out the book, right click opens it.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-guidebook.txt
+# Expect in latest.log: "You received a Class Guidebook", the Warlock pros/cons chat lines, and
+# dndclasses:class_guidebook in the Inventory; screenshot class-guidebook shows the Warlock page.
+wait 40
+closescreen
+/gamemode survival
+/clear @s
+/dndclass set @s warlock
+wait 10
+/data get entity @s Inventory
+# A second class change must not hand out a second book
+/dndclass set @s monk
+wait 10
+/data get entity @s Inventory
+hotbar 0
+# Opens on the first page (class + pros); the Special page with the key is the last one
+use
+wait 10
+screenshot class-guidebook
+closescreen
+quit

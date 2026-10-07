@@ -1,0 +1,125 @@
+{
+  "_comment": "Single source of truth for each class's pros, cons and special ability. Read by the game (class guidebook, class-pick chat message) and used to generate the Player Classes table in README.md: after editing, run ./gradlew generateClassReadme. A trailing ' (done)' is a dev status marker shown only in the README. specialOnKey says whether the special is fired with the Power Up key (otherwise it is always active).",
+  "classes": [
+    {
+      "id": "BARBARIAN",
+      "name": "Barbarian",
+      "pros": ["Strength highly buffed", "Health rivals dragons"],
+      "cons": ["Limited vision (fog closes in at ~24 blocks)", "Moves very slowly"],
+      "special": ["Strength III for 15 seconds, inspired by *One Punch Man*"],
+      "specialOnKey": true
+    },
+    {
+      "id": "BARD",
+      "name": "Bard",
+      "pros": ["Invisible to mobs"],
+      "cons": ["Less health"],
+      "special": ["Instantly tame tameable animals"],
+      "specialOnKey": true
+    },
+    {
+      "id": "CLERIC",
+      "name": "Cleric",
+      "pros": ["High mining speed", "Night vision"],
+      "cons": ["Shorter viewing distance (fog closes in at ~48 blocks)", "Slightly reduced attack damage"],
+      "special": ["Circle of ignoring mobs"],
+      "specialOnKey": true
+    },
+    {
+      "id": "DRUID",
+      "name": "Druid",
+      "pros": ["Gains an extra heart per tamed animal (up to 5)", "Regenerates in light (level 10+)"],
+      "cons": ["Cannot swim", "Gets hungry in the dark (light 4 or less)"],
+      "special": ["Transforms into a random animal it has killed for 30s"],
+      "specialOnKey": true
+    },
+    {
+      "id": "FIGHTER",
+      "name": "Fighter",
+      "pros": ["High health", "High strength", "Attracts mobs: hostile mobs prefer a Fighter over other players (done)"],
+      "cons": ["Cannot use bows or crossbows (done)", "No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done)"],
+      "special": ["Super regeneration: Regeneration V for 10s (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "MONK",
+      "name": "Monk",
+      "pros": ["Increased mobility", "Increased attack speed"],
+      "cons": ["Reduced damage output (75% unarmored, less the more armor you wear)", "Can only attack with a staff or bare fists"],
+      "special": ["Can triple jump", "Unrivaled attack speed"],
+      "specialOnKey": false
+    },
+    {
+      "id": "PALADIN",
+      "name": "Paladin",
+      "pros": ["High health", "circle of healing", "Unaffected by potions, good or bad (ability effects still apply) (done)"],
+      "cons": ["Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done)", "Very weak in the Nether: half damage and armor, 20% slower (done)"],
+      "special": ["Instantly heals everyone within 10 blocks to full (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "RANGER",
+      "name": "Ranger",
+      "pros": ["Can zoom in with bow, faster firing (done)"],
+      "cons": ["Cannot pick up swords (done)", "Weak to fire (done)"],
+      "special": ["Hold right click to spam fire (no ammo consumed) (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "ROGUE",
+      "name": "Rogue",
+      "pros": ["No poison damage (done)", "No need to eat: food never drains and no starvation, but no natural regen from food either (done)"],
+      "cons": ["Low health (done)"],
+      "special": ["Temporary invisibility (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "NECROMANCER",
+      "name": "Necromancer",
+      "pros": ["Wither debuff on melee enemies (done)", "Undead do not attack (done)"],
+      "cons": ["Slightly less health (done)", "Significantly less damage (done)"],
+      "special": ["Can spawn allied undead to attack enemies (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "WARLOCK",
+      "name": "Warlock",
+      "pros": ["Can throw fireballs with an empty hand (done)", "Immune to fire and lava (done)"],
+      "cons": ["Reduced damage output (done)", "Hurt by water and rain, 1 damage every 4s but never below 1 heart (done)"],
+      "special": ["Can breathe fire by holding a special key (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "WIZARD",
+      "name": "Wizard",
+      "pros": ["Can wield elemental staffs (done)"],
+      "cons": ["Greatly reduced health (done)"],
+      "special": ["Creates a massive explosion and becomes invulnerable for a few seconds (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "ARTIFICER",
+      "name": "Artificer",
+      "pros": ["Increased movement speed (done)", "25% chance for crafted tools, weapons and armor to come out enchanted (done)"],
+      "cons": ["Deals 25% less damage (done)", "Unaffected by potions except abilities: can't drink potions, immune to splash/lingering/tipped-arrow effects (done)"],
+      "special": ["Temporarily buffs all armor: +8 armor, +4 toughness for 30 seconds (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "BLOODHUNTER",
+      "name": "Blood Hunter",
+      "pros": ["Fire aspect applied to all swords (done)", "Double damage at night (done)"],
+      "cons": ["Half damage during the day (done)"],
+      "special": ["Can take control of any mob within 30m for 20 seconds (needs the Identity mod) (done)"],
+      "specialOnKey": true
+    },
+    {
+      "id": "ALCHEMIST",
+      "name": "Alchemist",
+      "pros": ["Can craft special potions exclusive to the class (done)", "Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done)"],
+      "cons": ["Cannot enchant (enchanting table or enchanted books on an anvil) (done)"],
+      "special": ["Instantly buff all potions to max level (done)"],
+      "specialOnKey": true
+    }
+  ]
+}

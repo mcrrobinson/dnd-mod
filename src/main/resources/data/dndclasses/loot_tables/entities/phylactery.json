@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:amethyst_shard",
+          "functions": [
+            {"function": "minecraft:set_count", "count": {"type": "minecraft:uniform", "min": 2, "max": 5}}
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {"condition": "minecraft:killed_by_player"},
+        {"condition": "minecraft:random_chance", "chance": 0.25}
+      ],
+      "entries": [
+        {"type": "minecraft:item", "name": "minecraft:echo_shard"}
+      ]
+    }
+  ]
+}

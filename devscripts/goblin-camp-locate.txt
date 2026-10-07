@@ -1,0 +1,7 @@
+# Finds the nearest goblin camp. Run: ./gradlew runClient -PdevScript=devscripts/goblin-camp-locate.txt
+# Check: "[CHAT]" lines in run/logs/latest.log for the coordinates.
+wait 40
+closescreen
+/locate structure dndclasses:goblin_camp
+wait 400
+quit

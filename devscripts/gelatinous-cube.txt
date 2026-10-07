@@ -1,0 +1,47 @@
+# Gelatinous Cube: looks, absorbed items, engulfing a mob, items dropping on death.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/gelatinous-cube.txt
+# Output: run/screenshots/gcube-*.png and [CHAT] results in run/logs/latest.log. Glass platform at y=149.
+/time set day
+/weather clear
+/gamemode creative
+/gamerule doMobLoot true
+/kill @e[type=dndclasses:gelatinous_cube]
+/kill @e[type=item]
+/fill -8 149 -8 8 149 8 glass
+hud off
+wait 40
+closescreen
+
+# Looks, with a few swallowed items inside
+/summon dndclasses:gelatinous_cube 0 150 0 {NoAI:1b,Rotation:[0f,0f],AbsorbedItems:[{id:"minecraft:iron_sword",Count:1b},{id:"minecraft:bone",Count:3b},{id:"minecraft:gold_ingot",Count:2b},{id:"minecraft:skeleton_skull",Count:1b}]}
+/tp @s 0 151.5 4.5 180 15
+wait 40
+screenshot gcube-front
+/tp @s 3.5 151.5 3.5 135 15
+wait 20
+screenshot gcube-angle
+
+# Absorbs items lying in it (throw a diamond in)
+/summon item 0.3 150.2 0.3 {Item:{id:"minecraft:diamond",Count:1b}}
+wait 30
+/data get entity @e[type=dndclasses:gelatinous_cube,limit=1] AbsorbedItems
+/execute if entity @e[type=item,distance=..20]
+screenshot gcube-diamond
+
+# Engulfs a mob: a frozen pig placed inside gets slowed and damaged
+/summon pig 0.4 150 0.4 {NoAI:1b,Health:10f,Tags:["gcube_test"]}
+wait 25
+/data get entity @e[type=pig,tag=gcube_test,limit=1] ActiveEffects
+/data get entity @e[type=pig,tag=gcube_test,limit=1] Health
+screenshot gcube-engulf
+wait 60
+/execute if entity @e[type=pig,tag=gcube_test]
+
+# Dies and drops what it absorbed
+/kill @e[type=dndclasses:gelatinous_cube]
+wait 30
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:diamond"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:iron_sword"}}]
+screenshot gcube-drops
+/kill @e[type=item]
+quit

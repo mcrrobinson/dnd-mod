@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.lair;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.entity.LightningChaserEntity;
+import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -49,6 +50,8 @@ public class LairPiece extends StructurePiece {
     /** ...dropping this many blocks for each block out, give or take a couple. */
     private static final double SLOPE = 1.6D;
     private static final int STONES = 8;
+    /** Chance of a mimic lying in wait beside the hoard chest. */
+    private static final float MIMIC_CHANCE = 0.5F;
 
     private final BlockPos center;
     private final long seed;
@@ -173,6 +176,20 @@ public class LairPiece extends StructurePiece {
             float yaw = random.nextFloat() * 360.0F;
             if (chunkBox.contains(at)) {
                 spawnDragon(world, at, yaw);
+            }
+        }
+
+        // Sometimes a second chest sits beside the hoard. It isn't a chest.
+        if (random.nextFloat() < MIMIC_CHANCE) {
+            Direction side = Direction.Type.HORIZONTAL.random(random);
+            BlockPos at = chest.offset(side, 2);
+            if (chunkBox.contains(at)) {
+                world.setBlockState(at, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                world.setBlockState(at.up(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                MimicEntity mimic = MimicEntity.disguised(world.toServerWorld(), at, side, HOARD);
+                if (mimic != null) {
+                    world.spawnEntity(mimic);
+                }
             }
         }
     }

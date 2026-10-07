@@ -576,6 +576,60 @@ def sting_alchemist(rng):
     return finish_sting(out, 3.0, wet=0.4, room=0.86)
 
 
+# ---------------------------------------------------------------- bard instrument songs
+
+def flute_note(sec, freq, rng, attack=0.04, vib=(5.5, 0.006)):
+    fl = partials(sec, freq, [(1, 1, 99), (2, 0.18, 99), (3, 0.06, 99)], attack=attack, vibrato=vib)
+    br = svf(noise(sec, rng), freq * 2, 3, "band")
+    fl = [a + 0.22 * b for a, b in zip(fl, br)]
+    return apply(fl, env_points(len(fl), [(0, 0), (attack, 1), (max(attack, sec - 0.06), 0.8), (sec, 0)]))
+
+
+def song_lute(rng):
+    # Gentle lute air in D major: a plucked melody over rolled chords (the regeneration song)
+    out = buf(4.4)
+    beat = 0.36
+    chords = [[38, 45, 50, 54, 57], [43, 50, 55, 59, 62], [45, 52, 57, 61, 64], [38, 45, 50, 54, 62]]
+    for c, chord in enumerate(chords):
+        for k, m in enumerate(chord):
+            mix(out, pluck(2.0, hz(m), rng, decay=0.996, bright=0.5), c * beat * 3 + k * 0.025, 0.22)
+    melody = [(0, 66), (1, 69), (2, 74), (3, 71), (4, 67), (5, 71), (6, 73), (7, 69), (8, 76), (9, 74), (10, 73), (12, 74)]
+    for step, m in melody:
+        mix(out, pluck(1.2, hz(m), rng, decay=0.993, bright=0.75), 0.05 + step * beat * 0.75 * 1.2, 0.3)
+    return finish_sting(out, 4.0, wet=0.35, room=0.86)
+
+
+def song_drum(rng):
+    # War drums: a driving tom rhythm building to a big double hit (the strength song)
+    out = buf(4.4)
+    beat = 0.22
+    pattern = [1, 0, 0.6, 0, 1, 0, 0.6, 0.6, 1, 0, 0.6, 0, 1, 0.7, 0.8, 0.9]
+    for k, v in enumerate(pattern):
+        if v:
+            mix(out, drum(0.7, 110, 62, 0.03, 0.22, click=0.4, rng=rng), k * beat, v)
+        if k % 4 == 2:
+            s = svf(noise(0.2, rng), 3000, 1.2, "band")
+            mix(out, apply(s, env_ar(len(s), 0.001, 0.05)), k * beat, 0.35)
+    end = len(pattern) * beat
+    for at in (end, end + 0.18):
+        mix(out, drum(1.2, 80, 38, 0.05, 0.5, click=0.6, rng=rng), at, 1.2)
+    return finish_sting(out, 4.0, wet=0.25, room=0.8)
+
+
+def song_flute(rng):
+    # Quick, skipping flute jig in G (the speed song)
+    out = buf(4.2)
+    step = 0.16
+    notes = [67, 71, 74, 79, 78, 76, 74, 71, 72, 76, 79, 76, 74, 71, 67, 71, 74, 76, 78, 79]
+    for k, m in enumerate(notes):
+        d = step * (2 if k == len(notes) - 1 else 1)
+        mix(out, flute_note(d + 0.04, hz(m), rng, attack=0.02), 0.05 + k * step, 0.4)
+    mix(out, flute_note(0.9, hz(79), rng, attack=0.03), 0.05 + len(notes) * step, 0.45)
+    for k in range(0, len(notes) + 4, 2):
+        mix(out, drum(0.3, 140, 90, 0.02, 0.08, click=0.3, rng=rng), 0.05 + k * step, 0.25)
+    return finish_sting(out, 4.0, wet=0.35, room=0.86)
+
+
 # ---------------------------------------------------------------- loops
 
 def loop_low_health(rng):
@@ -637,6 +691,133 @@ def loop_nether_fortress(rng):
     return normalize(out, -1.0, -19.0)
 
 
+def loop_lich_fight(rng):
+    # Lich boss fight: 120 bpm in D minor. Pounding low drums, a dark "ah" choir walking
+    # Dm - Bb - Gm - A, a harpsichord-like ostinato, a funeral bell every two bars and bone rattles.
+    beat = 0.5
+    bar = beat * 4
+    loop = bar * 12  # 24 s
+    xf = 1.5
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    # Drums: kick on 1 and 3, a tom pair leading into each bar
+    t = 0.0
+    k = 0
+    while t < sec:
+        mix(out, drum(0.6, 90, 40, 0.03, 0.18, click=0.15, rng=rng), t, 1.0)
+        mix(out, drum(0.6, 90, 40, 0.03, 0.18, click=0.15, rng=rng), t + 2 * beat, 0.85)
+        mix(out, drum(0.4, 160, 95, 0.02, 0.12, click=0.1, rng=rng), t + 3 * beat, 0.45)
+        mix(out, drum(0.4, 140, 80, 0.02, 0.12, click=0.1, rng=rng), t + 3.5 * beat, 0.5)
+        t += bar
+        k += 1
+    # Choir chords, three bars each
+    chords = [(38, 50, 53, 57), (34, 50, 53, 58), (31, 50, 55, 58), (33, 49, 52, 57)]
+    for c, notes in enumerate(chords + chords[:1]):
+        at = c * 3 * bar
+        if at >= sec:
+            break
+        length = 3 * bar + 0.4
+        for m in notes:
+            v = formant(saw(length, hz(m), detune=0.006, voices=3, vibrato=(4.5, 0.004), rng=rng),
+                        freqs=(650, 1080, 2650), gains=(1, 0.5, 0.15))
+            env = env_points(len(v), [(0, 0), (0.25, 1), (length - 0.5, 0.85), (length, 0)])
+            mix(out, apply(v, env), at, 0.16 if m > 40 else 0.3)
+    # Ostinato: eighth notes over the chord roots
+    pattern = [0, 3, 7, 8, 7, 3, 0, 3]
+    roots = [62, 58, 55, 57]
+    i = 0
+    t = 0.0
+    while t < sec - 0.05:
+        chord = int(t // (3 * bar)) % 4
+        root = roots[chord]
+        step = pattern[i % len(pattern)]
+        if chord == 3 and step == 3:
+            step = 4  # major third over A
+        p = svf(pluck(0.45, hz(root + step), rng, decay=0.993, bright=0.8), 3500, 0.8)
+        mix(out, p, t, 0.28 if i % 2 == 0 else 0.2)
+        t += beat / 2
+        i += 1
+    # Funeral bell every two bars
+    t = 0.0
+    while t < sec:
+        mix(out, bell(4.0, hz(50), decay=2.2, ratios=(1, 2.0, 2.4, 3.0, 4.2, 5.4)), t, 0.25)
+        t += 2 * bar
+    # Bone rattles on the off-beats of every fourth bar
+    for b in range(3, 12, 4):
+        for _ in range(10):
+            at = b * bar + rng.uniform(0.0, bar)
+            c = svf(noise(0.03, rng), rng.uniform(1500, 3500), 6, "band")
+            mix(out, apply(c, env_ar(len(c), 0.0005, 0.006)), at, 0.35)
+    out = reverb(out, wet=0.3, room=0.86, damp=0.4)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -16.0)
+
+
+# ---------------------------------------------------------------- d20 skill checks
+
+def dice_click(rng, bright=1.0):
+    """One die hitting wood: a short resonant knock plus a bright tick of noise."""
+    f = rng.uniform(900, 1500) * bright
+    knock = partials(0.08, f, [(1, 1.0, 0.012), (2.3, 0.5, 0.008), (3.9, 0.25, 0.005)], attack=0.0005)
+    tick = svf(noise(0.02, rng), 4000, 0.8, "high")
+    tick = apply(tick, env_ar(len(tick), 0.0005, 0.004))
+    return mix(knock, tick, 0.0, 0.6)
+
+
+def dice_roll(rng):
+    # A d20 rattling across a table: bounces that come quicker and softer, then it settles
+    out = buf(0.9)
+    t, gap, gain = 0.0, 0.11, 1.0
+    while t < 0.75 and gain > 0.08:
+        mix(out, dice_click(rng), t, gain)
+        if rng.random() < 0.5:  # it clatters on an edge: a quick double knock
+            mix(out, dice_click(rng, 1.15), t + 0.018, gain * 0.5)
+        t += gap * rng.uniform(0.8, 1.2)
+        gap *= 0.78
+        gain *= 0.8
+    out = reverb(out, wet=0.12, room=0.6)
+    return normalize(out[:ns(0.9)], -3.0, -20.0)
+
+
+def dice_success(rng):
+    # Two bright notes up a fourth
+    out = buf(1.2)
+    mix(out, bell(1.0, hz(76), decay=0.5), 0.0, 0.5)
+    mix(out, bell(1.0, hz(81), decay=0.7), 0.09, 0.6)
+    return finish_sting(out, 1.1, wet=0.25, room=0.75)
+
+
+def dice_failure(rng):
+    # A dull low knock and a falling minor second
+    out = buf(1.0)
+    mix(out, drum(0.5, 160, 70, 0.03, 0.15, rng=rng), 0.0, 0.7)
+    mix(out, bell(0.8, hz(57), decay=0.35, bright=0.5), 0.02, 0.35)
+    mix(out, bell(0.8, hz(56), decay=0.35, bright=0.5), 0.16, 0.35)
+    return finish_sting(out, 0.9, wet=0.2, room=0.7)
+
+
+def dice_critical(rng):
+    # Natural 20: a quick major arpeggio ringing out over a cymbal swell
+    out = buf(2.2)
+    for k, m in enumerate((72, 76, 79, 84)):
+        mix(out, bell(1.8, hz(m), decay=1.0, bright=1.3), k * 0.07, 0.45)
+    shimmer = svf(noise(1.4, rng), 7000, 0.7, "high")
+    mix(out, apply(shimmer, env_points(len(shimmer), [(0, 0), (0.25, 1), (1.4, 0)])), 0.0, 0.25)
+    mix(out, drum(1.0, 140, 55, 0.04, 0.35, rng=rng), 0.21, 0.6)
+    return finish_sting(out, 2.0, wet=0.35, room=0.85)
+
+
+def dice_fumble(rng):
+    # Natural 1: a sad "wah-wah-wahhh" of muted brass sliding down
+    out = buf(2.2)
+    for k, m in enumerate((55, 54, 53)):
+        mix(out, brass(0.32, hz(m), rng, attack=0.03, bright=700, base=300, voices=2, release=0.08), k * 0.34, 0.4)
+    mix(out, brass(1.0, hz(52), rng, attack=0.04, bright=700, base=300, voices=2, release=0.4,
+                   vib=(6.0, 0.02)), 1.02, 0.4)
+    return finish_sting(out, 2.1, wet=0.25, room=0.7)
+
+
 SOUNDS = {
     "sting_barbarian": sting_barbarian,
     "sting_bard": sting_bard,
@@ -655,6 +836,15 @@ SOUNDS = {
     "sting_alchemist": sting_alchemist,
     "low_health": loop_low_health,
     "nether_fortress": loop_nether_fortress,
+    "song_lute": song_lute,
+    "song_drum": song_drum,
+    "song_flute": song_flute,
+    "lich_fight": loop_lich_fight,
+    "dice_roll": dice_roll,
+    "dice_success": dice_success,
+    "dice_failure": dice_failure,
+    "dice_critical": dice_critical,
+    "dice_fumble": dice_fumble,
 }
 
 
@@ -665,7 +855,7 @@ def main(argv):
         if key not in SOUNDS:
             sys.exit(f"unknown sound {name}; choose from {', '.join(SOUNDS)}")
         rng = random.Random(key)
-        quality = 2 if key in ("low_health", "nether_fortress") else 3
+        quality = 2 if key in ("low_health", "nether_fortress", "lich_fight") else 3
         write_ogg(key, SOUNDS[key](rng), quality)
 
 

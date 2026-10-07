@@ -1,0 +1,29 @@
+# Goblin raid: start one by hand, clear its waves with /kill, check the bar and rewards.
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+/effect give @s minecraft:resistance 600 4 true
+/time set day
+/goblinraid start here
+wait 60
+screenshot raid_approaching
+wait 180
+screenshot raid_wave1
+/goblinraid list
+/kill @e[type=dndclasses:goblin_warrior]
+wait 60
+/goblinraid list
+wait 300
+/kill @e[type=dndclasses:goblin_warrior]
+wait 320
+screenshot raid_warlord
+/goblinraid list
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 30
+screenshot raid_victory
+/goblinraid list
+slots
+wait 20
+quit

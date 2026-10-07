@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Damages;
 
 import mattonfire.dnd.classes.DnDClasses;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageType;
 import net.minecraft.registry.RegistryKey;
@@ -25,6 +26,14 @@ public class ModDamageTypes {
     public static final Identifier WARLOCK_WET_DAMAGE = new Identifier(DnDClasses.MOD_ID, "warlock_wet");
     public static final RegistryKey<DamageType> WARLOCK_WET_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
             WARLOCK_WET_DAMAGE);
+
+    /** A Gelatinous Cube's acid, dealt to whatever it has engulfed. */
+    public static final RegistryKey<DamageType> GELATINOUS_CUBE_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "gelatinous_cube"));
+
+    public static DamageSource of(World world, RegistryKey<DamageType> key, Entity attacker) {
+        return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key), attacker);
+    }
 
     public static DamageSource of(World world, RegistryKey<DamageType> key) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));

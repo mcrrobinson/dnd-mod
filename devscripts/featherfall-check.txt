@@ -1,0 +1,31 @@
+# Featherfall: fall 25 blocks (22 damage without it) onto a platform with no boots, level I and level III
+# boots, logging health after each landing. Expect 20 - 11 = 9 at level I, and 20 at level III (slow falling).
+wait 40
+closescreen
+/gamemode survival
+# The saved dev player can be stuck Invulnerable; running the Invulnerability effect out clears it.
+/effect give @s dndclasses:invulnerability 1
+wait 30
+/difficulty normal
+/gamerule fallDamage
+/gamerule naturalRegeneration false
+/fill 0 100 0 4 100 4 stone
+/item replace entity @s armor.feet with diamond_boots{Enchantments:[{id:"dndclasses:featherfall",lvl:1s}]}
+/effect give @s instant_health 1 10
+wait 20
+/tp @s 2 126 2 0 90
+wait 100
+/data get entity @s Health
+screenshot featherfall-1
+/item replace entity @s armor.feet with diamond_boots{Enchantments:[{id:"dndclasses:featherfall",lvl:3s}]}
+/effect give @s instant_health 1 10
+wait 20
+/tp @s 2 126 2 0 90
+wait 30
+/data get entity @s ActiveEffects
+screenshot featherfall-3-midair
+wait 200
+/data get entity @s Health
+screenshot featherfall-3
+/gamerule naturalRegeneration true
+quit

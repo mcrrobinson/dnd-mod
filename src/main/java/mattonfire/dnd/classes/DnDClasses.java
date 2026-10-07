@@ -380,6 +380,7 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                MonkHandler.register();
 
                 ModSounds.registerSounds();
                 mattonfire.dnd.classes.Music.DungeonMusic.register();

@@ -52,11 +52,20 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<HobbitEntity> HOBBIT = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "hobbit"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, HobbitEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.5f, 1.1f))
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
         FabricDefaultAttributeRegistry.register(GOBLIN_WARRIOR, GoblinWarriorEntity.createGoblinWarriorAttributes());
+        FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
     }
 }

@@ -1,0 +1,7 @@
+# Finds the nearest hobbit village. Run: ./gradlew runClient -PdevScript=devscripts/hobbit-locate.txt
+# Check: "[CHAT]" lines in run/logs/latest.log for the coordinates.
+wait 40
+closescreen
+/locate structure dndclasses:hobbit_village
+wait 600
+quit

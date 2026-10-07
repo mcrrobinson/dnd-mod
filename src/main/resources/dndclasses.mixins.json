@@ -32,7 +32,10 @@
         "SpawnHelperMixin"
     ],
     "client": [
+        "HiddenWindowMixin",
+        "MinecraftClientInvoker",
         "DoubleJumpMixin",
+        "InGameHudMixin",
         "EntityRenderDispatcherMixin",
         "LivingEntityMixin",
         "LivingEntityRendererMixin",

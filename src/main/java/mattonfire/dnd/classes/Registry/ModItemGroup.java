@@ -97,6 +97,7 @@ public class ModItemGroup {
             entries.add(ModItems.MIMIC_SPAWN_EGG);
             entries.add(ModItems.OWLBEAR_SPAWN_EGG);
             entries.add(ModItems.LICH_SPAWN_EGG);
+            entries.add(ModItems.BEHOLDER_SPAWN_EGG);
         });
     }
 }

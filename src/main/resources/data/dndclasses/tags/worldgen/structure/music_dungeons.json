@@ -9,6 +9,7 @@
         "minecraft:mansion",
         "minecraft:monument",
         "minecraft:jungle_pyramid",
-        "minecraft:desert_pyramid"
+        "minecraft:desert_pyramid",
+        "dndclasses:beholder_lair"
     ]
 }

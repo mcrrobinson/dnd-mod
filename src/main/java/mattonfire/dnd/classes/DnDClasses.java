@@ -136,6 +136,10 @@ public class DnDClasses implements ModInitializer {
                         if (mana < cost) {
                                 return;
                         }
+                        // A Beholder's anti-magic cone: the power fizzles and the mana is kept
+                        if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)) {
+                                return;
+                        }
 
                         boolean success = skill == null
                                         ? PowerUpEffect.play(server, player, Progression.classOf(player))
@@ -303,6 +307,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
                 // Before DwarfGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.SkillChecks.D20.register();
+                mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
 

@@ -91,7 +91,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Mimic](docs/mobs/mimic.md): a chest that isn't. It bites and grabs whoever opens or hits it, and hides in dungeons, dragon lairs and dwarven fortresses.
 - [Owlbear](docs/mobs/owlbear.md): a hostile owl-headed bear in dark and old-growth forests that charges and bear-hugs. Druids who kill one can take its form.
 - [Gelatinous Cube](docs/mobs/gelatinous-cube.md): a slow jelly cube in dark caves and dungeons that engulfs whatever it touches and soaks up items.
-- Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md), the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md) and the [Lich](docs/bosses/lich.md), an undead caster in stronghold libraries that reforms from its phylactery until that's smashed. See [Boss fights](docs/bosses/boss-fights.md).
+- Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md), the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md), the [Lich](docs/bosses/lich.md) (reforms from its phylactery until that's smashed) and the [Beholder](docs/bosses/beholder.md) (its anti-magic cone blocks class specials). See [Boss fights](docs/bosses/boss-fights.md).
 
 ### Structures
 - [Dragon Lairs](docs/structures/dragon-lairs.md) on mountain summits (`/locate structure dndclasses:dragon_lair`).
@@ -100,6 +100,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Goblin Camps](docs/structures/goblin-camps.md): palisaded war camps in forests and plains (`dndclasses:goblin_camp`).
 - [Dwarven Fortresses](docs/structures/dwarven-fortresses.md) carved into mountainsides (`dndclasses:dwarven_fortress`).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.
+- Beholder Lairs: sealed domed caverns deep in the deepslate, reached by a spiral stair (`dndclasses:beholder_lair`). See [Beholder](docs/bosses/beholder.md).
 
 ### Goblin Raids
 At night, goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and hear raid music, and defenders who win are rewarded. Start one by hand with `/goblinraid start`. See [Goblin raids](docs/systems/goblin-raids.md).

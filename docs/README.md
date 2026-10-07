@@ -44,7 +44,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Goblin Warlord](bosses/goblin-warlord.md): Nether Fortress boss that summons goblin waves
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery
-- [Beholder](bosses/beholder.md) (PR #73)
+- [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials
 
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits

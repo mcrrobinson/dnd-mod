@@ -1,0 +1,26 @@
+{
+    "parent": "minecraft:adventure/kill_a_mob",
+    "display": {
+        "icon": {
+            "item": "minecraft:ender_eye"
+        },
+        "title": {
+            "translate": "advancements.dndclasses.beholder_slayer.title"
+        },
+        "description": {
+            "translate": "advancements.dndclasses.beholder_slayer.description"
+        },
+        "frame": "challenge",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false
+    },
+    "criteria": {
+        "killed_beholder": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "rewards": {
+        "experience": 150
+    }
+}

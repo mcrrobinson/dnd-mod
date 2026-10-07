@@ -6,7 +6,7 @@ Event music replaces the vanilla pick, in this priority order:
 
 | Event | Track | When |
 |-|-|-|
-| Boss fight | **Tooth and Claw** | While you can see a boss bar with a fight track (dragons, Magmamuncher Alpha). It loops until the fight ends, then 20 seconds of quiet |
+| Boss fight | **Tooth and Claw** | While you can see a boss bar with a fight track (dragons, Magmamuncher Alpha, Beholder). It loops until the fight ends, then 20 seconds of quiet |
 | Lich fight | **Lich theme** (no disc) | Like a boss fight, during a fight with the [Lich](bosses/lich.md) |
 | Goblin raid | **Steel on Steel** | Within 96 blocks of a goblin raid, until it's won or lost (see [Goblin raids](systems/goblin-raids.md)) |
 | Low health | Low health loop | Below 25% health while in combat (hurt in the last 10 s or a monster within 12 blocks). It stops above 40% health or after 30 s out of combat |

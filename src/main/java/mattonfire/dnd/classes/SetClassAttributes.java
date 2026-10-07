@@ -118,9 +118,8 @@ public class SetClassAttributes {
 
     public void typeWarlock(PlayerEntity player) {
         System.out.println("Warlock...");
-        // Slow fireball.
-        // Resistant to fire and lava.
-        // Fire tick in water and rain.
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.5); // Default 1
+        // Slow fireball, fire/lava immunity and water/rain damage live in Warlock.
     }
 
     public void typeWizard(PlayerEntity player) {

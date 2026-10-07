@@ -25,6 +25,7 @@
         "BrewingStandBlockEntityMixin",
         "BrewingStandBlockMixin",
         "CraftingResultSlotMixin",
+        "CraftingQuickMoveMixin",
         "WorldMixin",
         "ServerWorldMixin",
         "ProjectileUtilMixin",

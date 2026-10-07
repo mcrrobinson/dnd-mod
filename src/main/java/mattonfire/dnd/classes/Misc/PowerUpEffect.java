@@ -223,7 +223,8 @@ public class PowerUpEffect {
 
                 break;
             case ARTIFICER:
-                // temporary buff to armor
+                // Temporary buff to armor (+8 armor, +4 toughness for 30 seconds)
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARMOR_BUFF, 600, 0));
                 break;
             case BLOODHUNTER: {
                 Vec3d vec3d = player.getCameraPosVec(1.0F);

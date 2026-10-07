@@ -21,6 +21,7 @@
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",
+        "MobEntityMixin",
         "BrewingStandAccessor",
         "BrewingStandBlockEntityMixin",
         "BrewingStandBlockMixin",

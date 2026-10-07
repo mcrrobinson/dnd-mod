@@ -1,0 +1,46 @@
+# Smite Dragons: hit a frozen wyvern and a husk with a plain sword, then with Smite Dragons V.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/smite-dragons.txt
+# Expect in latest.log: the wyvern loses 12.5 more health to the enchanted hit than to the plain one;
+# the husk (20 health) loses 7 to each hit.
+wait 40
+closescreen
+/gamemode survival
+/effect give @s minecraft:resistance 99999 255 true
+/gamerule doDaylightCycle false
+/time set noon
+/fill 0 149 0 8 149 12 minecraft:stone
+/fill 0 150 0 8 156 12 minecraft:air
+/clear @s
+/give @s minecraft:diamond_sword
+/give @s minecraft:diamond_sword{Enchantments:[{id:"dndclasses:smite_dragons",lvl:5s}]}
+/summon minecraft:husk 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f]}
+/tp @s 4.5 150 3.5 0 10
+wait 10
+screenshot smite-dragons-husk
+hotbar 0
+wait 30
+attack
+wait 30
+/data get entity @e[type=minecraft:husk,limit=1] Health
+hotbar 1
+wait 30
+attack
+wait 30
+/data get entity @e[type=minecraft:husk,limit=1] Health
+/kill @e[type=minecraft:husk]
+/summon dndclasses:wyvern 4.5 150 6.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f}
+/tp @s 4.5 150 3.5 0 20
+wait 20
+hotbar 0
+wait 30
+attack
+wait 30
+/data get entity @e[type=dndclasses:wyvern,limit=1] Health
+hotbar 1
+wait 30
+attack
+wait 30
+/data get entity @e[type=dndclasses:wyvern,limit=1] Health
+screenshot smite-dragons-wyvern
+/kill @e[type=dndclasses:wyvern]
+quit

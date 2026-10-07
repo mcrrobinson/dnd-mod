@@ -1,0 +1,40 @@
+# Checks regular Magmamunchers are fire immune: one stands in lava, one is set alight, one takes in_fire/lava damage.
+# A pig in the next lava pool is the control.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/magmamuncher-fire-immune.txt
+# Output: run/screenshots/magmamuncher-lava.png. In latest.log every Magmamuncher Health line stays 60.0f,
+# the pig's drops (or it's gone: "No entity was found").
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:magmamuncher]
+/kill @e[type=minecraft:pig]
+/fill -12 149 -12 12 149 12 glass
+/fill -12 150 -12 12 158 12 air
+wait 40
+closescreen
+/fill -4 148 -2 4 148 1 minecraft:glass
+/fill -4 149 -2 -1 149 1 minecraft:lava
+/fill 1 149 -2 4 149 1 minecraft:lava
+/summon dndclasses:magmamuncher -2.5 149 -0.5 {NoAI:1b,Rotation:[180f,0f],Tags:["lava"]}
+/summon minecraft:pig 2.5 149 -0.5 {NoAI:1b,Rotation:[180f,0f]}
+/summon dndclasses:magmamuncher 0 150 5 {NoAI:1b,Rotation:[180f,0f],Fire:400s,Tags:["fire"]}
+/summon dndclasses:magmamuncher 6 150 5 {NoAI:1b,Rotation:[180f,0f],Tags:["dmg"]}
+/tp @s 0 153 9 180 25
+wait 10
+screenshot magmamuncher-lava-start
+wait 30
+/data get entity @e[type=minecraft:pig,limit=1] Health
+screenshot magmamuncher-lava
+/damage @e[type=dndclasses:magmamuncher,tag=dmg,limit=1] 10 minecraft:in_fire
+/damage @e[type=dndclasses:magmamuncher,tag=dmg,limit=1] 10 minecraft:lava
+/damage @e[type=dndclasses:magmamuncher,tag=dmg,limit=1] 10 minecraft:on_fire
+wait 160
+/data get entity @e[type=dndclasses:magmamuncher,tag=lava,limit=1] Health
+/data get entity @e[type=dndclasses:magmamuncher,tag=fire,limit=1] Health
+/data get entity @e[type=dndclasses:magmamuncher,tag=dmg,limit=1] Health
+/data get entity @e[type=minecraft:pig,limit=1] Health
+screenshot magmamuncher-lava-later
+/kill @e[type=dndclasses:magmamuncher]
+/kill @e[type=minecraft:pig]
+/fill -12 148 -12 12 158 12 air
+quit

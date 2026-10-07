@@ -70,11 +70,11 @@ public class WyvernAttackGoal extends Goal {
                  if (distanceSq <= breathRange * breathRange) {
                      this.entity.getFireBreath().start(target);
                      // The cooldown starts once the breath is over (ticking pauses while breathing)
-                     this.cooldown = 60;
+                     this.cooldown = this.entity.getBreathCooldown();
                  }
              } else { // Melee
                  this.entity.tryAttack(target);
-                 this.cooldown = 20;
+                 this.cooldown = this.entity.getMeleeCooldown();
              }
         }
     }

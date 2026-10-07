@@ -27,6 +27,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<EmberWyvernEntity> EMBER_WYVERN = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "ember_wyvern"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, EmberWyvernEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.5f, 1.5f))
+                    .fireImmune()
+                    .build()
+    );
+
     public static final EntityType<RiverPikehornEntity> RIVER_PIKEHORN = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "river_pikehorn"),
@@ -89,6 +98,7 @@ public class ModEntityTypes {
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
+        FabricDefaultAttributeRegistry.register(EMBER_WYVERN, EmberWyvernEntity.createEmberWyvernAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER_ALPHA, MagmamuncherAlphaEntity.createMagmamuncherAlphaAttributes());

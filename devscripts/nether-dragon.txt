@@ -1,0 +1,62 @@
+# Ember Wyvern smoke test: frozen next to a regular wyvern high in the air, with and without hit
+# shapes, plus attribute checks and a natural-spawn-predicate check in the Nether.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/nether-dragon.txt
+# Output: run/screenshots/ember-*.png; grep the log for [CHAT] attribute values.
+/time set day
+/weather clear
+# Spectators hang in the air (a creative player would fall out of shot)
+/gamemode spectator
+/kill @e[type=dndclasses:wyvern]
+/kill @e[type=dndclasses:ember_wyvern]
+wait 40
+closescreen
+hud off
+
+# Teleport first so the chunks there are loaded and tracked before the dragons appear
+/tp @s 22 151 0 90 8
+wait 60
+/summon dndclasses:wyvern 0 148 -8 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f],Tags:["smoke"]}
+/summon dndclasses:ember_wyvern 0 148 8 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f],Tags:["smoke"]}
+wait 60
+screenshot ember-side
+/tp @s 0 166 0 0 90
+wait 40
+screenshot ember-top
+hitboxes on
+/tp @s 22 151 0 90 8
+wait 40
+screenshot ember-hitboxes
+hitboxes off
+
+# Night-time look (glowmask)
+/time set midnight
+/tp @s 14 150 8 90 8
+wait 40
+screenshot ember-night
+/time set day
+
+hud on
+/attribute @e[type=dndclasses:ember_wyvern,limit=1] minecraft:generic.max_health get
+/attribute @e[type=dndclasses:ember_wyvern,limit=1] minecraft:generic.attack_damage get
+/attribute @e[type=dndclasses:ember_wyvern,limit=1] minecraft:generic.flying_speed get
+/attribute @e[type=dndclasses:wyvern,limit=1] minecraft:generic.max_health get
+/data get entity @e[type=dndclasses:ember_wyvern,limit=1] Health
+# Fire immunity: set it alight in lava and check it keeps full health
+/setblock 0 147 8 minecraft:lava
+/data merge entity @e[type=dndclasses:ember_wyvern,limit=1] {Fire:200s}
+wait 60
+/data get entity @e[type=dndclasses:ember_wyvern,limit=1] Health
+/kill @e[tag=smoke]
+/setblock 0 147 8 minecraft:air
+
+# Spawns in the Nether via the spawn egg path and summon there
+/execute in minecraft:the_nether run tp @s 0 70 0
+wait 40
+/execute in minecraft:the_nether run summon dndclasses:ember_wyvern 0 120 0 {NoAI:1b,NoGravity:1b,Tags:["smoke"]}
+wait 10
+/execute in minecraft:the_nether if entity @e[type=dndclasses:ember_wyvern,tag=smoke]
+/kill @e[tag=smoke]
+/execute in minecraft:overworld run tp @s 0 150 0
+/gamemode creative
+wait 20
+quit

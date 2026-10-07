@@ -33,6 +33,10 @@ public class ModSpawns {
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.PLAINS, BiomeKeys.MEADOW, BiomeKeys.STONY_PEAKS, BiomeKeys.JAGGED_PEAKS),
                 SpawnGroup.CREATURE, ModEntityTypes.WYVERN, 10, 1, 3);
         
+        // Ember Wyverns (fire-immune glass cannons) across the open Nether biomes
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.NETHER_WASTES, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS, BiomeKeys.SOUL_SAND_VALLEY),
+                SpawnGroup.MONSTER, ModEntityTypes.EMBER_WYVERN, 4, 1, 2);
+
         // River Pikehorns in rivers and swamps
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.RIVER, BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP),
                 SpawnGroup.CREATURE, ModEntityTypes.RIVER_PIKEHORN, 15, 2, 4);
@@ -53,6 +57,8 @@ public class ModSpawns {
         // spawn_overrides), which get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.LIGHTNING_CHASER, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canLightningChaserSpawn);
+        SpawnRestriction.register(ModEntityTypes.EMBER_WYVERN, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.EmberWyvernEntity::canSpawn);
         SpawnRestriction.register(ModEntityTypes.RIVER_PIKEHORN, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
         SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER, SpawnRestriction.Location.ON_GROUND,

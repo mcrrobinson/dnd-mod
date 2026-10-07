@@ -382,6 +382,7 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                mattonfire.dnd.classes.Misc.PaladinNetherWeakness.register();
                 mattonfire.dnd.classes.Misc.ArtificerDamage.register();
                 mattonfire.dnd.classes.Misc.ClericHandler.register();
                 MonkHandler.register();

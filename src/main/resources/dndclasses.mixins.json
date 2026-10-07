@@ -27,6 +27,8 @@
         "BrewingStandBlockEntityMixin",
         "BrewingStandBlockMixin",
         "CraftingResultSlotMixin",
+        "SlotMixin",
+        "SmithingScreenHandlerMixin",
         "CraftingQuickMoveMixin",
         "WorldMixin",
         "ServerWorldMixin",

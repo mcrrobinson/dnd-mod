@@ -1,0 +1,30 @@
+# Checks Thick Skin armor and Rogue Shadowstep. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-progression-check2.txt
+wait 40
+closescreen
+/gamemode survival
+/fill 0 149 0 8 149 20 minecraft:stone
+/fill 0 150 0 8 154 20 minecraft:air
+/dndclass set @s barbarian
+wait 10
+closescreen
+/tp @s 4.5 150 2.5 0 0
+wait 40
+/attribute @s minecraft:generic.armor get
+press key.dnd-classes.skill-tree
+wait 5
+screenshot progression-tree-small
+closescreen
+/dndclass set @s rogue
+wait 10
+closescreen
+/dndclass xp @s set 200
+/dndclass unlock @s rogue.backstab
+/dndclass unlock @s rogue.shadowstep
+/dndclass equip @s rogue.shadowstep
+/tp @s 4.5 150 2.5 0 0
+wait 200
+press key.dnd-classes.power-up
+wait 10
+/execute if entity @s[z=12,dz=4] run say shadowstep-ok
+/data get entity @s Pos
+quit

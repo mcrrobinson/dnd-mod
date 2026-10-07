@@ -4,6 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.IEntityDataSaver;
+import mattonfire.dnd.classes.Progression.ClassProgress;
+import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GameRenderer;
@@ -42,6 +44,14 @@ public final class PowerupOverlay {
         RenderSystem.setShaderTexture(0, FULL_POWER);
         for (int i = 0; i < Math.min(mana, DnDClasses.MANA_ICONS); i++) {
             DrawableHelper.drawTexture(matrices, x + (i * 9) + 10, y - 48, 0, 0, 9, 9, 9, 9);
+        }
+
+        // Underline the pips the equipped active costs, gold once it can be used.
+        SkillNode active = ClassProgress.client.activeNode();
+        if (active != null) {
+            int cost = Math.min(active.manaCost(), DnDClasses.MANA_ICONS);
+            int color = mana >= cost ? 0xFFE0B040 : 0xFF505050;
+            DrawableHelper.fill(matrices, x + 10, y - 39, x + 10 + cost * 9 - 1, y - 38, color);
         }
 
         // Vanilla keeps drawing (mount health) with the GUI icons texture it bound earlier.

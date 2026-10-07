@@ -12,7 +12,7 @@ public class WyvernModel extends GeoModel<WyvernEntity> {
 
     @Override
     public Identifier getTextureResource(WyvernEntity object) {
-        return new Identifier("dndclasses", "textures/entity/wyvern/green.png");
+        return object.getTexture();
     }
 
     @Override

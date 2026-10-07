@@ -109,19 +109,19 @@ Custom music plays during different events in the game. There are **five** music
 - **Goblin Warrior**: A goblin warrior is a strong and tough mob that has a low attack speed but high health. It can be found near the entrance of the Nether Fortress.
 
 #### Dragons
-Dragons live in the Overworld. Their wings, neck, head, tail and legs can all be hit (like the ender dragon's), they take no fall damage, and they breathe fire: after a growl and a rear back, a 12-block cone of flame for 2 seconds (4 damage a hit and sets you alight) that slowly swings after its target, so you can dodge it by moving sideways. They can't breathe fire underwater.
+Dragons live in the Overworld and the Nether. Their wings, neck, head, tail and legs can all be hit (like the ender dragon's), they take no fall damage, and they breathe fire: after a growl and a rear back, a 12-block cone of flame for 2 seconds (4 damage a hit and sets you alight) that slowly swings after its target, so you can dodge it by moving sideways. They can't breathe fire underwater.
 
-| | Wyvern | Lightning Chaser |
-|-|-|-|
-| **Where** | Plains, meadows, stony peaks and jagged peaks, on well-lit ground (weight 10, groups of 1-3) | Only in its lair on a mountain summit (see [Dragon Lairs](#dragon-lairs)) |
-| **Health** | 40 | 200, with 12 armour, 6 toughness and 80% knockback resistance |
-| **Bite** | 6 damage | 14 damage |
-| **Speed** | 0.3 walking, 0.6 flying | 0.35 walking, 0.6 flying |
-| **Attacks** | Hunts players on sight. Bites up close (once a second), breathes fire from further off (every 3 seconds) | Hunts players on sight. Bites up close (once a second); from further off, every 3 seconds, it takes turns breathing fire and calling down a storm of three lightning bolts round you. Immune to lightning |
-| **Boss fight** | Red boss bar | Yellow boss bar |
-| **Rewards** | **Dragon Slayer** advancement (challenge, 100 XP) | 2-5 phantom membranes and 1-3 copper blocks; when a player kills it, also 80 XP, 2-5 diamonds and a 15% chance (+5% per Looting level) of a **Staff of Lightning** |
+| | Wyvern | Ember Wyvern | Lightning Chaser |
+|-|-|-|-|
+| **Where** | Plains, meadows, stony peaks and jagged peaks, on well-lit ground (weight 10, groups of 1-3) | The Nether: Nether Wastes, Crimson Forests, Basalt Deltas and Soul Sand Valleys, on solid ground in any light but never on the bedrock roof (monster, weight 4, groups of 1-2; not in peaceful, and it despawns like a monster) | Only in its lair on a mountain summit (see [Dragon Lairs](#dragon-lairs)) |
+| **Health** | 40 | 26 (a glass cannon) | 200, with 12 armour, 6 toughness and 80% knockback resistance |
+| **Bite** | 6 damage | 7 damage | 14 damage |
+| **Speed** | 0.3 walking, 0.6 flying | 0.35 walking, 0.75 flying | 0.35 walking, 0.6 flying |
+| **Attacks** | Hunts players on sight. Bites up close (once a second), breathes fire from further off (every 3 seconds) | Hunts players on sight. Bites twice a second up close, breathes fire from further off (every 2 seconds). Immune to fire and lava | Hunts players on sight. Bites up close (once a second); from further off, every 3 seconds, it takes turns breathing fire and calling down a storm of three lightning bolts round you. Immune to lightning |
+| **Boss fight** | Red boss bar | None (no bar or music) | Yellow boss bar |
+| **Rewards** | **Dragon Slayer** advancement (challenge, 100 XP) | 1-3 magma cream and 0-2 blaze powder (+ Looting); when a player kills it, also 10 XP, 2-6 gold nuggets, a 5% chance (+2% per Looting level) of a netherite scrap, and **Dragon Slayer** | 2-5 phantom membranes and 1-3 copper blocks; when a player kills it, also 80 XP, 2-5 diamonds and a 15% chance (+5% per Looting level) of a **Staff of Lightning** |
 
-In a fight with a player, a wild dragon shows its boss bar to everyone within 64 blocks and **Tooth and Claw** plays for them until the fight ends.
+In a fight with a player, a wild Wyvern or Lightning Chaser shows its boss bar to everyone within 64 blocks and **Tooth and Claw** plays for them until the fight ends. The Ember Wyvern is the Wyvern charred black and red, with molten wings and eyes that glow in the dark.
 
 - **River Pikehorn**: a small fire-breathing drake (20 HP, 2 damage bite, a 7-block flame doing 2 damage) in rivers, swamps and mangrove swamps (weight 15, groups of 2-4). It's passive and keeps to itself.
 

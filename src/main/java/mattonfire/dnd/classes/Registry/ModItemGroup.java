@@ -86,6 +86,7 @@ public class ModItemGroup {
             entries.add(ModItems.WOODEN_BOOTS);
             entries.add(ModItems.HOBBIT_SPAWN_EGG);
             entries.add(ModItems.MOUNTAIN_DWARF_SPAWN_EGG);
+            entries.add(ModItems.GOBLIN_WARLORD_SPAWN_EGG);
         });
     }
 }

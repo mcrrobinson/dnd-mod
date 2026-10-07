@@ -52,6 +52,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<GoblinWarlordEntity> GOBLIN_WARLORD = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "goblin_warlord"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, GoblinWarlordEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.1f, 2.1f))
+                    .fireImmune()
+                    .build()
+    );
+
     public static final EntityType<HobbitEntity> HOBBIT = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "hobbit"),
@@ -74,6 +83,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
         FabricDefaultAttributeRegistry.register(GOBLIN_WARRIOR, GoblinWarriorEntity.createGoblinWarriorAttributes());
+        FabricDefaultAttributeRegistry.register(GOBLIN_WARLORD, GoblinWarlordEntity.createGoblinWarlordAttributes());
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
         FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
     }

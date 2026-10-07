@@ -13,7 +13,9 @@ import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
@@ -63,6 +65,10 @@ public class FastBrewingStandBlock extends BrewingStandBlock {
             if (blockEntity instanceof FastBrewingStandBlockEntity) {
                 if (player instanceof PlayerEntityExt) {
                     PlayerEntityExt playerExt = (PlayerEntityExt) player;
+                    if (playerExt.getDndClass() == DndCharacter.PALADIN) {
+                        player.sendMessage(Text.literal("Paladins cannot brew potions!").formatted(Formatting.RED),
+                                true);
+                    }
                     if (playerExt.getDndClass() != DndCharacter.ALCHEMIST) {
                         return ActionResult.FAIL;
                     }

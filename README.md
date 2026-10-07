@@ -52,7 +52,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Warlock** | Can throw fireballs, Resistant to fire and lava | Reduced damage output | Can breathe fire by holding a special key (done) |
 | **Wizard** | Can wield elemental staffs (done) | Greatly reduced health (done) | Creates a massive explosion and becomes invulnerable for a few seconds (done) |
 | **Artificer** | Increased movement speed (done), Auto-enchanting chance | Deals less damage, Unaffected by potions (except abilities) | Temporarily buffs all armor |
-| **Blood Hunter**| Fire aspect applied to all swords, Double damage at night (done) | Half damage during the day (done) | Can take control of any mob within 30m |
+| **Blood Hunter**| Fire aspect applied to all swords (done), Double damage at night (done) | Half damage during the day (done) | Can take control of any mob within 30m for 20 seconds (needs the Identity mod) (done) |
 | **Alchemist** | Can craft special potions exclusive to the class (done), Brewing don't explode (wait, brewing explodes?) | Cannot enchant | Instantly buff all potions to max level (done) |
 
 ### Armor

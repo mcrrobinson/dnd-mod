@@ -26,7 +26,7 @@ public class ClericHandler {
     // Night vision starts flickering under 200 ticks, so refresh before that.
     private static final int REFRESH_BELOW = 220;
     private static final int EFFECT_DURATION = 400;
-    private static final double REPEL_RADIUS = 16;
+    public static final double REPEL_RADIUS = 16;
     private static final int BASE_HASTE = 2;
     private static final int DEEP_DELVER_HASTE = 3;
 
@@ -38,13 +38,20 @@ public class ClericHandler {
         return entity instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.CLERIC;
     }
 
-    /** True if mobs should ignore this entity (a Cleric with MOB_REPEL). */
+    /**
+     * True if mobs should ignore this entity: a player with MOB_REPEL (a Cleric
+     * using their power, or a party member inside their circle).
+     */
     public static boolean isRepellingMobs(@Nullable LivingEntity entity) {
-        return isCleric(entity) && entity.hasStatusEffect(ModEffects.MOB_REPEL);
+        return entity instanceof PlayerEntity && entity.hasStatusEffect(ModEffects.MOB_REPEL);
     }
 
     private static void onWorldTick(ServerWorld world) {
         for (ServerPlayerEntity player : world.getPlayers()) {
+            if (!isCleric(player) && isRepellingMobs(player) && player.isAlive()) {
+                // Party member sharing a Cleric's circle
+                clearTargets(world, player);
+            }
             if (!isCleric(player) || !player.isAlive()) {
                 continue;
             }
@@ -57,13 +64,17 @@ public class ClericHandler {
             if (player.hasStatusEffect(ModEffects.MOB_REPEL)) {
                 DnDClasses.createParticleRing(world, player.getPos(), REPEL_RADIUS, 100);
 
-                // Mobs already chasing the Cleric lose interest.
-                if (world.getTime() % 10 == 0) {
-                    for (MobEntity mob : world.getEntitiesByClass(MobEntity.class,
-                            player.getBoundingBox().expand(REPEL_RADIUS * 2), mob -> mob.getTarget() == player)) {
-                        mob.setTarget(null);
-                    }
-                }
+                clearTargets(world, player);
+            }
+        }
+    }
+
+    // Mobs already chasing the player lose interest.
+    private static void clearTargets(ServerWorld world, ServerPlayerEntity player) {
+        if (world.getTime() % 10 == 0) {
+            for (MobEntity mob : world.getEntitiesByClass(MobEntity.class,
+                    player.getBoundingBox().expand(REPEL_RADIUS * 2), mob -> mob.getTarget() == player)) {
+                mob.setTarget(null);
             }
         }
     }

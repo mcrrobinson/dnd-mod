@@ -33,6 +33,7 @@
     "enchantment.dndclasses.grid_miner": "Grid Miner",
     "enchantment.dndclasses.tree_feller": "Tree Feller",
     "enchantment.dndclasses.invulnerability": "Invulnerability",
+    "death.attack.warlock_wet": "%1$s was extinguished",
     "death.attack.brewing_stand_explosion": "%1$s got blown up by a brewing stand HAHAHAHAHAHAHAHA!",
     "item.dndclasses.rogue_helmet": "Thief Helmet",
     "item.dndclasses.rogue_chestplate": "Thief Chestplate",

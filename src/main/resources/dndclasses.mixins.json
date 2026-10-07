@@ -18,9 +18,11 @@
         "EnchantmentScreenHandlerInvoker",
         "EnchantmentScreenHandlerAccessor",
         "EnchantingTableMixin",
+        "AnvilScreenHandlerMixin",
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",
+        "MobEntityMixin",
         "BrewingStandAccessor",
         "BrewingStandBlockEntityMixin",
         "BrewingStandBlockMixin",
@@ -32,6 +34,7 @@
         "SpawnHelperMixin"
     ],
     "client": [
+        "BackgroundRendererMixin",
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
         "DoubleJumpMixin",
@@ -40,7 +43,8 @@
         "LivingEntityMixin",
         "LivingEntityRendererMixin",
         "MinecraftClientMusicMixin",
-        "MusicTrackerAccessor"
+        "MusicTrackerAccessor",
+        "WarlockFireballMixin"
     ],
     "injectors": {
         "defaultRequire": 1

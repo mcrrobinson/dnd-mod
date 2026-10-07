@@ -19,6 +19,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.stat.Stats;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Util;
 import net.minecraft.util.collection.Weighting;
 import net.minecraft.util.math.MathHelper;
@@ -152,6 +153,12 @@ public class EnchantingTableMixin {
         boolean isPowerfulUser = false;
         if (player instanceof PlayerEntityExt) {
             PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            // Alchemists cannot enchant
+            if (playerEntity.getDndClass() == DndCharacter.ALCHEMIST) {
+                player.sendMessage(Text.literal("Alchemists cannot enchant items.").formatted(Formatting.RED), true);
+                cir.setReturnValue(false);
+                return;
+            }
             isPowerfulUser = playerEntity.getDndClass() == DndCharacter.ARTIFICER;
 
         }

@@ -12,6 +12,7 @@
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
     - [Mountain Dwarves](#mountain-dwarves)
+    - [Owlbears](#owlbears)
   - [Dragon Lairs](#dragon-lairs)
   - [Hobbit Villages](#hobbit-villages)
   - [Dwarven Fortresses](#dwarven-fortresses)
@@ -45,7 +46,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Inspired by *One Punch Man* |
 | **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
 | **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs |
-| **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed for 30s |
+| **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed (or an Owlbear, once it has killed one) for 30s |
 | **Fighter** | High health, High strength, Attracts mobs: hostile mobs prefer a Fighter over other players (done) | Cannot use bows or crossbows (done), No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done) | Super regeneration: Regeneration V for 10s (done) |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Can triple jump, Unrivaled attack speed |
 | **Paladin** | High health, circle of healing, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Instantly heals everyone within 10 blocks to full (done) |
@@ -135,6 +136,13 @@ A Lightning Chaser's lair sits on the very summit of a jagged, frozen or stony p
 
 #### Mountain Dwarves
 - **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`). Dwarves guard their fortress like piglins guard gold: open a chest or barrel, or break a gold block, where one can see you and they all turn on you.
+
+#### Owlbears
+- **Owlbear**: A hulking, hostile bear with an owl's head, feathered ruff and ear tufts. It prowls dark forests and old-growth birch, pine and spruce taigas (a monster, weight 12, alone; in the dark, so under the dark forest canopy by day and anywhere in those woods at night). 50 health, 4 armour, 60% knockback resistance, 8 damage claw swipes. It hunts players and villagers, and now and then livestock.
+  - **Charge**: with its target 5-16 blocks off and in sight, it rears up and roars, paws the ground for a second, then barrels in a straight line at where you stood: 12 damage and a big knockback to the first thing in its path. The line is set when it starts, so sidestep it. If it runs into a tree or wall instead, it's stunned for 2.5 seconds. Every 6 seconds at most.
+  - **Bear hug**: a claw hit has a 35% chance to turn into a hug. It rears up and pins you in front of it for 3 seconds, crushing you for 3 damage every half second (ignoring hit cooldown). Hit it for 6 damage to break free early. At most every 8 seconds.
+  - Drops 2-5 feathers, 1-3 leather and 1-2 raw chicken (cooked if it died burning), plus Looting; 15 XP.
+  - A **Druid** that kills one can take its form with their special ability (kills are tracked through the `#dndclasses:druid_forms` entity tag, on top of every animal).
 
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:

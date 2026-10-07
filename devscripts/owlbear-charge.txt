@@ -1,0 +1,37 @@
+# Owlbear charge check: a survival player (Resistance V, so unhurt) 12 blocks from an owlbear.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/owlbear-charge.txt
+# Screenshots: owlbear-charge-windup (rearing roar), owlbear-charge-run (bounding at you), owlbear-charge-after.
+# The owlbear's Pos in the "[CHAT]" lines jumps ~10 blocks towards the player within about two seconds.
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/difficulty normal
+wait 40
+closescreen
+respawn
+wait 20
+/fill 10 149 -10 42 149 22 minecraft:grass_block
+/fill 10 150 -10 42 154 22 minecraft:air
+/kill @e[type=!minecraft:player,distance=..60]
+hud off
+/tp @s 26 150 -2 0 5
+/gamemode survival
+/effect give @s minecraft:resistance 60 4
+/summon dndclasses:owlbear 26 150 12 {Rotation:[180f,0f]}
+wait 10
+screenshot owlbear-charge-windup
+/data get entity @e[type=dndclasses:owlbear,limit=1] Pos
+wait 18
+screenshot owlbear-charge-run
+/data get entity @e[type=dndclasses:owlbear,limit=1] Pos
+wait 15
+screenshot owlbear-charge-after
+/data get entity @e[type=dndclasses:owlbear,limit=1] Pos
+/data get entity @s Pos
+wait 100
+perspective back
+wait 2
+screenshot owlbear-later
+/gamemode creative
+/kill @e[type=dndclasses:owlbear,distance=..60]
+quit

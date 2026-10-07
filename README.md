@@ -90,7 +90,7 @@ Set bonuses can be turned off with `applyArmorEffects` in `config/dndclasses/dnd
 | **Invulnerability** | The player will be invulnerable for a short duration | Attack Weapons |
 | **Tree Feller** | Can dismantle trees | Axe |
 | **Grid Miner** | Can mine blocks in a grid pattern | Pickaxe & Shovel |
-| **Returning** | A thrown item goes straight back into the thrower's inventory once it hits a mob or block (or falls out of the world, for tridents); the throwable's effect still happens. Can't be combined with Loyalty or Riptide | Trident, Snowball, Egg, Ender Pearl |
+| **Returning** | Thrown items go straight back to the thrower when they land. See [docs/enchantments/returning.md](docs/enchantments/returning.md). | Trident, Snowball, Egg, Ender Pearl |
 
 ### Music
 

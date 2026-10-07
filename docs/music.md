@@ -7,6 +7,7 @@ Event music replaces the vanilla pick, in this priority order:
 | Event | Track | When |
 |-|-|-|
 | Boss fight | **Tooth and Claw** | While you can see a boss bar with a fight track (dragons, Magmamuncher Alpha). It loops until the fight ends, then 20 seconds of quiet |
+| Goblin raid | **Steel on Steel** | Within 96 blocks of a goblin raid, until it's won or lost (see [Goblin raids](systems/goblin-raids.md)) |
 | Low health | Low health loop | Below 25% health while in combat (hurt in the last 10 s or a monster within 12 blocks). It stops above 40% health or after 30 s out of combat |
 | Dungeon | **Silent Footsteps** | Within 16 blocks of a mob spawner, or inside a stronghold, mineshaft, ancient city, bastion, mansion, ocean monument or desert/jungle temple |
 | Nether Fortress | Nether Fortress loop | Inside a Nether Fortress or within 16 blocks of it (32 up or down) |

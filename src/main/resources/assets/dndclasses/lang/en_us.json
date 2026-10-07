@@ -95,5 +95,17 @@
     "message.dndclasses.instrument.not_bard": "A pleasant tune, but only a Bard's song inspires",
     "subtitles.dndclasses.instrument.lute": "Lute plays",
     "subtitles.dndclasses.instrument.drum": "War drum beats",
-    "subtitles.dndclasses.instrument.flute": "Flute plays"
+    "subtitles.dndclasses.instrument.flute": "Flute plays",
+    "advancements.dndclasses.goblin_raid_defended.title": "Hold the Line",
+    "advancements.dndclasses.goblin_raid_defended.description": "Defend a hobbit village or dwarven fortress from a goblin raid",
+    "raid.dndclasses.goblin.place.hobbit_village": "the hobbit village",
+    "raid.dndclasses.goblin.place.dwarven_fortress": "the dwarven fortress",
+    "raid.dndclasses.goblin.place.wilds": "the wilds",
+    "raid.dndclasses.goblin.approaching": "Goblin war party approaching - wave %s/%s",
+    "raid.dndclasses.goblin.fighting": "Goblin Raid on %3$s - wave %1$s/%2$s",
+    "raid.dndclasses.goblin.wave": "Goblins attack %3$s! (wave %1$s/%2$s)",
+    "raid.dndclasses.goblin.warlord": "The Goblin Warlord leads the final assault on %s!",
+    "raid.dndclasses.goblin.victory": "Goblin Raid - Victory!",
+    "raid.dndclasses.goblin.reward": "You defended %s from the goblins. The grateful folk share their stores with you.",
+    "raid.dndclasses.goblin.withdrew": "The goblin war party withdrew from %s with its plunder."
 }

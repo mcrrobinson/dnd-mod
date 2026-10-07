@@ -13,6 +13,7 @@
   - [Music](#music)
   - [Mobs and Bosses](#mobs-and-bosses)
   - [Structures](#structures)
+  - [Goblin Raids](#goblin-raids)
   - [Admin Commands](#admin-commands)
 - [Documentation](#documentation)
 
@@ -78,7 +79,7 @@ Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and pres
 Lunge, Invulnerability, Tree Feller, Grid Miner, Returning, Vampiric, Smite Dragons and Featherfall, which only an Artificer can roll at an enchanting table. See [Enchantments](docs/enchantments/README.md).
 
 ### Music
-Event music for boss fights, low health, dungeons, Nether Fortresses, travelling and night, a sting when you use your special, and five music discs. See [Music](docs/music.md).
+Event music for boss fights, goblin raids, low health, dungeons, Nether Fortresses, travelling and night, a sting when you use your special, and five music discs. See [Music](docs/music.md).
 
 ### Mobs and Bosses
 - [Dragons](docs/mobs/dragons.md): the Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn. They breathe fire, have hittable wings and tails, and killing any of them earns **Dragon Slayer**.
@@ -91,6 +92,9 @@ Event music for boss fights, low health, dungeons, Nether Fortresses, travelling
 - [Goblin Camps](docs/structures/goblin-camps.md): palisaded war camps in forests and plains (`dndclasses:goblin_camp`).
 - [Dwarven Fortresses](docs/structures/dwarven-fortresses.md) carved into mountainsides (`dndclasses:dwarven_fortress`).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.
+
+### Goblin Raids
+At night, goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and hear raid music, and defenders who win are rewarded. Start one by hand with `/goblinraid start`. See [Goblin raids](docs/systems/goblin-raids.md).
 
 ### Admin Commands
 `/dndclass get <player>` and `/dndclass set <player> <class>` change a class without dying. See [Admin commands](docs/systems/admin-commands.md).

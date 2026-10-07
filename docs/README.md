@@ -27,7 +27,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Party](systems/party.md): group up with other players
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles (PR #72)
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
-- [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses (PR #65)
+- [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn

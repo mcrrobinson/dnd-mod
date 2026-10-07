@@ -12,6 +12,7 @@
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
     - [Mountain Dwarves](#mountain-dwarves)
+    - [Gelatinous Cubes](#gelatinous-cubes)
   - [Dragon Lairs](#dragon-lairs)
   - [Hobbit Villages](#hobbit-villages)
   - [Dwarven Fortresses](#dwarven-fortresses)
@@ -135,6 +136,9 @@ A Lightning Chaser's lair sits on the very summit of a jagged, frozen or stony p
 
 #### Mountain Dwarves
 - **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`). Dwarves guard their fortress like piglins guard gold: open a chest or barrel, or break a gold block, where one can see you and they all turn on you.
+
+#### Gelatinous Cubes
+- **Gelatinous Cube**: A slow (0.17 speed), 2-block cube of translucent green jelly with 50 health and full knockback resistance. It oozes through dark caves and dungeons anywhere in the Overworld, well below sea level (monster, weight 5, alone), and hunts players and iron golems. Anything living that it touches (players, mobs) sinks into it instead of being pushed aside and is engulfed: Slowness III, a gentle drag towards its middle, and 3 acid damage a second (scales with difficulty, goes through shields; "was dissolved by Gelatinous Cube"). It soaks up items lying in its path (needs `mobGriefing`), up to 6 different stacks, which float about inside it where you can see them; once it has taken something it no longer despawns. It often already holds some junk from earlier adventurers (`gameplay/gelatinous_cube_contents`: bones, arrows, nuggets, torches, now and then an emerald, a worn sword, a skull, a golden apple or a diamond). When it dies it drops everything it absorbed, plus 1-3 slime balls (+ Looting).
 
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:

@@ -1,0 +1,70 @@
+# d20 skill checks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/d20-skill-checks.txt
+# Expect: a Fighter is told the dungeon chest is locked (d20-locked); a Rogue's lockpick rolls show on the HUD
+# (d20-lockpick-N); once one succeeds the chest opens a moment later (d20-lockpick-N-after) and `data get block` no longer shows a LootTable;
+# a Bard's sneak + right-click on a librarian rolls Persuasion (d20-persuade-*) and adds minor_positive Gossips.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/clear @s
+/dndclass set @s fighter
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/tp @s 3.5 150 3.5 0 35
+wait 20
+use
+wait 3
+screenshot d20-locked
+/dndclass set @s rogue
+wait 10
+use
+wait 20
+screenshot d20-lockpick-1
+wait 15
+screenshot d20-lockpick-1-after
+closescreen
+wait 100
+use
+wait 20
+screenshot d20-lockpick-2
+wait 15
+screenshot d20-lockpick-2-after
+closescreen
+wait 100
+use
+wait 20
+screenshot d20-lockpick-3
+wait 15
+screenshot d20-lockpick-3-after
+closescreen
+wait 100
+use
+wait 20
+screenshot d20-lockpick-4
+wait 15
+screenshot d20-lockpick-4-after
+closescreen
+wait 100
+/data get block 3 150 5
+/setblock 3 150 5 minecraft:air
+/dndclass set @s bard
+/summon minecraft:villager 3.5 150 5.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:librarian",level:2,type:"minecraft:plains"}}
+/tp @s 3.5 150 3.5 0 20
+wait 20
+sneak on
+wait 2
+use
+wait 20
+screenshot d20-persuade-1
+/time add 24000
+wait 40
+use
+wait 20
+screenshot d20-persuade-2
+sneak off
+/data get entity @e[type=minecraft:villager,limit=1] Gossips
+wait 10
+quit

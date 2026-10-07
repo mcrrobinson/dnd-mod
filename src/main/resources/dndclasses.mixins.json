@@ -52,7 +52,9 @@
         "VampiricMixin",
         "FeatherfallMixin",
         "ExperienceOrbEntityMixin",
-        "DungeonFeatureMixin"
+        "DungeonFeatureMixin",
+        "LootableContainerBlockEntityAccessor",
+        "PlayerAttackRollMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

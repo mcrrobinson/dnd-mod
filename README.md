@@ -8,6 +8,7 @@
   - [Player Classes Overview](#player-classes-overview)
   - [Mana and Specials](#mana-and-specials)
   - [Parties](#parties)
+  - [d20 Skill Checks](#d20-skill-checks)
   - [Armor and Items](#armor-and-items)
   - [Enchantments](#enchantments)
   - [Music](#music)
@@ -68,6 +69,9 @@ Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and pres
 
 ### Parties
 `/party` lets players group up: shared XP, no friendly fire, a party health HUD and party-aware Paladin/Cleric powers. See [Party](docs/systems/party.md).
+
+### d20 Skill Checks
+Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Rogues pick the locks of dungeon and lair loot chests, Bards persuade villagers for better prices, and melee attacks crit on a natural 20 and fumble on a natural 1. See [D20 skill checks](docs/systems/d20-skill-checks.md).
 
 ### Armor and Items
 - [Armor](docs/items/armor.md): 14 class-themed sets. A full set gives a bonus to anyone, boosted for the classes it's made for.

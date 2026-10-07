@@ -22,6 +22,10 @@ public class ModDamageTypes {
             RegistryKeys.DAMAGE_TYPE,
             WIZARD_EXPLOSION_DAMAGE);
 
+    public static final Identifier WARLOCK_WET_DAMAGE = new Identifier(DnDClasses.MOD_ID, "warlock_wet");
+    public static final RegistryKey<DamageType> WARLOCK_WET_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            WARLOCK_WET_DAMAGE);
+
     public static DamageSource of(World world, RegistryKey<DamageType> key) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key));
     }

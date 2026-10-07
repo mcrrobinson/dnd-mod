@@ -2,6 +2,8 @@ package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
+import mattonfire.dnd.classes.Enchantments.ReturningEnchantment;
+import mattonfire.dnd.classes.Enchantments.VampiricEnchantment;
 import mattonfire.dnd.classes.Enchantments.SmiteDragonsEnchantment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
@@ -23,6 +25,13 @@ public class ModEnchantments {
 
         public static final Enchantment INVULNERABILITY_ENCHANTMENT = registerEnchantment("invulnerability",
                         new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+
+        public static final Enchantment RETURNING_ENCHANTMENT = registerEnchantment("returning",
+                        new ReturningEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));
+
+        public static final Enchantment VAMPIRIC_ENCHANTMENT = registerEnchantment("vampiric",
+                        new VampiricEnchantment(Enchantment.Rarity.RARE, EnchantmentTarget.WEAPON,
+                                        EquipmentSlot.MAINHAND));
 
         public static final Enchantment SMITE_DRAGONS_ENCHANTMENT = registerEnchantment("smite_dragons",
                         new SmiteDragonsEnchantment(Enchantment.Rarity.UNCOMMON, EnchantmentTarget.WEAPON,

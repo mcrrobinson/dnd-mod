@@ -37,12 +37,18 @@
         "SpawnHelperMixin",
         "NetherFortressStartMixin",
         "PotionItemMixin",
+        "AlchemistPotionMixin",
         "PotionEntityMixin",
         "AreaEffectCloudEntityMixin",
         "ArrowEntityMixin",
         "PotionImmunityMixin",
         "PotionInstantEffectMixin",
-        "ActiveTargetGoalAccessor"
+        "ActiveTargetGoalAccessor",
+        "PaladinAuraMixin",
+        "ArtificerItemStackMixin",
+        "TridentEntityMixin",
+        "ProjectileEntityMixin",
+        "VampiricMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.mixin;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -12,6 +13,7 @@ import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.FluidTags;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -74,6 +76,9 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         PlayerEntity player = (PlayerEntity) (Object) this;
         if (player instanceof PlayerEntityExt) {
             PlayerEntityExt playerEntity = (PlayerEntityExt) player;
+            if (!world.isClient && this.age % 20 == 0 && player instanceof ServerPlayerEntity serverPlayer) {
+                Druid.serverTick(serverPlayer);
+            }
             if (playerEntity.getDndClass() == DndCharacter.DRUID) {
                 if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
                         !player.getAbilities().flying) {
@@ -120,11 +125,9 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         if (entity instanceof PlayerEntityExt) {
             PlayerEntityExt playerEntity = (PlayerEntityExt) entity;
 
-            // Custom Healing Mechanic for "mattonfire"
-            if (playerEntity.getDndClass() == DndCharacter.DRUID && world.isDay()) {
-                if (entity.getHealth() < entity.getMaxHealth() && this.age % 20 == 0) {
-                    entity.heal(0.5F); // Heal even without food requirement
-                }
+            // Druids regenerate in the light and get hungry in the dark.
+            if (playerEntity.getDndClass() == DndCharacter.DRUID && !world.isClient && this.age % 20 == 0) {
+                Druid.lightTick((PlayerEntity) entity);
             }
         }
 

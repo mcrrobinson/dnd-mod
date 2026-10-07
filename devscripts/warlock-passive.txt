@@ -1,0 +1,93 @@
+wait 40
+closescreen
+/gamerule naturalRegeneration false
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/time set day
+/gamemode creative
+/dndclass set @s warlock
+wait 10
+/attribute @s minecraft:generic.attack_damage base get
+/fillbiome 485 140 485 515 175 515 minecraft:plains
+/fill 485 150 485 515 150 515 minecraft:stone
+/fill 485 151 485 515 165 515 minecraft:air
+/tp @s 500 151 500
+wait 20
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 20
+/say T0 start
+/data get entity @s Health
+/say LAVA
+/setblock 495 151 495 minecraft:lava
+/tp @s 495.5 151 495.5
+wait 100
+/data get entity @s Health
+/setblock 495 151 495 minecraft:air
+/tp @s 500 151 500
+wait 60
+/data get entity @s Health
+/say FIRE
+/setblock 505 150 495 minecraft:netherrack
+/setblock 505 151 495 minecraft:fire
+/tp @s 505.5 151 495.5
+wait 100
+/data get entity @s Health
+/tp @s 500 151 500
+/setblock 505 151 495 minecraft:air
+wait 60
+/data get entity @s Health
+screenshot warlock-after-fire
+/say WATER
+/fill 493 151 502 497 151 506 minecraft:stone
+/fill 494 151 503 496 151 505 minecraft:water
+/tp @s 495.5 151 504.5
+/data get entity @s Health
+wait 80
+/data get entity @s Health
+wait 80
+/data get entity @s Health
+wait 80
+/data get entity @s Health
+wait 80
+/data get entity @s Health
+screenshot warlock-water
+/say LEFT_WATER
+/tp @s 500 151 500
+wait 10
+/data get entity @s Health
+wait 240
+/data get entity @s Health
+/say WATER_FLOOR
+/tp @s 495.5 151 504.5
+/damage @s 12 minecraft:generic
+wait 2
+/data get entity @s Health
+wait 400
+/data get entity @s Health
+wait 240
+/data get entity @s Health
+/tp @s 500 151 500
+/effect give @s minecraft:instant_health 1 5
+wait 20
+/data get entity @s Health
+/say RAIN
+/weather rain
+wait 60
+/data get entity @s Health
+wait 160
+/data get entity @s Health
+wait 160
+/data get entity @s Health
+screenshot warlock-rain
+/say CLEAR
+/weather clear
+wait 120
+/data get entity @s Health
+wait 240
+/data get entity @s Health
+/gamemode creative
+/fill 485 150 485 515 165 515 minecraft:air
+quit

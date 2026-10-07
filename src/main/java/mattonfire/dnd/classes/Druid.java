@@ -18,6 +18,8 @@ import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
@@ -44,11 +46,14 @@ public class Druid {
     private static final int MAX_RECORDED_ANIMALS = 16;
     private static final String KILLED_ANIMALS_KEY = "druidKilledAnimals";
     private static final String FORM_EXPIRY_KEY = "druidFormExpiry";
+    /** Creatures besides animals whose form a druid learns by killing one (the Owlbear). */
+    public static final TagKey<EntityType<?>> DRUID_FORMS = TagKey.of(RegistryKeys.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "druid_forms"));
 
     public static void register() {
-        // Remember every animal a druid kills.
+        // Remember every animal (and wild beast like the Owlbear) a druid kills.
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-            if (!(entity instanceof AnimalEntity))
+            if (!(entity instanceof AnimalEntity) && !entity.getType().isIn(DRUID_FORMS))
                 return;
             Entity attacker = damageSource.getAttacker();
             if (attacker instanceof ServerPlayerEntity player && isDruid(player)) {

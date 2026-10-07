@@ -43,6 +43,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<MagmamuncherAlphaEntity> MAGMAMUNCHER_ALPHA = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "magmamuncher_alpha"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MagmamuncherAlphaEntity::new)
+                    .dimensions(EntityDimensions.fixed(2.6f, 1.6f))
+                    .fireImmune()
+                    .build()
+    );
+
     public static final EntityType<GoblinWarriorEntity> GOBLIN_WARRIOR = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "goblin_warrior"),
@@ -82,6 +91,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
+        FabricDefaultAttributeRegistry.register(MAGMAMUNCHER_ALPHA, MagmamuncherAlphaEntity.createMagmamuncherAlphaAttributes());
         FabricDefaultAttributeRegistry.register(GOBLIN_WARRIOR, GoblinWarriorEntity.createGoblinWarriorAttributes());
         FabricDefaultAttributeRegistry.register(GOBLIN_WARLORD, GoblinWarlordEntity.createGoblinWarlordAttributes());
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());

@@ -1,0 +1,51 @@
+# Checks the tavern bounty board and innkeeper. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hobbit-tavern.txt
+# Expect in latest.log: a bounty notice in the inventory after using the board, the spider notice's Progress going 7 -> 8,
+# emeralds after handing it in, and the innkeeper's trade screen listing its offers.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/fill 0 150 6 6 152 6 minecraft:oak_planks
+/clear @s
+/setblock 3 151 5 dndclasses:bounty_board[facing=north]
+/setblock 2 151 5 dndclasses:bounty_board[facing=north]
+/tp @s 3.5 150 3.2 0 0
+wait 10
+screenshot tavern-board-before
+use
+wait 5
+screenshot tavern-board-after
+/data get entity @s Inventory
+/tp @s 3.5 150 3.2 0 0
+/execute if block 3 151 5 dndclasses:bounty_board[notice_1=false]
+/clear @s
+/give @s minecraft:diamond_sword
+/give @s dndclasses:bounty_notice{Bounty:"spiders",Progress:7}
+/summon minecraft:spider 3.5 150 5.0 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
+/tp @s 3.5 150 3.2 0 45
+hotbar 0
+wait 5
+attack
+wait 10
+/data get entity @s Inventory[1]
+hotbar 1
+/tp @s 3.5 150 3.2 0 0
+wait 5
+use
+wait 10
+/clear @s minecraft:emerald 0
+screenshot tavern-claim
+/summon dndclasses:innkeeper 3.5 150 5.0 {NoAI:1b,Rotation:[180f,0f]}
+/setblock 3 151 5 minecraft:air
+hotbar 5
+/tp @s 3.5 150 3.2 0 25
+wait 10
+use
+wait 10
+screenshot tavern-innkeeper-trades
+slots
+closescreen
+quit

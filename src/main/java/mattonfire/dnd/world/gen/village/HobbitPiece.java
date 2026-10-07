@@ -28,6 +28,7 @@ import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.decoration.ItemFrameEntity;
 import net.minecraft.item.ItemStack;
@@ -430,12 +431,16 @@ public abstract class HobbitPiece extends StructurePiece {
         }
 
         void hobbit(int x, int y, int z) {
+            this.hobbit(x, y, z, ModEntityTypes.HOBBIT);
+        }
+
+        void hobbit(int x, int y, int z, EntityType<? extends HobbitEntity> type) {
             float yaw = this.random.nextFloat() * 360.0F;
             BlockPos pos = this.pos(x, y, z);
             if (!this.chunkBox.contains(pos)) {
                 return;
             }
-            HobbitEntity hobbit = ModEntityTypes.HOBBIT.create(this.world.toServerWorld());
+            HobbitEntity hobbit = type.create(this.world.toServerWorld());
             if (hobbit == null) {
                 return;
             }

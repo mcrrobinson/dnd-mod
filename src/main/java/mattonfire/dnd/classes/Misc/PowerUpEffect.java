@@ -3,9 +3,7 @@ package mattonfire.dnd.classes.Misc;
 import java.util.Iterator;
 import java.util.List;
 
-import draylar.identity.impl.PlayerDataProvider;
 import io.netty.buffer.Unpooled;
-import mattonfire.dnd.classes.BloodhunterIdentityData;
 import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
@@ -31,12 +29,10 @@ import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.potion.Potion;
@@ -46,7 +42,6 @@ import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
@@ -225,56 +220,13 @@ public class PowerUpEffect {
             case ARTIFICER:
                 // temporary buff to armor
                 break;
-            case BLOODHUNTER: {
-                Vec3d vec3d = player.getCameraPosVec(1.0F);
-                Vec3d vec3d3 = vec3d.add(player.getRotationVec(1.0F).multiply(20.0D));
-                Box box = player.getBoundingBox()
-                        .stretch(player.getRotationVec(1.0F).multiply(20.0D)).expand(1.0D, 1.0D, 1.0D);
-
-                EntityHitResult entityHitResult = ProjectileUtil.raycast(player, vec3d, vec3d3, box, (entityx) -> {
-                    return entityx instanceof LivingEntity && entityx != player;
-                }, 20.0D);
-
-                if (entityHitResult == null) {
-                    return false; // No target found
+            case BLOODHUNTER:
+                // Take control of the mob being looked at (within 30 blocks) for 20 seconds.
+                if (!(player instanceof ServerPlayerEntity serverPlayer)
+                        || !BloodHunterControl.takeControl(serverPlayer)) {
+                    return false;
                 }
-
-                // Update the player's identity to the target entity
-                LivingEntity livingTarget = (LivingEntity) entityHitResult.getEntity();
-
-                // Duplicate it
-                EntityType<?> type = livingTarget.getType();
-                LivingEntity duplicateEntity = (LivingEntity) type.create(player.getWorld());
-                if (duplicateEntity != null) {
-                    // Copy NBT data from the original entity
-                    NbtCompound nbt = new NbtCompound();
-                    livingTarget.writeNbt(nbt);
-
-                    // Remove UUID to avoid conflicts
-                    nbt.remove("UUID");
-
-                    duplicateEntity.readNbt(nbt);
-                }
-
-                // Also teleport the player to the target entity's position
-                // this doesn't work?
-                player.refreshPositionAndAngles(livingTarget.getX(), livingTarget.getY(), livingTarget.getZ(),
-                        player.getYaw(), player.getPitch());
-
-                ((PlayerDataProvider) player).setIdentity(duplicateEntity);
-
-                if (player.getWorld() instanceof ServerWorld serverWorld) {
-                    DnDClasses.BLOODHUNTER_IDENTITY_EXPIRY.put(player.getUuid(),
-                            new BloodhunterIdentityData(
-                                    serverWorld.getTime() + 400,
-                                    duplicateEntity));
-                }
-
-                // It's duplicate gets spawned in later.
-                livingTarget.discard();
-
                 break;
-            }
             case ALCHEMIST:
                 // buffs all potions in inventory
                 // Get all the things in the players inventory

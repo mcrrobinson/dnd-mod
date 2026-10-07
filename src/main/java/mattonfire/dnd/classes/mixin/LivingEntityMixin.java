@@ -56,7 +56,7 @@ public abstract class LivingEntityMixin extends Entity {
             // Check if using a sword
             if (player.getMainHandStack().getItem() instanceof SwordItem) {
                 if (isNight) {
-                    return originalAmount * 1.5F;
+                    return originalAmount * 2.0F;
                 } else {
                     return originalAmount * 0.5F;
                 }

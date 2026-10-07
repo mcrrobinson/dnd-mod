@@ -1,0 +1,54 @@
+# Checks the Magmamuncher Alpha boss: size next to a regular Magmamuncher, boss bar, enrage at half health.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/magmamuncher-alpha.txt
+# Output: run/screenshots/alpha-*.png. In latest.log the attack_damage lines go 14 -> 20 on enrage,
+# BossPhase goes 0 -> 1, and "Test passed, count" gives the regular Magmamunchers it called (2).
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:magmamuncher]
+/kill @e[type=dndclasses:magmamuncher_alpha]
+/fill -12 149 -12 12 149 12 glass
+/fill -12 150 -12 12 158 12 air
+wait 40
+closescreen
+
+# Size (2.5x model, 2.6x1.6 hitbox) next to a regular Magmamuncher
+hud off
+hitboxes on
+/summon dndclasses:magmamuncher_alpha 0 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/summon dndclasses:magmamuncher 3 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/tp @s 1.5 152.5 8 180 15
+wait 40
+screenshot alpha-front
+hitboxes off
+/kill @e[type=dndclasses:magmamuncher]
+/kill @e[type=dndclasses:magmamuncher_alpha]
+hud on
+
+# Fight: yellow boss bar once a player hits it
+/effect give @s resistance 120 4 true
+/effect give @s regeneration 120 4 true
+/effect give @s fire_resistance 120 0 true
+/gamemode survival
+/tp @s 0 150 7 180 10
+/summon dndclasses:magmamuncher_alpha 0 150 -4 {NoAI:1b,Rotation:[0f,0f]}
+/damage @e[type=dndclasses:magmamuncher_alpha,limit=1] 10 minecraft:player_attack by @s
+wait 20
+screenshot alpha-bossbar
+/attribute @e[type=dndclasses:magmamuncher_alpha,limit=1] minecraft:generic.attack_damage get
+/data get entity @e[type=dndclasses:magmamuncher_alpha,limit=1] BossPhase
+# Past half health: red bar, +6 damage, two regular Magmamunchers
+/damage @e[type=dndclasses:magmamuncher_alpha,limit=1] 160 minecraft:player_attack by @s
+wait 20
+/attribute @e[type=dndclasses:magmamuncher_alpha,limit=1] minecraft:generic.attack_damage get
+/attribute @e[type=dndclasses:magmamuncher_alpha,limit=1] minecraft:generic.movement_speed get
+/data get entity @e[type=dndclasses:magmamuncher_alpha,limit=1] BossPhase
+/data get entity @e[type=dndclasses:magmamuncher_alpha,limit=1] Health
+/execute if entity @e[type=dndclasses:magmamuncher]
+screenshot alpha-enraged
+/gamemode creative
+/kill @e[type=dndclasses:magmamuncher]
+/kill @e[type=dndclasses:magmamuncher_alpha]
+/effect clear @s
+wait 10
+quit

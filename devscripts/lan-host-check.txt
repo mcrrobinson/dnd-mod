@@ -1,0 +1,6 @@
+wait 40
+closescreen
+/publish false survival 25599
+wait 900
+/list
+quit

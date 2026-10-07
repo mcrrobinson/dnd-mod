@@ -31,6 +31,8 @@
         "SpawnHelperMixin"
     ],
     "client": [
+        "HiddenWindowMixin",
+        "MinecraftClientInvoker",
         "BackgroundRendererMixin",
         "DoubleJumpMixin",
         "InGameHudMixin",

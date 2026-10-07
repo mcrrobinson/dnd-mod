@@ -60,13 +60,8 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Alchemist** | Can craft special potions exclusive to the class (done), Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done) | Cannot enchant (enchanting table or enchanted books on an anvil) (done) | Instantly buff all potions to max level (done) |
 
 ### d20 Skill Checks
-Some actions roll a d20 and add a class modifier. The roll shows just below the crosshair: the die tumbles with a rattle, then lands on the natural roll with the sum, the DC and the outcome, and a sound for how it went. A natural 20 always succeeds and a natural 1 always fails.
-
-| Check | Who | Roll | What happens |
-|-|-|-|-|
-| **Lockpicking** | Rogue | d20 + 5 vs DC 10 (DC 15 for dragon lair, dwarven treasury, stronghold, mansion, ancient city, bastion treasure and end city chests) | Dungeon and lair loot chests are locked: any chest that still has an unrolled `chests/...` loot table (not village, hobbit or bonus chests). Right-click one as a Rogue to pick the lock: on a success it clicks open and swings open a moment later, and stays unlocked. On a failure try again after a moment; a natural 1 snaps your pick (5 seconds). Other classes are told it's locked. Anyone can break a locked chest open instead, but each stack inside has a 40% chance of being ruined |
-| **Persuasion** | Bard | d20 + 5 vs DC 12 | Sneak + right-click a villager with an empty hand, once per villager per day. A success earns reputation with it (like curing a zombie villager), lowering its prices; a natural 20 twice as much. A natural 1 offends it and raises them. Villagers gossip, so neighbours hear about it too |
-| **Attack roll** | Everyone | d20 + class attack bonus (+2 to +7) | Every full-strength melee swing at a mob rolls. A natural 20 is a critical hit for double damage (Fighters crit on 19-20); a natural 1 is a fumble and the swing misses. Only crits and fumbles show on the HUD |
+Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Rogues pick the locks of dungeon and lair loot chests, Bards persuade villagers for better prices, and melee attacks crit on a natural 20 and fumble on a natural 1.
+See [docs/systems/d20-skill-checks.md](docs/systems/d20-skill-checks.md).
 
 ### Armor
 There is armor for each class, however the armor benefits are increased depending on whether or not you match the class and wearing a full set.

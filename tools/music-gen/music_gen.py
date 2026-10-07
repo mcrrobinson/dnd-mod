@@ -637,6 +637,71 @@ def loop_nether_fortress(rng):
     return normalize(out, -1.0, -19.0)
 
 
+
+# ---------------------------------------------------------------- d20 skill checks
+
+def dice_click(rng, bright=1.0):
+    """One die hitting wood: a short resonant knock plus a bright tick of noise."""
+    f = rng.uniform(900, 1500) * bright
+    knock = partials(0.08, f, [(1, 1.0, 0.012), (2.3, 0.5, 0.008), (3.9, 0.25, 0.005)], attack=0.0005)
+    tick = svf(noise(0.02, rng), 4000, 0.8, "high")
+    tick = apply(tick, env_ar(len(tick), 0.0005, 0.004))
+    return mix(knock, tick, 0.0, 0.6)
+
+
+def dice_roll(rng):
+    # A d20 rattling across a table: bounces that come quicker and softer, then it settles
+    out = buf(0.9)
+    t, gap, gain = 0.0, 0.11, 1.0
+    while t < 0.75 and gain > 0.08:
+        mix(out, dice_click(rng), t, gain)
+        if rng.random() < 0.5:  # it clatters on an edge: a quick double knock
+            mix(out, dice_click(rng, 1.15), t + 0.018, gain * 0.5)
+        t += gap * rng.uniform(0.8, 1.2)
+        gap *= 0.78
+        gain *= 0.8
+    out = reverb(out, wet=0.12, room=0.6)
+    return normalize(out[:ns(0.9)], -3.0, -20.0)
+
+
+def dice_success(rng):
+    # Two bright notes up a fourth
+    out = buf(1.2)
+    mix(out, bell(1.0, hz(76), decay=0.5), 0.0, 0.5)
+    mix(out, bell(1.0, hz(81), decay=0.7), 0.09, 0.6)
+    return finish_sting(out, 1.1, wet=0.25, room=0.75)
+
+
+def dice_failure(rng):
+    # A dull low knock and a falling minor second
+    out = buf(1.0)
+    mix(out, drum(0.5, 160, 70, 0.03, 0.15, rng=rng), 0.0, 0.7)
+    mix(out, bell(0.8, hz(57), decay=0.35, bright=0.5), 0.02, 0.35)
+    mix(out, bell(0.8, hz(56), decay=0.35, bright=0.5), 0.16, 0.35)
+    return finish_sting(out, 0.9, wet=0.2, room=0.7)
+
+
+def dice_critical(rng):
+    # Natural 20: a quick major arpeggio ringing out over a cymbal swell
+    out = buf(2.2)
+    for k, m in enumerate((72, 76, 79, 84)):
+        mix(out, bell(1.8, hz(m), decay=1.0, bright=1.3), k * 0.07, 0.45)
+    shimmer = svf(noise(1.4, rng), 7000, 0.7, "high")
+    mix(out, apply(shimmer, env_points(len(shimmer), [(0, 0), (0.25, 1), (1.4, 0)])), 0.0, 0.25)
+    mix(out, drum(1.0, 140, 55, 0.04, 0.35, rng=rng), 0.21, 0.6)
+    return finish_sting(out, 2.0, wet=0.35, room=0.85)
+
+
+def dice_fumble(rng):
+    # Natural 1: a sad "wah-wah-wahhh" of muted brass sliding down
+    out = buf(2.2)
+    for k, m in enumerate((55, 54, 53)):
+        mix(out, brass(0.32, hz(m), rng, attack=0.03, bright=700, base=300, voices=2, release=0.08), k * 0.34, 0.4)
+    mix(out, brass(1.0, hz(52), rng, attack=0.04, bright=700, base=300, voices=2, release=0.4,
+                   vib=(6.0, 0.02)), 1.02, 0.4)
+    return finish_sting(out, 2.1, wet=0.25, room=0.7)
+
+
 SOUNDS = {
     "sting_barbarian": sting_barbarian,
     "sting_bard": sting_bard,
@@ -655,6 +720,11 @@ SOUNDS = {
     "sting_alchemist": sting_alchemist,
     "low_health": loop_low_health,
     "nether_fortress": loop_nether_fortress,
+    "dice_roll": dice_roll,
+    "dice_success": dice_success,
+    "dice_failure": dice_failure,
+    "dice_critical": dice_critical,
+    "dice_fumble": dice_fumble,
 }
 
 

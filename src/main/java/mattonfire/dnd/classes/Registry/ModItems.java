@@ -523,6 +523,9 @@ public class ModItems {
         public static final Item MOUNTAIN_DWARF_SPAWN_EGG = registerItem("mountain_dwarf_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, 0x5A5F66, 0x9C4A1E, new FabricItemSettings()));
 
+        public static final Item EMBER_WYVERN_SPAWN_EGG = registerItem("ember_wyvern_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, 0x2A0E0C, 0xFF7A1A, new FabricItemSettings()));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

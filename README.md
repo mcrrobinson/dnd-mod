@@ -90,6 +90,7 @@ Set bonuses can be turned off with `applyArmorEffects` in `config/dndclasses/dnd
 | **Invulnerability** | The player will be invulnerable for a short duration | Attack Weapons |
 | **Tree Feller** | Can dismantle trees | Axe |
 | **Grid Miner** | Can mine blocks in a grid pattern | Pickaxe & Shovel |
+| **Vampiric** (I-III) | Melee hits heal the wielder for 10% of the damage dealt per level (up to 30% at III) | Attack Weapons |
 
 ### Music
 

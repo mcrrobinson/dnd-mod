@@ -1,0 +1,32 @@
+# Screenshots a dragon lair from all round and logs its dragons. Run:
+# ./gradlew runClient -PdevScript=devscripts/dragon-lair-survey.txt
+# Find a lair first with dragon-lair-locate.txt, then its centre with
+# /execute as @e[type=dndclasses:lightning_chaser] run data get entity @s Lair, and put it below
+# (dev world: centre 13092 190 11524).
+# Check: run/screenshots/lair-*.png, and dragon positions, health and lair in "[CHAT]" lines of run/logs/latest.log.
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+wait 40
+closescreen
+hud off
+/tp @s 13092 215 11498 0 40
+wait 900
+screenshot lair-north
+/tp @s 13118 205 11524 90 30
+wait 200
+screenshot lair-east
+/tp @s 13092 196 11532 180 25
+wait 200
+screenshot lair-nest
+/tp @s 13092 250 11584 180 30
+wait 300
+screenshot lair-far-south
+/tp @s 13032 240 11524 -90 25
+wait 300
+screenshot lair-far-west
+/execute as @e[type=dndclasses:lightning_chaser,distance=..300] run data get entity @s Pos
+/execute as @e[type=dndclasses:lightning_chaser,distance=..300] run data get entity @s Lair
+/execute as @e[type=dndclasses:lightning_chaser,distance=..300] run data get entity @s Health
+quit

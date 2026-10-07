@@ -1,6 +1,7 @@
 package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.entity.HobbitEntity;
+import mattonfire.dnd.entity.LightningChaserEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
@@ -28,10 +29,6 @@ public class ModSpawns {
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.PLAINS, BiomeKeys.MEADOW, BiomeKeys.STONY_PEAKS, BiomeKeys.JAGGED_PEAKS),
                 SpawnGroup.CREATURE, ModEntityTypes.WYVERN, 10, 1, 3);
         
-        // Lightning Chasers in high/steep places
-        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.WINDSWEPT_HILLS, BiomeKeys.WINDSWEPT_GRAVELLY_HILLS, BiomeKeys.SAVANNA_PLATEAU),
-                SpawnGroup.CREATURE, ModEntityTypes.LIGHTNING_CHASER, 5, 1, 2);
-
         // River Pikehorns in rivers and swamps
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.RIVER, BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP),
                 SpawnGroup.CREATURE, ModEntityTypes.RIVER_PIKEHORN, 15, 2, 4);
@@ -43,8 +40,10 @@ public class ModSpawns {
 
         SpawnRestriction.register(ModEntityTypes.WYVERN, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+        // Lightning Chasers only live in their lairs on the mountain peaks (the structure's
+        // spawn_overrides), which get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.LIGHTNING_CHASER, SpawnRestriction.Location.ON_GROUND,
-                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canLightningChaserSpawn);
         SpawnRestriction.register(ModEntityTypes.RIVER_PIKEHORN, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
         SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER, SpawnRestriction.Location.ON_GROUND,
@@ -62,6 +61,15 @@ public class ModSpawns {
         // Mountain dwarves likewise only spawn inside dwarven fortresses, in the dark halls too.
         SpawnRestriction.register(ModEntityTypes.MOUNTAIN_DWARF, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canDwarfSpawn);
+    }
+
+    private static boolean canLightningChaserSpawn(EntityType<LightningChaserEntity> type, ServerWorldAccess world,
+                                                   SpawnReason reason, BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        return reason != SpawnReason.NATURAL
+                || world.getEntitiesByClass(LightningChaserEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty();
     }
 
     private static boolean canDwarfSpawn(EntityType<MountainDwarfEntity> type, ServerWorldAccess world, SpawnReason reason,

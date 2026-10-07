@@ -1,0 +1,11 @@
+# Finds the nearest dragon lair. Run: ./gradlew runClient -PdevScript=devscripts/dragon-lair-locate.txt
+# Change the /tp start point to search somewhere new: lairs already generated are found again.
+# Check: "[CHAT]" lines in run/logs/latest.log for the coordinates.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 12000 220 12000
+wait 40
+/locate structure dndclasses:dragon_lair
+wait 4000
+quit

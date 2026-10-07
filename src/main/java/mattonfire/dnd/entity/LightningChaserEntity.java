@@ -4,6 +4,7 @@ import java.util.UUID;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.ai.goal.LightningChaserAttackGoal;
 import mattonfire.dnd.entity.ai.goal.LightningChaserFlyRandomlyGoal;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
@@ -15,11 +16,17 @@ import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.boss.BossBar;
+import net.minecraft.entity.boss.ServerBossBar;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -60,11 +67,47 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
                     "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
     private final DragonPart[] parts;
 
+    private static final double BOSS_BAR_RANGE = 64.0;
+    private final ServerBossBar bossBar = (ServerBossBar) new ServerBossBar(this.getDisplayName(),
+            BossBar.Color.YELLOW, BossBar.Style.PROGRESS).setDragonMusic(true);
+
+    /** How far the storm's extra bolts land from the target. */
+    private static final double STORM_SPREAD = 3.0;
+
+    // Lightning Chasers live in lairs on the mountain peaks (see DragonLairStructure) and keep
+    // circling back to them.
+    @Nullable
+    private BlockPos lair;
+
     public LightningChaserEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
         this.parts = PART_LAYOUT.createParts(this);
         this.setId(DragonPartLayout.reserveIds(this.parts));
+        this.experiencePoints = 80;
+    }
+
+    @Nullable
+    public BlockPos getLair() {
+        return this.lair;
+    }
+
+    public void setLair(@Nullable BlockPos lair) {
+        this.lair = lair;
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        if (this.lair != null) {
+            nbt.put("Lair", NbtHelper.fromBlockPos(this.lair));
+        }
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        this.lair = nbt.contains("Lair") ? NbtHelper.toBlockPos(nbt.getCompound("Lair")) : null;
     }
 
     @Override
@@ -127,6 +170,54 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         if (!this.world.isClient && !this.isOnGround() && this.getVelocity().y < 0.0D) {
             this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
         }
+
+        if (!this.world.isClient) {
+            this.updateBossBar();
+        }
+    }
+
+    private boolean isFightingPlayer() {
+        return this.isAlive() && !this.isTamed()
+                && (this.getTarget() instanceof PlayerEntity || this.getAttacker() instanceof PlayerEntity);
+    }
+
+    private boolean inBossBarRange(ServerPlayerEntity player) {
+        return player.world == this.world && player.isAlive() && !player.isSpectator()
+                && player.squaredDistanceTo(this) < BOSS_BAR_RANGE * BOSS_BAR_RANGE;
+    }
+
+    private void updateBossBar() {
+        this.bossBar.setPercent(this.getHealth() / this.getMaxHealth());
+        this.bossBar.setName(this.getDisplayName());
+
+        boolean fighting = this.isFightingPlayer();
+        for (ServerPlayerEntity player : java.util.List.copyOf(this.bossBar.getPlayers())) {
+            if (!fighting || !this.inBossBarRange(player)) {
+                this.bossBar.removePlayer(player);
+            }
+        }
+        if (fighting) {
+            for (ServerPlayerEntity player : ((ServerWorld) this.world).getPlayers(this::inBossBarRange)) {
+                this.bossBar.addPlayer(player);
+            }
+        }
+    }
+
+    @Override
+    public void onStoppedTrackingBy(ServerPlayerEntity player) {
+        super.onStoppedTrackingBy(player);
+        this.bossBar.removePlayer(player);
+    }
+
+    @Override
+    public void remove(Entity.RemovalReason reason) {
+        super.remove(reason);
+        this.bossBar.clearPlayers();
+    }
+
+    // It calls the storm down itself, so its own lightning (and anyone else's) doesn't hurt it.
+    @Override
+    public void onStruckByLightning(ServerWorld world, LightningEntity lightning) {
     }
 
     // Flying creature: landing after a flight (or a dive) shouldn't hurt it
@@ -156,10 +247,14 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
 
     public static DefaultAttributeContainer.Builder createLightningChaserAttributes() {
         return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 50.0D)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 200.0D)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.35D)
                 .add(EntityAttributes.GENERIC_FLYING_SPEED, 0.6D)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 4.0D);
+                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 14.0D)
+                .add(EntityAttributes.GENERIC_ARMOR, 12.0D)
+                .add(EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 6.0D)
+                .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.8D)
+                .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 48.0D);
     }
 
     @Override
@@ -178,13 +273,24 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
     }
 
+    /** Calls a storm down on the target: one bolt on it and two more close by. */
     public void shoot(LivingEntity target) {
-        if (!this.world.isClient) {
-            LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(this.world);
-            if (lightning != null) {
-                lightning.refreshPositionAfterTeleport(target.getX(), target.getY(), target.getZ());
-                this.world.spawnEntity(lightning);
-            }
+        if (this.world.isClient) {
+            return;
+        }
+        this.strike(target.getX(), target.getY(), target.getZ());
+        for (int i = 0; i < 2; i++) {
+            double angle = this.random.nextDouble() * Math.PI * 2.0D;
+            double distance = 1.5D + this.random.nextDouble() * STORM_SPREAD;
+            this.strike(target.getX() + Math.cos(angle) * distance, target.getY(), target.getZ() + Math.sin(angle) * distance);
+        }
+    }
+
+    private void strike(double x, double y, double z) {
+        LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(this.world);
+        if (lightning != null) {
+            lightning.refreshPositionAfterTeleport(x, y, z);
+            this.world.spawnEntity(lightning);
         }
     }
 

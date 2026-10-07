@@ -1,0 +1,29 @@
+# Flies over a naturally generated goblin camp and screenshots it.
+# Run: ./gradlew runClient -PdevScript=devscripts/goblin-camp-tour.txt
+# Find a camp first with goblin-camp-locate.txt and put its x/z below (dev world: -408, 1096).
+# Check: run/screenshots/goblin-camp-*.png, and the goblin counts in "[CHAT]" lines of run/logs/latest.log.
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+wait 40
+closescreen
+hud off
+/tp @s -408 130 1096 0 90
+wait 600
+screenshot goblin-camp-top
+/tp @s -408 95 1070 0 35
+wait 200
+screenshot goblin-camp-north
+/tp @s -382 95 1096 90 35
+wait 200
+screenshot goblin-camp-east
+/tp @s -408 95 1122 180 35
+wait 200
+screenshot goblin-camp-south
+/execute if entity @e[type=dndclasses:goblin_warrior,distance=..60]
+/execute if entity @e[type=dndclasses:goblin_warlord,distance=..60]
+/execute if block -408 ~ 1096 minecraft:air
+wait 20
+hud on
+quit

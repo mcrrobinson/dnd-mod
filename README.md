@@ -41,7 +41,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 |-|-|-|-|
 | **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision, Moves very slowly | Inspired by *One Punch Man* |
 | **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
-| **Cleric (not working)** | High mining speed, Night vision | Shorter viewing distance, Slightly reduced attack damage | Circle of ignoring mobs |
+| **Cleric** | High mining speed, Night vision | Shorter viewing distance, Slightly reduced attack damage | Circle of ignoring mobs |
 | **Druid** | Gains extra hearts from tamed animals (up to 5 (not working)), Regenerates in light | Cannot swim | Can temporarily transform into killed animals |
 | **Fighter** | High health, High strength, Attracts mobs (needs to be tested) | Cannot use bows, No potions | Super regeneration |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output, Can only use a staff to attack | Can triple jump, Unrivaled attack speed |

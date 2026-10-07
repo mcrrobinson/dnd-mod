@@ -52,10 +52,8 @@ public class SetClassAttributes {
 
     public void typeCleric(PlayerEntity player) {
         System.out.println("Cleric...");
-        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(4); // -33%
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 20000, 2, false, false, true));
-        player.addStatusEffect(
-                new StatusEffectInstance(StatusEffects.NIGHT_VISION, 20000, 2, false, false, true));
+        player.getAttributeInstance(EntityAttributes.GENERIC_ATTACK_DAMAGE).setBaseValue(0.67); // -33%, Default 1.0
+        // Haste and Night Vision are kept up every tick - in ClericHandler
 
     }
 

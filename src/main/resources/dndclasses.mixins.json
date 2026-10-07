@@ -18,6 +18,7 @@
         "EnchantmentScreenHandlerInvoker",
         "EnchantmentScreenHandlerAccessor",
         "EnchantingTableMixin",
+        "AnvilScreenHandlerMixin",
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",
@@ -31,6 +32,7 @@
         "SpawnHelperMixin"
     ],
     "client": [
+        "BackgroundRendererMixin",
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
         "DoubleJumpMixin",

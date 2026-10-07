@@ -12,12 +12,16 @@ import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.World.ExplosionSourceType;
 
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess {
+
+    @Unique
+    private static final String LAST_PLAYER_KEY = "DndLastPlayerClass";
 
     @Unique
     private DndCharacter lastPlayer;
@@ -30,17 +34,11 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
             BrewingStandAccess instance = (BrewingStandAccess) blockEntity;
 
             if (accessor.getBrewTime() == 1) { // Use the accessor method
-                if (instance.getLastPlayer() != null) {
-                    System.out.println(instance.getLastPlayer().toString());
-                } else {
-                    System.out.println("lastPlayer is null");
-                }
-
+                // Only explode when we know the brew was started by a non-Alchemist.
+                // If nobody has used this stand (e.g. hopper-fed), don't explode.
                 DndCharacter lastPlayer = instance.getLastPlayer();
-                if (lastPlayer != null) {
-                    if (lastPlayer == DndCharacter.ALCHEMIST) {
-                        return;
-                    }
+                if (lastPlayer == null || lastPlayer == DndCharacter.ALCHEMIST) {
+                    return;
                 }
 
                 // Define a custom damage source
@@ -55,6 +53,24 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
         }
     }
 
+    @Inject(method = "readNbt", at = @At("TAIL"))
+    private void readLastPlayer(NbtCompound nbt, CallbackInfo ci) {
+        if (nbt.contains(LAST_PLAYER_KEY)) {
+            try {
+                this.lastPlayer = DndCharacter.fromValue(nbt.getInt(LAST_PLAYER_KEY));
+            } catch (IllegalArgumentException e) {
+                this.lastPlayer = null;
+            }
+        }
+    }
+
+    @Inject(method = "writeNbt", at = @At("TAIL"))
+    private void writeLastPlayer(NbtCompound nbt, CallbackInfo ci) {
+        if (this.lastPlayer != null) {
+            nbt.putInt(LAST_PLAYER_KEY, this.lastPlayer.getValue());
+        }
+    }
+
     // Getter and setter for lastPlayer
     public DndCharacter getLastPlayer() {
         return lastPlayer;
@@ -62,5 +78,6 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
 
     public void setLastPlayer(DndCharacter character) {
         this.lastPlayer = character;
+        ((BrewingStandBlockEntity) (Object) this).markDirty();
     }
 }

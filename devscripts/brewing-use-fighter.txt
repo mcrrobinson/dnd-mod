@@ -1,0 +1,26 @@
+# A fighter opens a filled brewing stand, then the brew finishes.
+wait 40
+closescreen
+wait 10
+/gamemode creative
+/dndclass set @s fighter
+/tp @s 30 150 7 180 35
+wait 20
+/fill 20 140 -5 40 160 15 minecraft:air
+/fill 25 149 0 35 149 10 minecraft:stone
+/setblock 30 150 5 minecraft:brewing_stand{Fuel:20,Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:water"}},{Slot:3b,id:"minecraft:nether_wart",Count:1b}]}
+wait 20
+use
+wait 10
+slots
+closescreen
+/data get block 30 150 5 DndLastPlayerClass
+/tp @s 30 160 25 180 20
+wait 420
+/execute if block 30 150 5 minecraft:brewing_stand
+/execute if block 30 149 5 minecraft:stone
+/data get block 30 150 5 Items
+wait 100
+/execute if block 30 150 5 minecraft:brewing_stand
+screenshot brewing-use-fighter
+quit

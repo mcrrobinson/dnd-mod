@@ -48,7 +48,8 @@
         "ArtificerItemStackMixin",
         "TridentEntityMixin",
         "ProjectileEntityMixin",
-        "VampiricMixin"
+        "VampiricMixin",
+        "FeatherfallMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

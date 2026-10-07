@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Enchantments.FeatherfallEnchantment;
 import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
 import mattonfire.dnd.classes.Enchantments.ReturningEnchantment;
 import mattonfire.dnd.classes.Enchantments.VampiricEnchantment;
@@ -37,11 +38,15 @@ public class ModEnchantments {
                         new SmiteDragonsEnchantment(Enchantment.Rarity.UNCOMMON, EnchantmentTarget.WEAPON,
                                         EquipmentSlot.MAINHAND));
 
+        public static final Enchantment FEATHERFALL_ENCHANTMENT = registerEnchantment("featherfall",
+                        new FeatherfallEnchantment(Enchantment.Rarity.UNCOMMON));
+
         private static Enchantment registerEnchantment(String name, Enchantment enchantment) {
                 return Registry.register(Registries.ENCHANTMENT, new Identifier(DnDClasses.MOD_ID, name), enchantment);
         }
 
         public static void registerEnchantments() {
                 DnDClasses.LOGGER.info("Registering Mod Enchantments for " + DnDClasses.MOD_ID);
+                mattonfire.dnd.classes.Featherfall.register();
         }
 }

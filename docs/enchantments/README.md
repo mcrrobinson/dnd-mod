@@ -10,6 +10,7 @@ The mod's own enchantments. At an enchanting table they only come up for an [Art
 | [Returning](returning.md) | I | Tridents (snowballs, eggs and ender pearls by anvil) | Thrown items go back to the thrower's inventory when they land |
 | [Vampiric](vampiric.md) | III | Swords and axes | Melee hits heal you for 10% of the damage dealt per level |
 | [Smite Dragons](smite-dragons.md) | V | Swords and axes | +2.5 melee damage per level against dragons |
+| [Featherfall](featherfall.md) | III | Boots | Cuts fall damage by 50-90%; slow falling at II-III |
 
 Pages for enchantments in open PRs are listed in the [docs index](../README.md#enchantments).
 

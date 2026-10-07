@@ -34,12 +34,24 @@ loom {
         client {
             client()
             name "Minecraft Client"
+            // -PdevRunDir=run-2 runs a second client from its own copy of run/ (worlds can't be shared)
+            runDir project.findProperty('devRunDir') ?: 'run'
             // Load straight into the dev world, skipping the title screen (see DevScript; 1.19.4
             // has no --quickPlaySingleplayer). Override with -PdevWorld=<name>, or -PdevWorld= to disable.
             vmArg "-Ddnd.autojoin=${project.findProperty('devWorld') ?: 'New World'}"
             // Scripted testing: ./gradlew runClient -PdevScript=devscripts/<script>.txt (see DevScript)
+            // -PdevServer=localhost:25599 joins a server or LAN game instead (e.g. a second test client)
+            if (project.hasProperty('devServer')) {
+                vmArg "-Ddnd.autoconnect=${project.property('devServer')}"
+            }
             if (project.hasProperty('devScript')) {
                 vmArg "-Ddnd.devscript=${file(project.property('devScript')).absolutePath}"
+            }
+            // Scripted runs get a hidden window that never takes focus, so they can run in the
+            // background (and several at once). -PdevHidden=false shows it, -PdevHidden forces it.
+            def hidden = project.findProperty('devHidden')
+            if (hidden == null ? project.hasProperty('devScript') : hidden != 'false') {
+                vmArg "-Ddnd.hidden=true"
             }
         }
     }

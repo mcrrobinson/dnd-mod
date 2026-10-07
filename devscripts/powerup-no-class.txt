@@ -1,0 +1,24 @@
+# Power-up key with no class must do nothing and keep the mana (it used to throw an NPE on the server).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/powerup-no-class.txt
+# Check run/logs/latest.log: no "Error executing task on Server", and the barbarian
+# power-up at the end still has mana (minecraft:strength shows in ActiveEffects).
+wait 40
+closescreen
+/effect clear @s
+# Let the mana fill up (18 seconds) in case an earlier run spent it
+wait 400
+/dndclass get @s
+press key.dnd-classes.power-up
+wait 20
+/dndclass set @s none
+wait 10
+press key.dnd-classes.power-up
+wait 20
+/dndclass set @s barbarian
+wait 10
+press key.dnd-classes.power-up
+wait 20
+/data get entity @s ActiveEffects
+/dndclass set @s none
+wait 10
+quit

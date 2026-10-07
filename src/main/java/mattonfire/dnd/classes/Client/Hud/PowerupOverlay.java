@@ -4,36 +4,33 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.IEntityDataSaver;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.Identifier;
 
-public class PowerupOverlay implements HudRenderCallback {
+/**
+ * Draws the mana bar. Called from {@code InGameHudMixin} at the end of
+ * {@code InGameHud.renderStatusBars}, so it shares the health/food bars'
+ * visibility (hidden in creative and spectator) and draws beneath chat.
+ */
+public final class PowerupOverlay {
     private static final Identifier FULL_POWER = new Identifier(DnDClasses.MOD_ID, "textures/power/full.png");
     private static final Identifier EMPTY_POWER = new Identifier(DnDClasses.MOD_ID, "textures/power/empty.png");
 
-    @Override
-    public void onHudRender(MatrixStack matrices, float delta) {
+    private PowerupOverlay() {
+    }
+
+    public static void render(MatrixStack matrices) {
         MinecraftClient client = MinecraftClient.getInstance();
-        int x = 0;
-        int y = 0;
-        if (client == null || client.player == null) {
+        if (client.player == null) {
             return;
         }
 
-        // Check if the player is in Creative Mode
-        if (client.player.isCreative()) {
-            return;
-        }
-
-        int width = client.getWindow().getScaledWidth();
-        int height = client.getWindow().getScaledHeight();
-
-        x = width / 2;
-        y = height;
+        int x = client.getWindow().getScaledWidth() / 2;
+        int y = client.getWindow().getScaledHeight();
+        int mana = ((IEntityDataSaver) client.player).getPersistentData().getInt("mana");
 
         RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
@@ -43,13 +40,11 @@ public class PowerupOverlay implements HudRenderCallback {
         }
 
         RenderSystem.setShaderTexture(0, FULL_POWER);
-        for (int i = 0; i < DnDClasses.MANA_ICONS; i++) {
-            if (((IEntityDataSaver) MinecraftClient.getInstance().player).getPersistentData().getInt("mana") > i) {
-                DrawableHelper.drawTexture(matrices, x + (i * 9) + 10, y - 48, 0, 0, 9, 9,
-                        9, 9);
-            } else {
-                break;
-            }
+        for (int i = 0; i < Math.min(mana, DnDClasses.MANA_ICONS); i++) {
+            DrawableHelper.drawTexture(matrices, x + (i * 9) + 10, y - 48, 0, 0, 9, 9, 9, 9);
         }
+
+        // Vanilla keeps drawing (mount health) with the GUI icons texture it bound earlier.
+        RenderSystem.setShaderTexture(0, DrawableHelper.GUI_ICONS_TEXTURE);
     }
 }

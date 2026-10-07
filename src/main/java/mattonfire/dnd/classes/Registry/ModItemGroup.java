@@ -84,6 +84,7 @@ public class ModItemGroup {
             entries.add(ModItems.WOODEN_CHESTPLATE);
             entries.add(ModItems.WOODEN_LEGGINGS);
             entries.add(ModItems.WOODEN_BOOTS);
+            entries.add(ModItems.HOBBIT_SPAWN_EGG);
         });
     }
 }

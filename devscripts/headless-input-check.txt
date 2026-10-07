@@ -1,0 +1,46 @@
+# Checks the hidden-window input steps. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/headless-input-check.txt
+# Expect in latest.log: the sword in the enchanting slot gains Enchantments, and the zombie's Health drops below 20.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/clear @s
+/xp add @s 30 levels
+/give @s minecraft:diamond_sword
+/give @s minecraft:lapis_lazuli 3
+/setblock 3 150 5 minecraft:enchanting_table
+/tp @s 3.5 150 3.5 0 35
+wait 10
+use
+wait 10
+slots
+# Enchanting screen slots: 0 item, 1 lapis, 2-28 inventory, 29-37 hotbar
+slot 29
+slot 0
+slot 30
+slot 1
+wait 10
+screenshot headless-enchant
+button 0
+wait 10
+slots
+closescreen
+/setblock 3 150 5 minecraft:air
+/summon minecraft:zombie 3.5 150 5.5 {NoAI:1b,Rotation:[180f,0f]}
+look 0 10
+wait 10
+hotbar 0
+attack
+wait 10
+/data get entity @e[type=minecraft:zombie,limit=1,sort=nearest] Health
+perspective back
+wait 5
+screenshot headless-attack
+perspective first
+/kill @e[type=minecraft:zombie]
+press key.dnd-classes.power-up
+wait 5
+quit

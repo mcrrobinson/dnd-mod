@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.mixin;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageSources;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -10,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Progression;
 
 @Mixin(Entity.class)
 public abstract class LavaDamageMixin {
@@ -25,7 +27,9 @@ public abstract class LavaDamageMixin {
 
         // Check if the entity is in lava
 
-        if (entity.isInLava() && !world.isClient && (((PlayerEntityExt) entity).getDndClass() == DndCharacter.RANGER)) {
+        // The Ranger's Fireproof passive removes the extra lava damage.
+        if (entity.isInLava() && !world.isClient && (((PlayerEntityExt) entity).getDndClass() == DndCharacter.RANGER)
+                && !(entity instanceof PlayerEntity player && Progression.hasPassive(player, "ranger.fireproof"))) {
 
             DamageSources damageSources = world.getDamageSources();
 

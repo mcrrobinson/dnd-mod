@@ -151,3 +151,49 @@ publishing {
 		// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
 	}
 }
+
+// The Player Classes table in README.md is generated from the class data the game reads
+// (class guidebook, class-pick message), so the two can't drift apart. Edit class_info.json,
+// then run ./gradlew generateClassReadme. `check` (and so `build`) fails if the README is stale.
+def classInfoFile = file('src/main/resources/data/dndclasses/class_info.json')
+def classTableStart = '<!-- class-table:start'
+def classTableEnd = '<!-- class-table:end -->'
+
+def readmeWithClassTable = {
+	def readme = file('README.md').getText('UTF-8')
+	def classes = new groovy.json.JsonSlurper().parse(classInfoFile, 'UTF-8').classes
+	def rows = ['| **Class**| **Pros**|**Cons**|**Special Ability**|', '|-|-|-|-|']
+	classes.each { c ->
+		rows << "| **${c.name}** | ${c.pros.join(', ')} | ${c.cons.join(', ')} | ${c.special.join(', ')} |".toString()
+	}
+	def startAt = readme.indexOf(classTableStart)
+	def endAt = readme.indexOf(classTableEnd)
+	if (startAt < 0 || endAt < startAt) {
+		throw new GradleException("README.md is missing the ${classTableStart} ... ${classTableEnd} markers")
+	}
+	def afterStart = readme.indexOf('\n', startAt) + 1
+	return readme.substring(0, afterStart) + rows.join('\n') + '\n' + readme.substring(endAt)
+}
+
+tasks.register('generateClassReadme') {
+	group = 'documentation'
+	description = 'Regenerates the Player Classes table in README.md from class_info.json.'
+	inputs.file(classInfoFile)
+	doLast {
+		file('README.md').setText(readmeWithClassTable(), 'UTF-8')
+	}
+}
+
+tasks.register('checkClassReadme') {
+	group = 'verification'
+	description = 'Fails if the README class table is out of date with class_info.json.'
+	inputs.files(classInfoFile, file('README.md'))
+	doLast {
+		if (file('README.md').getText('UTF-8') != readmeWithClassTable()) {
+			throw new GradleException('README.md class table is out of date with src/main/resources/data/dndclasses/class_info.json. '
+					+ 'Edit the JSON (not the README table), then run ./gradlew generateClassReadme')
+		}
+	}
+}
+
+tasks.named('check') { dependsOn 'checkClassReadme' }

@@ -21,7 +21,7 @@ public final class BossMusic {
     private BossMusic() {
     }
 
-    static void send(ServerPlayerEntity player, UUID bar, @Nullable SoundEvent track) {
+    public static void send(ServerPlayerEntity player, UUID bar, @Nullable SoundEvent track) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeUuid(bar);
         buf.writeBoolean(track != null);

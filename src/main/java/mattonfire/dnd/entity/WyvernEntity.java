@@ -16,13 +16,16 @@ import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -30,7 +33,7 @@ import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon {
+public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private String currentFlyAnimation = "fly.idle";
     private int flyAnimationTimer = 0;
@@ -57,6 +60,9 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
             .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
                     "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
     private final DragonPart[] parts;
+    private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+    private final FireBreath fireBreath;
 
     // Shown like the ender dragon's bar to players near a wild wyvern that is fighting a player.
     // The dragon music flag tells the client to play the dragon fight music (EventMusic).
@@ -68,7 +74,14 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
         this.parts = PART_LAYOUT.createParts(this);
+        this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, 12.0, 4.0F);
         this.setId(DragonPartLayout.reserveIds(this.parts));
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
     }
 
     @Override
@@ -135,6 +148,12 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         if (!this.world.isClient) {
             this.updateBossBar();
         }
+        this.fireBreath.tick();
+    }
+
+    @Override
+    public FireBreath getFireBreath() {
+        return this.fireBreath;
     }
 
     private boolean isFightingPlayer() {
@@ -212,19 +231,6 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
     }
 
-    public void shoot(LivingEntity target) {
-        if (!this.world.isClient) {
-            double d = target.getX() - this.getX();
-            double e = target.getBodyY(0.5) - this.getBodyY(0.5);
-            double f = target.getZ() - this.getZ();
-            
-            SmallFireballEntity fireball = new SmallFireballEntity(this.world, this, d, e, f);
-            fireball.setPosition(this.getX(), this.getEyeY(), this.getZ());
-            this.world.spawnEntity(fireball);
-            this.playSound(net.minecraft.sound.SoundEvents.ENTITY_BLAZE_SHOOT, 1.0F, 1.0F);
-        }
-    }
-
     public static DefaultAttributeContainer.Builder createWyvernAttributes() {
         return TameableEntity.createMobAttributes()
                 .add(EntityAttributes.GENERIC_MAX_HEALTH, 40.0)
@@ -275,6 +281,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         controller.setSoundKeyframeHandler(event -> {
         });
         controllerRegistrar.add(controller);
+        controllerRegistrar.add(this.fireBreath.createAnimationController(this));
     }
 
     @Override

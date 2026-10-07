@@ -1,17 +1,22 @@
 package mattonfire.dnd.entity;
 
 import java.util.UUID;
+import mattonfire.dnd.entity.ai.goal.FireBreathGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
+import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -22,7 +27,7 @@ import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class RiverPikehornEntity extends TameableEntity implements GeoEntity, MultipartDragon {
+public class RiverPikehornEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
 
     // Head, tail and wings stick out past the 1-block hitbox; each part wraps a group of model bones.
@@ -33,11 +38,26 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
             .part("tail", "tail1", "tail2")
             .pair("wing", "wing_left", "wing_membrane_left", "wing_cont_left");
     private final DragonPart[] parts;
+    private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(RiverPikehornEntity.class, TrackedDataHandlerRegistry.INTEGER);
+    private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(RiverPikehornEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+    private final FireBreath fireBreath;
 
     public RiverPikehornEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
         this.parts = PART_LAYOUT.createParts(this);
+        this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, 7.0, 2.0F);
         this.setId(DragonPartLayout.reserveIds(this.parts));
+    }
+
+    @Override
+    protected void initDataTracker() {
+        super.initDataTracker();
+        FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
+    }
+
+    @Override
+    public FireBreath getFireBreath() {
+        return this.fireBreath;
     }
 
     @Override
@@ -60,6 +80,7 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
     public void tick() {
         super.tick();
         PART_LAYOUT.update(this, this.parts, false);
+        this.fireBreath.tick();
     }
 
     @Override
@@ -84,11 +105,13 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new SitGoal(this));
-        this.goalSelector.add(3, new MeleeAttackGoal(this, 1.0D, true));
-        this.goalSelector.add(4, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 1.0D));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
-        this.goalSelector.add(7, new LookAroundGoal(this));
+        // Breathes fire from a few blocks away and bites up close
+        this.goalSelector.add(3, new FireBreathGoal<>(this, 3.0));
+        this.goalSelector.add(4, new MeleeAttackGoal(this, 1.0D, true));
+        this.goalSelector.add(5, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
+        this.goalSelector.add(6, new WanderAroundFarGoal(this, 1.0D));
+        this.goalSelector.add(7, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
+        this.goalSelector.add(8, new LookAroundGoal(this));
 
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
@@ -105,6 +128,7 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
         AnimationController<RiverPikehornEntity> controller = new AnimationController<>(this, "controller", 0, this::predicate);
         controller.setSoundKeyframeHandler(event -> {});
         controllers.add(controller);
+        controllers.add(this.fireBreath.createAnimationController(this));
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {

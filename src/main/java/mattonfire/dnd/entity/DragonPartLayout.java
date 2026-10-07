@@ -75,6 +75,16 @@ public final class DragonPartLayout {
         return this.groups.get(part).bones();
     }
 
+    /** The part created for the group called {@code name} */
+    public DragonPart part(DragonPart[] parts, String name) {
+        for (int i = 0; i < this.groups.size(); i++) {
+            if (this.groups.get(i).name().equals(name)) {
+                return parts[i];
+            }
+        }
+        throw new IllegalArgumentException("No dragon part " + name + " in " + this.modelName);
+    }
+
     public DragonPart[] createParts(MobEntity owner) {
         DragonPart[] parts = new DragonPart[this.groups.size()];
         for (int i = 0; i < parts.length; i++) {

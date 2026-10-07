@@ -31,7 +31,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn
-- [Goblins](mobs/goblins.md): Goblin Warriors in Nether Fortresses
+- [Goblins](mobs/goblins.md): Goblin Warriors in Nether Fortresses and goblin camps
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
@@ -51,7 +51,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
-- [Goblin Camps](structures/goblin-camps.md) (PR #63)
+- [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board (PR #69)
 
 ## Enchantments

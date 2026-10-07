@@ -105,7 +105,8 @@ public class SetClassAttributes {
         player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(26); // Default 20
 
         // Disallow potion effects - in living entity mixin
-        // Weak in nether.
+        // Weak in nether - in Misc/PaladinNetherWeakness
+        // Cannot craft or brew - in SlotMixin and BrewingStandBlockMixin
     }
 
     public void typeRanger(PlayerEntity player) {

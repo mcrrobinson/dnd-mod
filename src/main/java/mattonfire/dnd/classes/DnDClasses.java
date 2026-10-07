@@ -383,6 +383,7 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                mattonfire.dnd.classes.Misc.PaladinNetherWeakness.register();
 
                 ModSounds.registerSounds();
                 mattonfire.dnd.classes.Music.DungeonMusic.register();

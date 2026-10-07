@@ -48,6 +48,7 @@ public class BrewingStandBlockMixin {
                 if (player instanceof PlayerEntityExt) {
                     PlayerEntityExt playerEntity = (PlayerEntityExt) player;
                     access.setLastPlayer(playerEntity.getDndClass());
+                    access.setLastUser(player.getUuid());
                 }
 
             }

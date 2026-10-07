@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.Misc;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Classes.ArtificerSkills;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
@@ -10,11 +11,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.RangedWeaponItem;
 import net.minecraft.item.ToolItem;
 import net.minecraft.item.TridentItem;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.random.Random;
 
 /**
  * Artificer passive: crafted tools, weapons and armor have a chance to come out
- * already enchanted.
+ * already enchanted. Crafting them also gives class XP.
  */
 public class ArtificerCrafting {
     public static final float AUTO_ENCHANT_CHANCE = 0.25f;
@@ -23,10 +25,16 @@ public class ArtificerCrafting {
     public static final int MAX_ENCHANT_LEVEL = 15;
 
     public static void tryAutoEnchant(PlayerEntity player, ItemStack stack) {
-        if (player.getWorld().isClient || stack.isEmpty() || !isEquipment(stack) || !stack.isEnchantable()) {
+        if (player.getWorld().isClient || stack.isEmpty() || !isEquipment(stack)) {
             return;
         }
         if (!(player instanceof PlayerEntityExt ext) || ext.getDndClass() != DndCharacter.ARTIFICER) {
+            return;
+        }
+        if (player instanceof ServerPlayerEntity serverPlayer) {
+            ArtificerSkills.onCraftedEquipment(serverPlayer);
+        }
+        if (!stack.isEnchantable()) {
             return;
         }
         Random random = player.getRandom();

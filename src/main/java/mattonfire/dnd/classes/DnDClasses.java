@@ -132,6 +132,10 @@ public class DnDClasses implements ModInitializer {
                 }
 
                 server.execute(() -> {
+                        // A Beholder's anti-magic cone: the power fizzles and the mana is kept
+                        if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)) {
+                                return;
+                        }
                         if (player instanceof PlayerEntityExt) {
 
                                 boolean success = PowerUpEffect.play(server, player,
@@ -378,6 +382,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.village.HobbitVillageStructures.register();
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
+                mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
 
                 // Runs clientside right now.

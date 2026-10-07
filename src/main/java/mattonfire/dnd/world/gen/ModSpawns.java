@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen;
 
+import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.LightningChaserEntity;
 import mattonfire.dnd.entity.MagmamuncherAlphaEntity;
@@ -79,6 +80,22 @@ public class ModSpawns {
         // Mountain dwarves likewise only spawn inside dwarven fortresses, in the dark halls too.
         SpawnRestriction.register(ModEntityTypes.MOUNTAIN_DWARF, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canDwarfSpawn);
+
+        // Beholders only live in their underground lairs (the structure's spawn_overrides), which
+        // get a new one now and then once the old one's dead.
+        SpawnRestriction.register(ModEntityTypes.BEHOLDER, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canBeholderSpawn);
+    }
+
+    private static boolean canBeholderSpawn(EntityType<BeholderEntity> type, ServerWorldAccess world,
+                                            SpawnReason reason, BlockPos pos, Random random) {
+        if (!HostileEntity.canSpawnIgnoreLightLevel(type, world, reason, pos, random)) {
+            return false;
+        }
+        // Natural spawns (only ever inside a lair): rarely, underground, and never near another one.
+        return reason != SpawnReason.NATURAL
+                || (random.nextInt(20) == 0 && !world.isSkyVisible(pos)
+                && world.getEntitiesByClass(BeholderEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty());
     }
 
     private static boolean canLightningChaserSpawn(EntityType<LightningChaserEntity> type, ServerWorldAccess world,

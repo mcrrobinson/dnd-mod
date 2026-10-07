@@ -1,0 +1,19 @@
+{
+  "type": "dndclasses:beholder_lair",
+  "biomes": "#dndclasses:has_structure/beholder_lair",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "piece",
+      "spawns": [
+        {
+          "type": "dndclasses:beholder",
+          "weight": 1,
+          "minCount": 1,
+          "maxCount": 1
+        }
+      ]
+    }
+  }
+}

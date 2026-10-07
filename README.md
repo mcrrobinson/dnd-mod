@@ -12,7 +12,9 @@
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
     - [Mountain Dwarves](#mountain-dwarves)
+    - [Beholder](#beholder)
   - [Dragon Lairs](#dragon-lairs)
+  - [Beholder Lairs](#beholder-lairs)
   - [Hobbit Villages](#hobbit-villages)
   - [Dwarven Fortresses](#dwarven-fortresses)
 
@@ -97,7 +99,7 @@ Custom music plays during different events in the game. There are **five** music
 
 | Track | When it plays |
 |-------|---------------|
-| **Tooth and Claw** | Straight away when a dragon fight starts, looping until it ends |
+| **Tooth and Claw** | Straight away when a dragon (or Beholder) fight starts, looping until it ends |
 | **Silent Footsteps** | In dungeons (near a mob spawner, or inside a stronghold, mineshaft, ancient city, fortress, bastion, mansion, ocean monument or temple) and at night, mixed with the vanilla music |
 | **Awake Cart** | While travelling (about 80 blocks covered in 30 seconds), mixed with the vanilla music |
 | **Steel on Steel** | Music disc only |
@@ -135,6 +137,24 @@ A Lightning Chaser's lair sits on the very summit of a jagged, frozen or stony p
 
 #### Mountain Dwarves
 - **Mountain Dwarf**: A short, broad, bearded dwarf in a mail shirt, often with an iron, gold or chainmail helmet, carrying an axe or pickaxe. Neutral, like an iron golem: it leaves players alone and hunts monsters (except creepers) near its home, but hit one and it and its kin nearby fight back for a while. Right-click one with a gold ingot to trade for ores, gems or tools from the deep (`gameplay/dwarf_barter`). Dwarves guard their fortress like piglins guard gold: open a chest or barrel, or break a gold block, where one can see you and they all turn on you.
+
+#### Beholder
+A floating eye tyrant (250 health, 8 armour, 80% knockback resistance) that only lives in its lair deep underground (see [Beholder Lairs](#beholder-lairs)). It flies, takes no fall damage and turns its whole body to face what it looks at. Fighting a player, it shows a purple boss bar to everyone within 48 blocks and **Tooth and Claw** plays. The fight alternates between two modes:
+
+- **Gaze** (6 seconds): its great central eye is open and casts an **anti-magic cone** (20 blocks, 30° either side of where it looks, shown by grey motes). Anyone standing in it gets **Anti-Magic** for 1.5 seconds: class specials don't work (the power-up fizzles and keeps your mana, no Warlock fireballs, no Monk double jump), and the magical buffs class powers give (Arrow Storm, Mob Repel, Reinforced Armor, Invulnerable) are dispelled. Meanwhile it closes in and bites (10 damage). Its eye stays open, and the cone up, whenever it isn't fighting.
+- **Eye rays** (8 seconds): it shuts the central eye (the cone would smother its own magic too), hangs back about 9 blocks off and fires eye rays from its eight eyestalks, two of each kind. An eye glows in its colour for 0.8 seconds first, and the ray goes where you were standing when it started glowing, so keep moving. Rays stop at walls and hit the first creature in the way:
+
+| Eye | Colour | Effect |
+|-|-|-|
+| Slowing | Blue | 2 magic damage and Slowness III for 6 seconds |
+| Telekinetic | Violet | Levitation II for 2.5 seconds (and the fall after) |
+| Enervation | Red | 8 magic damage (10 once it's enraged) |
+| Fear | Yellow | **Frightened** for 8 seconds (your attacks do half damage, and it keeps driving you back when you come within 7 blocks) plus Darkness for 4 |
+
+Every eyestalk is its own hit shape (like a dragon's wings). Hit one for 3 or more damage and that eye shuts for 10 seconds, so that ray can't be used. Below half health it **enrages** (red bar): every eye opens again, it fires two rays at a time and more often, and the eye-ray phase lasts longer than the gaze. Drops 2-4 eyes of ender and 4-9 amethyst shards (+ Looting); when a player kills it, also 120 XP, 3-6 diamonds, a 30% chance (+5% per Looting level) of a Protection IV or Feather Falling IV book or a totem of undying, and the **An Eye for an Eye** advancement (challenge, 150 XP).
+
+### Beholder Lairs
+A Beholder's lair is a great domed cavern carved into the deepslate (floor somewhere between y=-38 and y=-19) under any Overworld biome except the deep dark, rarer than dragon lairs (about one per 40x40 chunks). The floor is a huge eye laid in calcite and blackstone round a glowing froglight iris and an obsidian pupil; the walls are veined with crying obsidian and amethyst, with dripstone hanging from the ceiling and the odd shroomlight. Petrified adventurers (grey armour stands, arms raised against its gaze) stand round the floor, and against the far wall a hoard of gold, bones and skulls surrounds a chest (`chests/beholder_lair`: gold, amethyst, emeralds, diamonds, ender pearls, enchanted books and diamond gear, and sometimes an enchanted golden apple, a totem of undying or a spyglass). The Beholder floats above the eye. The cavern is sealed in a two-block shell, so caves, water and lava can't break in. A deepslate-brick spiral stair climbs from a tunnel off the cavern to a mossy ring of wall on the surface, 20 blocks east of the cavern's centre. Silent Footsteps plays inside, no other monsters spawn there, and once the Beholder's dead the lair sends a new one now and then. Find one with `/locate structure dndclasses:beholder_lair`.
 
 ### Hobbit Villages
 Cozy, Shire-style villages that generate in plains, sunflower plains and meadows, laid out differently every time:

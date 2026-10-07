@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "dndclasses:beholder_lair",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 40,
+    "separation": 16,
+    "salt": 593017264
+  }
+}

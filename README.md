@@ -84,6 +84,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 ### Mobs and Bosses
 - [Dragons](docs/mobs/dragons.md): the Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn. They breathe fire, have hittable wings and tails, and killing any of them earns **Dragon Slayer**.
 - [Goblins](docs/mobs/goblins.md), [Magmamunchers](docs/mobs/magmamunchers.md), [Hobbits](docs/mobs/hobbits.md) and [Mountain Dwarves](docs/mobs/mountain-dwarves.md).
+- [Mimic](docs/mobs/mimic.md): a chest that isn't. It bites and grabs whoever opens or hits it, and hides in dungeons, dragon lairs and dwarven fortresses.
 - Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md) and the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md). See [Boss fights](docs/bosses/boss-fights.md).
 
 ### Structures

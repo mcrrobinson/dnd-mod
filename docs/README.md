@@ -35,7 +35,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
-- [Mimic](mobs/mimic.md) (PR #67)
+- [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md) (PR #68)
 - [Gelatinous Cube](mobs/gelatinous-cube.md) (PR #70)
 

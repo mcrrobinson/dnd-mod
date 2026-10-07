@@ -50,7 +50,8 @@
         "ProjectileEntityMixin",
         "VampiricMixin",
         "FeatherfallMixin",
-        "ExperienceOrbEntityMixin"
+        "ExperienceOrbEntityMixin",
+        "DungeonFeatureMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

@@ -646,6 +646,10 @@ public class DnDClasses implements ModInitializer {
 
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Party.PartyCommand
+                                                .register(dispatcher));
+                mattonfire.dnd.classes.Party.PartyEvents.register();
 
                 // tree feller enchantment
                 TreeFeller.register();

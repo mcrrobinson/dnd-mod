@@ -96,6 +96,23 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<LichEntity> LICH = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "lich"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, LichEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.9f, 2.5f))
+                    .build()
+    );
+
+    public static final EntityType<PhylacteryEntity> PHYLACTERY = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "phylactery"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MISC, PhylacteryEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.8f, 1.25f))
+                    .fireImmune()
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
@@ -107,5 +124,8 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(GOBLIN_WARLORD, GoblinWarlordEntity.createGoblinWarlordAttributes());
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
         FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
+        FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());
+        FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
+        LichEntity.registerEvents();
     }
 }

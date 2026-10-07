@@ -637,6 +637,69 @@ def loop_nether_fortress(rng):
     return normalize(out, -1.0, -19.0)
 
 
+def loop_lich_fight(rng):
+    # Lich boss fight: 120 bpm in D minor. Pounding low drums, a dark "ah" choir walking
+    # Dm - Bb - Gm - A, a harpsichord-like ostinato, a funeral bell every two bars and bone rattles.
+    beat = 0.5
+    bar = beat * 4
+    loop = bar * 12  # 24 s
+    xf = 1.5
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    # Drums: kick on 1 and 3, a tom pair leading into each bar
+    t = 0.0
+    k = 0
+    while t < sec:
+        mix(out, drum(0.6, 90, 40, 0.03, 0.18, click=0.15, rng=rng), t, 1.0)
+        mix(out, drum(0.6, 90, 40, 0.03, 0.18, click=0.15, rng=rng), t + 2 * beat, 0.85)
+        mix(out, drum(0.4, 160, 95, 0.02, 0.12, click=0.1, rng=rng), t + 3 * beat, 0.45)
+        mix(out, drum(0.4, 140, 80, 0.02, 0.12, click=0.1, rng=rng), t + 3.5 * beat, 0.5)
+        t += bar
+        k += 1
+    # Choir chords, three bars each
+    chords = [(38, 50, 53, 57), (34, 50, 53, 58), (31, 50, 55, 58), (33, 49, 52, 57)]
+    for c, notes in enumerate(chords + chords[:1]):
+        at = c * 3 * bar
+        if at >= sec:
+            break
+        length = 3 * bar + 0.4
+        for m in notes:
+            v = formant(saw(length, hz(m), detune=0.006, voices=3, vibrato=(4.5, 0.004), rng=rng),
+                        freqs=(650, 1080, 2650), gains=(1, 0.5, 0.15))
+            env = env_points(len(v), [(0, 0), (0.25, 1), (length - 0.5, 0.85), (length, 0)])
+            mix(out, apply(v, env), at, 0.16 if m > 40 else 0.3)
+    # Ostinato: eighth notes over the chord roots
+    pattern = [0, 3, 7, 8, 7, 3, 0, 3]
+    roots = [62, 58, 55, 57]
+    i = 0
+    t = 0.0
+    while t < sec - 0.05:
+        chord = int(t // (3 * bar)) % 4
+        root = roots[chord]
+        step = pattern[i % len(pattern)]
+        if chord == 3 and step == 3:
+            step = 4  # major third over A
+        p = svf(pluck(0.45, hz(root + step), rng, decay=0.993, bright=0.8), 3500, 0.8)
+        mix(out, p, t, 0.28 if i % 2 == 0 else 0.2)
+        t += beat / 2
+        i += 1
+    # Funeral bell every two bars
+    t = 0.0
+    while t < sec:
+        mix(out, bell(4.0, hz(50), decay=2.2, ratios=(1, 2.0, 2.4, 3.0, 4.2, 5.4)), t, 0.25)
+        t += 2 * bar
+    # Bone rattles on the off-beats of every fourth bar
+    for b in range(3, 12, 4):
+        for _ in range(10):
+            at = b * bar + rng.uniform(0.0, bar)
+            c = svf(noise(0.03, rng), rng.uniform(1500, 3500), 6, "band")
+            mix(out, apply(c, env_ar(len(c), 0.0005, 0.006)), at, 0.35)
+    out = reverb(out, wet=0.3, room=0.86, damp=0.4)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -16.0)
+
+
 SOUNDS = {
     "sting_barbarian": sting_barbarian,
     "sting_bard": sting_bard,
@@ -655,6 +718,7 @@ SOUNDS = {
     "sting_alchemist": sting_alchemist,
     "low_health": loop_low_health,
     "nether_fortress": loop_nether_fortress,
+    "lich_fight": loop_lich_fight,
 }
 
 
@@ -665,7 +729,7 @@ def main(argv):
         if key not in SOUNDS:
             sys.exit(f"unknown sound {name}; choose from {', '.join(SOUNDS)}")
         rng = random.Random(key)
-        quality = 2 if key in ("low_health", "nether_fortress") else 3
+        quality = 2 if key in ("low_health", "nether_fortress", "lich_fight") else 3
         write_ogg(key, SOUNDS[key](rng), quality)
 
 

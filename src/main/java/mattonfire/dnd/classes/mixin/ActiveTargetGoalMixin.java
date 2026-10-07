@@ -16,6 +16,7 @@ import draylar.identity.api.PlayerHostility;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Misc.BloodHunterControl;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.entity.LichEntity;
 
 @Mixin(ActiveTargetGoal.class)
 public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
@@ -41,7 +42,8 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
                         this.stop();
                         ci.cancel();
                     }
-                } else if (dndClass == DndCharacter.NECROMANCER && this.mob.getGroup().equals(EntityGroup.UNDEAD)) {
+                } else if (dndClass == DndCharacter.NECROMANCER && this.mob.getGroup().equals(EntityGroup.UNDEAD)
+                        && !LichEntity.defiesNecromancers(this.mob)) {
                     this.stop();
                     ci.cancel();
                 }

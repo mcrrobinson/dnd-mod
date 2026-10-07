@@ -35,6 +35,7 @@
         "ProjectileUtilMixin",
         "SpawnHelperMixin",
         "NetherFortressStartMixin",
+        "StrongholdLibraryMixin",
         "PotionItemMixin",
         "PotionEntityMixin",
         "AreaEffectCloudEntityMixin",

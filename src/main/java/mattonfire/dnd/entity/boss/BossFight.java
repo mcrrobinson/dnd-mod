@@ -216,14 +216,19 @@ public class BossFight {
         // Same player vanilla credits with the kill (player_killed_entity)
         LivingEntity killer = this.boss.getPrimeAdversary();
         if (this.advancement != null && killer instanceof ServerPlayerEntity player) {
-            Advancement advancement = player.server.getAdvancementLoader().get(this.advancement);
-            if (advancement != null) {
-                PlayerAdvancementTracker tracker = player.getAdvancementTracker();
-                List<String> criteria = new ArrayList<>();
-                tracker.getProgress(advancement).getUnobtainedCriteria().forEach(criteria::add);
-                for (String criterion : criteria) {
-                    tracker.grantCriterion(advancement, criterion);
-                }
+            grantAdvancement(player, this.advancement);
+        }
+    }
+
+    /** Grants every remaining criterion of an advancement, e.g. a kill reward given some other way. */
+    public static void grantAdvancement(ServerPlayerEntity player, Identifier id) {
+        Advancement advancement = player.server.getAdvancementLoader().get(id);
+        if (advancement != null) {
+            PlayerAdvancementTracker tracker = player.getAdvancementTracker();
+            List<String> criteria = new ArrayList<>();
+            tracker.getProgress(advancement).getUnobtainedCriteria().forEach(criteria::add);
+            for (String criterion : criteria) {
+                tracker.grantCriterion(advancement, criterion);
             }
         }
     }

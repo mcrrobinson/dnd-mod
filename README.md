@@ -15,6 +15,7 @@
   - [Dragon Lairs](#dragon-lairs)
   - [Hobbit Villages](#hobbit-villages)
   - [Dwarven Fortresses](#dwarven-fortresses)
+  - [Goblin Raids](#goblin-raids)
 
 ## Building
 Navigate to the root directory of the project and type the following...
@@ -100,7 +101,7 @@ Custom music plays during different events in the game. There are **five** music
 | **Tooth and Claw** | Straight away when a dragon fight starts, looping until it ends |
 | **Silent Footsteps** | In dungeons (near a mob spawner, or inside a stronghold, mineshaft, ancient city, fortress, bastion, mansion, ocean monument or temple) and at night, mixed with the vanilla music |
 | **Awake Cart** | While travelling (about 80 blocks covered in 30 seconds), mixed with the vanilla music |
-| **Steel on Steel** | Music disc only |
+| **Steel on Steel** | Straight away when a goblin raid reaches you, looping until the raid is won or lost |
 | **Music Box** | Music disc only |
 
 ### Mobs
@@ -153,3 +154,14 @@ Luxurious dwarven fortresses carved into mountainsides (meadows, groves, slopes,
 - **Side rooms**: forges with lava channels, barracks with bunks and armour stands, mead halls with long tables of food, and working mines with ore, amethyst and an ore cart. Every fortress has a forge and barracks.
 
 The halls are buried in the mountain: where the rock is too thin, the fortress piles more on top. Dwarves live in every room and keep turning up inside; monsters never spawn there. Chests and barrels use `chests/dwarven_fortress_treasury`, `_forge`, `_barracks`, `_brewhall` and `_mine`. Find one with `/locate structure dndclasses:dwarven_fortress`.
+
+### Goblin Raids
+Goblin war parties raid hobbit villages and dwarven fortresses. At night, a player in or near one (within 32 blocks) has a 1 in 20 chance every 30 seconds of a raid setting out for it; each settlement is raided at most once every three in-game days. Not in peaceful; turn raids off with `/gamerule dndGoblinRaids false`.
+
+- **Waves**: a horn sounds from the direction the goblins are coming, and 10 seconds later the first wave of Goblin Warriors arrives on open ground about 32 blocks out (in front of a fortress's gate). There are 2 waves on easy, 3 on normal and 4 on hard, each bigger than the last (wave *n* has *n*+1 warriors, one more on hard), with a 15 second lull and another horn call between them. The last wave is led by a **Goblin Warlord**, who marches on the village green or the fortress gate and holds it.
+- **The raid**: raiders go for the nearest hobbit, dwarf, villager, iron golem or player within 16 blocks, and otherwise march on the village green or the fortress gate. Hobbits flee; dwarves rush out to meet the raiders. When a wave is down to its last two goblins for 30 seconds, they glow.
+- **Bar and music**: everyone within 96 blocks sees a red raid bar (counting down to the next wave, then the wave's remaining health) and hears **Steel on Steel**.
+- **Victory**: clear every wave and the settlement cheers. Everyone who took part (survival or adventure, in range at some point) gets Hero of the Village for 40 minutes, a reward (`gameplay/goblin_raid_hobbit_village`: emeralds, food, sometimes a golden apple; `gameplay/goblin_raid_dwarven_fortress`: gold, iron, gems, sometimes an enchanted axe; both with a chance of the Steel on Steel disc), XP and the **Hold the Line** advancement. Dwarves forgive any grudge they held against the fortress's defenders.
+- **Defeat**: if nobody stays within 96 blocks for two minutes, the war party withdraws with its plunder.
+
+Raids are saved with the world. For testing, `/goblinraid start` sends a raid against the nearest village or fortress (within about 128 blocks, ignoring the cooldown), or the spot you're on if there isn't one; `/goblinraid start here` raids the spot you're on; `/goblinraid stop` calls off the nearest raid; `/goblinraid list` lists them. `devscripts/goblin-raid-check.txt` runs a raid through to victory.

@@ -379,6 +379,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
+                mattonfire.dnd.entity.raid.GoblinRaids.register();
 
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();
@@ -646,6 +647,8 @@ public class DnDClasses implements ModInitializer {
 
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.GoblinRaidCommand.register(dispatcher));
 
                 // tree feller enchantment
                 TreeFeller.register();

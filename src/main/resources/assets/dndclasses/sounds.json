@@ -99,6 +99,14 @@
             }
         ]
     },
+    "music.goblin_raid": {
+        "sounds": [
+            {
+                "name": "dndclasses:steel_on_steel",
+                "stream": true
+            }
+        ]
+    },
     "music.nether_fortress": {
         "sounds": [
             {

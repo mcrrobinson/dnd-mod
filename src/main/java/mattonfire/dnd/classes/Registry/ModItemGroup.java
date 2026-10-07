@@ -17,6 +17,7 @@ public class ModItemGroup {
     public static void registerItemGroups() {
         // Example of adding to existing Item Group
         ItemGroupEvents.modifyEntriesEvent(DND_CLASSES_ITEMGROUP).register(entries -> {
+            entries.add(ModItems.CLASS_GUIDEBOOK);
             entries.add(ModItems.STAFF_OF_ICE);
             entries.add(ModItems.STAFF_OF_FIRE);
             entries.add(ModItems.STAFF_OF_LIGHTNING);

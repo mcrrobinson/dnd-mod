@@ -139,6 +139,7 @@ public class DndClassesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
+        mattonfire.dnd.classes.Items.ClassGuidebookItem.clientOpener = mattonfire.dnd.classes.Client.Hud.ClassGuidebookScreen::open;
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, mattonfire.dnd.client.renderer.EmberWyvernRenderer::new);

@@ -1,0 +1,5 @@
+wait 40
+closescreen
+/list
+wait 40
+quit

@@ -10,6 +10,7 @@ import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
+import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -49,6 +50,9 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
 
 public class PowerUpEffect {
+
+    /** Paladins heal party members within this many blocks (everyone else: 10). */
+    public static final double PALADIN_PARTY_HEAL_RADIUS = 24;
 
     /**
      * Adds an AI goal that makes the entity target hostile mobs.
@@ -199,6 +203,13 @@ public class PowerUpEffect {
                 break;
             case CLERIC:
                 player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
+                // Party members inside the circle share it and get some regeneration.
+                if (player instanceof ServerPlayerEntity cleric) {
+                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, ClericHandler.REPEL_RADIUS)) {
+                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
+                        member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
+                    }
+                }
                 break;
             case PALADIN:
                 // Heal everyone within a area of the user
@@ -209,6 +220,16 @@ public class PowerUpEffect {
 
                 for (PlayerEntity entity : nearbyEntities) {
                     entity.heal(entity.getMaxHealth());
+                }
+
+                // Party members get it from further away, plus a few absorption hearts.
+                if (player instanceof ServerPlayerEntity paladin) {
+                    List<ServerPlayerEntity> party = PartyManager.nearbyMembers(paladin, PALADIN_PARTY_HEAL_RADIUS);
+                    party.add(paladin);
+                    for (ServerPlayerEntity member : party) {
+                        member.heal(member.getMaxHealth());
+                        member.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 600, 0));
+                    }
                 }
                 break;
             case ROGUE:

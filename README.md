@@ -103,6 +103,18 @@ Custom music plays during different events in the game. There are **five** music
 | **Steel on Steel** | Music disc only |
 | **Music Box** | Music disc only |
 
+#### Bard instruments
+
+Three instruments play a short song (heard up to 32 blocks away, on the Jukebox/Note Blocks volume slider; the background music ducks under it). When a **Bard** plays one, every player within 16 blocks, the Bard included, gets the instrument's buff for 30 seconds, and all three instruments then share a 10-second cooldown. Anyone else can play them too, but their song gives no buff (4-second cooldown).
+
+| Instrument | Bard buff | Recipe |
+|-|-|-|
+| **Lute** | Regeneration I | 3 planks, 2 sticks, 1 string |
+| **War Drum** | Strength I | 3 leather on top, 5 planks and 1 string below |
+| **Flute** | Speed I | 3 bamboo in a diagonal |
+
+The songs are synthesized by `tools/music-gen` (`song_lute`, `song_drum`, `song_flute`).
+
 ### Mobs
 
 #### Goblins

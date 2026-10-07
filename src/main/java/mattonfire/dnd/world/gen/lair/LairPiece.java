@@ -66,6 +66,10 @@ public class LairPiece extends StructurePiece {
         this.seed = nbt.getLong("Seed");
     }
 
+    public BlockPos getCenter() {
+        return this.center;
+    }
+
     @Override
     protected void writeNbt(StructureContext context, NbtCompound nbt) {
         nbt.put("Center", NbtHelper.fromBlockPos(this.center));

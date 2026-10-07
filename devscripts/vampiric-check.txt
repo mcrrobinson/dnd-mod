@@ -1,0 +1,31 @@
+# Checks the Vampiric enchantment. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/vampiric-check.txt
+# Expect in latest.log: player Health goes go above 20.0 (max health is raised to 40) after the hit (sword deals 8 -> Vampiric III heals 2.4),
+# and the zombie's Health drops below 20.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule naturalRegeneration false
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/clear @s
+/effect clear @s
+/give @s minecraft:netherite_sword{Enchantments:[{id:"dndclasses:vampiric",lvl:3s}]}
+/tp @s 3.5 150 3.5 0 10
+/summon minecraft:zombie 3.5 150 5.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f]}
+/attribute @s minecraft:generic.max_health base set 40
+# health is now 20/40, so healing shows up
+wait 30
+/data get entity @s Health
+hotbar 0
+look 0 10
+attack
+wait 5
+/data get entity @e[type=minecraft:zombie,limit=1,sort=nearest] Health
+/data get entity @s Health
+screenshot vampiric-hit
+/kill @e[type=minecraft:zombie]
+/gamerule naturalRegeneration true
+/attribute @s minecraft:generic.max_health base set 20
+quit

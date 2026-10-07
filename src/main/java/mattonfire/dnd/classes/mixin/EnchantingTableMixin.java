@@ -75,7 +75,8 @@ public class EnchantingTableMixin {
                         enchantment == ModEnchantments.TREE_FELLER_ENCHANTMENT ||
                         enchantment == ModEnchantments.INVULNERABILITY_ENCHANTMENT ||
                         enchantment == ModEnchantments.RETURNING_ENCHANTMENT ||
-                        enchantment == ModEnchantments.VAMPIRIC_ENCHANTMENT));
+                        enchantment == ModEnchantments.VAMPIRIC_ENCHANTMENT ||
+                        enchantment == ModEnchantments.SMITE_DRAGONS_ENCHANTMENT));
 
                 for (int i = enchantment.getMaxLevel(); i > enchantment.getMinLevel() - 1; --i) {
                     if (power >= enchantment.getMinPower(i) && power <= enchantment.getMaxPower(i)) {

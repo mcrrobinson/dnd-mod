@@ -511,6 +511,9 @@ public class ModItems {
                 .build()));
                 
 
+        public static final Item HOBBIT_SPAWN_EGG = registerItem("hobbit_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.HOBBIT, 0x5C7A2E, 0xD9A877, new FabricItemSettings()));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

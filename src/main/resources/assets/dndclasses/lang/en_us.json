@@ -86,5 +86,14 @@
     "book.dndclasses.class_guidebook.special": "Special Ability",
     "book.dndclasses.class_guidebook.key": "When your mana bar is full, press %s to use it.",
     "book.dndclasses.class_guidebook.rebind": "Change the key in Options > Controls > Key Binds > D&D Classes.",
-    "book.dndclasses.class_guidebook.passive": "Always active, no key needed."
+    "book.dndclasses.class_guidebook.passive": "Always active, no key needed.",
+    "item.dndclasses.lute": "Lute",
+    "item.dndclasses.drum": "War Drum",
+    "item.dndclasses.flute": "Flute",
+    "item.dndclasses.instrument.tooltip": "Bard song: %s (%ss) for players within %s blocks",
+    "message.dndclasses.instrument.bard": "Your song grants %1$s to %2$s player(s)",
+    "message.dndclasses.instrument.not_bard": "A pleasant tune, but only a Bard's song inspires",
+    "subtitles.dndclasses.instrument.lute": "Lute plays",
+    "subtitles.dndclasses.instrument.drum": "War drum beats",
+    "subtitles.dndclasses.instrument.flute": "Flute plays"
 }

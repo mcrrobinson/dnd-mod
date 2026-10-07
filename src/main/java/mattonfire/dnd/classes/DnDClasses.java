@@ -14,6 +14,7 @@ import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
 import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
 import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
+import mattonfire.dnd.classes.Misc.BloodHunterControl;
 import mattonfire.dnd.classes.Misc.PowerUpEffect;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -48,6 +49,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.SwordItem;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -71,7 +73,6 @@ import net.minecraft.util.math.Vec3d;
 
 public class DnDClasses implements ModInitializer {
 
-        public static final Map<UUID, BloodhunterIdentityData> BLOODHUNTER_IDENTITY_EXPIRY = new HashMap<>();
         public static final Map<UUID, Long> WARLOCK_FIREBREATH = new HashMap<>();
         public static final int FIREBREATH_DURATION_TICKS = 20 * 20; // 20 seconds
 
@@ -430,42 +431,6 @@ public class DnDClasses implements ModInitializer {
                                 return;
                         long now = serverWorld.getTime();
 
-                        Iterator<Map.Entry<UUID, BloodhunterIdentityData>> it = BLOODHUNTER_IDENTITY_EXPIRY.entrySet()
-                                        .iterator();
-                        while (it.hasNext()) {
-                                Map.Entry<UUID, BloodhunterIdentityData> entry = it.next();
-                                BloodhunterIdentityData identityData = entry.getValue();
-                                if (now >= identityData.expiryTick) {
-                                        ServerPlayerEntity player = (ServerPlayerEntity) serverWorld
-                                                        .getPlayerByUuid(entry.getKey());
-                                        if (player != null) {
-                                                // Move the entity to the player's current position before spawning
-                                                identityData.entity.refreshPositionAndAngles(
-                                                                player.getX(),
-                                                                player.getY(),
-                                                                player.getZ(),
-                                                                identityData.entity.getYaw(),
-                                                                identityData.entity.getPitch());
-
-                                                // TODO: There are bugs with the entity when copying it. This
-                                                // resets some properties. There is probably a better way to do
-                                                // this. Either copy it properly or don't do the copy at all and find
-                                                // why I slide when I become an entity.
-
-                                                identityData.entity.setNoGravity(false);
-                                                identityData.entity.setInvulnerable(false);
-                                                identityData.entity.setSprinting(false);
-
-                                                draylar.identity.api.PlayerIdentity.updateIdentity(player, null, null);
-                                                serverWorld.spawnEntity(identityData.entity);
-
-                                        }
-
-                                        // Spawn the old entity back
-                                        it.remove();
-                                }
-                        }
-
                         DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
                                 UUID uuid = entry.getKey();
                                 long endTick = entry.getValue();
@@ -559,22 +524,18 @@ public class DnDClasses implements ModInitializer {
                         }
                 });
 
-                AttackEntityCallback.EVENT.register((player, world, hand, hitResult, entity) -> {
-                        if (entity instanceof PlayerEntityExt) {
+                AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+                        // The params used to be swapped (hitResult, entity), so `entity` was the hit
+                        // result and nothing below ran. A RANGER branch here returned FAIL when the
+                        // *target* was a Ranger (making Rangers immune to player melee); it never
+                        // took effect and isn't in the README, so it stays disabled.
 
-                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) entity;
-                                switch (playerEntityExt.getDndClass()) {
-                                        case RANGER:
-                                                return ActionResult.FAIL;
-                                        case BLOODHUNTER:
-
-                                                // DamageSource customExplosionSource = ModDamageTypes.of(world,
-                                                // ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
-                                                // hitResult.damage()
-                                                break;
-                                        default:
-                                                break;
-                                }
+                        // Blood Hunter: every sword has Fire Aspect II (8 seconds of fire).
+                        if (!world.isClient && player instanceof PlayerEntityExt attacker
+                                        && attacker.getDndClass() == DndCharacter.BLOODHUNTER
+                                        && player.getStackInHand(hand).getItem() instanceof SwordItem
+                                        && entity instanceof LivingEntity) {
+                                entity.setOnFireFor(8);
                         }
 
                         return ActionResult.PASS;
@@ -690,6 +651,7 @@ public class DnDClasses implements ModInitializer {
 
                 Invulnerability.register();
 
+                BloodHunterControl.register();
                 Warlock.register();
                 Druid.register();
 

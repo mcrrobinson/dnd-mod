@@ -14,6 +14,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import draylar.identity.api.PlayerHostility;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Misc.BloodHunterControl;
 import mattonfire.dnd.classes.PlayerEntityExt;
 
 @Mixin(ActiveTargetGoal.class)
@@ -28,7 +29,8 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
                 && this.targetEntity instanceof PlayerEntity) {
             PlayerEntity targetPlayer = (PlayerEntity) this.targetEntity;
 
-            boolean hasHostility = PlayerHostility.hasHostility(targetPlayer);
+            boolean hasHostility = BloodHunterControl.isIdentityLoaded()
+                    && PlayerHostility.hasHostility(targetPlayer);
 
             if (targetPlayer instanceof PlayerEntityExt) {
                 PlayerEntityExt playerEntity = (PlayerEntityExt) targetPlayer;
@@ -53,7 +55,8 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
     protected void identity_shouldContinue(CallbackInfoReturnable<Boolean> cir) {
         if (this.mob instanceof Monster && this.targetEntity instanceof PlayerEntity) {
             PlayerEntity targetPlayer = (PlayerEntity) this.targetEntity;
-            boolean hasHostility = PlayerHostility.hasHostility(targetPlayer);
+            boolean hasHostility = BloodHunterControl.isIdentityLoaded()
+                    && PlayerHostility.hasHostility(targetPlayer);
             if (targetPlayer instanceof PlayerEntityExt) {
                 PlayerEntityExt playerEntity = (PlayerEntityExt) targetPlayer;
                 DndCharacter dndClass = playerEntity.getDndClass();

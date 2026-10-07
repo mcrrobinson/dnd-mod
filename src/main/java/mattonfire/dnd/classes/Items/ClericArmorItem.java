@@ -1,4 +1,6 @@
 package mattonfire.dnd.classes.Items;
+import mattonfire.dnd.classes.DndCharacter;
+import java.util.Set;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import software.bernie.geckolib.renderer.GeoArmorRenderer;
@@ -23,6 +25,16 @@ public class ClericArmorItem extends FAArmorItem {
         return List.of(
             new StatusEffectInstance(StatusEffects.JUMP_BOOST, 239)
             );
+    }
+
+    @Override
+    public Set<DndCharacter> getMatchingClasses() {
+        return Set.of(DndCharacter.CLERIC);
+    }
+
+    @Override
+    public List<StatusEffectInstance> getMatchingClassEffects() {
+        return List.of(new StatusEffectInstance(StatusEffects.RESISTANCE, 239));
     }
 
 

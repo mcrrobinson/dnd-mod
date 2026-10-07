@@ -9,6 +9,9 @@ import net.minecraft.util.math.random.Random;
 import java.util.EnumSet;
 
 public class LightningChaserFlyRandomlyGoal extends Goal {
+    /** How far it wanders from its lair before turning back. */
+    private static final double LAIR_RANGE = 24.0;
+
     private final LightningChaserEntity entity;
 
     public LightningChaserFlyRandomlyGoal(LightningChaserEntity entity) {
@@ -46,7 +49,15 @@ public class LightningChaserFlyRandomlyGoal extends Goal {
     private Vec3d getRandomLocation() {
         Random random = this.entity.getRandom();
         Vec3d pos = this.entity.getPos();
-        
+
+        // Strayed too far from its lair: head back and circle above it.
+        BlockPos lair = this.entity.getLair();
+        if (lair != null && Vec3d.ofBottomCenter(lair).subtract(pos).horizontalLengthSquared() > LAIR_RANGE * LAIR_RANGE) {
+            pos = Vec3d.ofBottomCenter(lair).add(0.0, 8.0, 0.0);
+            return new Vec3d(pos.x + random.nextDouble() * 16.0 - 8.0, pos.y + random.nextDouble() * 6.0,
+                    pos.z + random.nextDouble() * 16.0 - 8.0);
+        }
+
         // If in air, sometimes try to pick a landing spot (lower altitude)
         boolean tryLand = !this.entity.isOnGround() && random.nextInt(5) == 0;
 

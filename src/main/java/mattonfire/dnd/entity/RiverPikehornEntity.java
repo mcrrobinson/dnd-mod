@@ -2,6 +2,7 @@ package mattonfire.dnd.entity;
 
 import java.util.UUID;
 import mattonfire.dnd.entity.ai.goal.FireBreathGoal;
+import net.minecraft.entity.EntityStatuses;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
@@ -10,11 +11,20 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
+import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.GhastEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
+import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
@@ -41,6 +51,10 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
     private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(RiverPikehornEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(RiverPikehornEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
     private final FireBreath fireBreath;
+    /** Chance per raw fish that a wild one is tamed, like a wolf and its bones. */
+    private static final int TAME_CHANCE = 3;
+    /** Health a tamed one gets back from each raw fish. */
+    private static final float FISH_HEAL = 4.0F;
 
     public RiverPikehornEntity(EntityType<? extends TameableEntity> entityType, World world) {
         super(entityType, world);
@@ -115,6 +129,94 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
 
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
+        // Wild ones keep to themselves but the group fights back when one is hit
+        this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
+    }
+
+    /** A river dragon: tamed and healed with raw fish. */
+    public static boolean isTamingItem(ItemStack stack) {
+        return stack.isOf(Items.COD) || stack.isOf(Items.SALMON) || stack.isOf(Items.TROPICAL_FISH);
+    }
+
+    @Override
+    public ActionResult interactMob(PlayerEntity player, Hand hand) {
+        ItemStack stack = player.getStackInHand(hand);
+        if (this.world.isClient) {
+            boolean handled = this.isOwner(player) || this.isTamed() || isTamingItem(stack) && !this.isTamed();
+            return handled ? ActionResult.CONSUME : ActionResult.PASS;
+        }
+        if (this.isTamed()) {
+            if (isTamingItem(stack) && this.getHealth() < this.getMaxHealth()) {
+                if (!player.getAbilities().creativeMode) {
+                    stack.decrement(1);
+                }
+                this.heal(FISH_HEAL);
+                this.emitGameEvent(GameEvent.EAT, this);
+                return ActionResult.SUCCESS;
+            }
+            if (this.isOwner(player) && stack.isEmpty()) {
+                this.setSitting(!this.isSitting());
+                this.jumping = false;
+                this.navigation.stop();
+                this.setTarget(null);
+                return ActionResult.SUCCESS;
+            }
+            return super.interactMob(player, hand);
+        }
+        if (isTamingItem(stack)) {
+            if (!player.getAbilities().creativeMode) {
+                stack.decrement(1);
+            }
+            if (this.random.nextInt(TAME_CHANCE) == 0) {
+                this.setOwner(player);
+                this.navigation.stop();
+                this.setTarget(null);
+                this.setSitting(true);
+                this.world.sendEntityStatus(this, EntityStatuses.ADD_POSITIVE_PLAYER_REACTION_PARTICLES);
+            } else {
+                this.world.sendEntityStatus(this, EntityStatuses.ADD_NEGATIVE_PLAYER_REACTION_PARTICLES);
+            }
+            return ActionResult.SUCCESS;
+        }
+        return super.interactMob(player, hand);
+    }
+
+    @Override
+    public boolean damage(DamageSource source, float amount) {
+        if (this.isInvulnerableTo(source)) {
+            return false;
+        }
+        // Stands up to defend itself, like a wolf
+        if (!this.world.isClient) {
+            this.setSitting(false);
+        }
+        return super.damage(source, amount);
+    }
+
+    /** Never turns on its owner, even when the owner hits it. */
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        return !this.isOwner(target) && super.canTarget(target);
+    }
+
+    @Override
+    public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
+        if (target instanceof CreeperEntity || target instanceof GhastEntity) {
+            return false;
+        }
+        if (target instanceof TameableEntity tameable) {
+            return !tameable.isTamed() || tameable.getOwner() != owner;
+        }
+        if (target instanceof PlayerEntity player && owner instanceof PlayerEntity ownerPlayer
+                && !ownerPlayer.shouldDamagePlayer(player)) {
+            return false;
+        }
+        return !(target instanceof AbstractHorseEntity horse && horse.isTame());
+    }
+
+    @Override
+    public boolean cannotDespawn() {
+        return super.cannotDespawn() || this.isTamed() || this.isLeashed();
     }
 
     @Nullable
@@ -132,6 +234,9 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
     }
 
     private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {
+        if (this.isInSittingPose()) {
+            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("sit"));
+        }
         if (tAnimationState.isMoving()) {
             return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("walk"));
         }

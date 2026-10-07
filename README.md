@@ -70,7 +70,7 @@ Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and pres
 - [Potions and brewing](docs/items/potions-and-brewing.md): the Alchemist's Fast Brewing Stand, the Potion of Freezing, and brewing stands that explode for non-Alchemists.
 
 ### Enchantments
-Lunge, Invulnerability, Tree Feller and Grid Miner, which only an Artificer can roll at an enchanting table. See [Enchantments](docs/enchantments/README.md).
+Lunge, Invulnerability, Tree Feller, Grid Miner and Returning, which only an Artificer can roll at an enchanting table. See [Enchantments](docs/enchantments/README.md).
 
 ### Music
 Event music for boss fights, low health, dungeons, Nether Fortresses, travelling and night, a sting when you use your special, and five music discs. See [Music](docs/music.md).

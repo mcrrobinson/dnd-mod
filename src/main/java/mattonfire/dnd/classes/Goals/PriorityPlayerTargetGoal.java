@@ -1,71 +1,74 @@
 package mattonfire.dnd.classes.Goals;
 
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.GoalSelector;
+import net.minecraft.entity.ai.goal.PrioritizedGoal;
+import net.minecraft.entity.mob.EndermanEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.server.network.ServerPlayerEntity;
-
-import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.mixin.ActiveTargetGoalAccessor;
+import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 
-public class PriorityPlayerTargetGoal<T extends LivingEntity> extends ActiveTargetGoal<T> {
+/**
+ * Fighter "attracts mobs": mobs that would already target players switch to
+ * the nearest Fighter in range. Only targets Fighters; other players are left
+ * to the mob's own target goals.
+ */
+public class PriorityPlayerTargetGoal extends ActiveTargetGoal<PlayerEntity> {
 
-    public PriorityPlayerTargetGoal(MobEntity mob, Class<T> targetClass) {
-        super(mob, targetClass, true);
+    // Runs ahead of vanilla target goals (revenge/player goals sit at 1-2), so
+    // a mob already chasing someone else switches to the Fighter.
+    private static final int PRIORITY = 0;
+
+    public PriorityPlayerTargetGoal(MobEntity mob, TargetPredicate template) {
+        super(mob, PlayerEntity.class, true);
+        // Reuse the mob's own player predicate so e.g. zombified piglins and
+        // polar bears only go for Fighters they are already angry at.
+        this.targetPredicate = template;
+    }
+
+    /**
+     * Adds the goal to mobs that already have a player-targeting goal. Passive
+     * mobs (animals, villagers, iron golems...) have none and are skipped.
+     */
+    public static void attach(MobEntity mob) {
+        if (mob instanceof EndermanEntity) {
+            return; // Endermen only aggro when stared at
+        }
+        GoalSelector targetSelector = ((MobEntityAccessor) mob).getTargetSelector();
+        TargetPredicate template = null;
+        for (PrioritizedGoal prioritized : targetSelector.getGoals()) {
+            if (prioritized.getGoal() instanceof PriorityPlayerTargetGoal) {
+                return; // Already attached
+            }
+            if (template == null && prioritized.getGoal() instanceof ActiveTargetGoal<?> goal
+                    && ((ActiveTargetGoalAccessor) goal).getTargetClass().isAssignableFrom(PlayerEntity.class)) {
+                template = ((ActiveTargetGoalAccessor) goal).getTargetPredicate();
+            }
+        }
+        if (template != null) {
+            targetSelector.add(PRIORITY, new PriorityPlayerTargetGoal(mob, template));
+        }
     }
 
     @Override
     protected void findClosestTarget() {
-        // If it's a player-based target
-        if (this.targetClass == PlayerEntity.class || this.targetClass == ServerPlayerEntity.class) {
-            List<ServerPlayerEntity> players = this.mob.getWorld().getEntitiesByClass(
-                    ServerPlayerEntity.class,
-                    this.getSearchBox(this.getFollowRange()),
-                    player -> this.targetPredicate.test(this.mob, player));
-
-            if (players.isEmpty()) {
-                this.targetEntity = null;
-                return;
-            }
-
-            // Prioritize specific players (e.g., username, team, item, etc.)
-            ServerPlayerEntity priorityTarget = null;
-            for (ServerPlayerEntity player : players) {
-                if (isPriorityPlayer(player)) {
-                    priorityTarget = player;
-                    break; // Stop at first match
-                }
-            }
-
-            // If no priority players found, use default closest player selection
-            if (priorityTarget != null) {
-                this.targetEntity = priorityTarget;
-            } else {
-                this.targetEntity = this.mob.getWorld().getClosestPlayer(this.targetPredicate, this.mob,
-                        this.mob.getX(), this.mob.getEyeY(), this.mob.getZ());
-            }
-        } else {
-            // Default behavior for non-player targets
-            this.targetEntity = this.mob.getWorld().getClosestEntity(
-                    this.mob.getWorld().getEntitiesByClass(this.targetClass,
-                            this.getSearchBox(this.getFollowRange()),
-                            (livingEntity) -> true),
-                    this.targetPredicate,
-                    this.mob,
-                    this.mob.getX(),
-                    this.mob.getEyeY(),
-                    this.mob.getZ());
-        }
+        this.targetEntity = this.mob.getWorld().getClosestEntity(
+                this.mob.getWorld().getEntitiesByClass(PlayerEntity.class,
+                        this.getSearchBox(this.getFollowRange()),
+                        PriorityPlayerTargetGoal::isFighter),
+                this.targetPredicate,
+                this.mob,
+                this.mob.getX(),
+                this.mob.getEyeY(),
+                this.mob.getZ());
     }
 
-    private boolean isPriorityPlayer(ServerPlayerEntity player) {
-        if (player instanceof PlayerEntityExt) {
-            PlayerEntityExt playerEntity = (PlayerEntityExt) player;
-            return playerEntity.getDndClass() == DndCharacter.FIGHTER;
-        }
-        return false;
+    private static boolean isFighter(PlayerEntity player) {
+        return player instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.FIGHTER;
     }
 }

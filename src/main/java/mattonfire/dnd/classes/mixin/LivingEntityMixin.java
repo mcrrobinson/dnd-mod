@@ -78,9 +78,6 @@ public abstract class LivingEntityMixin extends Entity {
                     return;
                 }
                 switch (playerEntity.getDndClass()) {
-                    case PALADIN:
-                        cir.setReturnValue(false); // Paladins are immune
-                        break;
                     case WIZARD:
                         if (effectInstance.getEffectType() == ModEffects.FREEZE) {
                             cir.setReturnValue(false); // Prevent the effect from being applied

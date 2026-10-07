@@ -46,6 +46,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.SwordItem;
 import net.minecraft.item.Items;
@@ -106,9 +108,6 @@ public class DnDClasses implements ModInitializer {
         public static final Identifier S2C_CLASS_QUERY_PACKET_ID = Identifier.of("classpick", "class_query");
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
                         "approve_class_pick");
-
-        public static final Identifier CUSTOM_TEXTURE = new Identifier(DnDClasses.MOD_ID,
-                        "textures/gui/alchemist_brewing_stand.png");
 
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
@@ -281,8 +280,8 @@ public class DnDClasses implements ModInitializer {
                                 playerClasses.sendPlayerMessage(
                                                 player,
                                                 "Warlock",
-                                                "With an empty hand, the ability to throw fireballs & resistant to both fire and lava.",
-                                                "Decreases your damage output. You're also unable to use anything but a staff to attack.",
+                                                "Right click with an empty hand to throw fireballs. Fire and lava can't hurt you.",
+                                                "You deal less damage and water and rain burn you.",
                                                 "You breathe fire by holding your special key.");
                                 playerClasses.typeWarlock(player);
                                 break;
@@ -349,7 +348,7 @@ public class DnDClasses implements ModInitializer {
                 }
         }
 
-        private static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
+        public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
                 for (int i = 0; i < particleCount; i++) {
                         double time = world.getTime() % 360;
                         double angle = 2 * Math.PI * i / particleCount + time * 0.01;
@@ -384,6 +383,10 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                mattonfire.dnd.classes.Misc.PaladinNetherWeakness.register();
+                mattonfire.dnd.classes.Misc.ArtificerDamage.register();
+                mattonfire.dnd.classes.Misc.ClericHandler.register();
+                MonkHandler.register();
 
                 ModSounds.registerSounds();
                 mattonfire.dnd.classes.Music.DungeonMusic.register();
@@ -539,28 +542,39 @@ public class DnDClasses implements ModInitializer {
                 });
 
                 // Register event listener
+                // Runs on both sides, so the client refuses before starting the drink or draw animation
                 UseItemCallback.EVENT.register((player, world, hand) -> {
-                        if (player instanceof ServerPlayerEntity serverPlayer) {
-                                if (serverPlayer instanceof PlayerEntityExt) {
-                                        PlayerEntityExt playerEntityExt = (PlayerEntityExt) serverPlayer;
-                                        if (playerEntityExt.getDndClass() == DndCharacter.PALADIN) {
-                                                ItemStack itemStack = player.getStackInHand(hand);
-
-                                                // Check if the item is a potion
-                                                if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
-                                                                || itemStack.isOf(Items.LINGERING_POTION)) {
-                                                        // Prevent the player from using it
-                                                        player.sendMessage(Text
-                                                                        .of("You are not allowed to drink potions!"),
-                                                                        true);
-                                                        return TypedActionResult.fail(itemStack);
-                                                }
-                                        } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
-                                                // if (player.getStackInHand(hand).isEmpty()) {
-
-                                                // }
-
+                        if (player instanceof PlayerEntityExt) {
+                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) player;
+                                if (playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                        ItemStack itemStack = player.getStackInHand(hand);
+                                        if (itemStack.getItem() instanceof BowItem
+                                                        || itemStack.getItem() instanceof CrossbowItem) {
+                                                player.sendMessage(Text.of("Fighters cannot use bows!"), true);
+                                                return TypedActionResult.fail(itemStack);
                                         }
+                                }
+                                if (playerEntityExt.getDndClass() == DndCharacter.ARTIFICER
+                                                && player.getStackInHand(hand).isOf(Items.POTION)) {
+                                        // Drinking would waste it; splash/lingering can still be thrown at others
+                                        player.sendMessage(Text.of("Potions have no effect on you!"), true);
+                                        return TypedActionResult.fail(player.getStackInHand(hand));
+                                }
+                                if (playerEntityExt.getDndClass() == DndCharacter.PALADIN
+                                                || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
+                                        ItemStack itemStack = player.getStackInHand(hand);
+
+                                        // Check if the item is a potion
+                                        if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
+                                                        || itemStack.isOf(Items.LINGERING_POTION)) {
+                                                // Prevent the player from using it
+                                                player.sendMessage(Text
+                                                                .of("You are not allowed to drink potions!"),
+                                                                true);
+                                                return TypedActionResult.fail(itemStack);
+                                        }
+                                } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
+                                        // Empty-hand fireballs are handled in Warlock (client mixin + C2S packet).
                                 }
                         }
                         return TypedActionResult.pass(player.getStackInHand(hand));
@@ -638,6 +652,8 @@ public class DnDClasses implements ModInitializer {
                 Invulnerability.register();
 
                 BloodHunterControl.register();
+                Warlock.register();
+                Druid.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");
@@ -648,10 +664,8 @@ public class DnDClasses implements ModInitializer {
 
                 ServerEntityEvents.ENTITY_LOAD.register((entity, serverWorld) -> {
                         if (entity instanceof MobEntity mob) {
-                                MobEntityAccessor accessor = (MobEntityAccessor) mob;
-
-                                accessor.getTargetSelector().add(2,
-                                                new PriorityPlayerTargetGoal<>(mob, PlayerEntity.class));
+                                // Fighters attract mobs that already hunt players
+                                PriorityPlayerTargetGoal.attach(mob);
                         }
 
                 });
@@ -674,5 +688,4 @@ public class DnDClasses implements ModInitializer {
 
 // remove diamonds type create own again...
 // Change shade of the potion
-// Make the fireball no damage to caster.
 // Custom projectile for the staffs

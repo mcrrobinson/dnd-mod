@@ -6,6 +6,7 @@ import java.util.List;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
@@ -186,6 +187,11 @@ public class PowerUpEffect {
             case BARBARIAN:
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
                 break;
+            case FIGHTER:
+                // Super regeneration: Regeneration V for 10 seconds (~2 hearts/sec).
+                // Not potion-sourced, so the Fighter's potion block doesn't stop it.
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 4));
+                break;
             case BARD:
                 bardEffect(player);
                 break;
@@ -207,6 +213,10 @@ public class PowerUpEffect {
                 // Make the player immune to poison
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 300, 0));
                 break;
+            case DRUID:
+                if (!(player instanceof ServerPlayerEntity serverPlayer) || !Druid.transform(serverPlayer))
+                    return false; // Nothing to transform into, keep the mana
+                break;
             case NECROMANCER:
                 spawnUndead(player);
                 // Spawn undead enemies
@@ -218,7 +228,8 @@ public class PowerUpEffect {
 
                 break;
             case ARTIFICER:
-                // temporary buff to armor
+                // Temporary buff to armor (+8 armor, +4 toughness for 30 seconds)
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARMOR_BUFF, 600, 0));
                 break;
             case BLOODHUNTER:
                 // Take control of the mob being looked at (within 30 blocks) for 20 seconds.

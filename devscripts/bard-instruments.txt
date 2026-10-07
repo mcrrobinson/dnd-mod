@@ -1,0 +1,33 @@
+wait 40
+closescreen
+wait 10
+/gamemode survival
+/tp @s 0 150 0 0 0
+/effect give @s minecraft:slow_falling 600 0 true
+/effect clear @s
+/dndclass set @s bard
+/clear @s
+/give @s dndclasses:lute
+/give @s dndclasses:drum
+/give @s dndclasses:flute
+wait 10
+hotbar 0
+use
+wait 5
+screenshot bard-lute
+/execute if entity @s[nbt={ActiveEffects:[{Id:10}]}]
+/execute if entity @s[nbt={ActiveEffects:[{Id:5}]}]
+hotbar 1
+use
+wait 5
+/execute if entity @s[nbt={ActiveEffects:[{Id:5}]}]
+wait 210
+/effect clear @s
+/dndclass set @s fighter
+wait 10
+hotbar 2
+use
+wait 5
+screenshot fighter-flute
+/execute if entity @s[nbt={ActiveEffects:[{Id:1}]}]
+quit

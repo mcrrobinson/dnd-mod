@@ -106,9 +106,6 @@ public class DnDClasses implements ModInitializer {
         public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
                         "approve_class_pick");
 
-        public static final Identifier CUSTOM_TEXTURE = new Identifier(DnDClasses.MOD_ID,
-                        "textures/gui/alchemist_brewing_stand.png");
-
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
         private static void sendDoubleJumpPacket(MinecraftServer server, ServerPlayerEntity player,
@@ -384,6 +381,7 @@ public class DnDClasses implements ModInitializer {
 
                 FAArmorEffectHandler.register();
                 mattonfire.dnd.classes.Misc.ClericHandler.register();
+                MonkHandler.register();
 
                 ModSounds.registerSounds();
                 mattonfire.dnd.classes.Music.DungeonMusic.register();
@@ -676,6 +674,8 @@ public class DnDClasses implements ModInitializer {
                 GridMiner.register();
 
                 Invulnerability.register();
+
+                Druid.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

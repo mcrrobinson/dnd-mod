@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -26,6 +27,8 @@ public class ClericHandler {
     private static final int REFRESH_BELOW = 220;
     private static final int EFFECT_DURATION = 400;
     public static final double REPEL_RADIUS = 16;
+    private static final int BASE_HASTE = 2;
+    private static final int DEEP_DELVER_HASTE = 3;
 
     public static void register() {
         ServerTickEvents.END_WORLD_TICK.register(ClericHandler::onWorldTick);
@@ -53,7 +56,9 @@ public class ClericHandler {
                 continue;
             }
 
-            refreshEffect(player, StatusEffects.HASTE, 2);
+            // Deep Delver (skill tree) raises Haste III to Haste IV.
+            int haste = Progression.hasPassive(player, "cleric.deep_delver") ? DEEP_DELVER_HASTE : BASE_HASTE;
+            refreshEffect(player, StatusEffects.HASTE, haste);
             refreshEffect(player, StatusEffects.NIGHT_VISION, 0);
 
             if (player.hasStatusEffect(ModEffects.MOB_REPEL)) {
@@ -76,6 +81,12 @@ public class ClericHandler {
 
     private static void refreshEffect(PlayerEntity player, StatusEffect effect, int amplifier) {
         StatusEffectInstance existing = player.getStatusEffect(effect);
+        if (existing != null && existing.getAmplifier() != amplifier && !existing.isAmbient()
+                && !existing.shouldShowParticles()) {
+            // Our own effect at the wrong level (Deep Delver changed): replace it.
+            player.removeStatusEffect(effect);
+            existing = null;
+        }
         if (existing == null || existing.getDuration() < REFRESH_BELOW) {
             player.addStatusEffect(new StatusEffectInstance(effect, EFFECT_DURATION, amplifier, false, false, true));
         }

@@ -193,6 +193,9 @@ public class PowerUpEffect {
             case BARBARIAN:
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
                 break;
+            case MONK:
+                mattonfire.dnd.classes.Progression.Classes.MonkSkills.kiSurge(player);
+                break;
             case FIGHTER:
                 // Super regeneration: Regeneration V for 10 seconds (~2 hearts/sec).
                 // Not potion-sourced, so the Fighter's potion block doesn't stop it.

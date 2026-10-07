@@ -14,6 +14,7 @@ public class SetPlayerClass {
         switch (classID) {
             case 0:
                 client.setScreen(new ModKeybinds(new ClassSelectionHud()));
+                break;
             case 1:
                 playerClasses.typeBarbarian(player);
                 break;

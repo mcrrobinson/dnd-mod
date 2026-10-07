@@ -345,7 +345,7 @@ public class DnDClasses implements ModInitializer {
                 }
         }
 
-        private static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
+        public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
                 for (int i = 0; i < particleCount; i++) {
                         double time = world.getTime() % 360;
                         double angle = 2 * Math.PI * i / particleCount + time * 0.01;
@@ -380,6 +380,7 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                mattonfire.dnd.classes.Misc.ClericHandler.register();
                 MonkHandler.register();
 
                 ModSounds.registerSounds();

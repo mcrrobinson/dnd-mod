@@ -5,6 +5,7 @@ import mattonfire.dnd.entity.LightningChaserEntity;
 import mattonfire.dnd.entity.MagmamuncherAlphaEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
+import mattonfire.dnd.entity.MagmamuncherEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.entity.EntityType;
@@ -55,7 +56,7 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.RIVER_PIKEHORN, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
         SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER, SpawnRestriction.Location.ON_GROUND,
-                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn); // Or Monster::isValidSpawn? Magmamuncher is Tameable but spawns in Nether.
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, MagmamuncherEntity::canSpawnInNether);
 
         SpawnRestriction.register(ModEntityTypes.MAGMAMUNCHER_ALPHA, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canMagmamuncherAlphaSpawn);

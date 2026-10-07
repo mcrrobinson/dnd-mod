@@ -1,0 +1,96 @@
+# Beholder: model + eyestalk hit shapes, then a live one's anti-magic cone, then its lair.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/beholder.txt
+# Output: run/screenshots/beholder-*.png, and [CHAT] lines in run/logs/latest.log.
+/time set day
+/weather clear
+/gamemode creative
+/kill @e[type=dndclasses:beholder]
+wait 40
+respawn
+wait 40
+closescreen
+wait 20
+/effect give @s minecraft:night_vision 999 0 true
+
+# Frozen, facing north towards the camera, high in the sky
+/setblock 0 220 -6 minecraft:barrier
+/setblock 7 221 0 minecraft:barrier
+/tp @s 0.5 221 -5.5 0 5
+/summon dndclasses:beholder 0.5 220 0.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f]}
+wait 40
+hud off
+screenshot beholder-front
+hitboxes on
+wait 5
+screenshot beholder-hitboxes
+hitboxes off
+/tp @s 7.5 222 0.5 90 10
+wait 20
+screenshot beholder-side
+hud on
+/kill @e[type=dndclasses:beholder]
+
+# The lair: the nearest one to spawn in the dev world (/locate structure dndclasses:beholder_lair).
+# Look down its stair, then find its floor (the obsidian pupil at its centre) and go in.
+/tp @s -504 120 760
+wait 300
+/spreadplayers -484 760 0 1 false @s
+wait 40
+/tp @s ~ ~1 ~ 0 70
+wait 20
+hud off
+screenshot beholder-lair-top
+hud on
+/execute if block -504 -40 760 minecraft:obsidian run tp @s -491 -35 760 90 15
+/execute if block -504 -39 760 minecraft:obsidian run tp @s -491 -34 760 90 15
+/execute if block -504 -38 760 minecraft:obsidian run tp @s -491 -33 760 90 15
+/execute if block -504 -37 760 minecraft:obsidian run tp @s -491 -32 760 90 15
+/execute if block -504 -36 760 minecraft:obsidian run tp @s -491 -31 760 90 15
+/execute if block -504 -35 760 minecraft:obsidian run tp @s -491 -30 760 90 15
+/execute if block -504 -34 760 minecraft:obsidian run tp @s -491 -29 760 90 15
+/execute if block -504 -33 760 minecraft:obsidian run tp @s -491 -28 760 90 15
+/execute if block -504 -32 760 minecraft:obsidian run tp @s -491 -27 760 90 15
+/execute if block -504 -31 760 minecraft:obsidian run tp @s -491 -26 760 90 15
+/execute if block -504 -30 760 minecraft:obsidian run tp @s -491 -25 760 90 15
+/execute if block -504 -29 760 minecraft:obsidian run tp @s -491 -24 760 90 15
+/execute if block -504 -28 760 minecraft:obsidian run tp @s -491 -23 760 90 15
+/execute if block -504 -27 760 minecraft:obsidian run tp @s -491 -22 760 90 15
+/execute if block -504 -26 760 minecraft:obsidian run tp @s -491 -21 760 90 15
+/execute if block -504 -25 760 minecraft:obsidian run tp @s -491 -20 760 90 15
+/execute if block -504 -24 760 minecraft:obsidian run tp @s -491 -19 760 90 15
+/execute if block -504 -23 760 minecraft:obsidian run tp @s -491 -18 760 90 15
+/execute if block -504 -22 760 minecraft:obsidian run tp @s -491 -17 760 90 15
+/execute if block -504 -21 760 minecraft:obsidian run tp @s -491 -16 760 90 15
+/execute if block -504 -20 760 minecraft:obsidian run tp @s -491 -15 760 90 15
+/execute if block -504 -19 760 minecraft:obsidian run tp @s -491 -14 760 90 15
+/execute if block -504 -18 760 minecraft:obsidian run tp @s -491 -13 760 90 15
+/execute if block -504 -17 760 minecraft:obsidian run tp @s -491 -12 760 90 15
+/execute if block -504 -16 760 minecraft:obsidian run tp @s -491 -11 760 90 15
+wait 60
+hud off
+screenshot beholder-lair-inside
+/tp @s ~ ~ ~ 270 15
+wait 20
+screenshot beholder-lair-tunnel
+hud on
+
+# Fight it in survival (tough enough to last): gaze + anti-magic first, then eye rays
+/tp @s ~ ~ ~ 90 0
+/effect give @s minecraft:resistance 999 3 true
+/effect give @s minecraft:regeneration 999 2 true
+/gamemode survival
+wait 60
+/data get entity @s ActiveEffects
+screenshot beholder-gaze
+press key.dnd-classes.power-up
+wait 2
+screenshot beholder-powerup-blocked
+wait 110
+screenshot beholder-rays-1
+wait 12
+screenshot beholder-rays-2
+wait 12
+screenshot beholder-rays-3
+/data get entity @s ActiveEffects
+/gamemode creative
+quit

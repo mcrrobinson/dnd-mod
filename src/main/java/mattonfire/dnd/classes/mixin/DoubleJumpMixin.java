@@ -66,6 +66,7 @@ public abstract class DoubleJumpMixin {
 
     private boolean canJump(ClientPlayerEntity player) {
         return !wearingUsableElytra(player) && !player.isFallFlying() && !player.hasVehicle()
-                && !player.isTouchingWater() && !player.hasStatusEffect(StatusEffects.LEVITATION);
+                && !player.isTouchingWater() && !player.hasStatusEffect(StatusEffects.LEVITATION)
+                && !mattonfire.dnd.classes.Effects.AntiMagicEffect.isSuppressed(player);
     }
 }

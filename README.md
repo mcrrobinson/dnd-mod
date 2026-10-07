@@ -51,7 +51,7 @@ Each class in the game comes with its own unique strengths, weaknesses, and spec
 | **Wizard** | Can wield elemental staffs (done) | Greatly reduced health (done) | Creates a massive explosion and becomes invulnerable for a few seconds (done) |
 | **Artificer** | Increased movement speed (done), Auto-enchanting chance | Deals less damage, Unaffected by potions (except abilities) | Temporarily buffs all armor |
 | **Blood Hunter**| Fire aspect applied to all swords, Double damage at night (done) | Half damage during the day (done) | Can take control of any mob within 30m |
-| **Alchemist** | Can craft special potions exclusive to the class (done), Brewing don't explode (wait, brewing explodes?) | Cannot enchant | Instantly buff all potions to max level (done) |
+| **Alchemist** | Can craft special potions exclusive to the class (done), Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done) | Cannot enchant (enchanting table or enchanted books on an anvil) (done) | Instantly buff all potions to max level (done) |
 
 ### Armor
 There is armor for each class, however the armor benefits are increased depending on whether or not you match the class and wearing a full set.

@@ -1,0 +1,32 @@
+# Screenshots a dwarven fortress from above and from all four sides, and logs every dwarf.
+# Run: ./gradlew runClient -PdevScript=devscripts/dwarven-fortress-survey.txt
+# Find a fortress first with dwarven-fortress-locate.txt and put its x/z below (dev world: -7064, 6536,
+# gate facing east). The king's position shows which way the fortress runs: he sits at the far end.
+# Check: run/screenshots/fortress-*.png, and dwarf positions and names in "[CHAT]" lines of run/logs/latest.log.
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+wait 40
+closescreen
+hud off
+/tp @s -7064 175 6536 0 90
+wait 900
+screenshot fortress-top
+/tp @s -7064 125 6466 0 25
+wait 300
+screenshot fortress-north
+/tp @s -6994 125 6536 90 25
+wait 300
+screenshot fortress-east
+/tp @s -7064 125 6606 180 25
+wait 300
+screenshot fortress-south
+/tp @s -7134 125 6536 -90 25
+wait 300
+screenshot fortress-west
+/execute as @e[type=dndclasses:mountain_dwarf,distance=..200] run data get entity @s Pos
+/execute as @e[type=dndclasses:mountain_dwarf,distance=..200] run data get entity @s CustomName
+wait 20
+hud on
+quit

@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.entity.MountainDwarfEntity;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.minecraft.entity.EntityType;
@@ -20,6 +21,7 @@ import net.minecraft.world.biome.BiomeKeys;
 
 public class ModSpawns {
     private static final int MAX_HOBBITS_NEARBY = 16;
+    private static final int MAX_DWARVES_NEARBY = 24;
 
     public static void addSpawns() {
         // Wyverns in plains/mountains
@@ -56,6 +58,19 @@ public class ModSpawns {
         // over time without overcrowding.
         SpawnRestriction.register(ModEntityTypes.HOBBIT, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canHobbitSpawn);
+
+        // Mountain dwarves likewise only spawn inside dwarven fortresses, in the dark halls too.
+        SpawnRestriction.register(ModEntityTypes.MOUNTAIN_DWARF, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canDwarfSpawn);
+    }
+
+    private static boolean canDwarfSpawn(EntityType<MountainDwarfEntity> type, ServerWorldAccess world, SpawnReason reason,
+                                         BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        return reason != SpawnReason.NATURAL
+                || world.getEntitiesByClass(MountainDwarfEntity.class, new Box(pos).expand(64.0D), e -> true).size() < MAX_DWARVES_NEARBY;
     }
 
     private static boolean canHobbitSpawn(EntityType<HobbitEntity> type, ServerWorldAccess world, SpawnReason reason,

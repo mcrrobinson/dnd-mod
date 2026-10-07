@@ -73,6 +73,7 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     private static final int KIN_GRUDGE_TICKS = 20 * 10;
     private static final int HOME_RANGE = 32;
     private static final int BARTER_COOLDOWN = 40;
+    private static final double WITNESS_RANGE = 16.0D;
 
     private static final String[] FIRST_NAMES = {
             "Thorin", "Balin", "Dwalin", "Gimli", "Gloin", "Oin", "Bombur", "Bofur", "Bifur", "Dori", "Nori", "Ori",
@@ -174,6 +175,38 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         // The skins already wear mail; a few veterans have plate over it.
         if (random.nextFloat() < 0.2F) {
             this.equipStack(EquipmentSlot.CHEST, new ItemStack(Items.IRON_CHESTPLATE));
+        }
+    }
+
+    /** Makes this dwarf the fortress's king: a crown, a netherite axe and twice the health. */
+    public void crown() {
+        String name = this.getCustomName() != null ? this.getCustomName().getString() : FIRST_NAMES[0];
+        this.setCustomName(Text.literal("King " + name));
+        this.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
+        this.equipStack(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
+        this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_AXE));
+        this.setEquipmentDropChance(EquipmentSlot.HEAD, 1.0F);
+        this.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH).setBaseValue(64.0D);
+        this.setHealth(this.getMaxHealth());
+    }
+
+    /**
+     * A player is meddling with the fortress (opening its chests, prising out its gold): every
+     * dwarf nearby who can see it happen turns on them.
+     */
+    public static void witness(PlayerEntity player, BlockPos pos) {
+        if (player.isCreative() || player.isSpectator()) {
+            return;
+        }
+        List<MountainDwarfEntity> dwarves = player.world.getEntitiesByClass(MountainDwarfEntity.class,
+                new net.minecraft.util.math.Box(pos).expand(WITNESS_RANGE), dwarf -> dwarf.canSee(player));
+        for (MountainDwarfEntity dwarf : dwarves) {
+            if (!dwarf.shouldAngerAt(player)) {
+                dwarf.playSound(SoundEvents.ENTITY_VINDICATOR_AMBIENT, 1.0F, dwarf.getSoundPitch());
+            }
+            dwarf.setAngryAt(player.getUuid());
+            dwarf.chooseRandomAngerTime();
+            dwarf.setTarget(player);
         }
     }
 

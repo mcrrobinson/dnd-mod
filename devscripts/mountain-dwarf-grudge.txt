@@ -1,0 +1,31 @@
+# Checks dwarves defend their fortress: a survival player opening a chest in sight of a dwarf
+# makes it angry (AngryAt set to the player), while one out of sight stays calm.
+# Run: ./gradlew runClient -PdevScript=devscripts/mountain-dwarf-grudge.txt
+# Check "[CHAT]" lines in run/logs/latest.log: the first AngryAt query fails ("Found no elements"),
+# the second, after opening the chest, prints the player's UUID; the walled-off dwarf never has one.
+/time set 6000
+/gamerule doDaylightCycle false
+wait 40
+closescreen
+/fill 40 149 -6 52 149 6 minecraft:polished_deepslate
+/fill 40 150 -6 52 154 6 minecraft:air
+/kill @e[type=dndclasses:mountain_dwarf]
+/setblock 46 150 2 minecraft:chest[facing=north]
+/summon dndclasses:mountain_dwarf 49 150 4 {NoAI:1b,CustomName:'"Watcher"'}
+/fill 40 150 -6 52 154 -6 minecraft:polished_deepslate
+/fill 40 150 -7 52 154 -7 minecraft:air
+/summon dndclasses:mountain_dwarf 46 150 -6.5 {NoAI:1b,CustomName:'"Behind"'}
+/fill 40 150 -8 52 154 -8 minecraft:polished_deepslate
+/gamemode survival
+/tp @s 46 150 0 0 30
+wait 20
+/data get entity @e[type=dndclasses:mountain_dwarf,name=Watcher,limit=1] AngryAt
+use
+wait 20
+closescreen
+wait 10
+/data get entity @e[type=dndclasses:mountain_dwarf,name=Watcher,limit=1] AngryAt
+/data get entity @e[type=dndclasses:mountain_dwarf,name=Behind,limit=1] AngryAt
+/data get entity @s UUID
+/gamemode creative
+quit

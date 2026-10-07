@@ -1,0 +1,11 @@
+# Finds the nearest dwarven fortress. Run: ./gradlew runClient -PdevScript=devscripts/dwarven-fortress-locate.txt
+# Change the /tp start point to search somewhere new: fortresses already generated are found again.
+# Check: "[CHAT]" lines in run/logs/latest.log for the coordinates.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s -7000 200 7000
+wait 40
+/locate structure dndclasses:dwarven_fortress
+wait 4000
+quit

@@ -52,7 +52,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
-- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board (PR #69)
+- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board
 
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance

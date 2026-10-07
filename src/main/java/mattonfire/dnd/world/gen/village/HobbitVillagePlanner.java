@@ -90,9 +90,8 @@ final class HobbitVillagePlanner {
 
     private static List<Kind> wishList(Random random) {
         List<Kind> kinds = new ArrayList<>();
-        if (random.nextFloat() < 0.7F) {
-            kinds.add(Kind.INN);
-        }
+        // Every village has its inn (the tavern with the innkeeper and the bounty board).
+        kinds.add(Kind.INN);
         List<Kind> rest = new ArrayList<>();
         int smials = 4 + random.nextInt(4);
         for (int i = 0; i < smials; i++) {

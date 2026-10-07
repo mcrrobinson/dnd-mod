@@ -22,7 +22,7 @@
       "name": "Cleric",
       "pros": ["High mining speed", "Night vision"],
       "cons": ["Shorter viewing distance (fog closes in at ~48 blocks)", "Slightly reduced attack damage"],
-      "special": ["Circle of ignoring mobs"],
+      "special": ["Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s)"],
       "specialOnKey": true
     },
     {
@@ -54,7 +54,7 @@
       "name": "Paladin",
       "pros": ["High health", "circle of healing", "Unaffected by potions, good or bad (ability effects still apply) (done)"],
       "cons": ["Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done)", "Very weak in the Nether: half damage and armor, 20% slower (done)"],
-      "special": ["Instantly heals everyone within 10 blocks to full (done)"],
+      "special": ["Instantly heals everyone within 10 blocks to full, and party members within 24 blocks to full plus Absorption I for 30s (done)"],
       "specialOnKey": true
     },
     {

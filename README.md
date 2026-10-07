@@ -7,6 +7,7 @@
 - [Features](#features)
   - [Player Classes Overview](#player-classes-overview)
   - [Mana and Specials](#mana-and-specials)
+  - [Parties](#parties)
   - [Armor and Items](#armor-and-items)
   - [Enchantments](#enchantments)
   - [Music](#music)
@@ -46,11 +47,11 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 |-|-|-|-|
 | **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Strength III for 15 seconds, inspired by *One Punch Man* |
 | **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
-| **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs |
+| **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s) |
 | **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed for 30s |
 | **Fighter** | High health, High strength, Attracts mobs: hostile mobs prefer a Fighter over other players (done) | Cannot use bows or crossbows (done), No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done) | Super regeneration: Regeneration V for 10s (done) |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Can triple jump, Unrivaled attack speed |
-| **Paladin** | High health, circle of healing, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Instantly heals everyone within 10 blocks to full (done) |
+| **Paladin** | High health, circle of healing, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Instantly heals everyone within 10 blocks to full, and party members within 24 blocks to full plus Absorption I for 30s (done) |
 | **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords (done), Weak to fire (done) | Hold right click to spam fire (no ammo consumed) (done) |
 | **Rogue** | No poison damage (done), No need to eat: food never drains and no starvation, but no natural regen from food either (done) | Low health (done) | Temporary invisibility (done) |
 | **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Can spawn allied undead to attack enemies (done) |
@@ -63,6 +64,9 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 
 ### Mana and Specials
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. See [Mana and class specials](docs/systems/mana.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
+
+### Parties
+`/party` lets players group up: shared XP, no friendly fire, a party health HUD and party-aware Paladin/Cleric powers. See [Party](docs/systems/party.md).
 
 ### Armor and Items
 - [Armor](docs/items/armor.md): 14 class-themed sets. A full set gives a bonus to anyone, boosted for the classes it's made for.

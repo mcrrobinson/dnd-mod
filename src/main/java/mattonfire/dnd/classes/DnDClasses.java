@@ -674,6 +674,8 @@ public class DnDClasses implements ModInitializer {
 
                 Invulnerability.register();
 
+                Druid.register();
+
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");
                         // Safely use Identity's API here

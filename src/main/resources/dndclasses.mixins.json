@@ -18,21 +18,32 @@
         "EnchantmentScreenHandlerInvoker",
         "EnchantmentScreenHandlerAccessor",
         "EnchantingTableMixin",
+        "AnvilScreenHandlerMixin",
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",
+        "MobEntityMixin",
         "BrewingStandAccessor",
         "BrewingStandBlockEntityMixin",
         "BrewingStandBlockMixin",
         "CraftingResultSlotMixin",
         "SlotMixin",
         "SmithingScreenHandlerMixin",
+        "CraftingQuickMoveMixin",
         "WorldMixin",
         "ServerWorldMixin",
         "ProjectileUtilMixin",
-        "SpawnHelperMixin"
+        "SpawnHelperMixin",
+        "PotionItemMixin",
+        "PotionEntityMixin",
+        "AreaEffectCloudEntityMixin",
+        "ArrowEntityMixin",
+        "PotionImmunityMixin",
+        "PotionInstantEffectMixin",
+        "ActiveTargetGoalAccessor"
     ],
     "client": [
+        "BackgroundRendererMixin",
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
         "DoubleJumpMixin",
@@ -41,7 +52,8 @@
         "LivingEntityMixin",
         "LivingEntityRendererMixin",
         "MinecraftClientMusicMixin",
-        "MusicTrackerAccessor"
+        "MusicTrackerAccessor",
+        "WarlockFireballMixin"
     ],
     "injectors": {
         "defaultRequire": 1

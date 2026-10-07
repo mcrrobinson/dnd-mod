@@ -14,6 +14,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.passive.GoatEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
@@ -43,8 +44,10 @@ public class ModSpawns {
                 SpawnGroup.MONSTER, ModEntityTypes.MAGMAMUNCHER_ALPHA, 1, 1, 1);
 
 
+        // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
+        // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.
         SpawnRestriction.register(ModEntityTypes.WYVERN, SpawnRestriction.Location.ON_GROUND,
-                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, AnimalEntity::isValidNaturalSpawn);
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, GoatEntity::canSpawn);
         // Lightning Chasers only live in their lairs on the mountain peaks (the structure's
         // spawn_overrides), which get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.LIGHTNING_CHASER, SpawnRestriction.Location.ON_GROUND,

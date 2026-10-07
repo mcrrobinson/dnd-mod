@@ -12,6 +12,7 @@
     - [Dragons](#dragons)
     - [Hobbits](#hobbits)
     - [Mountain Dwarves](#mountain-dwarves)
+  - [Dragon Lairs](#dragon-lairs)
   - [Hobbit Villages](#hobbit-villages)
   - [Dwarven Fortresses](#dwarven-fortresses)
 
@@ -107,8 +108,25 @@ Custom music plays during different events in the game. There are **five** music
 #### Goblins
 - **Goblin Warrior**: A goblin warrior is a strong and tough mob that has a low attack speed but high health. It can be found near the entrance of the Nether Fortress.
 
-#### Dragons 
-- **Dragon**: A dragon is a large, green, and powerful creature that can be found in the Nether. It has a high attack speed and low health.
+#### Dragons
+Dragons live in the Overworld. Their wings, neck, head, tail and legs can all be hit (like the ender dragon's), they take no fall damage, and they breathe fire: after a growl and a rear back, a 12-block cone of flame for 2 seconds (4 damage a hit and sets you alight) that slowly swings after its target, so you can dodge it by moving sideways. They can't breathe fire underwater.
+
+| | Wyvern | Lightning Chaser |
+|-|-|-|
+| **Where** | Plains, meadows, stony peaks and jagged peaks, on well-lit ground (weight 10, groups of 1-3) | Only in its lair on a mountain summit (see [Dragon Lairs](#dragon-lairs)) |
+| **Health** | 40 | 200, with 12 armour, 6 toughness and 80% knockback resistance |
+| **Bite** | 6 damage | 14 damage |
+| **Speed** | 0.3 walking, 0.6 flying | 0.35 walking, 0.6 flying |
+| **Attacks** | Hunts players on sight. Bites up close (once a second), breathes fire from further off (every 3 seconds) | Hunts players on sight. Bites up close (once a second); from further off, every 3 seconds, it takes turns breathing fire and calling down a storm of three lightning bolts round you. Immune to lightning |
+| **Boss fight** | Red boss bar | Yellow boss bar |
+| **Rewards** | **Dragon Slayer** advancement (challenge, 100 XP) | 2-5 phantom membranes and 1-3 copper blocks; when a player kills it, also 80 XP, 2-5 diamonds and a 15% chance (+5% per Looting level) of a **Staff of Lightning** |
+
+In a fight with a player, a wild dragon shows its boss bar to everyone within 64 blocks and **Tooth and Claw** plays for them until the fight ends.
+
+- **River Pikehorn**: a small fire-breathing drake (20 HP, 2 damage bite, a 7-block flame doing 2 damage) in rivers, swamps and mangrove swamps (weight 15, groups of 2-4). It's passive and keeps to itself.
+
+### Dragon Lairs
+A Lightning Chaser's lair sits on the very summit of a jagged, frozen or stony peak (the highest point around, with the mountain falling away on every side): a ring of standing stones crowned with lightning rods, round a nest of logs and bones heaped with gold and a hoard chest (`chests/dragon_lair`: gold, copper, emeralds, diamonds, enchanted diamond gear, and sometimes an enchanted golden apple, a trident or a Staff of Lightning). Each lair starts with one Lightning Chaser (sometimes two). It never strays more than about 24 blocks before circling back, and once it's dead the lair sends a new one now and then. Find one with `/locate structure dndclasses:dragon_lair`.
 
 #### Hobbits
 - **Hobbit**: A small, peaceful halfling that lives in hobbit villages. Hobbits wander their village by day, head home at night, keep away from monsters and are always nibbling something. Right-click one with an empty hand and it shares some of its food (once every few minutes).

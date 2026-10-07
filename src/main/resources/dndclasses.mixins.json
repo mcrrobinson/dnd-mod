@@ -28,7 +28,14 @@
         "WorldMixin",
         "ServerWorldMixin",
         "ProjectileUtilMixin",
-        "SpawnHelperMixin"
+        "SpawnHelperMixin",
+        "PotionItemMixin",
+        "PotionEntityMixin",
+        "AreaEffectCloudEntityMixin",
+        "ArrowEntityMixin",
+        "PotionImmunityMixin",
+        "PotionInstantEffectMixin",
+        "ActiveTargetGoalAccessor"
     ],
     "client": [
         "HiddenWindowMixin",

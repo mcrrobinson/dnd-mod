@@ -17,6 +17,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,7 +40,14 @@ public class DragonPart extends Entity {
 
     private Box partBox;
     private List<Box> shapes = List.of();
-    private long renderedAt = Long.MIN_VALUE;
+    // Not Long.MIN_VALUE: worldTime - MIN_VALUE overflows, and the part would count as rendered forever
+    private long renderedAt = Long.MIN_VALUE / 2;
+    private long renderStamp = Long.MIN_VALUE;
+    // The pose (DragonPartLayout.Pose) and placement the current shapes were built for, so a dragon
+    // that hasn't changed pose or turned doesn't rebuild them; null after the renderer set them
+    private Object pose;
+    private double poseX, poseY, poseZ;
+    private float poseYaw;
 
     public DragonPart(MobEntity owner, String name) {
         super(owner.getType(), owner.world);
@@ -69,10 +77,52 @@ public class DragonPart extends Entity {
     public void setRenderedShapes(List<Box> shapes, long worldTime) {
         this.setShapes(shapes);
         this.renderedAt = worldTime;
+        this.pose = null;
     }
 
     public boolean hasRenderedShapes(long worldTime) {
         return worldTime - this.renderedAt <= 2;
+    }
+
+    /** Client only: an id for the half tick the renderer last fitted the shapes in, so it can skip refits. */
+    public long getRenderStamp() {
+        return this.renderStamp;
+    }
+
+    public void setRenderStamp(long stamp) {
+        this.renderStamp = stamp;
+    }
+
+    /** Shapes built from {@code pose} for a dragon at (x, y, z) facing {@code yaw}. */
+    public void setPoseShapes(List<Box> shapes, Object pose, double x, double y, double z, float yaw) {
+        this.setShapes(shapes);
+        this.pose = pose;
+        this.poseX = x;
+        this.poseY = y;
+        this.poseZ = z;
+        this.poseYaw = yaw;
+    }
+
+    /** Whether the current shapes were built from this pose (same object) and facing, wherever the dragon was. */
+    public boolean hasPoseShapes(Object pose, float yaw) {
+        return this.pose == pose && this.poseYaw == yaw;
+    }
+
+    public boolean isPosedAt(double x, double y, double z) {
+        return this.poseX == x && this.poseY == y && this.poseZ == z;
+    }
+
+    /** Shifts the posed shapes to a dragon that moved without turning or changing pose. */
+    public void movePoseShapes(double x, double y, double z) {
+        double dx = x - this.poseX, dy = y - this.poseY, dz = z - this.poseZ;
+        List<Box> moved = new ArrayList<>(this.shapes.size());
+        for (Box shape : this.shapes) {
+            moved.add(shape.offset(dx, dy, dz));
+        }
+        this.setShapes(moved);
+        this.poseX = x;
+        this.poseY = y;
+        this.poseZ = z;
     }
 
     public List<Box> getShapes() {
@@ -105,25 +155,32 @@ public class DragonPart extends Entity {
      * vectors {@code ex}, {@code ey} and {@code ez}; each edge is cut into slices of at most SLICE blocks.
      */
     public static void addCube(List<Box> shapes, Vec3d o, Vec3d ex, Vec3d ey, Vec3d ez) {
-        int nx = Math.max(1, (int) Math.ceil(ex.length() / SLICE));
-        int ny = Math.max(1, (int) Math.ceil(ey.length() / SLICE));
-        int nz = Math.max(1, (int) Math.ceil(ez.length() / SLICE));
-        Vec3d dx = ex.multiply(1.0 / nx);
-        Vec3d dy = ey.multiply(1.0 / ny);
-        Vec3d dz = ez.multiply(1.0 / nz);
+        addCube(shapes, o.x, o.y, o.z, ex.x, ex.y, ex.z, ey.x, ey.y, ey.z, ez.x, ez.y, ez.z);
+    }
+
+    /** {@link #addCube(List, Vec3d, Vec3d, Vec3d, Vec3d)} without the vectors, for code run every tick or frame. */
+    public static void addCube(List<Box> shapes, double ox, double oy, double oz,
+                               double exX, double exY, double exZ, double eyX, double eyY, double eyZ,
+                               double ezX, double ezY, double ezZ) {
+        int nx = Math.max(1, (int) Math.ceil(Math.sqrt(exX * exX + exY * exY + exZ * exZ) / SLICE));
+        int ny = Math.max(1, (int) Math.ceil(Math.sqrt(eyX * eyX + eyY * eyY + eyZ * eyZ) / SLICE));
+        int nz = Math.max(1, (int) Math.ceil(Math.sqrt(ezX * ezX + ezY * ezY + ezZ * ezZ) / SLICE));
+        double dxX = exX / nx, dxY = exY / nx, dxZ = exZ / nx;
+        double dyX = eyX / ny, dyY = eyY / ny, dyZ = eyZ / ny;
+        double dzX = ezX / nz, dzY = ezY / nz, dzZ = ezZ / nz;
         // Offsets from a slice's base corner to its min and max corners
-        double loX = Math.min(0, dx.x) + Math.min(0, dy.x) + Math.min(0, dz.x);
-        double loY = Math.min(0, dx.y) + Math.min(0, dy.y) + Math.min(0, dz.y);
-        double loZ = Math.min(0, dx.z) + Math.min(0, dy.z) + Math.min(0, dz.z);
-        double hiX = Math.max(0, dx.x) + Math.max(0, dy.x) + Math.max(0, dz.x);
-        double hiY = Math.max(0, dx.y) + Math.max(0, dy.y) + Math.max(0, dz.y);
-        double hiZ = Math.max(0, dx.z) + Math.max(0, dy.z) + Math.max(0, dz.z);
+        double loX = Math.min(0, dxX) + Math.min(0, dyX) + Math.min(0, dzX);
+        double loY = Math.min(0, dxY) + Math.min(0, dyY) + Math.min(0, dzY);
+        double loZ = Math.min(0, dxZ) + Math.min(0, dyZ) + Math.min(0, dzZ);
+        double hiX = Math.max(0, dxX) + Math.max(0, dyX) + Math.max(0, dzX);
+        double hiY = Math.max(0, dxY) + Math.max(0, dyY) + Math.max(0, dzY);
+        double hiZ = Math.max(0, dxZ) + Math.max(0, dyZ) + Math.max(0, dzZ);
         for (int i = 0; i < nx; i++) {
             for (int j = 0; j < ny; j++) {
                 for (int k = 0; k < nz; k++) {
-                    double x = o.x + dx.x * i + dy.x * j + dz.x * k;
-                    double y = o.y + dx.y * i + dy.y * j + dz.y * k;
-                    double z = o.z + dx.z * i + dy.z * j + dz.z * k;
+                    double x = ox + dxX * i + dyX * j + dzX * k;
+                    double y = oy + dxY * i + dyY * j + dzY * k;
+                    double z = oz + dxZ * i + dyZ * j + dzZ * k;
                     shapes.add(new Box(x + loX, y + loY, z + loZ, x + hiX, y + hiY, z + hiZ));
                 }
             }

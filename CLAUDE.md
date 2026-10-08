@@ -83,4 +83,5 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
 - Big GeckoLib mobs get extra hit shapes through `MultipartDragon`:
   - Implement it and list the model's bone groups in a `DragonPartLayout`.
   - Render the mob with a `DragonRenderer`.
-  - Parts follow the animated model on the client and the rest pose on the server.
+  - Parts follow the animated model on the client. On the server they follow the `.animation.json` for layouts with `.animations(...)` (Wyvern, Lightning Chaser), timed on the world clock like the client (`DragonAnimationController`), and the rest pose otherwise.
+  - DevScript `serverhitboxes on` draws the server's part shapes in red next to the client's green; `serverhitboxes measure` logs the gap.

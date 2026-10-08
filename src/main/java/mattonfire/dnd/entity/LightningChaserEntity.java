@@ -1,7 +1,6 @@
 package mattonfire.dnd.entity;
 
 import java.util.UUID;
-import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.ai.goal.LightningChaserAttackGoal;
 import mattonfire.dnd.entity.ai.goal.LightningChaserFlyRandomlyGoal;
 import net.minecraft.entity.Entity;
@@ -22,9 +21,7 @@ import net.minecraft.entity.LightningEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
-import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -46,6 +43,13 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.GameRules;
+import net.minecraft.block.AbstractFireBlock;
+import net.minecraft.block.BlockState;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.Box;
+import mattonfire.dnd.world.gen.lair.LairRespawns;
 import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -93,6 +97,9 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
 
     /** How far the storm's extra bolts land from the target. */
     private static final double STORM_SPREAD = 3.0;
+    /** Like a real bolt: 5 damage to anything within 3 blocks (and up to 6 above). */
+    private static final float STRIKE_DAMAGE = 5.0F;
+    private static final double STRIKE_RADIUS = 3.0;
 
     // Lightning Chasers live in lairs on the mountain peaks (see DragonLairStructure) and keep
     // circling back to them.
@@ -124,22 +131,27 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
     private static final RegistryKey<Structure> LAIR_STRUCTURE =
             RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "dragon_lair"));
 
+    /** The centre of the dragon lair containing {@code pos}, or null outside one. */
+    @Nullable
+    public static BlockPos findLair(ServerWorld world, BlockPos pos) {
+        StructureStart start = world.getStructureAccessor().getStructureContaining(pos, LAIR_STRUCTURE);
+        if (start.hasChildren()) {
+            for (StructurePiece piece : start.getChildren()) {
+                if (piece instanceof LairPiece lairPiece) {
+                    return lairPiece.getCenter();
+                }
+            }
+        }
+        return null;
+    }
+
     // The lair's first dragons get their lair from LairPiece; the ones its spawn_overrides send later
     // (and any summoned inside one) look it up here, so they circle back to it too.
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         if (this.lair == null && spawnReason != SpawnReason.STRUCTURE) {
-            StructureStart start = world.toServerWorld().getStructureAccessor()
-                    .getStructureContaining(this.getBlockPos(), LAIR_STRUCTURE);
-            if (start.hasChildren()) {
-                for (StructurePiece piece : start.getChildren()) {
-                    if (piece instanceof LairPiece lairPiece) {
-                        this.lair = lairPiece.getCenter();
-                        break;
-                    }
-                }
-            }
+            this.lair = findLair(world.toServerWorld(), this.getBlockPos());
         }
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
@@ -191,41 +203,16 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         return !this.isOnGround() && this.ticksSinceLastGround > 5;
     }
 
-    public void switchToFlightMode() {
-        this.moveControl = new FlightMoveControl(this, 10, false);
-        BirdNavigation birdNav = new BirdNavigation(this, this.world);
-        birdNav.setCanPathThroughDoors(false);
-        birdNav.setCanSwim(true);
-        this.navigation = birdNav;
-    }
-
     @Override
     public void tick() {
         super.tick();
         PART_LAYOUT.update(this, this.parts, this.isFlying());
+        // One BirdNavigation and FlightMoveControl for both ground and air (like the parrot), so the
+        // current path survives every landing and take-off.
         if (this.isOnGround()) {
             this.ticksSinceLastGround = 0;
-            // Use ground movement control when on ground
-            if (!(this.moveControl instanceof MoveControl)) {
-                this.moveControl = new MoveControl(this);
-            }
-            // Use ground navigation when on ground
-            if (!(this.getNavigation() instanceof MobNavigation)) {
-                this.navigation = new MobNavigation(this, this.world);
-            }
         } else {
             this.ticksSinceLastGround++;
-            // Use flight movement control when in air
-            if (!(this.moveControl instanceof FlightMoveControl)) {
-                this.moveControl = new FlightMoveControl(this, 10, false);
-            }
-            // Use bird navigation when in air
-            if (!(this.getNavigation() instanceof BirdNavigation)) {
-                BirdNavigation birdNav = new BirdNavigation(this, this.world);
-                birdNav.setCanPathThroughDoors(false);
-                birdNav.setCanSwim(true);
-                this.navigation = birdNav;
-            }
         }
 
         if (!this.world.isClient && !this.isOnGround() && this.getVelocity().y < 0.0D) {
@@ -257,6 +244,10 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
     public void onDeath(DamageSource source) {
         this.bossFight.onDeath();
         super.onDeath(source);
+        // The lair waits a while before it sends a new one (see ModSpawns)
+        if (this.world instanceof ServerWorld serverWorld && this.lair != null && !this.isTamed()) {
+            LairRespawns.get(serverWorld).onChaserKilled(this.lair, serverWorld.getTime());
+        }
     }
 
     // It calls the storm down itself, so its own lightning (and anyone else's) doesn't hurt it.
@@ -314,7 +305,8 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
         this.targetSelector.add(3, new RevengeGoal(this));
-        this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
+        // Wild ones hunt players; tamed ones leave everyone alone unless the owner fights them
+        this.targetSelector.add(4, new UntamedActiveTargetGoal<>(this, PlayerEntity.class, true, null));
     }
 
     /** Calls a storm down on the target: one bolt on it and two more close by. */
@@ -330,18 +322,73 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
         }
     }
 
+    /**
+     * A cosmetic bolt plus damage the chaser deals itself: kills are credited to it, it scales with
+     * difficulty like its other attacks, and it doesn't charge creepers, turn villagers into witches or burn
+     * dropped items. Fire on the ground only with mobGriefing (and doFireTick, like real lightning).
+     */
     private void strike(double x, double y, double z) {
         LightningEntity lightning = EntityType.LIGHTNING_BOLT.create(this.world);
-        if (lightning != null) {
-            lightning.refreshPositionAfterTeleport(x, y, z);
-            this.world.spawnEntity(lightning);
+        if (lightning == null) {
+            return;
         }
+        lightning.refreshPositionAfterTeleport(x, y, z);
+        lightning.setCosmetic(true);
+        this.world.spawnEntity(lightning);
+
+        DamageSource source = new DamageSource(this.world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE)
+                .entryOf(DamageTypes.LIGHTNING_BOLT), this);
+        Box area = new Box(x - STRIKE_RADIUS, y - STRIKE_RADIUS, z - STRIKE_RADIUS,
+                x + STRIKE_RADIUS, y + 6.0D + STRIKE_RADIUS, z + STRIKE_RADIUS);
+        for (LivingEntity victim : this.world.getEntitiesByClass(LivingEntity.class, area,
+                e -> e.isAlive() && e != this && !TamedDragons.isFriend(this, e) && !(e instanceof LightningChaserEntity))) {
+            if (victim.damage(source, STRIKE_DAMAGE)) {
+                victim.setOnFireFor(8);
+            }
+        }
+
+        if (this.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)
+                && this.world.getGameRules().getBoolean(GameRules.DO_FIRE_TICK)) {
+            BlockPos pos = BlockPos.ofFloored(x, y, z);
+            BlockState fire = AbstractFireBlock.getState(this.world, pos);
+            if (this.world.getBlockState(pos).isAir() && fire.canPlaceAt(this.world, pos)) {
+                this.world.setBlockState(pos, fire);
+            }
+        }
+    }
+
+    @Override
+    public boolean canTarget(LivingEntity target) {
+        return !TamedDragons.isFriend(this, target) && super.canTarget(target);
+    }
+
+    @Override
+    public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
+        return TamedDragons.canAttackWithOwner(target, owner);
+    }
+
+    // Wild ones leave in peaceful, like monsters (the lair sends a new one when you switch back)
+    @Override
+    protected boolean isDisallowedInPeaceful() {
+        return !this.isTamed();
+    }
+
+    // Can't breed, so wheat shouldn't put it in love mode (and use the wheat up)
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false;
+    }
+
+    // AnimalEntity gives 1-3 XP whatever experiencePoints says; this is the 80 from BossFight.xp
+    @Override
+    public int getXpToDrop() {
+        return this.experiencePoints;
     }
 
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null; // Not breedable by default as per request
+        return null;
     }
 
     @Override

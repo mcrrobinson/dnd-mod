@@ -23,6 +23,9 @@ import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.Difficulty;
+import net.minecraft.server.world.ServerWorld;
+import mattonfire.dnd.world.gen.lair.LairRespawns;
 
 public class ModSpawns {
     private static final int MAX_HOBBITS_NEARBY = 16;
@@ -65,7 +68,9 @@ public class ModSpawns {
         // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
         // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.
         SpawnRestriction.register(ModEntityTypes.WYVERN, SpawnRestriction.Location.ON_GROUND,
-                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, GoatEntity::canSpawn);
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) ->
+                        // Wild wyverns leave in peaceful, so don't spawn them there
+                        world.getDifficulty() != Difficulty.PEACEFUL && GoatEntity.canSpawn(type, world, reason, pos, random));
         // Lightning Chasers only live in their lairs on the mountain peaks (the structure's
         // spawn_overrides), which get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.LIGHTNING_CHASER, SpawnRestriction.Location.ON_GROUND,
@@ -118,8 +123,18 @@ public class ModSpawns {
         if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
             return false;
         }
-        return reason != SpawnReason.NATURAL
-                || world.getEntitiesByClass(LightningChaserEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty();
+        if (reason != SpawnReason.NATURAL) {
+            return true;
+        }
+        // Natural spawns only come from a lair's spawn override: not in peaceful, not while the lair is
+        // still waiting after its last chaser was killed, and never near another one.
+        if (world.getDifficulty() == Difficulty.PEACEFUL) {
+            return false;
+        }
+        ServerWorld serverWorld = world.toServerWorld();
+        BlockPos lair = LightningChaserEntity.findLair(serverWorld, pos);
+        return lair != null && LairRespawns.get(serverWorld).canRespawn(lair, serverWorld.getTime())
+                && world.getEntitiesByClass(LightningChaserEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty();
     }
 
     private static boolean canMagmamuncherAlphaSpawn(EntityType<MagmamuncherAlphaEntity> type, ServerWorldAccess world,

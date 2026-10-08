@@ -54,7 +54,8 @@
         "ExperienceOrbEntityMixin",
         "DungeonFeatureMixin",
         "LootableContainerBlockEntityAccessor",
-        "PlayerAttackRollMixin"
+        "PlayerAttackRollMixin",
+        "RangerSwordPickupMixin"
     ],
     "client": [
         "BackgroundRendererMixin",
@@ -68,7 +69,8 @@
         "MinecraftClientMusicMixin",
         "MusicTrackerAccessor",
         "SoundSystemMusicDuckMixin",
-        "WarlockFireballMixin"
+        "WarlockFireballMixin",
+        "RangerBowZoomMixin"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -5,8 +5,9 @@ How big GeckoLib mobs (the dragons) get extra hittable parts beyond their small 
 - A Wyvern model is about 12 blocks wide but its hitbox is 1.5. Its wings, neck, head, tail and legs are separate `DragonPart` entities that pass damage to the owner.
 - **`MultipartDragon`**: the interface a mob implements (`getParts()`, `getPartLayout()`).
 - **`DragonPartLayout`**: lists the model's bone groups. `part(name, bones...)` adds one part; `pair(name, leftBones...)` adds a left part and its mirrored `_right` twin. The constructor takes the geo file name and how far the root bone drops in the ground and flight animations.
-- **`DragonRenderer`**: on the client, it fits each part to its bones' cubes as they're animated every frame. The server has no animations, so it uses the rest pose from the `.geo.json`, shifted by the root bone drop.
-- **Hit detection:** `WorldMixin` adds parts to `getOtherEntities`, `ServerWorldMixin` resolves part ids from attack packets, and `ProjectileUtilMixin` tests the small shape a ray actually hits instead of the part's mostly-empty box. A dragon's own projectiles skip its parts.
+- **`DragonRenderer`**: on the client, it fits each part to its bones' cubes as they're animated, at most twice per tick (it reuses its matrix and vectors). The server has no animations, so it uses the rest pose from the `.geo.json`, shifted by the root bone drop.
+- **Rest pose:** `DragonPartLayout` reads each cube's origin, size and inflate, and applies the bone rotations (parents first) and the cube's own rotation about their pivots, the same way GeckoLib renders them. It's loaded once per model. Each tick a part keeps its shapes if the dragon hasn't moved or turned, shifts them if it only moved, and rebuilds them only when it turned or took off or landed.
+- **Hit detection:** `WorldMixin` adds parts to `getOtherEntities` (skipping dragons whose `DragonPartLayout.getReach()` can't touch the query box), `ServerWorldMixin` resolves part ids from attack packets, and `ProjectileUtilMixin` tests the small shape a ray actually hits instead of the part's mostly-empty box. A dragon's own projectiles skip its parts.
 
 ## Adding one
 1. Implement `MultipartDragon` and build a static `DragonPartLayout` (see `WyvernEntity.PART_LAYOUT`).
@@ -16,6 +17,7 @@ How big GeckoLib mobs (the dragons) get extra hittable parts beyond their small 
 5. Check it with `devscripts/dragon-hitboxes.txt` (`hitboxes on` draws the part shapes as green boxes).
 
 ## Known limitations
+- The server's shapes are the rest pose, not the animated one, so wing tips in flight are a bit off on the server.
 - GeckoLib 4.2 adds an extra identity matrix in `GeoBone.getLocalSpaceMatrix()` / `getWorldSpaceMatrix()`; `DragonRenderer` subtracts it.
 
 ## For developers

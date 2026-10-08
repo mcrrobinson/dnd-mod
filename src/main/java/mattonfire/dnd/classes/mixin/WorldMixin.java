@@ -45,6 +45,16 @@ public abstract class WorldMixin implements DragonPartTracker {
             if (dragon == except || dragon == shooter) {
                 continue;
             }
+            // Broad phase: skip dragons whose parts can't reach the query box
+            if (dragon instanceof Entity owner) {
+                double reach = dragon.getPartLayout().getReach();
+                Box own = owner.getBoundingBox();
+                if (own.maxX + reach < box.minX || own.minX - reach > box.maxX
+                        || own.maxY + reach < box.minY || own.minY - reach > box.maxY
+                        || own.maxZ + reach < box.minZ || own.minZ - reach > box.maxZ) {
+                    continue;
+                }
+            }
             for (DragonPart part : dragon.getParts()) {
                 if (part.getBoundingBox().intersects(box) && predicate.test(part)) {
                     result.add(part);

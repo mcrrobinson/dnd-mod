@@ -95,9 +95,9 @@ public class SetClassAttributes {
 
     public void typeRanger(PlayerEntity player) {
         System.out.println("Ranger...");
-        // 2x Zoom with a bow - found in BowItemMixin
+        // 2x zoom while drawing a bow - in RangerBowZoomMixin (client)
         player.getAttributeInstance(EntityAttributes.GENERIC_LUCK).setBaseValue(5); // Default 0.0
-        // Can't use swords - in global callback listener
+        // Can't pick up swords - in RangerSwordPickupMixin
     }
 
     public void typeRogue(PlayerEntity player) {

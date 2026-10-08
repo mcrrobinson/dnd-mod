@@ -1,0 +1,21 @@
+wait 40
+closescreen
+wait 10
+respawn
+/gamemode survival
+/dndclass set @s ranger
+wait 10
+/clear @s
+/setblock 0 149 0 minecraft:stone
+/tp @s 0.5 150 0.5 0 0
+wait 10
+/summon item ~ ~ ~ {Item:{id:"minecraft:iron_sword",Count:1b},PickupDelay:0s}
+/summon item ~ ~ ~ {Item:{id:"minecraft:arrow",Count:5b},PickupDelay:0s}
+wait 40
+/execute if entity @e[type=item,distance=..3,nbt={Item:{id:"minecraft:iron_sword"}}]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:arrow"}]}]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:iron_sword"}]}]
+/dndclass set @s fighter
+wait 40
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:iron_sword"}]}]
+quit

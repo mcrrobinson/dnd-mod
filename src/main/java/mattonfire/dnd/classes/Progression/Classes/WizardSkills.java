@@ -11,13 +11,17 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Items.ExtendedSwordItem;
+import mattonfire.dnd.classes.Items.WizardArmorItem;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -28,12 +32,18 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.FireballEntity;
+import net.minecraft.item.ArmorItem;
+import net.minecraft.item.ArmorMaterials;
+import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
@@ -104,7 +114,47 @@ public class WizardSkills extends ClassSkills {
 
     @Override
     public void register() {
-        ServerTickEvents.END_SERVER_TICK.register(server -> tickSwarms());
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            tickSwarms();
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                if (Progression.classOf(player) == DndCharacter.WIZARD) {
+                    removeHeavyArmor(player);
+                }
+            }
+        });
+
+        // Only Wizards can hit with an elemental staff. Runs on the client first (which
+        // then never sends the attack), so the message shows once.
+        AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
+            if (player.isSpectator() || !(player.getMainHandStack().getItem() instanceof ExtendedSwordItem)
+                    || ExtendedSwordItem.canWield(player)) {
+                return ActionResult.PASS;
+            }
+            ExtendedSwordItem.sendCantWield(player);
+            return ActionResult.FAIL;
+        });
+    }
+
+    /**
+     * Wizards can wear at most iron armor: any armor piece with more armor points
+     * than iron in its slot (diamond, netherite, the other classes' sets) comes off
+     * into the inventory, or drops if it's full. The Wizard set is allowed.
+     */
+    private static void removeHeavyArmor(ServerPlayerEntity player) {
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            if (slot.getType() != EquipmentSlot.Type.ARMOR)
+                continue;
+            ItemStack stack = player.getEquippedStack(slot);
+            if (!(stack.getItem() instanceof ArmorItem armor) || stack.getItem() instanceof WizardArmorItem
+                    || armor.getProtection() <= ArmorMaterials.IRON.getProtection(armor.getType()))
+                continue;
+            player.equipStack(slot, ItemStack.EMPTY);
+            if (!player.getInventory().insertStack(stack)) {
+                player.dropItem(stack, false);
+            }
+            player.sendMessage(Text.literal("Wizards can't wear armor heavier than iron!").formatted(Formatting.RED),
+                    true);
+        }
     }
 
     @Override

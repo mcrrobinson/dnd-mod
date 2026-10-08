@@ -3,6 +3,8 @@ Every class has a special ability (its "power-up"), fired with a key once your m
 
 ## How it works
 - **Mana bar:** 9 pips drawn above the hotbar, beside the health and food bars (hidden in creative and spectator like they are).
+  - It sits in the row above the food bar and moves up out of the way of the air bubbles (underwater) and of a second row of mount hearts (riding a horse with more than 20 health).
+  - The equipped active's cost is underlined in the 1px gap below the pips, gold once you can afford it.
 - **Regeneration:** +1 pip every 2 seconds, so an empty bar fills in 18 seconds.
 - **Firing:** press the **power-up key (Z by default**, "key.dnd-classes.power-up" in Controls). It only works with a full bar, and it empties the bar.
 - Mana is kept through death and leaving the End (dying doesn't refill it), and the bar is re-synced on respawn.

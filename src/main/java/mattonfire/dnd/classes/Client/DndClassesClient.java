@@ -23,6 +23,7 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
@@ -71,8 +72,13 @@ public class DndClassesClient implements ClientModInitializer {
     private static void receiveDoubleJumpEffectsRequest(MinecraftClient client, ClientPlayNetworkHandler handler,
             PacketByteBuf buf,
             PacketSender responseSender) {
+        // Read before execute: the buffer is released once this handler returns
+        UUID effectPlayerUuid = buf.readUuid();
         client.execute(() -> {
-            PlayerEntity effectPlayer = client.player.getEntityWorld().getPlayerByUuid(buf.readUuid());
+            if (client.player == null) {
+                return;
+            }
+            PlayerEntity effectPlayer = client.player.getEntityWorld().getPlayerByUuid(effectPlayerUuid);
             if (effectPlayer != null) {
                 DoubleJumpEffect.play(client.player, effectPlayer);
             }
@@ -84,6 +90,9 @@ public class DndClassesClient implements ClientModInitializer {
             PacketSender responseSender) {
         UUID effectPlayerUuid = buf.readUuid();
         client.execute(() -> {
+            if (client.player == null) {
+                return;
+            }
             PlayerEntity effectPlayer = client.player.getEntityWorld().getPlayerByUuid(effectPlayerUuid);
             if (effectPlayer != null) {
                 DoubleJumpEffect.play(client.player, effectPlayer);
@@ -126,12 +135,12 @@ public class DndClassesClient implements ClientModInitializer {
 
     private void handleWizardPowerupPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
-        MySphereRenderState.shouldRenderSphere = true;
-        MySphereRenderState.spherePos = client.player.getPos().add(0,
-                client.player.getStandingEyeHeight() / 2.0, 0);
-        MySphereRenderState.startTick = client.world.getTime();
         client.execute(() -> {
             if (client.world != null && client.player != null) {
+                MySphereRenderState.shouldRenderSphere = true;
+                MySphereRenderState.spherePos = client.player.getPos().add(0,
+                        client.player.getStandingEyeHeight() / 2.0, 0);
+                MySphereRenderState.startTick = client.world.getTime();
                 client.world.playSound(
                         client.player.getPos().getX(), client.player.getPos().getY(), client.player.getPos().getZ(),
                         ModSounds.WIZARD_EXPLOSION,
@@ -183,13 +192,18 @@ public class DndClassesClient implements ClientModInitializer {
 
         WorldRenderEvents.END.register(context -> {
             if (MySphereRenderState.shouldRenderSphere) {
-                long now = MinecraftClient.getInstance().world.getTime();
-                float progress = (now - MySphereRenderState.startTick) / (float) MySphereRenderState.DURATION_TICKS;
-                if (progress >= 1.0f) {
+                if (context.world() == null) {
                     MySphereRenderState.shouldRenderSphere = false;
                     return;
                 }
-                float radius = 0.1f + progress * 49.9f; // Expands from 1 to 5 blocks
+                long now = context.world().getTime();
+                float progress = (now - MySphereRenderState.startTick) / (float) MySphereRenderState.DURATION_TICKS;
+                // Below 0 if the world clock went backwards (another world, /time set)
+                if (progress < 0.0f || progress >= 1.0f) {
+                    MySphereRenderState.shouldRenderSphere = false;
+                    return;
+                }
+                float radius = 0.1f + progress * 49.9f; // Expands from 0.1 to 50 blocks
                 int baseColor = 0xFFffec64;
                 int originalAlpha = 0xFF;
                 int newAlpha = (int) ((1.0f - progress) * originalAlpha);
@@ -213,6 +227,13 @@ public class DndClassesClient implements ClientModInitializer {
                 DndClassesClient::handleClassQuery);
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WARLOCK_FIREBREATH, this::handleFireBreathPacket);
+        // Leaving a world mid-effect must not carry the flame particles or the sphere into the next one
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> client.execute(() -> {
+            isBreathingFire = false;
+            fireBreathEndTick = 0;
+            fireBreathWorld = null;
+            MySphereRenderState.shouldRenderSphere = false;
+        }));
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);
 

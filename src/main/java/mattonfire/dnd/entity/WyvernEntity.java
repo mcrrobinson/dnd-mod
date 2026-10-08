@@ -7,10 +7,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.control.FlightMoveControl;
-import net.minecraft.entity.ai.control.MoveControl;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.ai.pathing.BirdNavigation;
-import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -26,6 +24,7 @@ import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
@@ -43,7 +42,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     private String currentFlyAnimation = "fly.idle";
     private int flyAnimationTimer = 0;
     private int ticksSinceLastGround = 0;
-    private static final int FLY_ANIMATION_DURATION = 20; // ticks - reduced from 120 for responsiveness
+    private static final int FLY_ANIMATION_DURATION = 20; // ticks
 
     // The model is ~12 blocks wide but the entity hitbox is only 1.5, so wings, neck, head and tail
     // get their own hittable parts (like the ender dragon), each wrapping a group of model bones.
@@ -111,41 +110,16 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         return !this.isOnGround() && this.ticksSinceLastGround > 5;
     }
 
-    public void switchToFlightMode() {
-        this.moveControl = new FlightMoveControl(this, 10, false);
-        BirdNavigation birdNav = new BirdNavigation(this, this.world);
-        birdNav.setCanPathThroughDoors(false);
-        birdNav.setCanSwim(true);
-        this.navigation = birdNav;
-    }
-
     @Override
     public void tick() {
         super.tick();
         PART_LAYOUT.update(this, this.parts, this.isFlying());
+        // One BirdNavigation and FlightMoveControl for both ground and air (like the parrot), so the
+        // current path survives every landing and take-off.
         if (this.isOnGround()) {
             this.ticksSinceLastGround = 0;
-            // Use ground movement control when on ground
-            if (!(this.moveControl instanceof net.minecraft.entity.ai.control.MoveControl)) {
-                this.moveControl = new net.minecraft.entity.ai.control.MoveControl(this);
-            }
-            // Use ground navigation when on ground
-            if (!(this.getNavigation() instanceof net.minecraft.entity.ai.pathing.MobNavigation)) {
-                this.navigation = new net.minecraft.entity.ai.pathing.MobNavigation(this, this.world);
-            }
         } else {
             this.ticksSinceLastGround++;
-            // Use flight movement control when in air
-            if (!(this.moveControl instanceof FlightMoveControl)) {
-                this.moveControl = new FlightMoveControl(this, 10, false);
-            }
-            // Use bird navigation when in air
-            if (!(this.getNavigation() instanceof net.minecraft.entity.ai.pathing.BirdNavigation)) {
-                BirdNavigation birdNav = new BirdNavigation(this, this.world);
-                birdNav.setCanPathThroughDoors(false);
-                birdNav.setCanSwim(true);
-                this.navigation = birdNav;
-            }
         }
 
         if (!this.world.isClient && !this.isOnGround() && this.getVelocity().y < 0.0D) {
@@ -237,7 +211,8 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
         this.targetSelector.add(3, new RevengeGoal(this));
-        this.targetSelector.add(4, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
+        // Wild ones hunt players; tamed ones leave everyone alone unless the owner fights them
+        this.targetSelector.add(4, new UntamedActiveTargetGoal<>(this, PlayerEntity.class, true, null));
     }
 
     public static DefaultAttributeContainer.Builder createWyvernAttributes() {
@@ -250,6 +225,34 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     }
 
     @Override
+    public boolean canTarget(LivingEntity target) {
+        return !TamedDragons.isFriend(this, target) && super.canTarget(target);
+    }
+
+    @Override
+    public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
+        return TamedDragons.canAttackWithOwner(target, owner);
+    }
+
+    // Wild ones leave in peaceful, like monsters (they'd still start boss fights there)
+    @Override
+    protected boolean isDisallowedInPeaceful() {
+        return !this.isTamed();
+    }
+
+    // Can't breed, so wheat shouldn't put it in love mode (and use the wheat up)
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false;
+    }
+
+    // AnimalEntity gives 1-3 XP whatever experiencePoints says
+    @Override
+    public int getXpToDrop() {
+        return 20;
+    }
+
+    @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
         return null;
     }
@@ -257,11 +260,6 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     @Override
     public net.minecraft.world.EntityView method_48926() {
         return this.world;
-    }
-
-    @Override
-    public java.util.UUID getOwnerUuid() {
-        return super.getOwnerUuid();
     }
 
     @Override

@@ -6,6 +6,7 @@ import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
 import mattonfire.dnd.classes.Enchantments.ReturningEnchantment;
 import mattonfire.dnd.classes.Enchantments.VampiricEnchantment;
 import mattonfire.dnd.classes.Enchantments.SmiteDragonsEnchantment;
+import mattonfire.dnd.classes.Enchantments.TreeFellerEnchantment;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentTarget;
 import net.minecraft.entity.EquipmentSlot;
@@ -22,7 +23,8 @@ public class ModEnchantments {
                         new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.DIGGER));
 
         public static final Enchantment TREE_FELLER_ENCHANTMENT = registerEnchantment("tree_feller",
-                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+                        new TreeFellerEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.DIGGER,
+                                        EquipmentSlot.MAINHAND));
 
         public static final Enchantment INVULNERABILITY_ENCHANTMENT = registerEnchantment("invulnerability",
                         new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));

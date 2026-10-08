@@ -16,6 +16,9 @@ import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.collection.DefaultedList;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.PlayerEntityExt;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.screen.BrewingStandScreenHandler;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
@@ -29,13 +32,13 @@ import net.minecraft.world.World.ExplosionSourceType;
 public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess {
 
     @Unique
-    private static final String LAST_PLAYER_KEY = "DndLastPlayerClass";
+    private static final String ARMED_KEY = "DndBrewArmed";
 
     @Unique
     private static final String LAST_USER_KEY = "DndLastUser";
 
     @Unique
-    private DndCharacter lastPlayer;
+    private boolean brewArmed;
 
     @Unique
     private UUID lastUser;
@@ -47,38 +50,83 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
     @Unique
     private static boolean dnd$saveIngredient;
 
+    /** brewTime of the stand being ticked, before the vanilla tick ran. */
+    @Unique
+    private static int dnd$brewTimeBefore;
+
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private static void onBrewComplete(World world, BlockPos pos, BlockState state, BrewingStandBlockEntity blockEntity,
             CallbackInfo ci) {
-        if (!world.isClient) { // Ensure this runs only on the server
-            BrewingStandAccessor accessor = (BrewingStandAccessor) blockEntity; // Cast to our Accessor
-            BrewingStandAccess instance = (BrewingStandAccess) blockEntity;
-            dnd$brewer = instance.getLastUser();
+        if (world.isClient) {
+            return;
+        }
+        BrewingStandAccessor accessor = (BrewingStandAccessor) blockEntity;
+        BrewingStandAccess instance = (BrewingStandAccess) blockEntity;
+        dnd$brewer = instance.getLastUser();
+        dnd$brewTimeBefore = accessor.getBrewTime();
 
-            if (accessor.getBrewTime() == 1) { // Use the accessor method
-                // Only explode when we know the brew was started by a non-Alchemist.
-                // If nobody has used this stand (e.g. hopper-fed), don't explode.
-                DndCharacter lastPlayer = instance.getLastPlayer();
-                if (lastPlayer == null || lastPlayer == DndCharacter.ALCHEMIST) {
-                    return;
-                }
+        // Vanilla finishes the brew this tick only if it can still craft with the same ingredient;
+        // otherwise it cancels the brew, and a cancelled brew doesn't explode.
+        if (accessor.getBrewTime() != 1 || !instance.isBrewArmed()) {
+            return;
+        }
+        DefaultedList<ItemStack> slots = accessor.dnd$getInventory();
+        if (!BrewingStandAccessor.dnd$canCraft(slots) || !slots.get(3).isOf(accessor.dnd$getItemBrewing())) {
+            return;
+        }
+        instance.setBrewArmed(false);
 
-                // Define a custom damage source
-                DamageSource customExplosionSource = ModDamageTypes.of(world,
-                        ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
+        DamageSource customExplosionSource = ModDamageTypes.of(world, ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE);
+        // Hurts everyone nearby but leaves the terrain alone.
+        world.createExplosion(null, customExplosionSource, null, pos.toCenterPos(), 10.0F, false,
+                ExplosionSourceType.NONE);
+        // The brew is ruined: the stand breaks and drops itself and its contents. Breaking it after
+        // the explosion keeps the dropped items from being blown up.
+        world.breakBlock(pos, true);
 
-                // Create an explosion using the custom damage source
-                world.createExplosion(null, customExplosionSource, null,
-                        blockEntity.getPos().toCenterPos(),
-                        10.0F, false, ExplosionSourceType.TNT);
+        // Skip the rest of the vanilla tick, which would finish the brew and setBlockState the
+        // stand back into place.
+        if (blockEntity.isRemoved() || !world.getBlockState(pos).isOf(state.getBlock())) {
+            ci.cancel();
+        }
+    }
 
-                // The explosion removed the stand. Skip the rest of the vanilla tick, which
-                // would finish the brew and setBlockState the stand back into the crater.
-                if (blockEntity.isRemoved()) {
-                    ci.cancel();
-                }
+    // When a brew starts, arm it if a non-Alchemist (and no Alchemist) has this stand open.
+    // Brews started with nobody looking, e.g. by a hopper, are never armed.
+    @Inject(method = "tick", at = @At("RETURN"))
+    private static void dnd$armOnBrewStart(World world, BlockPos pos, BlockState state,
+            BrewingStandBlockEntity blockEntity, CallbackInfo ci) {
+        if (world.isClient) {
+            return;
+        }
+        BrewingStandAccess instance = (BrewingStandAccess) blockEntity;
+        int brewTime = ((BrewingStandAccessor) blockEntity).getBrewTime();
+        if (brewTime == 0) {
+            if (instance.isBrewArmed()) {
+                instance.setBrewArmed(false);
+            }
+        } else if (dnd$brewTimeBefore == 0) {
+            instance.setBrewArmed(dnd$startedByNonAlchemist(world, blockEntity));
+        }
+    }
+
+    @Unique
+    private static boolean dnd$startedByNonAlchemist(World world, BrewingStandBlockEntity blockEntity) {
+        boolean nonAlchemist = false;
+        for (PlayerEntity player : world.getPlayers()) {
+            if (!(player.currentScreenHandler instanceof BrewingStandScreenHandler handler)
+                    || handler.slots.isEmpty() || handler.slots.get(0).inventory != blockEntity) {
+                continue;
+            }
+            DndCharacter dndClass = player instanceof PlayerEntityExt ext ? ext.getDndClass() : null;
+            if (dndClass == DndCharacter.ALCHEMIST) {
+                return false;
+            }
+            if (dndClass != null && dndClass != DndCharacter.NONE) {
+                nonAlchemist = true;
             }
         }
+        return nonAlchemist;
     }
 
     // Alchemist brewing XP and Efficient Brewer.
@@ -97,33 +145,26 @@ public abstract class BrewingStandBlockEntityMixin implements BrewingStandAccess
 
     @Inject(method = "readNbt", at = @At("TAIL"))
     private void readLastPlayer(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains(LAST_PLAYER_KEY)) {
-            try {
-                this.lastPlayer = DndCharacter.fromValue(nbt.getInt(LAST_PLAYER_KEY));
-            } catch (IllegalArgumentException e) {
-                this.lastPlayer = null;
-            }
-        }
+        this.brewArmed = nbt.getBoolean(ARMED_KEY);
         this.lastUser = nbt.containsUuid(LAST_USER_KEY) ? nbt.getUuid(LAST_USER_KEY) : null;
     }
 
     @Inject(method = "writeNbt", at = @At("TAIL"))
     private void writeLastPlayer(NbtCompound nbt, CallbackInfo ci) {
-        if (this.lastPlayer != null) {
-            nbt.putInt(LAST_PLAYER_KEY, this.lastPlayer.getValue());
+        if (this.brewArmed) {
+            nbt.putBoolean(ARMED_KEY, true);
         }
         if (this.lastUser != null) {
             nbt.putUuid(LAST_USER_KEY, this.lastUser);
         }
     }
 
-    // Getter and setter for lastPlayer
-    public DndCharacter getLastPlayer() {
-        return lastPlayer;
+    public boolean isBrewArmed() {
+        return brewArmed;
     }
 
-    public void setLastPlayer(DndCharacter character) {
-        this.lastPlayer = character;
+    public void setBrewArmed(boolean armed) {
+        this.brewArmed = armed;
         ((BrewingStandBlockEntity) (Object) this).markDirty();
     }
 

@@ -9,8 +9,6 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BrewingStandBlock;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -36,22 +34,13 @@ public class BrewingStandBlockMixin {
         }
     }
 
+    // Remember who opened the stand last: an Alchemist gets the brewing XP. Whether a brew
+    // explodes is decided when it starts (BrewingStandBlockEntityMixin), not here.
     @Inject(method = "onUse", at = @At("HEAD"))
     private void onUseMixin(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
             BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
-        if (!world.isClient) {
-            BlockEntity blockEntity = world.getBlockEntity(pos);
-            if (blockEntity instanceof BrewingStandBlockEntity) {
-                BrewingStandAccess access = (BrewingStandAccess) blockEntity;
-
-                // Set the ID of the class
-                if (player instanceof PlayerEntityExt) {
-                    PlayerEntityExt playerEntity = (PlayerEntityExt) player;
-                    access.setLastPlayer(playerEntity.getDndClass());
-                    access.setLastUser(player.getUuid());
-                }
-
-            }
+        if (!world.isClient && world.getBlockEntity(pos) instanceof BrewingStandAccess access) {
+            access.setLastUser(player.getUuid());
         }
     }
 }

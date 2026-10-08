@@ -1,0 +1,63 @@
+# Wears each layered (non-GeckoLib) armor set at y=150 and screenshots it from the front.
+wait 40
+closescreen
+/gamemode creative
+/time set noon
+/gamerule doDaylightCycle false
+/effect clear @s
+/clear @s
+/dndclass set @s fighter
+wait 10
+closescreen
+/setblock 0 149 0 minecraft:barrier
+/tp @s 0.5 150 0.5 0 0
+hud off
+perspective front
+/item replace entity @s armor.head with dndclasses:prismarine_helmet
+/item replace entity @s armor.chest with dndclasses:prismarine_chestplate
+/item replace entity @s armor.legs with dndclasses:prismarine_leggings
+/item replace entity @s armor.feet with dndclasses:prismarine_boots
+wait 20
+screenshot after-prismarine-worn
+/item replace entity @s armor.head with dndclasses:warrior_helmet
+/item replace entity @s armor.chest with dndclasses:warrior_chestplate
+/item replace entity @s armor.legs with dndclasses:warrior_leggings
+/item replace entity @s armor.feet with dndclasses:warrior_boots
+wait 20
+screenshot after-warrior-worn
+/item replace entity @s armor.head with dndclasses:holy_armor_helmet
+/item replace entity @s armor.chest with dndclasses:holy_armor_chestplate
+/item replace entity @s armor.legs with dndclasses:holy_armor_leggings
+/item replace entity @s armor.feet with dndclasses:holy_armor_boots
+wait 20
+screenshot after-holy-worn
+/item replace entity @s armor.head with dndclasses:robe_helmet
+/item replace entity @s armor.chest with dndclasses:robe_chestplate
+/item replace entity @s armor.legs with dndclasses:robe_leggings
+/item replace entity @s armor.feet with dndclasses:robe_boots
+wait 20
+screenshot after-robe-worn
+/item replace entity @s armor.head with dndclasses:steampunk_helmet
+/item replace entity @s armor.chest with dndclasses:steampunk_chestplate
+/item replace entity @s armor.legs with dndclasses:steampunk_leggings
+/item replace entity @s armor.feet with dndclasses:steampunk_boots
+wait 20
+screenshot after-steampunk-worn
+/item replace entity @s armor.head with dndclasses:wither_helmet
+/item replace entity @s armor.chest with dndclasses:wither_chestplate
+/item replace entity @s armor.legs with dndclasses:wither_leggings
+/item replace entity @s armor.feet with dndclasses:wither_boots
+wait 20
+screenshot after-wither-worn
+/item replace entity @s armor.head with dndclasses:wooden_helmet
+/item replace entity @s armor.chest with dndclasses:wooden_chestplate
+/item replace entity @s armor.legs with dndclasses:wooden_leggings
+/item replace entity @s armor.feet with dndclasses:wooden_boots
+wait 20
+screenshot after-wooden-worn
+perspective back
+wait 10
+screenshot after-wooden-back
+perspective first
+hud on
+quit

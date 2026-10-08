@@ -8,9 +8,10 @@
         "mattonfire"
     ],
     "contact": {
-        "homepage": "https://github.io/mcrrobinson"
+        "homepage": "https://github.com/mcrrobinson/dnd-mod",
+        "sources": "https://github.com/mcrrobinson/dnd-mod"
     },
-    "license": "CC0-1.0",
+    "license": "GPL-3.0-or-later",
     "icon": "assets/dndclasses/icon.png",
     "environment": "*",
     "entrypoints": {
@@ -26,14 +27,13 @@
     ],
     "accessWidener": "dndclasses.accesswidener",
     "depends": {
-        "fabricloader": ">=0.7.4",
-        "fabric": "*",
-        "minecraft": "1.19.4"
+        "fabricloader": ">=0.16.0",
+        "fabric-api": ">=0.87.0",
+        "minecraft": "1.19.4",
+        "java": ">=17",
+        "geckolib": ">=4.2"
     },
     "recommends": {
         "identity": ">=2.7.0-1.19.4"
-    },
-    "suggests": {
-        "another-mod": "*"
     }
 }

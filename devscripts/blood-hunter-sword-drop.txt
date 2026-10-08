@@ -1,3 +1,5 @@
+# Blood Hunter can't drop a sword (the drop key keeps it in the hotbar), other items and other classes drop normally. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/blood-hunter-sword-drop.txt
+# Expect in latest.log: no iron_sword item entity after the Blood Hunter drop, the dirt drops, and the Fighter's sword drops.
 wait 40
 closescreen
 wait 10

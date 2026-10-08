@@ -1,16 +1,14 @@
 package mattonfire.dnd.classes.Items;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModEffects;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -26,6 +24,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.item.ToolMaterial;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
@@ -40,33 +39,20 @@ public class ExtendedSwordItem extends SwordItem {
 
     static int BEAM_RANGE = 40; // Range of the beam
 
-    private static final List<ScheduledBlockRestore> scheduledRestores = new ArrayList<>();
+    /** Cooldown after a cast, in ticks. */
+    static final int CAST_COOLDOWN_TICKS = 20;
+    /** Most lightning bolts one Staff of Lightning cast calls down. */
+    static final int MAX_LIGHTNING_BOLTS = 5;
+    /** Restored blocks come back over this window, after the rest of the 5 seconds. */
+    static final int RESTORE_TICKS = 20;
+    static final int RESTORE_DELAY_TICKS = 100 - RESTORE_TICKS;
 
     static {
-        // Updated server tick handler
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            Iterator<ScheduledBlockRestore> it = scheduledRestores.iterator();
-            while (it.hasNext()) {
-                ScheduledBlockRestore task = it.next();
-                task.ticks--;
-
-                // Start restoring blocks when time is up, or restore continuously
-                if (task.ticks <= 0) {
-                    boolean isComplete = task.restore(server);
-                    if (isComplete) {
-                        it.remove();
-                    }
-                }
-            }
-        });
+        ScheduledBlockRestore.register();
     }
 
     public ExtendedSwordItem(ToolMaterial toolMaterial, Settings settings) {
         super(toolMaterial, 10, 1.2F, settings);
-    }
-
-    private void scheduleBlockRestoration(ServerWorld world, Map<BlockPos, BlockState> blocks, int ticks) {
-        scheduledRestores.add(new ScheduledBlockRestore(world, blocks, ticks));
     }
 
     /** Only Wizards can wield the elemental staffs (cast with them or hit with them). */
@@ -123,18 +109,15 @@ public class ExtendedSwordItem extends SwordItem {
 
             BlockPos hitPos = blockHit.getBlockPos();
 
-            // Save surrounding blocks before explosion
+            // Blocks round the impact the staff may change: solid, breakable (no bedrock or
+            // obsidian), and no block entities, so chests and their contents are never touched.
             Map<BlockPos, BlockState> savedBlocks = new HashMap<>();
             BlockPos.iterateOutwards(hitPos, 3, 3, 3).forEach(pos -> {
-
                 BlockState blockState = serverWorld.getBlockState(pos);
                 float hardness = blockState.getHardness(serverWorld, pos);
-
-                // Ignores air and bedrock blocks
-                if (blockState.getMaterial().isReplaceable() || hardness < 0 || hardness > 49.f) // Ignore bedrock and
-                                                                                                 // obsidian
+                if (blockState.getMaterial().isReplaceable() || hardness < 0 || hardness > 49.f
+                        || blockState.hasBlockEntity())
                     return;
-
                 savedBlocks.put(pos.toImmutable(), blockState);
             });
 
@@ -148,50 +131,63 @@ public class ExtendedSwordItem extends SwordItem {
                 }
             }
 
-            int delayTicks = 100;
-
+            // None of the blasts break blocks themselves (a block-breaking explosion drops
+            // the blocks as items, and restoring them afterwards duplicated them). The Fire
+            // staff carves its own crater instead, with no drops, and puts it back later.
             switch (this.toString()) {
-                case "staff_of_fire":
-                    serverWorld.createExplosion(player, hitPos.getX(), hitPos.getY(), hitPos.getZ(),
-                            3.0F, true, World.ExplosionSourceType.TNT);
-
-                    // Schedule restoration after X ticks (e.g., 100 = 5 seconds)
-                    scheduleBlockRestoration(serverWorld, savedBlocks, delayTicks);
+                case "staff_of_fire": {
+                    Map<BlockPos, BlockState> crater = new HashMap<>();
+                    savedBlocks.forEach((pos, state) -> {
+                        if (pos.getSquaredDistance(hitPos) <= 9.0)
+                            crater.put(pos, state);
+                    });
+                    BlockState air = Blocks.AIR.getDefaultState();
+                    crater.keySet().forEach(pos -> serverWorld.setBlockState(pos, air, ScheduledBlockRestore.FLAGS));
+                    serverWorld.createExplosion(player, hitPos.getX() + 0.5, hitPos.getY() + 0.5, hitPos.getZ() + 0.5,
+                            3.0F, true, World.ExplosionSourceType.NONE);
+                    ScheduledBlockRestore.schedule(serverWorld, crater, air, RESTORE_DELAY_TICKS, RESTORE_TICKS);
                     break;
+                }
 
-                case "staff_of_lightning":
+                case "staff_of_lightning": {
                     serverWorld.createExplosion(player, hitPos.getX(), hitPos.getY(), hitPos.getZ(),
                             3.0F, false, World.ExplosionSourceType.NONE);
 
-                    List<BlockPos> keyList = new ArrayList<>(savedBlocks.keySet()); // Convert to list to get
-                                                                                    // indexed access
-                    IntStream.range(0, keyList.size())
-                            .filter(i -> i % 3 == 0)
-                            .mapToObj(keyList::get)
-                            .forEach(pos -> {
-                                LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
-                                lightningEntity.setPos(pos.getX(), pos.getY(), pos.getZ());
-                                serverWorld.spawnEntity(lightningEntity);
-                            });
-
+                    // A few bolts on exposed blocks round the impact (it used to be every third
+                    // block in the area, up to ~114 bolts a click).
+                    List<BlockPos> targets = new ArrayList<>();
+                    savedBlocks.keySet().forEach(pos -> {
+                        if (serverWorld.getBlockState(pos.up()).getMaterial().isReplaceable())
+                            targets.add(pos.up());
+                    });
+                    Collections.shuffle(targets);
+                    for (BlockPos pos : targets.subList(0, Math.min(MAX_LIGHTNING_BOLTS, targets.size()))) {
+                        LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);
+                        if (lightningEntity == null)
+                            continue;
+                        lightningEntity.refreshPositionAfterTeleport(Vec3d.ofBottomCenter(pos));
+                        if (player instanceof ServerPlayerEntity serverPlayer)
+                            lightningEntity.setChanneler(serverPlayer);
+                        serverWorld.spawnEntity(lightningEntity);
+                    }
                     break;
+                }
 
-                case "staff_of_ice":
-                    // Change to ice blocks
+                case "staff_of_ice": {
                     serverWorld.createExplosion(player, hitPos.getX(), hitPos.getY(), hitPos.getZ(),
                             3.0F, false, World.ExplosionSourceType.NONE);
 
                     BlockState iceState = Blocks.ICE.getDefaultState();
                     for (BlockPos pos : savedBlocks.keySet()) {
-                        serverWorld.setBlockState(pos, iceState);
+                        serverWorld.setBlockState(pos, iceState, ScheduledBlockRestore.FLAGS);
                     }
-
-                    // Schedule restoration after X ticks (e.g., 100 = 5 seconds)
-                    scheduleBlockRestoration(serverWorld, savedBlocks, delayTicks);
+                    ScheduledBlockRestore.schedule(serverWorld, savedBlocks, iceState, RESTORE_DELAY_TICKS, RESTORE_TICKS);
                     break;
+                }
                 default:
                     break;
             }
+            player.getItemCooldownManager().set(this, CAST_COOLDOWN_TICKS);
         }
         return TypedActionResult.success(player.getStackInHand(hand));
     }

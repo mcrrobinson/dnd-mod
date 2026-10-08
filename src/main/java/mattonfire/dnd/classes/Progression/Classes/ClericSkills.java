@@ -191,4 +191,10 @@ public class ClericSkills extends ClassSkills {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1));
         effects(player, SoundEvents.ENTITY_PLAYER_LEVELUP, ParticleTypes.HEART, 8);
     }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        int now = player.getServer().getTicks();
+        PRESERVE_LIFE_READY.values().removeIf(t -> now >= t);
+    }
 }

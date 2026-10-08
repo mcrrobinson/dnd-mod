@@ -1,6 +1,6 @@
 # Checks Wild Shape's bestiary forms, tiers and ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/druid-wild-shape.txt
 # Needs the Identity mod in the dev runtime. Expect in latest.log ([CHAT] lines):
-#  1. First power-up with nothing unlocked: no form, mana kept ("dnd-transformed" check fails)
+#  1. First power-up with nothing unlocked: no form, mana kept (no druidFormExpiry found)
 #  2. bestiary [minecraft:chicken] after unlocking at the table; the wolf unlock is refused at rank I
 #  3. bestiary [minecraft:chicken, minecraft:wolf] after /dndclass rank druid.wild_shape 2 and a second try
 #  4. druidChosenForm "minecraft:chicken", then "minecraft:wolf", then gone (random) after three sneak + power-ups

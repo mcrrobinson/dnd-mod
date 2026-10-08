@@ -159,8 +159,12 @@ public class DnDClasses implements ModInitializer {
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 int bufferInteger = buf.readInt();
                 applyClass(player, DndCharacter.fromValue(bufferInteger));
+                sendRespawnHint(player);
+        }
 
-                String message = DnDClasses.respawnMessage.get(player.getUuidAsString());
+        /** Shows the hint left by a player's last death, if any, once. */
+        public static void sendRespawnHint(ServerPlayerEntity player) {
+                String message = DnDClasses.respawnMessage.remove(player.getUuidAsString());
                 if (message == null) {
                         return;
                 }

@@ -1,0 +1,17 @@
+wait 40
+closescreen
+wait 10
+/gamerule doImmediateRespawn true
+/dndclass set @s barbarian
+wait 10
+/kill @s
+wait 20
+respawn
+wait 40
+screenshot class-keep-on-death
+/dndclass get @s
+/attribute @s minecraft:generic.max_health get
+/data get entity @s Health
+wait 10
+/gamerule doImmediateRespawn false
+quit

@@ -364,9 +364,7 @@ public class DnDClasses implements ModInitializer {
                         }
                 });
 
-                ServerTickEvents.END_WORLD_TICK.register(world -> {
-                        if (!(world instanceof ServerWorld serverWorld))
-                                return;
+                ServerTickEvents.END_WORLD_TICK.register(serverWorld -> {
                         long now = serverWorld.getTime();
 
                         DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
@@ -429,12 +427,12 @@ public class DnDClasses implements ModInitializer {
                         });
                 });
 
-                ServerTickEvents.END_WORLD_TICK.register(world -> {
-                        if (world instanceof ServerWorld serverWorld) {
+                ServerTickEvents.END_WORLD_TICK.register(serverWorld -> {
+                        {
                                 long currentTick = serverWorld.getServer().getTicks();
 
                                 if (currentTick % MANA_TICKS_PER_INCREMENT == 0) {
-                                        for (ServerPlayerEntity player : world.getPlayers()) {
+                                        for (ServerPlayerEntity player : serverWorld.getPlayers()) {
                                                 ManaManager.regenerateMana(player);
                                         }
                                 }

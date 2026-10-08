@@ -1,3 +1,5 @@
+# The /dndclass set|get command: class stats change with the class, unknown classes are rejected, none opens the picker. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dndclass-command.txt
+# Expect in latest.log: max health / speed change between Barbarian and Wizard, an error for notaclass; dndclass-none screenshot shows the picker.
 wait 40
 closescreen
 wait 10

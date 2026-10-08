@@ -34,4 +34,5 @@ All dragons can be hit on their wings, neck, head, tail and legs (like the ender
 - Entities: `entity/WyvernEntity` (base), `EmberWyvernEntity`, `LightningChaserEntity`, `RiverPikehornEntity`.
 - Breath: `FireBreath` + `ai/goal/FireBreathGoal`. Hit parts: see [Multipart mobs](../dev/multipart-mobs.md).
 - To add a dragon, put it in `data/dndclasses/tags/entity_types/dragons.json`.
+- The Ember Wyvern textures are recoloured from the green Wyvern texture by `tools/ember_wyvern_texture.py`; edit the script and rerun it rather than hand-editing them.
 - Devscripts: `dragon-hitboxes.txt`, `dragon-fire-breath-all.txt`, `dragon-fall-damage.txt`, `dragon-slayer-all.txt`, `nether-dragon.txt`, `tameable-pikehorn.txt`.

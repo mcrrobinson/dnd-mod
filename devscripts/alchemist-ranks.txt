@@ -1,0 +1,56 @@
+# Checks Alchemist Transmute and its ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/alchemist-ranks.txt
+# Expect in latest.log ([CHAT] lines):
+#  1. Rank I, held Strength potion thrown down: player gets Strength (id 5) Amplifier 1 (II); the spider in the cloud gets nothing from it
+#  2. The held potion is used up (SelectedItem empty)
+#  3. Rank IV, held splash Slowness potion: spider gets Slowness (id 2) Amplifier 2 (III), player doesn't
+#  4. Rank IV, empty hand (unstable brew): player gets one buff at Amplifier 2, spider one harm at Amplifier 2
+#     (a spider, not a zombie: undead ignore Poison and burn at noon)
+# Mana refills in 18 s, hence the long waits.
+# Screenshots: transmute-cloud (rank I cloud), transmute-cloud-4 (rank IV cloud, wider)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 16 149 16 minecraft:stone
+/fill 0 150 0 16 156 16 minecraft:air
+/dndclass set @s alchemist
+wait 10
+closescreen
+/dndclass resetprogress @s
+/effect clear @s
+/kill @e[type=minecraft:spider]
+/summon minecraft:spider 8.5 150 9.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b}
+/item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:strength"}
+/tp @s 8.5 150 8.5 0 90
+wait 200
+press key.dnd-classes.power-up
+wait 40
+screenshot transmute-cloud
+/data get entity @s ActiveEffects
+/data get entity @e[type=minecraft:spider,limit=1] ActiveEffects
+/data get entity @s SelectedItem
+wait 140
+/effect clear @s
+/effect clear @e[type=minecraft:spider]
+/dndclass rank @s alchemist.distill 4
+/item replace entity @s weapon.mainhand with minecraft:splash_potion{Potion:"minecraft:slowness"}
+wait 240
+press key.dnd-classes.power-up
+wait 40
+screenshot transmute-cloud-4
+/data get entity @s ActiveEffects
+/data get entity @e[type=minecraft:spider,limit=1] ActiveEffects
+wait 200
+/effect clear @s
+/effect clear @e[type=minecraft:spider]
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 220
+press key.dnd-classes.power-up
+wait 40
+/data get entity @s ActiveEffects
+/data get entity @e[type=minecraft:spider,limit=1] ActiveEffects
+/kill @e[type=minecraft:spider]
+/dndclass resetprogress @s
+quit

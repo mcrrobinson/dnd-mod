@@ -33,7 +33,7 @@ These are the roots of each tree, all 9 mana:
 | Wizard | Arcane Explosion | A power 40 explosion centred on you that breaks no blocks. You get Resistance V for 5 s so it doesn't hurt you |
 | Artificer | Arcane Armor | +8 armor and +4 armor toughness for 30 s |
 | Blood Hunter | Blood Control | Take control of the mob you're looking at, up to 30 blocks away, for 20 s (needs the Identity mod) |
-| Alchemist | Distill | Upgrade every potion in your inventory to its strongest version |
+| Alchemist | Transmute | Throw your held potion (or an unstable brew) as a cloud with stronger effects: buffs for allies, harm for mobs |
 
 Press O to see the rest of your tree.
 

@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -34,15 +35,9 @@ import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.PotionItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -266,9 +261,8 @@ public class PowerUpEffect {
                 }
                 break;
             case ALCHEMIST:
-                // Upgrades every potion in the inventory to its strongest version.
-                // Nothing to upgrade keeps the mana.
-                if (!alchemistUpgradePotions(player))
+                // Transmute: throws the held potion (or an unstable brew) as a big cloud.
+                if (!(player instanceof ServerPlayerEntity alchemist) || !AlchemistSkills.transmute(alchemist))
                     return false;
                 break;
             default:
@@ -277,48 +271,5 @@ public class PowerUpEffect {
         }
         return true; // Indicate that the power-up was successfully applied
 
-    }
-
-    /**
-     * Swaps each single-effect potion in the main inventory for the registered
-     * potion with the same effect at the highest amplifier (e.g. Swiftness to
-     * Swiftness II). Splash and lingering potions stay splash and lingering.
-     *
-     * @return whether any potion was upgraded
-     */
-    private static boolean alchemistUpgradePotions(PlayerEntity player) {
-        PlayerInventory inventory = player.getInventory();
-        boolean upgraded = false;
-        for (int i = 0; i < inventory.main.size(); i++) {
-            ItemStack stack = inventory.main.get(i);
-            if (!(stack.getItem() instanceof PotionItem))
-                continue;
-
-            Potion potion = PotionUtil.getPotion(stack);
-            List<StatusEffectInstance> effects = potion.getEffects();
-            if (effects.size() != 1)
-                continue; // Water, awkward, custom and mixed potions
-            StatusEffect effectType = effects.get(0).getEffectType();
-
-            Potion best = potion;
-            int bestAmplifier = effects.get(0).getAmplifier();
-            for (Potion candidate : Registries.POTION) {
-                List<StatusEffectInstance> candidateEffects = candidate.getEffects();
-                if (candidateEffects.size() == 1 && candidateEffects.get(0).getEffectType() == effectType
-                        && candidateEffects.get(0).getAmplifier() > bestAmplifier) {
-                    bestAmplifier = candidateEffects.get(0).getAmplifier();
-                    best = candidate;
-                }
-            }
-
-            if (best != potion) {
-                // Copy keeps the item (potion, splash, lingering), count and any custom name.
-                ItemStack newStack = stack.copy();
-                PotionUtil.setPotion(newStack, best);
-                inventory.setStack(i, newStack);
-                upgraded = true;
-            }
-        }
-        return upgraded;
     }
 }

@@ -118,7 +118,7 @@
       "name": "Alchemist",
       "pros": ["Can craft special potions exclusive to the class (done)", "Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done)"],
       "cons": ["Cannot enchant (enchanting table or enchanted books on an anvil) (done)"],
-      "special": ["Instantly buff all potions to max level (done)"],
+      "special": ["Transmute: throw your held potion (or an unstable brew) as a lingering cloud with stronger effects, buffs for allies and harmful effects for mobs; bigger and longer with ranks (done)"],
       "specialOnKey": true
     }
   ]

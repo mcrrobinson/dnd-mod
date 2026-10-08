@@ -54,7 +54,7 @@ public enum Bounty {
     public final Tier tier;
     /** Vanilla experience points. */
     public final int xp;
-    /** Class-progression XP (see {@link BountyRewards#grantProgressionXp}). */
+    /** Class-progression XP (see {@link mattonfire.dnd.classes.Progression.Progression#addXp}). */
     public final int classXp;
     /** How often this bounty gets posted, relative to the others. */
     public final int weight;

@@ -17,15 +17,24 @@ import net.minecraft.entity.SpawnRestriction;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.GoatEntity;
+import mattonfire.dnd.world.gen.village.HobbitPiece;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.Heightmap;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.biome.BiomeKeys;
+import net.minecraft.world.gen.structure.Structure;
 
 public class ModSpawns {
     private static final int MAX_HOBBITS_NEARBY = 16;
+    private static final RegistryKey<Structure> HOBBIT_VILLAGE = RegistryKey.of(RegistryKeys.STRUCTURE,
+            new Identifier(mattonfire.dnd.classes.DnDClasses.MOD_ID, "hobbit_village"));
     private static final int MAX_DWARVES_NEARBY = 24;
     private static final double MAX_ALPHA_DISTANCE = 96.0D;
 
@@ -148,6 +157,25 @@ public class ModSpawns {
             return false;
         }
         return reason != SpawnReason.NATURAL
-                || world.getEntitiesByClass(HobbitEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_HOBBITS_NEARBY;
+                || inHobbitBuilding(world, pos)
+                && world.getEntitiesByClass(HobbitEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_HOBBITS_NEARBY;
+    }
+
+    /**
+     * Whether {@code pos} is inside one of a hobbit village's real pieces (smials, gardens, the
+     * green and so on). The lanes and grounds pieces have boxes deep under the village, so a cave
+     * down there also counts as "in the village" for the structure's spawn override.
+     */
+    private static boolean inHobbitBuilding(ServerWorldAccess world, BlockPos pos) {
+        StructureStart start = world.toServerWorld().getStructureAccessor().getStructureContaining(pos, HOBBIT_VILLAGE);
+        if (!start.hasChildren()) {
+            return false;
+        }
+        for (StructurePiece piece : start.getChildren()) {
+            if (piece instanceof HobbitPiece && piece.getBoundingBox().contains(pos)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

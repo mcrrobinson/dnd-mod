@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Progression;
 
+import mattonfire.dnd.entity.boss.BossMinions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -47,7 +48,10 @@ public final class ProgressionEvents {
         if (skills != null) {
             xp += skills.killXp(player, entity, source);
         }
-        Progression.addXp(player, xp);
+        // Boss minions are endless; they give no class XP.
+        if (!BossMinions.isMinion(entity)) {
+            Progression.addXp(player, xp);
+        }
 
         if (skills != null) {
             skills.onKill(player, Progression.current(player), entity, source);

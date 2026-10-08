@@ -1,0 +1,37 @@
+wait 40
+closescreen
+/difficulty normal
+/gamerule dndGoblinRaids false
+/gamemode creative
+/spreadplayers 1200 1200 0 3 false @s
+wait 60
+/goblinraid start here
+wait 450
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=dndclasses.goblin_raider]
+/gamemode spectator
+/tp @s 4000 150 4000
+wait 2700
+/goblinraid list
+/spreadplayers 1200 1200 0 1 false @s
+/gamemode creative
+wait 100
+/execute if entity @e[type=dndclasses:goblin_warrior]
+/goblinraid start here
+wait 450
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=dndclasses.goblin_raider]
+/difficulty peaceful
+wait 60
+/goblinraid list
+/difficulty normal
+/kill @e[type=item]
+/summon minecraft:sheep ~4 ~ ~ {Tags:["dndclasses.boss_minion"],NoAI:1b}
+wait 5
+/kill @e[type=sheep]
+wait 10
+/execute if entity @e[type=item,distance=..30]
+/summon minecraft:sheep ~4 ~ ~ {NoAI:1b}
+wait 5
+/kill @e[type=sheep]
+wait 10
+/execute if entity @e[type=item,distance=..30]
+quit

@@ -9,7 +9,7 @@ The home of a [Lightning Chaser](../mobs/dragons.md), on the very summit of a mo
 - Once it's dead the lair sends a new one now and then (structure spawn override, never with another Lightning Chaser within 64 blocks).
 
 ## Where to find it / How to get it
-- Jagged Peaks, Frozen Peaks, Stony Peaks. Structure set spacing 12 chunks, separation 4.
+- Jagged Peaks, Frozen Peaks, Stony Peaks. Structure set spacing 12 chunks, separation 4, and at least 6 chunks from dwarven fortresses (which share the peaks).
 
 ## Commands
 - `/locate structure dndclasses:dragon_lair`

@@ -1,8 +1,6 @@
 package mattonfire.dnd.classes.mixin;
 
-import mattonfire.dnd.entity.GoblinWarlordEntity;
-import mattonfire.dnd.entity.ModEntityTypes;
-import net.minecraft.entity.SpawnReason;
+import mattonfire.dnd.entity.boss.StructureBosses;
 import net.minecraft.structure.NetherFortressGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -41,15 +39,8 @@ public abstract class NetherFortressStartMixin extends StructurePiece {
         if (!chunkBox.contains(pos)) {
             return;
         }
-        GoblinWarlordEntity warlord = ModEntityTypes.GOBLIN_WARLORD.create(world.toServerWorld());
-        if (warlord == null) {
-            return;
-        }
+        // On Peaceful this leaves a marker that raises the Warlord once the difficulty goes up.
         Direction facing = this.getFacing() == null ? Direction.NORTH : this.getFacing();
-        warlord.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, facing.asRotation(), 0.0F);
-        warlord.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-        warlord.setGuardPos(pos);
-        warlord.setPersistent();
-        world.spawnEntityAndPassengers(warlord);
+        StructureBosses.placeWarlord(world, pos, facing.asRotation());
     }
 }

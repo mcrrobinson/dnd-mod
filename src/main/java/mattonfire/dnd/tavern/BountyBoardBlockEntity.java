@@ -38,6 +38,23 @@ public class BountyBoardBlockEntity extends BlockEntity {
         this.markDirty();
     }
 
+    /**
+     * A board someone has just hung up starts bare, and gets its first notices next morning, so
+     * taking a board down and putting it back up doesn't post a fresh set.
+     */
+    public void startBare(World world) {
+        this.day = world.getTimeOfDay() / 24000L;
+        BlockState state = world.getBlockState(this.pos);
+        for (int i = 0; i < this.posted.length; i++) {
+            this.posted[i] = null;
+            if (state.contains(BountyBoardBlock.NOTICES[i])) {
+                state = state.with(BountyBoardBlock.NOTICES[i], false);
+            }
+        }
+        world.setBlockState(this.pos, state);
+        this.markDirty();
+    }
+
     @Nullable
     public Bounty posted(int slot) {
         return this.posted[slot];

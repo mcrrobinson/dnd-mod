@@ -7,13 +7,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleFactory;
 import net.fabricmc.fabric.api.gamerule.v1.GameRuleRegistry;
+import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -42,6 +45,9 @@ public class GoblinRaids extends PersistentState {
     /** How close (blocks outside its bounds) a player must be for their settlement to be raided. */
     private static final int NEAR_SETTLEMENT = 32;
 
+    /** Raiders of ended raids that loaded this tick (server thread only). */
+    private static final List<Entity> LEFTOVERS = new ArrayList<>();
+
     private final List<GoblinRaid> raids = new ArrayList<>();
     /** Settlement key -> game time its last raid started. */
     private final Map<Long, Long> lastRaid = new HashMap<>();
@@ -49,7 +55,43 @@ public class GoblinRaids extends PersistentState {
 
     public static void register() {
         ServerTickEvents.END_WORLD_TICK.register(world -> get(world).tick(world));
+        ServerTickEvents.END_SERVER_TICK.register(server -> sendAwayLeftovers());
         ServerWorldEvents.UNLOAD.register((server, world) -> get(world).raids.forEach(GoblinRaid::clearBar));
+        ServerEntityEvents.ENTITY_LOAD.register(GoblinRaids::onEntityLoad);
+    }
+
+    /**
+     * Raiders are persistent, so one that was unloaded when its raid ended (withdrew, was won or
+     * called off) or that the raid gave up on would otherwise stay by the settlement for good.
+     * Send it away as soon as it loads.
+     */
+    private static void onEntityLoad(Entity entity, ServerWorld world) {
+        if (!entity.getCommandTags().contains(GoblinRaid.RAIDER_TAG)) {
+            return;
+        }
+        for (GoblinRaid raid : get(world).raids) {
+            if (!raid.isOver() && raid.hasRaider(entity.getUuid())) {
+                return;
+            }
+        }
+        // Not removed mid-load; the world tick does it.
+        LEFTOVERS.add(entity);
+    }
+
+    private static void sendAwayLeftovers() {
+        if (LEFTOVERS.isEmpty()) {
+            return;
+        }
+        for (Entity entity : List.copyOf(LEFTOVERS)) {
+            if (!entity.isRemoved() && entity.world instanceof ServerWorld world) {
+                world.spawnParticles(ParticleTypes.LARGE_SMOKE, entity.getX(), entity.getBodyY(0.5D), entity.getZ(),
+                        15, 0.4D, 0.6D, 0.4D, 0.02D);
+                DnDClasses.LOGGER.info("[GoblinRaid] sent away a raider left over from an ended raid at {}",
+                        entity.getBlockPos().toShortString());
+                entity.discard();
+            }
+        }
+        LEFTOVERS.clear();
     }
 
     public static GoblinRaids get(ServerWorld world) {

@@ -14,6 +14,8 @@ Goblin war parties raid hobbit villages and dwarven fortresses in waves, ending 
 
   At a fortress, the dwarves also drop any grudge against the defenders.
 - **Defeat**: if no one is within 96 blocks for 2 minutes, the war party withdraws and its goblins vanish.
+- **Peaceful**: switching to Peaceful mid-raid makes the war party withdraw, with no rewards.
+- Raiders carry the `dndclasses.goblin_raider` tag. One that was unloaded when its raid ended, or that the raid lost track of (unloaded for 10 seconds while defenders are about), vanishes as soon as its chunk loads again, so no war party is left behind.
 - Raids are saved with the world and pick up again on reload.
 
 ## Where to find it
@@ -30,7 +32,8 @@ Permission level 2.
 - `/gamerule dndGoblinRaids false`: stops natural raids. `/goblinraid` still works.
 
 ## Known limitations
-- The raid doesn't count goblins the Warlord calls in mid-fight. They stay behind as ordinary hostile mobs after a win.
+- The raid doesn't count goblins the Warlord calls in mid-fight. They stay behind as ordinary hostile mobs after a win (they drop nothing, like all boss minions).
+- Raiders from before the `dndclasses.goblin_raider` tag existed aren't cleaned up.
 - The raid music reuses Steel on Steel.
 - Natural raids only check loaded chunks near players.
 

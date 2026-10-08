@@ -19,12 +19,12 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 - Each board has three notices.
 - **Take a notice:** right-click it. Which one you get (left, middle or right) depends on where you click, and the paper disappears from the board.
 - **Read the board:** sneak-right-click with an empty hand to list today's bounties in chat.
-- **Restocking:** each in-game day, a board posts 3 different bounties, drawn by weight. A taken notice stays gone until the next day, for everyone.
+- **Restocking:** each in-game day, a board posts 3 different bounties, drawn by weight. A taken notice stays gone until the next day, for everyone. A board that's just been hung up starts bare and gets its first notices the next morning, so taking a board down and putting it back doesn't restock it.
 
 ### Bounty notices
 - Notices track progress from anywhere in your inventory.
-  - **Hunts** count your kills, including kills with projectiles.
-  - **Expeditions** complete when you stand inside the structure. Players are checked once a second.
+  - **Hunts** count your kills, including kills with projectiles. Each kill counts towards one notice (the first unfinished one for that creature). Boss minions don't count.
+  - **Expeditions** complete when you stand inside the structure. Players are checked once a second. Each structure finishes one notice of each expedition per player, ever (the last 128 are remembered), so carrying a stack of the same notice doesn't pay out several times.
 - The tooltip shows the job, progress and reward, and a finished notice glows.
 - **Claiming:** right-click a bounty board or an innkeeper with a finished notice. You get emeralds, a roll of spoils, vanilla XP and class XP. An unfinished notice is refused and kept.
 
@@ -79,7 +79,7 @@ What the spoils can contain:
   - `#dndclasses:bounty/undead`
   - `#dndclasses:bounty/brigands`
 - Expedition targets are the structures `dndclasses:dwarven_fortress` and `dndclasses:dragon_lair`.
-- Class-XP hook: `BountyRewards.grantProgressionXp` looks up `mattonfire.dnd.classes.Progression.Progression.addXp(ServerPlayerEntity, int)` (from `feat/class-progression`) by reflection.
+- Class XP goes through `Progression.addXp`. Finished expeditions are kept in the player's persistent data under `BountyExpeditions`.
   - If the class isn't there, it does nothing.
   - `TODO(class-progression)`: replace the lookup with a direct call once that branch merges.
 - Devscript: `devscripts/hobbit-tavern.txt` takes a notice, completes a spider bounty, claims it, and opens the innkeeper's trades.

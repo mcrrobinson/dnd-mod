@@ -11,6 +11,7 @@ import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.entity.boss.Boss;
 import mattonfire.dnd.entity.boss.BossFight;
+import mattonfire.dnd.entity.boss.BossMinions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
@@ -456,6 +457,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
             }
             minion.initialize(world, world.getLocalDifficulty(minion.getBlockPos()), SpawnReason.MOB_SUMMONED, null, null);
             minion.addCommandTag(MINION_TAG);
+            BossMinions.mark(minion);
             if (target != null && target.isAlive()) {
                 minion.setTarget(target);
             }
@@ -830,10 +832,18 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         return this.cache;
     }
 
-    /** A wither skull whose blast hurts but never breaks blocks (the Lich lives in libraries). */
+    /**
+     * A wither skull whose blast hurts but never breaks blocks (the Lich lives in libraries). It has
+     * no entity type of its own, so it isn't saved: it would come back as a vanilla wither skull.
+     */
     private static class LichBoltEntity extends WitherSkullEntity {
         LichBoltEntity(World world, LivingEntity owner, double dx, double dy, double dz) {
             super(world, owner, dx, dy, dz);
+        }
+
+        @Override
+        public boolean shouldSave() {
+            return false;
         }
 
         @Override

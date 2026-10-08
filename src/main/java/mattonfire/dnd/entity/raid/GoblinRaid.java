@@ -81,6 +81,11 @@ public class GoblinRaid {
     private static final double SPAWN_DISTANCE = 32.0;
     private static final double DEFENDER_RANGE = 16.0;
     private static final Identifier ADVANCEMENT = new Identifier(DnDClasses.MOD_ID, "goblin_raid_defended");
+    /**
+     * Every raider carries this tag. A tagged goblin that loads while no raid in its world claims
+     * it (the raid ended, or forgot it, while it was unloaded) is sent away; see {@link GoblinRaids}.
+     */
+    public static final String RAIDER_TAG = "dndclasses.goblin_raider";
 
     public enum State {
         /** Counting down to the next wave. */
@@ -226,6 +231,11 @@ public class GoblinRaid {
         return this.raiders.size();
     }
 
+    /** Whether this raid still counts {@code uuid} among its war party. */
+    public boolean hasRaider(UUID uuid) {
+        return this.raiders.containsKey(uuid);
+    }
+
     public boolean isOver() {
         return this.state == State.DONE;
     }
@@ -238,6 +248,11 @@ public class GoblinRaid {
 
     void tick(ServerWorld world) {
         if (this.state == State.DONE) {
+            return;
+        }
+        // Peaceful sweeps the goblins away; that mustn't count as beating them.
+        if (world.getDifficulty() == Difficulty.PEACEFUL && this.state != State.VICTORY) {
+            this.withdraw(world);
             return;
         }
         List<ServerPlayerEntity> defenders = world.getPlayers(this::isDefender);
@@ -377,10 +392,12 @@ public class GoblinRaid {
         this.place(world, goblin, spawn);
         goblin.initialize(world, world.getLocalDifficulty(goblin.getBlockPos()), SpawnReason.EVENT, null, null);
         goblin.setPersistent();
+        goblin.addCommandTag(RAIDER_TAG);
+        // Claimed before it's spawned, so the load check in GoblinRaids keeps it.
+        this.raiders.put(goblin.getUuid(), new Raider(goblin.getHealth(), goblin.getMaxHealth()));
         world.spawnEntityAndPassengers(goblin);
         world.spawnParticles(ParticleTypes.LARGE_SMOKE, goblin.getX(), goblin.getBodyY(0.5D), goblin.getZ(),
                 10, 0.4D, 0.6D, 0.4D, 0.02D);
-        this.raiders.put(goblin.getUuid(), new Raider(goblin.getHealth(), goblin.getMaxHealth()));
     }
 
     /** Finds standing room for a goblin a few blocks round the war party's spawn point. */
@@ -606,7 +623,10 @@ public class GoblinRaid {
         world.playSound(null, this.rally, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 
-    /** The war party gives up (or is called off): its goblins leave in a puff of smoke. */
+    /**
+     * The war party gives up (or is called off): its goblins leave in a puff of smoke. Goblins that
+     * aren't loaded are sent away when they next load (see {@link GoblinRaids}).
+     */
     void withdraw(ServerWorld world) {
         for (UUID uuid : this.raiders.keySet()) {
             Entity entity = world.getEntity(uuid);

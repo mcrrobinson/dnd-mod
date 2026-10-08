@@ -19,15 +19,15 @@ public abstract class ModEntityDataSaverMixin implements IEntityDataSaver {
 
     @Override
     public NbtCompound getPersistentData() {
-        if (dnd$persistentData.isEmpty()) {
-            this.dnd$persistentData = new NbtCompound();
-        }
         return dnd$persistentData;
     }
 
     @Inject(method = "writeNbt", at = @At("HEAD"))
     private void dnd$writePersistentData(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
-        nbt.put(DND$DATA_KEY, this.dnd$persistentData);
+        // Only players use it; don't write an empty tag into every entity in the world.
+        if (!this.dnd$persistentData.isEmpty()) {
+            nbt.put(DND$DATA_KEY, this.dnd$persistentData.copy());
+        }
     }
 
     @Inject(method = "readNbt", at = @At("HEAD"))

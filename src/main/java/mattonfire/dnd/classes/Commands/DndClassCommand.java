@@ -10,7 +10,7 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 
-import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.ClassLifecycle;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.ClassProgress;
@@ -144,7 +144,7 @@ public class DndClassCommand {
                 .findFirst()
                 .orElseThrow(() -> UNKNOWN_CLASS.create(className));
 
-        DnDClasses.applyClass(player, dndClass);
+        ClassLifecycle.change(player, dndClass);
         context.getSource().sendFeedback(
                 Text.literal("Set " + player.getEntityName() + "'s class to " + name(dndClass)), true);
         return 1;

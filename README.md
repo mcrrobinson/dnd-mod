@@ -28,7 +28,7 @@ Navigate to the root directory of the project and type the following...
 That will build the latest edition of Minecraft I have got working with the mod.
 
 ### Linux (Debian/Ubuntu)
-Install JDK 21, then use the `./gradlew` wrapper:
+Install JDK 21 to build (the built mod runs on Java 17+, like Minecraft 1.19.4), then use the `./gradlew` wrapper:
 
 ```sh
 sudo apt install openjdk-21-jdk

@@ -9,7 +9,8 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.SetPlayerClass;
+import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
+import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
@@ -55,9 +56,13 @@ public class DndClassesClient implements ClientModInitializer {
             PacketSender responseSender) {
         int classID = buf.readInt();
         client.execute(() -> {
-            if (client.player instanceof PlayerEntityExt) {
-                ((PlayerEntityExt) (PlayerEntity) client.player).setDndClass(DndCharacter.fromValue(classID));
-                SetPlayerClass.setPlayerClass(client, client.player, classID);
+            if (client.player instanceof PlayerEntityExt ext) {
+                DndCharacter dndClass = DndCharacter.fromValue(classID);
+                ext.setDndClass(dndClass);
+                // The server applies the class's stats; the client only opens the picker.
+                if (dndClass == DndCharacter.NONE) {
+                    client.setScreen(new ModKeybinds(new ClassSelectionHud()));
+                }
             }
         });
     }

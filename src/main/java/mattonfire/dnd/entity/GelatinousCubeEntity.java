@@ -296,6 +296,17 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
         }
     }
 
+    // Peaceful discards hostile mobs before persistence is checked. One that has soaked up items from the
+    // world (maybe a player's death loot) spits them out first instead of deleting them.
+    @Override
+    public void checkDespawn() {
+        if (!this.world.isClient && this.isPersistent() && this.isDisallowedInPeaceful()
+                && this.world.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) {
+            this.dropInventory();
+        }
+        super.checkDespawn();
+    }
+
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);

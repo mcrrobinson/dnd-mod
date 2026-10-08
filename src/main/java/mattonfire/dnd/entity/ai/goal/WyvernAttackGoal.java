@@ -9,6 +9,7 @@ public class WyvernAttackGoal extends Goal {
     private final WyvernEntity entity;
     private int cooldown;
     private int seeTime;
+    private int repathTicks;
 
     public WyvernAttackGoal(WyvernEntity entity) {
         this.entity = entity;
@@ -25,11 +26,18 @@ public class WyvernAttackGoal extends Goal {
     public void start() {
         this.cooldown = 0;
         this.seeTime = 0;
+        this.repathTicks = 0;
     }
 
     @Override
     public void stop() {
         this.seeTime = 0;
+    }
+
+    // Cooldowns and seeTime count real ticks; otherwise the goal selector only ticks this every other tick.
+    @Override
+    public boolean shouldRunEveryTick() {
+        return true;
     }
 
     @Override
@@ -57,7 +65,11 @@ public class WyvernAttackGoal extends Goal {
             return;
         }
 
-        this.entity.getNavigation().startMovingTo(target, 1.0);
+        // Re-path now and then (like MeleeAttackGoal), not every tick
+        if (--this.repathTicks <= 0 || this.entity.getNavigation().isIdle()) {
+            this.repathTicks = 4 + this.entity.getRandom().nextInt(7);
+            this.entity.getNavigation().startMovingTo(target, 1.0);
+        }
 
         if (this.cooldown > 0) {
             this.cooldown--;

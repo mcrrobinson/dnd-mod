@@ -12,4 +12,4 @@ A nature class that grows stronger with tamed animals and sunlight, and can take
 - Only animals loaded in your world count towards the extra hearts.
 
 ## For developers
-- All mechanics: `Druid.java` (hearts, `lightTick`, `transform`). Swimming: `mixin/PlayerEntityMixin.tick`. The killed-animal list is saved in the player's persistent NBT (`druidKilledAnimals`).
+- All mechanics: `Druid.java` (hearts, `lightTick`, `transform`). Swimming: `mixin/PlayerEntityMixin.tick`. The killed-animal list is saved in the player's persistent NBT (`druidKilledAnimals`, with the active form's end time in `druidFormExpiry`); `ClassLifecycle` copies both to the new player on death and End exit.

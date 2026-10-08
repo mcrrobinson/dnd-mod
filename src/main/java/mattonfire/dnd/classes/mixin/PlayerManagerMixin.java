@@ -13,6 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Items.ClassGuidebook;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
@@ -44,13 +45,40 @@ public class PlayerManagerMixin {
 		ServerPlayNetworking.send(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, passedData);
 	}
 
+	/**
+	 * Respawning (after death or leaving the End) makes a new player entity, so
+	 * carry the class over and re-apply its stats instead of reopening the picker.
+	 */
 	@Inject(at = @At("RETURN"), method = "respawnPlayer")
 	public void respawnPlayer(ServerPlayerEntity player, boolean alive,
 			CallbackInfoReturnable<ServerPlayerEntity> info) {
-		if (!alive) {
-			PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-			passedData.writeInt(0);
-			ServerPlayNetworking.send(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, passedData);
+		ServerPlayerEntity newPlayer = info.getReturnValue();
+		if (!(player instanceof PlayerEntityExt oldExt) || !(newPlayer instanceof PlayerEntityExt newExt)) {
+			return;
 		}
+
+		DndCharacter playerClass = oldExt.getDndClass();
+		if (playerClass == null) {
+			playerClass = DndCharacter.NONE;
+		}
+		int classID = playerClass.getValue();
+
+		if (playerClass != DndCharacter.NONE) {
+			float health = player.getHealth();
+			newExt.setDndClass(playerClass);
+			SetPlayerClass.setPlayerClass(null, newPlayer, classID);
+			// The new entity got its health while it still had vanilla max health.
+			newPlayer.setHealth(alive ? Math.min(health, newPlayer.getMaxHealth()) : newPlayer.getMaxHealth());
+			ClassGuidebook.giveIfMissing(newPlayer);
+			if (!alive) {
+				DnDClasses.sendRespawnHint(newPlayer);
+			}
+		} else if (alive) {
+			return;
+		}
+
+		PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
+		passedData.writeInt(classID);
+		ServerPlayNetworking.send(newPlayer, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, passedData);
 	}
 }

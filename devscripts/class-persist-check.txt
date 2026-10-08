@@ -1,3 +1,5 @@
+# Second half of the class persistence check: run after class-persist-set.txt, in a new client session. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-persist-check.txt
+# Expect in latest.log: /dndclass get says barbarian and max health is the Barbarian's.
 wait 60
 screenshot class-persist-rejoin
 /dndclass get @s

@@ -12,6 +12,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
@@ -70,6 +71,18 @@ public class MagmamuncherEntity extends TameableEntity implements GeoEntity {
         return super.cannotDespawn() || this.isTamed() || this.isLeashed();
     }
 
+    // Can't breed, so wheat shouldn't put it in love mode (and use the wheat up)
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false;
+    }
+
+    // AnimalEntity gives 1-3 XP; a 60 HP Nether beast is worth a monster's share
+    @Override
+    public int getXpToDrop() {
+        return 10;
+    }
+
     @Override
     public LivingEntity getOwner() {
         UUID uuid = this.getOwnerUuid();
@@ -100,6 +113,8 @@ public class MagmamuncherEntity extends TameableEntity implements GeoEntity {
 
         this.targetSelector.add(1, new TrackOwnerAttackerGoal(this));
         this.targetSelector.add(2, new AttackWithOwnerGoal(this));
+        // Never starts a fight, but fights back when hit (and so do the others nearby)
+        this.targetSelector.add(3, new RevengeGoal(this).setGroupRevenge());
     }
 
     @Nullable

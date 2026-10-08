@@ -1,9 +1,12 @@
 package mattonfire.dnd.classes.Misc;
 
+import java.util.List;
+
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Classes.ArtificerSkills;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.FishingRodItem;
@@ -42,7 +45,14 @@ public class ArtificerCrafting {
             return;
         }
         int level = MIN_ENCHANT_LEVEL + random.nextInt(MAX_ENCHANT_LEVEL - MIN_ENCHANT_LEVEL + 1);
-        EnchantmentHelper.enchant(random, stack, level, false);
+        // Vanilla's roll only checks the enchantment target, which can put Tree Feller or Grid
+        // Miner (DIGGER target) on tools they don't work with; drop those.
+        List<EnchantmentLevelEntry> entries = EnchantmentHelper.generateEnchantments(random, stack, level, false);
+        for (EnchantmentLevelEntry entry : entries) {
+            if (entry.enchantment.isAcceptableItem(stack)) {
+                stack.addEnchantment(entry.enchantment, entry.level);
+            }
+        }
     }
 
     private static boolean isEquipment(ItemStack stack) {

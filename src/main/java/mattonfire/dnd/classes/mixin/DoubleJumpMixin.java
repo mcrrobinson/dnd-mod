@@ -42,13 +42,14 @@ public abstract class DoubleJumpMixin {
                                 --jumpCount;
                                 player.jump();
 
+                                // The server resets it too (MonkHandler), which is what counts for damage.
+                                player.fallDistance = 0;
+
                                 DoubleJumpEffect.play(player);
 
-                                PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                                passedData.writeUuid(player.getUuid());
-
+                                // Empty: the server knows who sent it.
                                 ClientPlayNetworking.send(DnDClasses.C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
-                                        passedData);
+                                        new PacketByteBuf(Unpooled.buffer()));
                             }
                         }
                     }

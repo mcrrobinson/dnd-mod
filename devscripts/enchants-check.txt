@@ -1,0 +1,66 @@
+# Checks Invulnerability (effect blocks damage, cooldown, no saved flag), Grid Miner caps in
+# creative (no drops), and that the enchanting table still enchants for a non-Artificer.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/enchants-check.txt
+wait 40
+closescreen
+/dndclass set @s fighter
+/gamemode survival
+/effect clear @s
+/kill @e[type=item]
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/tp @s 3.5 150 3.5 0 35
+/clear @s
+/give @s minecraft:diamond_sword{Enchantments:[{id:"dndclasses:invulnerability",lvl:1}]}
+hotbar 0
+wait 10
+use
+wait 2
+/damage @s 5 minecraft:generic
+/data get entity @s Health
+/data get entity @s Invulnerable
+wait 60
+use
+wait 2
+/damage @s 5 minecraft:generic
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/effect give @s minecraft:instant_health 1 5
+/gamemode creative
+/clear @s
+/fill 0 140 0 6 146 6 minecraft:stone
+/give @s minecraft:diamond_pickaxe{Enchantments:[{id:"dndclasses:grid_miner",lvl:2}]}
+/tp @s 3.5 148 3.5 0 90
+wait 10
+attack
+wait 5
+/execute if entity @e[type=item]
+/fill 0 140 0 6 146 6 minecraft:stone replace minecraft:air
+/clear @s
+/give @s minecraft:diamond_pickaxe{Enchantments:[{id:"dndclasses:grid_miner",lvl:1}]}
+wait 10
+attack
+wait 5
+/fill 0 140 0 6 146 6 minecraft:stone replace minecraft:air
+/gamemode survival
+/tp @s 3.5 150 3.5 0 35
+/clear @s
+/xp add @s 30 levels
+/give @s minecraft:diamond_axe
+/give @s minecraft:lapis_lazuli 3
+/setblock 3 150 5 minecraft:enchanting_table
+wait 10
+use
+wait 10
+slot 29
+slot 0
+slot 30
+slot 1
+wait 10
+screenshot enchants-table
+button 2
+wait 10
+slots
+closescreen
+/setblock 3 150 5 minecraft:air
+quit

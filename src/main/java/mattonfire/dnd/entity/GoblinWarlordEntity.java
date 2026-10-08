@@ -114,8 +114,8 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
                 this.summonTime = -1;
                 this.summonWave(target);
             }
-        } else if (target != null && target.isAlive() && now >= this.nextSummonTime
-                && this.nearbyGoblins().size() < (this.isEnraged() ? ENRAGED_MAX_MINIONS : MAX_MINIONS)) {
+        } else if (target != null && target.isAlive() && now >= this.nextSummonTime && now >= this.nextGoblinScan
+                && this.scanGoblins(now) < (this.isEnraged() ? ENRAGED_MAX_MINIONS : MAX_MINIONS)) {
             this.pendingWave = this.isEnraged() ? ENRAGED_WAVE_SIZE : WAVE_SIZE;
             this.summonTime = now + WARCRY_WIND_UP;
             this.nextSummonTime = now + (this.isEnraged() ? ENRAGED_SUMMON_COOLDOWN : SUMMON_COOLDOWN);
@@ -161,6 +161,15 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
     }
 
     /** Living Goblin Warriors around the warlord, whether it summoned them or they live here. */
+    /** Ticks between minion counts while the summon is ready but the cap is reached. */
+    private static final int GOBLIN_SCAN_INTERVAL = 10;
+    private long nextGoblinScan;
+
+    private int scanGoblins(long now) {
+        this.nextGoblinScan = now + GOBLIN_SCAN_INTERVAL;
+        return this.nearbyGoblins().size();
+    }
+
     private List<GoblinWarriorEntity> nearbyGoblins() {
         return this.world.getEntitiesByClass(GoblinWarriorEntity.class,
                 this.getBoundingBox().expand(MINION_RANGE),

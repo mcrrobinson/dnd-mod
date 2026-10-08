@@ -36,10 +36,6 @@ public class LightningChaserFlyRandomlyGoal extends Goal {
 
     @Override
     public void start() {
-        // Switch to flight controls and navigation immediately for takeoff
-        if (this.entity.isOnGround()) {
-            this.entity.switchToFlightMode();
-        }
         Vec3d vec3d = this.getRandomLocation();
         if (vec3d != null) {
             this.entity.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
@@ -74,7 +70,7 @@ public class LightningChaserFlyRandomlyGoal extends Goal {
                 y = pos.y - random.nextDouble() * 8.0 - 2.0; 
             }
 
-            BlockPos targetPos = new BlockPos((int)x, (int)y, (int)z);
+            BlockPos targetPos = BlockPos.ofFloored(x, y, z);
             if (this.entity.world.isAir(targetPos)) {
                  return new Vec3d(x, y, z);
             }

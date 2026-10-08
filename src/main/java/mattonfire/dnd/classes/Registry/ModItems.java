@@ -551,6 +551,24 @@ public class ModItems {
         public static final Item BEHOLDER_SPAWN_EGG = registerItem("beholder_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, 0x7A4860, 0x5AC850, new FabricItemSettings()));
 
+        public static final Item WYVERN_SPAWN_EGG = registerItem("wyvern_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.WYVERN, 0x3E6B2E, 0xB8C46A, new FabricItemSettings()));
+
+        public static final Item LIGHTNING_CHASER_SPAWN_EGG = registerItem("lightning_chaser_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, 0x2E3A5C, 0xF2E85A, new FabricItemSettings()));
+
+        public static final Item RIVER_PIKEHORN_SPAWN_EGG = registerItem("river_pikehorn_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, 0x3C6E78, 0xC9D8A0, new FabricItemSettings()));
+
+        public static final Item MAGMAMUNCHER_SPAWN_EGG = registerItem("magmamuncher_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MAGMAMUNCHER, 0x2E2622, 0xE0581A, new FabricItemSettings()));
+
+        public static final Item GOBLIN_WARRIOR_SPAWN_EGG = registerItem("goblin_warrior_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR, 0x4A6B2A, 0x8A8A8A, new FabricItemSettings()));
+
+        public static final Item GELATINOUS_CUBE_SPAWN_EGG = registerItem("gelatinous_cube_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, 0x7FD46A, 0x3C8A2E, new FabricItemSettings()));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

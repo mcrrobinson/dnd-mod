@@ -214,6 +214,12 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
         return !(target instanceof AbstractHorseEntity horse && horse.isTame());
     }
 
+    // Can't breed, so wheat shouldn't put it in love mode (and use the wheat up)
+    @Override
+    public boolean isBreedingItem(ItemStack stack) {
+        return false;
+    }
+
     @Override
     public boolean cannotDespawn() {
         return super.cannotDespawn() || this.isTamed() || this.isLeashed();

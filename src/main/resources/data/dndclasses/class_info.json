@@ -93,7 +93,7 @@
       "id": "WIZARD",
       "name": "Wizard",
       "pros": ["Can wield elemental staffs (done)"],
-      "cons": ["Greatly reduced health (done)"],
+      "cons": ["Greatly reduced health (done)", "Can't wear armor heavier than iron (done)"],
       "special": ["Creates a massive explosion and becomes invulnerable for a few seconds (done)"],
       "specialOnKey": true
     },
@@ -109,7 +109,7 @@
       "id": "BLOODHUNTER",
       "name": "Blood Hunter",
       "pros": ["Fire aspect applied to all swords (done)", "Double damage at night (done)"],
-      "cons": ["Half damage during the day (done)"],
+      "cons": ["Half damage during the day (done)", "Can't drop swords: they still drop on death (done)"],
       "special": ["Can take control of any mob within 30m for 20 seconds (needs the Identity mod) (done)"],
       "specialOnKey": true
     },

@@ -1,0 +1,30 @@
+wait 40
+closescreen
+wait 10
+/gamemode survival
+/tp @s 0 150 0 0 30
+/effect give @s minecraft:slow_falling 99999 0 true
+/dndclass set @s barbarian
+wait 10
+/clear @s
+/item replace entity @s hotbar.0 with dndclasses:staff_of_fire
+hotbar 0
+wait 5
+use
+wait 2
+screenshot wizard-limits-staff-barbarian
+/dndclass set @s wizard
+wait 10
+/item replace entity @s armor.chest with minecraft:diamond_chestplate
+/item replace entity @s armor.legs with minecraft:iron_leggings
+/item replace entity @s armor.head with dndclasses:wizard_helmet
+/item replace entity @s armor.feet with dndclasses:cleric_boots
+wait 5
+screenshot wizard-limits-armor
+/data get entity @s Inventory
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+screenshot wizard-limits-special
+quit

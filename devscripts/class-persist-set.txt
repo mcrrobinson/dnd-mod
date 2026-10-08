@@ -1,0 +1,7 @@
+wait 40
+closescreen
+wait 10
+/dndclass set @s barbarian
+wait 10
+/dndclass get @s
+quit

@@ -9,14 +9,17 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
-import mattonfire.dnd.classes.Goals.TimedDespawnGoal;
+import mattonfire.dnd.classes.Progression.SkillHelpers;
+import mattonfire.dnd.classes.Progression.Classes.NecromancerSkills;
 import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
+import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
+import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -33,7 +36,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.item.PotionItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
@@ -56,8 +58,11 @@ public class PowerUpEffect {
     /** How long the Wizard special's invulnerability lasts. */
     public static final int WIZARD_INVULNERABLE_TICKS = 5 * 20;
 
+    /** How long the Necromancer special's zombie and skeleton last. */
+    public static final int UNDEAD_LIFETIME_TICKS = 10 * 20;
+
     /**
-     * Adds an AI goal that makes the entity target hostile mobs.
+     * Adds AI goals that make the summon target hostile mobs and follow the player.
      */
     private static void addHostileTargetGoal(MobEntity mob, PlayerEntity player) {
         if (mob instanceof ZombieEntity || mob instanceof SkeletonEntity) {
@@ -67,8 +72,6 @@ public class PowerUpEffect {
 
             mobAccessor.getGoalSelector().add(3,
                     new FollowSummonerGoal((PathAwareEntity) mob, player, 2.0D, 5.0F, 10.0F));
-
-            mobAccessor.getGoalSelector().add(1, new TimedDespawnGoal(mob, 100));
         }
     }
 
@@ -77,68 +80,57 @@ public class PowerUpEffect {
             return; // Ensure it's server-side
 
         BlockPos pos = player.getBlockPos(); // Get necromancer's position
+        Team allyTeam = NecromancerSkills.allyTeam(world, player);
 
-        Team allyTeam = world.getScoreboard().getTeam(player.getUuidAsString());
-        if (allyTeam == null) {
-            allyTeam = world.getScoreboard().addTeam(player.getUuidAsString());
-            // Optionally configure the team to not show nametags, etc.
-        }
+        spawnAlly(world, player, EntityType.ZOMBIE.create(world), pos.getX(), pos.getY(), pos.getZ(), allyTeam);
+        spawnAlly(world, player, EntityType.SKELETON.create(world), pos.getX() + 1, pos.getY(), pos.getZ(),
+                allyTeam);
+    }
 
-        // Spawn a Zombie
-        ZombieEntity zombie = EntityType.ZOMBIE.create(world);
-        if (zombie != null) {
-            zombie.refreshPositionAndAngles(pos.getX(), pos.getY(), pos.getZ(), world.random.nextFloat() * 360F, 0F);
-            addHostileTargetGoal(zombie, player); // Add AI to target hostiles
+    /**
+     * Summons go through {@link SkillHelpers#spawnSummon}, which removes them when
+     * their time is up and when they'd come back from a chunk reload or restart
+     * without their AI goals.
+     */
+    private static void spawnAlly(ServerWorld world, PlayerEntity player, HostileEntity mob, double x, double y,
+            double z, Team allyTeam) {
+        if (mob == null)
+            return;
+        mob.refreshPositionAndAngles(x, y, z, world.random.nextFloat() * 360F, 0F);
+        addHostileTargetGoal(mob, player); // Add AI to target hostiles
+        world.getScoreboard().addPlayerToTeam(mob.getUuidAsString(), allyTeam);
+        mob.addCommandTag(NecromancerSkills.SUMMON_TAG);
+        mob.setPersistent();
+        SkillHelpers.spawnSummon(world, mob, UNDEAD_LIFETIME_TICKS);
+    }
 
-            world.getScoreboard().addPlayerToTeam(zombie.getUuidAsString(), allyTeam);
-
-            zombie.setPersistent();
-            world.spawnEntity(zombie); // Add to the world
-        }
-
-        // Spawn a Skeleton
-        SkeletonEntity skeleton = EntityType.SKELETON.create(world);
-        if (skeleton != null) {
-            skeleton.refreshPositionAndAngles(pos.getX() + 1, pos.getY(), pos.getZ(), world.random.nextFloat() * 360F,
-                    0F);
-            addHostileTargetGoal(skeleton, player); // Add AI to target hostiles
-            world.getScoreboard().addPlayerToTeam(skeleton.getUuidAsString(), allyTeam);
-
-            skeleton.setPersistent();
-            world.spawnEntity(skeleton);
+    /** The Bard special's "attack hostile mobs" goal; a marker type so it's only added once per mob. */
+    private static class BardRallyGoal extends ActiveTargetGoal<HostileEntity> {
+        BardRallyGoal(MobEntity mob) {
+            super(mob, HostileEntity.class, true);
         }
     }
 
     public static void bardEffect(PlayerEntity player) {
-        List<LivingEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
-                LivingEntity.class,
+        List<PassiveEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
+                PassiveEntity.class,
                 player.getBoundingBox().expand(10), // 10-block radius
-                entity -> entity instanceof PassiveEntity && !(entity instanceof PlayerEntity));
+                // Bosses (Wyvern, Lightning Chaser) can't be charmed.
+                entity -> entity.isAlive() && !(entity instanceof Boss));
 
-        for (LivingEntity entity : nearbyEntities) {
-            if (entity instanceof PassiveEntity passiveMob) {
+        for (PassiveEntity passiveMob : nearbyEntities) {
+            // Untamed tameable animals (wolves, cats, parrots...) become the Bard's
+            if (passiveMob instanceof TameableEntity tameable && !tameable.isTamed()) {
+                tameable.setOwner(player);
+            }
 
-                // If it's a tameable entity (e.g., wolf, cat, etc.), make it follow the player
-                if (passiveMob instanceof TameableEntity tameable) {
-                    if (!tameable.isTamed()) {
-                        tameable.setOwner(player);
-                    }
-                }
-
-                // Modify AI Goals using Mixin Accessor
-                if (passiveMob instanceof MobEntity) {
-                    MobEntityAccessor accessor = (MobEntityAccessor) passiveMob;
-                    accessor.getTargetSelector().add(1, new ActiveTargetGoal<>(
-                            passiveMob, HostileEntity.class, true));
-                }
+            // Turn them on hostile mobs, once: the goal stays until the mob is unloaded.
+            GoalSelector targets = ((MobEntityAccessor) passiveMob).getTargetSelector();
+            boolean rallied = targets.getGoals().stream().anyMatch(goal -> goal.getGoal() instanceof BardRallyGoal);
+            if (!rallied) {
+                targets.add(1, new BardRallyGoal(passiveMob));
             }
         }
-
-        // Make player unseen by hostile mobs
-        List<HostileEntity> hostileEntities = player.getEntityWorld().getEntitiesByClass(
-                HostileEntity.class,
-                player.getBoundingBox().expand(10), // 10-block radius
-                entity -> true);
     }
 
     public static boolean play(MinecraftServer server, PlayerEntity player, DndCharacter character) {
@@ -271,65 +263,10 @@ public class PowerUpEffect {
                 }
                 break;
             case ALCHEMIST:
-                // buffs all potions in inventory
-                // Get all the things in the players inventory
-                PlayerInventory inventory = player.getInventory();
-                for (int i = 0; i < inventory.main.size(); i++) {
-                    ItemStack stack = inventory.main.get(i);
-                    // Check if the stack is a potion
-                    Item item = stack.getItem();
-                    if (item instanceof PotionItem) {
-
-                        Potion potion = PotionUtil.getPotion(stack);
-                        if (potion == null) {
-                            return false;
-                        }
-                        // Get potion effects
-                        Potion maxPotion = potion;
-                        int maxAmplifier = 0;
-
-                        List<StatusEffectInstance> effects = PotionUtil.getPotionEffects(stack);
-                        if (effects.size() == 1) {
-                            StatusEffectInstance effect = effects.get(0);
-                            StatusEffect effectType = effect.getEffectType();
-
-                            for (Potion localPotion : Registries.POTION) {
-                                if (localPotion == null) {
-                                    continue;
-                                }
-
-                                List<StatusEffectInstance> localEffects = localPotion.getEffects();
-                                if (localEffects.size() == 1) {
-                                    StatusEffectInstance localEffect = localEffects.get(0);
-                                    StatusEffect localEffectType = localEffect.getEffectType();
-
-                                    if (localEffectType.equals(effectType)) {
-                                        if (localEffect.getAmplifier() > maxAmplifier) {
-                                            maxAmplifier = localEffect.getAmplifier();
-                                            maxPotion = localPotion;
-                                        }
-                                    }
-                                }
-                            }
-
-                            // If we found a better potion, replace the old stack
-                            if (maxPotion != potion) {
-                                // Create a new potion stack, same count as the old one
-                                ItemStack newStack = new ItemStack(Items.POTION, stack.getCount());
-                                PotionUtil.setPotion(newStack, maxPotion);
-
-                                // Replace the slot in the inventory
-                                inventory.setStack(i, newStack);
-
-                                // Optionally print or log something
-                                System.out.println("Upgraded potion at slot " + i
-                                        + " from " + potion.getEffects()
-                                        + " to " + maxPotion.getEffects());
-                            }
-                        }
-                    }
-                }
-                ;
+                // Upgrades every potion in the inventory to its strongest version.
+                // Nothing to upgrade keeps the mana.
+                if (!alchemistUpgradePotions(player))
+                    return false;
                 break;
             default:
                 break;
@@ -337,5 +274,48 @@ public class PowerUpEffect {
         }
         return true; // Indicate that the power-up was successfully applied
 
+    }
+
+    /**
+     * Swaps each single-effect potion in the main inventory for the registered
+     * potion with the same effect at the highest amplifier (e.g. Swiftness to
+     * Swiftness II). Splash and lingering potions stay splash and lingering.
+     *
+     * @return whether any potion was upgraded
+     */
+    private static boolean alchemistUpgradePotions(PlayerEntity player) {
+        PlayerInventory inventory = player.getInventory();
+        boolean upgraded = false;
+        for (int i = 0; i < inventory.main.size(); i++) {
+            ItemStack stack = inventory.main.get(i);
+            if (!(stack.getItem() instanceof PotionItem))
+                continue;
+
+            Potion potion = PotionUtil.getPotion(stack);
+            List<StatusEffectInstance> effects = potion.getEffects();
+            if (effects.size() != 1)
+                continue; // Water, awkward, custom and mixed potions
+            StatusEffect effectType = effects.get(0).getEffectType();
+
+            Potion best = potion;
+            int bestAmplifier = effects.get(0).getAmplifier();
+            for (Potion candidate : Registries.POTION) {
+                List<StatusEffectInstance> candidateEffects = candidate.getEffects();
+                if (candidateEffects.size() == 1 && candidateEffects.get(0).getEffectType() == effectType
+                        && candidateEffects.get(0).getAmplifier() > bestAmplifier) {
+                    bestAmplifier = candidateEffects.get(0).getAmplifier();
+                    best = candidate;
+                }
+            }
+
+            if (best != potion) {
+                // Copy keeps the item (potion, splash, lingering), count and any custom name.
+                ItemStack newStack = stack.copy();
+                PotionUtil.setPotion(newStack, best);
+                inventory.setStack(i, newStack);
+                upgraded = true;
+            }
+        }
+        return upgraded;
     }
 }

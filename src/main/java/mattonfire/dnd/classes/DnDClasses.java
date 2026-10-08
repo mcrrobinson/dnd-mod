@@ -115,17 +115,6 @@ public class DnDClasses implements ModInitializer {
 
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
-        private static void sendDoubleJumpPacket(MinecraftServer server, ServerPlayerEntity player,
-                        ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                passedData.writeUuid(buf.readUuid());
-                server.execute(() -> {
-                        PlayerLookup.tracking(player).forEach(p -> {
-                                ServerPlayNetworking.send(p, DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID, passedData);
-                        });
-                });
-        }
-
         private static void sendPowerupPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 server.execute(() -> {
@@ -364,70 +353,7 @@ public class DnDClasses implements ModInitializer {
                         }
                 });
 
-                ServerTickEvents.END_WORLD_TICK.register(world -> {
-                        if (!(world instanceof ServerWorld serverWorld))
-                                return;
-                        long now = serverWorld.getTime();
-
-                        DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
-                                UUID uuid = entry.getKey();
-                                long endTick = entry.getValue();
-                                ServerPlayerEntity player = serverWorld.getServer().getPlayerManager().getPlayer(uuid);
-
-                                if (now > endTick) {
-                                        // When ending fire breath:
-                                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                                        buf.writeBoolean(false);
-                                        ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
-                                        return true; // Remove expired
-                                }
-
-                                if (player == null)
-                                        return true;
-
-                                // TODO: Not sure if this is where it goes
-                                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                                buf.writeBoolean(true);
-                                buf.writeLong(endTick);
-                                ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
-
-                                // Fire breath logic
-                                Vec3d look = player.getRotationVec(1.0F);
-                                Vec3d start = player.getPos().add(0, player.getStandingEyeHeight(), 0);
-
-                                // Beam: 5 blocks long, 1 block wide
-                                for (int i = 1; i <= 5; i++) {
-                                        Vec3d pos = start.add(look.multiply(i));
-
-                                        for (ServerPlayerEntity otherPlayer : serverWorld.getPlayers()) {
-                                                if (!otherPlayer.getUuid().equals(player.getUuid())) {
-
-                                                        System.out.println("Spawning particles for player: "
-                                                                        + otherPlayer.getName().getString());
-                                                        serverWorld.spawnParticles(
-                                                                        otherPlayer,
-                                                                        ParticleTypes.FLAME,
-                                                                        false, // longDistance
-                                                                        pos.x, pos.y, pos.z,
-                                                                        8, 0.2, 0.2, 0.2, 0.01);
-                                                }
-                                        }
-
-                                        // serverWorld.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 8, 0.2,
-                                        // 0.2, 0.2, 0.01);
-
-                                        // Damage entities in the beam
-                                        Box box = new Box(pos.x - 0.5, pos.y - 0.5, pos.z - 0.5, pos.x + 0.5,
-                                                        pos.y + 0.5, pos.z + 0.5);
-                                        for (LivingEntity entity : serverWorld.getEntitiesByClass(LivingEntity.class,
-                                                        box, e -> e != player)) {
-                                                entity.setOnFireFor(2);
-                                                entity.damage(serverWorld.getDamageSources().magic(), 2.0F);
-                                        }
-                                }
-                                return false;
-                        });
-                });
+                // Warlock fire breath ticks in Warlock.register().
 
                 ServerTickEvents.END_WORLD_TICK.register(world -> {
                         if (world instanceof ServerWorld serverWorld) {
@@ -569,8 +495,7 @@ public class DnDClasses implements ModInitializer {
                                 ModPotions.FREEZE_POTION.value());
 
                 // Register doublejump registry.
-                ServerPlayNetworking.registerGlobalReceiver(C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
-                                DnDClasses::sendDoubleJumpPacket);
+                // The double-jump packet is handled in MonkHandler.register().
 
                 // Register powerup registry.
                 ServerPlayNetworking.registerGlobalReceiver(C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID,

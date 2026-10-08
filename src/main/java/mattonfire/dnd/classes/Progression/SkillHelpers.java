@@ -30,7 +30,15 @@ public final class SkillHelpers {
     }
 
     static void register() {
-        // Summons left over from before a restart.
+        // A summon that leaves a world without being killed (chunk unload, portal) comes back
+        // without its AI goals, so forget it and the load check below removes it.
+        ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
+            if (entity.getCommandTags().contains(SUMMON_TAG) && entity.getRemovalReason() != null
+                    && !entity.getRemovalReason().shouldDestroy()) {
+                SUMMONS.remove(entity.getUuid());
+            }
+        });
+        // Summons left over from before a restart or a chunk reload.
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity.getCommandTags().contains(SUMMON_TAG) && !SUMMONS.containsKey(entity.getUuid())) {
                 entity.discard();

@@ -57,7 +57,8 @@
         "PlayerAttackRollMixin",
         "RangerSwordPickupMixin",
         "BloodHunterSwordDropMixin",
-        "ServerPlayerSwordDropMixin"
+        "ServerPlayerSwordDropMixin",
+        "StatusEffectMixin"
     ],
     "client": [
         "BackgroundRendererMixin",

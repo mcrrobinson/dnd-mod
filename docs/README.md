@@ -57,7 +57,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance
 - [Lunge](enchantments/lunge.md): right-click to dash forward
-- [Invulnerability](enchantments/invulnerability.md): right-click for 2 s of invulnerability
+- [Invulnerability](enchantments/invulnerability.md): right-click for 2 s of invulnerability, with a cooldown
 - [Tree Feller](enchantments/tree-feller.md): fell a whole tree at once
 - [Grid Miner](enchantments/grid-miner.md): mine out connected blocks
 - [Returning](enchantments/returning.md): thrown tridents, snowballs, eggs and pearls come back

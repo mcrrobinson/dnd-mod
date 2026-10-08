@@ -16,8 +16,6 @@
         "LivingEntityMixin",
         "HungerManagerMixin",
         "ModEntityDataSaverMixin",
-        "EnchantmentScreenHandlerInvoker",
-        "EnchantmentScreenHandlerAccessor",
         "EnchantingTableMixin",
         "AnvilScreenHandlerMixin",
         "ActiveTargetGoalMixin",

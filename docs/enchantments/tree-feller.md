@@ -2,7 +2,8 @@
 Fell a whole tree by breaking one log.
 
 ## How it works
-- Breaking a log with a Tree Feller **axe** also breaks every connected log (up, down and the four sides), up to 10 steps from the first one, and drops them as items.
+- Breaking a log with a Tree Feller **axe** also breaks every connected log (up, down and the four sides), up to 10 steps from the first one and at most 64 logs.
+- Each log is broken as if you mined it: Fortune applies, each log costs durability (it stops when the axe breaks), creative mode drops nothing, and protection/claim mods can refuse logs.
 - Works on oak, spruce, birch, jungle, acacia, dark oak, mangrove and cherry logs, and crimson and warped stems.
 
 ## Where to find it / How to get it
@@ -14,7 +15,6 @@ Fell a whole tree by breaking one log.
 
 ## Known limitations
 - Stripped logs and wood blocks aren't counted.
-- The enchanting table's hint (the "Tree Feller...?" tooltip) comes from vanilla, so it can still name Tree Feller on a pickaxe, shovel or hoe, or for a non-Artificer. The roll you actually get only puts it on axes.
 
 ## For developers
-- `TreeFeller.java`. `Enchantments/TreeFellerEnchantment` uses the `DIGGER` target (vanilla has no axe-only one) and narrows it to axes in `isAcceptableItem`; `mixin/EnchantingTableMixin` checks both.
+- `TreeFeller.java` (uses `GridMiner.breakAsPlayer`). `Enchantments/TreeFellerEnchantment` uses the `DIGGER` target (vanilla has no axe-only one) and narrows it to axes in `isAcceptableItem`; `mixin/EnchantingTableMixin` checks both.

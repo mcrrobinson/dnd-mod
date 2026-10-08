@@ -1,0 +1,37 @@
+# Checks the mana bar moves above the air bubbles and a second row of mount hearts,
+# and that Freeze tints a mob (a husk, so it doesn't burn) frozen while you're already watching it.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/client-hud-freeze-check.txt
+# Output: run/screenshots/mana-dry.png, mana-underwater.png, mana-horse.png, freeze-tint.png
+wait 40
+closescreen
+/gamemode survival
+/fill -2 148 -2 6 154 6 minecraft:glass
+/fill -1 149 -1 5 153 5 minecraft:air
+/tp @s 2 150 2 0 0
+/effect give @s minecraft:saturation 60 10 true
+wait 20
+screenshot mana-dry
+/fill -1 149 -1 5 153 5 minecraft:water
+wait 40
+screenshot mana-underwater
+/fill -2 148 -2 6 154 6 minecraft:air
+/fill 18 149 18 24 149 24 minecraft:glass
+/tp @s 21 150 21 0 0
+/summon minecraft:horse 21 150 21 {Tame:1b,NoAI:1b,SaddleItem:{id:"minecraft:saddle",Count:1b},Attributes:[{Name:"generic.max_health",Base:30d}],Health:30f}
+wait 10
+/ride @s mount @e[type=minecraft:horse,limit=1,sort=nearest]
+wait 20
+screenshot mana-horse
+/ride @s dismount
+/kill @e[type=minecraft:horse]
+/fill 38 149 38 42 149 46 minecraft:glass
+/tp @s 40 150 40 0 10
+/summon minecraft:husk 40 150 43 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}
+wait 40
+/effect give @e[type=minecraft:husk,limit=1,sort=nearest] dndclasses:freeze 60
+wait 20
+screenshot freeze-tint
+/effect clear @e[type=minecraft:husk,limit=1,sort=nearest] dndclasses:freeze
+wait 20
+screenshot freeze-cleared
+quit

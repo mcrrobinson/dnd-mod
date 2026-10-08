@@ -1,7 +1,7 @@
 package mattonfire.dnd.classes.SkillChecks;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
@@ -25,8 +25,20 @@ import net.minecraft.util.ActionResult;
  * The modifier shown is the class's attack bonus (ability modifier + proficiency).
  */
 public final class AttackRolls {
-    /** Players whose current swing is a critical hit, set just before {@code PlayerEntity.attack} runs. */
-    private static final Set<UUID> CRITICAL = new HashSet<>();
+    /**
+     * Players whose current swing is a critical hit, set just before {@code PlayerEntity.attack} runs,
+     * with the target and the player's age then. Another attack callback can still cancel the swing,
+     * so the crit only counts for that target in that same tick.
+     */
+    private static final Map<UUID, Crit> CRITICAL = new HashMap<>();
+
+    private record Crit(int targetId, int age) {
+    }
+
+    /** Drops a crit roll that never got used; called on disconnect. */
+    public static void forget(UUID player) {
+        CRITICAL.remove(player);
+    }
 
     private AttackRolls() {
     }
@@ -53,7 +65,7 @@ public final class AttackRolls {
             if (natural >= critRange(dndClass)) {
                 D20.Roll roll = new D20.Roll(D20.Skill.ATTACK, natural, bonus, 0, D20.Outcome.CRITICAL);
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical"));
-                CRITICAL.add(player.getUuid());
+                CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
             }
             return ActionResult.PASS;
         });
@@ -76,12 +88,28 @@ public final class AttackRolls {
         return dndClass == DndCharacter.FIGHTER ? 19 : 20;
     }
 
-    public static float criticalDamage(PlayerEntity player, float amount) {
-        return !player.getWorld().isClient && CRITICAL.contains(player.getUuid()) ? amount * 2.0f : amount;
+    /** Whether this swing at the target is the one that rolled the crit; drops a stale mark. */
+    private static boolean isCritical(PlayerEntity player, Entity target) {
+        Crit crit = CRITICAL.get(player.getUuid());
+        if (crit == null)
+            return false;
+        if (crit.age() != player.age) {
+            CRITICAL.remove(player.getUuid()); // From a swing that was cancelled
+            return false;
+        }
+        return target != null && crit.targetId() == target.getId();
+    }
+
+    public static float criticalDamage(PlayerEntity player, Entity target, float amount) {
+        return !player.getWorld().isClient && isCritical(player, target) ? amount * 2.0f : amount;
     }
 
     public static void endAttack(PlayerEntity player, Entity target) {
-        if (!player.getWorld().isClient && CRITICAL.remove(player.getUuid())) {
+        if (player.getWorld().isClient)
+            return;
+        boolean critical = isCritical(player, target);
+        CRITICAL.remove(player.getUuid());
+        if (critical) {
             player.addCritParticles(target);
             player.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(),
                     SoundEvents.ENTITY_PLAYER_ATTACK_CRIT, SoundCategory.PLAYERS, 1.0f, 0.8f);

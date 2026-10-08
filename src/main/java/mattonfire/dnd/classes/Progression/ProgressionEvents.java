@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Progression;
 
+import mattonfire.dnd.classes.Party.PartyEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -47,7 +48,8 @@ public final class ProgressionEvents {
         if (skills != null) {
             xp += skills.killXp(player, entity, source);
         }
-        Progression.addXp(player, xp);
+        // Split with party members nearby, like vanilla XP; each gets it in their own class.
+        PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp);
 
         if (skills != null) {
             skills.onKill(player, Progression.current(player), entity, source);

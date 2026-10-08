@@ -1,3 +1,5 @@
+# Wizard limits: non-wizards can't use the staff, Wizards can't wear heavy armor, and the Wizard special applies its effects. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/wizard-limits.txt
+# Expect: screenshots wizard-limits-*, and the Inventory / ActiveEffects dumps in latest.log.
 wait 40
 closescreen
 wait 10

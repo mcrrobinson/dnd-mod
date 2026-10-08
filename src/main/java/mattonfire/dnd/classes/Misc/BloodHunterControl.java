@@ -15,6 +15,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.WitherEntity;
 import net.minecraft.entity.boss.dragon.EnderDragonEntity;
 import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.MinecraftServer;
@@ -47,6 +48,15 @@ public final class BloodHunterControl {
 
     public static boolean isIdentityLoaded() {
         return FabricLoader.getInstance().isModLoaded("identity");
+    }
+
+    /**
+     * Whether the player has attacked a mob recently (Identity's hostility). Always false without
+     * Identity. Mixins must call this instead of Identity directly: Mixin resolves every class a mixin
+     * method calls when it applies it, so a direct call crashes the game when Identity is missing.
+     */
+    public static boolean hasIdentityHostility(PlayerEntity player) {
+        return isIdentityLoaded() && BloodHunterIdentityCompat.hasHostility(player);
     }
 
     public static void register() {

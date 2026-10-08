@@ -53,13 +53,7 @@ public final class Progression {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> sync(handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> OPEN_TABLES.remove(handler.player.getUuid()));
 
-        // A new player entity is made on death and when leaving the End; keep the progress.
-        ServerPlayerEvents.COPY_FROM.register((oldPlayer, newPlayer, alive) -> {
-            NbtCompound oldData = ((IEntityDataSaver) oldPlayer).getPersistentData();
-            if (oldData.contains(DATA_KEY)) {
-                ((IEntityDataSaver) newPlayer).getPersistentData().put(DATA_KEY, oldData.getCompound(DATA_KEY).copy());
-            }
-        });
+        // ClassLifecycle copies the progress to the new player entity on death and End exit.
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> sync(newPlayer));
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {

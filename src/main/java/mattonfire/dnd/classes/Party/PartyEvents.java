@@ -30,6 +30,8 @@ public class PartyEvents {
 
     /** XP channel for vanilla experience orbs. */
     public static final String XP_VANILLA = "vanilla";
+    /** XP channel for class progression XP from kills. */
+    public static final String XP_PROGRESSION = "progression";
 
     /** Fractional XP left over from splitting, per channel and player, so small orbs aren't lost. */
     private static final Map<String, Map<UUID, Double>> XP_REMAINDER = new HashMap<>();
@@ -74,11 +76,9 @@ public class PartyEvents {
      * within {@link PartyManager#SHARE_RADIUS} blocks. With no party (or nobody
      * nearby) the player gets it all.
      *
-     * Vanilla XP orbs go through this with {@link #XP_VANILLA}. Other XP systems
-     * (e.g. class progression XP) should call this with their own channel name and
-     * a grant function, e.g.
-     * {@code PartyEvents.shareXp(player, xp, "progression", Progression::addXp)}.
-     * TODO: hook class-progression XP in here once that system lands on main.
+     * Vanilla XP orbs go through this with {@link #XP_VANILLA}, and class XP from
+     * kills with {@link #XP_PROGRESSION} ({@code ProgressionEvents}). Other XP
+     * systems call it with their own channel name and a grant function.
      */
     public static void shareXp(ServerPlayerEntity collector, int amount, String channel,
             BiConsumer<ServerPlayerEntity, Integer> grant) {

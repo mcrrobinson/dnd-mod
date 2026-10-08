@@ -19,7 +19,11 @@ import net.minecraft.util.hit.HitResult;
 
 /**
  * Vanilla never sends a use packet for an empty hand, so the Warlock's
- * fireball is triggered here on the client and thrown by the server.
+ * fireball is triggered here on the client and thrown by the server (which
+ * also enforces the cooldown, see {@link Warlock}).
+ *
+ * Injected at the end of doItemUse, which is only reached when neither hand
+ * did anything, so off-hand shields, food, potions and so on still work.
  */
 @Mixin(MinecraftClient.class)
 public abstract class WarlockFireballMixin {
@@ -29,12 +33,10 @@ public abstract class WarlockFireballMixin {
     @Shadow
     public HitResult crosshairTarget;
 
-    @Shadow
-    private int itemUseCooldown;
-
-    @Inject(method = "doItemUse", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "doItemUse", at = @At("TAIL"))
     private void dndclasses$warlockFireball(CallbackInfo ci) {
-        if (player == null || !Warlock.isWarlock(player) || !player.getMainHandStack().isEmpty()) {
+        if (player == null || !Warlock.isWarlock(player) || !player.getMainHandStack().isEmpty()
+                || player.isUsingItem()) {
             return;
         }
 
@@ -49,7 +51,5 @@ public abstract class WarlockFireballMixin {
 
         ClientPlayNetworking.send(Warlock.C2S_WARLOCK_FIREBALL, new PacketByteBuf(Unpooled.buffer()));
         player.swingHand(Hand.MAIN_HAND);
-        itemUseCooldown = 4;
-        ci.cancel();
     }
 }

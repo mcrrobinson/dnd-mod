@@ -1,3 +1,5 @@
+# Second LAN client: run with -PdevRunDir=run-2 -PdevServer=localhost:25599 while lan-host-check.txt is running. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/lan-guest-check.txt
+# Expect in latest.log: /list shows both players.
 wait 40
 closescreen
 /list

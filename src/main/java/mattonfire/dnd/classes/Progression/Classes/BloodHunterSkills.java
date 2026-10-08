@@ -211,4 +211,10 @@ public class BloodHunterSkills extends ClassSkills {
             }
         }
     }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        int now = player.getServer().getTicks();
+        BLOOD_MOON.values().removeIf(t -> now >= t);
+    }
 }

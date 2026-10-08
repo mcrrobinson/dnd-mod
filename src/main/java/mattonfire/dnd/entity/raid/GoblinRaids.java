@@ -62,6 +62,11 @@ public class GoblinRaids extends PersistentState {
 
     private void tick(ServerWorld world) {
         if (world.getTime() % CHECK_INTERVAL == 0) {
+            // Settlements off cooldown don't need remembering.
+            long now = world.getTime();
+            if (this.lastRaid.values().removeIf(time -> now - time >= SETTLEMENT_COOLDOWN)) {
+                this.markDirty();
+            }
             this.maybeStartRaids(world);
         }
         if (this.raids.isEmpty()) {

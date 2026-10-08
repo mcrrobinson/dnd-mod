@@ -2,7 +2,7 @@
 Players can form a party of up to 8 to adventure together. Party members split XP, can't hurt each other, see each other's health on the HUD, and get extra help from a party Paladin or Cleric.
 
 ## How it works
-- **Shared XP**: XP from orbs is split evenly between the player who collects it and party members who are alive, not spectating, in the same dimension and within 48 blocks. Mending takes its share before the split. Leftover fractions carry over per player, so 1-XP orbs aren't lost. With nobody nearby, the collector gets everything.
+- **Shared XP**: XP from orbs, and class XP from kills, is split evenly between the player who collects it and party members who are alive, not spectating, in the same dimension and within 48 blocks. Mending takes its share before the split. Leftover fractions carry over per player, so 1-XP orbs aren't lost. With nobody nearby, the collector gets everything.
 - **No friendly fire**: party members can't damage each other. This includes arrows, fireballs, thrown potions and their tamed pets (wolves, cats and so on). Hurting yourself still works.
 - **Party HUD**: the top-left corner lists the other members, updated every 10 ticks (half a second). Each entry shows:
   - the name, with a ★ for the leader. The name is grey when the member is out of XP range and dark grey when they're offline.
@@ -27,7 +27,7 @@ Every player can use these; no op is needed.
 
 ## Known limitations
 - XP is split, not copied: with one partner nearby, each player gets half.
-- Class progression XP isn't shared yet, because that system isn't on main. It just needs to call the share hook (see below).
+- Only class XP from kills is shared. Class XP from other actions (mining, brewing, crafting, the time trickle, kills by summons and pets) stays with the player who earned it. Each member gets their share in their own class; a member with no class gets nothing from it.
 - Mobs that party members summon or control can still hit other members: Bard animals, Necromancer undead and Blood Hunter-controlled mobs.
 - The party size (8), XP range (48) and heal range (24) are constants in the code, not config options.
 
@@ -37,7 +37,7 @@ Every player can use these; no op is needed.
 - `Party/Party.java`: one party's member list (the first member is the leader).
 - `Party/PartyCommand.java`: the `/party` commands.
 - `Party/PartyEvents.java`: the friendly-fire check (`ServerLivingEntityEvents.ALLOW_DAMAGE`), the HUD sync packet (`dndclasses:party_hud`) and XP sharing.
-  - Other XP systems share through `shareXp(player, amount, channel, grant)`, e.g. `PartyEvents.shareXp(player, xp, "progression", Progression::addXp)`.
+  - Other XP systems share through `shareXp(player, amount, channel, grant)`, e.g. `ProgressionEvents.onKill` uses `PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp)`.
 - `mixin/ExperienceOrbEntityMixin.java`: redirects the orb's `addExperience` call to `shareXp`.
 - `Client/Hud/PartyHud.java`: the client receiver and HUD drawing.
 - Paladin and Cleric changes are in `Misc/PowerUpEffect.java` and `Misc/ClericHandler.java`.

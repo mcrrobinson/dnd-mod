@@ -7,6 +7,7 @@ A huge, hostile [Magmamuncher](../mobs/magmamunchers.md) that roams the Nether. 
 - **Enrage (below 50% health):** the bar turns red and it roars, gaining +30% speed and +6 attack damage. It calls two regular Magmamunchers out of the ground, and its bites now burn for 8 seconds.
 - While enraged, every 4 seconds it spits a volley of 3 small fireballs at a target it can see 4-20 blocks away.
 - **Boss bar:** yellow, notched, for players within 48 blocks, with **Tooth and Claw** playing.
+- Once it has fought a player it never despawns, so you can't lose a half-killed Alpha by running off.
 
 ## Where to find it / How to get it
 - Rarely in Basalt Deltas and Nether Wastes (weight 1, plus a 1 in 4 roll), never within 96 blocks of another Alpha. There's also a spawn egg.

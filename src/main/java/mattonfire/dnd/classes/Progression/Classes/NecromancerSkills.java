@@ -56,7 +56,8 @@ import net.minecraft.world.World;
  * traced back to their necromancer.
  */
 public class NecromancerSkills extends ClassSkills {
-    private static final String SUMMON_TAG = "dndclasses.necromancer_summon";
+    /** Tag on every Necromancer summon (special and skills), used to tidy up the ally team. */
+    public static final String SUMMON_TAG = "dndclasses.necromancer_summon";
 
     private static final int SUMMON_KILL_XP = 3;
     private static final int WITHER_KILL_XP = 1;
@@ -150,7 +151,13 @@ public class NecromancerSkills extends ClassSkills {
         ServerEntityEvents.ENTITY_UNLOAD.register((entity, world) -> {
             if (entity.getCommandTags().contains(SUMMON_TAG) && entity.getRemovalReason() != null
                     && entity.getRemovalReason().shouldDestroy()) {
-                world.getScoreboard().clearPlayerTeam(entity.getUuidAsString());
+                Scoreboard scoreboard = world.getScoreboard();
+                Team team = scoreboard.getPlayerTeam(entity.getUuidAsString());
+                scoreboard.clearPlayerTeam(entity.getUuidAsString());
+                // The last summon gone: drop the team too, it's made again on the next summon.
+                if (team != null && team.getPlayerList().isEmpty()) {
+                    scoreboard.removeTeam(team);
+                }
             }
         });
 
@@ -251,7 +258,7 @@ public class NecromancerSkills extends ClassSkills {
     }
 
     /** The scoreboard team the root's summons use, named after the player's UUID. */
-    private static Team allyTeam(ServerWorld world, PlayerEntity player) {
+    public static Team allyTeam(ServerWorld world, PlayerEntity player) {
         Scoreboard scoreboard = world.getScoreboard();
         Team team = scoreboard.getTeam(player.getUuidAsString());
         return team != null ? team : scoreboard.addTeam(player.getUuidAsString());

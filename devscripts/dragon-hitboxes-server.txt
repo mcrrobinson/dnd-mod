@@ -1,0 +1,67 @@
+# Draws each flying dragon's hit shapes from the client (green, fitted to the animated model) and
+# from the integrated server (red, posed from the .animation.json) at a few points of the wing beat,
+# and logs how far apart they are ([ServerPartDebug] lines in the log).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dragon-hitboxes-server.txt
+# Output: run/screenshots/dragon-server-*.png. High in the air at x=2000 z=2000, on barrier blocks.
+/time set day
+/weather clear
+/gamemode creative
+hud off
+wait 40
+closescreen
+respawn
+wait 40
+closescreen
+hitboxes on
+serverhitboxes on
+/tp @s 2014 220 2000 90 10
+wait 200
+/fill 2010 219 1998 2017 219 2002 minecraft:barrier
+/fill 1998 235 1998 2002 235 2002 minecraft:barrier
+/fill 1998 231 1998 2002 231 2002 minecraft:barrier
+/kill @e[type=dndclasses:lightning_chaser]
+/kill @e[type=dndclasses:wyvern]
+
+# Lightning Chaser (fly.idle)
+/tp @s 2015 220 2000 90 10
+/summon dndclasses:lightning_chaser 2000 218 2000 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 60
+serverhitboxes measure
+screenshot dragon-server-lightning_chaser-side-a
+wait 9
+serverhitboxes measure
+screenshot dragon-server-lightning_chaser-side-b
+wait 9
+serverhitboxes measure
+screenshot dragon-server-lightning_chaser-side-c
+/tp @s 2000 236 2000 0 90
+wait 20
+serverhitboxes measure
+screenshot dragon-server-lightning_chaser-top-a
+wait 15
+serverhitboxes measure
+screenshot dragon-server-lightning_chaser-top-b
+/kill @e[type=dndclasses:lightning_chaser]
+
+# Wyvern (fly.idle)
+/tp @s 2012 220 2000 90 10
+/summon dndclasses:wyvern 2000 218 2000 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 60
+serverhitboxes measure
+screenshot dragon-server-wyvern-side-a
+wait 9
+serverhitboxes measure
+screenshot dragon-server-wyvern-side-b
+wait 9
+serverhitboxes measure
+screenshot dragon-server-wyvern-side-c
+/tp @s 2000 232 2000 0 90
+wait 20
+serverhitboxes measure
+screenshot dragon-server-wyvern-top-a
+wait 15
+serverhitboxes measure
+screenshot dragon-server-wyvern-top-b
+/kill @e[type=dndclasses:wyvern]
+hud on
+quit

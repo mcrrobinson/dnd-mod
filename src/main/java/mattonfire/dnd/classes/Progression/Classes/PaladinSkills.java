@@ -231,4 +231,11 @@ public class PaladinSkills extends ClassSkills {
         buffs.remove(player.getUuid());
         return false;
     }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        long now = player.getWorld().getTime();
+        SACRED_WEAPON.values().removeIf(t -> now >= t);
+        AVENGING_ANGEL.values().removeIf(t -> now >= t);
+    }
 }

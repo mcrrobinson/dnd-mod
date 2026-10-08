@@ -64,7 +64,7 @@ public class MagmamuncherAlphaEntity extends HostileEntity implements GeoEntity,
     private static final UUID ENRAGE_DAMAGE_ID = UUID.fromString("7e6d5c4b-3a29-4180-9f8e-7d6c5b4a3f82");
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    // Orange bar while it fights a player, red once it enrages.
+    // Yellow bar while it fights a player, red once it enrages.
     private final BossFight bossFight;
     private long nextSpitTime;
 
@@ -153,6 +153,10 @@ public class MagmamuncherAlphaEntity extends HostileEntity implements GeoEntity,
     public void tick() {
         super.tick();
         this.bossFight.tick();
+        // Once it has fought a player it stays, so kiting it out of range can't despawn a half-killed boss.
+        if (!this.world.isClient && !this.isPersistent() && this.bossFight.isFightingPlayer()) {
+            this.setPersistent();
+        }
         if (this.world.isClient && this.random.nextInt(4) == 0) {
             // Embers drifting off its back.
             this.world.addParticle(this.random.nextBoolean() ? ParticleTypes.FLAME : ParticleTypes.LAVA,

@@ -36,7 +36,7 @@ Some actions roll a d20 and add a class modifier. The roll shows just below the 
 
 ### Attack rolls (everyone)
 - Every full-strength melee swing (attack cooldown at 90% or more) at a living mob rolls. Armor stands are excluded.
-- **Critical hit:** a natural 20 deals double damage, with crit particles and the crit sound. Fighters crit on 19-20 (Improved Critical).
+- **Critical hit:** a natural 20 deals double damage, with crit particles and the crit sound. Fighters crit on 19-20 (Improved Critical). The crit only applies to the swing that rolled it: if something else cancels that attack (e.g. a Monk holding a sword), it's lost rather than saved for the next hit.
 - **Fumble:** on a natural 1 the swing misses entirely and the cooldown resets.
 - Only crits and fumbles show on the HUD. All other rolls are silent and hit as normal.
 - The modifier shown is the class's attack bonus. It's for display only: it doesn't change whether you hit.

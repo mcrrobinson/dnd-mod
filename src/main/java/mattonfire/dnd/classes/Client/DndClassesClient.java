@@ -49,6 +49,7 @@ public class DndClassesClient implements ClientModInitializer {
 
     private boolean isBreathingFire = false;
     private long fireBreathEndTick = 0;
+    private net.minecraft.world.World fireBreathWorld = null;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.dnd-classes.skill-tree", GLFW.GLFW_KEY_O, "category.dnd-classes.dnd-classes"));
 
@@ -114,12 +115,13 @@ public class DndClassesClient implements ClientModInitializer {
     private void handleFireBreathPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
         boolean active = buf.readBoolean();
-        if (active) {
-            fireBreathEndTick = buf.readLong();
-            isBreathingFire = true;
-        } else {
-            isBreathingFire = false;
-        }
+        long endTick = active ? buf.readLong() : 0;
+        client.execute(() -> {
+            // The end is in world time; remember the world so flames don't carry into the next one.
+            isBreathingFire = active;
+            fireBreathEndTick = endTick;
+            fireBreathWorld = client.world;
+        });
     }
 
     private void handleWizardPowerupPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
@@ -299,6 +301,7 @@ public class DndClassesClient implements ClientModInitializer {
     }
 
     private boolean isBreathingFire(PlayerEntity player) {
-        return isBreathingFire && (player.age < fireBreathEndTick);
+        return isBreathingFire && player.getWorld() == fireBreathWorld
+                && player.getWorld().getTime() < fireBreathEndTick;
     }
 }

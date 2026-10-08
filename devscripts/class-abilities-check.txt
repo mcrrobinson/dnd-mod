@@ -1,0 +1,49 @@
+# Warlock fireball (empty hand, off-hand torch, off-hand shield) and breath (only in the Warlock's world).
+wait 40
+closescreen
+wait 10
+/gamemode survival
+/effect clear @s
+/tp @s 30 150 7 0 0
+/fill 20 140 -5 40 160 15 minecraft:air
+/fill 25 149 0 35 149 15 minecraft:stone
+/dndclass set @s warlock
+wait 20
+closescreen
+/clear @s
+hotbar 0
+/tp @s 30 150 7 0 -10
+wait 5
+use
+wait 2
+/execute if entity @e[type=minecraft:small_fireball]
+/kill @e[type=minecraft:small_fireball]
+/item replace entity @s weapon.offhand with minecraft:torch
+wait 30
+use
+wait 2
+/execute if entity @e[type=minecraft:small_fireball]
+/kill @e[type=minecraft:small_fireball]
+/item replace entity @s weapon.offhand with minecraft:shield
+wait 30
+use
+wait 2
+/execute if entity @e[type=minecraft:small_fireball]
+/data get entity @s ActiveEffects
+/clear @s
+/execute in minecraft:the_nether run forceload add 30 10
+/execute in minecraft:the_nether run fill 28 148 8 32 148 12 minecraft:stone
+wait 20
+/execute in minecraft:the_nether run summon minecraft:zombie 30.5 150 10.5 {NoAI:1b,NoGravity:1b,PersistenceRequired:1b,Tags:["nz"]}
+/summon minecraft:zombie 30.5 150 10.5 {NoAI:1b,NoGravity:1b,PersistenceRequired:1b,Tags:["oz"]}
+wait 340
+/tp @s 30.5 150 7.5 0 15
+wait 5
+press key.dnd-classes.power-up
+wait 40
+screenshot warlock-breath
+/data get entity @e[tag=oz,limit=1] Health
+/execute in minecraft:the_nether run data get entity @e[tag=nz,limit=1] Health
+/execute in minecraft:the_nether run forceload remove 30 10
+/kill @e[type=minecraft:zombie]
+quit

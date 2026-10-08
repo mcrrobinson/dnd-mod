@@ -12,5 +12,5 @@ A slow, short-sighted brawler with a huge health pool and a heavy punch. Inspire
 - The fog is client-side only. It can't be turned off.
 
 ## For developers
-- Attributes: `SetClassAttributes.typeBarbarian`. Fog: `mixin/BackgroundRendererMixin`. Special: `Misc/PowerUpEffect` (`BARBARIAN`).
+- Attributes: `ClassStats`. Fog: `mixin/BackgroundRendererMixin`. Special: `Misc/PowerUpEffect` (`BARBARIAN`).
 - See [Mana and specials](../systems/mana.md) for how the special is triggered.

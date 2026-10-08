@@ -29,6 +29,11 @@ public class Featherfall {
 
     private static final Set<UUID> SLOW_FALLING = new HashSet<>();
 
+    /** Called on disconnect. */
+    public static void forget(UUID player) {
+        SLOW_FALLING.remove(player);
+    }
+
     public static int getLevel(LivingEntity entity) {
         return Math.min(EnchantmentHelper.getEquipmentLevel(ModEnchantments.FEATHERFALL_ENCHANTMENT, entity),
                 DAMAGE_REDUCTION.length - 1);

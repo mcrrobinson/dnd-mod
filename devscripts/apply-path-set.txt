@@ -1,0 +1,10 @@
+wait 40
+closescreen
+wait 10
+/dndclass set @s necromancer
+/effect give @s minecraft:instant_health 1 5
+/effect give @s minecraft:fire_resistance 9999
+wait 20
+/data get entity @s Health
+/data get entity @s "mattonfire.dnd.classes"
+quit

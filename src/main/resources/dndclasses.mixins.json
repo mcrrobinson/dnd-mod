@@ -7,7 +7,6 @@
         "BowItemMixin",
         "PlayerEntityMixin",
         "SmiteDragonsMixin",
-        "PlayerManagerMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
         "HungerManagerMixin",

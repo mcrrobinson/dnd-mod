@@ -28,7 +28,7 @@ A book that explains your current class: its pros, its cons, its special ability
 - Key files:
   - `ClassInfo.java` loads the JSON.
   - `Items/ClassGuidebookItem.java` is the item. It opens the book through a client hook.
-  - `Items/ClassGuidebook.java` gives the book on join and on class change. It's called from `DnDClasses.applyClass` and the JOIN event.
+  - `Items/ClassGuidebook.java` gives the book on join and on class change. It's called from `ClassLifecycle.change`, respawn and the JOIN event.
   - `Client/Hud/ClassGuidebookScreen.java` builds the pages and splits them to the vanilla page size of 114x128 px.
-  - `SetClassAttributes.sendPlayerMessage` prints the chat summary.
+  - `ClassLifecycle.sendIntro` prints the chat summary.
 - Devscript: `devscripts/class-guidebook.txt` checks that a class change gives the book, a second change doesn't add another, and right click opens it.

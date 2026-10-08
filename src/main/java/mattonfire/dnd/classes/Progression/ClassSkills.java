@@ -63,6 +63,16 @@ public abstract class ClassSkills {
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
     }
 
+    /**
+     * Drops this class's per-player state for the player and undoes anything it
+     * applied that wouldn't end by itself once the player isn't this class. Called
+     * for every class when a player changes class or disconnects, so it must be
+     * safe for players who never were this class. Keep cooldowns that are still
+     * running (relogging shouldn't reset them); just prune the ones that ended.
+     */
+    public void forget(ServerPlayerEntity player) {
+    }
+
     /** Passives that are just an attribute bonus; added and removed automatically. */
     public List<AttributeBonus> attributeBonuses() {
         return List.of();

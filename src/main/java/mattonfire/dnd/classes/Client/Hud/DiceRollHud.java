@@ -6,6 +6,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
@@ -20,6 +21,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.util.math.RotationAxis;
 
 /**
@@ -38,6 +40,7 @@ public final class DiceRollHud {
     private static Text detail;
     private static int age;
     private static int tumbleFace = 1;
+    private static final Random RANDOM = Random.create();
 
     private DiceRollHud() {
     }
@@ -49,6 +52,8 @@ public final class DiceRollHud {
             client.execute(() -> start(client, received, receivedDetail));
         });
         ClientTickEvents.END_CLIENT_TICK.register(DiceRollHud::tick);
+        // Drop a roll still animating when leaving the world
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> client.execute(DiceRollHud::reset));
         HudRenderCallback.EVENT.register(DiceRollHud::render);
     }
 
@@ -59,13 +64,23 @@ public final class DiceRollHud {
         play(client, ModSounds.DICE_ROLL, 1.0f);
     }
 
+    private static void reset() {
+        roll = null;
+        detail = null;
+        age = 0;
+    }
+
     private static void tick(MinecraftClient client) {
         if (roll == null || client.isPaused()) {
             return;
         }
+        if (client.world == null) {
+            reset();
+            return;
+        }
         age++;
         if (age < ROLL_TICKS && age % 2 == 0) {
-            int next = 1 + client.world.random.nextInt(19);
+            int next = 1 + RANDOM.nextInt(19);
             tumbleFace = next >= tumbleFace ? next + 1 : next; // never the same face twice
         }
         if (age == ROLL_TICKS) {

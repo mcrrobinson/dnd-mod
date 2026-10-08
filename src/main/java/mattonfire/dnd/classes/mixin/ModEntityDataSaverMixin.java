@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -11,26 +12,28 @@ import net.minecraft.nbt.NbtCompound;
 
 @Mixin(Entity.class)
 public abstract class ModEntityDataSaverMixin implements IEntityDataSaver {
-    private NbtCompound persistentData = new NbtCompound();
-    private final static String DATA_KEY = "mattonfire.dnd.classes";
+    @Unique
+    private NbtCompound dnd$persistentData = new NbtCompound();
+    @Unique
+    private static final String DND$DATA_KEY = "mattonfire.dnd.classes";
 
     @Override
     public NbtCompound getPersistentData() {
-        if (persistentData.isEmpty()) {
-            this.persistentData = new NbtCompound();
-        }
-        return persistentData;
+        return dnd$persistentData;
     }
 
     @Inject(method = "writeNbt", at = @At("HEAD"))
-    protected void injectWriteMethod(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
-        nbt.put(DATA_KEY, this.persistentData);
+    private void dnd$writePersistentData(NbtCompound nbt, CallbackInfoReturnable<NbtCompound> cir) {
+        // Only players use it; don't write an empty tag into every entity in the world.
+        if (!this.dnd$persistentData.isEmpty()) {
+            nbt.put(DND$DATA_KEY, this.dnd$persistentData.copy());
+        }
     }
 
     @Inject(method = "readNbt", at = @At("HEAD"))
-    protected void injectReadMethod(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains(DATA_KEY)) {
-            this.persistentData = nbt.getCompound(DATA_KEY);
+    private void dnd$readPersistentData(NbtCompound nbt, CallbackInfo ci) {
+        if (nbt.contains(DND$DATA_KEY)) {
+            this.dnd$persistentData = nbt.getCompound(DND$DATA_KEY);
         }
     }
 }

@@ -10,7 +10,7 @@ A slow, 2-block cube of translucent green jelly that oozes through dark caves an
   - takes **3 acid damage on contact and then every second**. The damage scales with difficulty, goes through shields, and doesn't knock the victim out of the cube. The death message is "*X* was dissolved by Gelatinous Cube".
 
   The cube wobbles and squelches when it catches something new. Anyone stuck inside sees the world tinted green.
-- **Absorbing items:** every 5 ticks it soaks up item entities touching it, once their pickup delay is over. It holds up to **6 different stacks** and tops up matching stacks first; anything that doesn't fit stays on the ground. The stacks float and turn inside the jelly. Once it has taken an item it never despawns, like vanilla mobs that pick up loot. Drops of the mobs it dissolves get absorbed too.
+- **Absorbing items:** every 5 ticks it soaks up item entities touching it, once their pickup delay is over. It holds up to **6 different stacks** and tops up matching stacks first; anything that doesn't fit stays on the ground. The stacks float and turn inside the jelly. Once it has taken an item it never despawns, like vanilla mobs that pick up loot. In peaceful it still leaves, but such a cube drops what it holds first. Drops of the mobs it dissolves get absorbed too.
 - **Spawn contents:** new cubes may already hold 0-3 rolls of junk from earlier adventurers: bones, arrows, rotten flesh, iron or gold nuggets, torches, coal, iron ingots, and rarely an emerald, a worn iron sword or leather boots, a skeleton skull, a golden apple or a diamond.
 - **Death:** it drops everything it absorbed, plus 1-3 slime balls (+ Looting). It slumps where it is rather than toppling over.
 
@@ -23,6 +23,7 @@ It spawns anywhere in the Overworld (monster, weight 5, always alone), but only:
 So it turns up in caves and dungeons, never on the surface. It needs a 2x2x2 space to spawn.
 
 ## Commands
+- Spawn egg: in the mod's creative tab (random contents).
 - `/summon dndclasses:gelatinous_cube` spawns one with random contents.
 - `/summon dndclasses:gelatinous_cube ~ ~ ~ {AbsorbedItems:[{id:"minecraft:diamond",Count:1b}]}` spawns one with exactly the given contents.
 - `/data get entity @e[type=dndclasses:gelatinous_cube,limit=1,sort=nearest] AbsorbedItems` lists what it holds.

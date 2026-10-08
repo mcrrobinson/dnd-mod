@@ -7,6 +7,7 @@ Every class has a special ability (its "power-up"), fired with a key once your m
   - The equipped active's cost is underlined in the 1px gap below the pips, gold once you can afford it.
 - **Regeneration:** +1 pip every 2 seconds, so an empty bar fills in 18 seconds.
 - **Firing:** press the **power-up key (Z by default**, "key.dnd-classes.power-up" in Controls). It only works with a full bar, and it empties the bar.
+- Mana is kept through death and leaving the End (dying doesn't refill it), and the bar is re-synced on respawn.
 - If the special can't do anything, your mana is kept: no class picked, a Druid with no animal forms, or a Blood Hunter with no target.
 - A short **music sting** for your class plays and the background music dips under it (see [Music](../music.md)).
 

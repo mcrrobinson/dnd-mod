@@ -1,3 +1,5 @@
+# LAN host for two-client tests: opens the world on port 25599 and waits about 45 s for lan-guest-check.txt to join. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/lan-host-check.txt
+# Expect in latest.log: "Started serving on" and /list with both players.
 wait 40
 closescreen
 /publish false survival 25599

@@ -1,0 +1,97 @@
+# Checks the mobs/dragons review fixes: new loot tables load, the Lightning Chaser's storm hurts
+# a survival player (credited to it) without real lightning, and the attack goals run.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/mobs-dragons-fixes.txt
+/time set day
+/weather clear
+/difficulty normal
+/gamemode creative
+/kill @e[type=!player]
+wait 40
+closescreen
+respawn
+wait 60
+closescreen
+/loot spawn 0 150 0 loot dndclasses:entities/wyvern
+/loot spawn 0 150 0 loot dndclasses:entities/river_pikehorn
+/loot spawn 0 150 0 loot dndclasses:entities/magmamuncher
+/loot spawn 0 150 0 loot dndclasses:entities/goblin_warrior
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:leather"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:basalt"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:gold_nugget"}}]
+/kill @e[type=item]
+/tp @s 0 100 0
+/fill -10 99 -10 10 99 10 minecraft:stone
+/fill -10 100 -10 10 110 10 minecraft:air
+/effect give @s minecraft:resistance 60 2 true
+/effect give @s minecraft:health_boost 60 40 true
+/effect give @s minecraft:instant_health 1 20 true
+/effect give @s minecraft:regeneration 60 3 true
+/gamemode survival
+/summon dndclasses:lightning_chaser 8 101 0
+closescreen
+wait 60
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+wait 10
+/execute if entity @e[type=minecraft:lightning_bolt]
+/data get entity @s Health
+screenshot mobs-dragons-chaser
+/gamemode creative
+/kill @e[type=dndclasses:lightning_chaser]
+quit

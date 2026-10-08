@@ -16,7 +16,8 @@ public class FireBreathGoal<T extends MobEntity & FireBreather> extends Goal {
     private static final int COOLDOWN = 60;
     private final T dragon;
     private final double minRange;
-    private int cooldown;
+    /** World time when the next breath may start; kept as a time since canStart only runs every other tick. */
+    private long nextBreathTime;
 
     public FireBreathGoal(T dragon, double minRange) {
         this.dragon = dragon;
@@ -30,8 +31,7 @@ public class FireBreathGoal<T extends MobEntity & FireBreather> extends Goal {
 
     @Override
     public boolean canStart() {
-        if (this.cooldown > 0) {
-            this.cooldown--;
+        if (this.dragon.getWorld().getTime() < this.nextBreathTime) {
             return false;
         }
         LivingEntity target = this.dragon.getTarget();
@@ -57,7 +57,7 @@ public class FireBreathGoal<T extends MobEntity & FireBreather> extends Goal {
 
     @Override
     public void stop() {
-        this.cooldown = COOLDOWN;
+        this.nextBreathTime = this.dragon.getWorld().getTime() + COOLDOWN;
     }
 
     @Override

@@ -20,7 +20,7 @@
             "trigger": "minecraft:player_killed_entity",
             "conditions": {
                 "entity": {
-                    "type": "#dndclasses:dragons"
+                    "type": "#dndclasses:dragon_slayer_targets"
                 }
             }
         }

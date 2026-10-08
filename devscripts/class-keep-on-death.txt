@@ -1,3 +1,5 @@
+# The class survives death and respawn (no class picker, class stats reapplied). Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-keep-on-death.txt
+# Expect in latest.log: /dndclass get says barbarian after respawn, with the Barbarian max health.
 wait 40
 closescreen
 wait 10

@@ -11,8 +11,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.attribute.EntityAttribute;
@@ -83,49 +81,7 @@ public abstract class DndArmorItem extends ArmorItem implements SetBonusArmor {
         if (FAConfig.getValues().showDescriptions()) {
             super.appendTooltip(stack, world, tooltip, context);
 
-            String translationKey = this.getTranslationKey() + ".tooltip";
-            String translatedText = Text.translatable(translationKey).getString();
-
-            int maxWidth;
-            if (FAConfig.getValues().descrtiptionsLength() < 20 || FAConfig.getValues().descrtiptionsLength() > 1000) {
-                maxWidth = 250;
-            } else {
-                maxWidth = FAConfig.getValues().descrtiptionsLength();
-            }
-
-            // Grab the TextRenderer (Fabric's equivalent to Forge's Font/FontRenderer)
-            TextRenderer textRenderer = MinecraftClient.getInstance().textRenderer;
-
-            String[] lines = translatedText.split("\n");
-
-            for (String line : lines) {
-                StringBuilder currentLine = new StringBuilder();
-                String[] words = line.split(" ");
-
-                for (String word : words) {
-                    // Check if adding this word would exceed maxWidth
-                    if (textRenderer.getWidth(currentLine + word) > maxWidth) {
-                        // Add the line so far to the tooltip
-                        tooltip.add(Text.literal(currentLine.toString()));
-                        // Reset the line, prefixed with color code
-                        currentLine = new StringBuilder("§7");
-                    }
-
-                    // Insert space (and color code) if we're not at the very start
-                    if (currentLine.length() > 2) {
-                        currentLine.append(" ");
-                        currentLine.append("§7");
-                    }
-
-                    currentLine.append(word);
-                }
-
-                // If something remains in currentLine, add it as well
-                if (currentLine.length() > 0) {
-                    tooltip.add(Text.literal(currentLine.toString()));
-                }
-            }
-
+            ArmorTooltips.appendDescription(this.getTranslationKey(), tooltip);
         }
     }
 

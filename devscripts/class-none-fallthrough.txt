@@ -1,3 +1,5 @@
+# Setting the class to none reopens the class picker; a classed player who dies keeps the class. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-none-fallthrough.txt
+# Expect screenshots: class-none-picker shows the picker, class-none-after-death doesn't.
 wait 40
 closescreen
 wait 10

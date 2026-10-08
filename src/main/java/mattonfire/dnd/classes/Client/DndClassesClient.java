@@ -9,7 +9,8 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.SetPlayerClass;
+import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
+import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
@@ -49,6 +50,7 @@ public class DndClassesClient implements ClientModInitializer {
 
     private boolean isBreathingFire = false;
     private long fireBreathEndTick = 0;
+    private net.minecraft.world.World fireBreathWorld = null;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.dnd-classes.skill-tree", GLFW.GLFW_KEY_O, "category.dnd-classes.dnd-classes"));
 
@@ -56,9 +58,13 @@ public class DndClassesClient implements ClientModInitializer {
             PacketSender responseSender) {
         int classID = buf.readInt();
         client.execute(() -> {
-            if (client.player instanceof PlayerEntityExt) {
-                ((PlayerEntityExt) (PlayerEntity) client.player).setDndClass(DndCharacter.fromValue(classID));
-                SetPlayerClass.setPlayerClass(client, client.player, classID);
+            if (client.player instanceof PlayerEntityExt ext) {
+                DndCharacter dndClass = DndCharacter.fromValue(classID);
+                ext.setDndClass(dndClass);
+                // The server applies the class's stats; the client only opens the picker.
+                if (dndClass == DndCharacter.NONE) {
+                    client.setScreen(new ModKeybinds(new ClassSelectionHud()));
+                }
             }
         });
     }
@@ -120,9 +126,10 @@ public class DndClassesClient implements ClientModInitializer {
         boolean active = buf.readBoolean();
         long endTick = active ? buf.readLong() : 0;
         client.execute(() -> {
-            // endTick is server world time, so isBreathingFire compares it with the world clock
-            fireBreathEndTick = endTick;
+            // The end is in world time; remember the world so flames don't carry into the next one.
             isBreathingFire = active;
+            fireBreathEndTick = endTick;
+            fireBreathWorld = client.world;
         });
     }
 
@@ -224,6 +231,7 @@ public class DndClassesClient implements ClientModInitializer {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> client.execute(() -> {
             isBreathingFire = false;
             fireBreathEndTick = 0;
+            fireBreathWorld = null;
             MySphereRenderState.shouldRenderSphere = false;
         }));
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
@@ -314,6 +322,7 @@ public class DndClassesClient implements ClientModInitializer {
     }
 
     private boolean isBreathingFire(PlayerEntity player) {
-        return isBreathingFire && player.world.getTime() <= fireBreathEndTick;
+        return isBreathingFire && player.getWorld() == fireBreathWorld
+                && player.getWorld().getTime() < fireBreathEndTick;
     }
 }

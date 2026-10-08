@@ -43,11 +43,11 @@ public class DragonPart extends Entity {
     // Not Long.MIN_VALUE: worldTime - MIN_VALUE overflows, and the part would count as rendered forever
     private long renderedAt = Long.MIN_VALUE / 2;
     private long renderStamp = Long.MIN_VALUE;
-    // What the current rest-pose shapes were built for, so an unmoved dragon doesn't rebuild them
-    private boolean restValid;
-    private double restX, restY, restZ;
-    private float restYaw;
-    private boolean restFlying;
+    // The pose (DragonPartLayout.Pose) and placement the current shapes were built for, so a dragon
+    // that hasn't changed pose or turned doesn't rebuild them; null after the renderer set them
+    private Object pose;
+    private double poseX, poseY, poseZ;
+    private float poseYaw;
 
     public DragonPart(MobEntity owner, String name) {
         super(owner.getType(), owner.world);
@@ -77,7 +77,11 @@ public class DragonPart extends Entity {
     public void setRenderedShapes(List<Box> shapes, long worldTime) {
         this.setShapes(shapes);
         this.renderedAt = worldTime;
-        this.restValid = false;
+        this.pose = null;
+    }
+
+    public boolean hasRenderedShapes(long worldTime) {
+        return worldTime - this.renderedAt <= 2;
     }
 
     /** Client only: an id for the half tick the renderer last fitted the shapes in, so it can skip refits. */
@@ -89,41 +93,36 @@ public class DragonPart extends Entity {
         this.renderStamp = stamp;
     }
 
-    /** Rest-pose shapes for a dragon at (x, y, z) facing {@code yaw}. */
-    public void setRestShapes(List<Box> shapes, double x, double y, double z, float yaw, boolean flying) {
+    /** Shapes built from {@code pose} for a dragon at (x, y, z) facing {@code yaw}. */
+    public void setPoseShapes(List<Box> shapes, Object pose, double x, double y, double z, float yaw) {
         this.setShapes(shapes);
-        this.restValid = true;
-        this.restX = x;
-        this.restY = y;
-        this.restZ = z;
-        this.restYaw = yaw;
-        this.restFlying = flying;
+        this.pose = pose;
+        this.poseX = x;
+        this.poseY = y;
+        this.poseZ = z;
+        this.poseYaw = yaw;
     }
 
-    /** Whether the current shapes are the rest pose for this facing and flight state (wherever the dragon is). */
-    public boolean hasRestShapes(float yaw, boolean flying) {
-        return this.restValid && this.restYaw == yaw && this.restFlying == flying;
+    /** Whether the current shapes were built from this pose (same object) and facing, wherever the dragon was. */
+    public boolean hasPoseShapes(Object pose, float yaw) {
+        return this.pose == pose && this.poseYaw == yaw;
     }
 
-    public boolean isRestAt(double x, double y, double z) {
-        return this.restX == x && this.restY == y && this.restZ == z;
+    public boolean isPosedAt(double x, double y, double z) {
+        return this.poseX == x && this.poseY == y && this.poseZ == z;
     }
 
-    /** Shifts the rest-pose shapes to a dragon that moved without turning. */
-    public void moveRestShapes(double x, double y, double z) {
-        double dx = x - this.restX, dy = y - this.restY, dz = z - this.restZ;
+    /** Shifts the posed shapes to a dragon that moved without turning or changing pose. */
+    public void movePoseShapes(double x, double y, double z) {
+        double dx = x - this.poseX, dy = y - this.poseY, dz = z - this.poseZ;
         List<Box> moved = new ArrayList<>(this.shapes.size());
         for (Box shape : this.shapes) {
             moved.add(shape.offset(dx, dy, dz));
         }
         this.setShapes(moved);
-        this.restX = x;
-        this.restY = y;
-        this.restZ = z;
-    }
-
-    public boolean hasRenderedShapes(long worldTime) {
-        return worldTime - this.renderedAt <= 2;
+        this.poseX = x;
+        this.poseY = y;
+        this.poseZ = z;
     }
 
     public List<Box> getShapes() {

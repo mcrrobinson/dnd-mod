@@ -40,10 +40,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather, Boss {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private String currentFlyAnimation = "fly.idle";
-    private int flyAnimationTimer = 0;
     private int ticksSinceLastGround = 0;
-    private static final int FLY_ANIMATION_DURATION = 20; // ticks - reduced from 120 for responsiveness
 
     // The model is ~12 blocks wide but the entity hitbox is only 1.5, so wings, neck, head and tail
     // get their own hittable parts (like the ender dragon), each wrapping a group of model bones.
@@ -63,10 +60,14 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
             .pair("wing_finger3", "wing_finger3_left", "membrane_wing_finger3_left", "wing_finger4_left")
             // Legs hang below the main hitbox in flight
             .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
-                    "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
+                    "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left")
+            // Server-side parts follow these, in step with the client (see DragonFlightAnimation)
+            .animations(DragonFlightAnimation.NAMES);
     private final DragonPart[] parts;
     private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+    private static final TrackedData<Byte> BODY_ANIMATION = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private final DragonFlightAnimation bodyAnimation = new DragonFlightAnimation(this, BODY_ANIMATION);
     private final FireBreath fireBreath;
 
     // Boss bar and fight music for players near a wild wyvern that is fighting a player.
@@ -89,6 +90,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     protected void initDataTracker() {
         super.initDataTracker();
         FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
+        DragonFlightAnimation.track(this.dataTracker, BODY_ANIMATION);
     }
 
     @Override
@@ -122,7 +124,8 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     @Override
     public void tick() {
         super.tick();
-        PART_LAYOUT.update(this, this.parts, this.isFlying());
+        this.bodyAnimation.tick(this.isFlying());
+        PART_LAYOUT.update(this, this.parts, this.bodyAnimation.current(), this.isFlying());
         if (this.isOnGround()) {
             this.ticksSinceLastGround = 0;
             // Use ground movement control when on ground
@@ -266,27 +269,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        AnimationController<WyvernEntity> controller = new AnimationController<>(this, "controller", 0, event -> {
-            boolean isFlying = this.isFlying(); // Must be airborne for >5 ticks (0.25s) to be considered flying
-
-            if (isFlying) {
-                String desiredAnimation = event.isMoving() ? "fly.straight" : "fly.idle";
-                if (!desiredAnimation.equals(currentFlyAnimation)) {
-                    flyAnimationTimer++;
-                    if (flyAnimationTimer >= FLY_ANIMATION_DURATION) {
-                        currentFlyAnimation = desiredAnimation;
-                        flyAnimationTimer = 0;
-                    }
-                } else {
-                    flyAnimationTimer = 0;
-                }
-                return event.setAndContinue(RawAnimation.begin().thenLoop(currentFlyAnimation));
-            }
-            if (event.isMoving()) {
-                return event.setAndContinue(RawAnimation.begin().thenLoop("walk"));
-            }
-            return event.setAndContinue(RawAnimation.begin().thenLoop("idle"));
-        });
+        AnimationController<WyvernEntity> controller = this.bodyAnimation.createController(this);
         controller.setSoundKeyframeHandler(event -> {
         });
         controllerRegistrar.add(controller);

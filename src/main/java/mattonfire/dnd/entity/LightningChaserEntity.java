@@ -59,10 +59,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class LightningChaserEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather, Boss {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private String currentFlyAnimation = "fly.idle";
-    private int flyAnimationTimer = 0;
     private int ticksSinceLastGround = 0;
-    private static final int FLY_ANIMATION_DURATION = 20; // ticks
 
     // The model's wingspan is ~18 blocks but the entity hitbox is only 1.5, so wings, neck, head and
     // tail get their own hittable parts, each wrapping a group of model bones. Root bone sits 4.25px
@@ -83,10 +80,14 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
             .pair("wing_finger3", "wing_finger3_left", "membrane_wing_finger3_left")
             // Legs hang below the main hitbox in flight
             .pair("leg", "leg_left", "leg_mid_left", "leg_ground_left", "feet_left",
-                    "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left");
+                    "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left")
+            // Server-side parts follow these, in step with the client (see DragonFlightAnimation)
+            .animations(DragonFlightAnimation.NAMES);
     private final DragonPart[] parts;
     private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(LightningChaserEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(LightningChaserEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
+    private static final TrackedData<Byte> BODY_ANIMATION = DataTracker.registerData(LightningChaserEntity.class, TrackedDataHandlerRegistry.BYTE);
+    private final DragonFlightAnimation bodyAnimation = new DragonFlightAnimation(this, BODY_ANIMATION);
     private final FireBreath fireBreath;
 
     private final BossFight bossFight;
@@ -164,6 +165,7 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
     protected void initDataTracker() {
         super.initDataTracker();
         FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
+        DragonFlightAnimation.track(this.dataTracker, BODY_ANIMATION);
     }
 
     @Override
@@ -202,7 +204,8 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
     @Override
     public void tick() {
         super.tick();
-        PART_LAYOUT.update(this, this.parts, this.isFlying());
+        this.bodyAnimation.tick(this.isFlying());
+        PART_LAYOUT.update(this, this.parts, this.bodyAnimation.current(), this.isFlying());
         if (this.isOnGround()) {
             this.ticksSinceLastGround = 0;
             // Use ground movement control when on ground
@@ -346,32 +349,10 @@ public class LightningChaserEntity extends TameableEntity implements GeoEntity, 
 
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
-        AnimationController<LightningChaserEntity> controller = new AnimationController<>(this, "controller", 0, this::predicate);
+        AnimationController<LightningChaserEntity> controller = this.bodyAnimation.createController(this);
         controller.setSoundKeyframeHandler(event -> {});
         controllers.add(controller);
         controllers.add(this.fireBreath.createAnimationController(this));
-    }
-
-    private <T extends GeoEntity> PlayState predicate(AnimationState<T> tAnimationState) {
-        boolean isFlying = this.isFlying(); // Must be airborne for >5 ticks to be considered flying
-
-        if (isFlying) {
-            String desiredAnimation = tAnimationState.isMoving() ? "fly.straight" : "fly.idle";
-            if (!desiredAnimation.equals(currentFlyAnimation)) {
-                flyAnimationTimer++;
-                if (flyAnimationTimer >= FLY_ANIMATION_DURATION) {
-                    currentFlyAnimation = desiredAnimation;
-                    flyAnimationTimer = 0;
-                }
-            } else {
-                flyAnimationTimer = 0;
-            }
-            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop(currentFlyAnimation));
-        }
-        if (tAnimationState.isMoving()) {
-            return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("walk"));
-        }
-        return tAnimationState.setAndContinue(RawAnimation.begin().thenLoop("idle"));
     }
 
     @Override

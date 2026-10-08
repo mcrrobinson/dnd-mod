@@ -193,4 +193,16 @@ public class FighterSkills extends ClassSkills {
                     1.0, EntityAttributeModifier.Operation.ADDITION));
         }
     }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        UUID id = player.getUuid();
+        int now = player.getServer().getTicks();
+        // Indomitable is only ended by secondTick, which stops once the player isn't a Fighter.
+        if (INDOMITABLE_UNTIL.remove(id) != null) {
+            setKnockbackImmune(player, false);
+        }
+        RIPOSTE_UNTIL.remove(id);
+        SECOND_WIND_READY.values().removeIf(t -> now >= t);
+    }
 }

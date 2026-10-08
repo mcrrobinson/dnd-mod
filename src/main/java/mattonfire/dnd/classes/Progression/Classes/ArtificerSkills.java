@@ -213,4 +213,11 @@ public class ArtificerSkills extends ClassSkills {
         }
         return kept;
     }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        SNAPSHOTS.remove(player.getUuid());
+        long minute = player.getWorld().getTime() / 1200;
+        CRAFT_XP_GIVEN.values().removeIf(given -> given[0] != minute);
+    }
 }

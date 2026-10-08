@@ -76,6 +76,11 @@ public final class Lockpicking {
     /** Player UUID to the world time their hands are steady enough to try again. */
     private static final Map<UUID, Long> RETRY_AT = new HashMap<>();
 
+    /** Called on disconnect: drops retry waits that are over (a running one survives a relog). */
+    public static void pruneRetries(long now) {
+        RETRY_AT.values().removeIf(t -> now >= t);
+    }
+
     private Lockpicking() {
     }
 

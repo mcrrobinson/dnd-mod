@@ -35,6 +35,11 @@ public final class AttackRolls {
     private record Crit(int targetId, int age) {
     }
 
+    /** Drops a crit roll that never got used; called on disconnect. */
+    public static void forget(UUID player) {
+        CRITICAL.remove(player);
+    }
+
     private AttackRolls() {
     }
 

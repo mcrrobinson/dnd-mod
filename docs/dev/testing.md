@@ -9,7 +9,7 @@ How to check a change in a real Minecraft client without anyone at the keyboard.
 - **Several clients / LAN:** give each one its own run directory (`-PdevRunDir=run-2`). A second player can join with `-PdevServer=localhost:25599` after the host runs `/publish false survival 25599`.
 
 ## Existing devscripts
-`devscripts/` has one or more scripts per feature (named after it). Good templates:
+`devscripts/` has one or more scripts per feature (named after it). Each script starts with `#` comment lines saying what it checks, how to run it and what to expect in the log or screenshots; keep that header when adding one. Good templates:
 - `headless-input-check.txt`: enchant a sword and attack a zombie.
 - `dragon-hitboxes.txt`: frozen mob plus hitbox screenshots.
 - `lan-host-check.txt` / `lan-guest-check.txt`: two clients.

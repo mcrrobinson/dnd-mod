@@ -22,7 +22,6 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -100,10 +99,8 @@ public class Druid {
      */
     public static int countTamedAnimals(ServerPlayerEntity player) {
         UUID owner = player.getUuid();
-        return player.getWorld() instanceof ServerWorld world
-                ? world.getEntitiesByType(TypeFilter.instanceOf(LivingEntity.class),
-                        e -> e.isAlive() && e instanceof Tameable t && owner.equals(t.getOwnerUuid())).size()
-                : 0;
+        return player.getWorld().getEntitiesByType(TypeFilter.instanceOf(LivingEntity.class),
+                e -> e.isAlive() && e instanceof Tameable t && owner.equals(t.getOwnerUuid())).size();
     }
 
     public static void updateAnimalHearts(ServerPlayerEntity player) {

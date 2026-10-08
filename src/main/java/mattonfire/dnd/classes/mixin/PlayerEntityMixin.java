@@ -13,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
@@ -24,6 +25,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends Entity implements PlayerEntityExt {
+    private static final String DND_CLASS_KEY = "DndClass";
+
     boolean dropEntireStack;
     private DndCharacter dndClass;
 
@@ -37,6 +40,25 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
 
     public DndCharacter getDndClass() {
         return this.dndClass;
+    }
+
+    // Save the class with the player so rejoining keeps it instead of reopening the picker.
+    @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
+    private void writeDndClass(NbtCompound nbt, CallbackInfo info) {
+        if (this.dndClass != null && this.dndClass != DndCharacter.NONE) {
+            nbt.putInt(DND_CLASS_KEY, this.dndClass.getValue());
+        }
+    }
+
+    @Inject(method = "readCustomDataFromNbt", at = @At("TAIL"))
+    private void readDndClass(NbtCompound nbt, CallbackInfo info) {
+        if (nbt.contains(DND_CLASS_KEY, NbtElement.INT_TYPE)) {
+            try {
+                this.dndClass = DndCharacter.fromValue(nbt.getInt(DND_CLASS_KEY));
+            } catch (IllegalArgumentException e) {
+                this.dndClass = DndCharacter.NONE;
+            }
+        }
     }
 
     public void setMana(int amount) {

@@ -1,0 +1,35 @@
+# Checks Arrow Storm ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ranger-ranks.txt
+# Expect in latest.log ([CHAT] /data get lines):
+#  1. dndclasses:arrow_storm with Duration ~160 after firing it at rank I
+#  2. Duration ~300 after firing it at rank IV
+# Fire rate, arrow speed and the steady FOV need right click held, which DevScript's one-tick "use"
+# can't do; check those by hand.
+# The 400-tick waits refill mana (18 s from empty).
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s ranger
+wait 10
+closescreen
+/dndclass resetprogress @s
+/tp @s 4.5 150 1.5 0 0
+/effect clear @s
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/dndclass rank @s ranger.arrow_storm 4
+/effect clear @s
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+screenshot ranger-ranks
+/effect clear @s
+/dndclass resetprogress @s
+quit

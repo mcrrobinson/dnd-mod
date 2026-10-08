@@ -11,7 +11,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions
 - [Monk](classes/monk.md): triple jump and fast fists; staff or fists only
 - [Paladin](classes/paladin.md): heals the party; no potions, crafting or brewing; weak in the Nether
-- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm
+- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
 - [Rogue](classes/rogue.md): no hunger or poison; turns invisible
 - [Necromancer](classes/necromancer.md): undead ignore you; summon undead allies
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water

@@ -62,7 +62,7 @@
       "name": "Ranger",
       "pros": ["Can zoom in with bow, faster firing (done)"],
       "cons": ["Cannot pick up swords (done)", "Weak to fire (done)"],
-      "special": ["Hold right click to spam fire (no ammo consumed) (done)"],
+      "special": ["Hold right click to spam fire (no ammo consumed); fire rate, arrow speed and duration grow with its rank, no zoom while it runs (done)"],
       "specialOnKey": true
     },
     {

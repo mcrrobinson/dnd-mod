@@ -17,6 +17,7 @@ import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.RangerSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -141,7 +142,9 @@ public class PowerUpEffect {
         System.out.println("Starting powerup on: " + character.toString());
         switch (character) {
             case RANGER:
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM, 300, 1));
+                // Fire rate and arrow speed are read from the rank while it runs (PlayerEntityMixin, BowItemMixin).
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM,
+                        RangerSkills.ARROW_STORM.ticks(player, "Duration"), 1));
                 break;
             case WIZARD:
 

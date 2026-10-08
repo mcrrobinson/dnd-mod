@@ -232,4 +232,10 @@ public class MonkSkills extends ClassSkills {
             speed.removeModifier(UNARMORED_SPEED_ID);
         }
     }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        COMBOS.remove(player.getUuid());
+        QUIVERING_PALM.remove(player.getUuid());
+    }
 }

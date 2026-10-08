@@ -28,6 +28,11 @@ public final class AttackRolls {
     /** Players whose current swing is a critical hit, set just before {@code PlayerEntity.attack} runs. */
     private static final Set<UUID> CRITICAL = new HashSet<>();
 
+    /** Drops a crit roll that never got used; called on disconnect. */
+    public static void forget(UUID player) {
+        CRITICAL.remove(player);
+    }
+
     private AttackRolls() {
     }
 

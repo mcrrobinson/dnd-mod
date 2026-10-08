@@ -12,4 +12,4 @@ A fast, fragile charmer that monsters ignore and animals rally around.
 - The class picker blurb mentions a diamond-armor limit and longer jumps. Neither is implemented.
 
 ## For developers
-- Attributes: `SetClassAttributes.typeBard`. Monster targeting: `mixin/ActiveTargetGoalMixin`. Poison: `mixin/StatusEffectMixin`. Special: `PowerUpEffect.bardEffect`.
+- Attributes: `ClassStats`. Monster targeting: `mixin/ActiveTargetGoalMixin`. Poison: `mixin/StatusEffectMixin`. Special: `PowerUpEffect.bardEffect`.

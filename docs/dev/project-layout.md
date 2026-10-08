@@ -5,7 +5,7 @@ Where things live in the code.
 | Area | Location (`src/main/java/mattonfire/dnd/`) |
 |-|-|
 | Mod entry point, class switching, specials' packets | `classes/DnDClasses.java` |
-| Class stats | `classes/SetClassAttributes.java`, `classes/DndCharacter.java` |
+| Class stats | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java` |
 | Class passives | `classes/` (`Druid`, `Warlock`, `MonkHandler`, `PotionImmunity`) and `classes/Misc/` |
 | Class specials | `classes/Misc/PowerUpEffect.java`, `classes/Effects/` |
 | Mixins (most class rules, dragon hit detection, dev window) | `classes/mixin/` (listed in `dndclasses.mixins.json`) |

@@ -2,8 +2,12 @@ package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
@@ -11,22 +15,33 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
 
 /**
  * Paladin skills. Hellforged is checked in {@code PaladinNetherWeakness}, and
@@ -36,6 +51,17 @@ import net.minecraft.sound.SoundEvents;
  * Paladins only ignore potion effects, so the effects given here still apply.
  */
 public class PaladinSkills extends ClassSkills {
+    /**
+     * The root special, Divine Judgment; fired by {@code PowerUpEffect}. A beam
+     * of holy light hits the mob you look at, and a shockwave hits hostiles
+     * around it. From rank III, extra beams strike the nearest other hostiles.
+     */
+    public static final String DIVINE_JUDGMENT_ID = "paladin.divine_judgment";
+    public static final Ranks DIVINE_JUDGMENT = Ranks.of(DIVINE_JUDGMENT_ID)
+            .amount("Damage", "", 8, 12, 16, 20)
+            .amount("Shockwave", "blocks", 3, 4, 5, 6)
+            .amount("Beams", "", 1, 1, 2, 3);
+
     public static final String HELLFORGED = "paladin.hellforged";
     private static final String AURA_OF_PROTECTION = "paladin.aura_of_protection";
 
@@ -53,6 +79,15 @@ public class PaladinSkills extends ClassSkills {
     private static final double ANGEL_RADIUS = 10;
     private static final int ANGEL_FIRE_SECONDS = 3;
 
+    private static final double JUDGMENT_RANGE = 30;
+    /** Extra beams pick hostiles within this many blocks of the first target. */
+    private static final double JUDGMENT_CHAIN_RADIUS = 12;
+    /** Share of the beam's damage the shockwave deals. */
+    private static final float SHOCKWAVE_SHARE = 0.4F;
+    private static final float JUDGMENT_UNDEAD_MULTIPLIER = 1.5F;
+    private static final int JUDGMENT_FIRE_SECONDS = 5;
+    private static final double BEAM_HEIGHT = 16;
+
     private static final UUID SHIELD_KNOCKBACK_UUID = UUID.fromString("8d0e6f43-2b7a-4c11-9e55-3f7a1c2d9b01");
 
     /** World time each player's timed buff ends at. */
@@ -68,11 +103,12 @@ public class PaladinSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("paladin.lay_on_hands", "Lay on Hands", "Fully heal every player within 10 blocks.",
-                        "minecraft:glistering_melon_slice", 9, 0, 1, 3),
+                active(DIVINE_JUDGMENT_ID, "Divine Judgment",
+                        "A beam of holy light strikes the mob you look at and sets it alight; a shockwave hits hostiles around it. Undead take 50% more.",
+                        "minecraft:lightning_rod", 9, 0, 1, 3),
                 // Devotion
                 passive("paladin.divine_smite", "Divine Smite", "Melee hits deal +4 damage to undead.",
-                        "minecraft:golden_sword", 1, 2, 3, "paladin.lay_on_hands"),
+                        "minecraft:golden_sword", 1, 2, 3, DIVINE_JUDGMENT_ID),
                 active("paladin.sacred_weapon", "Sacred Weapon",
                         "Strength for 15 seconds, and your melee hits set targets alight.", "minecraft:blaze_rod", 4,
                         1, 2, 2, "paladin.divine_smite"),
@@ -81,7 +117,7 @@ public class PaladinSkills extends ClassSkills {
                         "paladin.sacred_weapon"),
                 // Conquest
                 passive(HELLFORGED, "Hellforged", "The Nether no longer weakens you.", "minecraft:netherite_ingot",
-                        1, 0, 3, "paladin.lay_on_hands"),
+                        1, 0, 3, DIVINE_JUDGMENT_ID),
                 active("paladin.divine_shield", "Divine Shield",
                         "Absorption III and no knockback for 15 seconds.", "minecraft:shield", 5, 1, 0, 2,
                         HELLFORGED),
@@ -202,6 +238,109 @@ public class PaladinSkills extends ClassSkills {
             }
         }
         return amount;
+    }
+
+    /**
+     * Divine Judgment: strikes the mob the Paladin looks at (within 30 blocks,
+     * not through walls), then the nearest other hostiles for extra beams.
+     *
+     * @return false if nothing is in sight, so the mana is kept
+     */
+    public static boolean divineJudgment(ServerPlayerEntity player) {
+        LivingEntity target = judgmentTarget(player);
+        if (target == null) {
+            player.sendMessage(Text.literal("No target for Divine Judgment in sight."), true);
+            return false;
+        }
+        float damage = (float) DIVINE_JUDGMENT.get(player, "Damage");
+        double radius = DIVINE_JUDGMENT.get(player, "Shockwave");
+        int beams = DIVINE_JUDGMENT.getInt(player, "Beams");
+
+        List<LivingEntity> struck = new ArrayList<>();
+        struck.add(target);
+        if (beams > 1) {
+            target.getWorld().getEntitiesByClass(LivingEntity.class,
+                    target.getBoundingBox().expand(JUDGMENT_CHAIN_RADIUS),
+                    e -> e != target && e instanceof Monster && e.isAlive())
+                    .stream()
+                    .sorted(Comparator.comparingDouble(e -> e.squaredDistanceTo(target)))
+                    .limit(beams - 1)
+                    .forEach(struck::add);
+        }
+
+        Set<LivingEntity> hit = new HashSet<>(struck);
+        for (LivingEntity mob : struck) {
+            strike(player, mob, damage, radius, hit);
+        }
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT,
+                SoundCategory.PLAYERS, 1.0F, 1.2F);
+        return true;
+    }
+
+    private static void strike(ServerPlayerEntity player, LivingEntity target, float damage, double radius,
+            Set<LivingEntity> hit) {
+        ServerWorld world = (ServerWorld) player.getWorld();
+        Vec3d at = target.getPos();
+
+        // The beam: a column of light from the sky down onto the target.
+        for (double dy = 0; dy < BEAM_HEIGHT; dy += 0.4) {
+            world.spawnParticles(ParticleTypes.END_ROD, at.x, at.y + dy, at.z, 1, 0.08, 0.0, 0.08, 0.0);
+        }
+        world.spawnParticles(ParticleTypes.FLASH, at.x, at.y + 1, at.z, 1, 0, 0, 0, 0);
+        world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, at.x, at.y + 0.5, at.z, 30, 0.4, 0.6, 0.4, 0.3);
+        // The shockwave ring.
+        int points = (int) (radius * 12);
+        for (int i = 0; i < points; i++) {
+            double angle = 2 * Math.PI * i / points;
+            world.spawnParticles(ParticleTypes.END_ROD, at.x + Math.cos(angle) * radius, at.y + 0.2,
+                    at.z + Math.sin(angle) * radius, 1, 0, 0.05, 0, 0.01);
+        }
+        world.playSound(null, target.getBlockPos(), SoundEvents.ENTITY_LIGHTNING_BOLT_IMPACT, SoundCategory.PLAYERS,
+                1.2F, 1.4F);
+        world.playSound(null, target.getBlockPos(), SoundEvents.ITEM_TRIDENT_THUNDER, SoundCategory.PLAYERS, 0.6F,
+                1.6F);
+
+        hurt(player, target, damage);
+        target.setOnFireFor(JUDGMENT_FIRE_SECONDS);
+
+        for (LivingEntity mob : world.getEntitiesByClass(LivingEntity.class, new Box(at, at).expand(radius),
+                e -> e instanceof Monster && e.isAlive() && e.squaredDistanceTo(at) <= radius * radius)) {
+            if (!hit.add(mob))
+                continue; // Each mob is hit once, by its own beam or the first shockwave
+            hurt(player, mob, damage * SHOCKWAVE_SHARE);
+            if (isUndead(mob))
+                mob.setOnFireFor(JUDGMENT_FIRE_SECONDS);
+            double dx = mob.getX() - at.x;
+            double dz = mob.getZ() - at.z;
+            if (dx * dx + dz * dz > 1.0E-4)
+                mob.takeKnockback(0.6, -dx, -dz);
+        }
+    }
+
+    private static void hurt(ServerPlayerEntity player, LivingEntity mob, float amount) {
+        if (isUndead(mob))
+            amount *= JUDGMENT_UNDEAD_MULTIPLIER;
+        mob.damage(player.getWorld().getDamageSources().indirectMagic(player, player), amount);
+    }
+
+    /** The living thing the player looks at within range, not through walls, players or own pets. */
+    private static LivingEntity judgmentTarget(ServerPlayerEntity player) {
+        Vec3d eye = player.getCameraPosVec(1.0F);
+        Vec3d look = player.getRotationVec(1.0F);
+        double range = JUDGMENT_RANGE;
+        HitResult blockHit = player.raycast(JUDGMENT_RANGE, 1.0F, false);
+        if (blockHit.getType() != HitResult.Type.MISS) {
+            range = blockHit.getPos().distanceTo(eye);
+        }
+        Vec3d end = eye.add(look.multiply(range));
+        Box box = player.getBoundingBox().stretch(look.multiply(range)).expand(1.0D);
+        UUID owner = player.getUuid();
+        EntityHitResult hit = ProjectileUtil.raycast(player, eye, end, box,
+                (Entity e) -> e instanceof LivingEntity && e.isAlive() && !(e instanceof PlayerEntity)
+                        && !(e instanceof ArmorStandEntity)
+                        && !(e instanceof Tameable t && owner.equals(t.getOwnerUuid())),
+                range * range);
+        return hit == null ? null : (LivingEntity) hit.getEntity();
     }
 
     private static boolean isUndead(LivingEntity entity) {

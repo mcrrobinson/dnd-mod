@@ -1,5 +1,5 @@
 # Parties
-Group up with up to 7 other players (8 in total). Party members split XP, can't hurt each other, see each other's health on screen, and get extra help from a Paladin or Cleric in the group.
+Group up with up to 7 other players (8 in total). Party members split XP, can't hurt each other, see each other's health on screen, and get extra help from a Cleric in the group.
 
 ## How it works
 ### Making a party
@@ -14,11 +14,10 @@ The player who creates the party leads it. If the leader leaves, the member who 
 
 **Party HUD.** The top-left corner lists the other members, updated every half second. Each entry shows the name (with a ★ for the leader), HP as text, and a health bar that is green above 50%, yellow above 25% and red below that. A gold strip shows absorption. A grey name means that member is out of XP range, and dark grey means they're offline. The HUD hides with F1 and the F3 debug screen.
 
-**Paladin and Cleric specials.** These reach further for party members:
+**Cleric special.** It reaches party members too:
 
 | Special | Everyone | Party members |
 |-|-|-|
-| Paladin, Lay on Hands | Players within 10 blocks are healed to full | Members within 24 blocks (and the Paladin) are healed to full and get Absorption I for 30 s |
 | Cleric, Sanctuary | The Cleric gets Mob Repel for 15 s | Members within 16 blocks also get Mob Repel for 15 s and Regeneration I for 10 s, and mobs drop them as a target |
 
 ## Commands
@@ -38,7 +37,7 @@ Every player can use these. No op is needed.
 - Only class XP from kills is shared. Class XP from other actions (mining, brewing, crafting, the once-a-minute trickle, kills by summons and pets) stays with whoever earned it. Each member gets their share in their own class, and a member with no class gets nothing from it.
 - Mobs that members summon or control can still hit other members: Bard animals, Necromancer undead and mobs a Blood Hunter is controlling.
 - Party members can hurt each other's pets.
-- The party size (8), XP range (48) and Paladin heal range (24) are constants in the code, not config options.
+- The party size (8) and XP range (48) are constants in the code, not config options.
 
 ## For developers
 - `Party/PartyManager.java`: the party registry. It's a `PersistentState` saved in the overworld (`dndclasses_parties`) and also holds the invites.
@@ -49,5 +48,5 @@ Every player can use these. No op is needed.
   - Other XP systems share through `shareXp(player, amount, channel, grant)`. For example `ProgressionEvents.onKill` calls `PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp)`.
 - `mixin/ExperienceOrbEntityMixin.java`: redirects the orb's `addExperience` call to `shareXp`.
 - `Client/Hud/PartyHud.java`: the client receiver and HUD drawing.
-- The Paladin and Cleric changes are in `Misc/PowerUpEffect.java` and `Misc/ClericHandler.java`.
+- The Cleric change is in `Misc/PowerUpEffect.java` and `Misc/ClericHandler.java`.
 - To test with two players, follow the LAN steps in `CLAUDE.md` (`devscripts/lan-host-check.txt` and `lan-guest-check.txt`).

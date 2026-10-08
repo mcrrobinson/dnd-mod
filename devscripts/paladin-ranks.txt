@@ -1,0 +1,46 @@
+# Checks Divine Judgment (Paladin special) at rank IV. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/paladin-ranks.txt
+# Four frozen zombies with 100 HP and a pig. At rank IV (20 damage, 6-block shockwave, 3 beams), undead take 50% more.
+# Expect in latest.log ([CHAT] /data get lines):
+#  1. ranks {paladin.divine_judgment=4} from /dndclass progress
+#  2. zombies a, b and c (the target and the two nearest, hit by beams): Health 70.0f
+#  3. zombie d (4 blocks from a, shockwave only): Health 88.0f
+#  4. pig: Health 10.0f (not hostile, untouched)
+#  5. zombie a: Fire > 0
+# Screenshot: paladin-judgment (beams and shockwave rings)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 12 149 14 minecraft:stone
+/fill 0 150 0 12 156 14 minecraft:air
+/dndclass set @s paladin
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s paladin.divine_judgment 4
+/dndclass progress @s
+/kill @e[type=!minecraft:player]
+/summon minecraft:zombie 4.5 150 7.5 {NoAI:1b,Tags:["a"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,Tags:["b"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 2.5 150 7.5 {NoAI:1b,Tags:["c"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 4.5 150 11.5 {NoAI:1b,Tags:["d"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:pig 5.5 150 9.5 {NoAI:1b,Tags:["p"]}
+/tp @s 4.5 150 1.5 0 10
+/effect clear @s
+wait 200
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-judgment
+wait 10
+/data get entity @e[tag=a,limit=1] Health
+/data get entity @e[tag=b,limit=1] Health
+/data get entity @e[tag=c,limit=1] Health
+/data get entity @e[tag=d,limit=1] Health
+/data get entity @e[tag=p,limit=1] Health
+/data get entity @e[tag=a,limit=1] Fire
+/kill @e[type=!minecraft:player]
+/dndclass resetprogress @s
+quit

@@ -25,7 +25,7 @@ These are the roots of each tree, all 9 mana:
 | Druid | Wild Shape | Become a random animal you've killed for 30 s (needs the Identity mod) |
 | Fighter | Super Regeneration | Regeneration V for 10 s |
 | Monk | Ki Surge | Speed II, Haste II and Jump Boost II for 15 s |
-| Paladin | Lay on Hands | Heal every player within 10 blocks to full. Party members within 24 blocks are also healed and get Absorption I for 30 s |
+| Paladin | Divine Judgment | A beam of holy light hits the mob you look at, up to 30 blocks away, and a shockwave hits hostiles around it; undead take more. Stronger with rank. Keeps the mana with nothing in sight |
 | Ranger | Arrow Storm | For 15 s your bow needs no arrows and fires itself at full draw |
 | Rogue | Vanish | Invisibility for 15 s |
 | Necromancer | Raise Dead | An allied zombie and skeleton rise and fight for you for 10 s |

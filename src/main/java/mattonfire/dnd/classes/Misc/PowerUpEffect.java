@@ -17,6 +17,7 @@ import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.PaladinSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -54,8 +55,6 @@ import net.minecraft.world.explosion.Explosion;
 
 public class PowerUpEffect {
 
-    /** Paladins heal party members within this many blocks (everyone else: 10). */
-    public static final double PALADIN_PARTY_HEAL_RADIUS = 24;
     /** How long the Wizard special's invulnerability lasts. */
     public static final int WIZARD_INVULNERABLE_TICKS = 5 * 20;
 
@@ -216,25 +215,9 @@ public class PowerUpEffect {
                 }
                 break;
             case PALADIN:
-                // Heal everyone within a area of the user
-                List<PlayerEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
-                        PlayerEntity.class,
-                        player.getBoundingBox().expand(10), // 10-block radius
-                        entity -> true);
-
-                for (PlayerEntity entity : nearbyEntities) {
-                    entity.heal(entity.getMaxHealth());
-                }
-
-                // Party members get it from further away, plus a few absorption hearts.
-                if (player instanceof ServerPlayerEntity paladin) {
-                    List<ServerPlayerEntity> party = PartyManager.nearbyMembers(paladin, PALADIN_PARTY_HEAL_RADIUS);
-                    party.add(paladin);
-                    for (ServerPlayerEntity member : party) {
-                        member.heal(member.getMaxHealth());
-                        member.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 600, 0));
-                    }
-                }
+                // Divine Judgment: a beam of holy light on the mob in sight. Nothing in sight keeps the mana.
+                if (!(player instanceof ServerPlayerEntity paladin) || !PaladinSkills.divineJudgment(paladin))
+                    return false;
                 break;
             case ROGUE:
                 // Make the player immune to poison

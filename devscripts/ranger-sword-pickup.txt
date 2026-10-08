@@ -1,3 +1,5 @@
+# Ranger can't pick up swords (other items fine); a Fighter can. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ranger-sword-pickup.txt
+# Expect in latest.log: the sword item is still on the ground and arrows are in the inventory for the Ranger; the Fighter then has the sword.
 wait 40
 closescreen
 wait 10

@@ -41,4 +41,5 @@ All dragons can be hit on their wings, neck, head, tail and legs (like the ender
 - Breath: `FireBreath` + `ai/goal/FireBreathGoal`. Hit parts: see [Multipart mobs](../dev/multipart-mobs.md).
 - To add a dragon, put it in `data/dndclasses/tags/entity_types/dragons.json` (Smite Dragons), and in `dragon_slayer_targets.json` if killing it should grant Dragon Slayer.
 - Wyvern and Lightning Chaser keep one `BirdNavigation` and `FlightMoveControl` on the ground and in the air. Their attack goals tick every tick (`shouldRunEveryTick`) and re-path every 4-10 ticks. Lair respawn timers: `world/gen/lair/LairRespawns`.
+- The Ember Wyvern textures are recoloured from the green Wyvern texture by `tools/ember_wyvern_texture.py`; edit the script and rerun it rather than hand-editing them.
 - Devscripts: `dragon-hitboxes.txt`, `dragon-fire-breath-all.txt`, `dragon-fall-damage.txt`, `dragon-slayer-all.txt`, `nether-dragon.txt`, `tameable-pikehorn.txt`.

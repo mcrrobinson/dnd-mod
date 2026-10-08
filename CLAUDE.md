@@ -79,7 +79,7 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
 
 ## Repo notes
 
-- `build/` is tracked in git, so builds show changes under it. Don't commit them.
+- `build/` is ignored by git; don't force-add build output.
 - Big GeckoLib mobs get extra hit shapes through `MultipartDragon`:
   - Implement it and list the model's bone groups in a `DragonPartLayout`.
   - Render the mob with a `DragonRenderer`.

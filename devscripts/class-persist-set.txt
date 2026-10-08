@@ -1,3 +1,5 @@
+# First half of the class persistence check: sets Barbarian and quits. Then run class-persist-check.txt. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-persist-set.txt
+# Expect in latest.log: /dndclass get says barbarian.
 wait 40
 closescreen
 wait 10

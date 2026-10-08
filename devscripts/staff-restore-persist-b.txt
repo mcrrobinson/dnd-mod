@@ -1,0 +1,6 @@
+wait 40
+closescreen
+/execute if blocks 0 140 4 6 146 10 20 140 4 all
+wait 140
+/execute if blocks 0 140 4 6 146 10 20 140 4 all
+quit

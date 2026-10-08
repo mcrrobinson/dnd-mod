@@ -1,3 +1,5 @@
+# Bard instruments: the lute, drum and flute give their buffs to a Bard, and a Fighter gets no flute buff. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/bard-instruments.txt
+# Expect in latest.log: Test passed for the Bard's lute and drum effects, Test failed for the Fighter's flute Speed (see docs/items/bard-instruments.md).
 wait 40
 closescreen
 wait 10

@@ -118,6 +118,10 @@ public class EventMusic {
             inDungeon = false;
             nearFortress = false;
             bossTracks.clear();
+            // Otherwise the boss fight track keeps replacing the main menu music
+            current = Event.NONE;
+            bossMusic = null;
+            lastWorld = null;
             resetLowHealth();
             resetTravel();
         });

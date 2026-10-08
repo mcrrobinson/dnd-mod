@@ -1,19 +1,21 @@
 package mattonfire.dnd.classes.Config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 
 import mattonfire.dnd.classes.DnDClasses;
+import net.fabricmc.loader.api.FabricLoader;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public final class FAConfig {
 
-    private static final Path CONFIG_FILE_PATH = Paths.get("config", DnDClasses.MOD_ID, DnDClasses.MOD_ID + ".json");
+    private static final Path CONFIG_FILE_PATH = FabricLoader.getInstance().getConfigDir()
+            .resolve(DnDClasses.MOD_ID).resolve(DnDClasses.MOD_ID + ".json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     private static ConfigValues values;
@@ -48,8 +50,12 @@ public final class FAConfig {
     public static void load() {
         try (FileReader reader = new FileReader(CONFIG_FILE_PATH.toFile())) {
             values = GSON.fromJson(reader, ConfigValues.class);
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             DnDClasses.LOGGER.warn("Failed to read config (default parameters will be used): ", e);
+            loadDefaults();
+        }
+        if (values == null) { // Empty file
+            DnDClasses.LOGGER.warn("Config file is empty, default parameters will be used");
             loadDefaults();
         }
     }

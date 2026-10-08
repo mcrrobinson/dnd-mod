@@ -32,6 +32,11 @@ public final class Persuasion {
     /** "villager uuid/player uuid" to the day the player last tried to persuade that villager. */
     private static final Map<String, Long> LAST_TRIED = new HashMap<>();
 
+    /** Called on disconnect: only today's attempts still matter. */
+    public static void pruneOldDays(long today) {
+        LAST_TRIED.values().removeIf(day -> day != today);
+    }
+
     private Persuasion() {
     }
 

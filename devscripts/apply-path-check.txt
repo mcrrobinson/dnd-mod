@@ -1,0 +1,16 @@
+wait 60
+closescreen
+/dndclass get @s
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/data get entity @s "mattonfire.dnd.classes"
+/gamerule doImmediateRespawn true
+/kill @s
+wait 20
+respawn
+wait 40
+/dndclass get @s
+/attribute @s minecraft:generic.attack_damage base get
+/data get entity @s "mattonfire.dnd.classes"
+/gamerule doImmediateRespawn false
+quit

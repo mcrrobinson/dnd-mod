@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Progression;
 
+import mattonfire.dnd.classes.Party.PartyEvents;
 import mattonfire.dnd.entity.boss.BossMinions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -50,7 +51,8 @@ public final class ProgressionEvents {
         }
         // Boss minions are endless; they give no class XP.
         if (!BossMinions.isMinion(entity)) {
-            Progression.addXp(player, xp);
+            // Split with party members nearby, like vanilla XP; each gets it in their own class.
+            PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp);
         }
 
         if (skills != null) {

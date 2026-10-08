@@ -1,4 +1,4 @@
-# A fighter opens a filled brewing stand, then the brew finishes.
+# A fighter opens a brewing stand and adds the ingredient, so the brew starts with them looking: it must explode.
 wait 40
 closescreen
 wait 10
@@ -8,13 +8,15 @@ wait 10
 wait 20
 /fill 20 140 -5 40 160 15 minecraft:air
 /fill 25 149 0 35 149 10 minecraft:stone
-/setblock 30 150 5 minecraft:brewing_stand{Fuel:20,Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:water"}},{Slot:3b,id:"minecraft:nether_wart",Count:1b}]}
+/setblock 30 150 5 minecraft:brewing_stand{Fuel:20,Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:water"}}]}
 wait 20
 use
 wait 10
+/item replace block 30 150 5 container.3 with minecraft:nether_wart
+wait 5
 slots
 closescreen
-/data get block 30 150 5 DndLastPlayerClass
+/data get block 30 150 5 DndBrewArmed
 /tp @s 30 160 25 180 20
 wait 420
 /execute if block 30 150 5 minecraft:brewing_stand

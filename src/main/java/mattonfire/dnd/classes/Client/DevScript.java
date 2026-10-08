@@ -13,6 +13,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConnectScreen;
 import net.minecraft.client.gui.screen.TitleScreen;
+import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.network.ServerAddress;
 import net.minecraft.client.network.ServerInfo;
 import net.minecraft.client.option.KeyBinding;
@@ -40,8 +41,11 @@ import net.minecraft.screen.slot.SlotActionType;
  * <li>{@code wait <ticks>} pauses the script (20 ticks = 1 second)</li>
  * <li>{@code screenshot <name>} saves {@code run/screenshots/<name>.png}</li>
  * <li>{@code hitboxes on|off} toggles hitbox rendering (F3+B)</li>
+ * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
+ *     {@code serverhitboxes measure} logs how far they are from the client's</li>
  * <li>{@code hud on|off} toggles the HUD (F1)</li>
- * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join)</li>
+ * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join); a container screen is
+ *     closed on the server too, like pressing Esc</li>
  * <li>{@code respawn} respawns the player if it's dead (a world saved mid-death loads dead)</li>
  * <li>{@code quit} closes the game cleanly</li>
  * </ul>
@@ -175,8 +179,22 @@ public final class DevScript {
             case "screenshot" -> ScreenshotRecorder.saveScreenshot(client.runDirectory, argument + ".png", client.getFramebuffer(),
                     message -> DnDClasses.LOGGER.info("[DevScript] {}", message.getString()));
             case "hitboxes" -> client.getEntityRenderDispatcher().setRenderHitboxes(argument.equals("on"));
+            case "serverhitboxes" -> {
+                if (argument.equals("measure")) {
+                    mattonfire.dnd.client.renderer.ServerPartDebug.measure(client);
+                } else {
+                    mattonfire.dnd.client.renderer.ServerPartDebug.enabled = argument.equals("on");
+                }
+            }
             case "hud" -> client.options.hudHidden = argument.equals("off");
-            case "closescreen" -> client.setScreen(null);
+            case "closescreen" -> {
+                // setScreen(null) alone leaves a container open on the server (brewing stand, chest, ...)
+                if (client.currentScreen instanceof HandledScreen<?>) {
+                    client.player.closeHandledScreen();
+                } else {
+                    client.setScreen(null);
+                }
+            }
             case "respawn" -> {
                 if (client.player.isDead()) {
                     client.player.requestRespawn();

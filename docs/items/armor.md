@@ -3,6 +3,7 @@ Fourteen class-themed armor sets. A full set gives a bonus to anyone, boosted wh
 
 ## How it works
 - Every piece has the same stats: helmet 3, chestplate 8, leggings 6, boots 3 armor; 3 toughness and 10% knockback resistance each, plus small speed and attack speed bonuses (helmets also +1 luck).
+- **Durability, enchanting and repair:** every set has netherite durability and enchantability 15. The GeckoLib sets repair with netherite ingots; the others with a themed item: Prismarine (prismarine shard), Holy Armor (gold ingot), Robe (wool), Steampunk (copper ingot), Warrior (iron ingot), Wither (netherite scrap), Wooden (logs).
 - **Full set (all four pieces):** gives its set bonus to anyone.
 - **Matching class:** if your class is one the set is made for, every set effect goes up one level and you also get the class effect.
 
@@ -35,6 +36,7 @@ Fourteen class-themed armor sets. A full set gives a bonus to anyone, boosted wh
 ## Known limitations
 - The Wither set has no boots in the creative tab (`/give @s dndclasses:wither_boots` works).
 - The Thief set's items are named `rogue_*`.
+- Prismarine, Holy Armor, Robe, Steampunk, Warrior, Wither and Wooden render as layered vanilla-style armor, not 3D models. Their capes, shoulder pads and gears have textures but no model yet. Holy Armor's layers are a placeholder recoloured from the Warrior set (its own texture is for a model that was never added).
 
 ## For developers
-- Items: `Items/*ArmorItem` on `Items/lib/FAArmorItem` (GeckoLib armor). Set logic: `Items/lib/SetBonusArmor`, `Items/lib/FAArmorEffectHandler`. Devscript: `armor-class-bonus.txt`.
+- Items: `Items/*ArmorItem` on `Items/lib/FAArmorItem` (GeckoLib armor, `ArmorMaterials.NETHERITE`) or `Items/lib/DndArmorItem` (vanilla `ArmorItem` with `Items/lib/ModArmorMaterials`, rendered by `Client/Render/LayeredArmorRenderer` from `textures/models/armor/<set>/{body,leggings}_{lower,middle,upper}.png`). Set logic: `Items/lib/SetBonusArmor`, `Items/lib/FAArmorEffectHandler`. Devscript: `armor-class-bonus.txt`.

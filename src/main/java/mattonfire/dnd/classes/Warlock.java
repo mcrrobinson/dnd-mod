@@ -5,24 +5,31 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
+import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.SmallFireballEntity;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 /**
@@ -32,6 +39,9 @@ import net.minecraft.util.math.Vec3d;
  * (client sends C2S_WARLOCK_FIREBALL, see WarlockFireballMixin).
  * - Immune to fire, lava and fireball damage (DamageTypeTags.IS_FIRE).
  * - Hurt by water and rain (1 damage every 4s, never below 2 health).
+ * - Special: breathes fire for FIREBREATH_DURATION_TICKS (DnDClasses.WARLOCK_FIREBREATH
+ * holds the world time it ends at). Burns and hurts mobs in a 5 block beam, but not
+ * the Warlock's party or pets.
  */
 public class Warlock {
     public static final Identifier C2S_WARLOCK_FIREBALL = Identifier.of(DnDClasses.MOD_ID, "warlock_fireball");
@@ -54,6 +64,8 @@ public class Warlock {
 
     public static void register() {
         ServerPlayNetworking.registerGlobalReceiver(C2S_WARLOCK_FIREBALL, Warlock::receiveFireballRequest);
+
+        ServerTickEvents.END_WORLD_TICK.register(Warlock::tickFireBreath);
 
         ServerPlayConnectionEvents.DISCONNECT
                 .register((handler, server) -> FIREBALL_READY_TICK.remove(handler.getPlayer().getUuid()));
@@ -118,5 +130,73 @@ public class Warlock {
         player.swingHand(Hand.MAIN_HAND);
         player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
                 SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F);
+    }
+
+    /** Breath length in blocks; the beam is checked one block at a time. */
+    private static final int BREATH_LENGTH = 5;
+    private static final float BREATH_DAMAGE = 2.0F;
+
+    /** Runs once per world; only handles the Warlocks that are in this world. */
+    private static void tickFireBreath(ServerWorld world) {
+        if (DnDClasses.WARLOCK_FIREBREATH.isEmpty()) {
+            return;
+        }
+        long now = world.getTime();
+        DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
+            ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(entry.getKey());
+            if (player == null || player.isRemoved()) {
+                return true; // Went offline
+            }
+            if (player.getWorld() != world) {
+                return false; // Handled when its own world ticks
+            }
+            long endTick = entry.getValue();
+            if (now > endTick || !player.isAlive()) {
+                sendBreathState(player, false, 0);
+                return true;
+            }
+            sendBreathState(player, true, endTick);
+            breatheFire(world, player);
+            return false;
+        });
+    }
+
+    private static void sendBreathState(ServerPlayerEntity player, boolean active, long endTick) {
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeBoolean(active);
+        if (active) {
+            buf.writeLong(endTick);
+        }
+        ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
+    }
+
+    private static void breatheFire(ServerWorld world, ServerPlayerEntity player) {
+        Vec3d look = player.getRotationVec(1.0F);
+        Vec3d start = player.getEyePos();
+        for (int i = 1; i <= BREATH_LENGTH; i++) {
+            Vec3d pos = start.add(look.multiply(i));
+
+            // The Warlock's own client draws its flames.
+            for (ServerPlayerEntity other : world.getPlayers()) {
+                if (other != player) {
+                    world.spawnParticles(other, ParticleTypes.FLAME, false, pos.x, pos.y, pos.z, 8, 0.2, 0.2, 0.2,
+                            0.01);
+                }
+            }
+
+            Box box = new Box(pos.x - 0.5, pos.y - 0.5, pos.z - 0.5, pos.x + 0.5, pos.y + 0.5, pos.z + 0.5);
+            for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, box,
+                    e -> e != player && e.isAlive() && !isFriendly(player, e))) {
+                entity.setOnFireFor(2);
+                // Credit the Warlock, so kills count and the party's no-friendly-fire rule applies.
+                entity.damage(world.getDamageSources().indirectMagic(player, player), BREATH_DAMAGE);
+            }
+        }
+    }
+
+    /** Party members and the Warlock's own pets don't get burned. */
+    private static boolean isFriendly(ServerPlayerEntity player, LivingEntity entity) {
+        return PartyManager.areInSameParty(player, entity)
+                || entity instanceof Tameable pet && player.getUuid().equals(pet.getOwnerUuid());
     }
 }

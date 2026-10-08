@@ -115,17 +115,6 @@ public class DnDClasses implements ModInitializer {
 
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
-        private static void sendDoubleJumpPacket(MinecraftServer server, ServerPlayerEntity player,
-                        ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                passedData.writeUuid(buf.readUuid());
-                server.execute(() -> {
-                        PlayerLookup.tracking(player).forEach(p -> {
-                                ServerPlayNetworking.send(p, DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID, passedData);
-                        });
-                });
-        }
-
         private static void sendPowerupPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 server.execute(() -> {
@@ -155,13 +144,6 @@ public class DnDClasses implements ModInitializer {
 
         }
 
-        private static void sendClassPickPacket(MinecraftServer server, ServerPlayerEntity player,
-                        ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                int bufferInteger = buf.readInt();
-                applyClass(player, DndCharacter.fromValue(bufferInteger));
-                sendRespawnHint(player);
-        }
-
         /** Shows the hint left by a player's last death, if any, once. */
         public static void sendRespawnHint(ServerPlayerEntity player) {
                 String message = DnDClasses.respawnMessage.remove(player.getUuidAsString());
@@ -178,103 +160,6 @@ public class DnDClasses implements ModInitializer {
 
                 // Send the subtitle packet
                 player.networkHandler.sendPacket(subtitlePacket);
-        }
-
-        /**
-         * Switches a player to the given class on the server and tells their client.
-         * Every class only sets attribute base values, so resetting to default first
-         * means switching back and forth never stacks anything.
-         */
-        public static void applyClass(ServerPlayerEntity player, DndCharacter dndClass) {
-                SetClassAttributes playerClasses = new SetClassAttributes();
-                int bufferInteger = dndClass.getValue();
-                playerClasses.resetToDefault(player);
-                ClassInfo info = ClassInfo.get(dndClass);
-                if (info != null) {
-                        playerClasses.sendPlayerMessage(player, info);
-                }
-                switch (bufferInteger) {
-                        case 1:
-                                playerClasses.typeBarbarian(player);
-                                player.setHealth(25);
-                                break;
-                        case 2:
-                                playerClasses.typeBard(player);
-                                player.setHealth(15);
-                                break;
-                        case 3:
-                                playerClasses.typeCleric(player);
-                                break;
-                        case 4:
-
-                                playerClasses.typeDruid(player);
-                                break;
-                        case 5:
-                                playerClasses.typeFighter(player);
-                                player.setHealth(25);
-                                break;
-                        case 6:
-                                playerClasses.typeMonk(player);
-                                break;
-                        case 7:
-                                playerClasses.typePaladin(player);
-                                player.setHealth(25);
-                                break;
-                        case 8:
-                                playerClasses.typeRanger(player);
-                                break;
-                        case 9:
-                                playerClasses.typeRogue(player);
-                                break;
-                        case 10:
-                                playerClasses.typeNecromancer(player);
-                                break;
-                        case 11:
-                                playerClasses.typeWarlock(player);
-                                break;
-                        case 12:
-                                playerClasses.typeWizard(player);
-                                player.setHealth(10);
-                                break;
-                        case 13:
-                                playerClasses.typeArtificer(player);
-                                break;
-                        case 14:
-                                playerClasses.typeBloodHunter(player);
-                                break;
-                        case 15:
-                                playerClasses.typeAlchemist(player);
-                                break;
-                        default:
-                                break;
-                }
-                ;
-
-                // Close the user's class pick GUI.
-                player.closeHandledScreen();
-
-                // Create a new pool to pass the int.
-                PacketByteBuf approveClassBuf = new PacketByteBuf(Unpooled.buffer());
-                approveClassBuf.writeInt(bufferInteger);
-                ServerPlayNetworking.send(player,
-                                DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,
-                                approveClassBuf);
-
-                // A lower max health doesn't lower current health on its own.
-                if (player.getHealth() > player.getMaxHealth()) {
-                        player.setHealth(player.getMaxHealth());
-                }
-
-                // If run with no errors declare in the NBT.
-                if (player instanceof PlayerEntityExt) {
-                        ((PlayerEntityExt) player).setDndClass(dndClass);
-                }
-
-                // Every class change hands out the guidebook if the player has lost theirs.
-                if (dndClass != DndCharacter.NONE) {
-                        ClassGuidebook.giveIfMissing(player);
-                }
-                Progression.sync(player);
         }
 
         public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
@@ -365,77 +250,14 @@ public class DnDClasses implements ModInitializer {
                         }
                 });
 
-                ServerTickEvents.END_WORLD_TICK.register(world -> {
-                        if (!(world instanceof ServerWorld serverWorld))
-                                return;
-                        long now = serverWorld.getTime();
+                // Warlock fire breath ticks in Warlock.register().
 
-                        DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
-                                UUID uuid = entry.getKey();
-                                long endTick = entry.getValue();
-                                ServerPlayerEntity player = serverWorld.getServer().getPlayerManager().getPlayer(uuid);
-
-                                if (now > endTick) {
-                                        // When ending fire breath:
-                                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                                        buf.writeBoolean(false);
-                                        ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
-                                        return true; // Remove expired
-                                }
-
-                                if (player == null)
-                                        return true;
-
-                                // TODO: Not sure if this is where it goes
-                                PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-                                buf.writeBoolean(true);
-                                buf.writeLong(endTick);
-                                ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
-
-                                // Fire breath logic
-                                Vec3d look = player.getRotationVec(1.0F);
-                                Vec3d start = player.getPos().add(0, player.getStandingEyeHeight(), 0);
-
-                                // Beam: 5 blocks long, 1 block wide
-                                for (int i = 1; i <= 5; i++) {
-                                        Vec3d pos = start.add(look.multiply(i));
-
-                                        for (ServerPlayerEntity otherPlayer : serverWorld.getPlayers()) {
-                                                if (!otherPlayer.getUuid().equals(player.getUuid())) {
-
-                                                        System.out.println("Spawning particles for player: "
-                                                                        + otherPlayer.getName().getString());
-                                                        serverWorld.spawnParticles(
-                                                                        otherPlayer,
-                                                                        ParticleTypes.FLAME,
-                                                                        false, // longDistance
-                                                                        pos.x, pos.y, pos.z,
-                                                                        8, 0.2, 0.2, 0.2, 0.01);
-                                                }
-                                        }
-
-                                        // serverWorld.spawnParticles(ParticleTypes.FLAME, pos.x, pos.y, pos.z, 8, 0.2,
-                                        // 0.2, 0.2, 0.01);
-
-                                        // Damage entities in the beam
-                                        Box box = new Box(pos.x - 0.5, pos.y - 0.5, pos.z - 0.5, pos.x + 0.5,
-                                                        pos.y + 0.5, pos.z + 0.5);
-                                        for (LivingEntity entity : serverWorld.getEntitiesByClass(LivingEntity.class,
-                                                        box, e -> e != player)) {
-                                                entity.setOnFireFor(2);
-                                                entity.damage(serverWorld.getDamageSources().magic(), 2.0F);
-                                        }
-                                }
-                                return false;
-                        });
-                });
-
-                ServerTickEvents.END_WORLD_TICK.register(world -> {
-                        if (world instanceof ServerWorld serverWorld) {
+                ServerTickEvents.END_WORLD_TICK.register(serverWorld -> {
+                        {
                                 long currentTick = serverWorld.getServer().getTicks();
 
                                 if (currentTick % MANA_TICKS_PER_INCREMENT == 0) {
-                                        for (ServerPlayerEntity player : world.getPlayers()) {
+                                        for (ServerPlayerEntity player : serverWorld.getPlayers()) {
                                                 ManaManager.regenerateMana(player);
                                         }
                                 }
@@ -570,15 +392,13 @@ public class DnDClasses implements ModInitializer {
                                 ModPotions.FREEZE_POTION.value());
 
                 // Register doublejump registry.
-                ServerPlayNetworking.registerGlobalReceiver(C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
-                                DnDClasses::sendDoubleJumpPacket);
+                // The double-jump packet is handled in MonkHandler.register().
 
                 // Register powerup registry.
                 ServerPlayNetworking.registerGlobalReceiver(C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID,
                                 DnDClasses::sendPowerupPacket);
 
                 // Register classpick registry.
-                ServerPlayNetworking.registerGlobalReceiver(C2S_CLASS_PICK_PACKET_ID, DnDClasses::sendClassPickPacket);
 
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
@@ -600,6 +420,7 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Druid.register();
                 Progression.register();
+                ClassLifecycle.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

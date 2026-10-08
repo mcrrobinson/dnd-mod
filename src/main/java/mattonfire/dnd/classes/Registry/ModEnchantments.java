@@ -2,6 +2,8 @@ package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Enchantments.FeatherfallEnchantment;
+import mattonfire.dnd.classes.Enchantments.GridMinerEnchantment;
+import mattonfire.dnd.classes.Enchantments.InvulnerabilityEnchantment;
 import mattonfire.dnd.classes.Enchantments.LungeEnchantment;
 import mattonfire.dnd.classes.Enchantments.ReturningEnchantment;
 import mattonfire.dnd.classes.Enchantments.VampiricEnchantment;
@@ -20,14 +22,16 @@ public class ModEnchantments {
                         new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
 
         public static final Enchantment GRID_MINER_ENCHANTMENT = registerEnchantment("grid_miner",
-                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.DIGGER));
+                        new GridMinerEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.DIGGER,
+                                        EquipmentSlot.MAINHAND));
 
         public static final Enchantment TREE_FELLER_ENCHANTMENT = registerEnchantment("tree_feller",
                         new TreeFellerEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.DIGGER,
                                         EquipmentSlot.MAINHAND));
 
         public static final Enchantment INVULNERABILITY_ENCHANTMENT = registerEnchantment("invulnerability",
-                        new LungeEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON));
+                        new InvulnerabilityEnchantment(Enchantment.Rarity.COMMON, EnchantmentTarget.WEAPON,
+                                        EquipmentSlot.MAINHAND));
 
         public static final Enchantment RETURNING_ENCHANTMENT = registerEnchantment("returning",
                         new ReturningEnchantment(Enchantment.Rarity.UNCOMMON, EquipmentSlot.MAINHAND));

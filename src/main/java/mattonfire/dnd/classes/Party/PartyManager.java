@@ -163,6 +163,13 @@ public class PartyManager extends PersistentState {
         }
     }
 
+    /** Called on disconnect: drops the player's own invites and every expired one. */
+    public void forgetInvites(UUID player, int now) {
+        invites.remove(player);
+        invites.values().forEach(pending -> pending.values().removeIf(until -> until < now));
+        invites.values().removeIf(Map::isEmpty);
+    }
+
     @Override
     public NbtCompound writeNbt(NbtCompound nbt) {
         NbtList list = new NbtList();

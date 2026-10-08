@@ -1,6 +1,8 @@
 package mattonfire.dnd.world.gen.camp;
 
 import com.mojang.serialization.Codec;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
 import net.minecraft.registry.RegistryKeys;
@@ -42,18 +44,19 @@ public class GoblinCampStructure extends Structure {
         if (nearHobbitVillage(context)) {
             return Optional.empty();
         }
-        if (water(context, x, z) || !this.biomeAllowed(context, x, z)) {
+        Columns columns = new Columns(context);
+        if (columns.water(x, z) || !columns.biomeAllowed(x, z)) {
             return Optional.empty();
         }
-        int y = ground(context, x, z);
+        int y = columns.ground(x, z);
         int bad = 0;
         for (int ring = 0; ring < RINGS.length; ring++) {
             for (int i = 0; i < 8; i++) {
                 double angle = (i + ring * 0.5D) * Math.PI / 4.0D;
                 int sx = x + (int) Math.round(Math.cos(angle) * RINGS[ring]);
                 int sz = z + (int) Math.round(Math.sin(angle) * RINGS[ring]);
-                if (water(context, sx, sz) || Math.abs(ground(context, sx, sz) - y) > MAX_RISE[ring]
-                        || !this.biomeAllowed(context, sx, sz)) {
+                if (columns.water(sx, sz) || Math.abs(columns.ground(sx, sz) - y) > MAX_RISE[ring]
+                        || !columns.biomeAllowed(sx, sz)) {
                     bad++;
                 }
             }
@@ -90,19 +93,34 @@ public class GoblinCampStructure extends Structure {
         return false;
     }
 
-    /** y of the top block, from the noise generator before anything is built. */
-    private static int ground(Context context, int x, int z) {
-        return context.chunkGenerator().getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, context.world(), context.noiseConfig()) - 1;
-    }
+    /**
+     * Terrain samples for one site check: each column's surface (and, if asked, ocean floor) is read
+     * from the noise generator once, not again for every test that needs it.
+     */
+    private static final class Columns {
+        private final Context context;
+        private final Map<Long, Integer> ground = new HashMap<>();
 
-    private static boolean water(Context context, int x, int z) {
-        return context.chunkGenerator().getHeight(x, z, Heightmap.Type.OCEAN_FLOOR_WG, context.world(), context.noiseConfig())
-                < ground(context, x, z) + 1;
-    }
+        Columns(Context context) {
+            this.context = context;
+        }
 
-    private boolean biomeAllowed(Context context, int x, int z) {
-        return context.biomePredicate().test(context.biomeSource().getBiome(BiomeCoords.fromBlock(x),
-                BiomeCoords.fromBlock(ground(context, x, z)), BiomeCoords.fromBlock(z), context.noiseConfig().getMultiNoiseSampler()));
+        /** y of the top block, from the noise generator before anything is built. */
+        int ground(int x, int z) {
+            return this.ground.computeIfAbsent(ChunkPos.toLong(x, z), key -> this.context.chunkGenerator()
+                    .getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, this.context.world(), this.context.noiseConfig()) - 1);
+        }
+
+        boolean water(int x, int z) {
+            return this.context.chunkGenerator().getHeight(x, z, Heightmap.Type.OCEAN_FLOOR_WG, this.context.world(),
+                    this.context.noiseConfig()) < this.ground(x, z) + 1;
+        }
+
+        boolean biomeAllowed(int x, int z) {
+            return this.context.biomePredicate().test(this.context.biomeSource().getBiome(BiomeCoords.fromBlock(x),
+                    BiomeCoords.fromBlock(this.ground(x, z)), BiomeCoords.fromBlock(z),
+                    this.context.noiseConfig().getMultiNoiseSampler()));
+        }
     }
 
     @Override

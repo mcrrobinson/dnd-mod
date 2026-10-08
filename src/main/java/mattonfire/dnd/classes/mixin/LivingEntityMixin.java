@@ -14,6 +14,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -65,6 +66,19 @@ public abstract class LivingEntityMixin extends Entity {
             }
         }
         return originalAmount;
+    }
+
+    /**
+     * The Invulnerability effect (enchantment, potion) blocks all damage except what
+     * bypasses invulnerability (the void, /kill). It's checked here rather than through
+     * the entity's saved Invulnerable flag, so it can never outlast the effect.
+     */
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    private void cancelDamageWhileInvulnerable(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (ModEffects.INVULNERABILITY != null && ((LivingEntity) (Object) this).hasStatusEffect(ModEffects.INVULNERABILITY)
+                && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Inject(method = "addStatusEffect", at = @At("HEAD"), cancellable = true)

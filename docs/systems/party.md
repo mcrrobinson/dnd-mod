@@ -1,44 +1,53 @@
 # Parties
-Players can form a party of up to 8 to adventure together. Party members split XP, can't hurt each other, see each other's health on the HUD, and get extra help from a party Paladin or Cleric.
+Group up with up to 7 other players (8 in total). Party members split XP, can't hurt each other, see each other's health on screen, and get extra help from a Paladin or Cleric in the group.
 
 ## How it works
-- **Shared XP**: XP from orbs is split evenly between the player who collects it and party members who are alive, not spectating, in the same dimension and within 48 blocks. Mending takes its share before the split. Leftover fractions carry over per player, so 1-XP orbs aren't lost. With nobody nearby, the collector gets everything.
-- **No friendly fire**: party members can't damage each other. This includes arrows, fireballs, thrown potions and their tamed pets (wolves, cats and so on). Hurting yourself still works.
-- **Party HUD**: the top-left corner lists the other members, updated every 10 ticks (half a second). Each entry shows:
-  - the name, with a ★ for the leader. The name is grey when the member is out of XP range and dark grey when they're offline.
-  - HP as text, plus a health bar that is green above 50%, yellow above 25% and red below. A gold strip shows absorption.
-  - The HUD hides with F1 and the F3 debug screen.
-- **Paladin power**: still fully heals every player within 10 blocks. Party members within 24 blocks (and the Paladin) are also healed to full and get Absorption I for 30s.
-- **Cleric power**: the mob-repel circle (15s) also covers party members within 16 blocks. They get Mob Repel and Regeneration I for 10s, and mobs drop them as a target.
-- **Leadership**: the player who creates the party leads it. If the leader leaves, the next member to have joined takes over. A party disbands when its last member leaves.
-- Parties are saved with the world. Pending invites are not saved and expire after 60s.
+### Making a party
+Type `/party invite <player>` to invite someone. If you aren't in a party yet, this creates one with you as leader. The other player gets a chat message with a clickable **[Accept]** button, or they can type `/party accept`. Invites expire after 60 seconds.
+
+The player who creates the party leads it. If the leader leaves, the member who joined next takes over. The party disbands when its last member leaves. Parties are saved with the world, so they survive restarts. Pending invites aren't saved.
+
+### What being in a party does
+**Shared XP.** XP from orbs, and class XP from kills, is split evenly between you and every party member who is alive, not spectating, in the same dimension and within 48 blocks. Mending takes its share before the split. Leftover fractions carry over per player, so 1-XP orbs aren't lost. If nobody is nearby you keep it all.
+
+**No friendly fire.** Party members can't damage each other. That covers melee, arrows, fireballs, thrown potions and explosions, and attacks by a member's tamed pets (wolves, cats and so on). You can still hurt yourself.
+
+**Party HUD.** The top-left corner lists the other members, updated every half second. Each entry shows the name (with a ★ for the leader), HP as text, and a health bar that is green above 50%, yellow above 25% and red below that. A gold strip shows absorption. A grey name means that member is out of XP range, and dark grey means they're offline. The HUD hides with F1 and the F3 debug screen.
+
+**Paladin and Cleric specials.** These reach further for party members:
+
+| Special | Everyone | Party members |
+|-|-|-|
+| Paladin, Lay on Hands | Players within 10 blocks are healed to full | Members within 24 blocks (and the Paladin) are healed to full and get Absorption I for 30 s |
+| Cleric, Sanctuary | The Cleric gets Mob Repel for 15 s | Members within 16 blocks also get Mob Repel for 15 s and Regeneration I for 10 s, and mobs drop them as a target |
 
 ## Commands
-Every player can use these; no op is needed.
+Every player can use these. No op is needed.
 
-| Command | |
-|---|---|
+| Command | What it does |
+|-|-|
 | `/party create` | Start a party with you as leader |
-| `/party invite <player>` | Invite an online player. Creates a party if you're not in one. They get a clickable **[Accept]** message |
+| `/party invite <player>` | Invite an online player. Creates a party if you're not in one |
 | `/party accept [inviter]` | Join the party of your most recent invite, or of the named inviter |
 | `/party leave` | Leave your party |
-| `/party list` | List members, the leader, HP and who's offline (also lists pending invites when you have no party) |
+| `/party list` | List members, the leader, HP and who's offline. With no party, lists your pending invites |
 | `/party kick <player>` | Remove a member (leader only) |
 
 ## Known limitations
-- XP is split, not copied: with one partner nearby, each player gets half.
-- Class progression XP isn't shared yet, because that system isn't on main. It just needs to call the share hook (see below).
-- Mobs that party members summon or control can still hit other members: Bard animals, Necromancer undead and Blood Hunter-controlled mobs.
-- The party size (8), XP range (48) and heal range (24) are constants in the code, not config options.
+- XP is split, not copied. With one partner nearby, each of you gets half.
+- Only class XP from kills is shared. Class XP from other actions (mining, brewing, crafting, the once-a-minute trickle, kills by summons and pets) stays with whoever earned it. Each member gets their share in their own class, and a member with no class gets nothing from it.
+- Mobs that members summon or control can still hit other members: Bard animals, Necromancer undead and mobs a Blood Hunter is controlling.
+- Party members can hurt each other's pets.
+- The party size (8), XP range (48) and Paladin heal range (24) are constants in the code, not config options.
 
 ## For developers
 - `Party/PartyManager.java`: the party registry. It's a `PersistentState` saved in the overworld (`dndclasses_parties`) and also holds the invites.
   - Helpers: `areInSameParty(a, b)` and `nearbyMembers(player, radius)`.
 - `Party/Party.java`: one party's member list (the first member is the leader).
 - `Party/PartyCommand.java`: the `/party` commands.
-- `Party/PartyEvents.java`: the friendly-fire check (`ServerLivingEntityEvents.ALLOW_DAMAGE`), the HUD sync packet (`dndclasses:party_hud`) and XP sharing.
-  - Other XP systems share through `shareXp(player, amount, channel, grant)`, e.g. `PartyEvents.shareXp(player, xp, "progression", Progression::addXp)`.
+- `Party/PartyEvents.java`: the friendly-fire check (`ServerLivingEntityEvents.ALLOW_DAMAGE`, which maps a tamed attacker to its owner), the HUD sync packet (`dndclasses:party_hud`) and XP sharing.
+  - Other XP systems share through `shareXp(player, amount, channel, grant)`. For example `ProgressionEvents.onKill` calls `PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp)`.
 - `mixin/ExperienceOrbEntityMixin.java`: redirects the orb's `addExperience` call to `shareXp`.
 - `Client/Hud/PartyHud.java`: the client receiver and HUD drawing.
-- Paladin and Cleric changes are in `Misc/PowerUpEffect.java` and `Misc/ClericHandler.java`.
+- The Paladin and Cleric changes are in `Misc/PowerUpEffect.java` and `Misc/ClericHandler.java`.
 - To test with two players, follow the LAN steps in `CLAUDE.md` (`devscripts/lan-host-check.txt` and `lan-guest-check.txt`).

@@ -304,14 +304,23 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         return this.isDesperate() ? cooldown * 3 / 5 : cooldown;
     }
 
+    /** Ticks between the entity scans behind the nova and Raise Dead. */
+    private static final int SCAN_INTERVAL = 10;
+    private long nextScanTime;
+
     @Nullable
     private Spell chooseSpell(ServerWorld world, LivingEntity target, long now) {
         double distance = this.distanceTo(target);
         boolean canSee = this.getVisibilityCache().canSee(target);
-        if (this.ready(Spell.FROST_NOVA, now) && !this.enemiesWithin(NOVA_RADIUS - 1.0D).isEmpty()) {
+        // The nova and Raise Dead need entity scans: only look every SCAN_INTERVAL ticks
+        boolean scan = now >= this.nextScanTime;
+        if (scan) {
+            this.nextScanTime = now + SCAN_INTERVAL;
+        }
+        if (scan && this.ready(Spell.FROST_NOVA, now) && !this.enemiesWithin(NOVA_RADIUS - 1.0D).isEmpty()) {
             return Spell.FROST_NOVA;
         }
-        if (this.ready(Spell.RAISE_DEAD, now) && this.minions(world).size() < this.maxMinions()) {
+        if (scan && this.ready(Spell.RAISE_DEAD, now) && this.minions(world).size() < this.maxMinions()) {
             return Spell.RAISE_DEAD;
         }
         if (canSee && this.ready(Spell.RAY_OF_FROST, now) && distance <= FROST_RANGE) {

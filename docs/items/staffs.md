@@ -1,21 +1,54 @@
 # Staffs
-Three elemental staffs that blast whatever you point them at, plus the Monk's staff.
+Three elemental staffs that blast whatever you point them at, for [Wizards](../classes/wizard.md) only, plus the Monk's Staff.
+
+![The Staff of Ice turning the ground to ice](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/staff-ice.png)
 
 ## How it works
-**Elemental staffs** (Staff of Fire, Ice, Lightning) can only be used by [Wizards](../classes/wizard.md). They hit like a diamond sword with +10 damage (14 attack damage, 5.2 attack speed). Right click fires a beam up to 40 blocks at the block you're looking at:
-- **Fire:** a power-3 explosion that sets fires. The blocks round the impact (3-block radius) are restored 5 seconds later.
-- **Ice:** a small blast (no block damage). Every block in a 3-block radius turns to ice for 5 seconds, and entities nearby are frozen in place for 10 seconds.
-- **Lightning:** a small blast, then lightning strikes every third solid block round the impact.
+### Elemental staffs
+The Staff of Fire, Staff of Ice and Staff of Lightning only work for Wizards. Anyone else who tries to cast or hit with one gets "Only Wizards can wield elemental staffs!" on the action bar.
 
-**Monk Staff:** a diamond sword with +9 damage (13 attack damage, 1.8 attack speed). It's the only weapon a [Monk](../classes/monk.md) can attack with.
+Right click to fire a beam at the block you're looking at, up to 40 blocks away. If the beam doesn't reach a block, nothing happens. Each cast sets off a power 3 explosion where it lands and puts the staff on a 1 second cooldown.
 
-## Where to find it / How to get it
-- The mod's creative tab.
-- The Staff of Lightning: a 15% (+5%/Looting) drop from a [Lightning Chaser](../mobs/dragons.md) killed by a player, and sometimes in its [lair](../structures/dragon-lairs.md) hoard.
+| Staff | What the cast does |
+|-|-|
+| Fire | Carves out a crater (solid blocks within 3 of the impact), sets fires, and fills the crater back in 5 seconds later. The removed blocks don't drop |
+| Ice | Turns the solid blocks in a 7x7x7 cube around the impact to ice for 5 seconds, and freezes living things in a 7 wide, 11 tall box around it for 10 seconds |
+| Lightning | Calls down up to 5 lightning bolts on exposed blocks around the impact |
+
+Frozen mobs and players are held in place and get an icy tint. The lightning bolts are real lightning, so they can turn villagers into witches and pigs into zombified piglins.
+
+The staffs don't touch bedrock, obsidian or anything as hard, or block entities such as chests, furnaces and spawners. Changed blocks go back without block updates, so torches and sand next to them don't pop off or fall. A block only goes back if its spot is still ice or empty (air, fire or water). Anything you place there in the meantime stays. Pending restores are saved with the world, so they finish after a restart.
+
+As melee weapons the staffs are diamond swords with extra damage:
+
+| Item | Attack damage | Attack speed |
+|-|-|-|
+| Staff of Fire, Ice or Lightning | 14 | 5.2 |
+| Monk's Staff | 13 | 1.8 |
+
+Tips:
+- The blast can hurt you. Aim at something a few blocks away, not at your feet. The Wizard skill tree has a passive that makes your own blasts harmless.
+- The Staff of Ice freezes you too if you're inside its box, so keep your distance.
+- Ice is the safest crowd control: the blast breaks nothing and everything nearby stops moving for 10 seconds.
+- The Fire crater is temporary, so it's no use for mining.
+
+### Monk's Staff
+The Monk's Staff is the only weapon a [Monk](../classes/monk.md) can attack with (bare fists also work). It has no right click ability.
+
+## How to get it
+None of the staffs can be crafted.
+
+- **Staff of Lightning:** a 15% drop (+5% per level of Looting) from a [Lightning Chaser](../mobs/dragons.md) killed by a player. Each chest in a [dragon lair](../structures/dragon-lairs.md) hoard also has a 25% chance to hold one.
+- **All four:** the D&D Classes creative tab.
 
 ## Known limitations
-- Staffs have no cooldown and use no durability.
-- Restored blocks lose their contents (chests etc.).
+- Casting uses no durability. Melee hits wear the staff down like any diamond sword.
+- Mining the Staff of Ice's ice with Silk Touch gives you ice blocks.
+- The Staff of Fire and the Staff of Ice have no survival source yet.
 
 ## For developers
-- `Items/ExtendedSwordItem` (staff behaviour by item id), `Items/ScheduledBlockRestore`, `Items/MonkStaff`, `Effects/FreezeEffect`.
+- `Items/ExtendedSwordItem`: staff behaviour by item id, `canWield` for the Wizard check, `BEAM_RANGE` and the cast and restore timings.
+- `Items/ScheduledBlockRestore`: a per-world `PersistentState` (`data/dndclasses_staff_restores.dat`) that puts blocks back.
+- `Items/MonkStaff`, `Effects/FreezeEffect`. The melee Wizard check is an `AttackEntityCallback` in `Progression/Classes/WizardSkills`.
+- Unused loot tables `chests/staff_of_fire.json`, `staff_of_ice.json`, `staff_of_lightning.json` and `monk_staff.json` each give one staff; nothing references them yet.
+- Devscripts: `devscripts/staff-fire-dupe.txt`, `staff-restore-persist-a.txt` then `-b.txt`.

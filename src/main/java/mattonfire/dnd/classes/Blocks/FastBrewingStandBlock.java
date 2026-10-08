@@ -34,14 +34,12 @@ public class FastBrewingStandBlock extends BrewingStandBlock {
 
     @Override
     public void onStateReplaced(BlockState state, World world, BlockPos pos, BlockState newState, boolean moved) {
-        System.out.println("onStateReplaced");
         if (!state.isOf(newState.getBlock())) {
             BlockEntity blockEntity = world.getBlockEntity(pos);
             if (blockEntity instanceof FastBrewingStandBlockEntity) {
                 ItemScatterer.spawn(world, pos, (FastBrewingStandBlockEntity) blockEntity);
                 world.updateComparators(pos, this);
             }
-            System.out.println("UPDATING");
             super.onStateReplaced(state, world, pos, newState, moved);
         }
     }
@@ -68,8 +66,11 @@ public class FastBrewingStandBlock extends BrewingStandBlock {
                     if (playerExt.getDndClass() == DndCharacter.PALADIN) {
                         player.sendMessage(Text.literal("Paladins cannot brew potions!").formatted(Formatting.RED),
                                 true);
+                        return ActionResult.FAIL;
                     }
                     if (playerExt.getDndClass() != DndCharacter.ALCHEMIST) {
+                        player.sendMessage(Text.translatable("message.dndclasses.fast_brewing_stand.alchemist_only")
+                                .formatted(Formatting.RED), true);
                         return ActionResult.FAIL;
                     }
                 }

@@ -1,16 +1,47 @@
 # Barbarian
-A slow, short-sighted brawler with a huge health pool and a heavy punch. Inspired by *One Punch Man*.
+A slow, short-sighted brawler with twice the normal health and a punch that hurts even without a weapon. The special is inspired by *One Punch Man*.
 
 ## How it works
-- **Health:** 40 max (vanilla 20). You start at 25 when you pick the class.
-- **Damage:** base attack damage 6 (vanilla 1), so even bare fists hit hard.
-- **Speed:** 0.08 movement speed (vanilla 0.1, so 20% slower).
-- **Limited vision:** fog closes in from 4 to 24 blocks, whatever your render distance. Water, lava and blindness still win if they're closer.
-- **Special (power-up key, full mana):** Strength III for 15 seconds.
+| Stat | Barbarian | Vanilla |
+|-|-|-|
+| Max health | 40 (20 hearts) | 20 |
+| Attack damage (base) | 6 | 1 |
+| Movement speed | 0.08 (20% slower) | 0.1 |
+
+Picking the class sets your health to 25, so you start a little over half full.
+
+Your bare fist does 6 damage, and a weapon adds its own damage on top. The catch is that you can't see far. Fog starts 4 blocks out and is solid at 24, whatever your render distance. Water, lava and Blindness still win when their fog is closer.
+
+**Special (power-up key, full mana): Rage.** Strength III for 15 seconds.
+
+### Tips
+You're slow, so let mobs come to you instead of chasing them. Skeletons can shoot you from inside the fog, so close the gap behind cover. A horse makes up for the walking speed when you travel. Save Rage for a boss or a crowd: Strength III adds 9 damage to every hit.
+
+### Skill tree
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+
+Barbarians get 3 extra XP for each hostile mob they kill in melee.
+
+| Skill | Branch | Type | Points | Mana | Effect |
+|-|-|-|-|-|-|
+| Rage | Root | Active | 0 | 9 | Strength III for 15 s |
+| Bloodlust | Berserker | Passive | 1 | | Heal 1 heart for every kill |
+| War Cry | Berserker | Active | 1 | 3 | Hostile mobs within 8 blocks get Weakness I and Slowness II for 6 s |
+| Fuelled by Rage | Berserker | Passive | 1 | | 30% more damage while below half health |
+| Thick Skin | Juggernaut | Passive | 1 | | +4 armor |
+| Ground Slam | Juggernaut | Active | 1 | 5 | 6 damage to everything within 5 blocks except players and your pets, knocking them back and up |
+| Unstoppable | Juggernaut | Passive | 1 | | +50% knockback resistance, and Slowness is removed every second |
+| Titan | Capstone | Active | 2 | 9 | Strength III, Resistance I and Regeneration I for 20 s |
+
+Each branch unlocks in order from the root, and Titan needs the end of either branch. Ground Slam hits villagers and other people's animals too, so check who's standing next to you.
+
+## Commands
+- `/dndclass set <player> barbarian` switches a player to the class. `/dndclass xp`, `unlock` and `equip` handle the skill tree (see [Admin commands](../systems/admin-commands.md)).
 
 ## Known limitations
-- The fog is client-side only. It can't be turned off.
+- The fog is drawn on the client only and can't be turned off.
 
 ## For developers
-- Attributes: `SetClassAttributes.typeBarbarian`. Fog: `mixin/BackgroundRendererMixin`. Special: `Misc/PowerUpEffect` (`BARBARIAN`).
+- Attributes: `ClassStats`. Fog: `mixin/BackgroundRendererMixin` (`BARBARIAN_FOG_START`/`END`). Special: `Misc/PowerUpEffect` (`BARBARIAN`).
+- Skill tree: `Progression/Classes/BarbarianSkills.java`.
 - See [Mana and specials](../systems/mana.md) for how the special is triggered.

@@ -78,7 +78,7 @@
       "name": "Necromancer",
       "pros": ["Wither debuff on melee enemies (done)", "Undead do not attack (done)"],
       "cons": ["Slightly less health (done)", "Significantly less damage (done)"],
-      "special": ["Can spawn allied undead to attack enemies (done)"],
+      "special": ["Raise Dead: 2 undead allies for 10s, up to 5 stronger undead and a Bone Wyvern for 20s with ranks (done)"],
       "specialOnKey": true
     },
     {

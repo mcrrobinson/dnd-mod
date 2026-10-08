@@ -1,0 +1,53 @@
+# Checks Raise Dead's ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/necromancer-ranks.txt
+# Expect in latest.log ([CHAT] lines):
+#  1. rank 1: "Test passed, count: 2" raised undead (zombie + skeleton), 0 Bone Wyverns
+#  2. rank 5: "Test passed, count: 5" raised undead (2 wither skeletons, husk, stray, spider), count 1 Bone Wyvern
+#  3. serverhitboxes measure: the Bone Wyvern's server parts close to the client's
+#  4. after 21 s: "Test failed" for both (all despawned)
+# Screenshots: necro-rank1, necro-rank5 (client parts green, server parts red)
+wait 40
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -6 149 -6 10 149 10 minecraft:stone
+/fill -6 150 -6 10 160 10 minecraft:air
+/kill @e[type=!minecraft:player]
+/dndclass set @s necromancer
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/tp @s 2.5 150 2.5 0 20
+wait 400
+press key.dnd-classes.power-up
+wait 10
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/tp @s 2.5 150 -3.5 0 25
+wait 5
+screenshot necro-rank1
+/kill @e[type=!minecraft:player]
+/dndclass rank @s necromancer.raise_dead 5
+/dndclass progress @s
+/tp @s 2.5 150 2.5 0 20
+wait 400
+press key.dnd-classes.power-up
+wait 10
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/data get entity @e[type=dndclasses:bone_wyvern,limit=1] Owner
+/tp @s 2.5 150 -5.5 0 20
+hitboxes on
+serverhitboxes on
+wait 10
+serverhitboxes measure
+screenshot necro-rank5
+hitboxes off
+serverhitboxes off
+wait 410
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/dndclass resetprogress @s
+quit

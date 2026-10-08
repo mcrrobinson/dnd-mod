@@ -14,7 +14,7 @@ public class ModEntityTypes {
     public static final EntityType<WyvernEntity> WYVERN = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "wyvern"),
-            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, WyvernEntity::new)
+            FabricEntityTypeBuilder.<WyvernEntity>create(SpawnGroup.CREATURE, WyvernEntity::new)
                     .dimensions(EntityDimensions.fixed(1.5f, 1.5f))
                     .build()
     );
@@ -32,6 +32,16 @@ public class ModEntityTypes {
             new Identifier(DnDClasses.MOD_ID, "ember_wyvern"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, EmberWyvernEntity::new)
                     .dimensions(EntityDimensions.fixed(1.5f, 1.5f))
+                    .fireImmune()
+                    .build()
+    );
+
+    // The Necromancer's Raise Dead summon: a Wyvern drawn at BoneWyvernEntity.SCALE
+    public static final EntityType<BoneWyvernEntity> BONE_WYVERN = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "bone_wyvern"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MISC, BoneWyvernEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.8f, 0.7f))
                     .fireImmune()
                     .build()
     );
@@ -149,6 +159,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
         FabricDefaultAttributeRegistry.register(EMBER_WYVERN, EmberWyvernEntity.createEmberWyvernAttributes());
+        FabricDefaultAttributeRegistry.register(BONE_WYVERN, BoneWyvernEntity.createBoneWyvernAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER, MagmamuncherEntity.createMagmamuncherAttributes());
         FabricDefaultAttributeRegistry.register(MAGMAMUNCHER_ALPHA, MagmamuncherAlphaEntity.createMagmamuncherAlphaAttributes());

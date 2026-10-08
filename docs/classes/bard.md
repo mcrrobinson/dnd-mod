@@ -9,7 +9,6 @@ A fast, fragile charmer that monsters ignore and animals rally around.
 - **Special (power-up key, full mana):** every animal within 10 blocks turns on nearby hostile mobs, and untamed tameable animals (wolves, cats, parrots, horses...) in that radius become yours.
 
 ## Known limitations
-- When one of a Bard's tamed animals is removed from the world, the Bard's base max health goes **up** by 1. This is a leftover from an unfinished mechanic.
 - The class picker blurb mentions a diamond-armor limit and longer jumps. Neither is implemented.
 
 ## For developers

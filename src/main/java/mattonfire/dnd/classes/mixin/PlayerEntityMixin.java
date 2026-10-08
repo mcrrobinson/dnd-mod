@@ -89,9 +89,10 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
             }
             if (playerEntity.getDndClass() == DndCharacter.DRUID
                     && !Progression.hasPassive(player, "druid.tidecaller")) {
-                if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() &&
+                if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.isSpectator() &&
                         !player.getAbilities().flying) {
-                    this.setVelocity(0.0D, -0.5, 0.0D);
+                    // Pull down, but keep walking along the bottom possible
+                    this.setVelocity(this.getVelocity().x, -0.5, this.getVelocity().z);
                 }
             }
         }

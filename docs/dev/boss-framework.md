@@ -16,8 +16,8 @@ Forward these calls from the mob to the fight: `tick()`, `onStoppedTrackingBy(pl
 
 - The fight counts while the boss targets a player or was hurt by one, and the `activeWhen` condition holds (e.g. not tamed).
 - Phases run in order, are saved as `BossPhase` NBT, and don't re-run their callback on load. Put lasting phase effects in persistent attribute modifiers.
-- Music goes to clients through the `dndclasses:boss_music` packet (`BossMusic`), and `EventMusic` plays it.
+- `.music(...)` is optional. Without it the boss gets a bar but no fight track (the Goblin Warlord works this way). Music goes to clients through the `dndclasses:boss_music` packet (`BossMusic`), and `EventMusic` plays it.
 - Advancements should use a `minecraft:impossible` criterion. They go to the player vanilla credits with the kill.
 
 ## For developers
-- `entity/boss/Boss`, `BossFight`, `BossMusic`. Examples: `GoblinWarlordEntity`, `MagmamuncherAlphaEntity`, `WyvernEntity`. Devscript: `boss-framework.txt`.
+- `entity/boss/Boss`, `BossFight`, `BossMusic`. Examples: `GoblinWarlordEntity`, `MagmamuncherAlphaEntity`, `WyvernEntity`, `LichEntity`, `BeholderEntity`. Devscript: `boss-framework.txt`.

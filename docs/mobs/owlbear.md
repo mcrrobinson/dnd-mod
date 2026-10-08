@@ -1,27 +1,50 @@
 # Owlbear
+A hulking bear with an owl's head, feathered ruff and ear tufts that prowls dark and old-growth forests. It swipes hard up close, charges from a distance and crushes anyone it catches in a bear hug. Druids who kill one can take its form.
 
-A hulking, hostile bear with an owl's head, feathered ruff and ear tufts that prowls dark and old-growth forests. On top of heavy claw swipes, it charges from a distance and grabs anyone close in a crushing bear hug. Druids who kill one can take its form.
+![An owlbear](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/owlbear.png)
 
 ## How it works
-- **Stats**: 50 health, 4 armour, 60% knockback resistance, 8 damage claw swipes (alternating paws), 15 XP. It can step up full blocks.
-- **Targets**: players and villagers/wandering traders, and now and then livestock (any animal up to 1.5 blocks wide). It fights back against anything that hurts it.
-- **Charge**: when its target is 5-16 blocks away, in sight and within 3 blocks of its height:
-  1. It rears up and roars, then paws the ground for 1 second.
-  2. It rushes in a straight line (0.65 blocks a tick, for up to 1.5 s) at where the target stood. The line is set when the rush starts, so sidestepping dodges it.
-  3. The first living thing in its path takes 12 damage (1.5x its attack) and heavy knockback with a lift.
-  4. If it runs into a wall or tree instead, it's stunned for 2.5 s: it can't move or attack, and crit particles circle its head.
-  
-  It can charge at most once every 6 seconds.
-- **Bear hug**: a claw hit that lands has a 35% chance to become a hug (only on targets up to 1.5 blocks wide, not riding anything, and not in creative mode).
-  - It rears up and holds the target in front of it for 3 s, with heavy Slowness, crushing it for 3 damage every half second. The crush ignores the usual hit cooldown.
-  - Hit it for a total of 6 damage to break free early.
-  - When the hug ends, it tosses the target aside.
-  - It can hug at most once every 8 seconds.
-- **Drops**: 2-5 feathers, 1-3 leather and 1-2 raw chicken (cooked if it died burning). Looting adds more.
-- **Druid form**: killing an owlbear as a Druid adds it to the forms the Druid special ability picks from at random (alongside the animals the Druid has killed). The form lasts 30 s and needs the Identity mod.
+
+| Stat | Value |
+|-|-|
+| Health | 50 |
+| Armor | 4 |
+| Knockback resistance | 60% |
+| Claw swipe | 8 (alternating paws) |
+| Speed | 0.27 |
+| Follow range | 24 blocks |
+| XP | 15 |
+
+It can step up full blocks. It hunts players, villagers and wandering traders, and now and then goes after livestock (any animal up to 1.5 blocks wide). It fights back against anything that hurts it.
+
+### Charge
+When its target is 5 to 16 blocks away, in sight, and within 3 blocks of its height, it can charge:
+
+1. It rears up and roars, then paws the ground for 1 second.
+2. It rushes in a straight line at 0.65 blocks a tick, for up to 1.5 seconds, towards where the target stood when the rush began. It doesn't steer, so a sidestep dodges it.
+3. The first living thing in its path takes 12 damage (1.5 times its swipe) and is thrown back and up.
+4. If it runs into a wall or a tree instead, it's stunned for 2.5 seconds. It can't move or attack, and crit particles circle its head.
+
+It charges at most once every 6 seconds.
+
+### Bear hug
+A swipe that lands has a 35% chance to turn into a hug. This only works on targets up to 1.5 blocks wide that aren't riding anything and aren't in creative mode.
+
+It rears up and holds the target in front of it for 3 seconds with heavy Slowness, crushing it for 3 damage every half second. The crush ignores the usual hit cooldown. Deal 6 damage to the owlbear yourself, in total, to break free early; hits from anyone else don't count. When the hug ends it tosses the target aside. It hugs at most once every 8 seconds.
+
+### Drops
+2-5 feathers (up to 2 more per Looting level), 1-3 leather and 1-2 raw chicken (cooked if it died burning), each of those with up to 1 more per Looting level.
+
+### Druid form
+Killing an owlbear as a [Druid](../classes/druid.md) adds it to the forms the Druid's special picks from at random, alongside the animals the Druid has killed. The form lasts 30 seconds and needs the Identity mod.
+
+### Tips
+- When it rears up and paws the ground, move sideways. Better still, stand in front of a tree: a charge that misses you hits the trunk and stuns it for 2.5 seconds, which is your best window to hit it.
+- If it hugs you, hit back hard. 6 damage frees you, and a good sword does that in one or two hits.
+- A friend's hits don't free you, but they still hurt the owlbear, so have them pile on while you fight your way out.
 
 ## Where to find it
-- Spawns as a monster (weight 12, alone) in **dark forests** and **old-growth birch, pine and spruce taigas**.
+- Spawns as a monster (weight 12, always alone) in **dark forests** and **old-growth birch, pine and spruce taigas**.
 - Like other monsters it needs darkness: under the dark forest canopy by day, and anywhere in those woods at night.
 - Not in peaceful mode, and it despawns like other monsters.
 - Spawn egg in the mod's creative tab.
@@ -30,9 +53,9 @@ A hulking, hostile bear with an owl's head, feathered ruff and ear tufts that pr
 - `/summon dndclasses:owlbear`
 
 ## Known limitations
-- Placeholder art, and no custom sounds yet: it uses polar bear and ravager sounds.
-- As a Druid form it is only a body: no charge or hug. How it renders and animates as an Identity player form hasn't been checked yet.
-- The bear hug holds the target about 1.6 blocks in front of its centre, because the model is longer than its 1.4 x 1.9 hitbox.
+- Placeholder art and no sounds of its own: it uses polar bear and ravager sounds.
+- As a Druid form it's only a body, with no charge or hug. How it renders and animates as an Identity player form hasn't been checked.
+- The hug holds the target about 1.6 blocks in front of its centre, because the model is longer than its 1.4 x 1.9 hitbox.
 
 ## For developers
 - `entity/OwlbearEntity.java`: stats, goals, the bear hug (`tickHug`, `HoldStillGoal`), the stun, and the `CHARGING`/`HUGGING` tracked data that drives the animations.

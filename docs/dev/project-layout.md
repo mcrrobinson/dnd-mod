@@ -8,13 +8,19 @@ Where things live in the code.
 | Class stats | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java` |
 | Class passives | `classes/` (`Druid`, `Warlock`, `MonkHandler`, `PotionImmunity`) and `classes/Misc/` |
 | Class specials | `classes/Misc/PowerUpEffect.java`, `classes/Effects/` |
+| Class XP, skill trees, Attunement Table | `classes/Progression/` (one `Classes/<Class>Skills.java` per class), `classes/Blocks/AttunementTableBlock.java` |
+| d20 skill checks | `classes/SkillChecks/` |
+| Parties | `classes/Party/` |
+| Commands | `classes/Commands/` (`/dndclass`, `/goblinraid`); `/party` is in `classes/Party/PartyCommand.java` |
 | Mixins (most class rules, dragon hit detection, dev window) | `classes/mixin/` (listed in `dndclasses.mixins.json`) |
 | Items, armor, blocks | `classes/Items/`, `classes/Items/lib/`, `classes/Blocks/`, `classes/Registry/` |
 | Enchantments | `classes/Enchantments/`, `classes/TreeFeller.java`, `GridMiner.java`, `Invulnerability.java` |
 | Client: HUD, keybinds, music, DevScript | `classes/Client/` |
 | Mobs and bosses | `entity/`, `entity/boss/`, `entity/ai/goal/` |
+| Goblin raids | `entity/raid/` |
+| Hobbit Tavern (bounty board, ale) | `tavern/` |
 | Models and renderers | `client/model/`, `client/renderer/` |
-| Structures and spawns | `world/gen/` (`village/`, `fortress/`, `lair/`, `ModSpawns.java`) |
+| Structures and spawns | `world/gen/` (`village/`, `fortress/`, `lair/`, `camp/`, `beholder/`, `ModSpawns.java`) |
 | Data (loot, tags, structures, advancements) | `src/main/resources/data/dndclasses/` |
 | Assets (geo models, textures, sounds, lang) | `src/main/resources/assets/dndclasses/` |
 

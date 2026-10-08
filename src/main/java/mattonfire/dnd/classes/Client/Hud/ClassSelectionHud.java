@@ -43,7 +43,7 @@ public class ClassSelectionHud extends LightweightGuiDescription {
             new ClassOption("Bard", 2, "minecraft:textures/item/nether_brick.png"),
             // Buff: Mine a lot faster. Night Vision.
             // Nerf: Viewing distance shorter. Less attack damage.
-            // Special: Burst of healing spell.
+            // Special: Circle of ignoring mobs.
             new ClassOption("Cleric", 3, "minecraft:textures/item/chainmail_chestplate.png"),
             // Buff: Every taiimed animal adds a heart (capped at 5). Regen in the light
             // even when not full of food.

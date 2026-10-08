@@ -115,7 +115,7 @@ public class MonkSkills extends ClassSkills {
         });
     }
 
-    /** The root power-up; called from {@code MonkPowerUpMixin} since PowerUpEffect has no monk case. */
+    /** The root power-up; called from the MONK case in {@code PowerUpEffect}. */
     public static void kiSurge(PlayerEntity player) {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, KI_SURGE_TICKS, 1));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, KI_SURGE_TICKS, 1));

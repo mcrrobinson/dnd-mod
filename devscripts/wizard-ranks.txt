@@ -1,0 +1,50 @@
+# Checks the Wizard's ranked Arcane Explosion. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/wizard-ranks.txt
+# Two frozen zombies, 8 and 20 blocks away. Expect in latest.log ([CHAT] lines):
+#  1. Rank I (12-block radius): near zombie Health below 20, far zombie Health 20.0f;
+#     Resistance (id 11) Amplifier 4, Duration ~40
+#  2. Rank IV (72-block radius): both zombies below 20 (fresh ones);
+#     Resistance Amplifier 4, Duration ~100
+# Screenshots: wizard-rank1, wizard-rank4 (sphere mid-growth)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set midnight
+/fill -2 149 -2 30 149 4 minecraft:stone
+/fill -2 150 -2 30 156 4 minecraft:air
+/dndclass set @s wizard
+wait 10
+closescreen
+/dndclass resetprogress @s
+/kill @e[type=minecraft:zombie]
+/tp @s 0.5 150 0.5 -90 10
+/summon minecraft:zombie 8.5 150 0.5 {NoAI:1b,Tags:["near"],PersistenceRequired:1b}
+/summon minecraft:zombie 20.5 150 0.5 {NoAI:1b,Tags:["far"],PersistenceRequired:1b}
+/effect clear @s
+wait 200
+press key.dnd-classes.power-up
+wait 4
+screenshot wizard-rank1
+wait 4
+/data get entity @e[tag=near,limit=1] Health
+/data get entity @e[tag=far,limit=1] Health
+/data get entity @s ActiveEffects
+# Rank IV
+/kill @e[type=minecraft:zombie]
+/dndclass rank @s wizard.arcane_explosion 4
+/tp @s 0.5 150 0.5 -90 10
+/summon minecraft:zombie 8.5 150 0.5 {NoAI:1b,Tags:["near"],PersistenceRequired:1b}
+/summon minecraft:zombie 20.5 150 0.5 {NoAI:1b,Tags:["far"],PersistenceRequired:1b}
+/effect clear @s
+wait 200
+press key.dnd-classes.power-up
+wait 8
+screenshot wizard-rank4
+wait 4
+/data get entity @e[tag=near,limit=1] Health
+/data get entity @e[tag=far,limit=1] Health
+/data get entity @s ActiveEffects
+/kill @e[type=minecraft:zombie]
+/dndclass resetprogress @s
+quit

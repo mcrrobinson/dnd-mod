@@ -1,0 +1,45 @@
+# Checks Sanctuary's ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/cleric-ranks.txt
+# Expect in latest.log:
+#  1. rank I: dndclasses:mob_repel Duration ~120 (6 s) after firing it
+#  2. rank IV: dndclasses:mob_repel Duration ~300 (15 s); the zombie never attacks
+# Screenshots: cleric-rank1 (small 2-block ring), cleric-rank4 (16-block ring)
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -20 149 -20 20 149 20 minecraft:stone
+/fill -20 150 -20 20 156 20 minecraft:air
+/dndclass set @s cleric
+wait 10
+closescreen
+/dndclass resetprogress @s
+/tp @s 0.5 150 0.5 0 40
+/kill @e[type=!minecraft:player]
+/effect clear @s
+# Mana refills in about 18 s
+wait 380
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/summon minecraft:zombie 0.5 150 6.5 {PersistenceRequired:1b,Rotation:[180f,0f]}
+wait 40
+screenshot cleric-rank1
+/effect clear @s
+/dndclass xp @s set 2700
+/kill @e[type=minecraft:zombie]
+/dndclass rank @s cleric.sanctuary 4
+wait 380
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/summon minecraft:zombie 0.5 150 6.5 {PersistenceRequired:1b,Rotation:[180f,0f]}
+wait 40
+screenshot cleric-rank4
+/kill @e[type=minecraft:zombie]
+/dndclass progress @s
+/effect clear @s
+/dndclass resetprogress @s
+quit

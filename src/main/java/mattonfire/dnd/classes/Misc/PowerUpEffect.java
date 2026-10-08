@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -205,16 +206,23 @@ public class PowerUpEffect {
             case BARD:
                 bardEffect(player);
                 break;
-            case CLERIC:
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
-                // Party members inside the circle share it and get some regeneration.
-                if (player instanceof ServerPlayerEntity cleric) {
-                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, ClericHandler.REPEL_RADIUS)) {
-                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
-                        member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
+            case CLERIC: {
+                // Sanctuary: duration, party reach and the party's Regeneration come from its rank.
+                int duration = ClericSkills.SANCTUARY.ticks(player, "Duration");
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
+                double reach = ClericSkills.sanctuaryPartyReach(player);
+                if (reach > 0 && player instanceof ServerPlayerEntity cleric) {
+                    int regen = ClericSkills.sanctuaryPartyRegenAmplifier(player);
+                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, reach)) {
+                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
+                        if (regen >= 0) {
+                            member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,
+                                    ClericSkills.sanctuaryPartyRegenTicks(player), regen));
+                        }
                     }
                 }
                 break;
+            }
             case PALADIN:
                 // Heal everyone within a area of the user
                 List<PlayerEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(

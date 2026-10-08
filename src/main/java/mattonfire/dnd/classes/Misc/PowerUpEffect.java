@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.netty.buffer.Unpooled;
-import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
+import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
@@ -17,6 +17,7 @@ import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -249,9 +250,9 @@ public class PowerUpEffect {
                 // Spawn undead enemies
                 break;
             case WARLOCK:
-                // For 20 seconds breathe fire.
+                // Breathe fire; duration, reach, damage and burn time scale with the rank.
                 DnDClasses.WARLOCK_FIREBREATH.put(player.getUuid(),
-                        player.getWorld().getTime() + DnDClasses.FIREBREATH_DURATION_TICKS);
+                        player.getWorld().getTime() + WarlockSkills.FIRE_BREATH.ticks(player, "Duration"));
 
                 break;
             case ARTIFICER:

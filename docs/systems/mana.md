@@ -29,7 +29,7 @@ These are the roots of each tree, all 9 mana:
 | Ranger | Arrow Storm | For 15 s your bow needs no arrows and fires itself at full draw |
 | Rogue | Vanish | Invisibility for 15 s |
 | Necromancer | Raise Dead | An allied zombie and skeleton rise and fight for you for 10 s |
-| Warlock | Fire Breath | Breathe fire for 20 s |
+| Warlock | Fire Breath | Breathe fire for 8-20 s, 3-7 blocks (by rank) |
 | Wizard | Arcane Explosion | A power 40 explosion centred on you that breaks no blocks. You get Resistance V for 5 s so it doesn't hurt you |
 | Artificer | Arcane Armor | +8 armor and +4 armor toughness for 30 s |
 | Blood Hunter | Blood Control | Take control of the mob you're looking at, up to 30 blocks away, for 20 s (needs the Identity mod) |

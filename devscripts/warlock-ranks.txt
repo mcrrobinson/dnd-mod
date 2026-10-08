@@ -1,0 +1,57 @@
+# Warlock Fire Breath ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/warlock-ranks.txt
+# Two frozen 100 HP zombies in front of you: "near" 2.5 blocks ahead, "far" 6 blocks ahead.
+# Expect in latest.log ([CHAT] lines):
+#  1. RANK1: near zombie Health below 100 and Fire > 0; far zombie Health still 100 (3-block reach)
+#  2. RANK1 END: far zombie Health still 100 after the whole 8 s breath
+#  3. RANK4: far zombie Health below 100 and Fire > 0 (7-block reach)
+# Screenshots: warlock-breath-rank1 (short beam), warlock-breath-rank4 (long beam), both third person from behind.
+wait 40
+closescreen
+respawn
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doFireTick false
+/weather clear
+/time set midnight
+/gamemode creative
+/tp @s 602.5 160 601.5 0 0
+wait 40
+/fill 600 149 600 604 149 612 minecraft:stone
+/fill 600 150 600 604 156 612 minecraft:air
+/dndclass set @s warlock
+wait 10
+closescreen
+/dndclass resetprogress @s
+/tp @s 602.5 150 601.5 0 0
+/gamemode survival
+/kill @e[type=minecraft:zombie,tag=breath]
+/summon minecraft:zombie 602.5 150 604 {Tags:["breath","near"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 607.5 {Tags:["breath","far"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/tp @s 602.5 150 601.5 0 0
+perspective back
+wait 380
+/say RANK1
+press key.dnd-classes.power-up
+wait 30
+screenshot warlock-breath-rank1
+/data get entity @e[tag=near,limit=1] Health
+/data get entity @e[tag=near,limit=1] Fire
+/data get entity @e[tag=far,limit=1] Health
+wait 140
+/say RANK1 END
+/data get entity @e[tag=far,limit=1] Health
+/dndclass rank @s warlock.fire_breath 4
+/dndclass progress @s
+/kill @e[type=minecraft:zombie,tag=near]
+wait 230
+/say RANK4
+press key.dnd-classes.power-up
+wait 30
+screenshot warlock-breath-rank4
+/data get entity @e[tag=far,limit=1] Health
+/data get entity @e[tag=far,limit=1] Fire
+wait 20
+perspective first
+/kill @e[type=minecraft:zombie,tag=breath]
+/dndclass resetprogress @s
+quit

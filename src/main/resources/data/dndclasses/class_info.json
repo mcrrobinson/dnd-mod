@@ -38,7 +38,7 @@
       "name": "Fighter",
       "pros": ["High health", "High strength", "Attracts mobs: hostile mobs prefer a Fighter over other players (done)"],
       "cons": ["Cannot use bows or crossbows (done)", "No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done)"],
-      "special": ["Super regeneration: Regeneration V for 10s (done)"],
+      "special": ["Super regeneration: Regeneration V for 4s, up to 10s with ranks (done)"],
       "specialOnKey": true
     },
     {

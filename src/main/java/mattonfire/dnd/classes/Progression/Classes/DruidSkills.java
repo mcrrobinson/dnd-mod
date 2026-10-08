@@ -104,6 +104,17 @@ public class DruidSkills extends ClassSkills {
     }
 
     @Override
+    public boolean usesBestiary() {
+        return true;
+    }
+
+    /** Animals and wild beasts, like the Druid's old kill list. Tiers are set by the Wild Shape card. */
+    @Override
+    public boolean learnsFrom(LivingEntity killed) {
+        return killed instanceof AnimalEntity || killed.getType().isIn(Druid.DRUID_FORMS);
+    }
+
+    @Override
     public int killXp(ServerPlayerEntity player, LivingEntity killed, DamageSource source) {
         int xp = killed instanceof AnimalEntity ? ANIMAL_KILL_XP : 0;
         if (killed instanceof Monster && Druid.isTransformed(player)) {

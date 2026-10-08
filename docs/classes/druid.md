@@ -14,7 +14,7 @@ A nature class that gets tougher with every tamed animal, heals in sunlight and 
 Tame a few wolves early: five pets is +5 hearts. Kill a range of animals before relying on Wild Shape, since the form is picked at random. Carry torches for long cave trips so you heal instead of starving.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Druids get 3 XP for each animal they kill, and 4 extra for each hostile mob killed while in an animal form.
 

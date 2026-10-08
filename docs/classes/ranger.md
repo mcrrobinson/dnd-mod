@@ -18,7 +18,7 @@ An archer. Your bow draws almost instantly, you can zoom while aiming, and your 
 Carry a bow with Power and keep a stack of arrows, since outside Arrow Storm you still use them. The zoom makes long shots easy, and you get bonus XP for kills from 20 blocks or more. In the Nether, build bridges over lava lakes with walls on the sides.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Rangers get 2 extra XP for each hostile mob killed with an arrow, or 4 if it was 20 or more blocks away.
 

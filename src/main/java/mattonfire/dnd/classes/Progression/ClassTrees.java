@@ -35,7 +35,8 @@ import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
  *
  * The root is the class's original power-up and is always unlocked. Tier
  * nodes cost a point each and the capstone two, and it needs either third
- * tier, so with {@link ClassProgress#MAX_LEVEL} points you can't take everything.
+ * tier: 8 points for the whole tree. Ranks above 1 ({@link Ranks}) cost a point
+ * each too, so with {@link ClassProgress#MAX_LEVEL} points you can't take everything.
  */
 public final class ClassTrees {
     private static final List<ClassSkills> ALL = List.of(
@@ -59,6 +60,7 @@ public final class ClassTrees {
                 }
             }
         }
+        Ranks.validate();
     }
 
     private ClassTrees() {

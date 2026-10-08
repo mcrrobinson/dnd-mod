@@ -22,7 +22,7 @@ Picking the class sets your health to 25.
 A Paladin works best with friends: someone else crafts your tools and armor, and you keep them alive. Playing solo, collect villager trades and loot for gear, and keep a chest of crafted basics from before you picked the class. Avoid the Nether until you've unlocked Hellforged.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Paladins get 3 extra XP for killing undead, and 1 extra for a hostile kill while another player is within 16 blocks.
 

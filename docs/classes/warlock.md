@@ -20,7 +20,7 @@ A fire caster. You throw fireballs from an empty hand, fire can't hurt you, and 
 The Nether is your home: lava lakes are shortcuts, and blazes and ghast fireballs can't hurt you. On the surface, carry a roof or stay near shelter when it rains. Cross rivers by bridge rather than swimming.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Warlocks get 2 extra XP for any kill by fire, and 1 extra for any kill in the Nether.
 

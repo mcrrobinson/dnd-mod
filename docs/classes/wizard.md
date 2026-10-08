@@ -22,7 +22,7 @@ Picking the class sets your health to 10.
 With 5 hearts, one close creeper blast can end you. Fight from range with a staff and keep the explosion for when you're surrounded; it clears almost anything around you. Warn friends before you use it, because it hits them too. The Resistance V afterwards gives you 5 seconds to get away.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Wizards get 3 extra XP for each hostile mob killed with a staff, magic, an explosion or a meteor.
 

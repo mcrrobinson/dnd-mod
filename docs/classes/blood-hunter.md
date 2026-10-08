@@ -14,7 +14,7 @@ A sword fighter that is strongest at night and can take over any mob it looks at
 Do your fighting at night and your mining and building in the day. A good sword with Sharpness matters more for you than for anyone else, because the night bonus doubles it. Blood Control drops you right where the mob was, so it doubles as a 30-block teleport.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Blood Hunters get 3 extra XP for each hostile mob killed with a sword at night.
 

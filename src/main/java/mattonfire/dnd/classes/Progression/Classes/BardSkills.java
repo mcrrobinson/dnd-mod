@@ -15,6 +15,7 @@ import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -143,6 +144,17 @@ public class BardSkills extends ClassSkills {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean usesBestiary() {
+        return true;
+    }
+
+    /** Tiers are set by the Animal Friends card. */
+    @Override
+    public boolean learnsFrom(LivingEntity killed) {
+        return killed instanceof AnimalEntity;
     }
 
     @Override

@@ -21,7 +21,7 @@ Picking the class drops your current health to 5. Your max health stays at 20, s
 At night the undead are no threat, so most danger comes from creepers and spiders. Your own hits are weak, so let summons, a bow or a sharp sword do the work. Undead mob farms are safe for you to walk through.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Necromancers get 1 extra XP for killing a mob that has Wither, 1 XP when Wither you applied finishes a hostile mob, and 3 XP whenever one of their summons kills a hostile mob.
 

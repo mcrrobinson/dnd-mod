@@ -18,7 +18,7 @@ Your bare fist does 6 damage, and a weapon adds its own damage on top. The catch
 You're slow, so let mobs come to you instead of chasing them. Skeletons can shoot you from inside the fog, so close the gap behind cover. A horse makes up for the walking speed when you travel. Save Rage for a boss or a crowd: Strength III adds 9 damage to every hit.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Barbarians get 3 extra XP for each hostile mob they kill in melee.
 

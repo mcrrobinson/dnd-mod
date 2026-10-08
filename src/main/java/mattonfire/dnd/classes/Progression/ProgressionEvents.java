@@ -10,6 +10,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
@@ -55,6 +56,9 @@ public final class ProgressionEvents {
             PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp);
         }
 
+        if (skills != null && skills.usesBestiary() && skills.learnsFrom(entity)) {
+            Progression.learn(player, Registries.ENTITY_TYPE.getId(entity.getType()).toString());
+        }
         if (skills != null) {
             skills.onKill(player, Progression.current(player), entity, source);
         }

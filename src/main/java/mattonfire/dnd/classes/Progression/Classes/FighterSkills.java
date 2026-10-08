@@ -12,6 +12,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -32,6 +33,11 @@ import net.minecraft.sound.SoundEvents;
  * block (PotionImmunity) doesn't stop them.
  */
 public class FighterSkills extends ClassSkills {
+    /** The root special; fired by {@code PowerUpEffect}. Short early on, today's 10 s at full rank. */
+    public static final Ranks SUPER_REGEN = Ranks.of("fighter.super_regen")
+            .value("Regeneration", 5, 5, 5, 5)
+            .seconds("Duration", 4, 6, 8, 10);
+
     private static final int MELEE_KILL_BONUS_XP = 2;
     private static final int CROWD_KILL_BONUS_XP = 3;
     private static final int CROWD_SIZE = 3;
@@ -62,7 +68,8 @@ public class FighterSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("fighter.super_regen", "Super Regeneration", "Regeneration V for 10 seconds.",
+                active("fighter.super_regen", "Super Regeneration",
+                        "Regeneration V for a few seconds, longer with each rank.",
                         "minecraft:golden_apple", 9, 0, 1, 3),
                 // Champion
                 passive("fighter.improved_critical", "Improved Critical", "Critical hits deal 25% more damage.",

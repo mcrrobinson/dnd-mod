@@ -17,14 +17,17 @@ These all act on the player's current class. See [Class selection](class-selecti
 
 | Command | What it does |
 |-|-|
-| `/dndclass progress <player>` | Prints level, XP, unspent points, unlocked skills, the equipped active and the passives |
+| `/dndclass progress <player>` | Prints level, XP, unspent points, unlocked skills, the equipped active, the passives, skill ranks and, for the Bard and Druid, the learned and unlocked bestiary |
 | `/dndclass xp <player> add <amount>` | Adds class XP, announcing any level-up as normal |
 | `/dndclass xp <player> set <amount>` | Sets class XP. Lowering it can leave the player with negative points until they earn them back |
 | `/dndclass unlock <player> <skill>` | Unlocks a skill without spending points or needing the node below it |
 | `/dndclass equip <player> <skill>` | Equips an unlocked skill without an Attunement Table. Run it again on an equipped passive to unequip it |
-| `/dndclass resetprogress <player>` | Wipes XP and unlocks for the current class |
+| `/dndclass rank <player> <skill> <n>` | Sets an unlocked skill's rank without points, level or an Attunement Table. `n` is from 1 to the skill's max rank |
+| `/dndclass bestiary <player> learn <entity>` | Adds a creature to the class's bestiary as if they'd killed it (Bard and Druid only) |
+| `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
+| `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |
 
-Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree. `unlock`, `equip` and `xp` print the progress line afterwards, so you can check the result straight away.
+Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree; entity ids look like `minecraft:cow`. `unlock`, `equip`, `rank`, `bestiary` and `xp` print the progress line afterwards, so you can check the result straight away. See [Class progression](class-progression.md) for ranks and the bestiary.
 
 ### Goblin raids
 | Command | What it does |
@@ -43,5 +46,5 @@ See [Goblin raids](goblin-raids.md) for the details.
 
 ## For developers
 - `Commands/DndClassCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`.
-- `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`.
-- Devscript: `devscripts/dndclass-command.txt`.
+- `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
+- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`.

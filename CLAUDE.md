@@ -26,6 +26,8 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
 4. Implement the change and make sure `./gradlew build` passes.
 5. Start the client in the background from the worktree (`./gradlew runClient`) so the user can test, and wait for their feedback before calling it done.
 6. Once the user is happy, commit, push the branch and open a PR to `main`. Move the card to Done when it's merged.
+   - Commit with the identity set in this repo's local git config (`git config user.name` / `user.email`). Don't override it with `-c` or `--author`, and don't write the email into tracked files.
+   - Don't add Claude attribution anywhere: no `Co-Authored-By: Claude` trailer, no "Generated with Claude Code" / "Written by Claude" lines in commit messages or PR descriptions.
    - Include the screenshots you took while testing in the PR description. Don't commit them to the feature branch; push them to the orphan branch `pr-screenshots` under `<branch-slug>/` and embed them with `![name](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/<branch-slug>/<name>.png)`.
    - `pr-screenshots` is a protected branch (no deletion, no force-push, admins included), so old PRs keep their images. Only add new commits to it; don't rewrite or remove existing files.
    - To push them without touching your worktree: `git worktree add ../dnd-mod-pr-screenshots pr-screenshots` (first time: `git worktree add --orphan -b pr-screenshots ../dnd-mod-pr-screenshots`), copy the PNGs in, commit, push, then `git worktree remove ../dnd-mod-pr-screenshots`.

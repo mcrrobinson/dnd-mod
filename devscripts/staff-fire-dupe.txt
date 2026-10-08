@@ -1,0 +1,32 @@
+wait 40
+closescreen
+wait 10
+/dndclass set @s wizard
+/gamemode creative
+/kill @e[type=item]
+/fill 0 140 4 6 146 10 minecraft:iron_ore
+/fill 20 140 4 26 146 10 minecraft:iron_ore
+/fill 1 147 5 5 149 9 minecraft:air
+/tp @s 3.5 149 7.5 0 90
+/clear @s
+/item replace entity @s hotbar.0 with dndclasses:staff_of_fire
+hotbar 0
+wait 10
+use
+wait 5
+screenshot staff-fire-crater
+/execute if blocks 0 140 4 6 146 10 20 140 4 all
+/execute if entity @e[type=item]
+use
+wait 2
+/execute if blocks 0 140 4 6 146 10 20 140 4 all
+wait 120
+/execute if blocks 0 140 4 6 146 10 20 140 4 all
+screenshot staff-fire-restored
+/clear @s
+/item replace entity @s hotbar.0 with dndclasses:staff_of_lightning
+wait 25
+use
+wait 2
+/execute if entity @e[type=lightning_bolt]
+quit

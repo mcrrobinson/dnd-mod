@@ -86,7 +86,7 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
     }
 
     protected Text getContainerName() {
-        return Text.translatable("Alchemist's Brewing Stand");
+        return Text.translatable("container.dndclasses.fast_brewing_stand");
     }
 
     public int size() {
@@ -124,7 +124,7 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
         boolean bl2 = blockEntity.brewTime > 0;
         ItemStack itemStack2 = (ItemStack) blockEntity.inventory.get(3);
         if (bl2) {
-            blockEntity.brewTime = blockEntity.brewTime - SPEED_MODIFIER;
+            blockEntity.brewTime = Math.max(0, blockEntity.brewTime - SPEED_MODIFIER);
             boolean bl3 = blockEntity.brewTime == 0;
             if (bl3 && bl) {
                 craft(world, pos, blockEntity.inventory, blockEntity.brewer);

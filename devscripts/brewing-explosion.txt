@@ -1,4 +1,4 @@
-# Fighter-owned brewing stand finishes a brew and explodes. The stand must stay gone.
+# An armed brew (started by a non-Alchemist) finishes and explodes. The stand must stay gone, the stone floor must stay.
 wait 40
 closescreen
 wait 10
@@ -7,7 +7,7 @@ wait 10
 wait 20
 /fill 20 140 -5 40 160 15 minecraft:air
 /fill 25 149 0 35 149 10 minecraft:stone
-/setblock 30 150 5 minecraft:brewing_stand{DndLastPlayerClass:5,Fuel:20,Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:water"}},{Slot:3b,id:"minecraft:nether_wart",Count:1b}]}
+/setblock 30 150 5 minecraft:brewing_stand{DndBrewArmed:1b,Fuel:20,Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:water"}},{Slot:3b,id:"minecraft:nether_wart",Count:1b}]}
 wait 20
 /data get block 30 150 5 BrewTime
 wait 400

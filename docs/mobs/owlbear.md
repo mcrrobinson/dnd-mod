@@ -1,5 +1,5 @@
 # Owlbear
-A hulking bear with an owl's head, feathered ruff and ear tufts that prowls dark and old-growth forests. It swipes hard up close, charges from a distance and crushes anyone it catches in a bear hug. Druids who kill one can take its form.
+A hulking bear with an owl's head, feathered ruff and ear tufts that prowls dark and old-growth forests. It swipes hard up close, charges from a distance and crushes anyone it catches in a bear hug. Druids who kill one can unlock its form.
 
 ![An owlbear](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/owlbear.png)
 
@@ -36,7 +36,7 @@ It rears up and holds the target in front of it for 3 seconds with heavy Slownes
 2-5 feathers (up to 2 more per Looting level), 1-3 leather and 1-2 raw chicken (cooked if it died burning), each of those with up to 1 more per Looting level.
 
 ### Druid form
-Killing an owlbear as a [Druid](../classes/druid.md) adds it to the forms the Druid's special picks from at random, alongside the animals the Druid has killed. The form lasts 30 seconds and needs the Identity mod.
+Killing an owlbear as a [Druid](../classes/druid.md) adds it to the Druid's bestiary. It is a tier IV form, so it can be unlocked at an Attunement Table once Wild Shape is rank IV. The form lasts as long as Wild Shape's rank allows (30 seconds at rank IV) and needs the Identity mod.
 
 ### Tips
 - When it rears up and paws the ground, move sideways. Better still, stand in front of a tree: a charge that misses you hits the trunk and stuns it for 2.5 seconds, which is your best window to hit it.

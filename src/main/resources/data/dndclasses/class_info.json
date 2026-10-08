@@ -30,7 +30,7 @@
       "name": "Druid",
       "pros": ["Gains an extra heart per tamed animal (up to 5)", "Regenerates in light (level 10+)"],
       "cons": ["Cannot swim", "Gets hungry in the dark (light 4 or less)"],
-      "special": ["Transforms into a random animal it has killed (or an Owlbear, once it has killed one) for 30s"],
+      "special": ["Wild Shape: transforms into an animal it has killed and unlocked at an Attunement Table, for 15-30s by rank (sneak + key picks the form)"],
       "specialOnKey": true
     },
     {

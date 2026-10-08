@@ -1,0 +1,80 @@
+# Checks Wild Shape's bestiary forms, tiers and ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/druid-wild-shape.txt
+# Needs the Identity mod in the dev runtime. Expect in latest.log ([CHAT] lines):
+#  1. First power-up with nothing unlocked: no form, mana kept ("dnd-transformed" check fails)
+#  2. bestiary [minecraft:chicken] after unlocking at the table; the wolf unlock is refused at rank I
+#  3. bestiary [minecraft:chicken, minecraft:wolf] after /dndclass rank druid.wild_shape 2 and a second try
+#  4. druidChosenForm "minecraft:chicken", then "minecraft:wolf", then gone (random) after three sneak + power-ups
+#  5. After picking the wolf and firing: druidFormExpiry about 400 ticks (20 s at rank II) past the world time
+# Screenshots: wild-shape-bestiary (table bestiary tab: chicken and wolf green, owlbear grey), wild-shape-wolf (in wolf form, F5)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+# Nothing learned: mana is kept
+wait 200
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s mattonfire.dnd.classes.druidFormExpiry
+# Learn a chicken, a wolf and an owlbear; unlock at the table
+/dndclass bestiary @s learn minecraft:chicken
+/dndclass bestiary @s learn minecraft:wolf
+/dndclass bestiary @s learn dndclasses:owlbear
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:chicken
+wait 5
+skill bestiary minecraft:wolf
+wait 5
+/dndclass progress @s
+/dndclass rank @s druid.wild_shape 2
+wait 5
+skill bestiary minecraft:wolf
+wait 5
+skill bestiary dndclasses:owlbear
+wait 5
+/dndclass progress @s
+click 102 -104
+wait 10
+screenshot wild-shape-bestiary
+closescreen
+# Cycle the form: chicken, wolf, random
+sneak on
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s mattonfire.dnd.classes.druidChosenForm
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s mattonfire.dnd.classes.druidChosenForm
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s mattonfire.dnd.classes.druidChosenForm
+# Pick the wolf again and fire
+press key.dnd-classes.power-up
+wait 5
+press key.dnd-classes.power-up
+wait 5
+sneak off
+wait 5
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s mattonfire.dnd.classes.druidFormExpiry
+/time query gametime
+perspective back
+wait 10
+screenshot wild-shape-wolf
+perspective first
+/setblock 4 150 4 minecraft:air
+/dndclass resetprogress @s
+quit

@@ -14,8 +14,6 @@ Right click the book to open it. It reads your **current** class each time you o
 
 Long entries carry over onto the next page instead of being cut off. If you haven't picked a class yet, the book describes every class.
 
-The Monk's special page says "Always active, no key needed", because its class data marks the triple jump and attack speed as its special. The Monk also has Ki Surge on the power-up key; see [Mana](mana.md).
-
 Picking a class prints the same pros, cons and special in chat.
 
 ## How to get it

@@ -1,0 +1,67 @@
+# Checks the Monk's Flurry Rush at rank I and IV. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/monk-ranks.txt
+# Five frozen zombies with 100 health and Fire Resistance (no sunlight burning) stand in a row in front of the player.
+# Expect in latest.log ([CHAT] lines):
+#  1. Rank I: the first zombie (rush-a) at 91.18 health (3 hits of 3, less zombie armor), rush-b at 100
+#  2. A Pos next to a zombie mid-rush, then the player back at about 4.5 150 1.5 after the rush (Pos)
+#  3. Rank IV (10 hits of 4, 2 per target): rush-a at 83.31, rush-b to rush-e at 92.13
+#     (Flurry of Blows isn't unlocked, so no 50% bonus; zombie armor shaves a little off each hit)
+#  4. "No target in sight" isn't logged (action bar); rush-miss screenshot shows it with full mana kept
+# Screenshots: rush-mid (mid-chain, blink trail and crits), rush-end (back at the start), rush-miss
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -4 149 -4 12 149 14 minecraft:stone
+/fill -4 150 -4 12 156 14 minecraft:air
+/kill @e[type=minecraft:zombie]
+/dndclass set @s monk
+wait 10
+closescreen
+/dndclass resetprogress @s
+/item replace entity @s weapon.mainhand with minecraft:air
+/effect give @s minecraft:resistance 600 4 true
+/summon minecraft:zombie 4.5 150 5.5 {NoAI:1b,PersistenceRequired:1b,Tags:["rush-a"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,PersistenceRequired:1b,Tags:["rush-b"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 2.5 150 7.5 {NoAI:1b,PersistenceRequired:1b,Tags:["rush-c"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 4.5 150 9.5 {NoAI:1b,PersistenceRequired:1b,Tags:["rush-d"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 8.5 150 9.5 {NoAI:1b,PersistenceRequired:1b,Tags:["rush-e"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/effect give @e[type=minecraft:zombie] minecraft:fire_resistance 600 0 true
+/tp @s 4.5 150 1.5 0 10
+wait 200
+# Rank I: 3 hits on the zombie in the crosshair
+press key.dnd-classes.power-up
+wait 30
+/data get entity @e[tag=rush-a,limit=1] Health
+/data get entity @e[tag=rush-b,limit=1] Health
+/data get entity @s Pos
+# Rank IV: 10 hits across 5 targets
+/dndclass rank @s monk.flurry_rush 4
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 10
+# Mana refills in 18 s
+wait 380
+perspective back
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s Pos
+screenshot rush-mid
+wait 40
+screenshot rush-end
+perspective first
+/data get entity @e[tag=rush-a,limit=1] Health
+/data get entity @e[tag=rush-b,limit=1] Health
+/data get entity @e[tag=rush-c,limit=1] Health
+/data get entity @e[tag=rush-d,limit=1] Health
+/data get entity @e[tag=rush-e,limit=1] Health
+/data get entity @s Pos
+# Nothing in the crosshair: no rush, mana kept
+/tp @s 4.5 150 1.5 180 -30
+wait 380
+press key.dnd-classes.power-up
+wait 2
+screenshot rush-miss
+/kill @e[type=minecraft:zombie]
+/dndclass resetprogress @s
+quit

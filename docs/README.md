@@ -9,7 +9,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target
 - [Druid](classes/druid.md): hearts from tamed animals, light regen, animal forms
 - [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions
-- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only
+- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special (PR #NN)
 - [Paladin](classes/paladin.md): heals the party; no potions, crafting or brewing; weak in the Nether
 - [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm
 - [Rogue](classes/rogue.md): no hunger or poison; turns invisible

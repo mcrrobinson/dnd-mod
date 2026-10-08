@@ -44,10 +44,10 @@
     {
       "id": "MONK",
       "name": "Monk",
-      "pros": ["Increased mobility", "Increased attack speed"],
+      "pros": ["Increased mobility: can triple jump (done)", "Unrivaled attack speed (done)"],
       "cons": ["Reduced damage output (75% unarmored, less the more armor you wear)", "Can only attack with a staff or bare fists"],
-      "special": ["Can triple jump", "Unrivaled attack speed"],
-      "specialOnKey": false
+      "special": ["Flurry Rush: blink between the mob you're looking at and hostiles near it for a rapid chain of hits, then blink back; 3 hits on 1 target, up to 10 hits across 5 targets with ranks (done)"],
+      "specialOnKey": true
     },
     {
       "id": "PALADIN",

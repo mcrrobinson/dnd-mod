@@ -24,7 +24,7 @@ These are the roots of each tree, all 9 mana:
 | Cleric | Sanctuary | Mobs can't target you for 15 s. Party members within 16 blocks share it and get Regeneration I for 10 s |
 | Druid | Wild Shape | Become a random animal you've killed for 30 s (needs the Identity mod) |
 | Fighter | Super Regeneration | Regeneration V for 10 s |
-| Monk | Ki Surge | Speed II, Haste II and Jump Boost II for 15 s |
+| Monk | Flurry Rush | Blink-strike chain on the mob in the crosshair and hostiles near it: 3 hits on 1 target, up to 10 hits across 5 targets with ranks |
 | Paladin | Lay on Hands | Heal every player within 10 blocks to full. Party members within 24 blocks are also healed and get Absorption I for 30 s |
 | Ranger | Arrow Storm | For 15 s your bow needs no arrows and fires itself at full draw |
 | Rogue | Vanish | Invisibility for 15 s |

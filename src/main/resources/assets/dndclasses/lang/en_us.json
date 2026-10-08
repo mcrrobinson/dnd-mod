@@ -49,6 +49,7 @@
     "item.minecraft.tipped_arrow.effect.arrow_storm": "Arrow of Arrow Storm",
     "effect.dndclasses.invulnerability": "Invulnerable",
     "effect.dndclasses.mob_repel": "Mob Repel",
+    "effect.dndclasses.danger_sense": "Danger Sense",
     "itemgroup.dndclasses": "D&D Classes",
     "block.dndclasses.fast_brewing_stand": "Fast Brewing Stand",
     "block.dndclasses.fast_brewing_stand.desc": "Brewing stand that can only be used by an alchemist.",

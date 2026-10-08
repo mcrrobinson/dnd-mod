@@ -1,0 +1,62 @@
+# Checks Vanish's rank durations and Danger Sense. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/rogue-ranks.txt
+# Expect in latest.log ([CHAT] lines):
+#  1. Invisibility (id 14) Duration ~120 after Vanish at rank I
+#  2. Invisibility Duration ~300 after Vanish at rank IV
+#  3. active rogue.danger_sense in /dndclass progress, then the dndclasses:danger_sense effect with Duration ~160 (rank IV)
+#  4. Health 14.0f after the first arrow (dodged, it flies on and lands behind you)
+#  5. Health below 14 after the second arrow, fired once Danger Sense has ended
+# Screenshot: rogue-danger-sense (smoke puff where the arrow would have hit, arrow past the player)
+wait 40
+closescreen
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 12 minecraft:stone
+/fill 0 150 0 8 154 12 minecraft:air
+/dndclass set @s rogue
+wait 10
+closescreen
+/gamemode survival
+/dndclass resetprogress @s
+/tp @s 4.5 150 1.5 0 0
+/effect clear @s
+/dndclass rank @s rogue.vanish 1
+wait 200
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/effect clear @s
+/dndclass rank @s rogue.vanish 4
+# Vanish needs full mana again: 9 pips at 2 s each
+wait 370
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/effect clear @s
+# Danger Sense
+/dndclass unlock @s rogue.light_feet
+/dndclass unlock @s rogue.smoke_bomb
+/dndclass unlock @s rogue.danger_sense
+/dndclass equip @s rogue.danger_sense
+/dndclass rank @s rogue.danger_sense 4
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 10
+wait 200
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/summon minecraft:arrow 4.5 151.3 7.5 {Motion:[0.0,0.0,-1.6]}
+wait 3
+screenshot rogue-danger-sense
+wait 15
+/data get entity @s Health
+/tp @s 4.5 150 1.5 0 10
+wait 170
+/data get entity @s ActiveEffects
+/summon minecraft:arrow 4.5 151.3 7.5 {Motion:[0.0,0.0,-1.6]}
+wait 20
+/data get entity @s Health
+/kill @e[type=minecraft:arrow]
+/dndclass resetprogress @s
+quit

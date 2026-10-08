@@ -17,6 +17,7 @@ import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.RogueSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -237,8 +238,9 @@ public class PowerUpEffect {
                 }
                 break;
             case ROGUE:
-                // Make the player immune to poison
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 300, 0));
+                // Vanish: invisibility, longer with each rank.
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY,
+                        RogueSkills.VANISH.ticks(player, "Duration"), 0));
                 break;
             case DRUID:
                 if (!(player instanceof ServerPlayerEntity serverPlayer) || !Druid.transform(serverPlayer))

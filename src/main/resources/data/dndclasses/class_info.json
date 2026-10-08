@@ -70,7 +70,7 @@
       "name": "Rogue",
       "pros": ["No poison damage (done)", "No need to eat: food never drains and no starvation, but no natural regen from food either (done)"],
       "cons": ["Low health (done)"],
-      "special": ["Temporary invisibility (done)"],
+      "special": ["Temporary invisibility, 6 s at rank I up to 15 s at rank IV (done)"],
       "specialOnKey": true
     },
     {

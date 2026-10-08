@@ -1,0 +1,92 @@
+# Checks the Bard's bestiary and Animal Friends companions. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/bard-bestiary.txt
+# Expect in latest.log ([CHAT] /dndclass progress lines):
+#  1. bestiary [minecraft:wolf] a couple of seconds after becoming a Bard (starter animal)
+#  2. learned [minecraft:wolf, minecraft:fox] after killing the fox; the cow kill isn't learned
+#  3. goat learned by command; bestiary without minecraft:goat after the tier II unlock at rank I (refused)
+#  4. bestiary with minecraft:goat after /dndclass rank 2 and the unlock at the table
+#  5. After the special at rank II (cap 4): the fox, the goat and two wolves have a dnd_bard_companion:<uuid> tag,
+#     the cow and the other two wolves have no Tags
+# Screenshots: bard-bestiary (Bestiary tab at the table), bard-companions (companions going for a zombie)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -8 149 -8 16 149 16 minecraft:grass_block
+/fill -8 150 -8 16 156 16 minecraft:air
+/kill @e[type=!minecraft:player]
+/dndclass set @s bard
+wait 10
+closescreen
+/dndclass resetprogress @s
+wait 40
+/dndclass progress @s
+# Learn by killing
+/item replace entity @s weapon.mainhand with minecraft:netherite_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5}]}
+/summon minecraft:fox 4.5 150 3.5 {NoAI:1b,Rotation:[180f,0f]}
+/tp @s 4.5 150 1.5 0 40
+wait 10
+attack
+wait 10
+/tp @s 4.5 150 1.5 0 20
+/summon minecraft:cow 4.5 150 3.5 {NoAI:1b,Rotation:[180f,0f]}
+wait 10
+attack
+wait 10
+attack
+wait 10
+/kill @e[type=minecraft:item]
+/dndclass progress @s
+# Unlock at the table
+/dndclass bestiary @s learn minecraft:goat
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:fox
+wait 5
+skill bestiary minecraft:goat
+wait 5
+/dndclass progress @s
+/dndclass rank @s bard.animal_friends 2
+wait 5
+skill bestiary minecraft:goat
+wait 5
+/dndclass progress @s
+click 102 -104
+wait 10
+screenshot bard-bestiary
+closescreen
+/setblock 4 150 4 minecraft:air
+# Animal Friends at rank II: 6 candidates, cap 4
+# Fill mana first: wild wolves hunt foxes while waiting.
+/time set night
+/effect clear @s
+wait 200
+/summon minecraft:fox 2 150 6
+/summon minecraft:goat 7 150 6
+/summon minecraft:cow 4 150 8
+/summon minecraft:wolf 1 150 3
+/summon minecraft:wolf 8 150 3
+/summon minecraft:wolf 1 150 9
+/summon minecraft:wolf 8 150 9
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 20
+/data get entity @e[type=minecraft:fox,limit=1] Tags
+/data get entity @e[type=minecraft:goat,limit=1] Tags
+/data get entity @e[type=minecraft:cow,limit=1] Tags
+/execute as @e[type=minecraft:wolf] run data get entity @s Tags
+# Fight: a zombie walks in
+/summon minecraft:zombie 4.5 150 12.5
+wait 60
+perspective back
+screenshot bard-companions
+perspective first
+/kill @e[type=minecraft:zombie]
+/kill @e[type=!minecraft:player]
+/dndclass resetprogress @s
+quit

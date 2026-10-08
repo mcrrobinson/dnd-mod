@@ -14,7 +14,7 @@
       "name": "Bard",
       "pros": ["Invisible to mobs"],
       "cons": ["Less health"],
-      "special": ["Instantly tame tameable animals"],
+      "special": ["Nearby animals you have learned become companions that fight for you"],
       "specialOnKey": true
     },
     {

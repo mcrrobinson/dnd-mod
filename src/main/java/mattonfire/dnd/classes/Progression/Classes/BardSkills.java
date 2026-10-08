@@ -6,16 +6,27 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.enemiesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Misc.BardCompanions;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import mattonfire.dnd.entity.boss.Boss;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.passive.AnimalEntity;
+import net.minecraft.entity.mob.CreeperEntity;
+import net.minecraft.entity.mob.PathAwareEntity;
+import net.minecraft.registry.Registries;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -33,6 +44,28 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class BardSkills extends ClassSkills {
+    /**
+     * Animal Friends: the radius it reaches, how many companions the Bard can
+     * have at once, and the highest animal tier that can be unlocked.
+     */
+    public static final Ranks ANIMAL_FRIENDS = Ranks.of("bard.animal_friends")
+            .amount("Radius", "blocks", 10, 12, 14, 16)
+            .amount("Companions", "", 3, 4, 5, 6)
+            .text("Animals", "Tier I animals", "Up to tier II animals", "Up to tier III animals",
+                    "Up to tier IV animals");
+
+    /** Every new Bard has these unlocked. */
+    public static final String STARTER_ANIMAL = "minecraft:wolf";
+
+    /** Animal Friends rank needed to unlock each animal; others can't be learned. */
+    private static final Map<EntityType<?>, Integer> TIERS = Map.ofEntries(
+            Map.entry(EntityType.WOLF, 1), Map.entry(EntityType.CAT, 1), Map.entry(EntityType.FOX, 1),
+            Map.entry(EntityType.PARROT, 1),
+            Map.entry(EntityType.GOAT, 2), Map.entry(EntityType.LLAMA, 2), Map.entry(EntityType.TRADER_LLAMA, 2),
+            Map.entry(EntityType.BEE, 2),
+            Map.entry(EntityType.POLAR_BEAR, 3), Map.entry(EntityType.PANDA, 3),
+            Map.entry(EntityType.IRON_GOLEM, 4), Map.entry(EntityType.HOGLIN, 4));
+
     private static final int PET_KILL_BONUS_XP = 3;
     private static final int GROUP_KILL_BONUS_XP = 1;
     private static final double GROUP_RADIUS = 16;
@@ -59,7 +92,7 @@ public class BardSkills extends ClassSkills {
     public List<SkillNode> nodes() {
         return List.of(
                 active("bard.animal_friends", "Animal Friends",
-                        "Animals within 10 blocks become yours and defend you.", "minecraft:lead", 9, 0, 1, 3),
+                        "Unlocked animals nearby become your companions: they follow you and fight for you.", "minecraft:lead", 9, 0, 1, 3),
                 // Valor
                 passive("bard.inspiring_presence", "Inspiring Presence",
                         "Other players within 8 blocks get Speed I.", "minecraft:sugar", 1, 2, 3,
@@ -91,10 +124,14 @@ public class BardSkills extends ClassSkills {
 
     @Override
     public void register() {
+        BardCompanions.register();
         // Kills by a bard's pets aren't the bard's own kills, so their XP is handed out here.
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
-            if (entity instanceof Monster && source.getAttacker() instanceof TameableEntity pet
-                    && pet.getOwner() instanceof ServerPlayerEntity owner
+            if (!(entity instanceof Monster) || source.getAttacker() == null)
+                return;
+            Entity killer = source.getAttacker();
+            UUID ownerId = killer instanceof TameableEntity pet ? pet.getOwnerUuid() : BardCompanions.ownerOf(killer);
+            if (ownerId != null && killer.getWorld().getPlayerByUuid(ownerId) instanceof ServerPlayerEntity owner
                     && Progression.classOf(owner) == DndCharacter.BARD) {
                 Progression.addXp(owner, PET_KILL_BONUS_XP);
             }
@@ -151,10 +188,67 @@ public class BardSkills extends ClassSkills {
         return true;
     }
 
-    /** Tiers are set by the Animal Friends card. */
+    /** Animals with a tier, except the Bard's own companions. */
     @Override
     public boolean learnsFrom(LivingEntity killed) {
-        return killed instanceof AnimalEntity;
+        return TIERS.containsKey(killed.getType()) && !BardCompanions.isCompanion(killed)
+                && !(killed instanceof TameableEntity pet && pet.isTamed());
+    }
+
+    @Override
+    public int bestiaryRank(EntityType<?> type) {
+        return TIERS.getOrDefault(type, Integer.MAX_VALUE);
+    }
+
+    /**
+     * The Animal Friends special: unlocked animals within the radius become
+     * companions, up to the cap, and all of the Bard's companions there are
+     * set on nearby hostile mobs.
+     */
+    public static void animalFriends(ServerPlayerEntity player) {
+        ServerWorld world = (ServerWorld) player.getWorld();
+        ClassProgress progress = Progression.current(player);
+        double radius = ANIMAL_FRIENDS.get(player, "Radius");
+        int cap = ANIMAL_FRIENDS.getInt(player, "Companions");
+        int count = BardCompanions.count(world, player);
+
+        List<PathAwareEntity> nearby = world.getEntitiesByClass(PathAwareEntity.class,
+                player.getBoundingBox().expand(radius),
+                e -> e.isAlive() && !(e instanceof Boss)
+                        && progress.bestiary.contains(Registries.ENTITY_TYPE.getId(e.getType()).toString()));
+        nearby.sort(java.util.Comparator.comparingDouble(e -> e.squaredDistanceTo(player)));
+        int adopted = 0;
+        for (PathAwareEntity mob : nearby) {
+            if (BardCompanions.isCompanion(mob))
+                continue;
+            // Someone else's pet stays theirs.
+            if (mob instanceof TameableEntity pet && pet.isTamed() && !player.getUuid().equals(pet.getOwnerUuid()))
+                continue;
+            if (count >= cap) {
+                player.sendMessage(Text.literal("You can't lead more than " + cap + " companions.")
+                        .formatted(Formatting.YELLOW), true);
+                break;
+            }
+            BardCompanions.adopt(mob, player);
+            world.spawnParticles(ParticleTypes.HEART, mob.getX(), mob.getBodyY(1), mob.getZ(), 4, 0.3, 0.3, 0.3, 0);
+            count++;
+            adopted++;
+        }
+
+        // Point every companion in range at the nearest hostile mob.
+        List<LivingEntity> hostiles = hostilesNear(player, radius).stream()
+                .filter(h -> !(h instanceof CreeperEntity) && !(h instanceof Boss) && !BardCompanions.isCompanion(h))
+                .toList();
+        for (PathAwareEntity mob : world.getEntitiesByClass(PathAwareEntity.class,
+                player.getBoundingBox().expand(radius), e -> BardCompanions.isCompanionOf(e, player))) {
+            hostiles.stream().min(java.util.Comparator.comparingDouble(h -> h.squaredDistanceTo(mob)))
+                    .ifPresent(mob::setTarget);
+        }
+        if (adopted == 0 && count < cap && nearby.isEmpty()) {
+            player.sendMessage(Text.literal(progress.bestiary.isEmpty() ? "You haven't unlocked any animals."
+                    : "None of your unlocked animals are nearby.").formatted(Formatting.GRAY), true);
+        }
+        effects(player, SoundEvents.ENTITY_PARROT_AMBIENT, ParticleTypes.NOTE, 20);
     }
 
     @Override
@@ -174,6 +268,9 @@ public class BardSkills extends ClassSkills {
 
     @Override
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
+        if (!progress.bestiary.contains(STARTER_ANIMAL)) {
+            Progression.unlockBestiary(player, STARTER_ANIMAL, true);
+        }
         if (progress.hasPassive("bard.silver_tongue")) {
             player.addStatusEffect(
                     new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, HERO_TICKS, 0, true, false, true));

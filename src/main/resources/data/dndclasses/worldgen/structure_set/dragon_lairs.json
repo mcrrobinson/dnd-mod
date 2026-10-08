@@ -9,6 +9,10 @@
     "type": "minecraft:random_spread",
     "spacing": 12,
     "separation": 4,
-    "salt": 1847203916
+    "salt": 1847203916,
+    "exclusion_zone": {
+      "other_set": "dndclasses:dwarven_fortresses",
+      "chunk_count": 6
+    }
   }
 }

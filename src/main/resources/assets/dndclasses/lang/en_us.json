@@ -225,6 +225,7 @@
     "bounty.dndclasses.progress_update": "%s: %s / %s",
     "bounty.dndclasses.completed": "Bounty done: %s! Hand the notice in at a bounty board or to an innkeeper.",
     "bounty.dndclasses.not_done": "%s isn't done yet",
+    "bounty.dndclasses.explored_already": "%s: you've already scouted this place. Find another.",
     "bounty.dndclasses.claimed": "Bounty claimed: %s. The hobbits are most grateful!",
     "bounty.dndclasses.take": "You take down a notice: %s",
     "bounty.dndclasses.taken_already": "Someone's already taken that one. New notices go up every morning.",

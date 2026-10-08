@@ -13,6 +13,7 @@ import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import mattonfire.dnd.entity.boss.Boss;
 import mattonfire.dnd.entity.boss.BossFight;
+import mattonfire.dnd.entity.boss.BossMinions;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.HostileEntity;
@@ -184,6 +185,7 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
                 continue;
             }
             minion.initialize(world, world.getLocalDifficulty(minion.getBlockPos()), SpawnReason.MOB_SUMMONED, null, null);
+            BossMinions.mark(minion);
             if (target != null && target.isAlive()) {
                 minion.setTarget(target);
             }

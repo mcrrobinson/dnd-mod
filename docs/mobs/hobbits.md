@@ -9,7 +9,7 @@ Small, peaceful halflings that live in [hobbit villages](../structures/hobbit-vi
 - Drops 0-2 bread, 0-1 apple and 0-3 cookies (+Looting).
 
 ## Where to find it / How to get it
-- Only inside hobbit villages, which slowly top up their population (at most 16 hobbits within 48 blocks). There's also a spawn egg.
+- Only inside hobbit villages, which slowly top up their population (at most 16 hobbits within 48 blocks). Natural spawns must be inside one of the village's buildings or plots, not in the lanes' and grounds' boxes deep underground, so hobbits don't turn up in caves under the village. There's also a spawn egg.
 
 ## For developers
 - `entity/HobbitEntity`, `client/renderer/HobbitRenderer`. Loot: `loot_tables/entities/hobbit.json`.

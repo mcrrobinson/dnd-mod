@@ -1,6 +1,8 @@
 package mattonfire.dnd.tavern;
 
-import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.IEntityDataSaver;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.entity.boss.BossMinions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -11,16 +13,20 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.structure.StructureStart;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.Vec3d;
 
-import java.lang.reflect.Method;
 import java.util.List;
 
 /**
@@ -30,6 +36,9 @@ import java.util.List;
 public final class BountyRewards {
     /** How often (ticks) players carrying expedition notices are checked against structures. */
     private static final int EXPLORE_CHECK_INTERVAL = 20;
+    /** Player data: the expeditions (bounty and structure) each player has already finished. */
+    private static final String VISITS_KEY = "BountyExpeditions";
+    private static final int MAX_VISITS = 128;
 
     private BountyRewards() {
     }
@@ -43,7 +52,11 @@ public final class BountyRewards {
         ServerTickEvents.END_SERVER_TICK.register(BountyRewards::tick);
     }
 
+    /** One kill counts towards one notice: the first unfinished one for that kind of creature. */
     private static void onKill(ServerPlayerEntity player, LivingEntity killed) {
+        if (BossMinions.isMinion(killed)) {
+            return;
+        }
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getStack(i);
@@ -60,6 +73,7 @@ public final class BountyRewards {
                 player.sendMessage(Text.translatable("bounty.dndclasses.progress_update", bounty.title(), progress,
                         bounty.count).formatted(Formatting.YELLOW), true);
             }
+            return;
         }
     }
 
@@ -76,12 +90,41 @@ public final class BountyRewards {
                     continue;
                 }
                 ServerWorld world = player.getWorld();
-                if (world.getStructureAccessor().getStructureContaining(player.getBlockPos(), bounty.destination).hasChildren()) {
-                    BountyNoticeItem.setProgress(stack, bounty.count);
-                    announceComplete(player, bounty);
+                StructureStart start = world.getStructureAccessor().getStructureContaining(player.getBlockPos(), bounty.destination);
+                if (!start.hasChildren()) {
+                    continue;
                 }
+                // Each place counts once per player for each expedition, however many notices they carry.
+                String visit = bounty.id + "@" + start.getPos().toLong();
+                if (!markVisited(player, visit)) {
+                    player.sendMessage(Text.translatable("bounty.dndclasses.explored_already", bounty.title())
+                            .formatted(Formatting.GRAY), true);
+                    continue;
+                }
+                BountyNoticeItem.setProgress(stack, bounty.count);
+                announceComplete(player, bounty);
             }
         }
+    }
+
+    /**
+     * Records that {@code player} finished an expedition {@code visit} (bounty and structure). Returns
+     * false if they already had. Only the last {@link #MAX_VISITS} are kept.
+     */
+    private static boolean markVisited(ServerPlayerEntity player, String visit) {
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        NbtList visits = data.getList(VISITS_KEY, NbtElement.STRING_TYPE);
+        for (int i = 0; i < visits.size(); i++) {
+            if (visits.getString(i).equals(visit)) {
+                return false;
+            }
+        }
+        visits.add(NbtString.of(visit));
+        while (visits.size() > MAX_VISITS) {
+            visits.remove(0);
+        }
+        data.put(VISITS_KEY, visits);
+        return true;
     }
 
     private static void announceComplete(ServerPlayerEntity player, Bounty bounty) {
@@ -114,7 +157,7 @@ public final class BountyRewards {
                 .build(LootContextTypes.GIFT));
         spoils.forEach(stack -> give(player, stack));
         player.addExperience(bounty.xp);
-        grantProgressionXp(player, bounty.classXp);
+        Progression.addXp(player, bounty.classXp);
 
         player.sendMessage(Text.translatable("bounty.dndclasses.claimed", bounty.title()).formatted(Formatting.GOLD), false);
         world.playSound(null, where.x, where.y, where.z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.8F, 1.2F);
@@ -126,41 +169,4 @@ public final class BountyRewards {
             player.dropItem(stack, false);
         }
     }
-
-    // ---- Class progression ----
-
-    private static Method addXp;
-    private static boolean addXpLooked;
-
-    /**
-     * Grants class-progression XP for a bounty.
-     * <p>
-     * TODO(class-progression): class progression lives on the {@code feat/class-progression}
-     * branch and isn't on main yet. Once it lands, replace this lookup with a direct call to
-     * {@code mattonfire.dnd.classes.Progression.Progression.addXp(player, amount)}. Until then the
-     * call is looked up by name, so bounties start paying class XP as soon as that code exists,
-     * and are a no-op (vanilla XP and loot only) without it.
-     */
-    static void grantProgressionXp(ServerPlayerEntity player, int amount) {
-        if (amount <= 0) {
-            return;
-        }
-        if (!addXpLooked) {
-            addXpLooked = true;
-            try {
-                addXp = Class.forName("mattonfire.dnd.classes.Progression.Progression")
-                        .getMethod("addXp", ServerPlayerEntity.class, int.class);
-            } catch (ReflectiveOperationException e) {
-                DnDClasses.LOGGER.info("Class progression not present; bounties give no class XP");
-            }
-        }
-        if (addXp != null) {
-            try {
-                addXp.invoke(null, player, amount);
-            } catch (ReflectiveOperationException e) {
-                DnDClasses.LOGGER.warn("Couldn't grant bounty class XP", e);
-            }
-        }
-    }
-
 }

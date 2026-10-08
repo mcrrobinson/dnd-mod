@@ -9,7 +9,7 @@ The home of a [Lightning Chaser](../mobs/dragons.md), on the very summit of a mo
 - Once it's killed, the lair waits **3 in-game days** and then sends a new one (structure spawn override; never in peaceful or with another Lightning Chaser within 64 blocks). A chaser that left without dying (e.g. in peaceful) is replaced as soon as possible.
 
 ## Where to find it / How to get it
-- Jagged Peaks, Frozen Peaks, Stony Peaks. Structure set spacing 12 chunks, separation 4.
+- Jagged Peaks, Frozen Peaks, Stony Peaks. Structure set spacing 12 chunks, separation 4, and at least 6 chunks from dwarven fortresses (which share the peaks).
 
 ## Commands
 - `/locate structure dndclasses:dragon_lair`

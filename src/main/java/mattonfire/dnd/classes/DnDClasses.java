@@ -199,6 +199,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
+                mattonfire.dnd.entity.boss.StructureBosses.register();
 
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();

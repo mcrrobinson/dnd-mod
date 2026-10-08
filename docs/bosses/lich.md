@@ -8,12 +8,12 @@ A late-game undead caster boss that haunts stronghold libraries. It keeps its di
 
 | Spell | Effect | Cooldown |
 |-|-|-|
-| Wither Bolt | A wither skull from its staff. The blast hurts but never breaks blocks | 2.5 s |
+| Wither Bolt | A wither skull from its staff. The blast hurts but never breaks blocks. Bolts aren't saved, so one in flight when the chunk unloads is gone rather than coming back as a vanilla skull | 2.5 s |
 | Ray of Frost | A beam (up to 20 blocks, needs line of sight): 7 damage, Slowness III for 5 s, powder-snow freeze | 4.5 s |
 | Frost Nova | When anyone is within 4 blocks: 8 damage, Slowness IV for 6 s, freezing and a strong shove to everyone within 5 blocks | 7 s |
 | Raise Dead | A wave of undead around it: zombies, husks and skeletons | 20 s |
 
-The Lich, its phylactery and its minions never hurt each other. Its minions crumble when it dies.
+The Lich, its phylactery and its minions never hurt each other. Its minions crumble when it dies. Like an evoker's vexes, they drop no loot, equipment or XP and give no class XP or bounty progress (tag `dndclasses.boss_minion`), so a Lich can't be kept alive as a wither skeleton skull farm.
 
 **Phases** (boss bar visible within 48 blocks):
 - **Start** (purple bar): waves of 2, at most 4 minions at once.
@@ -43,7 +43,7 @@ The Lich, its phylactery and its minions never hurt each other. Its minions crum
 - **Phylactery** (`entities/phylactery`): 2-5 amethyst shards, plus a 25% chance of an echo shard when a player smashes it.
 
 ## Where to find it / How to get it
-- **Strongholds**: every stronghold library (not on Peaceful). The Lich stands in the open row at the back, facing the entrance; its phylactery goes in the open middle row. Find one with `/locate structure minecraft:stronghold`. A stronghold can have up to two libraries, so it can have two Liches.
+- **Strongholds**: every stronghold library. A library generated on Peaceful gets an invisible marker instead, which raises the Lich the first time it's loaded on a higher difficulty. The Lich stands in the open row at the back, facing the entrance; its phylactery goes in the open middle row. Find one with `/locate structure minecraft:stronghold`. A stronghold can have up to two libraries, so it can have two Liches.
 - **Lich Spawn Egg**: in the mod's creative tab.
 
 ## Commands
@@ -52,7 +52,7 @@ The Lich, its phylactery and its minions never hurt each other. Its minions crum
 - `/data merge entity @e[type=dndclasses:phylactery,limit=1] {ReformTicks:20}`: speeds up a reform (testing).
 
 ## Configuration
-No config options. `doMobLoot` controls loot as usual. On Peaceful, Liches and phylacteries despawn and libraries get no Lich.
+No config options. `doMobLoot` controls loot as usual. On Peaceful, Liches and phylacteries despawn, and libraries generated then get their Lich later (see above).
 
 ## Known limitations
 - If the Lich dies while its phylactery's chunk is unloaded, the death is final. The home radius and teleport-home make this unlikely.

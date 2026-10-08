@@ -12,7 +12,7 @@ Goblin war camps in Overworld forests and plains: a levelled clearing inside a c
 - **Garrison**: 3-5 Goblin Warriors, plus a 30% chance of a Goblin Warlord standing in front of the chief's tent with its boss bar and warcry. They never despawn and stay within about 10 blocks of the fire (the Warlord within 12) unless they're chasing something.
 
 ## Where to find it
-Forest, flower forest, birch forest, old growth birch forest, dark forest, plains and sunflower plains, on dry, fairly level ground. Camps are spread about 28 chunks apart (at least 10), and kept at least 4 chunks from vanilla villages.
+Forest, flower forest, birch forest, old growth birch forest, dark forest, plains and sunflower plains, on dry, fairly level ground. Camps are spread about 28 chunks apart (at least 10), and kept at least 4 chunks from vanilla villages and 8 chunks from where a hobbit village could start (`GoblinCampStructure.nearHobbitVillage`, since a structure set can only exclude one other set).
 
 ## Commands
 - `/locate structure dndclasses:goblin_camp`

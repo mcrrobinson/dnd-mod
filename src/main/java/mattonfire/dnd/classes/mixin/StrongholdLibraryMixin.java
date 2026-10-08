@@ -1,8 +1,6 @@
 package mattonfire.dnd.classes.mixin;
 
-import mattonfire.dnd.entity.LichEntity;
-import mattonfire.dnd.entity.ModEntityTypes;
-import net.minecraft.entity.SpawnReason;
+import mattonfire.dnd.entity.boss.StructureBosses;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
@@ -11,7 +9,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Difficulty;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
@@ -37,19 +34,11 @@ public abstract class StrongholdLibraryMixin extends StructurePiece {
         // Floor at y = 0; bookshelf rows run across z = 3, 5, ... 11, leaving z = 8 and 12-13 open.
         BlockPos pos = this.offsetPos(6, 1, 12);
         // generate runs once per chunk the piece overlaps: only spawn from the chunk that holds the spot.
-        if (!chunkBox.contains(pos) || world.getDifficulty() == Difficulty.PEACEFUL) {
+        if (!chunkBox.contains(pos)) {
             return;
         }
-        LichEntity lich = ModEntityTypes.LICH.create(world.toServerWorld());
-        if (lich == null) {
-            return;
-        }
-        // Facing the entrance (at z = 0)
+        // Facing the entrance (at z = 0). On Peaceful this leaves a marker that raises it later.
         Direction facing = this.getFacing() == null ? Direction.NORTH : this.getFacing();
-        lich.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, facing.getOpposite().asRotation(), 0.0F);
-        lich.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-        lich.setPhylacterySpot(this.offsetPos(7, 1, 8));
-        lich.setPersistent();
-        world.spawnEntityAndPassengers(lich);
+        StructureBosses.placeLich(world, pos, facing.getOpposite().asRotation(), this.offsetPos(7, 1, 8));
     }
 }

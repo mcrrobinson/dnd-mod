@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 
+import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.BlockState;
@@ -25,6 +27,8 @@ import net.minecraft.item.ToolMaterial;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
@@ -65,8 +69,25 @@ public class ExtendedSwordItem extends SwordItem {
         scheduledRestores.add(new ScheduledBlockRestore(world, blocks, ticks));
     }
 
+    /** Only Wizards can wield the elemental staffs (cast with them or hit with them). */
+    public static boolean canWield(PlayerEntity player) {
+        return Progression.classOf(player) == DndCharacter.WIZARD;
+    }
+
+    /** Tells a non-Wizard they can't use the staff. */
+    public static void sendCantWield(PlayerEntity player) {
+        player.sendMessage(Text.literal("Only Wizards can wield elemental staffs!").formatted(Formatting.RED), true);
+    }
+
     @Override
     public TypedActionResult<ItemStack> use(World world, PlayerEntity player, Hand hand) {
+        if (!canWield(player)) {
+            if (!world.isClient) {
+                sendCantWield(player);
+            }
+            return TypedActionResult.fail(player.getStackInHand(hand));
+        }
+
 
         if (!world.isClient) {
             ServerWorld serverWorld = (ServerWorld) world;

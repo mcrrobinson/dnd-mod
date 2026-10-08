@@ -1,0 +1,6 @@
+wait 60
+screenshot class-persist-rejoin
+/dndclass get @s
+/attribute @s minecraft:generic.max_health get
+wait 10
+quit

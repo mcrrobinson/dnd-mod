@@ -69,7 +69,10 @@ public class EnchantingTableMixin {
                                 enchantment = (Enchantment) var6.next();
                             } while (enchantment.isTreasure() && !treasureAllowed);
                         } while (!enchantment.isAvailableForRandomSelection());
-                    } while (!enchantment.target.isAcceptableItem(item) && !bl);
+                        // The target picks the item group; isAcceptableItem lets an enchantment narrow it
+                        // (Tree Feller: DIGGER, axes only). Vanilla overrides only widen it, so they're unaffected.
+                    } while (!(enchantment.target.isAcceptableItem(item) && enchantment.isAcceptableItem(stack))
+                            && !bl);
                 } while (!powerfulUser && (enchantment == ModEnchantments.LUNGE_ENCHANTMENT ||
                         enchantment == ModEnchantments.GRID_MINER_ENCHANTMENT ||
                         enchantment == ModEnchantments.TREE_FELLER_ENCHANTMENT ||

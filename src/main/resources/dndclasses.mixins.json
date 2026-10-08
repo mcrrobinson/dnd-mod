@@ -55,7 +55,9 @@
         "DungeonFeatureMixin",
         "LootableContainerBlockEntityAccessor",
         "PlayerAttackRollMixin",
-        "RangerSwordPickupMixin"
+        "RangerSwordPickupMixin",
+        "BloodHunterSwordDropMixin",
+        "ServerPlayerSwordDropMixin"
     ],
     "client": [
         "BackgroundRendererMixin",
@@ -70,7 +72,8 @@
         "MusicTrackerAccessor",
         "SoundSystemMusicDuckMixin",
         "WarlockFireballMixin",
-        "RangerBowZoomMixin"
+        "RangerBowZoomMixin",
+        "ClientPlayerSwordDropMixin"
     ],
     "injectors": {
         "defaultRequire": 1

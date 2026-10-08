@@ -1,38 +1,63 @@
 # Bard Instruments
+The Lute, War Drum and Flute each play a short song. When a [Bard](../classes/bard.md) plays one, every player nearby gets a buff. Anyone can play them, but only a Bard's song gives a buff.
 
-The **Lute**, **War Drum** and **Flute** each play a short song. When a Bard plays one, every player nearby gets a buff. Anyone else can play them too, but their song gives no buff.
+![A Bard's hotbar with the lute, drum and flute](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/hud-bard.png)
 
 ## How it works
-- Right click plays a 4-second song where you stand. It can be heard up to 32 blocks away and uses the **Jukebox/Note Blocks** volume slider. Note particles appear above the player.
-- Background music dips while the song plays, for every player in earshot, then comes back, the same way it does for class-special stings.
-- **Bard:** every player within **16 blocks**, the Bard included, gets the instrument's buff for **30 seconds**. The action bar names the buff and how many players got it. All three instruments then share a **10-second** cooldown.
+Right click to play a 4 second song where you stand. Note particles rise above you, and anyone within 32 blocks hears it. The song plays on the **Jukebox/Note Blocks** volume slider, so turn that up if you can't hear it. Background music dips for everyone in earshot while it plays, then comes back, the same as for class special stings.
 
-  | Instrument | Bard buff |
-  |-|-|
-  | Lute | Regeneration I |
-  | War Drum | Strength I |
-  | Flute | Speed I |
+**As a Bard**, every player within 16 blocks, you included, gets the instrument's buff for 30 seconds. Green sparkles show who got it, and the action bar says "Your song grants *buff* to *n* player(s)". All three instruments then go on a shared 10 second cooldown.
 
-- **Other classes:** the song plays with the message "only a Bard's song inspires". It gives no buff, and all three instruments get a 4-second cooldown.
-- The buff isn't a potion effect, so Fighters, Paladins and Artificers, who ignore potions, still get it.
+| Instrument | Buff for 30 s |
+|-|-|
+| Lute | Regeneration I |
+| War Drum | Strength I |
+| Flute | Speed I |
+
+**As any other class**, the song plays and the action bar says "A pleasant tune, but only a Bard's song inspires". There's no buff, and all three instruments get a 4 second cooldown.
+
+The buff doesn't come from a potion, so Fighters, Paladins and Artificers, who ignore potions, still get it.
+
+### Tips
+- The cooldown is shared, but it's shorter than the buff. Play the Lute, Drum and Flute one after another 10 seconds apart and your party keeps all three buffs running.
+- Keep all three in your hotbar so you can switch quickly.
 
 ## How to get it
-They are in the D&D Classes creative tab, or you can craft them:
+Craft them, or take them from the D&D Classes creative tab.
 
-| Item | Recipe (shaped) |
-|-|-|
-| Lute | `  T` / `PST` / `PP ` (P = any planks, S = string, T = stick) |
-| War Drum | `LLL` / `PSP` / `PPP` (L = leather, P = any planks, S = string) |
-| Flute | 3 bamboo in a diagonal |
+**Lute:** two sticks, three planks and a string.
+
+| | | |
+|-|-|-|
+| | | Stick |
+| Planks | String | Stick |
+| Planks | Planks | |
+
+**War Drum:** three leather, five planks and a string.
+
+| | | |
+|-|-|-|
+| Leather | Leather | Leather |
+| Planks | String | Planks |
+| Planks | Planks | Planks |
+
+**Flute:** three bamboo in a diagonal line, from top right to bottom left.
+
+| | | |
+|-|-|-|
+| | | Bamboo |
+| | Bamboo | |
+| Bamboo | | |
+
+Any kind of planks works.
 
 ## Known limitations
-- The shared cooldown makes a Bard play one song at a time, but they can keep all three buffs running by switching instruments.
-- The item art is a placeholder (16x16).
-- No test has been run with a second player yet.
+- The item art is a 16x16 placeholder.
+- Only the Bard check has been tested in a script. Buffing a second player hasn't been tested with two clients yet.
 
 ## For developers
-- `classes/Items/InstrumentItem.java`: the item logic (radius, duration, cooldowns, Bard check).
-- `classes/Music/InstrumentSongs.java`: the `dndclasses:instrument_song` packet that tells clients to duck their music. `Client/Music/MusicStings.duck()` handles it on the client.
-- Registration: `ModItems` (`LUTE`, `DRUM`, `FLUTE`), `ModSounds` (`instrument.lute|drum|flute`), `sounds.json`.
+- `classes/Items/InstrumentItem.java`: the item logic (`BUFF_RADIUS`, `BUFF_TICKS`, the cooldowns, the Bard check).
+- `classes/Music/InstrumentSongs.java`: `SONG_TICKS`, `HEARING_RANGE` and the `dndclasses:instrument_song` packet that tells clients to duck their music. `Client/Music/MusicStings.duck()` handles it on the client.
+- Registration: `ModItems` (`LUTE`, `DRUM`, `FLUTE`), `ModSounds` (`instrument.lute|drum|flute`), `sounds.json`. Recipes: `data/dndclasses/recipes/lute.json`, `drum.json`, `flute.json`.
 - The songs are synthesized with `python3 tools/music-gen/music_gen.py song_lute song_drum song_flute`.
 - Devscript: `devscripts/bard-instruments.txt` (Bard lute gives Regeneration, shared cooldown, Fighter flute gives no buff).

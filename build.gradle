@@ -106,13 +106,9 @@ tasks.withType(JavaCompile).configureEach {
 	// If Javadoc is generated, this must be specified in that task too.
 	it.options.encoding = "UTF-8"
 
-	// The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
-	// JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
-	// We'll use that if it's available, but otherwise we'll use the older option.
-    def targetVersion = 21
-	if (JavaVersion.current().isJava9Compatible()) {
-		 it.options.release = targetVersion
-	}
+	// Minecraft 1.19.4 runs on Java 17, so compile for 17 even though the toolchain is a newer JDK.
+	// `release` also stops the code from using APIs newer than Java 17.
+	it.options.release = 17
 }
 
 java {
@@ -120,6 +116,7 @@ java {
 	// if it is present.
 	// If you remove this line, sources will not be generated.
 	withSourcesJar()
+    // Builds with JDK 21; the bytecode still targets Java 17 (see options.release above).
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }

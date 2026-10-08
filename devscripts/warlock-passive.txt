@@ -1,3 +1,5 @@
+# Warlock passive: lava and fire damage over 5 s each, plus the Warlock attack damage base. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/warlock-passive.txt
+# Expect in latest.log: the Health readings around the LAVA and FIRE markers.
 wait 40
 closescreen
 /gamerule naturalRegeneration false

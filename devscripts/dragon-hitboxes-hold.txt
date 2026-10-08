@@ -1,0 +1,21 @@
+# Leaves a flapping Lightning Chaser and Wyvern hovering in the air with hit shapes on: client
+# shapes in green, the server's in red. The script doesn't quit, so fly round them yourself.
+# Run (visible window): ./gradlew runClient -PdevScript=devscripts/dragon-hitboxes-hold.txt -PdevHidden=false
+/time set day
+/weather clear
+/gamemode creative
+wait 40
+closescreen
+respawn
+wait 40
+closescreen
+/tp @s 2000 222 2025 180 0
+wait 200
+/fill 1998 221 2023 2002 221 2027 minecraft:barrier
+/tp @s 2000 222 2025 180 0
+/kill @e[type=dndclasses:lightning_chaser,distance=..100]
+/kill @e[type=dndclasses:wyvern,distance=..100]
+/summon dndclasses:lightning_chaser 1990 220 2000 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f],PersistenceRequired:1b}
+/summon dndclasses:wyvern 2012 220 2000 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f],PersistenceRequired:1b}
+hitboxes on
+serverhitboxes on

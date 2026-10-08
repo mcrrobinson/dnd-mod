@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import mattonfire.dnd.client.renderer.ServerPartDebug;
 import mattonfire.dnd.entity.DragonPart;
 import mattonfire.dnd.entity.MultipartDragon;
 import net.minecraft.client.render.VertexConsumer;
@@ -30,6 +31,14 @@ public abstract class EntityRenderDispatcherMixin {
         for (DragonPart part : dragon.getParts()) {
             for (Box shape : part.getShapes()) {
                 WorldRenderer.drawBox(matrices, vertices, shape.offset(-x, -y, -z), 0.25F, 1.0F, 0.0F, 1.0F);
+            }
+        }
+        // Dev check: the integrated server's shapes for the same dragon, in red
+        if (ServerPartDebug.enabled && ServerPartDebug.serverCopy(entity) instanceof MultipartDragon serverDragon) {
+            for (DragonPart part : serverDragon.getParts()) {
+                for (Box shape : part.getShapes()) {
+                    WorldRenderer.drawBox(matrices, vertices, shape.offset(-x, -y, -z), 1.0F, 0.15F, 0.15F, 1.0F);
+                }
             }
         }
     }

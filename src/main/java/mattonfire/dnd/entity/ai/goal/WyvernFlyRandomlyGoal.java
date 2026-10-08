@@ -33,10 +33,6 @@ public class WyvernFlyRandomlyGoal extends Goal {
 
     @Override
     public void start() {
-        // Switch to flight controls and navigation immediately for takeoff
-        if (this.wyvern.isOnGround()) {
-            this.wyvern.switchToFlightMode();
-        }
         Vec3d vec3d = this.getRandomLocation();
         if (vec3d != null) {
             this.wyvern.getNavigation().startMovingTo(vec3d.x, vec3d.y, vec3d.z, 1.0);
@@ -63,7 +59,7 @@ public class WyvernFlyRandomlyGoal extends Goal {
                 y = pos.y - random.nextDouble() * 8.0 - 2.0; 
             }
 
-            BlockPos targetPos = new BlockPos((int)x, (int)y, (int)z);
+            BlockPos targetPos = BlockPos.ofFloored(x, y, z);
             if (this.wyvern.world.isAir(targetPos)) {
                  return new Vec3d(x, y, z);
             }

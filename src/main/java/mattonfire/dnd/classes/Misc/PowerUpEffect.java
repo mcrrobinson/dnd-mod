@@ -53,6 +53,8 @@ public class PowerUpEffect {
 
     /** Paladins heal party members within this many blocks (everyone else: 10). */
     public static final double PALADIN_PARTY_HEAL_RADIUS = 24;
+    /** How long the Wizard special's invulnerability lasts. */
+    public static final int WIZARD_INVULNERABLE_TICKS = 5 * 20;
 
     /**
      * Adds an AI goal that makes the entity target hostile mobs.
@@ -167,6 +169,10 @@ public class PowerUpEffect {
                         playerX,
                         playerY, playerZ, radius, false,
                         Explosion.DestructionType.KEEP);
+
+                // A few seconds of invulnerability: Resistance V blocks all normal damage
+                // and wears off on its own (unlike setInvulnerable, which is saved).
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, WIZARD_INVULNERABLE_TICKS, 4));
 
                 explosion.collectBlocksAndDamageEntities();
                 explosion.affectWorld(true);

@@ -1,0 +1,206 @@
+# Docs screenshots for docs/enchantments/: an Artificer's enchanting table offer, Tree Feller felling a birch,
+# Grid Miner's hole, a Lunge dash, a Returning trident in flight, Vampiric and Smite Dragons hits,
+# the Invulnerability effect and Featherfall's slow fall.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/docs-enchantments.txt
+wait 40
+closescreen
+/dndclass set @s artificer
+/gamemode survival
+/effect clear @s
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule naturalRegeneration false
+/time set 1000
+/gamerule sendCommandFeedback false
+/gamerule announceAdvancements false
+/gamerule doMobSpawning false
+/weather clear
+/kill @e[type=!player]
+/fill -10 229 -10 20 229 30 minecraft:grass_block
+/fill -10 230 -10 20 250 30 minecraft:air
+/clear @s
+# Earn the diamond-armor advancement now so its toast is gone before the HUD shots
+/item replace entity @s armor.feet with minecraft:diamond_boots
+/item replace entity @s armor.feet with minecraft:air
+hud off
+# --- Overview: the mod's enchantments on floating, named items
+/summon minecraft:item 7.00 230.2 6.5 {Item:{id:"minecraft:diamond_sword",Count:1b,tag:{Enchantments:[{id:"dndclasses:lunge",lvl:2s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Lunge II","color":"aqua"}'}
+/summon minecraft:item 5.85 231.1 6.5 {Item:{id:"minecraft:diamond_sword",Count:1b,tag:{Enchantments:[{id:"dndclasses:invulnerability",lvl:2s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Invulnerability II","color":"aqua"}'}
+/summon minecraft:item 4.70 230.2 6.5 {Item:{id:"minecraft:diamond_axe",Count:1b,tag:{Enchantments:[{id:"dndclasses:tree_feller",lvl:1s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Tree Feller","color":"aqua"}'}
+/summon minecraft:item 3.55 231.1 6.5 {Item:{id:"minecraft:diamond_pickaxe",Count:1b,tag:{Enchantments:[{id:"dndclasses:grid_miner",lvl:2s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Grid Miner II","color":"aqua"}'}
+/summon minecraft:item 2.40 230.2 6.5 {Item:{id:"minecraft:trident",Count:1b,tag:{Enchantments:[{id:"dndclasses:returning",lvl:1s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Returning","color":"aqua"}'}
+/summon minecraft:item 1.25 231.1 6.5 {Item:{id:"minecraft:netherite_sword",Count:1b,tag:{Enchantments:[{id:"dndclasses:vampiric",lvl:3s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Vampiric III","color":"aqua"}'}
+/summon minecraft:item 0.10 230.2 6.5 {Item:{id:"minecraft:netherite_axe",Count:1b,tag:{Enchantments:[{id:"dndclasses:smite_dragons",lvl:5s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Smite Dragons V","color":"aqua"}'}
+/summon minecraft:item -1.05 231.1 6.5 {Item:{id:"minecraft:diamond_boots",Count:1b,tag:{Enchantments:[{id:"dndclasses:featherfall",lvl:3s}]}},NoGravity:1b,Age:-32768,PickupDelay:32767,CustomNameVisible:1b,CustomName:'{"text":"Featherfall III","color":"aqua"}'}
+/tp @s 2.95 230 1.5 0 10
+wait 40
+screenshot docs-ench-overview-1
+wait 7
+screenshot docs-ench-overview-1b
+wait 7
+screenshot docs-ench-overview-1c
+/tp @s 2.95 230 2.5 0 14
+wait 10
+screenshot docs-ench-overview-2
+/kill @e[type=item]
+/clear @s
+
+# --- Tree Feller
+/effect give @s minecraft:haste 60 9 true
+/setblock 3 229 8 minecraft:grass_block
+/place feature minecraft:birch 3 230 8
+/give @s minecraft:diamond_axe{Enchantments:[{id:"dndclasses:tree_feller",lvl:1},{id:"minecraft:efficiency",lvl:5}]}
+hotbar 0
+/tp @s 3.5 232 -1.5 0 -12
+wait 20
+screenshot docs-tree-before
+/tp @s 3.5 230 6.5 0 30
+wait 5
+attack
+wait 3
+/tp @s 3.5 232 -1.5 0 -12
+wait 3
+screenshot docs-tree-after-1
+wait 15
+screenshot docs-tree-after-2
+wait 30
+/fill -10 230 -10 20 250 30 minecraft:air
+/fill -10 229 -10 20 229 30 minecraft:grass_block
+/kill @e[type=item]
+/clear @s
+# --- Grid Miner
+/fill -3 230 8 11 238 10 minecraft:stone
+/give @s minecraft:diamond_pickaxe{Enchantments:[{id:"dndclasses:grid_miner",lvl:2},{id:"minecraft:efficiency",lvl:5}]}
+hotbar 0
+/tp @s 4.5 232.5 6.5 0 0
+wait 10
+attack
+wait 4
+/tp @s 2.5 231 0.5 -15 -5
+wait 2
+screenshot docs-grid-miner-1
+wait 40
+screenshot docs-grid-miner-2
+/kill @e[type=item]
+/tp @s 2.5 231 0.5 -15 -5
+wait 5
+screenshot docs-grid-miner-3
+/fill -10 230 -10 20 250 30 minecraft:air
+/fill -10 229 -10 20 229 30 minecraft:grass_block
+/clear @s
+# --- Lunge
+/give @s minecraft:diamond_sword{Enchantments:[{id:"dndclasses:lunge",lvl:2}]}
+hotbar 0
+/summon minecraft:husk 5.0 230 16.5 {NoAI:1b,Rotation:[180f,0f],PersistenceRequired:1b}
+/tp @s 3.5 230 0.5 0 0
+perspective back
+wait 20
+use
+wait 1
+screenshot docs-lunge-1
+wait 1
+screenshot docs-lunge-2
+wait 1
+screenshot docs-lunge-3
+wait 40
+perspective first
+/clear @s
+# --- Returning trident in flight at a zombie
+/kill @e[type=!player]
+/summon minecraft:husk 3.5 230 12.5 {NoAI:1b,Rotation:[180f,0f],PersistenceRequired:1b}
+/tp @s -3.5 230 6.5 -65 -3
+wait 20
+/summon minecraft:trident 3.0 231.4 7.0 {Motion:[0.0,0.0,0.15],NoGravity:1b,Trident:{id:"minecraft:trident",Count:1b,tag:{Enchantments:[{id:"dndclasses:returning",lvl:1}]}}}
+/data modify entity @e[type=trident,limit=1] Owner set from entity @s UUID
+screenshot docs-returning-1
+wait 3
+screenshot docs-returning-2
+wait 20
+/kill @e[type=!player]
+/clear @s
+# --- Featherfall (Slow falling after 3 blocks at level III)
+/item replace entity @s armor.feet with minecraft:diamond_boots{Enchantments:[{id:"dndclasses:featherfall",lvl:3s}]}
+/tp @s 3.5 248 3.5 0 -40
+perspective front
+wait 10
+/data get entity @s Pos
+screenshot docs-featherfall-1
+wait 10
+/data get entity @s Pos
+screenshot docs-featherfall-2
+wait 20
+/data get entity @s Pos
+screenshot docs-featherfall-3
+perspective first
+wait 200
+/item replace entity @s armor.feet with minecraft:air
+# --- Invulnerability: standing in lava without taking damage
+/fill 2 229 4 5 229 7 minecraft:lava
+/give @s minecraft:diamond_sword{Enchantments:[{id:"dndclasses:invulnerability",lvl:1}]}
+hotbar 0
+/tp @s 3.5 232 1.5 0 10
+wait 30
+use
+wait 1
+/tp @s 3.5 229.5 5.5 180 10
+perspective front
+hud on
+wait 15
+screenshot docs-invuln-1
+wait 10
+screenshot docs-invuln-2
+/tp @s 3.5 230 0.5 0 0
+/setblock 3 230 0 minecraft:water
+wait 10
+/setblock 3 230 0 minecraft:air
+/fill 2 229 4 5 229 7 minecraft:grass_block
+/effect give @s minecraft:fire_resistance 10 0 true
+/effect give @s minecraft:instant_health 1 5 true
+perspective first
+hud off
+wait 20
+/clear @s
+# --- Vampiric
+/attribute @s minecraft:generic.max_health base set 20
+/damage @s 8 minecraft:generic
+/give @s minecraft:netherite_sword{Enchantments:[{id:"dndclasses:vampiric",lvl:3s}]}
+hotbar 0
+/summon minecraft:husk 3.5 230 5.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f]}
+/tp @s 3.5 230 3.5 0 10
+hud on
+wait 30
+screenshot docs-vampiric-before
+attack
+wait 3
+screenshot docs-vampiric-hit
+hud off
+/kill @e[type=!player]
+/effect give @s minecraft:instant_health 1 5 true
+/clear @s
+# --- Smite Dragons
+/effect give @s minecraft:resistance 99999 255 true
+/give @s minecraft:diamond_sword{Enchantments:[{id:"dndclasses:smite_dragons",lvl:5s}]}
+hotbar 0
+/summon dndclasses:wyvern 4.5 230 8.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f}
+/kill @e[type=item]
+/tp @s 4.5 230 -3.5 0 -12
+wait 40
+screenshot docs-smite-before
+/tp @s 4.5 230 5 0 -15
+perspective back
+wait 30
+attack
+wait 2
+screenshot docs-smite-hit-1
+wait 2
+screenshot docs-smite-hit-2
+wait 30
+attack
+wait 1
+screenshot docs-smite-hit-3
+perspective first
+/kill @e[type=!player]
+/effect clear @s
+/clear @s
+/gamerule naturalRegeneration true
+quit

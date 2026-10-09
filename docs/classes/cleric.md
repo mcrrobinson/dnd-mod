@@ -1,6 +1,8 @@
 # Cleric
 A miner and healer. You dig fast, see in the dark, and can make every mob around you lose interest.
 
+![A Cleric in Sanctuary: the mobs around ignore them, and the particle ring marks the 16-block circle](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/cleric-sanctuary.png)
+
 ## How it works
 You always have **Haste III** and **Night Vision**. They're refreshed before they run low and show no particles, so you never see the Night Vision flicker.
 

@@ -1,0 +1,36 @@
+# Docs screenshots: a frozen Wyvern's multipart hit shapes, client (green, F3+B) and server (red) side by side,
+# and a Lightning Chaser's. Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-multipart.txt
+# Output: screenshots/docs-multipart-*.png. High in the air above x=0 z=0, like dragon-hitboxes.txt (spectator, so the camera does not fall).
+/time set 6000
+/weather clear
+/gamemode spectator
+/kill @e[type=dndclasses:wyvern]
+/kill @e[type=dndclasses:lightning_chaser]
+hitboxes on
+hud off
+wait 40
+closescreen
+
+# Wyvern
+/tp @s 12 176 0 90 -14
+/summon dndclasses:wyvern 0 175 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 40
+screenshot docs-multipart-wyvern-side
+/tp @s 8 177 -8 45 -10
+wait 20
+screenshot docs-multipart-wyvern-34
+serverhitboxes on
+wait 20
+screenshot docs-multipart-wyvern-server-34
+serverhitboxes off
+/kill @e[type=dndclasses:wyvern]
+
+# Lightning Chaser
+/summon dndclasses:lightning_chaser 0 175 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+/tp @s 11 178 -11 45 -8
+wait 40
+screenshot docs-multipart-chaser-34
+/kill @e[type=dndclasses:lightning_chaser]
+hitboxes off
+hud on
+quit

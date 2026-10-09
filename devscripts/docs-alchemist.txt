@@ -1,0 +1,64 @@
+# Docs screenshot: Alchemist Transmute cloud at rank IV, thrown with a Poison potion at a group of mobs. Needs main with Transmute (PR #105).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/docs-alchemist.txt
+# Output: <run dir>/screenshots/doc-alchemist-*.png
+wait 40
+closescreen
+hud off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/time set 6000
+/weather clear
+/tp @s 1000.5 200 1000.5 0 0
+/effect give @s minecraft:slow_falling 30 0 true
+wait 60
+/fillbiome 980 192 980 1020 207 1020 minecraft:plains
+/fill 980 199 980 1020 199 1020 minecraft:grass_block
+/kill @e[type=!minecraft:player,distance=..60]
+/tp @s 1000.5 200 1000.5 0 0
+/dndclass set @s alchemist
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s alchemist.distill 4
+/clear @s
+/effect clear @s
+/summon minecraft:spider 1000.5 200 1006.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Rotation:[180f,0f],Tags:["doc"]}
+/summon minecraft:zombie 998 200 1005.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"]}
+/summon minecraft:skeleton 1003 200 1005.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"]}
+/summon minecraft:zombie 1001.5 200 1008.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"]}
+wait 5
+/item replace entity @e[tag=doc,type=!minecraft:spider] armor.head with minecraft:leather_helmet
+/effect give @e[tag=doc] minecraft:resistance 1000 4 true
+/item replace entity @s weapon.mainhand with minecraft:splash_potion{Potion:"minecraft:strong_poison"}
+wait 400
+/tp @s 1000.5 200 1000.5 0 40
+wait 5
+press key.dnd-classes.power-up
+wait 30
+perspective back
+/tp @s 1000.5 200 1000.5 0 15
+wait 10
+screenshot doc-alchemist-a
+/tp @s 1000.5 200 999 0 25
+wait 5
+screenshot doc-alchemist-b
+perspective first
+/tp @s 1000.5 207 998.5 0 40
+wait 5
+screenshot doc-alchemist-c
+/item replace entity @s weapon.mainhand with minecraft:splash_potion{Potion:"minecraft:strong_harming"}
+/tp @s 1000.5 200 1000.5 0 40
+wait 400
+/tp @s 1000.5 200 1000.5 0 40
+press key.dnd-classes.power-up
+wait 25
+perspective back
+/tp @s 1000.5 200 999.5 0 20
+wait 5
+screenshot doc-alchemist-d
+perspective first
+/dndclass resetprogress @s
+quit

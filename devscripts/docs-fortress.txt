@@ -1,0 +1,41 @@
+# Docs screenshots: the Goblin Warlord on the central bridge crossing of a freshly generated Nether Fortress, with goblins.
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-fortress.txt
+# Uses the fortress made by docs-fortress-recon.txt (/place structure minecraft:fortress at 52000 64 52000 in the Nether,
+# the same generator as natural fortresses, so it gets its Warlord). Brightness (gamma) 1.0 helps here.
+# Output: screenshots/docs-fortress-*.png; the Warlord's Pos in "[CHAT]" lines of latest.log.
+wait 40
+closescreen
+/gamemode spectator
+hud off
+/execute in minecraft:the_nether run tp @s 52006 75 52010
+wait 300
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord] run data get entity @s Pos
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @s ~ ~ ~ 0 0
+wait 2
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] run data merge entity @s {NoAI:1b}
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run kill @e[type=dndclasses:goblin_warrior,distance=..8]
+wait 60
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run summon dndclasses:goblin_warrior ~0.9 ~ ~1.6 {NoAI:1b,Rotation:[-20f,0f]}
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run summon dndclasses:goblin_warrior ~-0.9 ~ ~1.8 {NoAI:1b,Rotation:[20f,0f]}
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run summon dndclasses:goblin_warrior ~-0.6 ~ ~-2.5 {NoAI:1b,Rotation:[10f,0f]}
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @p ~0.3 ~1.5 ~5.5 180 6
+wait 30
+screenshot docs-fortress-s-close
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @p ~0.5 ~3.5 ~8 180 18
+wait 30
+screenshot docs-fortress-s-mid
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @p ~1 ~7 ~14 180 25
+wait 30
+screenshot docs-fortress-s-wide
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @p ~0 ~7 ~-13 0 25
+wait 30
+screenshot docs-fortress-n-wide
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @p ~0 ~3 ~-8 0 14
+wait 30
+screenshot docs-fortress-n-mid
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord,limit=1] at @s run tp @p ~5 ~3 ~6 140 18
+wait 30
+screenshot docs-fortress-se
+/execute in minecraft:overworld run tp @s 0 151 0
+wait 20
+quit

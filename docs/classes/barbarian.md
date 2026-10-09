@@ -1,6 +1,8 @@
 # Barbarian
 A slow, short-sighted brawler with twice the normal health and a punch that hurts even without a weapon. The special is inspired by *One Punch Man*.
 
+![A raging Barbarian punching a zombie, with the Strength particles swirling](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/barbarian-rage.png)
+
 ## How it works
 | Stat | Barbarian | Vanilla |
 |-|-|-|

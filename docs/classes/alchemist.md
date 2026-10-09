@@ -1,6 +1,8 @@
 # Alchemist
 The brewer: the only class that can brew safely and use the Fast Brewing Stand, but it can't enchant.
 
+![A Transmute cloud spreading around the Alchemist and a group of mobs](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/alchemist-transmute.png)
+
 ## How it works
 - **Safe brewing:** a vanilla brewing stand explodes (power 10, no block damage) when it finishes a brew that a non-Alchemist started, i.e. a non-Alchemist had it open when the brew began and no Alchemist did. The stand breaks and drops itself and its contents. Brews started with nobody looking, such as hopper-fed ones, are safe. A death from it hints "Maybe get a alchamist to brew next time...".
 - **Fast Brewing Stand:** only Alchemists can open it, and it brews 10× faster. See [Potions and brewing](../items/potions-and-brewing.md).

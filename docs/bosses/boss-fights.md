@@ -1,6 +1,8 @@
 # Boss fights
 Bosses and the big dragons share one fight system: a boss bar, fight music, health phases and kill rewards. This page covers what they have in common. Each boss has its own page for its attacks.
 
+![A Lich in a stronghold library with its purple boss bar at the top of the screen](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/boss-fights-lich-bar.png)
+
 ## How it works
 **Boss bar.** The bar appears for every player within range (48 or 64 blocks, depending on the boss) while the boss is fighting a player, which means it's targeting a player or a player has hurt it. The bar goes away when the fight ends, when the boss dies, or when you leave range. Spectators and dead players don't see it.
 

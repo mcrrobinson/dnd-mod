@@ -1,6 +1,8 @@
 # Goblin Raids
 Goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and hear raid music. Defenders who win get loot, XP, Hero of the Village and the **Hold the Line** advancement.
 
+![Two glowing Goblin Warriors marching into a hobbit village under the red goblin raid bar](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/goblin-raid.png)
+
 ## How it works
 - **Trigger**: at night, every 30 seconds, each survival or adventure player in or within 32 blocks of a village or fortress has a 1 in 20 chance of a raid setting out for it. Each settlement is raided at most once every 3 in-game days. Raids never start in peaceful.
 - **Waves**: 2 on easy, 3 on normal, 4 on hard. Wave *n* has *n*+1 Goblin Warriors, plus one more on hard. A raid horn sounds from the war party's direction 10 seconds before the first wave. Each wave gathers on open ground about 32 blocks out (in front of the gate at a fortress). There is a 15 second lull and another horn call between waves. The **Goblin Warlord** leads the final wave: it marches on the village green or fortress gate and holds it.

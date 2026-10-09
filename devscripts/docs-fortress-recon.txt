@@ -1,0 +1,15 @@
+# Docs: places a Nether Fortress with /place structure (the same generator as natural ones) and checks for its Warlord.
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-fortress-recon.txt
+wait 40
+closescreen
+/gamemode spectator
+/execute in minecraft:the_nether run tp @s 52000 70 52000
+wait 200
+/execute in minecraft:the_nether run place structure minecraft:fortress 52000 64 52000
+wait 200
+/execute in minecraft:the_nether as @e[type=dndclasses:goblin_warlord] run data get entity @s Pos
+/execute in minecraft:the_nether as @e[type=minecraft:marker] run data get entity @s Pos
+/execute in minecraft:the_nether as @e[type=minecraft:blaze] run data get entity @s Pos
+/execute in minecraft:overworld run tp @s 0 151 0
+wait 20
+quit

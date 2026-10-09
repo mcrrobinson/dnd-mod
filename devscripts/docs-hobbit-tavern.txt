@@ -1,0 +1,47 @@
+# Docs screenshots: the innkeeper and bounty boards inside a real Green Dragon inn, and hobbits on the village green.
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-hobbit-tavern.txt
+# Dev world: innkeeper round 181 67 1330 (boards at 187 68 1329/1330, facing west), village green 201 68 1352.
+# Find the village with hobbit-locate.txt, the innkeeper with /execute as @e[type=dndclasses:innkeeper] run data get entity @s Pos. Output: screenshots/docs-tavern-*.png, docs-hobbits-*.png.
+# Looks best with fov ~85 in options.txt (fov:0.375).
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/tp @s 181.5 75 1330.5
+wait 200
+hud off
+/tp @e[type=dndclasses:innkeeper,limit=1,sort=nearest] 181.5 67 1332.0 0 0
+wait 2
+/execute as @e[type=dndclasses:innkeeper,limit=1,sort=nearest] run data merge entity @s {NoAI:1b}
+/tp @s 181.5 68.9 1334.6 180 15
+wait 30
+screenshot docs-tavern-inn-a
+/tp @s 180.0 69.1 1334.6 -150 18
+wait 20
+screenshot docs-tavern-inn-b
+/tp @e[type=dndclasses:innkeeper,limit=1,sort=nearest] 186.0 67 1331.4 151 0
+/tp @s 184.8 68.7 1329.2 -70 8
+wait 30
+screenshot docs-tavern-board-a
+/tp @s 185.4 68.6 1329.9 -85 3
+wait 20
+screenshot docs-tavern-board-b
+/tp @s 184.2 68.9 1328.6 -60 10
+wait 20
+screenshot docs-tavern-board-c
+/execute positioned 201 68 1352 run tag @e[type=dndclasses:hobbit,distance=..20,limit=3,sort=nearest] add docs
+/execute as @e[tag=docs] run data merge entity @s {NoAI:1b}
+/tp @e[tag=docs,tag=!placed,limit=1] 199.7 68 1349.4 165 0
+/execute positioned 199.7 68 1349.4 run tag @e[tag=docs,limit=1,sort=nearest] add placed
+/tp @e[tag=docs,tag=!placed,limit=1] 201.5 68 1349.9 180 0
+/execute positioned 201.5 68 1349.9 run tag @e[tag=docs,limit=1,sort=nearest] add placed
+/tp @e[tag=docs,tag=!placed,limit=1] 203.3 68 1349.3 -165 0
+/tp @s 201.5 69.4 1345.6 0 14
+wait 40
+screenshot docs-hobbits-a
+/tp @s 201.5 69.0 1346.3 0 8
+wait 20
+screenshot docs-hobbits-b
+quit

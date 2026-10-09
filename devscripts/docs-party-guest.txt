@@ -1,0 +1,28 @@
+# Docs screenshot for docs/systems/party.md (guest side): joins docs-party-host.txt's LAN game, keeps accepting
+# the party invite, then screenshots its own party HUD (the host shows with a leader star).
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevScript=devscripts/docs-party-guest.txt
+wait 40
+closescreen
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+closescreen
+hud on
+wait 20
+screenshot docs-party-guest-1
+wait 60
+screenshot docs-party-guest-2
+quit

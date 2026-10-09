@@ -1,6 +1,8 @@
 # Goblin Camps
 Goblin war camps in Overworld forests and plains: a levelled clearing inside a crude palisade, with hide tents round a campfire, a loot chest in the chief's tent, and a garrison of Goblin Warriors. Some camps are led by a Goblin Warlord.
 
+![A goblin camp from the air: palisade, three tents and the campfire in a forest clearing](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/goblin-camp.png)
+
 ## How it works
 - **Clearing**: about 29 blocks across (levelled and cleared out to radius 14, up to 16 blocks high, trees included). Dips are filled with up to 8 blocks of dirt.
 - **Palisade** at radius 11: spruce, stripped spruce and oak logs 2-3 high, with stretches of fence, stakes on top, the odd torch and roughly 10% gaps where it's fallen. The gate is on a random side, flanked by 4-high posts topped with skulls, with a 3-wide dirt track leading out.
@@ -10,6 +12,8 @@ Goblin war camps in Overworld forests and plains: a levelled clearing inside a c
   - The other tents have a 60% chance of a barrel of supplies (`chests/goblin_camp_supplies`: crops, bread, rotten flesh, bones, arrows, string, sticks, coal, leather).
 - **Corners**: each gets one of trophy poles with skulls (sometimes a carved pumpkin), a woodpile with a torch, a bone heap with a skull and cobweb, or a crude workshop (crafting table, cauldron, supplies barrel).
 - **Garrison**: 3-5 Goblin Warriors, plus a 30% chance of a Goblin Warlord standing in front of the chief's tent with its boss bar and warcry. They never despawn and stay within about 10 blocks of the fire (the Warlord within 12) unless they're chasing something.
+
+![The camp gate: skull-topped posts, the dirt track and the chief's tent across the fire](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/goblin-camp-gate.png)
 
 ## Where to find it
 Forest, flower forest, birch forest, old growth birch forest, dark forest, plains and sunflower plains, on dry, fairly level ground. Camps are spread about 28 chunks apart (at least 10), and kept at least 4 chunks from vanilla villages and 8 chunks from where a hobbit village could start (`GoblinCampStructure.nearHobbitVillage`, since a structure set can only exclude one other set).

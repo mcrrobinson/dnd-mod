@@ -1,6 +1,8 @@
 # Artificer
 A tinkerer that enchants as it crafts and is the only class that can roll the mod's [enchantments](../enchantments/README.md).
 
+![An Artificer with Arcane Armor up: four armor points with no armor worn](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/artificer-arcane-armor.png)
+
 ## How it works
 - **Speed:** 0.12 movement speed (20% faster than vanilla).
 - **Damage:** 25% less damage (a ×0.75 attack damage modifier).

@@ -2,6 +2,8 @@
 
 Featherfall is an Artificer-only boots enchantment (I-III). It's a stronger replacement for Feather Falling: it cuts fall damage much further, and at levels II and III you float gently down from big drops.
 
+![A player in Featherfall III boots drifting slowly down towards the ground](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/featherfall-slow-fall.png)
+
 ## How it works
 | Level | Fall damage taken | Slow falling |
 |-|-|-|

@@ -1,6 +1,8 @@
 # Hobbit Tavern
 Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells food and ale and buys produce. On the inn's east wall hang two **bounty boards**, where hobbits pin up jobs: hunts and expeditions that pay emeralds, loot, XP and class XP.
 
+![The innkeeper in front of the Green Dragon's bar, with the bounty boards on the wall to the right](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/hobbit-tavern-innkeeper.png)
+
 ## How it works
 ### Innkeeper
 - A hobbit (14 HP) holding a Mug of Ale, named "<name>, Innkeeper". It stays within 4 blocks of the bar by day and within 3 at night.
@@ -20,6 +22,8 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 - **Take a notice:** right-click it. Which one you get (left, middle or right) depends on where you click, and the paper disappears from the board.
 - **Read the board:** sneak-right-click with an empty hand to list today's bounties in chat.
 - **Restocking:** each in-game day, a board posts 3 different bounties, drawn by weight. A taken notice stays gone until the next day, for everyone. A board that's just been hung up starts bare and gets its first notices the next morning, so taking a board down and putting it back doesn't restock it.
+
+![The two bounty boards on the inn's east wall, three notices on each](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/hobbit-tavern-bounty-boards.png)
 
 ### Bounty notices
 - Notices track progress from anywhere in your inventory.

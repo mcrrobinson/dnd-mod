@@ -1,6 +1,8 @@
 # Monk
 A quick martial artist with the fastest attacks in the mod and a triple jump. You fight with a staff or your fists, and armor makes you weaker.
 
+![Flurry Rush at rank IV: the Monk blinks between zombies, leaving a trail](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/monk-flurry-rush.png)
+
 ## How it works
 | Stat | Monk | Vanilla |
 |-|-|-|

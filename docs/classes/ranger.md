@@ -1,6 +1,8 @@
 # Ranger
 An archer. Your bow draws almost instantly, you can zoom while aiming, and your special fires arrows for free.
 
+![A Ranger in Arrow Storm with no arrows in the inventory, arrows landing around the targets](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/ranger-arrow-storm.png)
+
 ## How it works
 **Fast draw.** A bow reaches full power in about 3 ticks instead of 20, so you can fire full-power shots as fast as you can click.
 

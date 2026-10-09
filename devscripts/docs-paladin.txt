@@ -1,0 +1,58 @@
+# Docs screenshot: Paladin Divine Judgment at rank IV (three beams). Needs main with the Divine Judgment special (PR #106).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/docs-paladin.txt
+# Output: <run dir>/screenshots/doc-paladin-*.png
+wait 40
+closescreen
+hud off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/time set 6000
+/weather clear
+/tp @s 1000.5 200 1000.5 0 0
+/effect give @s minecraft:slow_falling 30 0 true
+wait 60
+/fillbiome 980 192 980 1020 207 1020 minecraft:plains
+/fill 980 199 980 1020 199 1020 minecraft:grass_block
+/kill @e[type=!minecraft:player,distance=..60]
+/tp @s 1000.5 200 1000.5 0 0
+/dndclass set @s paladin
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s paladin.divine_judgment 4
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:iron_sword
+/item replace entity @s armor.chest with minecraft:iron_chestplate
+/effect clear @s
+/summon minecraft:zombie 1000.5 200 1007.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+/summon minecraft:zombie 997.5 200 1009 {NoAI:1b,PersistenceRequired:1b,Rotation:[160f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+/summon minecraft:skeleton 1003.5 200 1009 {NoAI:1b,PersistenceRequired:1b,Rotation:[200f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+/summon minecraft:zombie 1001.5 200 1011 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+wait 5
+/item replace entity @e[tag=doc] armor.head with minecraft:leather_helmet
+wait 400
+perspective back
+/tp @s 1000.5 200 1001.5 0 5
+wait 10
+press key.dnd-classes.power-up
+wait 2
+screenshot doc-paladin-a
+wait 2
+screenshot doc-paladin-b
+wait 4
+screenshot doc-paladin-c
+wait 400
+/tp @s 1000.5 200 1001.5 0 5
+/kill @e[type=minecraft:item]
+wait 5
+press key.dnd-classes.power-up
+wait 1
+screenshot doc-paladin-d
+wait 2
+screenshot doc-paladin-e
+perspective first
+/dndclass resetprogress @s
+quit

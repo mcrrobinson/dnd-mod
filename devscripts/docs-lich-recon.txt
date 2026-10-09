@@ -1,0 +1,12 @@
+# Docs: looks for the Lich and phylactery in the dev world's stronghold libraries (stronghold at 992 1472).
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-lich-recon.txt
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 992 30 1472
+wait 400
+/execute in minecraft:overworld as @e[type=dndclasses:lich] run data get entity @s Pos
+/execute in minecraft:overworld as @e[type=dndclasses:lich] run data get entity @s Rotation
+/execute in minecraft:overworld as @e[type=dndclasses:phylactery] run data get entity @s Pos
+/execute in minecraft:overworld as @e[type=minecraft:marker] run data get entity @s Pos
+quit

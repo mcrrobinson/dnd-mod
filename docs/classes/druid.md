@@ -1,6 +1,8 @@
 # Druid
 A nature class that gets tougher with every tamed animal, heals in sunlight and can take the shape of animals it has hunted.
 
+![A Druid in Wild Shape as an Owlbear](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/druid-wild-shape-owlbear.png)
+
 ## How it works
 **Animal hearts.** You get 1 extra heart (2 health) of max health for each living tamed animal you own in your current world, up to 5 hearts. The count is redone every second, so a pet dying costs you a heart straight away. Only animals that are loaded count, so pets left at a far-away base don't help.
 

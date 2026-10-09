@@ -2,6 +2,8 @@
 
 An Artificer weapon enchantment: every melee hit heals the wielder for a share of the damage it dealt.
 
+![A Vampiric III netherite sword hitting a husk while the wielder is below full health](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/vampiric-hit.png)
+
 ## How it works
 
 - Levels I-III. Heals **10% of the damage dealt per level**: 10% at I, 20% at II, 30% at III.

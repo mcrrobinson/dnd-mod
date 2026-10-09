@@ -1,6 +1,8 @@
 # Nether Fortress additions
 The mod doesn't add a new Nether structure. It changes vanilla Nether Fortresses: goblins move in, a boss guards the central bridge and the fortress gets its own music.
 
+![The Goblin Warlord and Goblin Warriors on a Nether Fortress bridge](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/nether-fortress-warlord-goblins.png)
+
 ## How it works
 [Goblin Warriors](../mobs/goblins.md) join the fortress spawn pool alongside blazes, wither skeletons and the rest, with weight 6 in groups of 1 to 3. Expect them anywhere in the fortress.
 

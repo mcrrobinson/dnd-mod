@@ -1,0 +1,41 @@
+# Docs screenshots: a Lich and its phylactery in a real stronghold library, then its purple boss bar (HUD on).
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-lich.txt
+# Dev world: Lich 1003.4 42 1504.8, phylactery 1005.5 42 1502.5 (from docs-lich-recon.txt). Brightness (gamma) 1.0 helps.
+# Output: screenshots/docs-lich-*.png.
+wait 40
+closescreen
+/gamemode spectator
+/gamerule sendCommandFeedback false
+/tp @s 999 44 1503.7
+wait 300
+/execute in minecraft:overworld as @e[type=dndclasses:lich,limit=1,sort=nearest] at @s run tp @s 1003.45 42 1504.85 90 0
+wait 2
+/execute in minecraft:overworld as @e[type=dndclasses:lich,limit=1,sort=nearest] run data merge entity @s {NoAI:1b}
+hud off
+/tp @s 1004.5 47.5 1500.2 10 45
+wait 30
+screenshot docs-lich-a
+/tp @s 1001 47.5 1503.7 -90 42
+wait 30
+screenshot docs-lich-b
+/tp @s 1004.2 48.5 1503.7 -90 80
+wait 30
+screenshot docs-lich-c
+/tp @s 1000.5 43.2 1504.6 -90 4
+wait 30
+screenshot docs-lich-d
+/tp @s 1007.5 47.5 1503.7 90 42
+wait 30
+screenshot docs-lich-e
+# Boss bar: hurt it as a player (it stays frozen)
+/gamemode survival
+/effect give @s minecraft:resistance 60 4 true
+/tp @s 1000.5 41.6 1504.6 -90 3
+wait 20
+/damage @e[type=dndclasses:lich,limit=1,sort=nearest] 10 minecraft:player_attack by @s
+hud on
+wait 30
+screenshot docs-lich-bar
+/gamemode spectator
+/gamerule sendCommandFeedback true
+quit

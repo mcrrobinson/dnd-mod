@@ -2,6 +2,8 @@
 
 Smite Dragons is an Artificer enchantment for swords and axes. It's Smite for dragons: extra melee damage against every dragon and wyvern in the mod. It pairs with the Dragon Slayer advancement.
 
+![A player hitting a Wyvern with a Smite Dragons V sword; the Wyvern flashes red from the hit](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/smite-dragons-hit.png)
+
 ## How it works
 
 - Levels I to V, each adding **+2.5 melee damage** against dragons, the same as Smite against undead. At level V that's +12.5: a diamond sword hits a Wyvern for 19.5 instead of 7.

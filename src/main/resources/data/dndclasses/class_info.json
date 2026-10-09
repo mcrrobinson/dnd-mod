@@ -22,7 +22,7 @@
       "name": "Cleric",
       "pros": ["High mining speed", "Night vision"],
       "cons": ["Shorter viewing distance (fog closes in at ~48 blocks)", "Slightly reduced attack damage"],
-      "special": ["Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s)"],
+      "special": ["Circle of ignoring mobs for 6 to 15 seconds as it ranks up; from rank II party members within 8 to 16 blocks share it and get Regeneration"],
       "specialOnKey": true
     },
     {

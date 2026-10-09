@@ -6,6 +6,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -26,7 +27,10 @@ public class ClericHandler {
     // Night vision starts flickering under 200 ticks, so refresh before that.
     private static final int REFRESH_BELOW = 220;
     private static final int EFFECT_DURATION = 400;
-    public static final double REPEL_RADIUS = 16;
+    /** Mobs within this many blocks that are chasing a repelling player give up. */
+    private static final double CHASE_CANCEL_RADIUS = 32;
+    /** Ring radius while Sanctuary only covers the Cleric (rank I). */
+    private static final double SOLO_RING_RADIUS = 2;
     private static final int BASE_HASTE = 2;
     private static final int DEEP_DELVER_HASTE = 3;
 
@@ -62,7 +66,10 @@ public class ClericHandler {
             refreshEffect(player, StatusEffects.NIGHT_VISION, 0);
 
             if (player.hasStatusEffect(ModEffects.MOB_REPEL)) {
-                DnDClasses.createParticleRing(world, player.getPos(), REPEL_RADIUS, 100);
+                // The ring shows how far the party share reaches at the Cleric's Sanctuary rank.
+                double reach = ClericSkills.sanctuaryPartyReach(player);
+                DnDClasses.createParticleRing(world, player.getPos(), reach > 0 ? reach : SOLO_RING_RADIUS,
+                        reach > 0 ? 100 : 20);
 
                 clearTargets(world, player);
             }
@@ -73,7 +80,7 @@ public class ClericHandler {
     private static void clearTargets(ServerWorld world, ServerPlayerEntity player) {
         if (world.getTime() % 10 == 0) {
             for (MobEntity mob : world.getEntitiesByClass(MobEntity.class,
-                    player.getBoundingBox().expand(REPEL_RADIUS * 2), mob -> mob.getTarget() == player)) {
+                    player.getBoundingBox().expand(CHASE_CANCEL_RADIUS), mob -> mob.getTarget() == player)) {
                 mob.setTarget(null);
             }
         }

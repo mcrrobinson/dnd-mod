@@ -31,7 +31,7 @@ Rank it up with skill points at an Attunement Table (1 point per rank).
 A Paladin works best with friends: someone else crafts your tools and armor, and your auras keep them standing while Divine Judgment thins the crowd. Playing solo, collect villager trades and loot for gear, and keep a chest of crafted basics from before you picked the class. Avoid the Nether until you've unlocked Hellforged.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)). The Paladin tree has a ninth node, Circle of Healing, straight above the root.
 
 Paladins get 3 extra XP for killing undead, and 1 extra for a hostile kill while another player is within 16 blocks.
 
@@ -44,6 +44,7 @@ Paladins get 3 extra XP for killing undead, and 1 extra for a hostile kill while
 | Hellforged | Conquest | Passive | 1 | | The Nether no longer weakens you |
 | Divine Shield | Conquest | Active | 1 | 5 | Absorption III and no knockback for 15 s |
 | Aura of Courage | Conquest | Passive | 1 | | Weakness and Slowness are removed from you and players within 8 blocks every second |
+| Circle of Healing | Mercy | Active | 2 | 7 | Fully heals every player within 10 blocks. You and party members within 24 blocks are fully healed and get Absorption I for 30 s |
 | Avenging Angel | Capstone | Active | 2 | 9 | Strength II, Regeneration II and Resistance II for 20 s; undead within 10 blocks are set on fire every second for the whole time |
 
 The effects from your own skills aren't potions, so they apply to you.
@@ -52,5 +53,5 @@ The effects from your own skills aren't potions, so they apply to you.
 - `/dndclass set <player> paladin` (see [Admin commands](../systems/admin-commands.md)).
 
 ## For developers
-- Nether weakness: `Misc/PaladinNetherWeakness` (skipped with `PaladinSkills.HELLFORGED`). Crafting: `mixin/SlotMixin`, `mixin/SmithingScreenHandlerMixin`. Brewing: `mixin/BrewingStandBlockMixin`. Potions: `PotionImmunity`. Divine Judgment: `PaladinSkills.divineJudgment`, fired from `PowerUpEffect` (`PALADIN`); its ranks are `PaladinSkills.DIVINE_JUDGMENT`. Test: `devscripts/paladin-ranks.txt`.
+- Nether weakness: `Misc/PaladinNetherWeakness` (skipped with `PaladinSkills.HELLFORGED`). Crafting: `mixin/SlotMixin`, `mixin/SmithingScreenHandlerMixin`. Brewing: `mixin/BrewingStandBlockMixin`. Potions: `PotionImmunity`. Divine Judgment: `PaladinSkills.divineJudgment`, fired from `PowerUpEffect` (`PALADIN`); its ranks are `PaladinSkills.DIVINE_JUDGMENT`. Circle of Healing: `PaladinSkills.circleOfHealing` (party lookup through `PartyManager.nearbyMembers`). Test: `devscripts/paladin-ranks.txt`.
 - Skill tree: `Progression/Classes/PaladinSkills.java`. Aura of Protection is applied in `PaladinAuraMixin`, since it also changes damage to other players.

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
@@ -79,6 +80,13 @@ public class PaladinSkills extends ClassSkills {
     private static final double ANGEL_RADIUS = 10;
     private static final int ANGEL_FIRE_SECONDS = 3;
 
+    private static final String CIRCLE_OF_HEALING = "paladin.circle_of_healing";
+    /** Every player this close is fully healed. */
+    private static final double HEAL_RADIUS = 10;
+    /** Party members this close are fully healed and get Absorption. */
+    private static final double PARTY_HEAL_RADIUS = 24;
+    private static final int HEAL_ABSORPTION_TICKS = 30 * 20;
+
     private static final double JUDGMENT_RANGE = 30;
     /** Extra beams pick hostiles within this many blocks of the first target. */
     private static final double JUDGMENT_CHAIN_RADIUS = 12;
@@ -126,7 +134,11 @@ public class PaladinSkills extends ClassSkills {
                         0, 1, "paladin.divine_shield"),
                 active("paladin.avenging_angel", "Avenging Angel",
                         "Strength II, Regeneration II and Resistance II for 20 seconds; undead within 10 blocks burn.",
-                        "minecraft:elytra", 9, 2, 1, 0, AURA_OF_PROTECTION, "paladin.aura_of_courage"));
+                        "minecraft:elytra", 9, 2, 1, 0, AURA_OF_PROTECTION, "paladin.aura_of_courage"),
+                // Mercy
+                active(CIRCLE_OF_HEALING, "Circle of Healing",
+                        "Fully heals players within 10 blocks; party members within 24 blocks are healed too and get Absorption for 30 seconds.",
+                        "minecraft:golden_apple", 7, 2, 1, 2, DIVINE_JUDGMENT_ID));
     }
 
     @Override
@@ -180,6 +192,7 @@ public class PaladinSkills extends ClassSkills {
                 burnUndead(player);
                 effects(player, SoundEvents.BLOCK_BEACON_ACTIVATE, ParticleTypes.END_ROD, 40);
             }
+            case CIRCLE_OF_HEALING -> circleOfHealing(player);
             default -> {
                 return false;
             }
@@ -238,6 +251,40 @@ public class PaladinSkills extends ClassSkills {
             }
         }
         return amount;
+    }
+
+    /**
+     * Circle of Healing: every player within 10 blocks is fully healed. The
+     * Paladin and party members within 24 blocks are fully healed and get
+     * Absorption I for 30 seconds.
+     */
+    private static void circleOfHealing(ServerPlayerEntity player) {
+        for (PlayerEntity ally : playersNear(player, HEAL_RADIUS)) {
+            ally.heal(ally.getMaxHealth());
+        }
+        List<ServerPlayerEntity> party = PartyManager.nearbyMembers(player, PARTY_HEAL_RADIUS);
+        party.add(player);
+        for (ServerPlayerEntity member : party) {
+            member.heal(member.getMaxHealth());
+            member.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, HEAL_ABSORPTION_TICKS, 0));
+            ((ServerWorld) member.getWorld()).spawnParticles(ParticleTypes.HEART, member.getX(),
+                    member.getY() + 1.2, member.getZ(), 5, 0.4, 0.4, 0.4, 0.0);
+        }
+
+        // A ring of light on the ground marking the 10-block circle.
+        ServerWorld world = (ServerWorld) player.getWorld();
+        int points = (int) (HEAL_RADIUS * 8);
+        for (int i = 0; i < points; i++) {
+            double angle = 2 * Math.PI * i / points;
+            world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, player.getX() + Math.cos(angle) * HEAL_RADIUS,
+                    player.getY() + 0.3, player.getZ() + Math.sin(angle) * HEAL_RADIUS, 2, 0.1, 0.2, 0.1, 0.0);
+        }
+        world.spawnParticles(ParticleTypes.HEART, player.getX(), player.getY() + 1, player.getZ(), 12, 1.5, 0.5,
+                1.5, 0.0);
+        world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.PLAYERS,
+                1.5F, 1.0F);
+        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS,
+                0.6F, 1.6F);
     }
 
     /**

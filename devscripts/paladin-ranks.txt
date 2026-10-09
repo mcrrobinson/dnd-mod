@@ -11,7 +11,9 @@
 #  IV  (20 dmg, r6, 3 beams): a 70.0 b 70.0  c 70.0  d 88.0  pig 10.0
 #  zombie a: Fire > 0 after each cast
 #  Divine Smite is unlocked before rank IV: it is melee only, so the rank IV numbers don't change
-# Screenshots: paladin-no-target, paladin-wall, paladin-rank1..4
+# Circle of Healing (7 mana): a 12-block fall hurts the Paladin (26 max health), then the cast
+#  heals to 26.0 and gives Absorption I (Id 22, Amplifier 0, ~600 ticks); AbsorptionAmount 4.0
+# Screenshots: paladin-no-target, paladin-wall, paladin-rank1..4, paladin-tree, paladin-heal
 wait 40
 closescreen
 /gamemode survival
@@ -139,5 +141,27 @@ wait 2
 /data get entity @e[tag=p,limit=1] Health
 /data get entity @e[tag=a,limit=1] Fire
 /kill @e[type=!minecraft:player,distance=..64]
+/dndclass unlock @s paladin.circle_of_healing
+/dndclass equip @s paladin.circle_of_healing
+/dndclass progress @s
+/effect clear @s
+/tp @s 4.5 162 1.5 0 10
+wait 60
+/data get entity @s Health
+wait 340
+press key.dnd-classes.skill-tree
+wait 10
+screenshot paladin-tree
+closescreen
+/data get entity @s Health
+/tp @s 4.5 150 1.5 0 30
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-heal
+wait 2
+/data get entity @s Health
+/data get entity @s AbsorptionAmount
+/data get entity @s ActiveEffects
 /dndclass resetprogress @s
 quit

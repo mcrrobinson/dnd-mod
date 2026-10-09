@@ -19,11 +19,25 @@ Abilities with more than four ranks set their own levels. Ranks compete with unl
 - **In the tooltip:** "Rank II/IV", "Now: ..." with the current values, "Next: ... (level 6, 1 point)", and a line saying what's needed: "Right-click to rank up", "Next rank needs level N", "Next rank needs 1 point" or "Max rank".
 - Ranks are kept per class, and survive death, the End and relogging. `/dndclass resetprogress` clears them and refunds their points.
 
-Abilities with ranks so far:
+Abilities with ranks (values for ranks I / II / III / IV unless noted):
 
 | Class | Ability | Ranks |
 |-|-|-|
+| Alchemist | Transmute | Radius 3 / 4 / 5 / 6 blocks, cloud 6 / 8 / 10 / 12 s, +1 / +1 / +2 / +2 effect levels |
+| Barbarian | Rage | Strength I 8 s / II 10 s / II 12 s / III 12 s |
+| Bard | Animal Friends | Radius 10 / 12 / 14 / 16 blocks, 3 / 4 / 5 / 6 companions, animals up to tier I / II / III / IV |
+| Blood Hunter | Blood Control | 8 / 12 / 16 / 20 s, 60 / 75 / 90 / 100% success, range 15 / 20 / 25 / 30 blocks |
+| Cleric | Sanctuary | 6 / 9 / 12 / 15 s; from rank II the party within 8 / 12 / 16 blocks shares it with Regeneration I 5 s / I 8 s / II 10 s |
+| Druid | Wild Shape | 15 / 20 / 25 / 30 s, forms up to tier I / II / III / IV |
 | Fighter | Super Regeneration | Regeneration V for 4 / 6 / 8 / 10 s |
+| Monk | Flurry Rush | 3 / 5 / 7 / 10 hits across 1 / 2 / 3 / 5 targets, 3 / 3 / 4 / 4 damage per hit |
+| Necromancer | Raise Dead | 5 ranks (levels 3 / 5 / 7 / 10): 2 / 3 / 4 / 5 / 5 undead for 10 / 12 / 14 / 16 / 20 s, stronger kinds with rank, plus a Bone Wyvern at rank V |
+| Paladin | Divine Judgment | 8 / 12 / 16 / 20 damage, shockwave 3 / 4 / 5 / 6 blocks, 1 / 1 / 2 / 3 beams |
+| Ranger | Arrow Storm | 2 / 2.5 / 3.3 / 5 shots/s, arrow speed 100 / 115 / 130 / 150%, 8 / 10 / 12 / 15 s |
+| Rogue | Vanish | Invisibility for 6 / 9 / 12 / 15 s |
+| Rogue | Danger Sense | Dodges projectiles for 5 / 6 / 7 / 8 s |
+| Warlock | Fire Breath | 8 / 12 / 16 / 20 s, reach 3 / 4 / 5 / 7 blocks, 1 / 2 / 2 / 3 damage, burn 2 / 2 / 4 / 4 s |
+| Wizard | Arcane Explosion | Radius 12 / 28 / 48 / 72 blocks, Resistance V for 2 / 3 / 4 / 5 s |
 
 ### Bestiary (Bard and Druid)
 - **Druid:** killing a creature **learns** it ("Learned Cow. Unlock it at an Attunement Table."): animals and wild beasts such as the Owlbear.

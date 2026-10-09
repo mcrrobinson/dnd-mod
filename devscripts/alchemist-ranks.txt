@@ -1,56 +1,114 @@
-# Checks Alchemist Transmute and its ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/alchemist-ranks.txt
-# Expect in latest.log ([CHAT] lines):
-#  1. Rank I, held Strength potion thrown down: player gets Strength (id 5) Amplifier 1 (II); the spider in the cloud gets nothing from it
-#  2. The held potion is used up (SelectedItem empty)
-#  3. Rank IV, held splash Slowness potion: spider gets Slowness (id 2) Amplifier 2 (III), player doesn't
-#  4. Rank IV, empty hand (unstable brew): player gets one buff at Amplifier 2, spider one harm at Amplifier 2
-#     (a spider, not a zombie: undead ignore Poison and burn at noon)
-# Mana refills in 18 s, hence the long waits.
-# Screenshots: transmute-cloud (rank I cloud), transmute-cloud-4 (rank IV cloud, wider)
+# Checks Alchemist Transmute at every rank. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/alchemist-ranks.txt
+# The player stands at 8.5 150 8.5 looking down, so the flask lands at their feet. Around them (frozen, tagged):
+#   near  spider 2 blocks east   far45 spider 4.5 blocks west   far55 spider 5.5 blocks east
+#   cow 2 blocks west, villager 2 blocks north (neither should ever get anything)
+# Expect in latest.log ([CHAT] lines), checked 30 ticks after each throw:
+#  I   (r3, +1) held Strength:       player Strength (id 5) Amplifier 1; potion used up (SelectedItem gone); spiders nothing
+#  II  (r4, +1) held splash Weakness: near Weakness (id 18) Amplifier 1; far45/far55, player, cow, villager nothing
+#  III (r5, +2) empty hand:           player one buff Amplifier 2; near and far45 one harm Amplifier 2; far55 nothing
+#  IV  (r6, +2) held splash Slowness: near, far45 and far55 Slowness (id 2) Amplifier 2; player nothing
+# Mana refills in 18 s, hence ~400 ticks between throws.
+# Screenshots: transmute-r1 .. transmute-r4 (from above and behind, cloud getting wider)
 wait 40
 closescreen
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false
 /time set noon
-/fill 0 149 0 16 149 16 minecraft:stone
-/fill 0 150 0 16 156 16 minecraft:air
+/fill -2 149 -2 18 149 18 minecraft:stone
+/fill -2 150 -2 18 160 18 minecraft:air
 /dndclass set @s alchemist
 wait 10
 closescreen
 /dndclass resetprogress @s
 /effect clear @s
-/kill @e[type=minecraft:spider]
-/summon minecraft:spider 8.5 150 9.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b}
+/kill @e[type=!minecraft:player,x=-2,y=145,z=-2,dx=20,dy=20,dz=20]
+/summon minecraft:spider 10.5 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["near"]}
+/summon minecraft:spider 4.0 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["far45"]}
+/summon minecraft:spider 14.0 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["far55"]}
+/summon minecraft:cow 6.5 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["cow"]}
+/summon minecraft:villager 8.5 150 6.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["vill"]}
 /item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:strength"}
 /tp @s 8.5 150 8.5 0 90
 wait 200
+# ---- Rank I: held Strength
+/dndclass progress @s
 press key.dnd-classes.power-up
-wait 40
-screenshot transmute-cloud
+wait 30
 /data get entity @s ActiveEffects
-/data get entity @e[type=minecraft:spider,limit=1] ActiveEffects
 /data get entity @s SelectedItem
-wait 140
-/effect clear @s
-/effect clear @e[type=minecraft:spider]
+/data get entity @e[tag=near,limit=1] ActiveEffects
+/data get entity @e[tag=far45,limit=1] ActiveEffects
+/tp @s 8.5 158 0.5 0 45
+hud off
+wait 5
+screenshot transmute-r1
+hud on
+/tp @s 8.5 150 8.5 0 90
+wait 200
+# ---- Rank II: held splash Weakness
+/effect clear @e[x=-2,y=145,z=-2,dx=20,dy=20,dz=20]
+/dndclass rank @s alchemist.distill 2
+/item replace entity @s weapon.mainhand with minecraft:splash_potion{Potion:"minecraft:weakness"}
+wait 170
+press key.dnd-classes.power-up
+wait 30
+/data get entity @s ActiveEffects
+/data get entity @e[tag=near,limit=1] ActiveEffects
+/data get entity @e[tag=far45,limit=1] ActiveEffects
+/data get entity @e[tag=far55,limit=1] ActiveEffects
+/data get entity @e[tag=cow,limit=1] ActiveEffects
+/data get entity @e[tag=vill,limit=1] ActiveEffects
+/tp @s 8.5 158 0.5 0 45
+hud off
+wait 5
+screenshot transmute-r2
+hud on
+/tp @s 8.5 150 8.5 0 90
+wait 200
+# ---- Rank III: empty hand (unstable brew)
+/effect clear @e[x=-2,y=145,z=-2,dx=20,dy=20,dz=20]
+/dndclass rank @s alchemist.distill 3
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 170
+press key.dnd-classes.power-up
+wait 30
+/data get entity @s ActiveEffects
+/data get entity @e[tag=near,limit=1] ActiveEffects
+/data get entity @e[tag=far45,limit=1] ActiveEffects
+/data get entity @e[tag=far55,limit=1] ActiveEffects
+/data get entity @e[tag=cow,limit=1] ActiveEffects
+/data get entity @e[tag=vill,limit=1] ActiveEffects
+/tp @s 8.5 158 0.5 0 45
+hud off
+wait 5
+screenshot transmute-r3
+hud on
+/tp @s 8.5 150 8.5 0 90
+wait 200
+# ---- Rank IV: held splash Slowness
+/effect clear @e[x=-2,y=145,z=-2,dx=20,dy=20,dz=20]
+# The rank III harm can be Wither III, which kills the spiders: bring them back
+/kill @e[type=minecraft:spider,x=-2,y=145,z=-2,dx=20,dy=20,dz=20]
+/summon minecraft:spider 10.5 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["near"]}
+/summon minecraft:spider 4.0 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["far45"]}
+/summon minecraft:spider 14.0 150 8.5 {NoAI:1b,PersistenceRequired:1b,Silent:1b,Tags:["far55"]}
 /dndclass rank @s alchemist.distill 4
 /item replace entity @s weapon.mainhand with minecraft:splash_potion{Potion:"minecraft:slowness"}
-wait 240
+wait 170
 press key.dnd-classes.power-up
-wait 40
-screenshot transmute-cloud-4
+wait 30
 /data get entity @s ActiveEffects
-/data get entity @e[type=minecraft:spider,limit=1] ActiveEffects
-wait 200
-/effect clear @s
-/effect clear @e[type=minecraft:spider]
-/item replace entity @s weapon.mainhand with minecraft:air
-wait 220
-press key.dnd-classes.power-up
-wait 40
-/data get entity @s ActiveEffects
-/data get entity @e[type=minecraft:spider,limit=1] ActiveEffects
-/kill @e[type=minecraft:spider]
+/data get entity @e[tag=near,limit=1] ActiveEffects
+/data get entity @e[tag=far45,limit=1] ActiveEffects
+/data get entity @e[tag=far55,limit=1] ActiveEffects
+/data get entity @e[tag=cow,limit=1] ActiveEffects
+/data get entity @e[tag=vill,limit=1] ActiveEffects
+/tp @s 8.5 158 0.5 0 45
+hud off
+wait 5
+screenshot transmute-r4
+hud on
+/kill @e[type=!minecraft:player,x=-2,y=145,z=-2,dx=20,dy=20,dz=20]
 /dndclass resetprogress @s
 quit

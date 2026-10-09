@@ -10,7 +10,7 @@ Mana comes back at 1 pip every 2 seconds, so an empty bar fills in 18 seconds.
 
 Press the **power-up key (Z by default)** to fire your equipped active. Each active has a mana cost, shown as a line under the pips it uses. The line is grey while you can't afford it and turns gold when you can. Your class's original special, the root of its [skill tree](class-selection.md#class-levels-and-the-skill-tree), costs all 9 pips. Most actives you unlock further up the tree cost less. Firing spends only that skill's cost, plays a short music sting for your class and dips the background music under it (see [Music](../music.md)).
 
-If the special can't do anything, you keep your mana. That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, as an Alchemist with no potions to upgrade, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
+If the special can't do anything, you keep your mana. That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
 
 Mana is kept through death and leaving the End, so dying doesn't refill it.
 

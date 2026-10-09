@@ -221,10 +221,10 @@ public class PowerUpEffect {
                 // Sanctuary: duration, party reach and the party's Regeneration come from its rank.
                 int duration = ClericSkills.SANCTUARY.ticks(player, "Duration");
                 player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
-                double reach = ClericSkills.sanctuaryPartyReach(player);
-                if (reach > 0 && player instanceof ServerPlayerEntity cleric) {
+                double partyReach = ClericSkills.sanctuaryPartyReach(player);
+                if (partyReach > 0 && player instanceof ServerPlayerEntity cleric) {
                     int regen = ClericSkills.sanctuaryPartyRegenAmplifier(player);
-                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, reach)) {
+                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, partyReach)) {
                         member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
                         if (regen >= 0) {
                             member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,

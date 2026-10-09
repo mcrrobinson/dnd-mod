@@ -34,17 +34,17 @@ Your class is saved on your player, so it survives logging out, dying and leavin
 ![The Warlock skill tree at level 0](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/skill-tree.png)
 
 ### Class levels and the skill tree
-Each class has its own XP and level, from 0 to 6. You earn class XP by playing:
+Each class has its own XP and level, from 0 to 10. You earn class XP by playing:
 
 - 1 XP for every minute you're online (not in spectator).
 - 2 XP for every hostile mob you kill, plus class-specific bonuses such as Barbarian melee kills, Cleric ore mining, Alchemist brewing and Artificer crafting.
 - Kill XP is split with nearby [party](party.md) members.
 
-| Level | 1 | 2 | 3 | 4 | 5 | 6 |
-|-|-|-|-|-|-|-|
-| Total XP | 40 | 120 | 250 | 450 | 700 | 1000 |
+| Level | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+|-|-|-|-|-|-|-|-|-|-|-|
+| Total XP | 40 | 120 | 250 | 450 | 700 | 1000 | 1350 | 1750 | 2200 | 2700 |
 
-Each level gives you one skill point, and chat tells you when you level up. Press **O** to open your skill tree. Every tree has the same shape: the root at the bottom is your class's original special and is always unlocked, a branch of three nodes climbs each side, and a capstone sits at the top. Branch nodes cost 1 point each. The capstone costs 2 and needs the top node of either branch. Six points can't buy everything, so you have to choose a path.
+Each level gives you one skill point, and chat tells you when you level up. Press **O** to open your skill tree. Every tree has the same shape: the root at the bottom is your class's original special and is always unlocked, a branch of three nodes climbs each side, and a capstone sits at the top. Branch nodes cost 1 point each. The capstone costs 2 and needs the top node of either branch. A full tree costs 8 points, and abilities can also be ranked up for points (see [Class progression](class-progression.md)), so ten levels can't buy everything and you have to choose.
 
 Click a node you can afford to unlock it. A new passive goes straight into an empty passive slot. To swap your active, or to change passives once both slots are full, you need an **Attunement Table**: right click one to open the tree in attunement mode, then click unlocked nodes to equip or unequip them. You hold one active and two passives at a time. Hover a node to see what it does, its mana cost and what it needs.
 

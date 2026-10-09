@@ -6,6 +6,8 @@ import java.util.Locale;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.LiteralArgumentBuilder;
+import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
@@ -19,10 +21,13 @@ import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
+import net.minecraft.command.argument.IdentifierArgumentType;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 /**
  * /dndclass get <player>
@@ -32,6 +37,8 @@ import net.minecraft.text.Text;
  * /dndclass xp <player> add|set <amount>
  * /dndclass resetprogress <player>
  * /dndclass unlock|equip <player> <skill>   (ignores points and the attunement table)
+ * /dndclass rank <player> <skill> <n>        (ignores points, level and the attunement table)
+ * /dndclass bestiary <player> learn|unlock <entity>
  *
  * Changes a player's class without them having to die. Setting "none" clears the
  * class and reopens the class picker on their client.
@@ -66,20 +73,25 @@ public class DndClassCommand {
                                                 .executes(context -> xp(context, false))))))
                 .then(skillCommand("unlock", true))
                 .then(skillCommand("equip", false))
+                .then(CommandManager.literal("rank")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(skillArgument()
+                                        .then(CommandManager.argument("rank", IntegerArgumentType.integer(1))
+                                                .executes(DndClassCommand::rank)))))
+                .then(CommandManager.literal("bestiary")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(bestiaryCommand("learn", false))
+                                .then(bestiaryCommand("unlock", true))))
                 .then(CommandManager.literal("resetprogress")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::resetProgress))));
     }
 
-    private static com.mojang.brigadier.builder.LiteralArgumentBuilder<ServerCommandSource> skillCommand(
+    private static LiteralArgumentBuilder<ServerCommandSource> skillCommand(
             String literal, boolean unlock) {
         return CommandManager.literal(literal)
                 .then(CommandManager.argument("player", EntityArgumentType.player())
-                        .then(CommandManager.argument("skill", StringArgumentType.word())
-                                .suggests((context, builder) -> CommandSource.suggestMatching(
-                                        ClassTrees.get(Progression.classOf(EntityArgumentType.getPlayer(context,
-                                                "player"))).stream().map(SkillNode::id),
-                                        builder))
+                        .then(skillArgument()
                                 .executes(context -> {
                                     ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
                                     String skill = StringArgumentType.getString(context, "skill");
@@ -94,6 +106,50 @@ public class DndClassCommand {
                                 })));
     }
 
+    private static RequiredArgumentBuilder<ServerCommandSource, String> skillArgument() {
+        return CommandManager.argument("skill", StringArgumentType.word())
+                .suggests((context, builder) -> CommandSource.suggestMatching(
+                        ClassTrees.get(Progression.classOf(EntityArgumentType.getPlayer(context, "player"))).stream()
+                                .map(SkillNode::id),
+                        builder));
+    }
+
+    private static int rank(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        String skill = StringArgumentType.getString(context, "skill");
+        int rank = IntegerArgumentType.getInteger(context, "rank");
+        if (!Progression.setRank(player, skill, rank)) {
+            SkillNode node = ClassTrees.node(skill);
+            context.getSource().sendError(Text.literal("Couldn't set " + skill + " to rank " + rank
+                    + (node == null ? "" : " (it must be unlocked; max rank " + node.maxRank() + ")")));
+            return 0;
+        }
+        return progress(context);
+    }
+
+    private static LiteralArgumentBuilder<ServerCommandSource> bestiaryCommand(String literal, boolean unlock) {
+        return CommandManager.literal(literal)
+                .then(CommandManager.argument("entity", IdentifierArgumentType.identifier())
+                        .suggests((context, builder) -> CommandSource.suggestIdentifiers(Registries.ENTITY_TYPE.getIds(),
+                                builder))
+                        .executes(context -> {
+                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                            Identifier id = IdentifierArgumentType.getIdentifier(context, "entity");
+                            if (!Registries.ENTITY_TYPE.containsId(id)) {
+                                context.getSource().sendError(Text.literal("Unknown entity " + id));
+                                return 0;
+                            }
+                            boolean done = unlock ? Progression.unlockBestiary(player, id.toString(), true)
+                                    : Progression.learn(player, id.toString());
+                            if (!done) {
+                                context.getSource().sendError(Text.literal("Couldn't " + literal + " " + id
+                                        + " (already done, or the class has no bestiary)"));
+                                return 0;
+                            }
+                            return progress(context);
+                        }));
+    }
+
     private static int progress(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
         ClassProgress progress = Progression.current(player);
@@ -101,7 +157,10 @@ public class DndClassCommand {
         context.getSource().sendFeedback(Text.literal(player.getEntityName() + " " + name(progress.dndClass)
                 + ": level " + progress.level() + ", " + progress.xp + " xp, " + progress.points() + " points"
                 + ", unlocked " + progress.unlocked + ", active " + (active == null ? "-" : active.id())
-                + ", passives " + progress.passives), false);
+                + ", passives " + progress.passives + ", ranks " + progress.ranks
+                + (progress.usesBestiary() ? ", learned " + progress.learned + ", bestiary " + progress.bestiary
+                        : "")),
+                false);
         return progress.level();
     }
 

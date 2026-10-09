@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -195,9 +196,11 @@ public class PowerUpEffect {
                 mattonfire.dnd.classes.Progression.Classes.MonkSkills.kiSurge(player);
                 break;
             case FIGHTER:
-                // Super regeneration: Regeneration V for 10 seconds (~2 hearts/sec).
+                // Super regeneration: Regeneration V (~3 hearts/sec), longer with each rank.
                 // Not potion-sourced, so the Fighter's potion block doesn't stop it.
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 4));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,
+                        FighterSkills.SUPER_REGEN.ticks(player, "Duration"),
+                        FighterSkills.SUPER_REGEN.amplifier(player, "Regeneration")));
                 break;
             case BARD:
                 bardEffect(player);

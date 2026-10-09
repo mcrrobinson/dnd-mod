@@ -1,0 +1,84 @@
+# Checks ability ranks and the bestiary. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ability-ranks.txt
+# Expect in latest.log ([CHAT] /dndclass progress lines):
+#  1. ranks {} after the rank-up away from a table (refused)
+#  2. ranks {fighter.super_regen=2}, 2 points after right-clicking Super Regeneration at the table
+#  3. still rank 2 after the second try (rank III needs level 6)
+#  4. ranks {fighter.super_regen=4}, 0 points after /dndclass rank
+#  5. Regeneration (id 10) Amplifier 4, Duration ~200 after firing it at rank IV
+#  6. ranks {} after resetprogress
+#  7. Druid: learned [minecraft:cow] after the kill, bestiary [] after the unlock away from the table,
+#     bestiary [minecraft:cow] after the unlock at it, then minecraft:pig learned and unlocked by command
+# Screenshots: ranks-tree (pips on Super Regeneration), ranks-bestiary (Druid bestiary page)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s fighter
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/tp @s 4.5 150 1.5 0 30
+wait 5
+skill rankup fighter.super_regen
+wait 5
+/dndclass progress @s
+/setblock 4 150 4 dndclasses:attunement_table
+wait 5
+use
+wait 10
+click 0 46 1
+wait 10
+/dndclass progress @s
+click 0 46 1
+wait 10
+/dndclass progress @s
+screenshot ranks-tree
+closescreen
+/dndclass rank @s fighter.super_regen 4
+/effect clear @s
+wait 200
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/dndclass resetprogress @s
+/dndclass progress @s
+# Druid bestiary
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/item replace entity @s weapon.mainhand with minecraft:netherite_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5}]}
+/setblock 4 150 4 minecraft:air
+/summon minecraft:cow 4.5 150 3.5 {NoAI:1b,Rotation:[180f,0f]}
+/tp @s 4.5 150 1.5 0 20
+wait 10
+attack
+wait 10
+/dndclass progress @s
+skill bestiary minecraft:cow
+wait 5
+/dndclass progress @s
+/kill @e[type=minecraft:item]
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+click 102 -104
+wait 5
+skill bestiary minecraft:cow
+wait 5
+/dndclass progress @s
+/dndclass bestiary @s learn minecraft:pig
+/dndclass bestiary @s unlock minecraft:sheep
+wait 10
+screenshot ranks-bestiary
+closescreen
+/setblock 4 150 4 minecraft:air
+/dndclass resetprogress @s
+quit

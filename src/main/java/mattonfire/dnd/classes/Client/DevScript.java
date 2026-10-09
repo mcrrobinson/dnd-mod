@@ -6,9 +6,12 @@ import java.nio.file.Path;
 import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.mixin.MinecraftClientInvoker;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ConnectScreen;
@@ -20,10 +23,12 @@ import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.option.Perspective;
 import net.minecraft.client.util.ScreenshotRecorder;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.RenameItemC2SPacket;
 import net.minecraft.screen.AnvilScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.SlotActionType;
+import net.minecraft.util.Identifier;
 
 /**
  * Dev-only automation, so the client can be driven without anyone at the keyboard.
@@ -63,6 +68,10 @@ import net.minecraft.screen.slot.SlotActionType;
  * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory)</li>
  * <li>{@code button <id>} clicks a screen button such as an enchanting option (0-2)</li>
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
+ * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
+ *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
+ * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
+ *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -229,8 +238,38 @@ public final class DevScript {
                     DnDClasses.LOGGER.warn("[DevScript] {}: rename needs an open anvil", lineNumber);
                 }
             }
+            case "click" -> {
+                String[] args = argument.split("\\s+");
+                if (client.currentScreen != null) {
+                    double x = client.currentScreen.width / 2.0 + Double.parseDouble(args[0]);
+                    double y = client.currentScreen.height / 2.0 + Double.parseDouble(args[1]);
+                    int button = args.length > 2 ? Integer.parseInt(args[2]) : 0;
+                    client.currentScreen.mouseClicked(x, y, button);
+                    client.currentScreen.mouseReleased(x, y, button);
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: click needs an open screen", lineNumber);
+                }
+            }
+            case "skill" -> skill(argument.split("\\s+"), lineNumber);
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
+    }
+
+    private static void skill(String[] args, int lineNumber) {
+        Identifier packet = switch (args[0]) {
+            case "unlock" -> Progression.C2S_UNLOCK;
+            case "equip" -> Progression.C2S_EQUIP;
+            case "rankup" -> Progression.C2S_RANK_UP;
+            case "bestiary" -> Progression.C2S_BESTIARY_UNLOCK;
+            default -> null;
+        };
+        if (packet == null || args.length < 2) {
+            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary <id>", lineNumber);
+            return;
+        }
+        PacketByteBuf buf = PacketByteBufs.create();
+        buf.writeString(args[1]);
+        ClientPlayNetworking.send(packet, buf);
     }
 
     private static void press(MinecraftClient client, String translationKey, int lineNumber) {

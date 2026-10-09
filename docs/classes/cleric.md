@@ -17,7 +17,7 @@ The shorter view is the main cost. You'll spot mobs and landmarks late on the su
 Sanctuary is an escape button: use it when a cave fight goes wrong and walk out. Mobs ignore you, but they still hit anything else, so it won't protect pets or villagers.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Clerics get 3 extra XP for killing undead, and XP for mining ores outside creative: 1 per ore, or 3 for diamond, emerald and ancient debris.
 

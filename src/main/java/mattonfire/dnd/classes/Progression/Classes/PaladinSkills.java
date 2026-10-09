@@ -320,7 +320,9 @@ public class PaladinSkills extends ClassSkills {
     private static void hurt(ServerPlayerEntity player, LivingEntity mob, float amount) {
         if (isUndead(mob))
             amount *= JUDGMENT_UNDEAD_MULTIPLIER;
-        mob.damage(player.getWorld().getDamageSources().indirectMagic(player, player), amount);
+        // No source entity, only the attacker: code that treats source == player as a melee hit
+        // (Divine Smite, Sacred Weapon, melee kill bonuses) must not count the beam.
+        mob.damage(player.getWorld().getDamageSources().indirectMagic(null, player), amount);
     }
 
     /** The living thing the player looks at within range, not through walls, players or own pets. */

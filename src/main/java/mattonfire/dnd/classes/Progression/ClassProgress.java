@@ -80,8 +80,12 @@ public class ClassProgress {
         return spent;
     }
 
+    /**
+     * Unspent skill points. Never below 0: admin commands can grant skills and
+     * ranks past the player's level, and those are paid off by later levels.
+     */
     public int points() {
-        return level() - pointsSpent();
+        return Math.max(0, level() - pointsSpent());
     }
 
     public boolean isUnlocked(String id) {

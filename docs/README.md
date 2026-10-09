@@ -18,7 +18,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
 - [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
 - [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
-- [Alchemist](classes/alchemist.md): safe and fast brewing, upgrades potions; can't enchant
+- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does

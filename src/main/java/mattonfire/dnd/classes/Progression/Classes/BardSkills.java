@@ -22,6 +22,7 @@ import mattonfire.dnd.entity.boss.Boss;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.mob.CreeperEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.registry.Registries;
@@ -61,10 +62,17 @@ public class BardSkills extends ClassSkills {
     private static final Map<EntityType<?>, Integer> TIERS = Map.ofEntries(
             Map.entry(EntityType.WOLF, 1), Map.entry(EntityType.CAT, 1), Map.entry(EntityType.FOX, 1),
             Map.entry(EntityType.PARROT, 1),
+            // Farm animals: tier I, for fun. They follow but can't fight.
+            Map.entry(EntityType.COW, 1), Map.entry(EntityType.PIG, 1), Map.entry(EntityType.SHEEP, 1),
+            Map.entry(EntityType.CHICKEN, 1), Map.entry(EntityType.RABBIT, 1), Map.entry(EntityType.MOOSHROOM, 1),
+            Map.entry(EntityType.HORSE, 1), Map.entry(EntityType.DONKEY, 1), Map.entry(EntityType.MULE, 1),
             Map.entry(EntityType.GOAT, 2), Map.entry(EntityType.LLAMA, 2), Map.entry(EntityType.TRADER_LLAMA, 2),
             Map.entry(EntityType.BEE, 2),
             Map.entry(EntityType.POLAR_BEAR, 3), Map.entry(EntityType.PANDA, 3),
             Map.entry(EntityType.IRON_GOLEM, 4), Map.entry(EntityType.HOGLIN, 4));
+
+    /** Animals within this many blocks of a Bard's song are learned. */
+    public static final double CHARM_RADIUS = 8;
 
     private static final int PET_KILL_BONUS_XP = 3;
     private static final int GROUP_KILL_BONUS_XP = 1;
@@ -125,6 +133,7 @@ public class BardSkills extends ClassSkills {
     @Override
     public void register() {
         BardCompanions.register();
+        mattonfire.dnd.classes.Music.BardInstrumentSlot.register();
         // Kills by a bard's pets aren't the bard's own kills, so their XP is handed out here.
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (!(entity instanceof Monster) || source.getAttacker() == null)
@@ -188,11 +197,46 @@ public class BardSkills extends ClassSkills {
         return true;
     }
 
-    /** Animals with a tier, except the Bard's own companions. */
+    /** Bards learn animals by charming them with music ({@link #charmAnimals}), not by killing them. */
     @Override
     public boolean learnsFrom(LivingEntity killed) {
-        return TIERS.containsKey(killed.getType()) && !BardCompanions.isCompanion(killed)
-                && !(killed instanceof TameableEntity pet && pet.isTamed());
+        return false;
+    }
+
+    /**
+     * Played an instrument: every tiered animal within {@link #CHARM_RADIUS}
+     * blocks that's alive, not tamed and not a companion is learned. Called
+     * from {@code InstrumentItem.use} on the server, after its own message.
+     */
+    public static void charmAnimals(ServerPlayerEntity player) {
+        if (Progression.classOf(player) != DndCharacter.BARD)
+            return;
+        ServerWorld world = (ServerWorld) player.getWorld();
+        ClassProgress progress = Progression.current(player);
+        List<LivingEntity> animals = world.getEntitiesByClass(LivingEntity.class,
+                player.getBoundingBox().expand(CHARM_RADIUS),
+                e -> e.isAlive() && TIERS.containsKey(e.getType()) && !BardCompanions.isCompanion(e)
+                        && !(e instanceof Tameable pet && pet.getOwnerUuid() != null)
+                        && e.squaredDistanceTo(player) <= CHARM_RADIUS * CHARM_RADIUS);
+        List<String> charmed = new java.util.ArrayList<>();
+        for (LivingEntity animal : animals) {
+            String id = Registries.ENTITY_TYPE.getId(animal.getType()).toString();
+            if (progress.learned.contains(id) || charmed.contains(id))
+                continue;
+            if (Progression.learn(player, id)) {
+                charmed.add(id);
+                world.spawnParticles(ParticleTypes.HEART, animal.getX(), animal.getBodyY(1), animal.getZ(), 5, 0.4,
+                        0.3, 0.4, 0);
+            }
+        }
+        if (!charmed.isEmpty()) {
+            // Replaces Progression.learn's "Learned ..." line with one for the whole song.
+            String names = String.join(", ", charmed.stream().map(Progression::entityName)
+                    .map(String::toLowerCase).toList());
+            player.sendMessage(Text.literal("Charmed " + (charmed.size() == 1 ? "a " : "") + names
+                    + ": unlock " + (charmed.size() == 1 ? "it" : "them") + " at an Attunement Table.")
+                    .formatted(Formatting.DARK_GREEN), true);
+        }
     }
 
     @Override
@@ -221,8 +265,9 @@ public class BardSkills extends ClassSkills {
         for (PathAwareEntity mob : nearby) {
             if (BardCompanions.isCompanion(mob))
                 continue;
-            // Someone else's pet stays theirs.
-            if (mob instanceof TameableEntity pet && pet.isTamed() && !player.getUuid().equals(pet.getOwnerUuid()))
+            // Someone else's pet or horse stays theirs.
+            if (mob instanceof Tameable pet && pet.getOwnerUuid() != null
+                    && !player.getUuid().equals(pet.getOwnerUuid()))
                 continue;
             if (count >= cap) {
                 player.sendMessage(Text.literal("You can't lead more than " + cap + " companions.")
@@ -235,12 +280,12 @@ public class BardSkills extends ClassSkills {
             adopted++;
         }
 
-        // Point every companion in range at the nearest hostile mob.
+        // Point every companion in range that can fight at the nearest hostile mob.
         List<LivingEntity> hostiles = hostilesNear(player, radius).stream()
                 .filter(h -> !(h instanceof CreeperEntity) && !(h instanceof Boss) && !BardCompanions.isCompanion(h))
                 .toList();
         for (PathAwareEntity mob : world.getEntitiesByClass(PathAwareEntity.class,
-                player.getBoundingBox().expand(radius), e -> BardCompanions.isCompanionOf(e, player))) {
+                player.getBoundingBox().expand(radius), e -> BardCompanions.isCompanionOf(e, player) && BardCompanions.canFight(e))) {
             hostiles.stream().min(java.util.Comparator.comparingDouble(h -> h.squaredDistanceTo(mob)))
                     .ifPresent(mob::setTarget);
         }

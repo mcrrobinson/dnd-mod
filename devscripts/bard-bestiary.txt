@@ -1,12 +1,21 @@
 # Checks the Bard's bestiary and Animal Friends companions. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/bard-bestiary.txt
 # Expect in latest.log ([CHAT] /dndclass progress lines):
 #  1. bestiary [minecraft:wolf] a couple of seconds after becoming a Bard (starter animal)
-#  2. learned [minecraft:wolf, minecraft:fox] after killing the fox; the cow kill isn't learned
-#  3. goat learned by command; bestiary without minecraft:goat after the tier II unlock at rank I (refused)
+#  2. Killing a fox: "Test failed" (it died) and learned is still [minecraft:wolf]. Pressing the instrument key
+#     (empty inventory) next to a fox and a cow: learned [minecraft:wolf, minecraft:fox, minecraft:cow] (farm animals
+#     are tier I); a second press on cooldown doesn't learn the pig. Screenshot bard-charm shows the 10th slot with
+#     the lute on cooldown, hearts, and "Charmed fox, cow: unlock them at an Attunement Table."
+#     Screenshot fighter-no-slot (end): a Fighter has no 10th slot.
+
+#  3. goat and the other farm animals learned by command; at rank I the fox, the cow and all farm animals unlock,
+#     the goat (tier II) is refused
 #  4. bestiary with minecraft:goat after /dndclass rank 2 and the unlock at the table
-#  5. After the special at rank II (cap 4): the fox, the goat and two wolves have a dnd_bard_companion:<uuid> tag,
-#     the cow and the other two wolves have no Tags
-# Screenshots: bard-bestiary (Bestiary tab at the table), bard-companions (companions going for a zombie)
+#  5. After the special at rank II (cap 4): the fox, the goat, the cow and one wolf have a dnd_bard_companion:<uuid> tag,
+#     the other three wolves have no Tags
+#  6. Farm animals at rank IV: pig, sheep, chicken, rabbit, horse and mooshroom get the tag. The Bard moves 13 blocks
+#     east; the Pos lines show them walking after the Bard (x near 17.5 by the last one; the rabbit, which can bite,
+#     may go for the frozen zombie instead) and "Test passed, count: 5" or 6 (the rabbit may hop off the platform). No exception in the log
+# Screenshots: bard-charm (10th slot, hearts), fighter-no-slot, bard-bestiary (Bestiary tab at the table), bard-companions (companions going for a zombie), bard-farm, bard-farm-follow (farm companions following)
 wait 40
 closescreen
 /gamemode survival
@@ -22,30 +31,72 @@ closescreen
 /dndclass resetprogress @s
 wait 40
 /dndclass progress @s
-# Learn by killing
+# Kills don't teach a Bard: kill a fox
 /item replace entity @s weapon.mainhand with minecraft:netherite_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5}]}
 /summon minecraft:fox 4.5 150 3.5 {NoAI:1b,Rotation:[180f,0f]}
 /tp @s 4.5 150 1.5 0 40
-wait 10
+# Full swing: the sword's cooldown restarts when it's put in the hand.
+wait 20
+attack
+wait 20
 attack
 wait 10
-/tp @s 4.5 150 1.5 0 20
-/summon minecraft:cow 4.5 150 3.5 {NoAI:1b,Rotation:[180f,0f]}
-wait 10
-attack
-wait 10
-attack
-wait 10
+/execute if entity @e[type=minecraft:fox]
 /kill @e[type=minecraft:item]
 /dndclass progress @s
+# Learn by charming: play the instrument slot (G) next to a frozen fox and cow, with no instrument in the inventory
+/clear @s dndclasses:lute
+/clear @s dndclasses:drum
+/clear @s dndclasses:flute
+/summon minecraft:fox 2.5 150 5.5 {NoAI:1b}
+/summon minecraft:cow 6.5 150 5.5 {NoAI:1b}
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.play-instrument
+wait 3
+screenshot bard-charm
+wait 10
+/dndclass progress @s
+# Still on cooldown: a second press does nothing
+/summon minecraft:pig 4.5 150 4.5 {NoAI:1b}
+press key.dnd-classes.play-instrument
+wait 5
+/dndclass progress @s
+/kill @e[type=!minecraft:player]
 # Unlock at the table
 /dndclass bestiary @s learn minecraft:goat
+/dndclass bestiary @s learn minecraft:pig
+/dndclass bestiary @s learn minecraft:sheep
+/dndclass bestiary @s learn minecraft:chicken
+/dndclass bestiary @s learn minecraft:rabbit
+/dndclass bestiary @s learn minecraft:mooshroom
+/dndclass bestiary @s learn minecraft:horse
+/dndclass bestiary @s learn minecraft:donkey
+/dndclass bestiary @s learn minecraft:mule
 /setblock 4 150 4 dndclasses:attunement_table
 /tp @s 4.5 150 1.5 0 30
 wait 5
 use
 wait 10
 skill bestiary minecraft:fox
+wait 5
+skill bestiary minecraft:cow
+wait 5
+skill bestiary minecraft:pig
+wait 5
+skill bestiary minecraft:sheep
+wait 5
+skill bestiary minecraft:chicken
+wait 5
+skill bestiary minecraft:rabbit
+wait 5
+skill bestiary minecraft:mooshroom
+wait 5
+skill bestiary minecraft:horse
+wait 5
+skill bestiary minecraft:donkey
+wait 5
+skill bestiary minecraft:mule
 wait 5
 skill bestiary minecraft:goat
 wait 5
@@ -192,5 +243,50 @@ wait 300
 /execute if entity @e[type=minecraft:zoglin]
 /data get entity @s Health
 /kill @e[type=!minecraft:player]
+# Farm animals (rank IV, cap 6): they become companions and follow, but never take a target.
+wait 100
+/time set night
+/summon minecraft:pig 2 150 6
+/summon minecraft:sheep 7 150 6
+/summon minecraft:chicken 4 150 7
+/summon minecraft:rabbit 2 150 3
+/summon minecraft:horse 7 150 3
+/summon minecraft:mooshroom 4.5 150 9
+/summon minecraft:zombie 4.5 150 14.5 {NoAI:1b}
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 10
+screenshot bard-farm
+/data get entity @e[type=minecraft:pig,limit=1] Tags
+/data get entity @e[type=minecraft:sheep,limit=1] Tags
+/data get entity @e[type=minecraft:chicken,limit=1] Tags
+/data get entity @e[type=minecraft:rabbit,limit=1] Tags
+/data get entity @e[type=minecraft:horse,limit=1] Tags
+/data get entity @e[type=minecraft:mooshroom,limit=1] Tags
+/tp @s 17.5 150 4.5 90 20
+/execute as @e[type=!minecraft:player,type=!minecraft:zombie] run data get entity @s Pos
+wait 100
+/execute as @e[type=!minecraft:player,type=!minecraft:zombie] run data get entity @s Pos
+wait 200
+/execute as @e[type=!minecraft:player,type=!minecraft:zombie] run data get entity @s Pos
+/execute at @s if entity @e[type=!minecraft:player,type=!minecraft:zombie,distance=..7]
+perspective back
+screenshot bard-farm-follow
+perspective first
+/kill @e[type=!minecraft:player]
+/dndclass resetprogress @s
+# A non-Bard has no instrument slot, and the key does nothing
+/dndclass set @s fighter
+wait 10
+closescreen
+/summon minecraft:fox 4.5 150 4.5 {NoAI:1b}
+press key.dnd-classes.play-instrument
+wait 10
+screenshot fighter-no-slot
+/kill @e[type=!minecraft:player]
+/dndclass set @s bard
+wait 10
+closescreen
 /dndclass resetprogress @s
 quit

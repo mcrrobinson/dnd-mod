@@ -54,6 +54,8 @@ public final class BardCompanions {
     /** Starts following beyond this distance, and teleports to the Bard beyond {@link #TELEPORT_DISTANCE}. */
     private static final double FOLLOW_DISTANCE = 6;
     private static final double TELEPORT_DISTANCE = 24;
+    /** Teleports from this far when it can't find a path. */
+    private static final double STUCK_TELEPORT_DISTANCE = 12;
 
     private BardCompanions() {
     }
@@ -171,7 +173,7 @@ public final class BardCompanions {
         boolean attacks = goals.getGoals().stream().anyMatch(goal -> goal.getGoal() instanceof MeleeAttackGoal
                 || goal.getGoal() instanceof net.minecraft.entity.ai.goal.AttackGoal
                 || goal.getGoal() instanceof net.minecraft.entity.ai.goal.ProjectileAttackGoal);
-        if (!attacks && mob.getAttributes().hasAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE)) {
+        if (!attacks && canFight(mob)) {
             goals.add(1, new CompanionAttackGoal(mob));
         }
         goals.add(0, new GuardGoal(mob));
@@ -179,8 +181,28 @@ public final class BardCompanions {
             // Tamed wolves, cats and parrots already follow (and sit) the vanilla way.
             goals.add(2, new FollowOwnerGoal(mob));
         }
-        targets.add(1, new DefendOwnerGoal(mob));
+        if (canFight(mob)) {
+            targets.add(1, new DefendOwnerGoal(mob));
+        }
+        // Always added: it marks the goals as added, and can't start for a mob that can't fight.
         targets.add(2, new RallyGoal(mob));
+    }
+
+    /**
+     * Whether the companion can hurt anything: it has an attack damage
+     * attribute or an attack of its own (a llama's spit). Farm animals (cows,
+     * pigs, sheep, chickens, horses...) can't, so they only follow and are
+     * never given a target, which would stop them following.
+     */
+    public static boolean canFight(Entity entity) {
+        if (!(entity instanceof MobEntity mob))
+            return false;
+        if (mob.getAttributes().hasAttribute(EntityAttributes.GENERIC_ATTACK_DAMAGE))
+            return true;
+        return ((MobEntityAccessor) mob).getGoalSelector().getGoals().stream()
+                .anyMatch(goal -> goal.getGoal() instanceof MeleeAttackGoal
+                        || goal.getGoal() instanceof net.minecraft.entity.ai.goal.AttackGoal
+                        || goal.getGoal() instanceof net.minecraft.entity.ai.goal.ProjectileAttackGoal);
     }
 
     @Nullable
@@ -191,10 +213,18 @@ public final class BardCompanions {
 
     /** Targets hostile mobs, except creepers, bosses and other Bards' companions (hoglins are Monsters). */
     private static class RallyGoal extends ActiveTargetGoal<LivingEntity> {
+        private final boolean fights;
+
         RallyGoal(MobEntity mob) {
             super(mob, LivingEntity.class, 10, true, false,
                     e -> e instanceof Monster && !(e instanceof CreeperEntity) && !(e instanceof Boss)
                             && !isCompanion(e));
+            fights = canFight(mob);
+        }
+
+        @Override
+        public boolean canStart() {
+            return fights && super.canStart();
         }
     }
 
@@ -242,6 +272,7 @@ public final class BardCompanions {
     private static class FollowOwnerGoal extends Goal {
         private final PathAwareEntity mob;
         private PlayerEntity owner;
+        private int repathDelay;
 
         FollowOwnerGoal(PathAwareEntity mob) {
             this.mob = mob;
@@ -262,6 +293,11 @@ public final class BardCompanions {
         }
 
         @Override
+        public void start() {
+            repathDelay = 0;
+        }
+
+        @Override
         public void stop() {
             mob.getNavigation().stop();
             owner = null;
@@ -270,17 +306,28 @@ public final class BardCompanions {
         @Override
         public void tick() {
             mob.getLookControl().lookAt(owner, 10.0F, mob.getMaxLookPitchChange());
-            if (mob.squaredDistanceTo(owner) > TELEPORT_DISTANCE * TELEPORT_DISTANCE) {
-                BlockPos pos = owner.getBlockPos();
-                mob.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, mob.getYaw(),
-                        mob.getPitch());
-                mob.getNavigation().stop();
-            } else if (mob.age % 10 == 0) {
+            double distance = mob.squaredDistanceTo(owner);
+            if (distance > TELEPORT_DISTANCE * TELEPORT_DISTANCE) {
+                teleportToOwner();
+            } else if (--repathDelay <= 0) {
+                // Goal ticks run every other tick, so mob.age % 10 can never line up for half the mobs.
+                repathDelay = getTickCount(10);
                 if (mob.getBrain().hasMemoryModule(MemoryModuleType.WALK_TARGET)) {
                     mob.getBrain().forget(MemoryModuleType.WALK_TARGET);
                 }
-                mob.getNavigation().startMovingTo(owner, 1.2);
+                // No path (like vanilla pets): catch up once well behind.
+                if (!mob.getNavigation().startMovingTo(owner, 1.2)
+                        && distance > STUCK_TELEPORT_DISTANCE * STUCK_TELEPORT_DISTANCE) {
+                    teleportToOwner();
+                }
             }
+        }
+
+        private void teleportToOwner() {
+            BlockPos pos = owner.getBlockPos();
+            mob.refreshPositionAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, mob.getYaw(),
+                    mob.getPitch());
+            mob.getNavigation().stop();
         }
     }
 
@@ -311,9 +358,11 @@ public final class BardCompanions {
      */
     private static class GuardGoal extends Goal {
         private final MobEntity mob;
+        private final boolean fights;
 
         GuardGoal(MobEntity mob) {
             this.mob = mob;
+            fights = canFight(mob);
         }
 
         @Override
@@ -328,7 +377,8 @@ public final class BardCompanions {
 
         @Override
         public void tick() {
-            if (blocksTarget(mob, mob.getTarget())) {
+            // Farm animals can't fight, so a target (from a hit or a vanilla goal) only stops them following.
+            if (blocksTarget(mob, mob.getTarget()) || mob.getTarget() != null && !fights) {
                 mob.setTarget(null);
             }
             Brain<?> brain = mob.getBrain();

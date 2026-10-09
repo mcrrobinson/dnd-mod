@@ -11,6 +11,8 @@ Picking the class sets your health to 15.
 
 Hostile mobs won't start targeting you. You can walk past zombies and creepers at night and they leave you alone. If you hit something it fights back as normal, and with the Identity mod installed, a mob you've attacked (Identity's "hostility") will hunt you again.
 
+**Instrument slot.** Every Bard has a 10th hotbar slot, just right of the hotbar, that always holds a Lute. Press **G** ("Play Instrument" in Controls, D&D Classes) to play it: it works exactly like playing a [Lute](../items/bard-instruments.md) (Regeneration I for players within 16 blocks, charms nearby animals) and shares the instruments' 10 second cooldown, which shows on the slot. The slot isn't a real item, so it can't be dropped, moved, lost on death or duplicated. It moves right to make room for the offhand slot (left-handed) or the hotbar attack indicator. Only Bards have it, and it's hidden with F1 and in spectator mode.
+
 Poison heals you instead of hurting: each poison tick gives back 1 health. A splash Potion of Poison is a cheap emergency heal.
 
 **Special (power-up key, full mana): Animal Friends.** Animals you've unlocked in your bestiary that are within range become your companions, up to your companion cap, nearest first. All your companions in range then go after the nearest hostile mob. Other players' pets, bosses and animals you haven't unlocked are left alone.
@@ -27,21 +29,23 @@ Companions follow you (and teleport to you when more than 24 blocks behind), fig
 Rank up Animal Friends at an Attunement Table for a skill point per rank. The cap counts every companion you have loaded in your current world.
 
 #### Bestiary
-1. **Learn.** Killing a tiered animal for the first time as a Bard learns it ("Learned Fox. Unlock it at an Attunement Table."). Killing your own companion or a tamed pet doesn't count.
+1. **Learn.** Play your instrument slot (**G**) or any [Bard instrument](../items/bard-instruments.md) (lute, war drum or flute), and every tiered animal within 8 blocks that's alive, not tamed and not already a companion is charmed and learned: hearts float over it and the action bar says "Charmed a fox: unlock it at an Attunement Table.". The instrument's shared 10 second cooldown applies. Killing animals doesn't teach a Bard anything (that's the Druid's way).
 2. **Unlock.** Open the skill tree at an Attunement Table, switch to the **Bestiary** tab and click a learned animal. Unlocking is free, but the animal's tier needs Animal Friends at that rank. Only unlocked animals answer Animal Friends.
 3. **Starter.** Every Bard has wolves unlocked from the start.
 
 | Tier | Animals |
 |-|-|
-| I | Wolf, cat, fox, parrot |
+| I | Wolf, cat, fox, parrot, and the farm animals: cow, pig, sheep, chicken, rabbit, mooshroom, horse, donkey, mule |
 | II | Goat, llama, trader llama, bee |
 | III | Polar bear, panda |
 | IV | Iron golem, hoglin |
 
-Other animals (cows, pigs and so on) aren't learned.
+Other animals, such as turtles, axolotls or ocelots, aren't learned.
+
+Farm animals are just for fun: they follow you, but they can't fight, so they never take a target (rabbits are the exception and will nip at hostile mobs for 3 damage).
 
 ### Tips
-Hunt a fox or a llama early to fill your bestiary, then rank Animal Friends up as you level for the big animals. Use the special next to a wolf pack before a fight, then lead the mob in. Companions stay yours after the special ends, so the cap is the real limit. The [Bard instruments](../items/bard-instruments.md) are built for this class.
+Press G next to foxes, llamas or a farm to fill your bestiary, then rank Animal Friends up as you level for the big animals. Use the special next to a wolf pack before a fight, then lead the mob in. Companions stay yours after the special ends, so the cap is the real limit. The [Bard instruments](../items/bard-instruments.md) are built for this class.
 
 ### Skill tree
 Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
@@ -69,11 +73,13 @@ Inspiring Presence and Battle Hymn only buff other players, not you. They're the
 - The class picker blurb used to mention a diamond-armor limit and longer jumps. Neither is in the game.
 - Goats still pick their own ram targets. A ram can't hurt you or your friends, but it can still knock you back.
 - Hoglins and goats are steered by their own brains as well as the companion goals, so they follow less smoothly than the others.
-- Parrots have no attack; they follow and keep you company.
+- Parrots and farm animals (except rabbits) have no attack; they follow and keep you company.
 - The cap only sees companions in loaded chunks, so ones left far away don't count until they load again.
 
 ## For developers
 - Attributes: `ClassStats`. Monster targeting: `mixin/ActiveTargetGoalMixin`. Poison: `mixin/StatusEffectMixin`. Special: `BardSkills.animalFriends` (called from `PowerUpEffect`); ranks are `BardSkills.ANIMAL_FRIENDS`, tiers `BardSkills.TIERS`.
 - Skill tree: `Progression/Classes/BardSkills.java`. Pet kill XP is handed out from its own `AFTER_DEATH` hook, since a pet's kill isn't the player's.
 - Companions: `Misc/BardCompanions.java`. The owner is a command tag `dnd_bard_companion:<uuid>`; the goals (follow, melee for mobs without one, defend owner, rally on hostiles, a guard that clears brain targets) are added on adoption and again on `ENTITY_LOAD`. `mixin/MobEntityMixin` stops companions targeting friends, and an `ALLOW_DAMAGE` hook stops them hurting friends. `mixin/FoxEntityInvoker` makes foxes trust the Bard.
+- Instrument slot: `Music/BardInstrumentSlot` (packet `play_bard_instrument`, Bard and lute cooldown checks; registered from `BardSkills.register`) and `Client/Hud/InstrumentSlotHud` (key binding, HUD slot). Both play through `InstrumentItem.playAsBard`, which real instruments use too.
+- Learning: `BardSkills.charmAnimals` (called from `InstrumentItem.playAsBard`, radius `CHARM_RADIUS`); `learnsFrom` returns false so kills don't teach. Companions without an attack damage attribute or attack goal (`BardCompanions.canFight`) get no target goals and never keep a target.
 - Test: `devscripts/bard-bestiary.txt`.

@@ -1,10 +1,12 @@
-# Warlock Fire Breath ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/warlock-ranks.txt
-# Two frozen 100 HP zombies in front of you: "near" 2.5 blocks ahead, "far" 6 blocks ahead.
-# Expect in latest.log ([CHAT] lines):
-#  1. RANK1: near zombie Health below 100 and Fire > 0; far zombie Health still 100 (3-block reach)
-#  2. RANK1 END: far zombie Health still 100 after the whole 8 s breath
-#  3. RANK4: far zombie Health below 100 and Fire > 0 (7-block reach)
-# Screenshots: warlock-breath-rank1 (short beam), warlock-breath-rank4 (long beam), both third person from behind.
+# Warlock Fire Breath ranks. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/warlock-ranks.txt
+# Frozen 100 HP zombies straight ahead of the eye (z 601.5); the beam checks 1-block boxes at 1..reach blocks:
+#   near z=604 (every rank), r4 z=605.8 (reach 4+), r5 z=606.8 (reach 5+), far z=607.5 (reach 7 only).
+# For each rank N, expect in latest.log ([CHAT] lines) after "RANKN":
+#   the farthest zombie in reach has Health below 100 and Fire = burn ticks, the next one out is still 100.
+#   "RANKN IN": a fresh probe zombie summoned shortly before the breath should end is hurt (< 100).
+#   "RANKN OUT": a probe summoned just after the breath ended stays at 100.
+# Durations 160/240/320/400 ticks; burn 40/40/80/80 ticks; damage 1/2/2/3 per hit (10-tick hurt cooldown).
+# Screenshots: warlock-breath-rank1..4, first person with the HUD hidden and night vision.
 wait 40
 closescreen
 respawn
@@ -23,34 +25,140 @@ wait 10
 closescreen
 /dndclass resetprogress @s
 /tp @s 602.5 150 601.5 0 0
+wait 20
+# Switching to survival right after the fall from y=160 used to kill the player with fall damage.
+/effect give @s minecraft:resistance 5 255 true
 /gamemode survival
+wait 20
+/tp @s 602.5 150 601.5 0 0
+perspective first
+/effect give @s minecraft:night_vision 600 0 true
+wait 360
+/dndclass resetprogress @s
 /kill @e[type=minecraft:zombie,tag=breath]
 /summon minecraft:zombie 602.5 150 604 {Tags:["breath","near"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 605.8 {Tags:["breath","r4"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 606.8 {Tags:["breath","r5"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
 /summon minecraft:zombie 602.5 150 607.5 {Tags:["breath","far"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
 /tp @s 602.5 150 601.5 0 0
-perspective back
-wait 380
+wait 20
 /say RANK1
 press key.dnd-classes.power-up
 wait 30
+hud off
+wait 2
 screenshot warlock-breath-rank1
+hud on
 /data get entity @e[tag=near,limit=1] Health
 /data get entity @e[tag=near,limit=1] Fire
+/data get entity @e[tag=r4,limit=1] Health
+wait 66
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK1 IN
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+wait 45
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK1 OUT
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+/data get entity @e[tag=r4,limit=1] Health
+wait 150
+/dndclass rank @s warlock.fire_breath 2
+/kill @e[type=minecraft:zombie,tag=breath]
+/summon minecraft:zombie 602.5 150 604 {Tags:["breath","near"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 605.8 {Tags:["breath","r4"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 606.8 {Tags:["breath","r5"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 607.5 {Tags:["breath","far"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/tp @s 602.5 150 601.5 0 0
+wait 20
+/say RANK2
+press key.dnd-classes.power-up
+wait 30
+hud off
+wait 2
+screenshot warlock-breath-rank2
+hud on
+/data get entity @e[tag=r4,limit=1] Health
+/data get entity @e[tag=r4,limit=1] Fire
+/data get entity @e[tag=r5,limit=1] Health
+wait 146
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK2 IN
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+wait 45
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK2 OUT
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+/data get entity @e[tag=r5,limit=1] Health
+wait 70
+/dndclass rank @s warlock.fire_breath 3
+/kill @e[type=minecraft:zombie,tag=breath]
+/summon minecraft:zombie 602.5 150 604 {Tags:["breath","near"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 605.8 {Tags:["breath","r4"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 606.8 {Tags:["breath","r5"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 607.5 {Tags:["breath","far"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/tp @s 602.5 150 601.5 0 0
+wait 20
+/say RANK3
+press key.dnd-classes.power-up
+wait 30
+hud off
+wait 2
+screenshot warlock-breath-rank3
+hud on
+/data get entity @e[tag=r5,limit=1] Health
+/data get entity @e[tag=r5,limit=1] Fire
 /data get entity @e[tag=far,limit=1] Health
-wait 140
-/say RANK1 END
+wait 226
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK3 IN
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+wait 45
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK3 OUT
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
 /data get entity @e[tag=far,limit=1] Health
 /dndclass rank @s warlock.fire_breath 4
-/dndclass progress @s
-/kill @e[type=minecraft:zombie,tag=near]
-wait 230
+/kill @e[type=minecraft:zombie,tag=breath]
+/summon minecraft:zombie 602.5 150 604 {Tags:["breath","near"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 605.8 {Tags:["breath","r4"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 606.8 {Tags:["breath","r5"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/summon minecraft:zombie 602.5 150 607.5 {Tags:["breath","far"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+/tp @s 602.5 150 601.5 0 0
+wait 20
 /say RANK4
 press key.dnd-classes.power-up
 wait 30
+hud off
+wait 2
 screenshot warlock-breath-rank4
+hud on
 /data get entity @e[tag=far,limit=1] Health
 /data get entity @e[tag=far,limit=1] Fire
+wait 306
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
 wait 20
+/say RANK4 IN
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+wait 45
+/summon minecraft:zombie 602.5 150 603 {Tags:["breath","probe"],NoAI:1b,Silent:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}],Rotation:[180f,0f]}
+wait 20
+/say RANK4 OUT
+/data get entity @e[tag=probe,limit=1] Health
+/kill @e[tag=probe]
+wait 10
 perspective first
 /kill @e[type=minecraft:zombie,tag=breath]
 /dndclass resetprogress @s

@@ -19,7 +19,7 @@ These are the roots of each tree, all 9 mana:
 
 | Class | Special | What it does |
 |-|-|-|
-| Barbarian | Rage | Strength III for 15 s |
+| Barbarian | Rage | Strength I for 8 s, up to Strength III for 12 s with ranks |
 | Bard | Animal Friends | Animals within 10 blocks attack monsters; untamed tameable animals become yours |
 | Cleric | Sanctuary | Mobs can't target you for 15 s. Party members within 16 blocks share it and get Regeneration I for 10 s |
 | Druid | Wild Shape | Become a random animal you've killed for 30 s (needs the Identity mod) |

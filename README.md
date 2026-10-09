@@ -53,7 +53,7 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 | **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Wild Shape: transforms into an animal it has killed and unlocked at an Attunement Table, for 15-30s by rank (sneak + key picks the form) |
 | **Fighter** | High health, High strength, Attracts mobs: hostile mobs prefer a Fighter over other players (done) | Cannot use bows or crossbows (done), No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done) | Super regeneration: Regeneration V for 4s, up to 10s with ranks (done) |
 | **Monk** | Increased mobility, Increased attack speed | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Can triple jump, Unrivaled attack speed |
-| **Paladin** | High health, circle of healing, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Instantly heals everyone within 10 blocks to full, and party members within 24 blocks to full plus Absorption I for 30s (done) |
+| **Paladin** | High health, protective auras for nearby players, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Divine Judgment: a beam of holy light strikes the mob you look at within 30 blocks and sets it alight, with a shockwave around it; undead take 50% more. Damage, shockwave and extra beams grow with its rank (done) |
 | **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords (done), Weak to fire (done) | Hold right click to spam fire (no ammo consumed) (done) |
 | **Rogue** | No poison damage (done), No need to eat: food never drains and no starvation, but no natural regen from food either (done) | Low health (done) | Temporary invisibility (done) |
 | **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Can spawn allied undead to attack enemies (done) |
@@ -68,7 +68,7 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. See [Mana and class specials](docs/systems/mana.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
 
 ### Parties
-`/party` lets players group up: shared XP, no friendly fire, a party health HUD and party-aware Paladin/Cleric powers. See [Party](docs/systems/party.md).
+`/party` lets players group up: shared XP, no friendly fire, a party health HUD and a party-aware Cleric power. See [Party](docs/systems/party.md).
 
 ### d20 Skill Checks
 Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Rogues pick the locks of dungeon and lair loot chests, Bards persuade villagers for better prices, and melee attacks crit on a natural 20 and fumble on a natural 1. See [D20 skill checks](docs/systems/d20-skill-checks.md).

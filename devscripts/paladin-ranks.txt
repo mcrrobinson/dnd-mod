@@ -1,0 +1,167 @@
+# Checks Divine Judgment (Paladin special) at every rank. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/paladin-ranks.txt
+# Each rank: four frozen 100 HP zombies with Fire Resistance (so beam fire doesn't skew Health) and a pig. Midnight, so no sunburn.
+# The Paladin looks at zombie a (4.5 150 7.5). b is 2 blocks east of a, c 3.5 blocks west, d 4.5 blocks south.
+# Undead take 50% more; the shockwave deals 40% of the beam's damage; extra beams pick the nearest hostiles.
+# Expect in latest.log ([CHAT] /data get lines, order a b c d pig):
+#  0. no target: sky and behind glass both give "No target..." on the action bar and keep the mana,
+#     so the rank I cast right after still fires
+#  I   (8 dmg, r3, 1 beam):  a 88.0  b 95.2  c 100.0 d 100.0 pig 10.0
+#  II  (12 dmg, r4, 1 beam): a 82.0  b 92.8  c 92.8  d 100.0 pig 10.0
+#  III (16 dmg, r5, 2 beams): a 76.0 b 76.0  c 90.4  d 90.4  pig 10.0
+#  IV  (20 dmg, r6, 3 beams): a 70.0 b 70.0  c 70.0  d 88.0  pig 10.0
+#  zombie a: Fire > 0 after each cast
+#  Divine Smite is unlocked before rank IV: it is melee only, so the rank IV numbers don't change
+# Circle of Healing (7 mana): a 12-block fall hurts the Paladin (26 max health), then the cast
+#  heals to 26.0 and gives Absorption I (Id 22, Amplifier 0, ~600 ticks); AbsorptionAmount 4.0
+# Screenshots: paladin-no-target, paladin-wall, paladin-rank1..4, paladin-tree, paladin-heal
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set midnight
+/weather clear
+/fill 0 149 0 12 149 14 minecraft:stone
+/fill 0 150 0 12 156 14 minecraft:air
+/dndclass set @s paladin
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/kill @e[type=!minecraft:player,distance=..64]
+/effect clear @s
+/tp @s 4.5 150 1.5 0 10
+wait 400
+/tp @s 4.5 150 1.5 0 -60
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-no-target
+/kill @e[type=!minecraft:player,distance=..64]
+/summon minecraft:zombie 4.5 150 7.5 {NoAI:1b,Tags:["a"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,Tags:["b"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 1.0 150 7.5 {NoAI:1b,Tags:["c"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 4.5 150 12.0 {NoAI:1b,Tags:["d"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:pig 5.5 150 9.5 {NoAI:1b,Tags:["p"]}
+/effect give @e[type=minecraft:zombie] minecraft:fire_resistance 600 0 true
+/fill 3 150 4 6 152 4 minecraft:glass
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-wall
+/data get entity @e[tag=a,limit=1] Health
+/fill 3 150 4 6 152 4 minecraft:air
+/kill @e[type=!minecraft:player,distance=..64]
+/summon minecraft:zombie 4.5 150 7.5 {NoAI:1b,Tags:["a"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,Tags:["b"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 1.0 150 7.5 {NoAI:1b,Tags:["c"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 4.5 150 12.0 {NoAI:1b,Tags:["d"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:pig 5.5 150 9.5 {NoAI:1b,Tags:["p"]}
+/effect give @e[type=minecraft:zombie] minecraft:fire_resistance 600 0 true
+/dndclass rank @s paladin.divine_judgment 1
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-rank1
+wait 2
+/data get entity @e[tag=a,limit=1] Health
+/data get entity @e[tag=b,limit=1] Health
+/data get entity @e[tag=c,limit=1] Health
+/data get entity @e[tag=d,limit=1] Health
+/data get entity @e[tag=p,limit=1] Health
+/data get entity @e[tag=a,limit=1] Fire
+wait 400
+/kill @e[type=!minecraft:player,distance=..64]
+/summon minecraft:zombie 4.5 150 7.5 {NoAI:1b,Tags:["a"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,Tags:["b"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 1.0 150 7.5 {NoAI:1b,Tags:["c"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 4.5 150 12.0 {NoAI:1b,Tags:["d"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:pig 5.5 150 9.5 {NoAI:1b,Tags:["p"]}
+/effect give @e[type=minecraft:zombie] minecraft:fire_resistance 600 0 true
+/dndclass rank @s paladin.divine_judgment 2
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-rank2
+wait 2
+/data get entity @e[tag=a,limit=1] Health
+/data get entity @e[tag=b,limit=1] Health
+/data get entity @e[tag=c,limit=1] Health
+/data get entity @e[tag=d,limit=1] Health
+/data get entity @e[tag=p,limit=1] Health
+/data get entity @e[tag=a,limit=1] Fire
+wait 400
+/kill @e[type=!minecraft:player,distance=..64]
+/summon minecraft:zombie 4.5 150 7.5 {NoAI:1b,Tags:["a"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,Tags:["b"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 1.0 150 7.5 {NoAI:1b,Tags:["c"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 4.5 150 12.0 {NoAI:1b,Tags:["d"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:pig 5.5 150 9.5 {NoAI:1b,Tags:["p"]}
+/effect give @e[type=minecraft:zombie] minecraft:fire_resistance 600 0 true
+/dndclass rank @s paladin.divine_judgment 3
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-rank3
+wait 2
+/data get entity @e[tag=a,limit=1] Health
+/data get entity @e[tag=b,limit=1] Health
+/data get entity @e[tag=c,limit=1] Health
+/data get entity @e[tag=d,limit=1] Health
+/data get entity @e[tag=p,limit=1] Health
+/data get entity @e[tag=a,limit=1] Fire
+wait 400
+/kill @e[type=!minecraft:player,distance=..64]
+/summon minecraft:zombie 4.5 150 7.5 {NoAI:1b,Tags:["a"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 6.5 150 7.5 {NoAI:1b,Tags:["b"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 1.0 150 7.5 {NoAI:1b,Tags:["c"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:zombie 4.5 150 12.0 {NoAI:1b,Tags:["d"],Attributes:[{Name:"generic.max_health",Base:100d}],Health:100f,PersistenceRequired:1b}
+/summon minecraft:pig 5.5 150 9.5 {NoAI:1b,Tags:["p"]}
+/effect give @e[type=minecraft:zombie] minecraft:fire_resistance 600 0 true
+/dndclass unlock @s paladin.divine_smite
+/dndclass rank @s paladin.divine_judgment 4
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-rank4
+wait 2
+/data get entity @e[tag=a,limit=1] Health
+/data get entity @e[tag=b,limit=1] Health
+/data get entity @e[tag=c,limit=1] Health
+/data get entity @e[tag=d,limit=1] Health
+/data get entity @e[tag=p,limit=1] Health
+/data get entity @e[tag=a,limit=1] Fire
+/kill @e[type=!minecraft:player,distance=..64]
+/dndclass unlock @s paladin.circle_of_healing
+/dndclass equip @s paladin.circle_of_healing
+/dndclass progress @s
+/effect clear @s
+/tp @s 4.5 162 1.5 0 10
+wait 60
+/data get entity @s Health
+wait 340
+press key.dnd-classes.skill-tree
+wait 10
+screenshot paladin-tree
+closescreen
+/data get entity @s Health
+/tp @s 4.5 150 1.5 0 30
+wait 5
+press key.dnd-classes.power-up
+wait 3
+screenshot paladin-heal
+wait 2
+/data get entity @s Health
+/data get entity @s AbsorptionAmount
+/data get entity @s ActiveEffects
+/dndclass resetprogress @s
+quit

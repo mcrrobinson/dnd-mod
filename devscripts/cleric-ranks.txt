@@ -1,43 +1,76 @@
-# Checks Sanctuary's ranks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/cleric-ranks.txt
-# Expect in latest.log:
-#  1. rank I: dndclasses:mob_repel Duration ~120 (6 s) after firing it
-#  2. rank IV: dndclasses:mob_repel Duration ~300 (15 s); the zombie never attacks
-# Screenshots: cleric-rank1 (small 2-block ring), cleric-rank4 (16-block ring)
+# Checks Sanctuary's duration and ring at every rank on one client. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/cleric-ranks.txt
+# Party sharing needs two clients: see cleric-ranks-party-host.txt.
+# Expect in latest.log: dndclasses:mob_repel (Id 37) Duration ~120 / ~180 / ~240 / ~300 at ranks I-IV;
+# at rank IV the zombie that was chasing gives up, so Health stays 20.
+# Screenshots: cleric-ring1 .. cleric-ring4 (ring of 2 / 8 / 12 / 16 blocks, HUD hidden)
 wait 40
 closescreen
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false
-/time set noon
-/fill -20 149 -20 20 149 20 minecraft:stone
-/fill -20 150 -20 20 156 20 minecraft:air
+/time set midnight
+/fill -24 149 -24 24 149 24 minecraft:stone
+/fill -24 150 -24 24 156 24 minecraft:air
 /dndclass set @s cleric
 wait 10
 closescreen
 /dndclass resetprogress @s
-/tp @s 0.5 150 0.5 0 40
+/dndclass xp @s set 2700
+/tp @s 0.5 150 0.5 0 25
 /kill @e[type=!minecraft:player]
 /effect clear @s
+# Rank 1
 # Mana refills in about 18 s
-wait 380
-press key.dnd-classes.power-up
-wait 10
-/data get entity @s ActiveEffects
-/summon minecraft:zombie 0.5 150 6.5 {PersistenceRequired:1b,Rotation:[180f,0f]}
-wait 40
-screenshot cleric-rank1
+wait 400
 /effect clear @s
-/dndclass xp @s set 2700
-/kill @e[type=minecraft:zombie]
-/dndclass rank @s cleric.sanctuary 4
-wait 380
 press key.dnd-classes.power-up
 wait 10
 /data get entity @s ActiveEffects
-/summon minecraft:zombie 0.5 150 6.5 {PersistenceRequired:1b,Rotation:[180f,0f]}
-wait 40
-screenshot cleric-rank4
+hud off
+wait 5
+screenshot cleric-ring1
+hud on
+# Rank 2
+/dndclass rank @s cleric.sanctuary 2
+# Mana refills in about 18 s
+wait 400
+/effect clear @s
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+hud off
+wait 5
+screenshot cleric-ring2
+hud on
+# Rank 3
+/dndclass rank @s cleric.sanctuary 3
+# Mana refills in about 18 s
+wait 400
+/effect clear @s
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+hud off
+wait 5
+screenshot cleric-ring3
+hud on
+# Rank 4
+/dndclass rank @s cleric.sanctuary 4
+# Mana refills in about 18 s
+wait 400
+/summon minecraft:zombie 0.5 150 -7.5 {PersistenceRequired:1b}
+wait 20
+/effect clear @s
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+hud off
+wait 5
+screenshot cleric-ring4
+hud on
+wait 100
+/data get entity @s Health
 /kill @e[type=minecraft:zombie]
 /dndclass progress @s
 /effect clear @s

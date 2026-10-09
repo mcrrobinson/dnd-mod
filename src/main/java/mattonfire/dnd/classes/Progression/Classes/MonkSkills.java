@@ -3,20 +3,25 @@ package mattonfire.dnd.classes.Progression.Classes;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.MonkHandler;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModItems;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -26,13 +31,23 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
+import net.minecraft.world.World;
 
 public class MonkSkills extends ClassSkills {
     private static final int UNARMED_KILL_BONUS_XP = 3;
@@ -61,7 +76,46 @@ public class MonkSkills extends ClassSkills {
     private static final float QUIVERING_PALM_DAMAGE = 20.0F;
     private static final long QUIVERING_PALM_TICKS = 200;
 
-    private static final int KI_SURGE_TICKS = 300;
+    /**
+     * Flurry Rush, the power-up: blink to the mob in the crosshair and the
+     * hostiles around it and hit each in turn, then blink back.
+     */
+    public static final Ranks FLURRY_RUSH = Ranks.of("monk.flurry_rush")
+            .amount("Hits", "", 3, 5, 7, 10)
+            .amount("Targets", "", 1, 2, 3, 5)
+            .amount("Damage", "per hit", 3, 3, 4, 4);
+    /** How far away the first target can be. */
+    private static final double RUSH_RANGE = 16;
+    /** Further targets are hostiles within this many blocks of the first. */
+    private static final double RUSH_CHAIN_RADIUS = 8;
+    private static final int RUSH_HIT_INTERVAL_TICKS = 3;
+    /** Each blink lands this far round the target from the last one. */
+    private static final double RUSH_ANGLE_STEP = Math.toRadians(137.5);
+
+    /** A Flurry Rush in progress: the hits still to land, in order, and where to come back to. */
+    private static final class Rush {
+        final RegistryKey<World> world;
+        final Vec3d start;
+        final float yaw;
+        final float pitch;
+        final List<UUID> hits;
+        final float damage;
+        int next = 0;
+        long nextTick;
+
+        Rush(RegistryKey<World> world, Vec3d start, float yaw, float pitch, List<UUID> hits, float damage,
+                long nextTick) {
+            this.world = world;
+            this.start = start;
+            this.yaw = yaw;
+            this.pitch = pitch;
+            this.hits = hits;
+            this.damage = damage;
+            this.nextTick = nextTick;
+        }
+    }
+
+    private static final Map<UUID, Rush> RUSHES = new HashMap<>();
 
     /** Flurry of Blows combo per player. */
     private record Combo(UUID target, int hits, long lastHit) {
@@ -79,12 +133,13 @@ public class MonkSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("monk.ki_surge", "Ki Surge", "Speed II, Haste II and Jump Boost II for 15 seconds.",
-                        "minecraft:sugar", 9, 0, 1, 3),
+                active("monk.flurry_rush", "Flurry Rush",
+                        "Blink between the mob you're looking at and hostiles near it, landing a rapid chain of hits, then blink back.",
+                        "minecraft:blaze_rod", 9, 0, 1, 3),
                 // Open Hand
                 passive("monk.flurry_of_blows", "Flurry of Blows",
                         "Every 3rd hit in a row on the same target deals 50% more damage.", "minecraft:stick", 1, 2,
-                        3, "monk.ki_surge"),
+                        3, "monk.flurry_rush"),
                 active("monk.stunning_strike", "Stunning Strike",
                         "Mobs within 4 blocks get Slowness IV and Weakness II for 4 seconds.", "minecraft:bell", 3, 1,
                         2, 2, "monk.flurry_of_blows"),
@@ -92,7 +147,7 @@ public class MonkSkills extends ClassSkills {
                         "minecraft:arrow", 1, 2, 1, "monk.stunning_strike"),
                 // Way of the Wind
                 passive("monk.slow_fall", "Slow Fall", "Take 75% less fall damage.", "minecraft:feather", 1, 0, 3,
-                        "monk.ki_surge"),
+                        "monk.flurry_rush"),
                 active("monk.step_of_the_wind", "Step of the Wind", "Dash about 8 blocks the way you're looking.",
                         "minecraft:phantom_membrane", 3, 1, 0, 2, "monk.slow_fall"),
                 passive("monk.unarmored_movement", "Unarmored Movement",
@@ -113,16 +168,188 @@ public class MonkSkills extends ClassSkills {
                 updateUnarmoredMovement(player);
             }
         });
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (RUSHES.isEmpty())
+                return;
+            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+                Rush rush = RUSHES.get(player.getUuid());
+                if (rush != null)
+                    tickRush(player, rush);
+            }
+            // Players who left mid-rush.
+            RUSHES.keySet().removeIf(id -> server.getPlayerManager().getPlayer(id) == null);
+        });
     }
 
-    /** The root power-up; called from the MONK case in {@code PowerUpEffect}. */
-    public static void kiSurge(PlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, KI_SURGE_TICKS, 1));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, KI_SURGE_TICKS, 1));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, KI_SURGE_TICKS, 1));
-        if (player instanceof ServerPlayerEntity serverPlayer) {
-            effects(serverPlayer, SoundEvents.BLOCK_BEACON_POWER_SELECT, ParticleTypes.END_ROD, 20);
+    /**
+     * The root power-up, Flurry Rush; called from the MONK case in
+     * {@code PowerUpEffect}.
+     *
+     * @return false if there's nothing in the crosshair, so no mana is spent
+     */
+    public static boolean flurryRush(PlayerEntity player) {
+        if (!(player instanceof ServerPlayerEntity serverPlayer) || RUSHES.containsKey(player.getUuid()))
+            return false;
+        ServerWorld world = (ServerWorld) player.getWorld();
+        LivingEntity first = lookTarget(player, RUSH_RANGE);
+        if (first == null) {
+            serverPlayer.sendMessage(Text.literal("No target in sight").formatted(Formatting.GRAY), true);
+            return false;
         }
+
+        int maxTargets = FLURRY_RUSH.getInt(player, "Targets");
+        List<LivingEntity> targets = new ArrayList<>();
+        targets.add(first);
+        world.getEntitiesByClass(LivingEntity.class, first.getBoundingBox().expand(RUSH_CHAIN_RADIUS),
+                e -> e != first && e instanceof Monster && e.isAlive())
+                .stream()
+                .sorted(Comparator.comparingDouble(e -> e.squaredDistanceTo(first)))
+                .limit(maxTargets - 1)
+                .forEach(targets::add);
+
+        // The hits go to each target in a row (so Flurry of Blows can combo), the first gets any extra.
+        int hits = FLURRY_RUSH.getInt(player, "Hits");
+        List<UUID> order = new ArrayList<>();
+        for (int i = 0; i < targets.size(); i++) {
+            int count = hits / targets.size() + (i < hits % targets.size() ? 1 : 0);
+            for (int j = 0; j < count; j++)
+                order.add(targets.get(i).getUuid());
+        }
+
+        // Armor weakens the rush like any other Monk strike; unarmored is full damage.
+        float damage = (float) (FLURRY_RUSH.get(player, "Damage")
+                * MonkHandler.damageMultiplier(player.getArmor()) / MonkHandler.damageMultiplier(0));
+        RUSHES.put(player.getUuid(), new Rush(world.getRegistryKey(), player.getPos(), player.getYaw(),
+                player.getPitch(), order, damage, world.getTime()));
+
+        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ILLUSIONER_PREPARE_MIRROR,
+                SoundCategory.PLAYERS, 1.0F, 1.4F);
+        world.spawnParticles(ParticleTypes.CLOUD, player.getX(), player.getBodyY(0.5), player.getZ(), 15, 0.3, 0.5,
+                0.3, 0.05);
+        tickRush(serverPlayer, RUSHES.get(player.getUuid()));
+        return true;
+    }
+
+    private static void tickRush(ServerPlayerEntity player, Rush rush) {
+        ServerWorld world = (ServerWorld) player.getWorld();
+        if (!player.isAlive() || world.getRegistryKey() != rush.world) {
+            RUSHES.remove(player.getUuid());
+            return;
+        }
+        if (world.getTime() < rush.nextTick)
+            return;
+        rush.nextTick = world.getTime() + RUSH_HIT_INTERVAL_TICKS;
+
+        // The next target still alive; dead ones lose their remaining hits.
+        LivingEntity target = null;
+        while (rush.next < rush.hits.size() && target == null) {
+            if (world.getEntity(rush.hits.get(rush.next)) instanceof LivingEntity living && living.isAlive()
+                    && living.squaredDistanceTo(rush.start) <= (RUSH_RANGE + RUSH_CHAIN_RADIUS)
+                            * (RUSH_RANGE + RUSH_CHAIN_RADIUS)) {
+                target = living;
+            } else {
+                rush.next++;
+            }
+        }
+        if (target == null) {
+            endRush(player, rush);
+            return;
+        }
+
+        Vec3d from = player.getPos();
+        blinkTo(player, target, rush.next);
+        trail(world, from, player.getPos());
+
+        player.swingHand(Hand.MAIN_HAND, true);
+        target.timeUntilRegen = 0; // A hit every 3 ticks, faster than the usual half-second of invulnerability.
+        target.damage(player.getDamageSources().playerAttack(player), rush.damage);
+        player.fallDistance = 0;
+        rush.next++;
+
+        world.spawnParticles(ParticleTypes.SWEEP_ATTACK, target.getX(), target.getBodyY(0.5), target.getZ(), 1, 0, 0,
+                0, 0);
+        world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.5), target.getZ(), 10, 0.3, 0.4,
+                0.3, 0.3);
+        float pitch = 0.8F + 0.8F * rush.next / rush.hits.size();
+        boolean last = rush.next >= rush.hits.size();
+        world.playSound(null, target.getBlockPos(),
+                last ? SoundEvents.ENTITY_PLAYER_ATTACK_CRIT : SoundEvents.ENTITY_PLAYER_ATTACK_STRONG,
+                SoundCategory.PLAYERS, 1.0F, pitch);
+        if (last) {
+            world.spawnParticles(ParticleTypes.EXPLOSION, target.getX(), target.getBodyY(0.5), target.getZ(), 1, 0,
+                    0, 0, 0);
+            rush.nextTick = world.getTime() + RUSH_HIT_INTERVAL_TICKS * 2L; // A beat before blinking back.
+        }
+    }
+
+    /** Puts the player next to the target, facing it, on a different side each hit. */
+    private static void blinkTo(ServerPlayerEntity player, LivingEntity target, int hit) {
+        ServerWorld world = (ServerWorld) player.getWorld();
+        double distance = target.getWidth() / 2 + player.getWidth() / 2 + 0.7;
+        Vec3d spot = null;
+        // Try a few sides round the target for one with room to stand.
+        for (int attempt = 0; attempt < 6 && spot == null; attempt++) {
+            double angle = (hit + attempt) * RUSH_ANGLE_STEP;
+            Vec3d candidate = new Vec3d(target.getX() + Math.cos(angle) * distance, target.getY(),
+                    target.getZ() + Math.sin(angle) * distance);
+            if (world.isSpaceEmpty(player, player.getBoundingBox().offset(candidate.subtract(player.getPos()))))
+                spot = candidate;
+        }
+        if (spot == null)
+            spot = player.getPos(); // Boxed in: strike from where you are.
+        Vec3d look = target.getPos().add(0, target.getHeight() / 2, 0).subtract(spot.add(0, player.getStandingEyeHeight(), 0));
+        float yaw = (float) (Math.toDegrees(Math.atan2(look.z, look.x)) - 90);
+        float pitch = (float) -Math.toDegrees(Math.atan2(look.y, Math.sqrt(look.x * look.x + look.z * look.z)));
+        player.networkHandler.requestTeleport(spot.x, spot.y, spot.z, yaw, pitch);
+        player.setVelocity(Vec3d.ZERO);
+        player.velocityModified = true;
+    }
+
+    private static void endRush(ServerPlayerEntity player, Rush rush) {
+        RUSHES.remove(player.getUuid());
+        ServerWorld world = (ServerWorld) player.getWorld();
+        Vec3d from = player.getPos();
+        player.networkHandler.requestTeleport(rush.start.x, rush.start.y, rush.start.z, rush.yaw, rush.pitch);
+        player.setVelocity(Vec3d.ZERO);
+        player.velocityModified = true;
+        player.fallDistance = 0;
+        trail(world, from, rush.start);
+        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, SoundCategory.PLAYERS,
+                1.0F, 1.2F);
+        world.spawnParticles(ParticleTypes.CLOUD, rush.start.x, rush.start.y + 1, rush.start.z, 15, 0.3, 0.5, 0.3,
+                0.05);
+    }
+
+    /** A line of particles where the player blinked. */
+    private static void trail(ServerWorld world, Vec3d from, Vec3d to) {
+        Vec3d step = to.subtract(from);
+        int points = (int) Math.min(step.length() * 3, 60);
+        for (int i = 0; i <= points; i++) {
+            Vec3d pos = from.add(step.multiply(points == 0 ? 0 : i / (double) points)).add(0, 1, 0);
+            world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 1, 0.05, 0.1, 0.05, 0);
+        }
+    }
+
+    /** Whether the player is mid Flurry Rush. */
+    public static boolean isRushing(PlayerEntity player) {
+        return RUSHES.containsKey(player.getUuid());
+    }
+
+    /** The first living non-player, non-pet in the crosshair within range, not behind blocks. */
+    private static LivingEntity lookTarget(PlayerEntity player, double range) {
+        Vec3d eye = player.getEyePos();
+        Vec3d end = eye.add(player.getRotationVec(1.0F).multiply(range));
+        HitResult block = player.getWorld().raycast(new RaycastContext(eye, end, RaycastContext.ShapeType.COLLIDER,
+                RaycastContext.FluidHandling.NONE, player));
+        if (block.getType() != HitResult.Type.MISS)
+            end = block.getPos();
+        Box area = player.getBoundingBox().stretch(end.subtract(eye)).expand(1.0);
+        UUID owner = player.getUuid();
+        EntityHitResult hit = ProjectileUtil.raycast(player, eye, end, area,
+                e -> e instanceof LivingEntity && e.isAlive() && !(e instanceof PlayerEntity)
+                        && !(e instanceof Tameable t && owner.equals(t.getOwnerUuid())),
+                eye.squaredDistanceTo(end));
+        return hit != null ? (LivingEntity) hit.getEntity() : null;
     }
 
     @Override
@@ -197,6 +424,8 @@ public class MonkSkills extends ClassSkills {
 
     @Override
     public float modifyTakenDamage(PlayerEntity player, ClassProgress progress, DamageSource source, float amount) {
+        if (RUSHES.containsKey(player.getUuid()) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY))
+            return 0;
         if (source.isOf(DamageTypes.FALL) && progress.hasPassive("monk.slow_fall")) {
             return amount * FALL_DAMAGE_MULTIPLIER;
         }
@@ -237,5 +466,6 @@ public class MonkSkills extends ClassSkills {
     public void forget(ServerPlayerEntity player) {
         COMBOS.remove(player.getUuid());
         QUIVERING_PALM.remove(player.getUuid());
+        RUSHES.remove(player.getUuid());
     }
 }

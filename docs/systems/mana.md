@@ -24,7 +24,7 @@ These are the roots of each tree, all 9 mana:
 | Cleric | Sanctuary | Mobs can't target you for 15 s. Party members within 16 blocks share it and get Regeneration I for 10 s |
 | Druid | Wild Shape | Become a random animal you've killed for 30 s (needs the Identity mod) |
 | Fighter | Super Regeneration | Regeneration V for 10 s |
-| Monk | Ki Surge | Speed II, Haste II and Jump Boost II for 15 s |
+| Monk | Flurry Rush | Blink-strike chain on the mob in the crosshair and hostiles near it: 3 hits on 1 target, up to 10 hits across 5 targets with ranks |
 | Paladin | Divine Judgment | A beam of holy light hits the mob you look at, up to 30 blocks away, and a shockwave hits hostiles around it; undead take more. Stronger with rank. Keeps the mana with nothing in sight |
 | Ranger | Arrow Storm | For 15 s your bow needs no arrows and fires itself at full draw |
 | Rogue | Vanish | Invisibility for 15 s |

@@ -172,7 +172,9 @@ public class PowerUpEffect {
                         BarbarianSkills.RAGE.amplifier(player, "Strength")));
                 break;
             case MONK:
-                mattonfire.dnd.classes.Progression.Classes.MonkSkills.kiSurge(player);
+                // Flurry Rush: a chain of blink strikes; hits, targets and damage come from its rank.
+                if (!mattonfire.dnd.classes.Progression.Classes.MonkSkills.flurryRush(player))
+                    return false; // Nothing in the crosshair, keep the mana
                 break;
             case FIGHTER:
                 // Super regeneration: Regeneration V (~3 hearts/sec), longer with each rank.

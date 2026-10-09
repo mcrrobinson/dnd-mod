@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.netty.buffer.Unpooled;
-import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
+import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
@@ -16,7 +16,11 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
+import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
+import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -56,8 +60,6 @@ public class PowerUpEffect {
 
     /** Paladins heal party members within this many blocks (everyone else: 10). */
     public static final double PALADIN_PARTY_HEAL_RADIUS = 24;
-    /** How long the Wizard special's invulnerability lasts. */
-    public static final int WIZARD_INVULNERABLE_TICKS = 5 * 20;
 
     /** How long the Necromancer special's zombie and skeleton last. */
     public static final int UNDEAD_LIFETIME_TICKS = 10 * 20;
@@ -153,7 +155,9 @@ public class PowerUpEffect {
                 double playerX = player.getX();
                 double playerY = player.getY();
                 double playerZ = player.getZ();
-                float radius = 40.F;
+                // The rank sets the reach; a vanilla explosion reaches twice its power.
+                float reach = (float) WizardSkills.ARCANE_EXPLOSION.get(player, "Radius");
+                float radius = reach / 2;
 
                 DamageSource damageSource = world.getDamageSources()
                         .create(ModDamageTypes.WIZARD_EXPLOSION_DAMAGE_SOURCE, player);
@@ -165,7 +169,8 @@ public class PowerUpEffect {
 
                 // A few seconds of invulnerability: Resistance V blocks all normal damage
                 // and wears off on its own (unlike setInvulnerable, which is saved).
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, WIZARD_INVULNERABLE_TICKS, 4));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE,
+                        WizardSkills.ARCANE_EXPLOSION.ticks(player, "Resistance V"), 4));
 
                 explosion.collectBlocksAndDamageEntities();
                 explosion.affectWorld(true);
@@ -183,14 +188,22 @@ public class PowerUpEffect {
                                         explosion.getAffectedBlocks(),
                                         (Vec3d) explosion.getAffectedPlayers().get(serverPlayerEntity)));
 
-                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
-                                new PacketByteBuf(Unpooled.buffer()));
+                        // Where the blast is and how far it reaches, so the sphere matches it
+                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                        buf.writeDouble(playerX);
+                        buf.writeDouble(playerY + player.getStandingEyeHeight() / 2.0);
+                        buf.writeDouble(playerZ);
+                        buf.writeFloat(reach);
+                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID, buf);
                     }
                 }
 
                 break;
             case BARBARIAN:
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
+                // Rage: Strength I for 8 s at rank I, up to Strength III for 12 s at rank IV.
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH,
+                        BarbarianSkills.RAGE.ticks(player, "Duration"),
+                        BarbarianSkills.RAGE.amplifier(player, "Strength")));
                 break;
             case MONK:
                 mattonfire.dnd.classes.Progression.Classes.MonkSkills.kiSurge(player);
@@ -205,16 +218,23 @@ public class PowerUpEffect {
             case BARD:
                 bardEffect(player);
                 break;
-            case CLERIC:
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
-                // Party members inside the circle share it and get some regeneration.
-                if (player instanceof ServerPlayerEntity cleric) {
-                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, ClericHandler.REPEL_RADIUS)) {
-                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
-                        member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
+            case CLERIC: {
+                // Sanctuary: duration, party reach and the party's Regeneration come from its rank.
+                int duration = ClericSkills.SANCTUARY.ticks(player, "Duration");
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
+                double partyReach = ClericSkills.sanctuaryPartyReach(player);
+                if (partyReach > 0 && player instanceof ServerPlayerEntity cleric) {
+                    int regen = ClericSkills.sanctuaryPartyRegenAmplifier(player);
+                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, partyReach)) {
+                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
+                        if (regen >= 0) {
+                            member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,
+                                    ClericSkills.sanctuaryPartyRegenTicks(player), regen));
+                        }
                     }
                 }
                 break;
+            }
             case PALADIN:
                 // Heal everyone within a area of the user
                 List<PlayerEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
@@ -249,9 +269,9 @@ public class PowerUpEffect {
                 // Spawn undead enemies
                 break;
             case WARLOCK:
-                // For 20 seconds breathe fire.
+                // Breathe fire; duration, reach, damage and burn time scale with the rank.
                 DnDClasses.WARLOCK_FIREBREATH.put(player.getUuid(),
-                        player.getWorld().getTime() + DnDClasses.FIREBREATH_DURATION_TICKS);
+                        player.getWorld().getTime() + WarlockSkills.FIRE_BREATH.ticks(player, "Duration"));
 
                 break;
             case ARTIFICER:

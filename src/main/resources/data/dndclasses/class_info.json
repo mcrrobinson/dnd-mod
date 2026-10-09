@@ -6,7 +6,7 @@
       "name": "Barbarian",
       "pros": ["Strength highly buffed", "Health rivals dragons"],
       "cons": ["Limited vision (fog closes in at ~24 blocks)", "Moves very slowly"],
-      "special": ["Strength III for 15 seconds, inspired by *One Punch Man*"],
+      "special": ["Rage: Strength I for 8s, up to Strength III for 12s with ranks, inspired by *One Punch Man*"],
       "specialOnKey": true
     },
     {
@@ -22,7 +22,7 @@
       "name": "Cleric",
       "pros": ["High mining speed", "Night vision"],
       "cons": ["Shorter viewing distance (fog closes in at ~48 blocks)", "Slightly reduced attack damage"],
-      "special": ["Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s)"],
+      "special": ["Circle of ignoring mobs for 6 to 15 seconds as it ranks up; from rank II party members within 8 to 16 blocks share it and get Regeneration"],
       "specialOnKey": true
     },
     {
@@ -86,7 +86,7 @@
       "name": "Warlock",
       "pros": ["Can throw fireballs with an empty hand (done)", "Immune to fire and lava (done)"],
       "cons": ["Reduced damage output (done)", "Hurt by water and rain, 1 damage every 4s but never below 1 heart (done)"],
-      "special": ["Can breathe fire by holding a special key (done)"],
+      "special": ["Breathes fire on the special key, 8 s and 3 blocks at rank I up to 20 s and 7 blocks at rank IV (done)"],
       "specialOnKey": true
     },
     {
@@ -94,7 +94,7 @@
       "name": "Wizard",
       "pros": ["Can wield elemental staffs (done)"],
       "cons": ["Greatly reduced health (done)", "Can't wear armor heavier than iron (done)"],
-      "special": ["Creates a massive explosion and becomes invulnerable for a few seconds (done)"],
+      "special": ["Arcane explosion: 12-block blast and Resistance V for 2s, up to 72 blocks and 5s with ranks (done)"],
       "specialOnKey": true
     },
     {

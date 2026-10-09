@@ -15,7 +15,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Rogue](classes/rogue.md): no hunger or poison; turns invisible
 - [Necromancer](classes/necromancer.md): undead ignore you; summon undead allies
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
-- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion
+- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
 - [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
 - [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
 - [Alchemist](classes/alchemist.md): safe and fast brewing, upgrades potions; can't enchant

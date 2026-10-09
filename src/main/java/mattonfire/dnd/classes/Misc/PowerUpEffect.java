@@ -14,7 +14,6 @@ import mattonfire.dnd.classes.Progression.Classes.NecromancerSkills;
 import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
-import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
@@ -24,7 +23,6 @@ import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -35,8 +33,6 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
@@ -105,35 +101,6 @@ public class PowerUpEffect {
         mob.addCommandTag(NecromancerSkills.SUMMON_TAG);
         mob.setPersistent();
         SkillHelpers.spawnSummon(world, mob, UNDEAD_LIFETIME_TICKS);
-    }
-
-    /** The Bard special's "attack hostile mobs" goal; a marker type so it's only added once per mob. */
-    private static class BardRallyGoal extends ActiveTargetGoal<HostileEntity> {
-        BardRallyGoal(MobEntity mob) {
-            super(mob, HostileEntity.class, true);
-        }
-    }
-
-    public static void bardEffect(PlayerEntity player) {
-        List<PassiveEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
-                PassiveEntity.class,
-                player.getBoundingBox().expand(10), // 10-block radius
-                // Bosses (Wyvern, Lightning Chaser) can't be charmed.
-                entity -> entity.isAlive() && !(entity instanceof Boss));
-
-        for (PassiveEntity passiveMob : nearbyEntities) {
-            // Untamed tameable animals (wolves, cats, parrots...) become the Bard's
-            if (passiveMob instanceof TameableEntity tameable && !tameable.isTamed()) {
-                tameable.setOwner(player);
-            }
-
-            // Turn them on hostile mobs, once: the goal stays until the mob is unloaded.
-            GoalSelector targets = ((MobEntityAccessor) passiveMob).getTargetSelector();
-            boolean rallied = targets.getGoals().stream().anyMatch(goal -> goal.getGoal() instanceof BardRallyGoal);
-            if (!rallied) {
-                targets.add(1, new BardRallyGoal(passiveMob));
-            }
-        }
     }
 
     public static boolean play(MinecraftServer server, PlayerEntity player, DndCharacter character) {
@@ -216,7 +183,9 @@ public class PowerUpEffect {
                         FighterSkills.SUPER_REGEN.amplifier(player, "Regeneration")));
                 break;
             case BARD:
-                bardEffect(player);
+                if (player instanceof ServerPlayerEntity bard) {
+                    mattonfire.dnd.classes.Progression.Classes.BardSkills.animalFriends(bard);
+                }
                 break;
             case CLERIC: {
                 // Sanctuary: duration, party reach and the party's Regeneration come from its rank.

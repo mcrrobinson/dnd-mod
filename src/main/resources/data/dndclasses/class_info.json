@@ -14,7 +14,7 @@
       "name": "Bard",
       "pros": ["Invisible to mobs"],
       "cons": ["Less health"],
-      "special": ["Instantly tame tameable animals"],
+      "special": ["Nearby animals you have charmed with an instrument become companions that follow and fight for you"],
       "specialOnKey": true
     },
     {

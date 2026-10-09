@@ -48,7 +48,7 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 | **Class**| **Pros**|**Cons**|**Special Ability**|
 |-|-|-|-|
 | **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Rage: Strength I for 8s, up to Strength III for 12s with ranks, inspired by *One Punch Man* |
-| **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
+| **Bard** | Invisible to mobs | Less health | Nearby animals you have charmed with an instrument become companions that follow and fight for you |
 | **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs for 6 to 15 seconds as it ranks up; from rank II party members within 8 to 16 blocks share it and get Regeneration |
 | **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Wild Shape: transforms into an animal it has killed and unlocked at an Attunement Table, for 15-30s by rank (sneak + key picks the form) |
 | **Fighter** | High health, High strength, Attracts mobs: hostile mobs prefer a Fighter over other players (done) | Cannot use bows or crossbows (done), No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done) | Super regeneration: Regeneration V for 4s, up to 10s with ranks (done) |

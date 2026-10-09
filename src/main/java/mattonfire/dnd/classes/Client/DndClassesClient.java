@@ -188,6 +188,7 @@ public class DndClassesClient implements ClientModInitializer {
         DevScript.register();
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
+        mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
 

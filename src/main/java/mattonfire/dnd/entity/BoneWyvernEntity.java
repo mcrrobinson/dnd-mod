@@ -13,6 +13,7 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.TameableEntity;
+import net.minecraft.scoreboard.Team;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
@@ -83,6 +84,17 @@ public class BoneWyvernEntity extends WyvernEntity {
             living.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, BITE_WITHER_TICKS, 0), this);
         }
         return hit;
+    }
+
+    /**
+     * A tamed mob only asks its owner (and reports the owner's team as its own), and the owner isn't on
+     * the Necromancer's ally team, so the raised undead on it would count as hostile mobs to bite and
+     * flame. The wyvern's own ally team counts too.
+     */
+    @Override
+    public boolean isTeammate(Entity other) {
+        Team team = this.world.getScoreboard().getPlayerTeam(this.getEntityName());
+        return super.isTeammate(other) || team != null && team.isEqual(other.getScoreboardTeam());
     }
 
     @Override

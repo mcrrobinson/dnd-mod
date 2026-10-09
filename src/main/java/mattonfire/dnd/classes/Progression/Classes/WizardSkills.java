@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -55,6 +56,15 @@ import net.minecraft.world.World;
  * explosion the player set off directly).
  */
 public class WizardSkills extends ClassSkills {
+    /**
+     * The root special; fired by {@code PowerUpEffect}. Radius is how far the blast
+     * reaches entities (vanilla explosions reach twice their power, so power is half
+     * of it). Small early on, close to the old power-40 blast at full rank.
+     */
+    public static final Ranks ARCANE_EXPLOSION = Ranks.of("wizard.arcane_explosion")
+            .amount("Radius", "blocks", 12, 28, 48, 72)
+            .seconds("Resistance V", 2, 3, 4, 5);
+
     private static final int SPELL_KILL_BONUS_XP = 3;
     private static final float ARCANE_FOCUS_MULTIPLIER = 1.25F;
     private static final float FROZEN_TARGET_MULTIPLIER = 1.5F;
@@ -81,7 +91,7 @@ public class WizardSkills extends ClassSkills {
     public List<SkillNode> nodes() {
         return List.of(
                 active("wizard.arcane_explosion", "Arcane Explosion",
-                        "A huge arcane blast around you that throws everything back.", "minecraft:end_crystal", 9, 0,
+                        "An arcane blast around you that throws everything back. Grows with each rank.", "minecraft:end_crystal", 9, 0,
                         1, 3),
                 // Evocation
                 passive("wizard.arcane_focus", "Arcane Focus", "Staff hits and staff blasts deal 25% more damage.",

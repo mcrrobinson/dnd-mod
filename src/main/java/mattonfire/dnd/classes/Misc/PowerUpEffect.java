@@ -19,6 +19,7 @@ import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
 import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.RogueSkills;
 import mattonfire.dnd.classes.Progression.Classes.RangerSkills;
 import mattonfire.dnd.classes.Progression.Classes.PaladinSkills;
 import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
@@ -208,8 +209,9 @@ public class PowerUpEffect {
                     return false;
                 break;
             case ROGUE:
-                // Make the player immune to poison
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 300, 0));
+                // Vanish: invisibility, longer with each rank.
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY,
+                        RogueSkills.VANISH.ticks(player, "Duration"), 0));
                 break;
             case DRUID:
                 if (!(player instanceof ServerPlayerEntity serverPlayer) || !Druid.transform(serverPlayer))

@@ -12,7 +12,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Monk](classes/monk.md): triple jump and fast fists; staff or fists only
 - [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether
 - [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
-- [Rogue](classes/rogue.md): no hunger or poison; turns invisible
+- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
 - [Necromancer](classes/necromancer.md): undead ignore you; summon undead allies
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
 - [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks

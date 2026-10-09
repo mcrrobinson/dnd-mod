@@ -1,0 +1,57 @@
+# Checks the Barbarian's Rage ranks. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/barbarian-ranks.txt
+# Expect in latest.log ([CHAT] /data get entity @s ActiveEffects lines):
+#  1. rank I:  Strength (id 5) Amplifier 0, Duration ~160
+#  2. rank II:  Strength (id 5) Amplifier 1, Duration ~200
+#  3. rank III: Strength (id 5) Amplifier 1, Duration ~240
+#  4. rank IV:  Strength (id 5) Amplifier 2, Duration ~240
+# Screenshot: barbarian-rage-tree (Rage tooltip with Now/Next lines at the table)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s barbarian
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/effect clear @s
+wait 200
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/dndclass rank @s barbarian.rage 2
+/effect clear @s
+# Mana refills in 18 s after each Rage.
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+screenshot barbarian-rage-rank2
+/dndclass rank @s barbarian.rage 3
+/effect clear @s
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/dndclass rank @s barbarian.rage 4
+/effect clear @s
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+screenshot barbarian-rage-rank4
+/dndclass rank @s barbarian.rage 2
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+screenshot barbarian-rage-tree
+closescreen
+/setblock 4 150 4 minecraft:air
+/dndclass resetprogress @s
+quit

@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
 import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
 import net.minecraft.entity.EntityType;
@@ -197,7 +198,10 @@ public class PowerUpEffect {
 
                 break;
             case BARBARIAN:
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
+                // Rage: Strength I for 8 s at rank I, up to Strength III for 12 s at rank IV.
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH,
+                        BarbarianSkills.RAGE.ticks(player, "Duration"),
+                        BarbarianSkills.RAGE.amplifier(player, "Strength")));
                 break;
             case MONK:
                 mattonfire.dnd.classes.Progression.Classes.MonkSkills.kiSurge(player);

@@ -47,7 +47,7 @@ Every player gets a **Class Guidebook** on first join and on class change, expla
 <!-- class-table:start - generated from src/main/resources/data/dndclasses/class_info.json, the same data the guidebook uses. Edit that file and run ./gradlew generateClassReadme -->
 | **Class**| **Pros**|**Cons**|**Special Ability**|
 |-|-|-|-|
-| **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Strength III for 15 seconds, inspired by *One Punch Man* |
+| **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Rage: Strength I for 8s, up to Strength III for 12s with ranks, inspired by *One Punch Man* |
 | **Bard** | Invisible to mobs | Less health | Instantly tame tameable animals |
 | **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s) |
 | **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Transforms into a random animal it has killed (or an Owlbear, once it has killed one) for 30s |

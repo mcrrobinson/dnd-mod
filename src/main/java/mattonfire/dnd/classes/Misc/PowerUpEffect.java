@@ -279,7 +279,8 @@ public class PowerUpEffect {
                 player.addStatusEffect(new StatusEffectInstance(ModEffects.ARMOR_BUFF, 600, 0));
                 break;
             case BLOODHUNTER:
-                // Take control of the mob being looked at (within 30 blocks) for 20 seconds.
+                // Take control of the mob being looked at; range, duration and success chance by rank.
+                // A resisted attempt still spends the mana.
                 if (!(player instanceof ServerPlayerEntity serverPlayer)
                         || !BloodHunterControl.takeControl(serverPlayer)) {
                     return false;

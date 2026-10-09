@@ -139,14 +139,15 @@ public class DndClassesClient implements ClientModInitializer {
 
     private void handleWizardPowerupPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
+        Vec3d pos = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        float reach = buf.readFloat();
         client.execute(() -> {
             if (client.world != null && client.player != null) {
                 MySphereRenderState.shouldRenderSphere = true;
-                MySphereRenderState.spherePos = client.player.getPos().add(0,
-                        client.player.getStandingEyeHeight() / 2.0, 0);
+                MySphereRenderState.spherePos = pos;
+                MySphereRenderState.maxRadius = reach;
                 MySphereRenderState.startTick = client.world.getTime();
-                client.world.playSound(
-                        client.player.getPos().getX(), client.player.getPos().getY(), client.player.getPos().getZ(),
+                client.world.playSound(pos.x, pos.y, pos.z,
                         ModSounds.WIZARD_EXPLOSION,
                         SoundCategory.BLOCKS,
                         4.0F,
@@ -211,7 +212,7 @@ public class DndClassesClient implements ClientModInitializer {
                     MySphereRenderState.shouldRenderSphere = false;
                     return;
                 }
-                float radius = 0.1f + progress * 49.9f; // Expands from 0.1 to 50 blocks
+                float radius = 0.1f + progress * (MySphereRenderState.maxRadius - 0.1f); // Grows to the blast's reach
                 int baseColor = 0xFFffec64;
                 int originalAlpha = 0xFF;
                 int newAlpha = (int) ((1.0f - progress) * originalAlpha);

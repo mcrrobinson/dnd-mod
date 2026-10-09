@@ -10,7 +10,7 @@ Mana comes back at 1 pip every 2 seconds, so an empty bar fills in 18 seconds.
 
 Press the **power-up key (Z by default)** to fire your equipped active. Each active has a mana cost, shown as a line under the pips it uses. The line is grey while you can't afford it and turns gold when you can. Your class's original special, the root of its [skill tree](class-selection.md#class-levels-and-the-skill-tree), costs all 9 pips. Most actives you unlock further up the tree cost less. Firing spends only that skill's cost, plays a short music sting for your class and dips the background music under it (see [Music](../music.md)).
 
-If the special can't do anything, you keep your mana. That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, as an Alchemist with no potions to upgrade, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
+If the special can't do anything, you keep your mana. That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
 
 Mana is kept through death and leaving the End, so dying doesn't refill it.
 
@@ -19,21 +19,21 @@ These are the roots of each tree, all 9 mana:
 
 | Class | Special | What it does |
 |-|-|-|
-| Barbarian | Rage | Strength III for 15 s |
+| Barbarian | Rage | Strength I for 8 s, up to Strength III for 12 s with ranks |
 | Bard | Animal Friends | Animals within 10 blocks attack monsters; untamed tameable animals become yours |
 | Cleric | Sanctuary | Mobs can't target you for 15 s. Party members within 16 blocks share it and get Regeneration I for 10 s |
 | Druid | Wild Shape | Become a random animal you've killed for 30 s (needs the Identity mod) |
 | Fighter | Super Regeneration | Regeneration V for 10 s |
 | Monk | Flurry Rush | Blink-strike chain on the mob in the crosshair and hostiles near it: 3 hits on 1 target, up to 10 hits across 5 targets with ranks |
-| Paladin | Lay on Hands | Heal every player within 10 blocks to full. Party members within 24 blocks are also healed and get Absorption I for 30 s |
+| Paladin | Divine Judgment | A beam of holy light hits the mob you look at, up to 30 blocks away, and a shockwave hits hostiles around it; undead take more. Stronger with rank. Keeps the mana with nothing in sight |
 | Ranger | Arrow Storm | For 15 s your bow needs no arrows and fires itself at full draw |
 | Rogue | Vanish | Invisibility for 15 s |
 | Necromancer | Raise Dead | An allied zombie and skeleton rise and fight for you for 10 s |
-| Warlock | Fire Breath | Breathe fire for 20 s |
+| Warlock | Fire Breath | Breathe fire for 8-20 s, 3-7 blocks (by rank) |
 | Wizard | Arcane Explosion | A power 40 explosion centred on you that breaks no blocks. You get Resistance V for 5 s so it doesn't hurt you |
 | Artificer | Arcane Armor | +8 armor and +4 armor toughness for 30 s |
 | Blood Hunter | Blood Control | Take control of the mob you're looking at, up to 30 blocks away, for 20 s (needs the Identity mod) |
-| Alchemist | Distill | Upgrade every potion in your inventory to its strongest version |
+| Alchemist | Transmute | Throw your held potion (or an unstable brew) as a cloud with stronger effects: buffs for allies, harm for mobs |
 
 Press O to see the rest of your tree.
 

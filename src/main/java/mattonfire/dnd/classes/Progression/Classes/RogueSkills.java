@@ -6,15 +6,19 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
@@ -23,6 +27,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
@@ -30,6 +35,17 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
 public class RogueSkills extends ClassSkills {
+    /** The root special; fired by {@code PowerUpEffect}. Short early on, today's 15 s at full rank. */
+    public static final Ranks VANISH = Ranks.of("rogue.vanish")
+            .seconds("Duration", 6, 9, 12, 15);
+
+    /** Thief active: every projectile that would hit you misses for this long. */
+    public static final Ranks DANGER_SENSE = Ranks.of("rogue.danger_sense")
+            .seconds("Duration", 5, 6, 7, 8);
+
+    /** Sideways push when Danger Sense dodges a projectile, in blocks per tick. */
+    private static final double SIDESTEP_SPEED = 0.45;
+
     private static final int STEALTH_KILL_BONUS_XP = 4;
     private static final int SHADOWSTEP_RANGE = 12;
 
@@ -41,7 +57,7 @@ public class RogueSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("rogue.vanish", "Vanish", "Invisibility for 15 seconds.", "minecraft:fermented_spider_eye", 9,
+                active("rogue.vanish", "Vanish", "Turn invisible for a few seconds, longer with each rank.", "minecraft:fermented_spider_eye", 9,
                         0, 1, 3),
                 // Assassin
                 passive("rogue.backstab", "Backstab", "Deal 50% more damage while sneaking or invisible.",
@@ -56,6 +72,9 @@ public class RogueSkills extends ClassSkills {
                 active("rogue.smoke_bomb", "Smoke Bomb",
                         "Blind and slow mobs within 6 blocks, and they lose track of you.", "minecraft:gunpowder", 3,
                         1, 0, 2, "rogue.light_feet"),
+                active("rogue.danger_sense", "Danger Sense",
+                        "For a few seconds, arrows and other projectiles that would hit you miss as you sidestep.",
+                        "minecraft:phantom_membrane", 4, 1, 1, 2, "rogue.smoke_bomb"),
                 passive("rogue.fleet", "Fleet", "Move 15% faster.", "minecraft:sugar", 1, 0, 1, "rogue.smoke_bomb"),
                 active("rogue.death_mark", "Death Mark",
                         "Invisibility, Strength II and Speed II for 10 seconds.", "minecraft:wither_skeleton_skull", 9,
@@ -94,6 +113,11 @@ public class RogueSkills extends ClassSkills {
                         player.getZ(), 40, 2.0, 1.0, 2.0, 0.01);
                 effects(player, SoundEvents.ENTITY_GENERIC_EXTINGUISH_FIRE, ParticleTypes.LARGE_SMOKE, 30);
             }
+            case "rogue.danger_sense" -> {
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.DANGER_SENSE,
+                        DANGER_SENSE.ticks(player, "Duration"), 0, false, false, true));
+                effects(player, SoundEvents.ENTITY_ILLUSIONER_PREPARE_MIRROR, ParticleTypes.CLOUD, 20);
+            }
             case "rogue.death_mark" -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 200, 0));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 200, 1));
@@ -126,6 +150,29 @@ public class RogueSkills extends ClassSkills {
         return null;
     }
 
+    /**
+     * Danger Sense dodged a projectile that was about to hit: a sideways nudge, a whoosh and a puff of
+     * smoke where it would have landed. Called once per projectile from {@code ProjectileEntityMixin}.
+     */
+    public static void sidestep(PlayerEntity player, Entity projectile) {
+        if (!(player.getWorld() instanceof ServerWorld world))
+            return;
+        Vec3d flight = projectile.getVelocity();
+        Vec3d side = new Vec3d(-flight.z, 0, flight.x);
+        if (side.lengthSquared() < 1.0E-6) {
+            side = player.getRotationVec(1.0F).crossProduct(new Vec3d(0, 1, 0));
+        }
+        side = side.normalize().multiply(player.getRandom().nextBoolean() ? SIDESTEP_SPEED : -SIDESTEP_SPEED);
+        player.addVelocity(side.x, 0.1, side.z);
+        player.velocityModified = true;
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP,
+                SoundCategory.PLAYERS, 0.8F, 1.6F);
+        world.spawnParticles(ParticleTypes.CLOUD, projectile.getX(), projectile.getY(), projectile.getZ(), 8, 0.2,
+                0.2, 0.2, 0.02);
+        world.spawnParticles(ParticleTypes.LARGE_SMOKE, projectile.getX(), projectile.getY(), projectile.getZ(), 6,
+                0.15, 0.15, 0.15, 0.01);
+    }
+
     @Override
     public int killXp(ServerPlayerEntity player, LivingEntity killed, DamageSource source) {
         return killed instanceof Monster && (player.isSneaking() || player.isInvisible()) ? STEALTH_KILL_BONUS_XP : 0;
@@ -146,6 +193,10 @@ public class RogueSkills extends ClassSkills {
 
     @Override
     public float modifyTakenDamage(PlayerEntity player, ClassProgress progress, DamageSource source, float amount) {
+        // Projectiles already fly through a Danger Sense Rogue (ProjectileEntityMixin); this catches the rest.
+        if (source.isIn(DamageTypeTags.IS_PROJECTILE) && player.hasStatusEffect(ModEffects.DANGER_SENSE)) {
+            return 0;
+        }
         return source.isOf(DamageTypes.FALL) && progress.hasPassive("rogue.light_feet") ? amount * 0.5F : amount;
     }
 }

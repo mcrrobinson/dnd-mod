@@ -1,0 +1,292 @@
+# Checks the Bard's bestiary and Animal Friends companions. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/bard-bestiary.txt
+# Expect in latest.log ([CHAT] /dndclass progress lines):
+#  1. bestiary [minecraft:wolf] a couple of seconds after becoming a Bard (starter animal)
+#  2. Killing a fox: "Test failed" (it died) and learned is still [minecraft:wolf]. Pressing the instrument key
+#     (empty inventory) next to a fox and a cow: learned [minecraft:wolf, minecraft:fox, minecraft:cow] (farm animals
+#     are tier I); a second press on cooldown doesn't learn the pig. Screenshot bard-charm shows the 10th slot with
+#     the lute on cooldown, hearts, and "Charmed fox, cow: unlock them at an Attunement Table."
+#     Screenshot fighter-no-slot (end): a Fighter has no 10th slot.
+
+#  3. goat and the other farm animals learned by command; at rank I the fox, the cow and all farm animals unlock,
+#     the goat (tier II) is refused
+#  4. bestiary with minecraft:goat after /dndclass rank 2 and the unlock at the table
+#  5. After the special at rank II (cap 4): the fox, the goat, the cow and one wolf have a dnd_bard_companion:<uuid> tag,
+#     the other three wolves have no Tags
+#  6. Farm animals at rank IV: pig, sheep, chicken, rabbit, horse and mooshroom get the tag. The Bard moves 13 blocks
+#     east; the Pos lines show them walking after the Bard (x near 17.5 by the last one; the rabbit, which can bite,
+#     may go for the frozen zombie instead) and "Test passed, count: 5" or 6 (the rabbit may hop off the platform). No exception in the log
+# Screenshots: bard-charm (10th slot, hearts), fighter-no-slot, bard-bestiary (Bestiary tab at the table), bard-companions (companions going for a zombie), bard-farm, bard-farm-follow (farm companions following)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -8 149 -8 24 149 16 minecraft:grass_block
+/fill -8 150 -8 24 156 16 minecraft:air
+/kill @e[type=!minecraft:player]
+/dndclass set @s bard
+wait 10
+closescreen
+/dndclass resetprogress @s
+wait 40
+/dndclass progress @s
+# Kills don't teach a Bard: kill a fox
+/item replace entity @s weapon.mainhand with minecraft:netherite_sword{Enchantments:[{id:"minecraft:sharpness",lvl:5}]}
+/summon minecraft:fox 4.5 150 3.5 {NoAI:1b,Rotation:[180f,0f]}
+/tp @s 4.5 150 1.5 0 40
+# Full swing: the sword's cooldown restarts when it's put in the hand.
+wait 20
+attack
+wait 20
+attack
+wait 10
+/execute if entity @e[type=minecraft:fox]
+/kill @e[type=minecraft:item]
+/dndclass progress @s
+# Learn by charming: play the instrument slot (G) next to a frozen fox and cow, with no instrument in the inventory
+/clear @s dndclasses:lute
+/clear @s dndclasses:drum
+/clear @s dndclasses:flute
+/summon minecraft:fox 2.5 150 5.5 {NoAI:1b}
+/summon minecraft:cow 6.5 150 5.5 {NoAI:1b}
+/tp @s 4.5 150 1.5 0 10
+wait 5
+press key.dnd-classes.play-instrument
+wait 3
+screenshot bard-charm
+wait 10
+/dndclass progress @s
+# Still on cooldown: a second press does nothing
+/summon minecraft:pig 4.5 150 4.5 {NoAI:1b}
+press key.dnd-classes.play-instrument
+wait 5
+/dndclass progress @s
+/kill @e[type=!minecraft:player]
+# Unlock at the table
+/dndclass bestiary @s learn minecraft:goat
+/dndclass bestiary @s learn minecraft:pig
+/dndclass bestiary @s learn minecraft:sheep
+/dndclass bestiary @s learn minecraft:chicken
+/dndclass bestiary @s learn minecraft:rabbit
+/dndclass bestiary @s learn minecraft:mooshroom
+/dndclass bestiary @s learn minecraft:horse
+/dndclass bestiary @s learn minecraft:donkey
+/dndclass bestiary @s learn minecraft:mule
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:fox
+wait 5
+skill bestiary minecraft:cow
+wait 5
+skill bestiary minecraft:pig
+wait 5
+skill bestiary minecraft:sheep
+wait 5
+skill bestiary minecraft:chicken
+wait 5
+skill bestiary minecraft:rabbit
+wait 5
+skill bestiary minecraft:mooshroom
+wait 5
+skill bestiary minecraft:horse
+wait 5
+skill bestiary minecraft:donkey
+wait 5
+skill bestiary minecraft:mule
+wait 5
+skill bestiary minecraft:goat
+wait 5
+/dndclass progress @s
+/dndclass rank @s bard.animal_friends 2
+wait 5
+skill bestiary minecraft:goat
+wait 5
+/dndclass progress @s
+click 102 -104
+wait 10
+screenshot bard-bestiary
+closescreen
+/setblock 4 150 4 minecraft:air
+# Animal Friends at rank II: 6 candidates, cap 4
+# Fill mana first: wild wolves hunt foxes while waiting.
+/time set night
+/effect clear @s
+wait 200
+/summon minecraft:fox 2 150 6
+/summon minecraft:goat 7 150 6
+/summon minecraft:cow 4 150 8
+/summon minecraft:wolf 1 150 3
+/summon minecraft:wolf 8 150 3
+/summon minecraft:wolf 1 150 9
+/summon minecraft:wolf 8 150 9
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 20
+/data get entity @e[type=minecraft:fox,limit=1] Tags
+/data get entity @e[type=minecraft:goat,limit=1] Tags
+/data get entity @e[type=minecraft:cow,limit=1] Tags
+/execute as @e[type=minecraft:wolf] run data get entity @s Tags
+# Fight: a zombie walks in
+/summon minecraft:zombie 4.5 150 12.5
+wait 60
+perspective back
+screenshot bard-companions
+perspective first
+/kill @e[type=minecraft:zombie]
+/kill @e[type=!minecraft:player]
+# Rank III: tier III unlocks, tier IV still refused
+/time set night
+/dndclass bestiary @s learn minecraft:polar_bear
+/dndclass bestiary @s learn minecraft:panda
+/dndclass bestiary @s learn minecraft:iron_golem
+/dndclass bestiary @s learn minecraft:hoglin
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:polar_bear
+wait 5
+/dndclass progress @s
+/dndclass rank @s bard.animal_friends 3
+wait 5
+skill bestiary minecraft:polar_bear
+wait 5
+skill bestiary minecraft:panda
+wait 5
+skill bestiary minecraft:iron_golem
+wait 5
+/dndclass progress @s
+closescreen
+/setblock 4 150 4 minecraft:air
+# Rank III special: radius 14, cap 5. In range: bear, panda, 2 wolves, wolf at dx 13; wolf at dx 15 is out.
+wait 400
+/summon minecraft:polar_bear 2 150 7
+/summon minecraft:panda 7 150 7
+/summon minecraft:wolf 1 150 3
+/summon minecraft:wolf 8 150 3
+/summon minecraft:wolf 17.5 150 4.5 {NoAI:1b,Tags:["r3_dx13"]}
+/summon minecraft:wolf 19.5 150 4.5 {NoAI:1b,Tags:["r3_dx15"]}
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 10
+screenshot bard-rank3
+/data get entity @e[type=minecraft:polar_bear,limit=1] Tags
+/data get entity @e[type=minecraft:panda,limit=1] Tags
+/execute as @e[type=minecraft:wolf] run data get entity @s Tags
+/kill @e[type=!minecraft:player]
+# Rank IV: tier IV unlocks
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:iron_golem
+wait 5
+/dndclass progress @s
+/dndclass rank @s bard.animal_friends 4
+wait 5
+skill bestiary minecraft:iron_golem
+wait 5
+skill bestiary minecraft:hoglin
+wait 5
+/dndclass progress @s
+click 102 -104
+wait 10
+screenshot bard-bestiary-rank4
+closescreen
+/setblock 4 150 4 minecraft:air
+# Rank IV special: radius 16, cap 6. 7 in range (golem, hoglin, 3 wolves, wolves at dx 15 and 15.5), wolf at dx 18 out.
+wait 400
+/item replace entity @s weapon.mainhand with minecraft:air
+/summon minecraft:iron_golem 4.5 150 7.5
+/summon minecraft:hoglin 7 150 6
+/summon minecraft:wolf 1 150 3
+/summon minecraft:wolf 8 150 3
+/summon minecraft:wolf 1 150 8
+/summon minecraft:wolf 19.5 150 4.5 {NoAI:1b,Tags:["r4_dx15"]}
+/summon minecraft:wolf 20 150 6.5 {NoAI:1b,Tags:["r4_dx15_5"]}
+/summon minecraft:wolf 22.5 150 4.5 {NoAI:1b,Tags:["r4_dx18"]}
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 5
+screenshot bard-rank4-cap
+/data get entity @e[type=minecraft:iron_golem,limit=1] Tags
+/data get entity @e[type=minecraft:hoglin,limit=1] Tags
+/execute as @e[type=minecraft:wolf] run data get entity @s Tags
+# Punch the golem: it must not hit back
+/tp @s 4.5 150 4.5 0 20
+attack
+wait 5
+attack
+wait 60
+/data get entity @s Health
+# Fight: zombie gets killed, a frozen creeper is ignored
+/summon minecraft:creeper 4.5 150 -3.5 {NoAI:1b}
+/summon minecraft:zombie 4.5 150 12.5
+wait 100
+perspective back
+screenshot bard-rank4-fight
+perspective first
+/execute if entity @e[type=minecraft:zombie]
+/data get entity @e[type=minecraft:creeper,limit=1] Health
+# Hoglin zombifies after 300 ticks in the Overworld unless kept
+wait 300
+/execute if entity @e[type=minecraft:hoglin]
+/execute if entity @e[type=minecraft:zoglin]
+/data get entity @s Health
+/kill @e[type=!minecraft:player]
+# Farm animals (rank IV, cap 6): they become companions and follow, but never take a target.
+wait 100
+/time set night
+/summon minecraft:pig 2 150 6
+/summon minecraft:sheep 7 150 6
+/summon minecraft:chicken 4 150 7
+/summon minecraft:rabbit 2 150 3
+/summon minecraft:horse 7 150 3
+/summon minecraft:mooshroom 4.5 150 9
+/summon minecraft:zombie 4.5 150 14.5 {NoAI:1b}
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 10
+screenshot bard-farm
+/data get entity @e[type=minecraft:pig,limit=1] Tags
+/data get entity @e[type=minecraft:sheep,limit=1] Tags
+/data get entity @e[type=minecraft:chicken,limit=1] Tags
+/data get entity @e[type=minecraft:rabbit,limit=1] Tags
+/data get entity @e[type=minecraft:horse,limit=1] Tags
+/data get entity @e[type=minecraft:mooshroom,limit=1] Tags
+/tp @s 17.5 150 4.5 90 20
+/execute as @e[type=!minecraft:player,type=!minecraft:zombie] run data get entity @s Pos
+wait 100
+/execute as @e[type=!minecraft:player,type=!minecraft:zombie] run data get entity @s Pos
+wait 200
+/execute as @e[type=!minecraft:player,type=!minecraft:zombie] run data get entity @s Pos
+/execute at @s if entity @e[type=!minecraft:player,type=!minecraft:zombie,distance=..7]
+perspective back
+screenshot bard-farm-follow
+perspective first
+/kill @e[type=!minecraft:player]
+/dndclass resetprogress @s
+# A non-Bard has no instrument slot, and the key does nothing
+/dndclass set @s fighter
+wait 10
+closescreen
+/summon minecraft:fox 4.5 150 4.5 {NoAI:1b}
+press key.dnd-classes.play-instrument
+wait 10
+screenshot fighter-no-slot
+/kill @e[type=!minecraft:player]
+/dndclass set @s bard
+wait 10
+closescreen
+/dndclass resetprogress @s
+quit

@@ -143,8 +143,9 @@ public class PowerUpEffect {
         switch (character) {
             case RANGER:
                 // Fire rate and arrow speed are read from the rank while it runs (PlayerEntityMixin, BowItemMixin).
+                // No particles: they fill the first-person view with green squares while aiming.
                 player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM,
-                        RangerSkills.ARROW_STORM.ticks(player, "Duration"), 1));
+                        RangerSkills.ARROW_STORM.ticks(player, "Duration"), 1, false, false, true));
                 break;
             case WIZARD:
 

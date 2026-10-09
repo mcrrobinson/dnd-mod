@@ -86,7 +86,7 @@
       "name": "Warlock",
       "pros": ["Can throw fireballs with an empty hand (done)", "Immune to fire and lava (done)"],
       "cons": ["Reduced damage output (done)", "Hurt by water and rain, 1 damage every 4s but never below 1 heart (done)"],
-      "special": ["Can breathe fire by holding a special key (done)"],
+      "special": ["Breathes fire on the special key, 8 s and 3 blocks at rank I up to 20 s and 7 blocks at rank IV (done)"],
       "specialOnKey": true
     },
     {

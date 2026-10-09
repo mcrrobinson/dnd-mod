@@ -50,6 +50,8 @@ public class DndClassesClient implements ClientModInitializer {
 
     private boolean isBreathingFire = false;
     private long fireBreathEndTick = 0;
+    /** Beam length in blocks, sent by the server so the flames match the rank's reach. */
+    private int fireBreathReach = 0;
     private net.minecraft.world.World fireBreathWorld = null;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.dnd-classes.skill-tree", GLFW.GLFW_KEY_O, "category.dnd-classes.dnd-classes"));
@@ -125,10 +127,12 @@ public class DndClassesClient implements ClientModInitializer {
             PacketSender responseSender) {
         boolean active = buf.readBoolean();
         long endTick = active ? buf.readLong() : 0;
+        int reach = active ? buf.readVarInt() : 0;
         client.execute(() -> {
             // The end is in world time; remember the world so flames don't carry into the next one.
             isBreathingFire = active;
             fireBreathEndTick = endTick;
+            fireBreathReach = reach;
             fireBreathWorld = client.world;
         });
     }
@@ -281,10 +285,10 @@ public class DndClassesClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null && isBreathingFire(client.player)) {
-                // Example: spawn a semi-transparent red particle in front of the player
+                // Semi-transparent flames along the beam, as far as it reaches
                 Vec3d look = client.player.getRotationVec(1.0F);
                 Vec3d start = client.player.getPos().add(0, client.player.getStandingEyeHeight(), 0);
-                for (int i = 1; i <= 5; i++) {
+                for (int i = 1; i <= fireBreathReach; i++) {
                     Vec3d pos = start.add(look.multiply(i));
                     client.world.addParticle(ModParticles.TRANSLUCENT_FLAME, pos.x, pos.y, pos.z, 0, 0, 0);
                 }

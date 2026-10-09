@@ -5,6 +5,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
+import mattonfire.dnd.classes.Misc.BardCompanions;
 import mattonfire.dnd.classes.Misc.ClericHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
@@ -17,6 +18,10 @@ public class MobEntityMixin {
     @ModifyVariable(at = @At("HEAD"), method = "setTarget", argsOnly = true)
     private @Nullable LivingEntity ignoreRepellingCleric(@Nullable LivingEntity target) {
         if (ClericHandler.isRepellingMobs(target)) {
+            return null;
+        }
+        // A Bard's companions never turn on the Bard, their party or their other companions.
+        if (BardCompanions.blocksTarget((MobEntity) (Object) this, target)) {
             return null;
         }
         return target;

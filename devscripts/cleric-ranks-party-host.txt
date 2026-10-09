@@ -1,0 +1,96 @@
+# Sanctuary at every rank with a party member. Two clients:
+#  1. timeout 450 ./gradlew runClient -PdevScript=devscripts/cleric-ranks-party-host.txt
+#  2. once its log says "Started serving on": timeout 450 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25599 -PdevScript=devscripts/cleric-ranks-party-guest.txt
+# Expect in the host's latest.log (Mob Repel is Id 37, Regeneration Id 10):
+#  rank I   guest 3 blocks away:  host Mob Repel ~120; guest nothing
+#  rank II  guest 6 blocks away:  host and guest Mob Repel ~180; guest Regeneration Amplifier 0 ~100
+#  rank III guest 10 blocks away: host and guest Mob Repel ~240; guest Regeneration Amplifier 0 ~160
+#  rank IV  guest 20 blocks away: host Mob Repel ~300; guest nothing
+#  rank IV  guest 14 blocks away: host and guest Mob Repel ~300; guest Regeneration Amplifier 1 ~200;
+#           the zombie that was chasing gives up, so the host's Health stays 20
+# Screenshots: cleric-party-rank1 .. cleric-party-rank4 (ring of 2 / 8 / 12 / 16 blocks)
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set midnight
+/fill -24 149 -24 24 149 24 minecraft:stone
+/fill -24 150 -24 24 156 24 minecraft:air
+/tag @s add host
+/dndclass set @s cleric
+wait 10
+closescreen
+/dndclass resetprogress @s
+/tp @s 0.5 150 0.5 0 60
+/kill @e[type=!minecraft:player]
+/effect clear @s
+/publish true survival 25599
+# Give the guest client time to start and join
+wait 1400
+/list
+/party invite @a[tag=!host,limit=1]
+wait 200
+/party invite @a[tag=!host,limit=1]
+wait 100
+/party list
+# Rank I, guest 3 blocks ahead
+/tp @a[tag=!host] 0.5 150 3.5 180 0
+/effect clear @a
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+screenshot cleric-party-rank1
+# Rank II, guest 6 blocks ahead
+/dndclass xp @s set 2700
+/dndclass rank @s cleric.sanctuary 2
+/dndclass progress @s
+wait 400
+/tp @a[tag=!host] 0.5 150 6.5 180 0
+/effect clear @a
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+screenshot cleric-party-rank2
+# Rank III, guest 10 blocks ahead
+/dndclass rank @s cleric.sanctuary 3
+wait 400
+/tp @a[tag=!host] 0.5 150 10.5 180 0
+/effect clear @a
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+screenshot cleric-party-rank3
+# Rank IV, guest 20 blocks ahead (outside 16)
+/dndclass rank @s cleric.sanctuary 4
+wait 400
+/tp @a[tag=!host] 0.5 150 20.5 180 0
+/effect clear @a
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+# Rank IV, guest 14 blocks ahead; a zombie starts chasing first
+wait 380
+/tp @a[tag=!host] 0.5 150 14.5 180 0
+/effect clear @a
+/summon minecraft:zombie 0.5 150 -7.5 {PersistenceRequired:1b}
+wait 20
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+screenshot cleric-party-rank4
+wait 100
+/data get entity @s Health
+/data get entity @a[tag=!host,limit=1] Health
+/kill @e[type=minecraft:zombie]
+/effect clear @a
+/party leave
+/tag @s remove host
+/dndclass resetprogress @s
+quit

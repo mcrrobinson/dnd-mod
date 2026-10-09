@@ -1,5 +1,5 @@
 # Class progression
-Each class levels up to 10 with class XP. Every level is a skill point, spent on unlocking skill tree nodes or on ranking up abilities at an Attunement Table. The Bard and Druid also keep a bestiary of creatures they've killed.
+Each class levels up to 10 with class XP. Every level is a skill point, spent on unlocking skill tree nodes or on ranking up abilities at an Attunement Table. The Bard and Druid also keep a bestiary of creatures they've learned: the Druid by killing them, the Bard by charming them with music.
 
 ## How it works
 ### Levels and points
@@ -26,7 +26,8 @@ Abilities with ranks so far:
 | Fighter | Super Regeneration | Regeneration V for 4 / 6 / 8 / 10 s |
 
 ### Bestiary (Bard and Druid)
-- Killing a creature as a Bard or Druid **learns** it ("Learned Cow. Unlock it at an Attunement Table."). The Druid learns animals and wild beasts such as the Owlbear; the Bard learns animals.
+- **Druid:** killing a creature **learns** it ("Learned Cow. Unlock it at an Attunement Table."): animals and wild beasts such as the Owlbear.
+- **Bard:** playing an [instrument](../items/bard-instruments.md) **learns** every tiered animal within 8 blocks that isn't tamed or a companion ("Charmed a fox: unlock it at an Attunement Table."). Kills don't teach the Bard anything.
 - At an Attunement Table, open the **Bestiary** tab (top right of the skill tree) and click a learned creature to **unlock** it. Unlocking is free.
 - Each creature has a tier. Unlocking it needs the class's special (Wild Shape or Animal Friends) at that rank or higher. Every creature is tier I for now; the class's special card sets the tiers.
 - Green entries are unlocked, gold ones can be unlocked now, and grey ones need a higher rank. Scroll with the mouse wheel when the list is long.
@@ -59,7 +60,7 @@ None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels ar
   ```
   Every list has one value per rank, which sets the max rank. `value` is an effect level (roman numerals; read with `amplifier`), `seconds` a duration (read with `ticks`), `amount(name, unit, ...)` and `percent` numbers (`get`, `fraction`), `text` free tooltip text, `ranks(n)` ranks with nothing to show (read `rank`). `levels(...)` overrides the 3/6/9 gates. Readers take the player or a `ClassProgress` and work on both sides, so the effect and the tooltip use the same numbers. `ClassTrees` checks every declaration at startup.
 - **Don't** add upgrade nodes or a new `SkillNode.Kind`; a rank belongs to the node. `SkillNode.maxRank()` reads it from `Ranks`.
-- **Server:** `Progression.rankUp` (packet `C2S_RANK_UP`; table, level and point checks), `setRank` (admin), `learn` (from `ProgressionEvents.onKill`), `unlockBestiary` (packet `C2S_BESTIARY_UNLOCK`).
+- **Server:** `Progression.rankUp` (packet `C2S_RANK_UP`; table, level and point checks), `setRank` (admin), `learn` (from `ProgressionEvents.onKill`, and `BardSkills.charmAnimals` via `InstrumentItem`), `unlockBestiary` (packet `C2S_BESTIARY_UNLOCK`).
 - **Bestiary hooks** on `ClassSkills`: `usesBestiary()`, `learnsFrom(killed)`, `bestiaryRank(type)` (rank of the root special needed).
 - **Screen:** `Client/Hud/SkillTreeScreen` (pips, rank tooltip, Tree/Bestiary tabs).
 - **Test:** `devscripts/ability-ranks.txt`. DevScript's `skill unlock|equip|rankup|bestiary <id>` sends the screen's packets, and `click <dx> <dy> [button]` clicks the open screen relative to its centre.

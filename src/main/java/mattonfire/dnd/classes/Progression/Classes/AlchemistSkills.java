@@ -5,8 +5,10 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -15,6 +17,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -25,17 +28,22 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
+import net.minecraft.entity.AreaEffectCloudEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.Tameable;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.mob.MobEntity;
+import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.PotionEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.PotionItem;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
@@ -46,11 +54,22 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 
 public class AlchemistSkills extends ClassSkills {
+    /**
+     * The root special, Transmute; fired by {@code PowerUpEffect}. The cloud's
+     * size and how long it stays, and how many levels its effects gain.
+     */
+    public static final Ranks TRANSMUTE = Ranks.of("alchemist.distill")
+            .amount("Radius", "blocks", 3, 4, 5, 6)
+            .seconds("Cloud", 6, 8, 10, 12)
+            .amount("Extra levels", "", 1, 1, 2, 2);
+
     private static final int BREW_XP = 2;
     private static final int POTION_USE_XP = 1;
     private static final int POTION_KILL_BONUS_XP = 2;
@@ -68,6 +87,35 @@ public class AlchemistSkills extends ClassSkills {
             StatusEffects.REGENERATION, StatusEffects.RESISTANCE, StatusEffects.FIRE_RESISTANCE, StatusEffects.HASTE,
             StatusEffects.JUMP_BOOST, StatusEffects.ABSORPTION, StatusEffects.NIGHT_VISION);
 
+    /** Highest level a Transmute effect reaches (V), and an instant one (II). */
+    private static final int TRANSMUTE_MAX_AMPLIFIER = 4;
+    private static final int TRANSMUTE_MAX_INSTANT_AMPLIFIER = 1;
+    /** How long a Transmute effect lasts after leaving the cloud. */
+    private static final int TRANSMUTE_EFFECT_TICKS = 10 * 20;
+    private static final int TRANSMUTE_PULSE_TICKS = 20;
+    /** Cloud height above and below its centre that counts as inside. */
+    private static final double TRANSMUTE_CLOUD_HEIGHT = 2.5;
+    private static final int UNSTABLE_COLOR = 0x9B30FF;
+
+    /** An unstable brew (no potion held) picks one buff and one harm from these. */
+    private static final List<StatusEffect> UNSTABLE_BUFFS = List.of(StatusEffects.SPEED, StatusEffects.STRENGTH,
+            StatusEffects.REGENERATION, StatusEffects.RESISTANCE, StatusEffects.HASTE, StatusEffects.JUMP_BOOST);
+    private static final List<StatusEffect> UNSTABLE_HARMS = List.of(StatusEffects.SLOWNESS, StatusEffects.WEAKNESS,
+            StatusEffects.POISON, StatusEffects.WITHER, StatusEffects.GLOWING);
+
+    /** What a Transmute flask turns into: buffs for allies, harms for mobs. */
+    private record Brew(UUID owner, List<StatusEffectInstance> buffs, List<StatusEffectInstance> harms, int color,
+            float radius, int ticks) {
+    }
+
+    /** A Transmute cloud on the ground, and who already took its instant effects. */
+    private record Cloud(AreaEffectCloudEntity entity, Brew brew, Set<UUID> instantDone) {
+    }
+
+    /** Transmute flasks in flight; each becomes a cloud where it shatters. */
+    private static final Map<PotionEntity, Brew> TRANSMUTE_FLASKS = new HashMap<>();
+    private static final List<Cloud> TRANSMUTE_CLOUDS = new ArrayList<>();
+
     /** Volatile flasks in flight; each explodes when it shatters. */
     private static final Set<PotionEntity> FLASKS = new HashSet<>();
 
@@ -79,8 +127,9 @@ public class AlchemistSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("alchemist.distill", "Distill",
-                        "Upgrade every potion in your inventory to its strongest version.", "minecraft:glowstone_dust",
+                active("alchemist.distill", "Transmute",
+                        "Throw your held potion as a lingering cloud with stronger effects: buffs for allies, harmful effects for mobs. With no potion, it's an unstable brew.",
+                        "minecraft:glowstone_dust",
                         9, 0, 1, 3),
                 // Mutagen
                 passive("alchemist.iron_stomach", "Iron Stomach", "You're immune to Poison, Wither and Nausea.",
@@ -119,6 +168,8 @@ public class AlchemistSkills extends ClassSkills {
         });
 
         PlayerBlockBreakEvents.AFTER.register(AlchemistSkills::philosophersTouch);
+
+        ServerTickEvents.END_SERVER_TICK.register(server -> tickTransmute());
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (FLASKS.isEmpty())
@@ -189,6 +240,150 @@ public class AlchemistSkills extends ClassSkills {
             player.removeStatusEffect(StatusEffects.POISON);
             player.removeStatusEffect(StatusEffects.WITHER);
             player.removeStatusEffect(StatusEffects.NAUSEA);
+        }
+    }
+
+    /**
+     * The power-up special: throws the potion in either hand (main hand
+     * first) as a flask that bursts into a cloud. Its effects are stronger by
+     * the rank's extra levels; beneficial ones go to players and their pets in
+     * the cloud, the rest to hostile mobs. Without a potion it throws an
+     * unstable brew of one random buff and one random harm.
+     *
+     * @return always true; the special never fizzles
+     */
+    public static boolean transmute(ServerPlayerEntity player) {
+        ServerWorld world = (ServerWorld) player.getWorld();
+        int extra = TRANSMUTE.getInt(player, "Extra levels");
+
+        ItemStack held = ItemStack.EMPTY;
+        for (Hand hand : Hand.values()) {
+            ItemStack stack = player.getStackInHand(hand);
+            if (stack.getItem() instanceof PotionItem && !PotionUtil.getPotionEffects(stack).isEmpty()) {
+                held = stack;
+                break;
+            }
+        }
+
+        List<StatusEffectInstance> buffs = new ArrayList<>();
+        List<StatusEffectInstance> harms = new ArrayList<>();
+        int color;
+        if (held.isEmpty()) {
+            buffs.add(strengthen(new StatusEffectInstance(
+                    UNSTABLE_BUFFS.get(player.getRandom().nextInt(UNSTABLE_BUFFS.size()))), extra));
+            harms.add(strengthen(new StatusEffectInstance(
+                    UNSTABLE_HARMS.get(player.getRandom().nextInt(UNSTABLE_HARMS.size()))), extra));
+            color = UNSTABLE_COLOR;
+        } else {
+            for (StatusEffectInstance effect : PotionUtil.getPotionEffects(held)) {
+                (effect.getEffectType().isBeneficial() ? buffs : harms).add(strengthen(effect, extra));
+            }
+            color = PotionUtil.getColor(held);
+            if (!player.getAbilities().creativeMode) {
+                held.decrement(1);
+            }
+        }
+
+        ItemStack flaskItem = PotionUtil.setPotion(new ItemStack(Items.LINGERING_POTION), Potions.AWKWARD);
+        flaskItem.getOrCreateNbt().putInt("CustomPotionColor", color);
+        PotionEntity flask = new PotionEntity(world, player);
+        flask.setItem(flaskItem);
+        flask.setVelocity(player, player.getPitch(), player.getYaw(), -20.0F, 0.6F, 1.0F);
+        world.spawnEntity(flask);
+        TRANSMUTE_FLASKS.put(flask, new Brew(player.getUuid(), buffs, harms, color,
+                (float) TRANSMUTE.get(player, "Radius"), TRANSMUTE.ticks(player, "Cloud")));
+
+        effects(player, SoundEvents.ENTITY_LINGERING_POTION_THROW, ParticleTypes.WITCH, 20);
+        return true;
+    }
+
+    /** The effect at its Transmute level, lasting while in the cloud plus a little. */
+    private static StatusEffectInstance strengthen(StatusEffectInstance effect, int extra) {
+        int cap = effect.getEffectType().isInstant() ? TRANSMUTE_MAX_INSTANT_AMPLIFIER : TRANSMUTE_MAX_AMPLIFIER;
+        int amplifier = Math.min(effect.getAmplifier() + extra, Math.max(cap, effect.getAmplifier()));
+        return new StatusEffectInstance(effect.getEffectType(), TRANSMUTE_EFFECT_TICKS, amplifier, false, true, true);
+    }
+
+    private static void tickTransmute() {
+        if (!TRANSMUTE_FLASKS.isEmpty()) {
+            TRANSMUTE_FLASKS.entrySet().removeIf(entry -> {
+                PotionEntity flask = entry.getKey();
+                // A potion is discarded when it shatters
+                if (flask.getRemovalReason() == Entity.RemovalReason.DISCARDED) {
+                    spawnCloud((ServerWorld) flask.getWorld(), flask, entry.getValue());
+                    return true;
+                }
+                return flask.isRemoved() || flask.age > FLASK_MAX_AGE;
+            });
+        }
+        if (TRANSMUTE_CLOUDS.isEmpty())
+            return;
+        TRANSMUTE_CLOUDS.removeIf(cloud -> {
+            AreaEffectCloudEntity entity = cloud.entity();
+            if (entity.isRemoved())
+                return true;
+            if (entity.age % TRANSMUTE_PULSE_TICKS == 0) {
+                pulse(cloud);
+            }
+            return false;
+        });
+    }
+
+    private static void spawnCloud(ServerWorld world, Entity at, Brew brew) {
+        AreaEffectCloudEntity cloud = new AreaEffectCloudEntity(world, at.getX(), at.getY(), at.getZ());
+        PlayerEntity owner = world.getPlayerByUuid(brew.owner());
+        if (owner != null) {
+            cloud.setOwner(owner);
+        }
+        // No potion on the cloud itself, so vanilla applies nothing; pulse() does.
+        cloud.setColor(brew.color());
+        cloud.setRadius(brew.radius());
+        cloud.setRadiusOnUse(0);
+        cloud.setRadiusGrowth(0);
+        cloud.setWaitTime(0);
+        cloud.setDuration(brew.ticks());
+        world.spawnEntity(cloud);
+        TRANSMUTE_CLOUDS.add(new Cloud(cloud, brew, new HashSet<>()));
+        world.playSound(null, cloud.getBlockPos(), SoundEvents.BLOCK_BREWING_STAND_BREW, SoundCategory.PLAYERS, 1.0F,
+                1.2F);
+        world.spawnParticles(ParticleTypes.WITCH, cloud.getX(), cloud.getY() + 0.5, cloud.getZ(), 30, brew.radius() / 2,
+                0.3, brew.radius() / 2, 0.05);
+    }
+
+    /** Gives everyone standing in the cloud their side of the brew. */
+    private static void pulse(Cloud cloud) {
+        AreaEffectCloudEntity entity = cloud.entity();
+        Brew brew = cloud.brew();
+        double radius = entity.getRadius();
+        Entity owner = ((ServerWorld) entity.getWorld()).getEntity(brew.owner());
+        Box box = new Box(entity.getX() - radius, entity.getY() - TRANSMUTE_CLOUD_HEIGHT, entity.getZ() - radius,
+                entity.getX() + radius, entity.getY() + TRANSMUTE_CLOUD_HEIGHT, entity.getZ() + radius);
+        for (LivingEntity target : entity.getWorld().getEntitiesByClass(LivingEntity.class, box,
+                LivingEntity::isAffectedBySplashPotions)) {
+            double dx = target.getX() - entity.getX();
+            double dz = target.getZ() - entity.getZ();
+            if (!target.isAlive() || dx * dx + dz * dz > radius * radius)
+                continue;
+            List<StatusEffectInstance> effects;
+            if (target instanceof PlayerEntity
+                    || target instanceof Tameable pet && brew.owner().equals(pet.getOwnerUuid())) {
+                effects = brew.buffs();
+            } else if (target instanceof Monster
+                    || target instanceof MobEntity mob && mob.getTarget() instanceof PlayerEntity) {
+                effects = brew.harms();
+            } else {
+                continue; // Villagers, passive animals and other people's pets
+            }
+            boolean firstVisit = cloud.instantDone().add(target.getUuid());
+            for (StatusEffectInstance effect : effects) {
+                if (effect.getEffectType().isInstant()) {
+                    if (firstVisit) {
+                        effect.getEffectType().applyInstantEffect(entity, owner, target, effect.getAmplifier(), 1.0);
+                    }
+                } else {
+                    target.addStatusEffect(new StatusEffectInstance(effect), owner);
+                }
+            }
         }
     }
 

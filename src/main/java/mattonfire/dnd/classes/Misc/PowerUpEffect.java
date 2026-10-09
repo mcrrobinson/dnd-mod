@@ -19,6 +19,7 @@ import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
 import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.RangerSkills;
 import mattonfire.dnd.classes.Progression.Classes.PaladinSkills;
 import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
 import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
@@ -104,7 +105,10 @@ public class PowerUpEffect {
         System.out.println("Starting powerup on: " + character.toString());
         switch (character) {
             case RANGER:
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM, 300, 1));
+                // Fire rate and arrow speed are read from the rank while it runs (PlayerEntityMixin, BowItemMixin).
+                // No particles: they fill the first-person view with green squares while aiming.
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARROW_STORM,
+                        RangerSkills.ARROW_STORM.ticks(player, "Duration"), 1, false, false, true));
                 break;
             case WIZARD:
 

@@ -4,7 +4,9 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.projectile.PersistentProjectileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
@@ -18,6 +20,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.Classes.RangerSkills;
 import mattonfire.dnd.classes.Registry.ModEffects;
 
 @Mixin(BowItem.class)
@@ -43,6 +46,17 @@ public class BowItemMixin {
             return dnd$rangerPullProgress(useTicks);
         }
         return original.call(useTicks);
+    }
+
+    // Arrow Storm arrows fly faster with its rank (arrow damage scales with speed too)
+    @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"))
+    private void dnd$arrowStormSpeed(PersistentProjectileEntity arrow, Entity shooter, float pitch, float yaw,
+            float roll, float speed, float divergence, Operation<Void> original,
+            @Local(argsOnly = true) LivingEntity user) {
+        if (user instanceof PlayerEntity player && player.hasStatusEffect(ModEffects.ARROW_STORM)) {
+            speed *= (float) RangerSkills.ARROW_STORM.fraction(player, "Arrow speed");
+        }
+        original.call(arrow, shooter, pitch, yaw, roll, speed, divergence);
     }
 
     // Bypassing infinity check whilst using Arrow Storm

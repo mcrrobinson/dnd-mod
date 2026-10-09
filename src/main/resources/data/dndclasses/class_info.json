@@ -6,7 +6,7 @@
       "name": "Barbarian",
       "pros": ["Strength highly buffed", "Health rivals dragons"],
       "cons": ["Limited vision (fog closes in at ~24 blocks)", "Moves very slowly"],
-      "special": ["Strength III for 15 seconds, inspired by *One Punch Man*"],
+      "special": ["Rage: Strength I for 8s, up to Strength III for 12s with ranks, inspired by *One Punch Man*"],
       "specialOnKey": true
     },
     {
@@ -14,7 +14,7 @@
       "name": "Bard",
       "pros": ["Invisible to mobs"],
       "cons": ["Less health"],
-      "special": ["Instantly tame tameable animals"],
+      "special": ["Nearby animals you have charmed with an instrument become companions that follow and fight for you"],
       "specialOnKey": true
     },
     {
@@ -22,7 +22,7 @@
       "name": "Cleric",
       "pros": ["High mining speed", "Night vision"],
       "cons": ["Shorter viewing distance (fog closes in at ~48 blocks)", "Slightly reduced attack damage"],
-      "special": ["Circle of ignoring mobs (party members within 16 blocks share it and get Regeneration I for 10s)"],
+      "special": ["Circle of ignoring mobs for 6 to 15 seconds as it ranks up; from rank II party members within 8 to 16 blocks share it and get Regeneration"],
       "specialOnKey": true
     },
     {
@@ -30,7 +30,7 @@
       "name": "Druid",
       "pros": ["Gains an extra heart per tamed animal (up to 5)", "Regenerates in light (level 10+)"],
       "cons": ["Cannot swim", "Gets hungry in the dark (light 4 or less)"],
-      "special": ["Transforms into a random animal it has killed (or an Owlbear, once it has killed one) for 30s"],
+      "special": ["Wild Shape: transforms into an animal it has killed and unlocked at an Attunement Table, for 15-30s by rank (sneak + key picks the form)"],
       "specialOnKey": true
     },
     {
@@ -52,9 +52,9 @@
     {
       "id": "PALADIN",
       "name": "Paladin",
-      "pros": ["High health", "circle of healing", "Unaffected by potions, good or bad (ability effects still apply) (done)"],
+      "pros": ["High health", "protective auras for nearby players", "Unaffected by potions, good or bad (ability effects still apply) (done)"],
       "cons": ["Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done)", "Very weak in the Nether: half damage and armor, 20% slower (done)"],
-      "special": ["Instantly heals everyone within 10 blocks to full, and party members within 24 blocks to full plus Absorption I for 30s (done)"],
+      "special": ["Divine Judgment: a beam of holy light strikes the mob you look at within 30 blocks and sets it alight, with a shockwave around it; undead take 50% more. Damage, shockwave and extra beams grow with its rank (done)"],
       "specialOnKey": true
     },
     {
@@ -62,7 +62,7 @@
       "name": "Ranger",
       "pros": ["Can zoom in with bow, faster firing (done)"],
       "cons": ["Cannot pick up swords (done)", "Weak to fire (done)"],
-      "special": ["Hold right click to spam fire (no ammo consumed) (done)"],
+      "special": ["Hold right click to spam fire (no ammo consumed); fire rate, arrow speed and duration grow with its rank, no zoom while it runs (done)"],
       "specialOnKey": true
     },
     {
@@ -86,7 +86,7 @@
       "name": "Warlock",
       "pros": ["Can throw fireballs with an empty hand (done)", "Immune to fire and lava (done)"],
       "cons": ["Reduced damage output (done)", "Hurt by water and rain, 1 damage every 4s but never below 1 heart (done)"],
-      "special": ["Can breathe fire by holding a special key (done)"],
+      "special": ["Breathes fire on the special key, 8 s and 3 blocks at rank I up to 20 s and 7 blocks at rank IV (done)"],
       "specialOnKey": true
     },
     {
@@ -94,7 +94,7 @@
       "name": "Wizard",
       "pros": ["Can wield elemental staffs (done)"],
       "cons": ["Greatly reduced health (done)", "Can't wear armor heavier than iron (done)"],
-      "special": ["Creates a massive explosion and becomes invulnerable for a few seconds (done)"],
+      "special": ["Arcane explosion: 12-block blast and Resistance V for 2s, up to 72 blocks and 5s with ranks (done)"],
       "specialOnKey": true
     },
     {
@@ -110,7 +110,7 @@
       "name": "Blood Hunter",
       "pros": ["Fire aspect applied to all swords (done)", "Double damage at night (done)"],
       "cons": ["Half damage during the day (done)", "Can't drop swords: they still drop on death (done)"],
-      "special": ["Can take control of any mob within 30m for 20 seconds (needs the Identity mod) (done)"],
+      "special": ["Blood Control: take control of the mob you look at, 8s within 15 blocks at 60% success, up to 20s, 30 blocks and 100% with ranks; strong mobs resist more, a failure costs the mana and a heart, bosses can't be controlled (needs the Identity mod) (done)"],
       "specialOnKey": true
     },
     {
@@ -118,7 +118,7 @@
       "name": "Alchemist",
       "pros": ["Can craft special potions exclusive to the class (done)", "Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done)"],
       "cons": ["Cannot enchant (enchanting table or enchanted books on an anvil) (done)"],
-      "special": ["Instantly buff all potions to max level (done)"],
+      "special": ["Transmute: throw your held potion (or an unstable brew) as a lingering cloud with stronger effects, buffs for allies and harmful effects for mobs; bigger and longer with ranks (done)"],
       "specialOnKey": true
     }
   ]

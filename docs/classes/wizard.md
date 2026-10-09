@@ -1,5 +1,5 @@
 # Wizard
-A glass cannon. You're the only class that can use the elemental staffs, and your special is a huge explosion centred on you.
+A glass cannon. You're the only class that can use the elemental staffs, and your special is an explosion centred on you that grows as you rank it up.
 
 ![A Wizard's Staff of Fire blast](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/staff-fire.png)
 
@@ -16,10 +16,19 @@ Picking the class sets your health to 10.
 
 **Immune to Freeze**, so you can't freeze yourself with a [Staff of Ice](../items/staffs.md).
 
-**Special (power-up key, full mana): Arcane Explosion.** A power-40 explosion at your position. It breaks no blocks, but it hurts and throws back every entity in range except you, including other players and your pets. Players within 64 blocks see a sphere and hear the blast. You also get Resistance V for 5 seconds, which blocks all normal damage (not the void or `/kill`).
+**Special (power-up key, full mana): Arcane Explosion.** An explosion at your position. It breaks no blocks, but it hurts and throws back every entity in range except you, including other players and your pets. Damage falls off with distance, like any explosion. Players within 64 blocks see a sphere that grows to the blast's radius and hear the blast. You also get Resistance V, which blocks all normal damage (not the void or `/kill`). Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)):
+
+| Rank | Class level | Radius | Explosion power | Resistance V |
+|-|-|-|-|-|
+| I | 0 | 12 blocks | 6 | 2 s |
+| II | 3 | 28 blocks | 14 | 3 s |
+| III | 6 | 48 blocks | 24 | 4 s |
+| IV | 9 | 72 blocks | 36 | 5 s |
+
+A TNT blast is power 4 and reaches 8 blocks. The old unranked explosion was power 40 (80 blocks).
 
 ### Tips
-With 5 hearts, one close creeper blast can end you. Fight from range with a staff and keep the explosion for when you're surrounded; it clears almost anything around you. Warn friends before you use it, because it hits them too. The Resistance V afterwards gives you 5 seconds to get away.
+With 5 hearts, one close creeper blast can end you. Fight from range with a staff and keep the explosion for when you're surrounded; at rank I it only clears what's close, and by rank IV almost anything around you. Warn friends before you use it, because it hits them too. The Resistance V afterwards gives you 2 to 5 seconds to get away.
 
 ### Skill tree
 Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
@@ -30,7 +39,7 @@ Wizards get 3 extra XP for each hostile mob killed with a staff, magic, an explo
 
 | Skill | Branch | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
-| Arcane Explosion | Root | Active | 0 | 9 | The special above |
+| Arcane Explosion | Root | Active | 0 | 9 | The special above: 12 / 28 / 48 / 72-block radius and Resistance V for 2 / 3 / 4 / 5 s (ranks I-IV) |
 | Arcane Focus | Evocation | Passive | 1 | | 25% more staff damage |
 | Frost Nova | Evocation | Active | 1 | 4 | Freezes hostile mobs within 6 blocks for 3 s |
 | Spell Mastery | Evocation | Passive | 1 | | Your own blasts and meteors can't hurt you, and staff damage to frozen mobs is 50% higher |
@@ -45,6 +54,6 @@ Frost Nova into a staff combo is the Evocation play: freeze them, then hit them 
 - `/dndclass set <player> wizard` (see [Admin commands](../systems/admin-commands.md)).
 
 ## For developers
-- Special: `PowerUpEffect` (`WIZARD`, `WIZARD_INVULNERABLE_TICKS`), sphere `Client/MySphereRenderState`, damage type `dndclasses:wizard_explosion`. Freeze immunity: `mixin/LivingEntityMixin`. Staff and armor limits: `Items/ExtendedSwordItem.canWield`, `WizardSkills.removeHeavyArmor`.
+- Special: `PowerUpEffect` (`WIZARD`); per-rank radius and Resistance length in `WizardSkills.ARCANE_EXPLOSION` (power = radius / 2). The `wizard_powerup` packet carries the blast position and radius, and the sphere (`Client/MySphereRenderState`) grows to that radius; damage type `dndclasses:wizard_explosion`. Freeze immunity: `mixin/LivingEntityMixin`. Staff and armor limits: `Items/ExtendedSwordItem.canWield`, `WizardSkills.removeHeavyArmor`.
 - Skill tree: `Progression/Classes/WizardSkills.java`.
-- Devscript: `devscripts/wizard-limits.txt`.
+- Devscripts: `devscripts/wizard-limits.txt`, `devscripts/wizard-ranks.txt` (explosion at rank I and IV).

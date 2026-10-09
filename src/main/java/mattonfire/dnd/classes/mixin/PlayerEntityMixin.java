@@ -5,6 +5,7 @@ import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Classes.RangerSkills;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,6 +20,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -29,6 +31,9 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
 
     boolean dropEntireStack;
     private DndCharacter dndClass;
+    /** Age at the last Arrow Storm auto-release, for its fire rate. */
+    @Unique
+    private int dnd$lastStormShot = Integer.MIN_VALUE / 2;
 
     public PlayerEntityMixin(EntityType<?> type, World world) {
         super(type, world);
@@ -121,8 +126,10 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
                 progress = BowItem.getPullProgress(useTicks);
             }
 
-            if (progress >= 1.0F) {
-                // Auto-release the bow
+            // Auto-release the bow once drawn, but no sooner than the rank's fire rate allows.
+            if (progress >= 1.0F && this.age - this.dnd$lastStormShot >= RangerSkills
+                    .arrowStormShotDelay((PlayerEntity) (Object) this)) {
+                this.dnd$lastStormShot = this.age;
                 self.stopUsingItem(); // Triggers BowItem#onStoppedUsing
             }
         }

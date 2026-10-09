@@ -1,0 +1,147 @@
+# Checks Wild Shape's bestiary forms, tiers and ranks. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/druid-wild-shape.txt
+# Needs the Identity mod in the dev runtime. Expect in latest.log ([CHAT] lines):
+#  1. First power-up with nothing unlocked: no form, mana kept (no druidFormExpiry found)
+#  2. bestiary [minecraft:chicken] after unlocking at the table; the wolf unlock is refused at rank I
+#  3. bestiary [minecraft:chicken, minecraft:wolf] after /dndclass rank druid.wild_shape 2 and a second try
+#  4. druidChosenForm "minecraft:chicken", then "minecraft:wolf", then gone (random) after three sneak + power-ups
+#  5. After picking the wolf and firing: druidFormExpiry about 400 ticks (20 s at rank II) past the world time
+#  0. A real pig kill adds minecraft:pig to learned (and 3 xp)
+#  6. Rank III: horse unlocks, owlbear still refused; horse form, expiry ~500 ticks past the time
+#  7. Rank IV: owlbear unlocks; owlbear form, expiry ~600 ticks past the time
+# Screenshots: wild-shape-bestiary (table bestiary tab: chicken and wolf green, owlbear grey), wild-shape-wolf (in wolf form, F5),
+#  wild-shape-horse-r3, wild-shape-bestiary-r4 (owlbear unlocked), wild-shape-owlbear-r4
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+# A real kill teaches the pig (ProgressionEvents.onKill)
+/give @s minecraft:netherite_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 20
+/summon minecraft:pig 2.5 150 4.5 {NoAI:1b,Health:1f,Rotation:[0f,0f]}
+wait 10
+attack
+wait 10
+/dndclass progress @s
+# Nothing learned: mana is kept
+wait 200
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s "mattonfire.dnd.classes".druidFormExpiry
+# Learn a chicken, a wolf and an owlbear; unlock at the table
+/dndclass bestiary @s learn minecraft:chicken
+/dndclass bestiary @s learn minecraft:wolf
+/dndclass bestiary @s learn dndclasses:owlbear
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:chicken
+wait 5
+skill bestiary minecraft:wolf
+wait 5
+/dndclass progress @s
+/dndclass rank @s druid.wild_shape 2
+wait 5
+skill bestiary minecraft:wolf
+wait 5
+skill bestiary dndclasses:owlbear
+wait 5
+/dndclass progress @s
+click 102 -104
+wait 10
+screenshot wild-shape-bestiary
+closescreen
+# Cycle the form: chicken, wolf, random
+sneak on
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+# Pick the wolf again and fire
+press key.dnd-classes.power-up
+wait 5
+press key.dnd-classes.power-up
+wait 5
+sneak off
+wait 5
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s "mattonfire.dnd.classes".druidFormExpiry
+/time query gametime
+perspective back
+wait 10
+screenshot wild-shape-wolf
+perspective first
+# Rank III: a horse unlocks, the owlbear still doesn't; 25 s form
+/dndclass xp @s set 2200
+/dndclass rank @s druid.wild_shape 3
+/dndclass bestiary @s learn minecraft:horse
+wait 5
+skill bestiary minecraft:horse
+wait 5
+skill bestiary dndclasses:owlbear
+wait 5
+/dndclass progress @s
+sneak on
+press key.dnd-classes.power-up
+wait 5
+sneak off
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+wait 400
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s "mattonfire.dnd.classes".druidFormExpiry
+/time query gametime
+perspective back
+wait 10
+screenshot wild-shape-horse-r3
+perspective first
+# Rank IV: the owlbear unlocks; 30 s form
+/dndclass rank @s druid.wild_shape 4
+wait 5
+skill bestiary dndclasses:owlbear
+wait 5
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+click 102 -104
+wait 10
+screenshot wild-shape-bestiary-r4
+closescreen
+sneak on
+press key.dnd-classes.power-up
+wait 5
+sneak off
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+wait 400
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s "mattonfire.dnd.classes".druidFormExpiry
+/time query gametime
+/tp @s 4.5 150 0.5 0 20
+perspective back
+wait 10
+screenshot wild-shape-owlbear-r4
+perspective first
+/setblock 4 150 4 minecraft:air
+/clear @s minecraft:netherite_sword
+/dndclass resetprogress @s
+quit

@@ -19,10 +19,10 @@ These all act on the player's current class. See [Class selection](class-selecti
 |-|-|
 | `/dndclass progress <player>` | Prints level, XP, unspent points, unlocked skills, the equipped active, the passives, skill ranks and, for the Bard and Druid, the learned and unlocked bestiary |
 | `/dndclass xp <player> add <amount>` | Adds class XP, announcing any level-up as normal |
-| `/dndclass xp <player> set <amount>` | Sets class XP. Lowering it can leave the player with negative points until they earn them back |
-| `/dndclass unlock <player> <skill>` | Unlocks a skill without spending points or needing the node below it |
+| `/dndclass xp <player> set <amount>` | Sets class XP. If it drops below what their skills cost, they have 0 points until later levels cover it |
+| `/dndclass unlock <player> <skill>` | Unlocks a skill without needing points or the node below it. Its cost still counts, so later levels pay it off before giving new points |
 | `/dndclass equip <player> <skill>` | Equips an unlocked skill without an Attunement Table. Run it again on an equipped passive to unequip it |
-| `/dndclass rank <player> <skill> <n>` | Sets an unlocked skill's rank without points, level or an Attunement Table. `n` is from 1 to the skill's max rank |
+| `/dndclass rank <player> <skill> <n>` | Sets an unlocked skill's rank without points, level or an Attunement Table. `n` is from 1 to the skill's max rank. Ranks still count toward points spent, as with `unlock` |
 | `/dndclass bestiary <player> learn <entity>` | Adds a creature to the class's bestiary as if they'd killed it (Bard and Druid only) |
 | `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
 | `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |

@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.netty.buffer.Unpooled;
-import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH and FIREBREATH_DURATION_TICKS
+import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
@@ -14,14 +14,17 @@ import mattonfire.dnd.classes.Progression.Classes.NecromancerSkills;
 import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
-import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
+import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
+import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
 import mattonfire.dnd.classes.Progression.Classes.PaladinSkills;
+import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
+import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.GoalSelector;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -32,18 +35,10 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.PotionItem;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
-import net.minecraft.potion.Potion;
-import net.minecraft.potion.PotionUtil;
-import net.minecraft.registry.Registries;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -55,8 +50,6 @@ import net.minecraft.world.explosion.Explosion;
 
 public class PowerUpEffect {
 
-    /** How long the Wizard special's invulnerability lasts. */
-    public static final int WIZARD_INVULNERABLE_TICKS = 5 * 20;
 
     /** How long the Necromancer special's zombie and skeleton last. */
     public static final int UNDEAD_LIFETIME_TICKS = 10 * 20;
@@ -104,35 +97,6 @@ public class PowerUpEffect {
         SkillHelpers.spawnSummon(world, mob, UNDEAD_LIFETIME_TICKS);
     }
 
-    /** The Bard special's "attack hostile mobs" goal; a marker type so it's only added once per mob. */
-    private static class BardRallyGoal extends ActiveTargetGoal<HostileEntity> {
-        BardRallyGoal(MobEntity mob) {
-            super(mob, HostileEntity.class, true);
-        }
-    }
-
-    public static void bardEffect(PlayerEntity player) {
-        List<PassiveEntity> nearbyEntities = player.getEntityWorld().getEntitiesByClass(
-                PassiveEntity.class,
-                player.getBoundingBox().expand(10), // 10-block radius
-                // Bosses (Wyvern, Lightning Chaser) can't be charmed.
-                entity -> entity.isAlive() && !(entity instanceof Boss));
-
-        for (PassiveEntity passiveMob : nearbyEntities) {
-            // Untamed tameable animals (wolves, cats, parrots...) become the Bard's
-            if (passiveMob instanceof TameableEntity tameable && !tameable.isTamed()) {
-                tameable.setOwner(player);
-            }
-
-            // Turn them on hostile mobs, once: the goal stays until the mob is unloaded.
-            GoalSelector targets = ((MobEntityAccessor) passiveMob).getTargetSelector();
-            boolean rallied = targets.getGoals().stream().anyMatch(goal -> goal.getGoal() instanceof BardRallyGoal);
-            if (!rallied) {
-                targets.add(1, new BardRallyGoal(passiveMob));
-            }
-        }
-    }
-
     public static boolean play(MinecraftServer server, PlayerEntity player, DndCharacter character) {
         if (character == null || character == DndCharacter.NONE)
             return false; // No class picked yet, keep the mana
@@ -152,7 +116,9 @@ public class PowerUpEffect {
                 double playerX = player.getX();
                 double playerY = player.getY();
                 double playerZ = player.getZ();
-                float radius = 40.F;
+                // The rank sets the reach; a vanilla explosion reaches twice its power.
+                float reach = (float) WizardSkills.ARCANE_EXPLOSION.get(player, "Radius");
+                float radius = reach / 2;
 
                 DamageSource damageSource = world.getDamageSources()
                         .create(ModDamageTypes.WIZARD_EXPLOSION_DAMAGE_SOURCE, player);
@@ -164,7 +130,8 @@ public class PowerUpEffect {
 
                 // A few seconds of invulnerability: Resistance V blocks all normal damage
                 // and wears off on its own (unlike setInvulnerable, which is saved).
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, WIZARD_INVULNERABLE_TICKS, 4));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE,
+                        WizardSkills.ARCANE_EXPLOSION.ticks(player, "Resistance V"), 4));
 
                 explosion.collectBlocksAndDamageEntities();
                 explosion.affectWorld(true);
@@ -182,14 +149,22 @@ public class PowerUpEffect {
                                         explosion.getAffectedBlocks(),
                                         (Vec3d) explosion.getAffectedPlayers().get(serverPlayerEntity)));
 
-                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
-                                new PacketByteBuf(Unpooled.buffer()));
+                        // Where the blast is and how far it reaches, so the sphere matches it
+                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                        buf.writeDouble(playerX);
+                        buf.writeDouble(playerY + player.getStandingEyeHeight() / 2.0);
+                        buf.writeDouble(playerZ);
+                        buf.writeFloat(reach);
+                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID, buf);
                     }
                 }
 
                 break;
             case BARBARIAN:
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 300, 2));
+                // Rage: Strength I for 8 s at rank I, up to Strength III for 12 s at rank IV.
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH,
+                        BarbarianSkills.RAGE.ticks(player, "Duration"),
+                        BarbarianSkills.RAGE.amplifier(player, "Strength")));
                 break;
             case MONK:
                 mattonfire.dnd.classes.Progression.Classes.MonkSkills.kiSurge(player);
@@ -202,18 +177,27 @@ public class PowerUpEffect {
                         FighterSkills.SUPER_REGEN.amplifier(player, "Regeneration")));
                 break;
             case BARD:
-                bardEffect(player);
+                if (player instanceof ServerPlayerEntity bard) {
+                    mattonfire.dnd.classes.Progression.Classes.BardSkills.animalFriends(bard);
+                }
                 break;
-            case CLERIC:
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
-                // Party members inside the circle share it and get some regeneration.
-                if (player instanceof ServerPlayerEntity cleric) {
-                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, ClericHandler.REPEL_RADIUS)) {
-                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, 300));
-                        member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 200, 0));
+            case CLERIC: {
+                // Sanctuary: duration, party reach and the party's Regeneration come from its rank.
+                int duration = ClericSkills.SANCTUARY.ticks(player, "Duration");
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
+                double partyReach = ClericSkills.sanctuaryPartyReach(player);
+                if (partyReach > 0 && player instanceof ServerPlayerEntity cleric) {
+                    int regen = ClericSkills.sanctuaryPartyRegenAmplifier(player);
+                    for (ServerPlayerEntity member : PartyManager.nearbyMembers(cleric, partyReach)) {
+                        member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
+                        if (regen >= 0) {
+                            member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,
+                                    ClericSkills.sanctuaryPartyRegenTicks(player), regen));
+                        }
                     }
                 }
                 break;
+            }
             case PALADIN:
                 // Divine Judgment: a beam of holy light on the mob in sight. Nothing in sight keeps the mana.
                 if (!(player instanceof ServerPlayerEntity paladin) || !PaladinSkills.divineJudgment(paladin))
@@ -232,9 +216,9 @@ public class PowerUpEffect {
                 // Spawn undead enemies
                 break;
             case WARLOCK:
-                // For 20 seconds breathe fire.
+                // Breathe fire; duration, reach, damage and burn time scale with the rank.
                 DnDClasses.WARLOCK_FIREBREATH.put(player.getUuid(),
-                        player.getWorld().getTime() + DnDClasses.FIREBREATH_DURATION_TICKS);
+                        player.getWorld().getTime() + WarlockSkills.FIRE_BREATH.ticks(player, "Duration"));
 
                 break;
             case ARTIFICER:
@@ -242,16 +226,16 @@ public class PowerUpEffect {
                 player.addStatusEffect(new StatusEffectInstance(ModEffects.ARMOR_BUFF, 600, 0));
                 break;
             case BLOODHUNTER:
-                // Take control of the mob being looked at (within 30 blocks) for 20 seconds.
+                // Take control of the mob being looked at; range, duration and success chance by rank.
+                // A resisted attempt still spends the mana.
                 if (!(player instanceof ServerPlayerEntity serverPlayer)
                         || !BloodHunterControl.takeControl(serverPlayer)) {
                     return false;
                 }
                 break;
             case ALCHEMIST:
-                // Upgrades every potion in the inventory to its strongest version.
-                // Nothing to upgrade keeps the mana.
-                if (!alchemistUpgradePotions(player))
+                // Transmute: throws the held potion (or an unstable brew) as a big cloud.
+                if (!(player instanceof ServerPlayerEntity alchemist) || !AlchemistSkills.transmute(alchemist))
                     return false;
                 break;
             default:
@@ -260,48 +244,5 @@ public class PowerUpEffect {
         }
         return true; // Indicate that the power-up was successfully applied
 
-    }
-
-    /**
-     * Swaps each single-effect potion in the main inventory for the registered
-     * potion with the same effect at the highest amplifier (e.g. Swiftness to
-     * Swiftness II). Splash and lingering potions stay splash and lingering.
-     *
-     * @return whether any potion was upgraded
-     */
-    private static boolean alchemistUpgradePotions(PlayerEntity player) {
-        PlayerInventory inventory = player.getInventory();
-        boolean upgraded = false;
-        for (int i = 0; i < inventory.main.size(); i++) {
-            ItemStack stack = inventory.main.get(i);
-            if (!(stack.getItem() instanceof PotionItem))
-                continue;
-
-            Potion potion = PotionUtil.getPotion(stack);
-            List<StatusEffectInstance> effects = potion.getEffects();
-            if (effects.size() != 1)
-                continue; // Water, awkward, custom and mixed potions
-            StatusEffect effectType = effects.get(0).getEffectType();
-
-            Potion best = potion;
-            int bestAmplifier = effects.get(0).getAmplifier();
-            for (Potion candidate : Registries.POTION) {
-                List<StatusEffectInstance> candidateEffects = candidate.getEffects();
-                if (candidateEffects.size() == 1 && candidateEffects.get(0).getEffectType() == effectType
-                        && candidateEffects.get(0).getAmplifier() > bestAmplifier) {
-                    bestAmplifier = candidateEffects.get(0).getAmplifier();
-                    best = candidate;
-                }
-            }
-
-            if (best != potion) {
-                // Copy keeps the item (potion, splash, lingering), count and any custom name.
-                ItemStack newStack = stack.copy();
-                PotionUtil.setPotion(newStack, best);
-                inventory.setStack(i, newStack);
-                upgraded = true;
-            }
-        }
-        return upgraded;
     }
 }

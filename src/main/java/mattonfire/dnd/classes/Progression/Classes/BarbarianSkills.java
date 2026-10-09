@@ -10,6 +10,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -26,6 +27,14 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.Vec3d;
 
 public class BarbarianSkills extends ClassSkills {
+    /**
+     * The root special; fired by {@code PowerUpEffect}. Strength I for 8 s early on, Strength III for
+     * 12 s at full rank, a little under Titan (Strength III, Resistance and Regeneration for 20 s).
+     */
+    public static final Ranks RAGE = Ranks.of("barbarian.rage")
+            .value("Strength", 1, 2, 2, 3)
+            .seconds("Duration", 8, 10, 12, 12);
+
     private static final int MELEE_KILL_BONUS_XP = 3;
 
     @Override
@@ -36,7 +45,7 @@ public class BarbarianSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("barbarian.rage", "Rage", "Strength III for 15 seconds.", "minecraft:blaze_powder", 9, 0, 1, 3),
+                active("barbarian.rage", "Rage", "Strength for a few seconds, stronger with each rank.", "minecraft:blaze_powder", 9, 0, 1, 3),
                 // Berserker
                 passive("barbarian.bloodlust", "Bloodlust", "Heal a heart every time you kill something.",
                         "minecraft:redstone", 1, 2, 3, "barbarian.rage"),

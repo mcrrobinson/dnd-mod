@@ -8,6 +8,8 @@ import java.util.UUID;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import mattonfire.dnd.classes.Progression.Classes.BloodHunterSkills;
+import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -18,25 +20,40 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * Blood Hunter special: take control of the mob you are looking at (within 30
- * blocks) for 20 seconds. The player teleports to the mob and takes its shape
- * (via the optional Identity mod); the mob is removed and comes back, with its
- * original NBT (health, name, equipment, ...), where the player stands when the
- * time runs out.
+ * Blood Hunter special: take control of the mob you are looking at. The player
+ * teleports to the mob and takes its shape (via the optional Identity mod); the
+ * mob is removed and comes back, with its original NBT (health, name,
+ * equipment, ...), where the player stands when the time runs out.
+ *
+ * <p>Duration, range and success chance come from the special's rank
+ * ({@link BloodHunterSkills#BLOOD_CONTROL}). Mobs with more max health than a
+ * player resist more often. A failed attempt still spends the mana and costs
+ * the Blood Hunter a heart (the blood price). Bosses (the Ender Dragon, the
+ * Wither and the mod's own {@link Boss}es) can't be controlled at all.
  */
 public final class BloodHunterControl {
-    public static final double RANGE = 30.0D;
-    public static final int DURATION_TICKS = 20 * 20;
+    /** Max health at which the strong-mob penalty starts (a player's). */
+    private static final float PENALTY_FREE_HEALTH = 20.0F;
+    /** Success chance lost per point of max health above that, in percentage points. */
+    private static final double PENALTY_PER_HEALTH = 0.25;
+    /** The most the strong-mob penalty takes off, in percentage points. */
+    private static final double MAX_PENALTY = 30.0;
+    /** Damage the Blood Hunter takes when the mob resists (one heart). */
+    private static final float BLOOD_PRICE = 2.0F;
 
     private record Controlled(int expiryTick, EntityType<?> type, NbtCompound nbt) {
     }
@@ -81,7 +98,7 @@ public final class BloodHunterControl {
         ServerLifecycleEvents.SERVER_STOPPING.register(BloodHunterControl::releaseAll);
     }
 
-    /** @return true if a mob was taken over (mana is only spent then). */
+    /** @return true if the mana is spent: the mob was taken over, or it resisted. */
     public static boolean takeControl(ServerPlayerEntity player) {
         if (!isIdentityLoaded()) {
             player.sendMessage(Text.of("Taking control of mobs needs the Identity mod."), true);
@@ -91,12 +108,22 @@ public final class BloodHunterControl {
             return false;
         }
 
-        MobEntity target = findTarget(player);
+        MobEntity target = findTarget(player, BloodHunterSkills.BLOOD_CONTROL.get(player, "Range"));
         if (target == null) {
+            return false;
+        }
+        if (isBoss(target)) {
+            player.sendMessage(Text.literal(target.getDisplayName().getString() + " is too powerful to control.")
+                    .formatted(Formatting.RED), true);
             return false;
         }
 
         ServerWorld world = player.getWorld();
+        if (player.getRandom().nextDouble() >= successChance(player, target)) {
+            resist(player, target, world);
+            return true;
+        }
+
         NbtCompound saved = target.writeNbt(new NbtCompound());
 
         // Separate copy used only as the player's shape, so the original state
@@ -122,28 +149,57 @@ public final class BloodHunterControl {
 
         target.discard();
         ACTIVE.put(player.getUuid(), new Controlled(
-                player.getServer().getTicks() + DURATION_TICKS, target.getType(), saved));
+                player.getServer().getTicks() + BloodHunterSkills.BLOOD_CONTROL.ticks(player, "Duration"),
+                target.getType(), saved));
         return true;
     }
 
-    private static MobEntity findTarget(ServerPlayerEntity player) {
+    /**
+     * Chance (0 to 1) that the player takes over the target: the rank's success
+     * chance, less 0.25 percentage points per point of max health above 20 (at
+     * most 30). A zombie has no penalty, an iron golem or ravager (100) -20.
+     */
+    public static double successChance(PlayerEntity player, LivingEntity target) {
+        double penalty = Math.min(MAX_PENALTY,
+                Math.max(0.0, (target.getMaxHealth() - PENALTY_FREE_HEALTH) * PENALTY_PER_HEALTH));
+        return Math.max(0.0, BloodHunterSkills.BLOOD_CONTROL.get(player, "Success") - penalty) / 100.0;
+    }
+
+    private static boolean isBoss(Entity entity) {
+        return entity instanceof Boss || entity instanceof EnderDragonEntity || entity instanceof WitherEntity;
+    }
+
+    /** The mob shakes it off: a message, smoke and blood on the mob, and the blood price for the player. */
+    private static void resist(ServerPlayerEntity player, MobEntity target, ServerWorld world) {
+        player.sendMessage(Text.literal(target.getDisplayName().getString() + " resists your Blood Control!")
+                .formatted(Formatting.DARK_RED), true);
+        world.spawnParticles(ParticleTypes.LARGE_SMOKE, target.getX(), target.getBodyY(0.5), target.getZ(),
+                20, 0.4, 0.5, 0.4, 0.02);
+        world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, player.getX(), player.getBodyY(0.5), player.getZ(),
+                8, 0.3, 0.4, 0.3, 0.1);
+        world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK,
+                SoundCategory.PLAYERS, 1.0F, 0.6F);
+        world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_HURT,
+                SoundCategory.PLAYERS, 1.0F, 1.0F);
+        player.damage(player.getDamageSources().magic(), BLOOD_PRICE);
+    }
+
+    private static MobEntity findTarget(ServerPlayerEntity player, double maxRange) {
         Vec3d eye = player.getCameraPosVec(1.0F);
         Vec3d look = player.getRotationVec(1.0F);
 
         // Don't take control through walls.
-        double range = RANGE;
-        HitResult blockHit = player.raycast(RANGE, 1.0F, false);
+        double range = maxRange;
+        HitResult blockHit = player.raycast(maxRange, 1.0F, false);
         if (blockHit.getType() != HitResult.Type.MISS) {
             range = blockHit.getPos().distanceTo(eye);
         }
 
         Vec3d end = eye.add(look.multiply(range));
         Box box = player.getBoundingBox().stretch(look.multiply(range)).expand(1.0D);
-        // The last argument is a squared distance.
+        // The last argument is a squared distance. Bosses are hit too, so the player is told why it failed.
         EntityHitResult hit = ProjectileUtil.raycast(player, eye, end, box,
-                entity -> entity instanceof MobEntity && entity.isAlive()
-                        && !(entity instanceof EnderDragonEntity) && !(entity instanceof WitherEntity),
-                range * range);
+                entity -> entity instanceof MobEntity && entity.isAlive(), range * range);
         return hit == null ? null : (MobEntity) hit.getEntity();
     }
 

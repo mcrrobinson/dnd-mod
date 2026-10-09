@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Music.InstrumentSongs;
+import mattonfire.dnd.classes.Progression.Classes.BardSkills;
 import mattonfire.dnd.classes.Registry.ModItems;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.effect.StatusEffect;
@@ -15,6 +16,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
@@ -56,30 +58,49 @@ public class InstrumentItem extends Item {
         }
 
         boolean bard = user instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.BARD;
-        world.playSound(null, user.getX(), user.getY(), user.getZ(), song, SoundCategory.RECORDS, 2.0F, 1.0F);
-        ServerWorld serverWorld = (ServerWorld) world;
-        InstrumentSongs.sendDuck(serverWorld, user.getPos());
-        serverWorld.spawnParticles(ParticleTypes.NOTE, user.getX(), user.getY() + 2.2, user.getZ(),
-                bard ? 8 : 3, 0.6, 0.3, 0.6, 1.0);
-
         if (bard) {
-            List<PlayerEntity> listeners = world.getEntitiesByClass(PlayerEntity.class,
-                    user.getBoundingBox().expand(BUFF_RADIUS),
-                    p -> p.isAlive() && !p.isSpectator() && p.squaredDistanceTo(user) <= BUFF_RADIUS * BUFF_RADIUS);
-            for (PlayerEntity listener : listeners) {
-                listener.addStatusEffect(new StatusEffectInstance(buff, BUFF_TICKS, 0), user);
-                Vec3d p = listener.getPos();
-                serverWorld.spawnParticles(ParticleTypes.HAPPY_VILLAGER, p.x, p.y + 1.0, p.z, 6, 0.4, 0.5, 0.4, 0.0);
-            }
-            user.sendMessage(Text.translatable("message.dndclasses.instrument.bard",
-                    Text.translatable(buff.getTranslationKey()), listeners.size()), true);
-            setCooldown(user, BARD_COOLDOWN_TICKS);
+            playAsBard(user);
         } else {
+            playSong(user, false);
             user.sendMessage(Text.translatable("message.dndclasses.instrument.not_bard"), true);
             setCooldown(user, OTHER_COOLDOWN_TICKS);
         }
         user.incrementStat(Stats.USED.getOrCreateStat(this));
         return TypedActionResult.success(stack);
+    }
+
+    /**
+     * A Bard plays this instrument (from the hotbar, or the lute in the Bard's
+     * instrument slot): the song, the buff for every player in range, charming
+     * nearby animals into the bestiary, and the shared Bard cooldown. Server
+     * side only; the caller checks the class.
+     */
+    public void playAsBard(PlayerEntity user) {
+        ServerWorld serverWorld = (ServerWorld) user.getWorld();
+        playSong(user, true);
+        List<PlayerEntity> listeners = serverWorld.getEntitiesByClass(PlayerEntity.class,
+                user.getBoundingBox().expand(BUFF_RADIUS),
+                p -> p.isAlive() && !p.isSpectator() && p.squaredDistanceTo(user) <= BUFF_RADIUS * BUFF_RADIUS);
+        for (PlayerEntity listener : listeners) {
+            listener.addStatusEffect(new StatusEffectInstance(buff, BUFF_TICKS, 0), user);
+            Vec3d p = listener.getPos();
+            serverWorld.spawnParticles(ParticleTypes.HAPPY_VILLAGER, p.x, p.y + 1.0, p.z, 6, 0.4, 0.5, 0.4, 0.0);
+        }
+        user.sendMessage(Text.translatable("message.dndclasses.instrument.bard",
+                Text.translatable(buff.getTranslationKey()), listeners.size()), true);
+        setCooldown(user, BARD_COOLDOWN_TICKS);
+        if (user instanceof ServerPlayerEntity player) {
+            BardSkills.charmAnimals(player);
+        }
+    }
+
+    /** The song itself: the sound, music ducking and note particles. */
+    private void playSong(PlayerEntity user, boolean bard) {
+        ServerWorld serverWorld = (ServerWorld) user.getWorld();
+        serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), song, SoundCategory.RECORDS, 2.0F, 1.0F);
+        InstrumentSongs.sendDuck(serverWorld, user.getPos());
+        serverWorld.spawnParticles(ParticleTypes.NOTE, user.getX(), user.getY() + 2.2, user.getZ(),
+                bard ? 8 : 3, 0.6, 0.3, 0.6, 1.0);
     }
 
     private static void setCooldown(PlayerEntity user, int ticks) {

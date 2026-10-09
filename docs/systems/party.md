@@ -18,7 +18,8 @@ The player who creates the party leads it. If the leader leaves, the member who 
 
 | Special | Everyone | Party members |
 |-|-|-|
-| Cleric, Sanctuary | The Cleric gets Mob Repel for 15 s | Members within 16 blocks also get Mob Repel for 15 s and Regeneration I for 10 s, and mobs drop them as a target |
+| Paladin, Circle of Healing (tree skill) | Players within 10 blocks are healed to full | Members within 24 blocks (and the Paladin) are healed to full and get Absorption I for 30 s |
+| Cleric, Sanctuary | The Cleric gets Mob Repel for 6 / 9 / 12 / 15 s (ranks I-IV) | From rank II, members within 8 / 12 / 16 blocks (ranks II-IV) also get Mob Repel for the same time and Regeneration I 5 s / I 8 s / II 10 s, and mobs drop them as a target. At rank I only the Cleric is covered |
 
 ## Commands
 Every player can use these. No op is needed.

@@ -1,4 +1,4 @@
-# Checks the Bard's bestiary and Animal Friends companions. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/bard-bestiary.txt
+# Checks the Bard's bestiary and Animal Friends companions. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/bard-bestiary.txt
 # Expect in latest.log ([CHAT] /dndclass progress lines):
 #  1. bestiary [minecraft:wolf] a couple of seconds after becoming a Bard (starter animal)
 #  2. learned [minecraft:wolf, minecraft:fox] after killing the fox; the cow kill isn't learned
@@ -13,8 +13,8 @@ closescreen
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false
 /time set noon
-/fill -8 149 -8 16 149 16 minecraft:grass_block
-/fill -8 150 -8 16 156 16 minecraft:air
+/fill -8 149 -8 24 149 16 minecraft:grass_block
+/fill -8 150 -8 24 156 16 minecraft:air
 /kill @e[type=!minecraft:player]
 /dndclass set @s bard
 wait 10
@@ -87,6 +87,110 @@ perspective back
 screenshot bard-companions
 perspective first
 /kill @e[type=minecraft:zombie]
+/kill @e[type=!minecraft:player]
+# Rank III: tier III unlocks, tier IV still refused
+/time set night
+/dndclass bestiary @s learn minecraft:polar_bear
+/dndclass bestiary @s learn minecraft:panda
+/dndclass bestiary @s learn minecraft:iron_golem
+/dndclass bestiary @s learn minecraft:hoglin
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:polar_bear
+wait 5
+/dndclass progress @s
+/dndclass rank @s bard.animal_friends 3
+wait 5
+skill bestiary minecraft:polar_bear
+wait 5
+skill bestiary minecraft:panda
+wait 5
+skill bestiary minecraft:iron_golem
+wait 5
+/dndclass progress @s
+closescreen
+/setblock 4 150 4 minecraft:air
+# Rank III special: radius 14, cap 5. In range: bear, panda, 2 wolves, wolf at dx 13; wolf at dx 15 is out.
+wait 400
+/summon minecraft:polar_bear 2 150 7
+/summon minecraft:panda 7 150 7
+/summon minecraft:wolf 1 150 3
+/summon minecraft:wolf 8 150 3
+/summon minecraft:wolf 17.5 150 4.5 {NoAI:1b,Tags:["r3_dx13"]}
+/summon minecraft:wolf 19.5 150 4.5 {NoAI:1b,Tags:["r3_dx15"]}
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 10
+screenshot bard-rank3
+/data get entity @e[type=minecraft:polar_bear,limit=1] Tags
+/data get entity @e[type=minecraft:panda,limit=1] Tags
+/execute as @e[type=minecraft:wolf] run data get entity @s Tags
+/kill @e[type=!minecraft:player]
+# Rank IV: tier IV unlocks
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary minecraft:iron_golem
+wait 5
+/dndclass progress @s
+/dndclass rank @s bard.animal_friends 4
+wait 5
+skill bestiary minecraft:iron_golem
+wait 5
+skill bestiary minecraft:hoglin
+wait 5
+/dndclass progress @s
+click 102 -104
+wait 10
+screenshot bard-bestiary-rank4
+closescreen
+/setblock 4 150 4 minecraft:air
+# Rank IV special: radius 16, cap 6. 7 in range (golem, hoglin, 3 wolves, wolves at dx 15 and 15.5), wolf at dx 18 out.
+wait 400
+/item replace entity @s weapon.mainhand with minecraft:air
+/summon minecraft:iron_golem 4.5 150 7.5
+/summon minecraft:hoglin 7 150 6
+/summon minecraft:wolf 1 150 3
+/summon minecraft:wolf 8 150 3
+/summon minecraft:wolf 1 150 8
+/summon minecraft:wolf 19.5 150 4.5 {NoAI:1b,Tags:["r4_dx15"]}
+/summon minecraft:wolf 20 150 6.5 {NoAI:1b,Tags:["r4_dx15_5"]}
+/summon minecraft:wolf 22.5 150 4.5 {NoAI:1b,Tags:["r4_dx18"]}
+/tp @s 4.5 150 4.5 0 20
+wait 5
+press key.dnd-classes.power-up
+wait 5
+screenshot bard-rank4-cap
+/data get entity @e[type=minecraft:iron_golem,limit=1] Tags
+/data get entity @e[type=minecraft:hoglin,limit=1] Tags
+/execute as @e[type=minecraft:wolf] run data get entity @s Tags
+# Punch the golem: it must not hit back
+/tp @s 4.5 150 4.5 0 20
+attack
+wait 5
+attack
+wait 60
+/data get entity @s Health
+# Fight: zombie gets killed, a frozen creeper is ignored
+/summon minecraft:creeper 4.5 150 -3.5 {NoAI:1b}
+/summon minecraft:zombie 4.5 150 12.5
+wait 100
+perspective back
+screenshot bard-rank4-fight
+perspective first
+/execute if entity @e[type=minecraft:zombie]
+/data get entity @e[type=minecraft:creeper,limit=1] Health
+# Hoglin zombifies after 300 ticks in the Overworld unless kept
+wait 300
+/execute if entity @e[type=minecraft:hoglin]
+/execute if entity @e[type=minecraft:zoglin]
+/data get entity @s Health
 /kill @e[type=!minecraft:player]
 /dndclass resetprogress @s
 quit

@@ -14,6 +14,14 @@ import mattonfire.dnd.classes.Progression.Classes.NecromancerSkills;
 import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
+import mattonfire.dnd.entity.boss.Boss;
+import mattonfire.dnd.entity.BoneWyvernEntity;
+import mattonfire.dnd.entity.ModEntityTypes;
+import net.minecraft.entity.EquipmentSlot;
+import net.minecraft.entity.mob.AbstractSkeletonEntity;
+import net.minecraft.item.Items;
+import net.minecraft.particle.ParticleTypes;
+import net.minecraft.util.TypeFilter;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
 import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
@@ -35,17 +43,16 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.entity.mob.SkeletonEntity;
 import net.minecraft.entity.mob.ZombieEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.ExplosionS2CPacket;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.explosion.Explosion;
@@ -53,33 +60,95 @@ import net.minecraft.world.explosion.Explosion;
 public class PowerUpEffect {
 
 
-    /** How long the Necromancer special's zombie and skeleton last. */
-    public static final int UNDEAD_LIFETIME_TICKS = 10 * 20;
+    /** Tag on Raise Dead's units, for {@link #MAX_RAISED}. */
+    public static final String RAISED_TAG = "dndclasses.raised_dead";
+    /** Most Raise Dead units (not counting the Bone Wyvern) a Necromancer can have at once. */
+    public static final int MAX_RAISED = 10;
 
     /**
-     * Adds AI goals that make the summon target hostile mobs and follow the player.
+     * Turns a summon on hostile mobs and has it follow the player. Its own target goals go, so
+     * spiders and the like don't hunt players and zombies leave villagers alone.
      */
-    private static void addHostileTargetGoal(MobEntity mob, PlayerEntity player) {
-        if (mob instanceof ZombieEntity || mob instanceof SkeletonEntity) {
-            MobEntityAccessor mobAccessor = (MobEntityAccessor) mob;
-            mobAccessor.getTargetSelector().add(2, new ActiveTargetGoal<LivingEntity>(
-                    mob, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster));
-
-            mobAccessor.getGoalSelector().add(3,
-                    new FollowSummonerGoal((PathAwareEntity) mob, player, 2.0D, 5.0F, 10.0F));
-        }
+    private static void addHostileTargetGoal(PathAwareEntity mob, PlayerEntity player) {
+        MobEntityAccessor mobAccessor = (MobEntityAccessor) mob;
+        mobAccessor.getTargetSelector().clear(goal -> true);
+        mobAccessor.getTargetSelector().add(2, new ActiveTargetGoal<LivingEntity>(
+                mob, LivingEntity.class, 10, true, false, entity -> entity instanceof Monster));
+        mobAccessor.getGoalSelector().add(3, new FollowSummonerGoal(mob, player, 2.0D, 5.0F, 10.0F));
     }
 
+    /**
+     * Raise Dead: the undead for the special's rank ({@link NecromancerSkills#RAISE_DEAD}) in a ring
+     * around the player, and a Bone Wyvern at the top rank if the player hasn't got one.
+     */
     public static void spawnUndead(PlayerEntity player) {
         if (!(player.world instanceof ServerWorld world))
             return; // Ensure it's server-side
 
-        BlockPos pos = player.getBlockPos(); // Get necromancer's position
+        int rank = NecromancerSkills.RAISE_DEAD.rank(player);
+        int count = NecromancerSkills.RAISE_DEAD.getInt(player, "Undead");
+        int lifetime = NecromancerSkills.RAISE_DEAD.ticks(player, "Duration");
         Team allyTeam = NecromancerSkills.allyTeam(world, player);
+        List<EntityType<? extends HostileEntity>> roster = NecromancerSkills.raisedUndead(rank);
 
-        spawnAlly(world, player, EntityType.ZOMBIE.create(world), pos.getX(), pos.getY(), pos.getZ(), allyTeam);
-        spawnAlly(world, player, EntityType.SKELETON.create(world), pos.getX() + 1, pos.getY(), pos.getZ(),
-                allyTeam);
+        // Recasting while the last lot is still up tops it up to the cap rather than stacking forever.
+        String team = player.getUuidAsString();
+        int alive = world.getEntitiesByType(TypeFilter.instanceOf(MobEntity.class),
+                e -> e.isAlive() && e.getCommandTags().contains(RAISED_TAG) && e.getScoreboardTeam() != null
+                        && team.equals(e.getScoreboardTeam().getName())).size();
+        count = Math.min(count, MAX_RAISED - alive);
+
+        for (int i = 0; i < count; i++) {
+            double angle = i * Math.PI * 2 / count;
+            HostileEntity mob = roster.get(i % roster.size()).create(world);
+            if (mob == null)
+                continue;
+            mob.refreshPositionAndAngles(player.getX() + Math.cos(angle) * 1.5, player.getY(),
+                    player.getZ() + Math.sin(angle) * 1.5, world.random.nextFloat() * 360F, 0F);
+            equipRaised(mob, rank);
+            addHostileTargetGoal(mob, player);
+            mob.addCommandTag(RAISED_TAG);
+            spawnAlly(world, mob, allyTeam, lifetime);
+        }
+
+        if (rank >= NecromancerSkills.BONE_WYVERN_RANK && !hasBoneWyvern(world, player)) {
+            BoneWyvernEntity wyvern = ModEntityTypes.BONE_WYVERN.create(world);
+            if (wyvern != null) {
+                wyvern.refreshPositionAndAngles(player.getX(), player.getY() + 1.5, player.getZ(), player.getYaw(), 0F);
+                wyvern.setOwner(player);
+                spawnAlly(world, wyvern, allyTeam, lifetime);
+            }
+        }
+        world.spawnParticles(ParticleTypes.SOUL, player.getX(), player.getY() + 0.5, player.getZ(), 10 + 4 * count,
+                1.5, 0.5, 1.5, 0.02);
+    }
+
+    /** Weapons and helmets by kind and rank; nothing drops. Fire resistance covers fire and lava. */
+    private static void equipRaised(HostileEntity mob, int rank) {
+        Item weapon = null;
+        if (mob instanceof AbstractSkeletonEntity) {
+            // Equipping re-picks a skeleton's bow or melee attack
+            weapon = mob.getType() == EntityType.WITHER_SKELETON ? Items.STONE_SWORD : Items.BOW;
+        } else if (mob instanceof ZombieEntity) {
+            weapon = rank >= 3 ? Items.IRON_SWORD : rank == 2 ? Items.STONE_SWORD : null;
+        }
+        if (weapon != null) {
+            mob.equipStack(EquipmentSlot.MAINHAND, new ItemStack(weapon));
+        }
+        // A helmet stops zombies and skeletons catching fire in daylight
+        if (mob instanceof AbstractSkeletonEntity || mob instanceof ZombieEntity) {
+            Item helmet = rank >= 4 ? Items.IRON_HELMET : rank == 3 ? Items.CHAINMAIL_HELMET : Items.LEATHER_HELMET;
+            mob.equipStack(EquipmentSlot.HEAD, new ItemStack(helmet));
+        }
+        for (EquipmentSlot slot : EquipmentSlot.values()) {
+            mob.setEquipmentDropChance(slot, 0);
+        }
+        mob.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, StatusEffectInstance.INFINITE, 0,
+                false, false));
+    }
+
+    private static boolean hasBoneWyvern(ServerWorld world, PlayerEntity player) {
+        return !world.getEntitiesByType(ModEntityTypes.BONE_WYVERN, e -> e.isAlive() && e.isOwner(player)).isEmpty();
     }
 
     /**
@@ -87,16 +156,11 @@ public class PowerUpEffect {
      * their time is up and when they'd come back from a chunk reload or restart
      * without their AI goals.
      */
-    private static void spawnAlly(ServerWorld world, PlayerEntity player, HostileEntity mob, double x, double y,
-            double z, Team allyTeam) {
-        if (mob == null)
-            return;
-        mob.refreshPositionAndAngles(x, y, z, world.random.nextFloat() * 360F, 0F);
-        addHostileTargetGoal(mob, player); // Add AI to target hostiles
+    private static void spawnAlly(ServerWorld world, MobEntity mob, Team allyTeam, int lifetime) {
         world.getScoreboard().addPlayerToTeam(mob.getUuidAsString(), allyTeam);
         mob.addCommandTag(NecromancerSkills.SUMMON_TAG);
         mob.setPersistent();
-        SkillHelpers.spawnSummon(world, mob, UNDEAD_LIFETIME_TICKS);
+        SkillHelpers.spawnSummon(world, mob, lifetime);
     }
 
     public static boolean play(MinecraftServer server, PlayerEntity player, DndCharacter character) {

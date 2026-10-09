@@ -13,7 +13,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether
 - [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
 - [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
-- [Necromancer](classes/necromancer.md): undead ignore you; summon undead allies
+- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
 - [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
 - [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
@@ -32,6 +32,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn
+- [Bone Wyvern](mobs/bone-wyvern.md): the Necromancer's small undead dragon from Raise Dead rank V
 - [Goblins](mobs/goblins.md): Goblin Warriors in Nether Fortresses and goblin camps
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food

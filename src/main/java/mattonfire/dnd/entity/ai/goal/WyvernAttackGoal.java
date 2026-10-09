@@ -76,7 +76,8 @@ public class WyvernAttackGoal extends Goal {
         }
 
         if (this.cooldown <= 0 && this.seeTime >= 10 && distanceSq <= this.maxAttackDistance()) {
-             if (distanceSq > 25.0) { // Fire breath (> 5 blocks)
+             double biteRange = this.entity.getBiteRange();
+             if (distanceSq > biteRange * biteRange) { // Fire breath (> 5 blocks)
                  // Starts a bit inside the flame's reach, since the target keeps moving
                  double breathRange = this.entity.getFireBreath().range - 2.0;
                  if (distanceSq <= breathRange * breathRange) {

@@ -78,7 +78,6 @@ import net.minecraft.util.math.Vec3d;
 public class DnDClasses implements ModInitializer {
 
         public static final Map<UUID, Long> WARLOCK_FIREBREATH = new HashMap<>();
-        public static final int FIREBREATH_DURATION_TICKS = 20 * 20; // 20 seconds
 
         public static final Identifier C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("doublejump",
                         "request_doublejump_effects");
@@ -121,6 +120,10 @@ public class DnDClasses implements ModInitializer {
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
                         SkillNode skill = Progression.current(player).activeNode();
                         int cost = skill == null ? MANA_ICONS : skill.manaCost();
+                        // Sneak + power-up picks the Druid's Wild Shape form; free, so before the mana check.
+                        if (Druid.cycleForm(player)) {
+                                return;
+                        }
                         int mana = ManaManager.getMana(player);
                         if (mana < cost) {
                                 return;
@@ -418,7 +421,6 @@ public class DnDClasses implements ModInitializer {
 
                 BloodHunterControl.register();
                 Warlock.register();
-                Druid.register();
                 Progression.register();
                 ClassLifecycle.register();
 

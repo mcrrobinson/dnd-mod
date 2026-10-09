@@ -11,6 +11,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -33,6 +34,20 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 
 public class RangerSkills extends ClassSkills {
+    /**
+     * The root special; fired by {@code PowerUpEffect}. Early storms fire slower with normal-speed arrows;
+     * rank IV fires as fast as the Ranger can redraw, with faster (flatter, harder-hitting) arrows.
+     */
+    public static final Ranks ARROW_STORM = Ranks.of("ranger.arrow_storm")
+            .amount("Fire rate", "shots/s", 2, 2.5, 3.3, 5)
+            .percent("Arrow speed", 100, 115, 130, 150)
+            .seconds("Duration", 8, 10, 12, 15);
+
+    /** Fewest ticks between two Arrow Storm shots at the player's rank. */
+    public static int arrowStormShotDelay(PlayerEntity player) {
+        return (int) Math.round(20 / ARROW_STORM.get(player, "Fire rate"));
+    }
+
     private static final int BOW_KILL_BONUS_XP = 2;
     private static final int LONG_SHOT_BONUS_XP = 2;
     private static final double LONG_SHOT_DISTANCE = 20;
@@ -69,7 +84,7 @@ public class RangerSkills extends ClassSkills {
     public List<SkillNode> nodes() {
         return List.of(
                 active("ranger.arrow_storm", "Arrow Storm",
-                        "For 15 seconds your bow needs no arrows and fires itself at full draw.", "minecraft:bow", 9,
+                        "Your bow needs no arrows and fires itself at full draw. Higher ranks fire faster, shoot faster arrows and last longer.", "minecraft:bow", 9,
                         0, 1, 3),
                 // Hunter
                 passive("ranger.sharpshooter", "Sharpshooter", "Your arrows deal 25% more damage.",

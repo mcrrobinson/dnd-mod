@@ -12,6 +12,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -39,6 +40,16 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class WarlockSkills extends ClassSkills {
+    /**
+     * The root special; fired by {@code PowerUpEffect} and ticked by {@code Warlock}.
+     * Short and close early on, longer than the old 20 s / 5 blocks at full rank.
+     */
+    public static final Ranks FIRE_BREATH = Ranks.of("warlock.fire_breath")
+            .seconds("Duration", 8, 12, 16, 20)
+            .amount("Reach", "blocks", 3, 4, 5, 7)
+            .amount("Damage", "", 1, 2, 2, 3)
+            .seconds("Burn", 2, 2, 4, 4);
+
     /** Read by {@code Warlock} for the fireball cooldown. */
     public static final String INFERNAL_FIREBALLS = "warlock.infernal_fireballs";
 
@@ -77,7 +88,7 @@ public class WarlockSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("warlock.fire_breath", "Fire Breath", "Breathe fire for 20 seconds.", "minecraft:blaze_powder",
+                active("warlock.fire_breath", "Fire Breath", "Breathe a beam of fire that burns and hurts the mobs in front of you.", "minecraft:blaze_powder",
                         9, 0, 1, 3),
                 // Fiend
                 passive("warlock.hellfire", "Hellfire", "Burning targets take 25% more damage from you.",

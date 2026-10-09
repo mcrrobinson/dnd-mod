@@ -14,7 +14,16 @@ A fire caster. You throw fireballs from an empty hand, fire can't hurt you, and 
 
 **Water and rain hurt.** You take 1 damage every 4 seconds while touching water or standing in rain. It never takes you below 1 heart, and it doesn't apply in creative or spectator. It won't kill you, but it stops you healing and leaves you open to anything else.
 
-**Special (power-up key, full mana): Fire Breath** for 20 seconds. A 5-block beam in front of you sets targets on fire for 2 seconds and deals 2 magic damage to anything in it. The kills count as yours. Your party members and your own pets are left alone. Only your current dimension is affected.
+**Special (power-up key, full mana): Fire Breath.** A beam of fire in front of you sets targets on fire and deals magic damage to anything in it. Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)):
+
+| Rank | Class level | Duration | Reach | Damage | Burn |
+|-|-|-|-|-|-|
+| I | 0 | 8 s | 3 blocks | 1 | 2 s |
+| II | 3 | 12 s | 4 blocks | 2 | 2 s |
+| III | 6 | 16 s | 5 blocks | 2 | 4 s |
+| IV | 9 | 20 s | 7 blocks | 3 | 4 s |
+
+The damage lands each time a mob's hurt cooldown runs out (about twice a second). Hellfire boosts it once the target is burning, and the longer burn at ranks III and IV keeps it burning between passes. The kills count as yours. Your party members and your own pets are left alone. Only your current dimension is affected.
 
 ### Tips
 The Nether is your home: lava lakes are shortcuts, and blazes and ghast fireballs can't hurt you. On the surface, carry a roof or stay near shelter when it rains. Cross rivers by bridge rather than swimming.
@@ -26,7 +35,7 @@ Warlocks get 2 extra XP for any kill by fire, and 1 extra for any kill in the Ne
 
 | Skill | Branch | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
-| Fire Breath | Root | Active | 0 | 9 | The special above |
+| Fire Breath | Root | Active | 0 | 9 | The special above: 8 / 12 / 16 / 20 s, 3 / 4 / 5 / 7 blocks (ranks I-IV) |
 | Hellfire | Fiend | Passive | 1 | | Burning targets take 25% more damage from you |
 | Eldritch Blast | Fiend | Active | 1 | 3 | An instant beam that deals 8 magic damage to the first mob in your crosshair within 20 blocks |
 | Infernal Fireballs | Fiend | Passive | 1 | | Fireball cooldown halved, to two a second |
@@ -41,6 +50,6 @@ Hellfire works with your fireballs: the first fireball sets the target alight, a
 - `/dndclass set <player> warlock` (see [Admin commands](../systems/admin-commands.md)).
 
 ## For developers
-- Fireballs, fire immunity and wet damage: `Warlock.java` (`FIREBALL_COOLDOWN_TICKS`, `WET_DAMAGE_INTERVAL_TICKS`) with `mixin/WarlockFireballMixin` (client). Fire breath: `Warlock.tickFireBreath` (end times in `DnDClasses.WARLOCK_FIREBREATH`, in world time); the client draws your own flames until that world time.
+- Fireballs, fire immunity and wet damage: `Warlock.java` (`FIREBALL_COOLDOWN_TICKS`, `WET_DAMAGE_INTERVAL_TICKS`) with `mixin/WarlockFireballMixin` (client). Fire breath: `Warlock.tickFireBreath` (end times in `DnDClasses.WARLOCK_FIREBREATH`, in world time); per-rank values in `WarlockSkills.FIRE_BREATH`, read each tick. `S2C_WARLOCK_FIREBREATH` carries the end time and the reach, and the client draws your own flames that far until that world time.
 - Skill tree: `Progression/Classes/WarlockSkills.java`. `Warlock` reads `WarlockSkills.INFERNAL_FIREBALLS` for the cooldown.
-- Devscript: `devscripts/warlock-passive.txt`.
+- Devscripts: `devscripts/warlock-passive.txt`, `devscripts/warlock-ranks.txt` (Fire Breath ranks).

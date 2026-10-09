@@ -3,6 +3,7 @@ package mattonfire.dnd.classes.Registry;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Effects.AntiMagicEffect;
 import mattonfire.dnd.classes.Effects.ArmorBuffEffect;
+import mattonfire.dnd.classes.Effects.DangerSenseEffect;
 import mattonfire.dnd.classes.Effects.FrightenedEffect;
 import mattonfire.dnd.classes.Effects.FreezeEffect;
 import mattonfire.dnd.classes.Effects.InvulnerabilityEffect;
@@ -21,6 +22,7 @@ public class ModEffects {
     public static StatusEffect ARMOR_BUFF;
     public static StatusEffect ANTI_MAGIC;
     public static StatusEffect FRIGHTENED;
+    public static StatusEffect DANGER_SENSE;
 
     public static StatusEffect registerStatusEffect(String name, StatusEffect effect) {
         return Registry.register(Registries.STATUS_EFFECT, new Identifier(DnDClasses.MOD_ID, name),
@@ -39,5 +41,8 @@ public class ModEffects {
         // Beholder
         ANTI_MAGIC = registerStatusEffect("anti_magic", new AntiMagicEffect(StatusEffectCategory.HARMFUL, 0x7A6A9A));
         FRIGHTENED = registerStatusEffect("frightened", new FrightenedEffect(StatusEffectCategory.HARMFUL, 0xE0C83C));
+        // Rogue: projectiles miss (ProjectileEntityMixin)
+        DANGER_SENSE = registerStatusEffect("danger_sense",
+                new DangerSenseEffect(StatusEffectCategory.BENEFICIAL, 0x9FB4C8));
     }
 }

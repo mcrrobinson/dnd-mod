@@ -11,6 +11,7 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.LivingEntity;
@@ -40,6 +41,16 @@ import net.minecraft.util.math.Vec3d;
  * Moon scale day damage up here to land on their target multiplier.
  */
 public class BloodHunterSkills extends ClassSkills {
+    /**
+     * The root special; fired by {@code PowerUpEffect} through {@code BloodHunterControl}. Short, unreliable
+     * and close-range early on; today's 20 s, 30 blocks and a sure hit at full rank. Strong mobs lower the
+     * success chance (see {@code BloodHunterControl.successChance}).
+     */
+    public static final Ranks BLOOD_CONTROL = Ranks.of("bloodhunter.blood_control")
+            .seconds("Duration", 8, 12, 16, 20)
+            .percent("Success", 60, 75, 90, 100)
+            .amount("Range", "blocks", 15, 20, 25, 30);
+
     private static final int NIGHT_SWORD_KILL_BONUS_XP = 3;
 
     private static final int BLEED_TICKS = 40;
@@ -67,7 +78,8 @@ public class BloodHunterSkills extends ClassSkills {
     public List<SkillNode> nodes() {
         return List.of(
                 active("bloodhunter.blood_control", "Blood Control",
-                        "Take control of the mob you're looking at (30 blocks) for 20 seconds.", "minecraft:lead", 9,
+                        "Take control of the mob you're looking at for a while. It can resist, more often if it's strong; "
+                                + "a failure still costs the mana and a heart.", "minecraft:lead", 9,
                         0, 1, 3),
                 // Blood Curse
                 passive("bloodhunter.crimson_rite", "Crimson Rite", "Sword hits make targets bleed (Wither).",

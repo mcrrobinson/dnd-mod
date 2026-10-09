@@ -4,7 +4,7 @@ An archer. Your bow draws almost instantly, you can zoom while aiming, and your 
 ## How it works
 **Fast draw.** A bow reaches full power in about 3 ticks instead of 20, so you can fire full-power shots as fast as you can click.
 
-**Bow zoom.** Drawing a bow zooms the view in 2x, like a spyglass. It only works in first person.
+**Bow zoom.** Drawing a bow zooms the view in 2x, like a spyglass. It only works in first person, and not during Arrow Storm.
 
 **Luck.** You have +5 luck, which improves loot tables that use it, such as fishing.
 
@@ -12,7 +12,16 @@ An archer. Your bow draws almost instantly, you can zoom while aiming, and your 
 
 **Lava is lethal.** Standing in lava deals you 20 extra damage every tick on top of the normal burn. Fire Resistance doesn't stop it, so treat lava as instant death.
 
-**Special (power-up key, full mana): Arrow Storm** for 15 seconds. Hold right click with a bow and it fires each time it's fully drawn, without needing or using arrows.
+**Special (power-up key, full mana): Arrow Storm.** Hold right click with a bow and it fires each time it's fully drawn, without needing or using arrows. It scales with its rank, which you raise with skill points at an Attunement Table:
+
+| Rank | Class level | Fire rate | Arrow speed | Duration |
+|-|-|-|-|-|
+| I | 0 | 2 shots/s (one every 10 ticks) | 100% | 8 s |
+| II | 3 | 2.5 shots/s (every 8 ticks) | 115% | 10 s |
+| III | 6 | 3.3 shots/s (every 6 ticks) | 130% | 12 s |
+| IV | 9 | 5 shots/s (every 4 ticks) | 150% | 15 s |
+
+Faster arrows fly flatter and further, and hit a bit harder, since arrow damage scales with speed. The bow zoom and the vanilla bow FOV change are off while Arrow Storm runs, so the view stays steady.
 
 ### Tips
 Carry a bow with Power and keep a stack of arrows, since outside Arrow Storm you still use them. The zoom makes long shots easy, and you get bonus XP for kills from 20 blocks or more. In the Nether, build bridges over lava lakes with walls on the sides.
@@ -24,7 +33,7 @@ Rangers get 2 extra XP for each hostile mob killed with an arrow, or 4 if it was
 
 | Skill | Branch | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
-| Arrow Storm | Root | Active | 0 | 9 | The special above |
+| Arrow Storm | Root | Active | 0 | 9 | The special above; 4 ranks |
 | Sharpshooter | Hunter | Passive | 1 | | Your arrows deal 25% more damage |
 | Volley | Hunter | Active | 1 | 4 | Fire a fan of 5 critical arrows, 10 degrees apart, where you're looking. You can't pick them up |
 | Hunter's Mark | Hunter | Passive | 1 | | Your arrows make targets glow for 10 s, and glowing targets take 20% more damage from all your attacks |
@@ -42,6 +51,6 @@ Hunter's Mark doesn't boost the arrow that applies the mark, only the hits after
 - The sword ban only covers picking swords up off the ground. A Ranger can still take one out of a chest, craft one or keep one they had before switching class.
 
 ## For developers
-- Draw speed: `mixin/BowItemMixin` (server) and the bow `pull` predicate in `DndClassesClient`. Zoom: `mixin/RangerBowZoomMixin` (client, `RANGER_DRAW_TICKS`, `RANGER_ZOOM`). Sword pickup: `mixin/RangerSwordPickupMixin`. Auto-fire: `mixin/PlayerEntityMixin.tick`. Lava: `mixin/LavaDamageMixin`. Effect: `ModEffects.ARROW_STORM`.
+- Draw speed: `mixin/BowItemMixin` (server) and the bow `pull` predicate in `DndClassesClient`. Zoom: `mixin/RangerBowZoomMixin` (client, `RANGER_DRAW_TICKS`, `RANGER_ZOOM`). Sword pickup: `mixin/RangerSwordPickupMixin`. Auto-fire: `mixin/PlayerEntityMixin.tick` (waits `RangerSkills.arrowStormShotDelay` ticks between shots). Arrow speed: `BowItemMixin.dnd$arrowStormSpeed`. Ranks: `RangerSkills.ARROW_STORM`, duration read in `PowerUpEffect` case `RANGER`. Lava: `mixin/LavaDamageMixin`. Effect: `ModEffects.ARROW_STORM`.
 - Skill tree: `Progression/Classes/RangerSkills.java`.
-- Devscript: `devscripts/ranger-sword-pickup.txt`.
+- Devscripts: `devscripts/ranger-sword-pickup.txt`, `devscripts/ranger-ranks.txt` (Arrow Storm duration at ranks I and IV, plus a screenshot of the steady FOV mid-storm).

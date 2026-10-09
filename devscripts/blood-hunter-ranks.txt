@@ -1,0 +1,57 @@
+# Checks Blood Control's ranks and boss refusal. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/blood-hunter-ranks.txt
+# Expect in latest.log ([CHAT] lines):
+#  1. ranks {bloodhunter.blood_control=4} after /dndclass rank
+#  2. Goblin Warlord: "Test passed" (refused, the boss is still there); screenshot bh-boss shows "... is too powerful to control."
+#  3. Zombie at rank IV (100%): "Test failed" right after (taken over), screenshot bh-control, then "Test passed" ~20 s later (released)
+#  4. Rank I against a ravager (60% - 20 = 40%): screenshot bh-rank1 shows either the zombie-like shape or the
+#     red "resists" message; Health drops by 2 on a resist. "Test passed" after 8 s either way (released or never taken)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set midnight
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s bloodhunter
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass rank @s bloodhunter.blood_control 4
+/dndclass progress @s
+/tp @s 4.5 150 1.5 0 0
+/summon dndclasses:goblin_warlord 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f]}
+wait 220
+press key.dnd-classes.power-up
+wait 3
+screenshot bh-boss
+/execute if entity @e[type=dndclasses:goblin_warlord]
+/kill @e[type=dndclasses:goblin_warlord]
+/kill @e[type=minecraft:item]
+/summon minecraft:zombie 4.5 150 4.5 {NoAI:1b,Rotation:[180f,0f],Tags:["bh"]}
+/tp @s 4.5 150 1.5 0 0
+wait 5
+press key.dnd-classes.power-up
+wait 10
+screenshot bh-control
+/execute if entity @e[tag=bh]
+wait 400
+/execute if entity @e[tag=bh]
+/kill @e[tag=bh]
+/dndclass rank @s bloodhunter.blood_control 1
+/dndclass progress @s
+/effect give @s minecraft:instant_health 1 5
+/tp @s 4.5 150 1.5 0 0
+/summon minecraft:ravager 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f]}
+wait 220
+/data get entity @s Health
+press key.dnd-classes.power-up
+wait 3
+screenshot bh-rank1
+/data get entity @s Health
+/execute if entity @e[type=minecraft:ravager]
+wait 180
+/execute if entity @e[type=minecraft:ravager]
+/kill @e[type=minecraft:ravager]
+/dndclass resetprogress @s
+quit

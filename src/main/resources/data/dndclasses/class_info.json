@@ -94,7 +94,7 @@
       "name": "Wizard",
       "pros": ["Can wield elemental staffs (done)"],
       "cons": ["Greatly reduced health (done)", "Can't wear armor heavier than iron (done)"],
-      "special": ["Creates a massive explosion and becomes invulnerable for a few seconds (done)"],
+      "special": ["Arcane explosion: 12-block blast and Resistance V for 2s, up to 72 blocks and 5s with ranks (done)"],
       "specialOnKey": true
     },
     {

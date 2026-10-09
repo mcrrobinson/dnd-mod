@@ -18,6 +18,7 @@ import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import mattonfire.dnd.classes.Progression.Classes.BarbarianSkills;
 import mattonfire.dnd.classes.Progression.Classes.FighterSkills;
+import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
@@ -57,8 +58,6 @@ public class PowerUpEffect {
 
     /** Paladins heal party members within this many blocks (everyone else: 10). */
     public static final double PALADIN_PARTY_HEAL_RADIUS = 24;
-    /** How long the Wizard special's invulnerability lasts. */
-    public static final int WIZARD_INVULNERABLE_TICKS = 5 * 20;
 
     /** How long the Necromancer special's zombie and skeleton last. */
     public static final int UNDEAD_LIFETIME_TICKS = 10 * 20;
@@ -154,7 +153,9 @@ public class PowerUpEffect {
                 double playerX = player.getX();
                 double playerY = player.getY();
                 double playerZ = player.getZ();
-                float radius = 40.F;
+                // The rank sets the reach; a vanilla explosion reaches twice its power.
+                float reach = (float) WizardSkills.ARCANE_EXPLOSION.get(player, "Radius");
+                float radius = reach / 2;
 
                 DamageSource damageSource = world.getDamageSources()
                         .create(ModDamageTypes.WIZARD_EXPLOSION_DAMAGE_SOURCE, player);
@@ -166,7 +167,8 @@ public class PowerUpEffect {
 
                 // A few seconds of invulnerability: Resistance V blocks all normal damage
                 // and wears off on its own (unlike setInvulnerable, which is saved).
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, WIZARD_INVULNERABLE_TICKS, 4));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE,
+                        WizardSkills.ARCANE_EXPLOSION.ticks(player, "Resistance V"), 4));
 
                 explosion.collectBlocksAndDamageEntities();
                 explosion.affectWorld(true);
@@ -184,8 +186,13 @@ public class PowerUpEffect {
                                         explosion.getAffectedBlocks(),
                                         (Vec3d) explosion.getAffectedPlayers().get(serverPlayerEntity)));
 
-                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
-                                new PacketByteBuf(Unpooled.buffer()));
+                        // Where the blast is and how far it reaches, so the sphere matches it
+                        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+                        buf.writeDouble(playerX);
+                        buf.writeDouble(playerY + player.getStandingEyeHeight() / 2.0);
+                        buf.writeDouble(playerZ);
+                        buf.writeFloat(reach);
+                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID, buf);
                     }
                 }
 

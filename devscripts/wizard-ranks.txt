@@ -1,0 +1,118 @@
+# Checks the Wizard's ranked Arcane Explosion. Run: timeout 500 ./gradlew runClient -PdevScript=devscripts/wizard-ranks.txt
+# Four frozen zombies, 8, 20, 40 and 60 blocks away; the special is fired at each rank.
+# Radius per rank: I 12, II 28, III 48, IV 72 blocks. Expect in latest.log ([CHAT] lines):
+#  Rank I:   z8 hurt; z20, z40, z60 Health 20.0f. Resistance (Id 11) Amplifier 4, Duration ~40 minus ~14
+#  Rank II:  z8, z20 hurt; z40, z60 20.0f. Resistance ~60
+#  Rank III: z8..z40 hurt; z60 20.0f. Resistance ~80
+#  Rank IV:  all four hurt (or killed: "No entity was found"). Resistance ~100
+# (The Duration printed is what's left ~14 ticks after the cast.)
+# The cast costs a full mana bar (9), which refills in about 18 s, hence wait 400 between casts.
+# Screenshots: wizard-rank1..4 (third person, sphere mid-growth)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set midnight
+/dndclass set @s wizard
+wait 10
+closescreen
+/dndclass resetprogress @s
+# Rank 1
+/kill @e[type=minecraft:zombie]
+/kill @e[type=minecraft:item]
+/fill -2 149 -2 66 149 4 minecraft:stone
+/fill -2 150 -2 66 156 4 minecraft:air
+/tp @s 0.5 150 0.5 -90 10
+/summon minecraft:zombie 8.5 150 0.5 {NoAI:1b,Tags:["z8"],PersistenceRequired:1b}
+/summon minecraft:zombie 20.5 150 0.5 {NoAI:1b,Tags:["z20"],PersistenceRequired:1b}
+/summon minecraft:zombie 40.5 150 0.5 {NoAI:1b,Tags:["z40"],PersistenceRequired:1b}
+/summon minecraft:zombie 60.5 150 0.5 {NoAI:1b,Tags:["z60"],PersistenceRequired:1b}
+/effect clear @s
+perspective back
+wait 200
+press key.dnd-classes.power-up
+wait 4
+screenshot wizard-rank1
+wait 4
+/data get entity @e[tag=z8,limit=1] Health
+/data get entity @e[tag=z20,limit=1] Health
+/data get entity @e[tag=z40,limit=1] Health
+/data get entity @e[tag=z60,limit=1] Health
+/data get entity @s ActiveEffects
+perspective first
+# Rank 2
+/kill @e[type=minecraft:zombie]
+/kill @e[type=minecraft:item]
+/fill -2 149 -2 66 149 4 minecraft:stone
+/fill -2 150 -2 66 156 4 minecraft:air
+/dndclass rank @s wizard.arcane_explosion 2
+/tp @s 0.5 150 0.5 -90 10
+/summon minecraft:zombie 8.5 150 0.5 {NoAI:1b,Tags:["z8"],PersistenceRequired:1b}
+/summon minecraft:zombie 20.5 150 0.5 {NoAI:1b,Tags:["z20"],PersistenceRequired:1b}
+/summon minecraft:zombie 40.5 150 0.5 {NoAI:1b,Tags:["z40"],PersistenceRequired:1b}
+/summon minecraft:zombie 60.5 150 0.5 {NoAI:1b,Tags:["z60"],PersistenceRequired:1b}
+/effect clear @s
+perspective back
+wait 400
+press key.dnd-classes.power-up
+wait 4
+screenshot wizard-rank2
+wait 4
+/data get entity @e[tag=z8,limit=1] Health
+/data get entity @e[tag=z20,limit=1] Health
+/data get entity @e[tag=z40,limit=1] Health
+/data get entity @e[tag=z60,limit=1] Health
+/data get entity @s ActiveEffects
+perspective first
+# Rank 3
+/kill @e[type=minecraft:zombie]
+/kill @e[type=minecraft:item]
+/fill -2 149 -2 66 149 4 minecraft:stone
+/fill -2 150 -2 66 156 4 minecraft:air
+/dndclass rank @s wizard.arcane_explosion 3
+/tp @s 0.5 150 0.5 -90 10
+/summon minecraft:zombie 8.5 150 0.5 {NoAI:1b,Tags:["z8"],PersistenceRequired:1b}
+/summon minecraft:zombie 20.5 150 0.5 {NoAI:1b,Tags:["z20"],PersistenceRequired:1b}
+/summon minecraft:zombie 40.5 150 0.5 {NoAI:1b,Tags:["z40"],PersistenceRequired:1b}
+/summon minecraft:zombie 60.5 150 0.5 {NoAI:1b,Tags:["z60"],PersistenceRequired:1b}
+/effect clear @s
+perspective back
+wait 400
+press key.dnd-classes.power-up
+wait 4
+screenshot wizard-rank3
+wait 4
+/data get entity @e[tag=z8,limit=1] Health
+/data get entity @e[tag=z20,limit=1] Health
+/data get entity @e[tag=z40,limit=1] Health
+/data get entity @e[tag=z60,limit=1] Health
+/data get entity @s ActiveEffects
+perspective first
+# Rank 4
+/kill @e[type=minecraft:zombie]
+/kill @e[type=minecraft:item]
+/fill -2 149 -2 66 149 4 minecraft:stone
+/fill -2 150 -2 66 156 4 minecraft:air
+/dndclass rank @s wizard.arcane_explosion 4
+/tp @s 0.5 150 0.5 -90 10
+/summon minecraft:zombie 8.5 150 0.5 {NoAI:1b,Tags:["z8"],PersistenceRequired:1b}
+/summon minecraft:zombie 20.5 150 0.5 {NoAI:1b,Tags:["z20"],PersistenceRequired:1b}
+/summon minecraft:zombie 40.5 150 0.5 {NoAI:1b,Tags:["z40"],PersistenceRequired:1b}
+/summon minecraft:zombie 60.5 150 0.5 {NoAI:1b,Tags:["z60"],PersistenceRequired:1b}
+/effect clear @s
+perspective back
+wait 400
+press key.dnd-classes.power-up
+wait 4
+screenshot wizard-rank4
+wait 4
+/data get entity @e[tag=z8,limit=1] Health
+/data get entity @e[tag=z20,limit=1] Health
+/data get entity @e[tag=z40,limit=1] Health
+/data get entity @e[tag=z60,limit=1] Health
+/data get entity @s ActiveEffects
+perspective first
+/kill @e[type=minecraft:zombie]
+/dndclass resetprogress @s
+quit

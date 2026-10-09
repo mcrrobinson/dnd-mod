@@ -17,7 +17,9 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtElement;
 import net.minecraft.network.PacketByteBuf;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -28,16 +30,20 @@ import net.minecraft.util.math.BlockPos;
 
 /**
  * Server side of class progression: stores each class's {@link ClassProgress}
- * in the player's persistent data, hands out XP, and handles unlock and
- * loadout requests from the skill tree screen.
+ * in the player's persistent data, hands out XP, and handles unlock, rank,
+ * loadout and bestiary requests from the skill tree screen.
  */
 public final class Progression {
     public static final Identifier S2C_SYNC = new Identifier(DnDClasses.MOD_ID, "progression_sync");
     public static final Identifier S2C_OPEN_ATTUNEMENT = new Identifier(DnDClasses.MOD_ID, "open_attunement");
     public static final Identifier C2S_UNLOCK = new Identifier(DnDClasses.MOD_ID, "unlock_skill");
     public static final Identifier C2S_EQUIP = new Identifier(DnDClasses.MOD_ID, "equip_skill");
+    public static final Identifier C2S_RANK_UP = new Identifier(DnDClasses.MOD_ID, "rank_up_skill");
+    public static final Identifier C2S_BESTIARY_UNLOCK = new Identifier(DnDClasses.MOD_ID, "bestiary_unlock");
 
     private static final String DATA_KEY = "dndProgression";
+    /** The Druid's kill list from before the bestiary; becomes its learned set on first load. */
+    private static final String OLD_DRUID_KILLS_KEY = "druidKilledAnimals";
     /** Everyone with a class gets this much XP a minute just for playing. */
     private static final int TRICKLE_XP = 1;
     private static final int TRICKLE_TICKS = 60 * 20;
@@ -74,6 +80,14 @@ public final class Progression {
             String id = buf.readString();
             server.execute(() -> equip(player, id, false));
         });
+        ServerPlayNetworking.registerGlobalReceiver(C2S_RANK_UP, (server, player, handler, buf, sender) -> {
+            String id = buf.readString();
+            server.execute(() -> rankUp(player, id, false));
+        });
+        ServerPlayNetworking.registerGlobalReceiver(C2S_BESTIARY_UNLOCK, (server, player, handler, buf, sender) -> {
+            String id = buf.readString();
+            server.execute(() -> unlockBestiary(player, id, false));
+        });
 
         ProgressionEvents.register();
     }
@@ -87,8 +101,15 @@ public final class Progression {
         if (player.getWorld().isClient) {
             return ClassProgress.client.dndClass == dndClass ? ClassProgress.client : new ClassProgress(dndClass);
         }
-        NbtCompound all = ((IEntityDataSaver) player).getPersistentData().getCompound(DATA_KEY);
-        return ClassProgress.fromNbt(dndClass, all.getCompound(dndClass.name()));
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        NbtCompound saved = data.getCompound(DATA_KEY).getCompound(dndClass.name());
+        ClassProgress progress = ClassProgress.fromNbt(dndClass, saved);
+        if (dndClass == DndCharacter.DRUID && !saved.contains("learned")) {
+            // Kept until something saves the progress, which writes "learned".
+            data.getList(OLD_DRUID_KILLS_KEY, NbtElement.STRING_TYPE)
+                    .forEach(e -> progress.learned.add(e.asString()));
+        }
+        return progress;
     }
 
     /** Progress in the player's current class. Works on both sides (the client only knows its own player). */
@@ -177,6 +198,126 @@ public final class Progression {
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
                 SoundCategory.PLAYERS, 1.0F, 1.0F);
         return true;
+    }
+
+    /**
+     * Raises a node of the player's current class by one rank, for a skill
+     * point. Needs an attunement table and the class level for the rank.
+     *
+     * @param force skip the table, level and point checks (admin command)
+     * @return whether it ranked up
+     */
+    public static boolean rankUp(ServerPlayerEntity player, String id, boolean force) {
+        ClassProgress progress = current(player);
+        SkillNode node = ClassTrees.node(id);
+        ClassProgress.RankUp check = progress.canRankUp(node);
+        if (!force) {
+            if (!atAttunementTable(player)) {
+                player.sendMessage(Text.literal("Skills can only be ranked up at an Attunement Table.")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+            if (check == ClassProgress.RankUp.LEVEL) {
+                player.sendMessage(Text.literal(node.name() + " " + Ranks.roman(progress.rank(id) + 1) + " needs "
+                        + name(progress.dndClass) + " level " + Ranks.levelFor(id, progress.rank(id) + 1) + ".")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+            if (check == ClassProgress.RankUp.POINTS) {
+                player.sendMessage(Text.literal("You need a skill point to rank up " + node.name() + ".")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+        }
+        if (check == ClassProgress.RankUp.LOCKED || check == ClassProgress.RankUp.MAX_RANK)
+            return false;
+        return setRank(player, progress, node, progress.rank(id) + 1);
+    }
+
+    /**
+     * Sets a node's rank without checking points, level or the table (admin
+     * command). The node must be unlocked.
+     *
+     * @return whether the rank was set
+     */
+    public static boolean setRank(ServerPlayerEntity player, String id, int rank) {
+        ClassProgress progress = current(player);
+        SkillNode node = ClassTrees.node(id);
+        if (!ClassTrees.belongsTo(node, progress.dndClass) || !progress.isUnlocked(id) || rank < 1
+                || rank > node.maxRank())
+            return false;
+        return setRank(player, progress, node, rank);
+    }
+
+    private static boolean setRank(ServerPlayerEntity player, ClassProgress progress, SkillNode node, int rank) {
+        if (rank <= 1) {
+            progress.ranks.remove(node.id());
+        } else {
+            progress.ranks.put(node.id(), rank);
+        }
+        save(player, progress);
+        sync(player);
+
+        player.sendMessage(Text.literal(node.name() + " is now rank " + Ranks.roman(rank) + ".")
+                .formatted(Formatting.GOLD), true);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP,
+                SoundCategory.PLAYERS, 0.8F, 1.6F);
+        return true;
+    }
+
+    /**
+     * Adds an entity to the bestiary of the player's current class, if it has one.
+     *
+     * @return whether it was new
+     */
+    public static boolean learn(ServerPlayerEntity player, String entityId) {
+        ClassProgress progress = current(player);
+        if (!progress.usesBestiary() || !progress.learned.add(entityId))
+            return false;
+        save(player, progress);
+        sync(player);
+        player.sendMessage(Text.literal("Learned " + entityName(entityId)
+                + ". Unlock it at an Attunement Table.").formatted(Formatting.DARK_GREEN), true);
+        return true;
+    }
+
+    /**
+     * Unlocks a learned entity in the bestiary. Needs an attunement table and
+     * the root special's rank for the entity's tier.
+     *
+     * @param force skip every check but the class having a bestiary; also learns it (admin command)
+     * @return whether it was unlocked
+     */
+    public static boolean unlockBestiary(ServerPlayerEntity player, String entityId, boolean force) {
+        ClassProgress progress = current(player);
+        if (!progress.usesBestiary() || progress.bestiary.contains(entityId))
+            return false;
+        if (!force) {
+            if (!atAttunementTable(player)) {
+                player.sendMessage(Text.literal("The bestiary can only be changed at an Attunement Table.")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+            if (!progress.canUnlockBestiary(entityId))
+                return false;
+        }
+        progress.learned.add(entityId);
+        progress.bestiary.add(entityId);
+        save(player, progress);
+        sync(player);
+
+        player.sendMessage(Text.literal("Unlocked " + entityName(entityId) + ".").formatted(Formatting.GREEN), true);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
+                SoundCategory.PLAYERS, 1.0F, 1.0F);
+        return true;
+    }
+
+    /** An entity type's display name from its id, or the id if it's unknown. */
+    public static String entityName(String entityId) {
+        Identifier id = Identifier.tryParse(entityId);
+        return id != null && Registries.ENTITY_TYPE.containsId(id)
+                ? Registries.ENTITY_TYPE.get(id).getName().getString()
+                : entityId;
     }
 
     /** Called when the player opens an attunement table. */

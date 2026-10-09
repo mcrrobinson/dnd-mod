@@ -13,6 +13,7 @@ import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -59,6 +60,31 @@ public class NecromancerSkills extends ClassSkills {
     /** Tag on every Necromancer summon (special and skills), used to tidy up the ally team. */
     public static final String SUMMON_TAG = "dndclasses.necromancer_summon";
 
+    /**
+     * The root special; fired by {@code PowerUpEffect.spawnUndead}. Each rank raises more and
+     * stronger undead (see {@link #raisedUndead}) for longer, and the last adds a Bone Wyvern.
+     */
+    public static final Ranks RAISE_DEAD = Ranks.of("necromancer.raise_dead")
+            .amount("Undead", "", 2, 3, 4, 5, 5)
+            .text("Kinds", "zombie, skeleton", "zombie, skeleton, spider", "husk, stray, spider, zombie",
+                    "2 wither skeletons, husk, stray, spider", "2 wither skeletons, husk, stray, spider, Bone Wyvern")
+            .seconds("Duration", 10, 12, 14, 16, 20)
+            .levels(3, 5, 7, 10);
+
+    /** Rank of Raise Dead that adds a Bone Wyvern (one at a time). */
+    public static final int BONE_WYVERN_RANK = 5;
+
+    /** The undead Raise Dead raises at a rank, in order; as long as the "Undead" count. */
+    public static List<EntityType<? extends HostileEntity>> raisedUndead(int rank) {
+        return switch (rank) {
+            case 1 -> List.of(EntityType.ZOMBIE, EntityType.SKELETON);
+            case 2 -> List.of(EntityType.ZOMBIE, EntityType.SKELETON, EntityType.SPIDER);
+            case 3 -> List.of(EntityType.HUSK, EntityType.STRAY, EntityType.SPIDER, EntityType.ZOMBIE);
+            default -> List.of(EntityType.WITHER_SKELETON, EntityType.WITHER_SKELETON, EntityType.HUSK,
+                    EntityType.STRAY, EntityType.SPIDER);
+        };
+    }
+
     private static final int SUMMON_KILL_XP = 3;
     private static final int WITHER_KILL_XP = 1;
 
@@ -90,7 +116,8 @@ public class NecromancerSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("necromancer.raise_dead", "Raise Dead", "A zombie and a skeleton rise to fight for you.",
+                active("necromancer.raise_dead", "Raise Dead",
+                        "Undead rise to fight for you. More and stronger ones with each rank, up to a Bone Wyvern.",
                         "minecraft:rotten_flesh", 9, 0, 1, 3),
                 // Bone
                 passive("necromancer.bone_armor", "Bone Armor", "+3 armor.", "minecraft:bone_block", 1, 2, 3,

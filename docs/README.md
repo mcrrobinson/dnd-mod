@@ -5,24 +5,25 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Classes
 - [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted
-- [Bard](classes/bard.md): ignored by monsters; animals fight for you
+- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you
 - [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target
-- [Druid](classes/druid.md): hearts from tamed animals, light regen, animal forms
+- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals
 - [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions
-- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only
-- [Paladin](classes/paladin.md): heals the party; no potions, crafting or brewing; weak in the Nether
-- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm
-- [Rogue](classes/rogue.md): no hunger or poison; turns invisible
-- [Necromancer](classes/necromancer.md): undead ignore you; summon undead allies
+- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special
+- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether
+- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
+- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
+- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
-- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion
+- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
 - [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
 - [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
-- [Alchemist](classes/alchemist.md): safe and fast brewing, upgrades potions; can't enchant
+- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
+- [Class progression](systems/class-progression.md): class levels, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`
 - [Party](systems/party.md): group up with other players
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles
@@ -31,6 +32,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn
+- [Bone Wyvern](mobs/bone-wyvern.md): the Necromancer's small undead dragon from Raise Dead rank V
 - [Goblins](mobs/goblins.md): Goblin Warriors in Nether Fortresses and goblin camps
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food

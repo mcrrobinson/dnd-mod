@@ -1,0 +1,126 @@
+# Checks Arrow Storm ranks. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/ranger-ranks.txt
+# For each rank I-IV the script fires the storm, holds right click for 60 ticks (3 s) at a wall 30 blocks south,
+# then counts the arrows. Expect in latest.log ([CHAT] lines), per rank:
+#  - ActiveEffects: dndclasses:arrow_storm Duration ~5 below 160 / 200 / 240 / 300
+#  - arrow Motion z about 3.0 / 3.45 / 3.9 / 4.5 (full draw 3.0 times the rank's arrow speed)
+#  - "Test passed, count: N" arrows after 60 ticks: about 6 / 8 / 10 / 15 (fire rate 2 / 2.5 / 3.3 / 5 per s)
+# Screenshots: ranger-storm-<rank> mid-storm (FOV unchanged), ranger-idle and ranger-zoom (2x bow zoom outside it).
+# The 400-tick waits refill mana (18 s from empty).
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/fill -12 140 30 20 166 30 minecraft:stone
+/fill 3 150 30 5 152 30 minecraft:red_wool
+/kill @e[type=arrow]
+/dndclass set @s ranger
+wait 10
+closescreen
+/dndclass resetprogress @s
+/clear @s
+hotbar 0
+/item replace entity @s weapon.mainhand with minecraft:bow
+/tp @s 4.5 150 1.5 0 0
+perspective first
+/effect clear @s
+/effect clear @s
+/kill @e[type=arrow]
+/tp @s 4.5 150 1.5 0 0
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+holduse on
+wait 4
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 20
+screenshot ranger-storm-1
+wait 30
+holduse off
+wait 20
+/execute if entity @e[type=arrow]
+/dndclass rank @s ranger.arrow_storm 2
+/effect clear @s
+/kill @e[type=arrow]
+/tp @s 4.5 150 1.5 0 0
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+holduse on
+wait 4
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 20
+screenshot ranger-storm-2
+wait 30
+holduse off
+wait 20
+/execute if entity @e[type=arrow]
+/dndclass rank @s ranger.arrow_storm 3
+/effect clear @s
+/kill @e[type=arrow]
+/tp @s 4.5 150 1.5 0 0
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+holduse on
+wait 4
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 20
+screenshot ranger-storm-3
+wait 30
+holduse off
+wait 20
+/execute if entity @e[type=arrow]
+/dndclass rank @s ranger.arrow_storm 4
+/effect clear @s
+/kill @e[type=arrow]
+/tp @s 4.5 150 1.5 0 0
+wait 400
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+holduse on
+wait 4
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 3
+/data get entity @e[type=arrow,sort=nearest,limit=1] Motion
+wait 20
+screenshot ranger-storm-4
+wait 30
+holduse off
+wait 20
+/execute if entity @e[type=arrow]
+/effect clear @s
+/kill @e[type=arrow]
+/give @s minecraft:arrow 16
+wait 20
+screenshot ranger-idle
+holduse on
+wait 8
+screenshot ranger-zoom
+holduse off
+wait 5
+/clear @s
+/effect clear @s
+/dndclass resetprogress @s
+quit

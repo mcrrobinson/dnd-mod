@@ -4,6 +4,7 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.SkillNode.Kind;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,6 +72,27 @@ public abstract class ClassSkills {
      * running (relogging shouldn't reset them); just prune the ones that ended.
      */
     public void forget(ServerPlayerEntity player) {
+    }
+
+    /**
+     * Whether the class has a bestiary: kills while playing it are learned, and
+     * learned entities are unlocked at an Attunement Table for its root special.
+     */
+    public boolean usesBestiary() {
+        return false;
+    }
+
+    /** Whether killing this entity adds it to the bestiary. Only asked when {@link #usesBestiary()}. */
+    public boolean learnsFrom(LivingEntity killed) {
+        return true;
+    }
+
+    /**
+     * Rank of the root special needed to unlock this learned entity at the
+     * table (its tier); above the root's max rank means never. Both sides.
+     */
+    public int bestiaryRank(EntityType<?> type) {
+        return 1;
     }
 
     /** Passives that are just an attribute bonus; added and removed automatically. */

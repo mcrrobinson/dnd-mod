@@ -68,6 +68,8 @@ public final class DragonPartLayout {
     private final double flyingDrop;
     private final List<Group> groups = new ArrayList<>();
     private String[] animationNames = new String[0];
+    /** How much smaller or bigger than the .geo.json the dragon is drawn (the renderer's withScale). */
+    private double scale = 1.0;
 
     // Loaded on first use by the server and the client threads alike; both load the same data.
     private volatile Model model;
@@ -105,6 +107,18 @@ public final class DragonPartLayout {
     public DragonPartLayout animations(String... names) {
         this.animationNames = names;
         return this;
+    }
+
+    /**
+     * The same parts for a dragon drawn at {@code scale} times the model's size (its renderer's
+     * {@code withScale}). Client parts follow the scaled model anyway; this scales the server's.
+     */
+    public DragonPartLayout scaled(double scale) {
+        DragonPartLayout copy = new DragonPartLayout(this.modelName, this.groundDrop, this.flyingDrop);
+        copy.groups.addAll(this.groups);
+        copy.animationNames = this.animationNames;
+        copy.scale = this.scale * scale;
+        return copy;
     }
 
     public int size() {
@@ -150,8 +164,9 @@ public final class DragonPartLayout {
         double drop = 0.0;
         if (pose == null) {
             pose = this.getModel().rest();
-            drop = flying ? this.flyingDrop : this.groundDrop;
+            drop = (flying ? this.flyingDrop : this.groundDrop) * this.scale;
         }
+        double k = this.scale;
         double x = owner.getX(), y = owner.getY() + drop, z = owner.getZ();
         float yaw = owner.bodyYaw;
         // GeckoLib renders entities rotated by (180 - body yaw) around Y
@@ -174,10 +189,10 @@ public final class DragonPartLayout {
             for (double[] c : cubes) {
                 // c = corner, then the three edge vectors, in model space (blocks)
                 DragonPart.addCube(shapes,
-                        x + c[0] * cos + c[2] * sin, y + c[1], z - c[0] * sin + c[2] * cos,
-                        c[3] * cos + c[5] * sin, c[4], -c[3] * sin + c[5] * cos,
-                        c[6] * cos + c[8] * sin, c[7], -c[6] * sin + c[8] * cos,
-                        c[9] * cos + c[11] * sin, c[10], -c[9] * sin + c[11] * cos);
+                        x + k * (c[0] * cos + c[2] * sin), y + k * c[1], z + k * (-c[0] * sin + c[2] * cos),
+                        k * (c[3] * cos + c[5] * sin), k * c[4], k * (-c[3] * sin + c[5] * cos),
+                        k * (c[6] * cos + c[8] * sin), k * c[7], k * (-c[6] * sin + c[8] * cos),
+                        k * (c[9] * cos + c[11] * sin), k * c[10], k * (-c[9] * sin + c[11] * cos));
             }
             part.setPoseShapes(shapes, pose, x, y, z, yaw);
         }
@@ -210,7 +225,7 @@ public final class DragonPartLayout {
      * corner, with room for animations that swing wings and tail further out.
      */
     public double getReach() {
-        return this.getModel().reach() * 1.5 + 2.0;
+        return this.getModel().reach() * 1.5 * this.scale + 2.0;
     }
 
     private DragonAnimations getAnimations() {

@@ -50,6 +50,8 @@ public class DndClassesClient implements ClientModInitializer {
 
     private boolean isBreathingFire = false;
     private long fireBreathEndTick = 0;
+    /** Beam length in blocks, sent by the server so the flames match the rank's reach. */
+    private int fireBreathReach = 0;
     private net.minecraft.world.World fireBreathWorld = null;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.dnd-classes.skill-tree", GLFW.GLFW_KEY_O, "category.dnd-classes.dnd-classes"));
@@ -125,24 +127,27 @@ public class DndClassesClient implements ClientModInitializer {
             PacketSender responseSender) {
         boolean active = buf.readBoolean();
         long endTick = active ? buf.readLong() : 0;
+        int reach = active ? buf.readVarInt() : 0;
         client.execute(() -> {
             // The end is in world time; remember the world so flames don't carry into the next one.
             isBreathingFire = active;
             fireBreathEndTick = endTick;
+            fireBreathReach = reach;
             fireBreathWorld = client.world;
         });
     }
 
     private void handleWizardPowerupPacket(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
+        Vec3d pos = new Vec3d(buf.readDouble(), buf.readDouble(), buf.readDouble());
+        float reach = buf.readFloat();
         client.execute(() -> {
             if (client.world != null && client.player != null) {
                 MySphereRenderState.shouldRenderSphere = true;
-                MySphereRenderState.spherePos = client.player.getPos().add(0,
-                        client.player.getStandingEyeHeight() / 2.0, 0);
+                MySphereRenderState.spherePos = pos;
+                MySphereRenderState.maxRadius = reach;
                 MySphereRenderState.startTick = client.world.getTime();
-                client.world.playSound(
-                        client.player.getPos().getX(), client.player.getPos().getY(), client.player.getPos().getZ(),
+                client.world.playSound(pos.x, pos.y, pos.z,
                         ModSounds.WIZARD_EXPLOSION,
                         SoundCategory.BLOCKS,
                         4.0F,
@@ -163,6 +168,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, mattonfire.dnd.client.renderer.EmberWyvernRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BONE_WYVERN, mattonfire.dnd.client.renderer.BoneWyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, mattonfire.dnd.client.renderer.RiverPikehornRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MAGMAMUNCHER, mattonfire.dnd.client.renderer.MagmamuncherRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MAGMAMUNCHER_ALPHA, mattonfire.dnd.client.renderer.MagmamuncherAlphaRenderer::new);
@@ -183,6 +189,7 @@ public class DndClassesClient implements ClientModInitializer {
         DevScript.register();
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
+        mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
 
@@ -207,7 +214,7 @@ public class DndClassesClient implements ClientModInitializer {
                     MySphereRenderState.shouldRenderSphere = false;
                     return;
                 }
-                float radius = 0.1f + progress * 49.9f; // Expands from 0.1 to 50 blocks
+                float radius = 0.1f + progress * (MySphereRenderState.maxRadius - 0.1f); // Grows to the blast's reach
                 int baseColor = 0xFFffec64;
                 int originalAlpha = 0xFF;
                 int newAlpha = (int) ((1.0f - progress) * originalAlpha);
@@ -280,10 +287,10 @@ public class DndClassesClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player != null && isBreathingFire(client.player)) {
-                // Example: spawn a semi-transparent red particle in front of the player
+                // Semi-transparent flames along the beam, as far as it reaches
                 Vec3d look = client.player.getRotationVec(1.0F);
                 Vec3d start = client.player.getPos().add(0, client.player.getStandingEyeHeight(), 0);
-                for (int i = 1; i <= 5; i++) {
+                for (int i = 1; i <= fireBreathReach; i++) {
                     Vec3d pos = start.add(look.multiply(i));
                     client.world.addParticle(ModParticles.TRANSLUCENT_FLAME, pos.x, pos.y, pos.z, 0, 0, 0);
                 }

@@ -6,11 +6,13 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.spawnSummon;
 
 import java.util.List;
+import java.util.Set;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -21,6 +23,7 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
@@ -30,6 +33,23 @@ import net.minecraft.sound.SoundEvents;
  * {@link Druid} and {@code PlayerEntityMixin}.
  */
 public class DruidSkills extends ClassSkills {
+    /**
+     * The root special; fired by {@code PowerUpEffect} through {@link Druid#transform}. The rank sets the
+     * form's duration (today's 30 s at full rank) and the highest form tier that can be unlocked.
+     */
+    public static final Ranks WILD_SHAPE = Ranks.of("druid.wild_shape")
+            .seconds("Duration", 15, 20, 25, 30)
+            .text("Forms", "Tier I forms", "Up to tier II forms", "Up to tier III forms", "Up to tier IV forms");
+
+    /** Wild Shape rank II: bigger hunters and climbers. */
+    private static final Set<EntityType<?>> TIER_2 = Set.of(EntityType.WOLF, EntityType.GOAT, EntityType.CAT,
+            EntityType.OCELOT, EntityType.AXOLOTL, EntityType.BEE, EntityType.PARROT, EntityType.STRIDER);
+    /** Wild Shape rank III: big beasts and mounts. */
+    private static final Set<EntityType<?>> TIER_3 = Set.of(EntityType.POLAR_BEAR, EntityType.HORSE,
+            EntityType.DONKEY, EntityType.MULE, EntityType.SKELETON_HORSE, EntityType.ZOMBIE_HORSE,
+            EntityType.LLAMA, EntityType.TRADER_LLAMA, EntityType.CAMEL, EntityType.PANDA, EntityType.HOGLIN,
+            EntityType.SNIFFER);
+
     private static final int ANIMAL_KILL_XP = 3;
     private static final int FORM_KILL_BONUS_XP = 4;
     private static final int WOLF_LIFETIME_TICKS = 60 * 20;
@@ -42,7 +62,7 @@ public class DruidSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("druid.wild_shape", "Wild Shape", "Turn into an animal you've killed for 30 seconds.",
+                active("druid.wild_shape", "Wild Shape", "Turn into an animal you've killed and unlocked. Sneak + power-up picks the form.",
                         "minecraft:rabbit_foot", 9, 0, 1, 3),
                 // Circle of the Moon
                 passive("druid.hardy_form", "Hardy Form", "Resistance while in animal form.",
@@ -101,6 +121,32 @@ public class DruidSkills extends ClassSkills {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean usesBestiary() {
+        return true;
+    }
+
+    /** Animals and wild beasts (the {@code #dndclasses:druid_forms} tag), like the Druid's old kill list. */
+    @Override
+    public boolean learnsFrom(LivingEntity killed) {
+        return killed instanceof AnimalEntity || killed.getType().isIn(Druid.DRUID_FORMS);
+    }
+
+    /**
+     * Form tiers: small animals at rank I, then {@link #TIER_2}, {@link #TIER_3}, and the mod's own
+     * creatures (the Owlbear, and any from other mods) at rank IV. Uses no tags, so the client agrees.
+     */
+    @Override
+    public int bestiaryRank(EntityType<?> type) {
+        if (TIER_2.contains(type))
+            return 2;
+        if (TIER_3.contains(type))
+            return 3;
+        if (!Registries.ENTITY_TYPE.getId(type).getNamespace().equals("minecraft"))
+            return 4;
+        return 1;
     }
 
     @Override

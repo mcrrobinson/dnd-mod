@@ -14,6 +14,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
@@ -39,6 +40,45 @@ import net.minecraft.sound.SoundEvents;
 
 /** Cleric skill tree: Life (healing, smiting undead) and Forge (mining, radiance). */
 public class ClericSkills extends ClassSkills {
+    /** Party reach of Sanctuary at each rank, in blocks; 0 = only the Cleric. */
+    private static final int[] SANCTUARY_PARTY_REACH = { 0, 8, 12, 16 };
+    /** Regeneration level party members get at each rank; 0 = none. */
+    private static final int[] SANCTUARY_PARTY_REGEN = { 0, 1, 1, 2 };
+    /** How long that Regeneration lasts at each rank, in seconds. */
+    private static final int[] SANCTUARY_PARTY_REGEN_SECONDS = { 0, 5, 8, 10 };
+
+    /**
+     * The root special, fired by {@code PowerUpEffect}. A short personal escape at
+     * rank I; at rank IV today's 15 s, shared with the party within 16 blocks.
+     */
+    public static final Ranks SANCTUARY = Ranks.of("cleric.sanctuary")
+            .seconds("Duration", 6, 9, 12, 15)
+            .text("Party", sanctuaryPartyText());
+
+    private static String[] sanctuaryPartyText() {
+        String[] text = new String[SANCTUARY_PARTY_REACH.length];
+        for (int i = 0; i < text.length; i++) {
+            text[i] = SANCTUARY_PARTY_REACH[i] == 0 ? "only you"
+                    : "party within " + SANCTUARY_PARTY_REACH[i] + " blocks, Regeneration "
+                            + Ranks.roman(SANCTUARY_PARTY_REGEN[i]) + " " + SANCTUARY_PARTY_REGEN_SECONDS[i] + " s";
+        }
+        return text;
+    }
+
+    /** Blocks within which party members share the player's Sanctuary; 0 if they don't yet. */
+    public static double sanctuaryPartyReach(PlayerEntity player) {
+        return SANCTUARY_PARTY_REACH[SANCTUARY.rank(player) - 1];
+    }
+
+    /** Regeneration amplifier party members get from Sanctuary, or -1 for none. */
+    public static int sanctuaryPartyRegenAmplifier(PlayerEntity player) {
+        return SANCTUARY_PARTY_REGEN[SANCTUARY.rank(player) - 1] - 1;
+    }
+
+    public static int sanctuaryPartyRegenTicks(PlayerEntity player) {
+        return SANCTUARY_PARTY_REGEN_SECONDS[SANCTUARY.rank(player) - 1] * 20;
+    }
+
     private static final int UNDEAD_KILL_BONUS_XP = 3;
     private static final int ORE_XP = 1;
     private static final int RARE_ORE_XP = 3;
@@ -61,7 +101,7 @@ public class ClericSkills extends ClassSkills {
     @Override
     public List<SkillNode> nodes() {
         return List.of(
-                active("cleric.sanctuary", "Sanctuary", "Mobs ignore you for 15 seconds.", "minecraft:bell", 9, 0, 1,
+                active("cleric.sanctuary", "Sanctuary", "Mobs ignore you for a few seconds; higher ranks last longer and protect your party.", "minecraft:bell", 9, 0, 1,
                         3),
                 // Life
                 passive("cleric.preserve_life", "Preserve Life",

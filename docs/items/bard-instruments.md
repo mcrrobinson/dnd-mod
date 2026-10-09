@@ -23,7 +23,7 @@ The buff doesn't come from a potion, so Fighters, Paladins and Artificers, who i
 - Keep all three in your hotbar so you can switch quickly.
 
 ## How to get it
-Craft them, or take them from the D&D Classes creative tab.
+Every Bard always has a Lute in their instrument slot, played with **G** (see [Bard](../classes/bard.md)); it shares the cooldown with these items. Craft them, or take them from the D&D Classes creative tab.
 
 **Lute:** two sticks, three planks and a string.
 

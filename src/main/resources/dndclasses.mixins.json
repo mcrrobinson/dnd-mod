@@ -16,6 +16,7 @@
         "ActiveTargetGoalMixin",
         "TrackTargetGoalMixin",
         "MobEntityAccessor",
+        "FoxEntityInvoker",
         "MobEntityMixin",
         "BrewingStandAccessor",
         "BrewingStandBlockEntityMixin",

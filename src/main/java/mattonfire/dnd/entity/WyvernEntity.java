@@ -44,7 +44,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     // The model is ~12 blocks wide but the entity hitbox is only 1.5, so wings, neck, head and tail
     // get their own hittable parts (like the ender dragon), each wrapping a group of model bones.
     // Root bone sits 11px lower on the ground and 34.5px lower in flight (wyvern.animation.json).
-    private static final DragonPartLayout PART_LAYOUT = new DragonPartLayout("wyvern", -11 / 16.0, -34.5 / 16.0)
+    protected static final DragonPartLayout PART_LAYOUT = new DragonPartLayout("wyvern", -11 / 16.0, -34.5 / 16.0)
             .part("body", "front", "back")
             .part("neck_base", "neck1", "neck2")
             .part("neck_mid", "neck3", "neck4")
@@ -73,10 +73,16 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     private final BossFight bossFight;
 
     public WyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
+        this(entityType, world, 12.0, 4.0F);
+    }
+
+    /** A variant with its own flame reach and damage. */
+    protected WyvernEntity(EntityType<? extends TameableEntity> entityType, World world, double breathRange,
+            float breathDamage) {
         super(entityType, world);
         this.moveControl = new FlightMoveControl(this, 10, false);
         this.parts = PART_LAYOUT.createParts(this);
-        this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, 12.0, 4.0F);
+        this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, breathRange, breathDamage);
         this.setId(DragonPartLayout.reserveIds(this.parts));
         this.bossFight = new BossFight(this, BossBar.Color.RED, BossBar.Style.PROGRESS)
                 .range(64.0)
@@ -116,7 +122,7 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     public void tick() {
         super.tick();
         this.bodyAnimation.tick(this.isFlying());
-        PART_LAYOUT.update(this, this.parts, this.bodyAnimation.current(), this.isFlying());
+        this.getPartLayout().update(this, this.parts, this.bodyAnimation.current(), this.isFlying());
         // One BirdNavigation and FlightMoveControl for both ground and air (like the parrot), so the
         // current path survives every landing and take-off.
         if (this.isOnGround()) {
@@ -146,6 +152,11 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     /** Ticks between bites. */
     public int getMeleeCooldown() {
         return 20;
+    }
+
+    /** Bites inside this many blocks, breathes fire further out. */
+    public double getBiteRange() {
+        return 5.0;
     }
 
     /** Ticks after a fire breath ends before the next attack. */

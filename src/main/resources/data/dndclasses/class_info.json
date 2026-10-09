@@ -14,7 +14,7 @@
       "name": "Bard",
       "pros": ["Ignored by hostile mobs"],
       "cons": ["Less health"],
-      "special": ["**Animal Friends**: nearby animals you have learned become companions that fight for you"],
+      "special": ["**Animal Friends**: nearby animals you have charmed with an instrument become companions that follow and fight for you"],
       "specialOnKey": true
     },
     {

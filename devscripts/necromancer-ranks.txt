@@ -1,0 +1,157 @@
+# Checks every rank of Raise Dead. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/necromancer-ranks.txt
+# Mana (9) refills in at most 18 s, so casts are 365 ticks apart. Survival, so "Health" shows any friendly fire.
+# Expect in latest.log ([CHAT] lines), per rank: raised count 2/3/4/5/5, Bone Wyvern only at V,
+# zombie-likes get no/stone/iron/iron sword, helmets leather/leather/chainmail/iron, drop chances 0, Fire -1 at noon.
+# Rank II and IV are cast at midnight: the player's Health must stay 20 next to the spiders.
+# Rank V: Bone Wyvern owned by the player, serverhitboxes measure, it hurts a frozen vindicator on its own
+# (the raised undead are frozen), recast tops up to 10 raised and keeps 1 wyvern, then all despawn.
+# Screenshots: necro-rank1..necro-rank5, necro-wyvern-hitboxes, necro-wyvern-fight
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -6 149 -6 10 149 10 minecraft:stone
+/fill -6 150 -6 10 160 10 minecraft:air
+/kill @e[type=!minecraft:player]
+/dndclass set @s necromancer
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/effect give @s minecraft:saturation 1000 1 true
+/tp @s 2.5 150 2.5 0 20
+wait 365
+# ---- Rank I (noon) ----
+press key.dnd-classes.power-up
+wait 60
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:skeleton]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] HandItems
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] ArmorItems[3]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:skeleton,limit=1] HandItems[0]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:skeleton,limit=1] ArmorDropChances
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] Fire
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:skeleton,limit=1] Fire
+/tp @s 2.5 150 -3.5 0 25
+wait 5
+screenshot necro-rank1
+/kill @e[tag=dndclasses.raised_dead]
+wait 5
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:leather_helmet"}}]
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:bow"}}]
+/kill @e[type=!minecraft:player]
+# ---- Rank II (midnight, spiders) ----
+/dndclass rank @s necromancer.raise_dead 2
+/time set midnight
+/tp @s 2.5 150 2.5 0 20
+wait 280
+press key.dnd-classes.power-up
+wait 100
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:spider]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] HandItems[0]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] ArmorItems[3]
+/data get entity @s Health
+/tp @s 2.5 150 -3.5 0 25
+wait 5
+screenshot necro-rank2
+/kill @e[type=!minecraft:player]
+# ---- Rank III (noon) ----
+/dndclass rank @s necromancer.raise_dead 3
+/time set noon
+/tp @s 2.5 150 2.5 0 20
+wait 255
+press key.dnd-classes.power-up
+wait 60
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:husk]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:stray]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:spider]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] HandItems[0]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] ArmorItems[3]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:zombie,limit=1] Fire
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:stray,limit=1] Fire
+/tp @s 2.5 150 -3.5 0 25
+wait 5
+screenshot necro-rank3
+/kill @e[type=!minecraft:player]
+# ---- Rank IV (midnight) ----
+/dndclass rank @s necromancer.raise_dead 4
+/time set midnight
+/tp @s 2.5 150 2.5 0 20
+wait 290
+press key.dnd-classes.power-up
+wait 100
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:wither_skeleton]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:husk]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:stray]
+/execute if entity @e[tag=dndclasses.raised_dead,type=minecraft:spider]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:wither_skeleton,limit=1] HandItems[0]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:husk,limit=1] HandItems[0]
+/data get entity @e[tag=dndclasses.raised_dead,type=minecraft:husk,limit=1] ArmorItems[3]
+/data get entity @s Health
+/tp @s 2.5 150 -3.5 0 25
+wait 5
+screenshot necro-rank4
+/kill @e[type=!minecraft:player]
+# ---- Rank V (noon) ----
+/dndclass rank @s necromancer.raise_dead 5
+/dndclass progress @s
+/time set noon
+/tp @s 2.5 150 2.5 0 20
+wait 255
+press key.dnd-classes.power-up
+wait 10
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/data get entity @e[type=dndclasses:bone_wyvern,limit=1] Owner
+/data get entity @e[type=dndclasses:bone_wyvern,limit=1] Health
+/execute as @e[tag=dndclasses.raised_dead] run data merge entity @s {NoAI:1b}
+/tp @s 2.5 151.5 -1.5 0 10
+wait 20
+screenshot necro-wyvern
+hitboxes on
+serverhitboxes on
+wait 10
+serverhitboxes measure
+screenshot necro-wyvern-hitboxes
+hitboxes off
+serverhitboxes off
+/tp @s 2.5 150 2.5 0 20
+/summon minecraft:vindicator 2.5 150 8.5 {NoAI:1b,PersistenceRequired:1b,Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}]}
+wait 60
+/tp @s 2.5 151 -1.5 0 15
+wait 5
+screenshot necro-wyvern-fight
+wait 35
+/data get entity @e[type=minecraft:vindicator,limit=1] Health
+/data get entity @e[type=minecraft:vindicator,limit=1] ActiveEffects
+/execute if entity @e[tag=dndclasses.raised_dead]
+/data get entity @s Health
+/kill @e[type=minecraft:vindicator]
+/execute as @e[tag=dndclasses.raised_dead] run data merge entity @s {NoAI:0b}
+/tp @s 2.5 150 2.5 0 20
+wait 190
+# ---- Rank V recast: tops up to 10, no second wyvern ----
+press key.dnd-classes.power-up
+wait 10
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/tp @s 2.5 150 -3.5 0 25
+wait 5
+screenshot necro-rank5
+wait 410
+/execute if entity @e[tag=dndclasses.raised_dead]
+/execute if entity @e[type=dndclasses:bone_wyvern]
+/dndclass resetprogress @s
+/gamemode creative
+quit

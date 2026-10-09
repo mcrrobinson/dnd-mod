@@ -17,19 +17,19 @@ Picking the class sets your health to 25.
 
 **No potions.** You can't drink or throw potions, and potion buffs from any source (drinking, splash, lingering clouds, tipped arrows) don't apply to you. Harmful potion effects still do, so a witch's splash potion hurts you as normal.
 
-**Special (power-up key, full mana): Super Regeneration.** Regeneration V for 10 seconds, about 2 hearts a second. It isn't a potion, so it works.
+**Special (power-up key, full mana): Super Regeneration.** Regeneration V, about 3 hearts a second, for 4 seconds at rank I, 6 at II, 8 at III and 10 at IV. Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)). It isn't a potion, so it works.
 
 ### Tips
 In a group, stand in front: the mobs come to you, so your friends can shoot or cast in peace. You have no ranged attack, so carry a shield for skeletons and close in on them. Golden apples and beacons still work for you, since they aren't potions.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Fighters get 2 extra XP for each hostile mob killed in melee, and 3 more on top if at least 3 hostile mobs (counting the one you killed) were within 6 blocks.
 
 | Skill | Branch | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
-| Super Regeneration | Root | Active | 0 | 9 | Regeneration V for 10 s |
+| Super Regeneration | Root | Active | 0 | 9 | Regeneration V for 4 / 6 / 8 / 10 s (ranks I-IV) |
 | Improved Critical | Champion | Passive | 1 | | Critical hits (falling, not sprinting) deal 25% more damage |
 | Action Surge | Champion | Active | 1 | 4 | Haste II, Speed II and Strength I for 8 s |
 | Brawler | Champion | Passive | 1 | | +2 attack damage |

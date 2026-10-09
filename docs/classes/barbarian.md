@@ -14,19 +14,19 @@ Picking the class sets your health to 25, so you start a little over half full.
 
 Your bare fist does 6 damage, and a weapon adds its own damage on top. The catch is that you can't see far. Fog starts 4 blocks out and is solid at 24, whatever your render distance. Water, lava and Blindness still win when their fog is closer.
 
-**Special (power-up key, full mana): Rage.** Strength III for 15 seconds.
+**Special (power-up key, full mana): Rage.** Strength that grows with its rank: Strength I for 8 seconds at rank I, Strength II for 10 at II, Strength II for 12 at III and Strength III for 12 at IV. Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)); ranks II, III and IV need class level 3, 6 and 9 and a skill point each.
 
 ### Tips
-You're slow, so let mobs come to you instead of chasing them. Skeletons can shoot you from inside the fog, so close the gap behind cover. A horse makes up for the walking speed when you travel. Save Rage for a boss or a crowd: Strength III adds 9 damage to every hit.
+You're slow, so let mobs come to you instead of chasing them. Skeletons can shoot you from inside the fog, so close the gap behind cover. A horse makes up for the walking speed when you travel. Save Rage for a boss or a crowd: each Strength level adds 3 damage to every hit, so a fully ranked Rage adds 9. Fuelled by Rage's 30% bonus applies on top of it while you're below half health. Titan is still the bigger buff: Strength III for 20 seconds with Resistance and Regeneration.
 
 ### Skill tree
-Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 6 at 1000 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) at an Attunement Table.
+Press **O** to open your skill tree. Class XP gives you a skill point per level, up to level 10 at 2700 XP. Every class gets 2 XP for a hostile kill and 1 XP a minute for playing. Unlock skills from the tree anywhere; change your loadout (one active for the power-up key, two passives) and rank up abilities at an Attunement Table (see [Class progression](../systems/class-progression.md)).
 
 Barbarians get 3 extra XP for each hostile mob they kill in melee.
 
 | Skill | Branch | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
-| Rage | Root | Active | 0 | 9 | Strength III for 15 s |
+| Rage | Root | Active | 0 | 9 | Strength I for 8 s / Strength II for 10 s / Strength II for 12 s / Strength III for 12 s (ranks I-IV) |
 | Bloodlust | Berserker | Passive | 1 | | Heal 1 heart for every kill |
 | War Cry | Berserker | Active | 1 | 3 | Hostile mobs within 8 blocks get Weakness I and Slowness II for 6 s |
 | Fuelled by Rage | Berserker | Passive | 1 | | 30% more damage while below half health |
@@ -44,6 +44,6 @@ Each branch unlocks in order from the root, and Titan needs the end of either br
 - The fog is drawn on the client only and can't be turned off.
 
 ## For developers
-- Attributes: `ClassStats`. Fog: `mixin/BackgroundRendererMixin` (`BARBARIAN_FOG_START`/`END`). Special: `Misc/PowerUpEffect` (`BARBARIAN`).
+- Attributes: `ClassStats`. Fog: `mixin/BackgroundRendererMixin` (`BARBARIAN_FOG_START`/`END`). Special: `Misc/PowerUpEffect` (`BARBARIAN`), with its per-rank values in `BarbarianSkills.RAGE`.
 - Skill tree: `Progression/Classes/BarbarianSkills.java`.
 - See [Mana and specials](../systems/mana.md) for how the special is triggered.

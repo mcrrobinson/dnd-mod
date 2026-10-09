@@ -1,23 +1,22 @@
 package mattonfire.dnd.classes;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
+import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.Progression;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import mattonfire.dnd.classes.Progression.SkillNode;
+import mattonfire.dnd.classes.Progression.Classes.DruidSkills;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.passive.AnimalEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtElement;
-import net.minecraft.nbt.NbtList;
-import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
@@ -29,7 +28,8 @@ import net.minecraft.util.TypeFilter;
 
 /**
  * Druid mechanics: extra hearts from tamed animals, light based regen /
- * darkness hunger, and transforming into animals the druid has killed.
+ * darkness hunger, and Wild Shape into animals the druid has killed and
+ * unlocked in the bestiary.
  */
 public class Druid {
     // Extra hearts from tamed animals.
@@ -42,26 +42,15 @@ public class Druid {
     public static final int DARK_LIGHT_LEVEL = 4;
     public static final float DARK_EXHAUSTION_PER_SECOND = 0.1F; // 4.0 = half a drumstick, so ~1 per 40s
 
-    // Animal form.
-    public static final int FORM_DURATION_TICKS = 30 * 20;
-    private static final int MAX_RECORDED_ANIMALS = 16;
-    private static final String KILLED_ANIMALS_KEY = "druidKilledAnimals";
+    // Animal form. Forms come from the bestiary (learned by killing, unlocked at an
+    // Attunement Table); the duration and tiers are DruidSkills.WILD_SHAPE's ranks.
     private static final String FORM_EXPIRY_KEY = "druidFormExpiry";
+    /** The form picked with sneak + power-up; missing means a random unlocked form. */
+    private static final String CHOSEN_FORM_KEY = "druidChosenForm";
+    private static final String WILD_SHAPE = "druid.wild_shape";
     /** Creatures besides animals whose form a druid learns by killing one (the Owlbear). */
     public static final TagKey<EntityType<?>> DRUID_FORMS = TagKey.of(RegistryKeys.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "druid_forms"));
-
-    public static void register() {
-        // Remember every animal (and wild beast like the Owlbear) a druid kills.
-        ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-            if (!(entity instanceof AnimalEntity) && !entity.getType().isIn(DRUID_FORMS))
-                return;
-            Entity attacker = damageSource.getAttacker();
-            if (attacker instanceof ServerPlayerEntity player && isDruid(player)) {
-                recordKill(player, entity.getType());
-            }
-        });
-    }
 
     public static boolean isDruid(PlayerEntity player) {
         return player instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.DRUID;
@@ -164,22 +153,61 @@ public class Druid {
         return ((IEntityDataSaver) player).getPersistentData().contains(FORM_EXPIRY_KEY);
     }
 
-    private static void recordKill(ServerPlayerEntity player, EntityType<?> type) {
-        String id = Registries.ENTITY_TYPE.getId(type).toString();
-        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
-        NbtList list = data.getList(KILLED_ANIMALS_KEY, NbtElement.STRING_TYPE);
-
-        // Keep each animal once, most recent last.
-        list.removeIf(e -> e.asString().equals(id));
-        list.add(NbtString.of(id));
-        while (list.size() > MAX_RECORDED_ANIMALS) {
-            list.remove(0);
+    /**
+     * The forms Wild Shape can take now: unlocked in the bestiary, still a living
+     * entity type, and within the tier Wild Shape's rank allows.
+     */
+    public static List<String> availableForms(ClassProgress progress) {
+        int rank = DruidSkills.WILD_SHAPE.rank(progress);
+        List<String> forms = new ArrayList<>();
+        for (String id : progress.bestiary) {
+            if (progress.learned.contains(id) && progress.bestiaryRank(id) <= rank) {
+                forms.add(id);
+            }
         }
-        data.put(KILLED_ANIMALS_KEY, list);
+        return forms;
     }
 
     /**
-     * Transforms the druid into a random animal they've killed.
+     * Sneak + power-up with Wild Shape equipped picks the next unlocked form
+     * (then "random"), without mana. Checked before the power-up's mana check.
+     *
+     * @return whether the key press was used up
+     */
+    public static boolean cycleForm(ServerPlayerEntity player) {
+        if (!isDruid(player) || !player.isSneaking())
+            return false;
+        ClassProgress progress = Progression.current(player);
+        SkillNode active = progress.activeNode();
+        if (active == null || !active.id().equals(WILD_SHAPE))
+            return false;
+
+        List<String> forms = availableForms(progress);
+        if (forms.isEmpty()) {
+            player.sendMessage(Text.literal(progress.learned.isEmpty()
+                    ? "Kill animals to learn their forms."
+                    : "Unlock a learned form at an Attunement Table first.").formatted(Formatting.RED), true);
+            return true;
+        }
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        // Cycle: form 1, form 2, ..., random, form 1...
+        int next = forms.indexOf(data.getString(CHOSEN_FORM_KEY)) + 1;
+        if (!data.contains(CHOSEN_FORM_KEY)) {
+            next = 0;
+        }
+        if (next == forms.size()) {
+            data.remove(CHOSEN_FORM_KEY);
+            player.sendMessage(Text.literal("Wild Shape form: random").formatted(Formatting.DARK_GREEN), true);
+        } else {
+            data.putString(CHOSEN_FORM_KEY, forms.get(next));
+            player.sendMessage(Text.literal("Wild Shape form: " + Progression.entityName(forms.get(next)) + " ("
+                    + (next + 1) + "/" + forms.size() + ")").formatted(Formatting.DARK_GREEN), true);
+        }
+        return true;
+    }
+
+    /**
+     * Transforms the druid into their chosen form, or a random unlocked one.
      *
      * @return false if nothing happened, so no mana is spent.
      */
@@ -189,15 +217,20 @@ public class Druid {
             return false;
         }
 
-        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
-        NbtList list = data.getList(KILLED_ANIMALS_KEY, NbtElement.STRING_TYPE);
-        if (list.isEmpty()) {
-            player.sendMessage(Text.literal("You haven't slain any animals to take the form of yet.")
-                    .formatted(Formatting.RED), true);
+        ClassProgress progress = Progression.current(player);
+        List<String> forms = availableForms(progress);
+        if (forms.isEmpty()) {
+            player.sendMessage(Text.literal(progress.learned.isEmpty()
+                    ? "You haven't slain any animals to take the form of yet."
+                    : "Unlock a learned form at an Attunement Table first.").formatted(Formatting.RED), true);
             return false;
         }
 
-        String id = list.getString(player.getRandom().nextInt(list.size()));
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        String id = data.getString(CHOSEN_FORM_KEY);
+        if (!forms.contains(id)) {
+            id = forms.get(player.getRandom().nextInt(forms.size()));
+        }
         EntityType<?> type = Registries.ENTITY_TYPE.get(new Identifier(id));
         if (!(type.create(player.getWorld()) instanceof LivingEntity form)) {
             player.sendMessage(Text.literal("You can't recall that animal's form.").formatted(Formatting.RED), true);
@@ -207,7 +240,8 @@ public class Druid {
         if (!draylar.identity.api.PlayerIdentity.updateIdentity(player, null, form))
             return false;
 
-        data.putLong(FORM_EXPIRY_KEY, player.getWorld().getTime() + FORM_DURATION_TICKS);
+        data.putLong(FORM_EXPIRY_KEY,
+                player.getWorld().getTime() + DruidSkills.WILD_SHAPE.ticks(progress, "Duration"));
         player.sendMessage(Text.literal("You take the form of a ").append(form.getName()).append(".")
                 .formatted(Formatting.DARK_GREEN), true);
         return true;

@@ -20,19 +20,19 @@ These are the roots of each tree, all 9 mana:
 | Class | Special | What it does |
 |-|-|-|
 | Barbarian | Rage | Strength I for 8 s, up to Strength III for 12 s with ranks |
-| Bard | Animal Friends | Animals within 10 blocks attack monsters; untamed tameable animals become yours |
-| Cleric | Sanctuary | Mobs can't target you for 15 s. Party members within 16 blocks share it and get Regeneration I for 10 s |
-| Druid | Wild Shape | Become a random animal you've killed for 30 s (needs the Identity mod) |
-| Fighter | Super Regeneration | Regeneration V for 10 s |
+| Bard | Animal Friends | Unlocked animals within 10-16 blocks become companions that follow you and fight monsters, 3-6 at once (by rank) |
+| Cleric | Sanctuary | Mobs can't target you for 6-15 s. From rank II, party members nearby share it and get Regeneration (by rank) |
+| Druid | Wild Shape | Become an animal you've unlocked for 15-30 s (by rank; needs the Identity mod) |
+| Fighter | Super Regeneration | Regeneration V for 4-10 s (by rank) |
 | Monk | Flurry Rush | Blink-strike chain on the mob in the crosshair and hostiles near it: 3 hits on 1 target, up to 10 hits across 5 targets with ranks |
 | Paladin | Divine Judgment | A beam of holy light hits the mob you look at, up to 30 blocks away, and a shockwave hits hostiles around it; undead take more. Stronger with rank. Keeps the mana with nothing in sight |
-| Ranger | Arrow Storm | For 15 s your bow needs no arrows and fires itself at full draw |
-| Rogue | Vanish | Invisibility for 15 s |
-| Necromancer | Raise Dead | An allied zombie and skeleton rise and fight for you for 10 s |
+| Ranger | Arrow Storm | For 8-15 s your bow needs no arrows and fires itself, faster with rank |
+| Rogue | Vanish | Invisibility for 6-15 s (by rank) |
+| Necromancer | Raise Dead | 2-5 allied undead rise and fight for you for 10-20 s; a Bone Wyvern joins at rank V |
 | Warlock | Fire Breath | Breathe fire for 8-20 s, 3-7 blocks (by rank) |
-| Wizard | Arcane Explosion | A power 40 explosion centred on you that breaks no blocks. You get Resistance V for 5 s so it doesn't hurt you |
+| Wizard | Arcane Explosion | A blast centred on you that breaks no blocks, reaching 12-72 blocks by rank. You get Resistance V for 2-5 s so it doesn't hurt you |
 | Artificer | Arcane Armor | +8 armor and +4 armor toughness for 30 s |
-| Blood Hunter | Blood Control | Take control of the mob you're looking at, up to 30 blocks away, for 20 s (needs the Identity mod) |
+| Blood Hunter | Blood Control | Take control of the mob you're looking at for 8-20 s; range, duration and success chance grow with rank (needs the Identity mod) |
 | Alchemist | Transmute | Throw your held potion (or an unstable brew) as a cloud with stronger effects: buffs for allies, harm for mobs |
 
 Press O to see the rest of your tree.

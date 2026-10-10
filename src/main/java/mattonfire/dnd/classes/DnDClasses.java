@@ -216,6 +216,7 @@ public class DnDClasses implements ModInitializer {
 
                 mattonfire.dnd.entity.ModEntityTypes.registerEntityTypes();
                 mattonfire.dnd.entity.DragonSaves.register();
+                mattonfire.dnd.entity.BossSaves.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();

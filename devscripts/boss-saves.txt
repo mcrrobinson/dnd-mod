@@ -1,0 +1,99 @@
+# Saves against the Beholder's rays and the Lich's Frost Nova and Dread Presence
+# (docs/bosses/beholder.md#saving-throws, docs/bosses/lich.md).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/boss-saves.txt
+# Check run/logs/latest.log:
+# - Beholder: one "[D20] <player> <Slowing|Telekinetic|Enervation|Fear> ray ..." line per ray that hits.
+#   Rigged nat 20s: no Levitation, Slowness or dndclasses:frightened in ActiveEffects (Darkness 20 ticks after a
+#   Fear ray). Rigged nat 1s: the full effects.
+# - Lich Frost Nova: one "[D20] ... Frost Nova" line per nova; Health loss about 4 on a 20, 8 on a 1.
+# - Lich at 59%: "A wave of dread rolls out" in [CHAT] and exactly one "[D20] ... Dread Presence" line,
+#   dndclasses:frightened in ActiveEffects after the nat 1, none after the nat 20 (30% threshold).
+# Screenshots: run/screenshots/boss-save-*.png show the save lane.
+/time set day
+/weather clear
+/gamerule naturalRegeneration false
+/gamerule doMobLoot false
+/gamerule mobGriefing false
+/kill @e[type=!player]
+respawn
+wait 40
+closescreen
+/fill -20 149 -20 20 149 26 stone
+/fill -20 150 -20 20 164 26 air
+/gamemode survival
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+
+# ---- Beholder rays, every save a natural 20 ----
+/tp @s 0 150 6 180 0
+/dndclass forceroll @s 20 20 20 20 20 20 20 20 20 20 20 20
+/summon dndclasses:beholder 0 154 -6 {Rotation:[0f,0f]}
+wait 300
+clearchat
+screenshot boss-save-rays-pass
+/data get entity @s ActiveEffects
+/kill @e[type=dndclasses:beholder]
+/dndclass forceroll @s clear
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+
+# ---- Beholder rays, every save a natural 1 ----
+/tp @s 0 150 6 180 0
+/dndclass forceroll @s 1 1 1 1 1 1 1 1 1 1 1 1
+/summon dndclasses:beholder 0 154 -6 {Rotation:[0f,0f]}
+wait 300
+clearchat
+screenshot boss-save-rays-fail
+/data get entity @s ActiveEffects
+/kill @e[type=dndclasses:beholder]
+/dndclass forceroll @s clear
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+
+# ---- Lich Frost Nova (CON 15): stand next to it ----
+/tp @s 0 150 1 180 0
+/data get entity @s Health
+/dndclass forceroll @s 20
+/summon dndclasses:lich 0 150 -1 {NoPhylactery:1b,Rotation:[0f,0f]}
+wait 100
+/data get entity @s Health
+clearchat
+screenshot boss-save-nova
+/kill @e[type=dndclasses:lich]
+/kill @e[type=!player]
+/dndclass forceroll @s clear
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+
+# ---- Lich Dread Presence (WIS 15): at 59% everyone within 24 blocks saves once ----
+/tp @s 0 150 15 180 0
+/summon dndclasses:lich 0 150 -1 {NoPhylactery:1b,NoAI:1b,Rotation:[0f,0f]}
+wait 5
+/dndclass forceroll @s 1
+/data merge entity @e[type=dndclasses:lich,limit=1] {Health:177f}
+wait 5
+clearchat
+screenshot boss-save-dread-fail
+/data get entity @s ActiveEffects
+/effect clear @s dndclasses:frightened
+/dndclass forceroll @s 20
+/data merge entity @e[type=dndclasses:lich,limit=1] {Health:88f}
+wait 5
+screenshot boss-save-dread-pass
+/data get entity @s ActiveEffects
+/kill @e[type=!player]
+
+/dndclass forceroll @s clear
+/gamerule naturalRegeneration true
+/gamerule doMobLoot true
+/gamerule mobGriefing true
+/effect clear @s
+/gamemode creative
+quit

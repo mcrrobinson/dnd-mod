@@ -75,8 +75,23 @@ public class ClericSkills extends ClassSkills {
         return SANCTUARY_PARTY_REGEN[SANCTUARY.rank(player) - 1] - 1;
     }
 
+    /** How long Sanctuary's party Regeneration lasts; 25% longer for a Life Cleric (Disciple of Life). */
     public static int sanctuaryPartyRegenTicks(PlayerEntity player) {
-        return SANCTUARY_PARTY_REGEN_SECONDS[SANCTUARY.rank(player) - 1] * 20;
+        return discipleOfLife(player, SANCTUARY_PARTY_REGEN_SECONDS[SANCTUARY.rank(player) - 1] * 20);
+    }
+
+    /** Whether the player is a Life Cleric. */
+    public static boolean isLife(PlayerEntity player) {
+        return Progression.classOf(player) == DndCharacter.CLERIC && Progression.current(player).hasSubclass(LIFE);
+    }
+
+    /** Disciple of Life: a heal (or a healing effect's ticks) 25% bigger for a Life Cleric. */
+    private static float discipleOfLife(PlayerEntity player, float amount) {
+        return isLife(player) ? amount * DISCIPLE_OF_LIFE : amount;
+    }
+
+    private static int discipleOfLife(PlayerEntity player, int ticks) {
+        return isLife(player) ? Math.round(ticks * DISCIPLE_OF_LIFE) : ticks;
     }
 
     private static final int UNDEAD_KILL_BONUS_XP = 3;
@@ -89,6 +104,13 @@ public class ClericSkills extends ClassSkills {
     private static final float SMITE_MULTIPLIER = 1.5F;
     private static final float PROSPECTOR_CHANCE = 0.2F;
     private static final float RADIANCE_DAMAGE = 4.0F;
+
+    public static final String LIFE = "cleric.life";
+    public static final String FORGE = "cleric.forge";
+    /** Disciple of Life: the Life Domain's healing is multiplied by this. */
+    public static final float DISCIPLE_OF_LIFE = 1.25F;
+    /** Disciple of Life: Divine Intervention's overflow, as Absorption I for its 10 seconds. */
+    private static final int DISCIPLE_ABSORPTION_TICKS = 200;
 
     /** Server tick each player's Preserve Life is ready again at. */
     private static final Map<UUID, Integer> PRESERVE_LIFE_READY = new HashMap<>();
@@ -171,7 +193,7 @@ public class ClericSkills extends ClassSkills {
         switch (node.id()) {
             case "cleric.cure_wounds" -> {
                 for (LivingEntity ally : alliesNear(player, 8)) {
-                    ally.heal(CURE_WOUNDS_HEAL);
+                    ally.heal(discipleOfLife(player, CURE_WOUNDS_HEAL));
                     world.spawnParticles(ParticleTypes.HEART, ally.getX(), ally.getY() + 1.5, ally.getZ(), 4, 0.4,
                             0.3, 0.4, 0);
                 }
@@ -199,6 +221,11 @@ public class ClericSkills extends ClassSkills {
                     }
                     harmful.forEach(ally::removeStatusEffect);
                     ally.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200, 2));
+                    if (isLife(player)) {
+                        // A full heal can't be 25% bigger, so the extra becomes Absorption.
+                        ally.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION,
+                                DISCIPLE_ABSORPTION_TICKS, 0));
+                    }
                     world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, ally.getX(), ally.getY() + 1, ally.getZ(),
                             30, 0.5, 0.8, 0.5, 0.2);
                 }
@@ -233,7 +260,7 @@ public class ClericSkills extends ClassSkills {
             return;
         }
         PRESERVE_LIFE_READY.put(player.getUuid(), now + PRESERVE_LIFE_COOLDOWN);
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, discipleOfLife(player, 100), 1));
         effects(player, SoundEvents.ENTITY_PLAYER_LEVELUP, ParticleTypes.HEART, 8);
     }
 

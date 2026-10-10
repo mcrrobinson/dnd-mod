@@ -1,0 +1,124 @@
+# Short rest interruptions and refusals, then a full Wizard rest (Arcane Recovery: 2 charges).
+# A zombie 5 blocks away interrupts (and refuses a new rest), so do taking damage, moving,
+# the campfire going out, firing a power and attacking. A creeper 10 blocks away that isn't
+# targeting anyone doesn't.
+# Run: timeout 700 ./gradlew runClient -PdevRunDir=run-2 -PdevScript=devscripts/rests-short-interrupts.txt
+# Output: screenshots int-*.png and wizard-rest-done.png; [CHAT] lines in logs/latest.log
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule dndRests true
+/time set 1000
+/clear @s
+hotbar 0
+/fill -4 149 -4 4 149 8 minecraft:stone
+/fill -4 150 -4 4 155 8 minecraft:air
+/setblock 0 150 2 minecraft:campfire[lit=true]
+/kill @e[type=zombie]
+/dndclass set @s wizard
+/dndclass resetprogress @s
+/clear @s
+/effect clear @s
+/dndclass rest @s long
+/tp @s 0.5 150 0.5 0 35
+# Wait out any short rest cooldown left from an earlier script in this run dir
+wait 3600
+clearchat
+# A monster 5 blocks away
+clearchat
+sneak on
+use
+wait 5
+sneak off
+/summon minecraft:zombie 0.5 150 5.5 {NoAI:1b,PersistenceRequired:1b}
+wait 20
+screenshot int-monster
+sneak on
+use
+wait 20
+screenshot int-monster-refused
+sneak off
+/kill @e[type=zombie]
+wait 5
+# Taking damage
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 20
+/damage @s 1 minecraft:generic
+wait 20
+screenshot int-damage
+# Moving 2 blocks
+/tp @s 0.5 150 0.5 0 35
+clearchat
+sneak on
+use
+wait 5
+sneak off
+/tp @s 2.5 150 0.5 0 35
+wait 20
+screenshot int-moved
+# The campfire going out
+/tp @s 0.5 150 0.5 0 35
+wait 5
+clearchat
+sneak on
+use
+wait 5
+sneak off
+/setblock 0 150 2 minecraft:campfire[lit=false]
+wait 20
+screenshot int-fire
+/setblock 0 150 2 minecraft:campfire[lit=true]
+# An unlit campfire doesn't start a rest
+/setblock 0 150 2 minecraft:campfire[lit=false]
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 20
+screenshot int-unlit
+/setblock 0 150 2 minecraft:campfire[lit=true]
+# Firing a power
+clearchat
+sneak on
+use
+wait 5
+sneak off
+press key.dnd-classes.power-up
+wait 20
+screenshot int-power
+# Attacking (the campfire under the crosshair)
+/tp @s 0.5 150 0.5 0 35
+wait 5
+clearchat
+sneak on
+use
+wait 5
+sneak off
+attack
+wait 20
+screenshot int-attack
+# A full Wizard rest with a creeper 10 blocks away that targets nobody: Arcane Recovery gives 2
+/summon minecraft:creeper 0.5 150 8.5 {NoAI:1b,PersistenceRequired:1b}
+/dndclass charges @s 0
+/tp @s 0.5 150 -1.5 0 17
+wait 5
+/dndclass charges @s
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 300
+screenshot int-wizard-progress
+wait 310
+/dndclass charges @s
+screenshot wizard-rest-done
+/kill @e[type=creeper]
+quit

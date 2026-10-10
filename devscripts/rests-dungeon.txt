@@ -1,0 +1,60 @@
+# Dungeon rest rules at the dev world's natural crypt (see dungeon-place.txt; entrance about 247 983).
+# With the boss alive: a short rest is refused in an encounter room ("This place is too dangerous
+# to rest.") and allowed in the antechamber; /dungeon clear allows it everywhere.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevScript=devscripts/rests-dungeon.txt
+# Check: "[Rest]" lines and the /dungeon info [CHAT] lines in logs/latest.log; screenshots dungeon-rest-*.png
+wait 40
+closescreen
+/time set noon
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamemode spectator
+/tp @s 247 150 983
+wait 300
+# Wait out any short rest cooldown left from an earlier script in this run dir
+wait 3600
+/dungeon reset
+/dungeon info
+/gamemode creative
+/clear @s
+/dndclass rest @s long
+# An encounter room with the boss alive: refused
+/tp @s 263.5 43 966.5 0 35
+/setblock 263 43 968 minecraft:campfire[lit=true]
+/kill @e[type=!player,distance=..20]
+wait 40
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 20
+screenshot dungeon-rest-encounter
+# The antechamber: allowed (sneak + use again to get up)
+/tp @s 247.5 43 966.5 0 35
+/setblock 247 43 968 minecraft:campfire[lit=true]
+/kill @e[type=!player,distance=..20]
+wait 40
+sneak on
+use
+wait 25
+screenshot dungeon-rest-antechamber
+use
+wait 5
+sneak off
+# Cleared: allowed in the encounter room too
+/dungeon clear
+/tp @s 263.5 43 966.5 0 35
+wait 40
+sneak on
+use
+wait 25
+screenshot dungeon-rest-cleared
+use
+wait 5
+sneak off
+/dungeon reset
+/setblock 263 43 968 minecraft:air
+/setblock 247 43 968 minecraft:air
+wait 20
+quit

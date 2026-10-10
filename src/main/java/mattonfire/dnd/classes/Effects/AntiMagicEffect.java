@@ -10,8 +10,8 @@ import net.minecraft.text.Text;
 
 /**
  * Standing in a Beholder's anti-magic cone. While it lasts class specials don't work (the power-up,
- * the Warlock's fireballs, the Monk's double jump), and the magical buffs class powers give are
- * dispelled when it lands.
+ * the Warlock's fireballs, the Monk's double jump), magic items are inert ({@code Attunement.isActive}),
+ * and the magical buffs class powers give are dispelled when it lands.
  */
 public class AntiMagicEffect extends StatusEffect {
     public AntiMagicEffect(StatusEffectCategory category, int color) {
@@ -37,6 +37,10 @@ public class AntiMagicEffect extends StatusEffect {
         super.onApplied(entity, attributes, amplifier);
         if (entity.world.isClient) {
             return;
+        }
+        if (entity instanceof PlayerEntity player) {
+            // Items' bonuses come off at once; they come back on the next second tick after it ends.
+            mattonfire.dnd.magic.MagicEffects.updateAttributes(player);
         }
         for (StatusEffect magic : new StatusEffect[] {ModEffects.ARROW_STORM, ModEffects.MOB_REPEL,
                 ModEffects.ARMOR_BUFF, ModEffects.INVULNERABILITY}) {

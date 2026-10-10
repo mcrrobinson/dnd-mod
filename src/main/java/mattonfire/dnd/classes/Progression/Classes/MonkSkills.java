@@ -18,6 +18,8 @@ import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModItems;
+import mattonfire.dnd.classes.ManaManager;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -75,6 +77,17 @@ public class MonkSkills extends ClassSkills {
 
     private static final float QUIVERING_PALM_DAMAGE = 20.0F;
     private static final long QUIVERING_PALM_TICKS = 200;
+
+    public static final String OPEN_HAND = "monk.open_hand";
+    public static final String DRUNKEN_MASTER = "monk.drunken_master";
+    /** Open Hand Technique: each Flurry Rush hit slows the target (Slowness II) for this long... */
+    public static final int OPEN_HAND_SLOW_TICKS = 2 * 20;
+    /** ...and knocks it back this hard. */
+    public static final double OPEN_HAND_KNOCKBACK = 0.4;
+    /** Tipsy Sway: chance a melee hit misses a Drunken Master with no chestplate on. */
+    public static final float TIPSY_SWAY_CHANCE = 0.15F;
+    /** Tipsy Sway: mana pips a Drunken Master gets from a mug of Ale. */
+    public static final int ALE_MANA = 2;
 
     /**
      * Flurry Rush, the power-up: blink to the mob in the crosshair and the
@@ -165,6 +178,22 @@ public class MonkSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Tipsy Sway: the hit misses outright, with no damage, knockback or hurt flash.
+        ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> {
+            if (!(entity instanceof ServerPlayerEntity player) || !tipsySwayApplies(player, source)
+                    || player.getRandom().nextFloat() >= TIPSY_SWAY_CHANCE) {
+                return true;
+            }
+            ServerWorld world = (ServerWorld) player.getWorld();
+            world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE,
+                    SoundCategory.PLAYERS, 1.0F, 1.2F);
+            world.spawnParticles(ParticleTypes.CLOUD, player.getX(), player.getBodyY(0.5), player.getZ(), 6, 0.3, 0.4,
+                    0.3, 0.02);
+            mattonfire.dnd.classes.DnDClasses.LOGGER.debug("[Subclass] Tipsy Sway: {} dodged {}",
+                    player.getEntityName(), source.getName());
+            player.sendMessage(Text.literal("Tipsy Sway: the blow misses").formatted(Formatting.GOLD), true);
+            return false;
+        });
         // Unarmored Movement depends on the chestplate, so it can't be a plain AttributeBonus.
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTicks() % UNARMORED_CHECK_TICKS != 0)
@@ -269,6 +298,9 @@ public class MonkSkills extends ClassSkills {
         target.timeUntilRegen = 0; // A hit every 3 ticks, faster than the usual half-second of invulnerability.
         target.damage(player.getDamageSources().playerAttack(player), rush.damage);
         player.fallDistance = 0;
+        if (Progression.current(player).hasSubclass(OPEN_HAND)) {
+            openHandTechnique(player, target);
+        }
         rush.next++;
 
         world.spawnParticles(ParticleTypes.SWEEP_ATTACK, target.getX(), target.getBodyY(0.5), target.getZ(), 1, 0, 0,
@@ -285,6 +317,39 @@ public class MonkSkills extends ClassSkills {
                     0, 0, 0);
             rush.nextTick = world.getTime() + RUSH_HIT_INTERVAL_TICKS * 2L; // A beat before blinking back.
         }
+    }
+
+    /** Open Hand Technique: Slowness II for 2 seconds and a small push away from the Monk. */
+    private static void openHandTechnique(ServerPlayerEntity player, LivingEntity target) {
+        if (!target.isAlive())
+            return;
+        target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, OPEN_HAND_SLOW_TICKS, 1), player);
+        double dx = target.getX() - player.getX();
+        double dz = target.getZ() - player.getZ();
+        if (dx * dx + dz * dz > 1.0E-4) {
+            target.takeKnockback(OPEN_HAND_KNOCKBACK, -dx, -dz);
+        }
+    }
+
+    /** Whether Tipsy Sway could make this hit miss: a Drunken Master with no chestplate, hit in melee. */
+    public static boolean tipsySwayApplies(PlayerEntity player, DamageSource source) {
+        return Progression.classOf(player) == DndCharacter.MONK
+                && Progression.current(player).hasSubclass(DRUNKEN_MASTER)
+                && player.getEquippedStack(EquipmentSlot.CHEST).isEmpty()
+                && !source.isIn(DamageTypeTags.IS_PROJECTILE) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)
+                && source.getAttacker() instanceof LivingEntity attacker && attacker != player
+                && source.getSource() == attacker;
+    }
+
+    /** Tipsy Sway: a Drunken Master who drinks Ale gets 2 mana pips. Called from {@code AleItem}. */
+    public static void drankAle(ServerPlayerEntity player) {
+        if (Progression.classOf(player) != DndCharacter.MONK || !Progression.current(player).hasSubclass(DRUNKEN_MASTER))
+            return;
+        ManaManager.setMana(player, ManaManager.getMana(player) + ALE_MANA);
+        ManaManager.sync(player);
+        mattonfire.dnd.classes.DnDClasses.LOGGER.debug("[Subclass] Tipsy Sway: {} drank Ale, mana now {}",
+                player.getEntityName(), ManaManager.getMana(player));
+        player.sendMessage(Text.literal("Tipsy Sway: +" + ALE_MANA + " mana").formatted(Formatting.GOLD), true);
     }
 
     /** Puts the player next to the target, facing it, on a different side each hit. */

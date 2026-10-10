@@ -1,5 +1,5 @@
 # Races
-Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling or Dragonborn. A race is a small layer on top of your class. For now it changes a few body stats and adds its ability score bonuses; its traits arrive in later updates.
+Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling or Dragonborn. A race is a small layer on top of your class. For now it changes your body size and a few body stats, gives a few races head features, and adds its ability score bonuses; its traits arrive in later updates.
 
 ![The race picker](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/races/race-picker.png)
 
@@ -28,7 +28,40 @@ Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, G
 
 - **Stat modifiers** are live now. They're attribute modifiers on top of your class's base values, so a race and a class never overwrite each other, and switching class keeps them. Speed is a percentage of your class's base speed: a Barbarian Dwarf walks at 0.08 × 0.92 = 0.0736.
 - **Ability bonuses** are added to your [ability scores](../systems/ability-scores.md); `/dndclass sheet` lists them under the race's name.
-- **Traits** and **size** are planned. They're listed so you can choose, but they do nothing yet.
+- **Traits** are planned. They're listed so you can choose, but they do nothing yet.
+
+### Body size
+Your race sets your size: your hitbox, your eye height (the camera) and your model, which everyone else sees too. Sizes come from `scale`, `hitboxWidth` and `modelWidth` in `race_info.json`.
+
+| Size | Races | Standing hitbox | Sneaking hitbox | Eye height (standing / sneaking) | Model |
+|-|-|-|-|-|-|
+| Medium | Human, Elf, Tiefling | 0.6 × 1.8 | 0.6 × 1.5 | 1.62 / 1.27 | normal |
+| Medium | Half-Orc | 0.6 × 1.8 | 0.6 × 1.5 | 1.62 / 1.27 | 5% wider and deeper |
+| Stocky | Dwarf | 0.6 × 1.53 | 0.6 × 1.275 | 1.38 / 1.08 | 85% height, full width |
+| Small | Halfling, Gnome | 0.39 × 1.17 | 0.39 × 0.975 | 1.05 / 0.83 | 65% on every axis |
+| Tall | Dragonborn | 0.6 × 1.89 | 0.6 × 1.575 | 1.70 / 1.33 | 105% on every axis |
+
+- **Small folk crawl**: a sneaking Halfling or Gnome is under 1 block tall, so they fit through 1-high, 1-wide gaps. Once inside they stay crouched even if they let go of sneak, the same way a normal player stays crouched under a 1.5-high ceiling.
+- **Dwarves** are short enough that a 1.5-high gap forces them to crouch, and still as wide as anyone.
+- **Dragonborn** still fit 2-high tunnels.
+- Swimming, gliding and sleeping hitboxes scale the same way.
+- Small races also have 0.5 blocks less attack reach (see the table).
+- **Wild Shape and Blood Hunter control**: while you're in an Identity form, the form's own hitbox and model are used, not your race's.
+- The first-person hand isn't scaled.
+
+### Head features
+Four races have head features on their player model, so other players can tell them apart:
+
+| Race | Feature |
+|-|-|
+| Elf | long pointed ears, in your skin's colour |
+| Tiefling | two curved horns |
+| Half-Orc | two lower tusks |
+| Dragonborn | a snout and a frill of spines down the back of the head, red (Ember), white (Frost) or blue (Storm) |
+
+They're hidden while you wear anything on your head, and while you're invisible or in an Identity form.
+
+![All eight races side by side](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/race-sizes/races-side-by-side.png)
 
 ### Saving
 Your race and ancestry are saved on your player, so they survive logging out, dying and leaving the End. Join and respawn only re-apply the race's modifiers, so they never stack.
@@ -40,10 +73,12 @@ The race picker opens on its own. Your race is on the last page of the Class Gui
 `/dndrace get|set|list` (operators). See [Admin commands](../systems/admin-commands.md#races).
 
 ## Configuration
-`/gamerule dndRaces false` turns races off: nobody is prompted, and no race modifiers apply (saved races are kept and come back if you turn it on again). Turning it back on prompts every online player without a race. Default: `true`.
+`/gamerule dndRaces false` turns races off: nobody is prompted, and no race modifiers, sizes or head features apply (saved races are kept and come back if you turn it on again). Turning it back on prompts every online player without a race. Default: `true`.
 
 ## Known limitations
-- Only the stat modifiers and ability bonuses work. Traits, body sizes and the Dragonborn Breath Weapon come in later tickets.
+- Only the stat modifiers, body sizes, head features and ability bonuses work. Traits and the Dragonborn Breath Weapon come in later tickets.
+- Shadows aren't scaled, so a Halfling's shadow is a little big.
+- Head features are hidden under any helmet, so horns don't poke through.
 - You can't change race yourself. Ask an operator.
 
 ## For developers
@@ -56,4 +91,7 @@ The race picker opens on its own. Your race is on the last page of the Class Gui
   - `RaceAbilityBonuses` is the hook for ability scores: `forPlayer(player)` returns the active race's bonuses, `CONTRIBUTOR_ID` is `dndclasses:race`, and `register()` (called from `RaceLifecycle.register()`) adds the bonuses to the sheet and sets `onChange`, which runs on every race change, to `AbilityScores.invalidate`.
 - Storage: `mixin/PlayerEntityMixin` saves `DndRace` and `DndAncestry` ints in the player NBT, next to `DndClass`. The live value is a DataTracker byte (race in the low 4 bits, ancestry in the high 4) so every client knows every player's race, which racial sizes will need. `PlayerEntityExt.getDndRace/getDragonAncestry/setDndRace`; the setter also calls `calculateDimensions()`.
 - Client: `Client/PickerFlow` handles the race and class queries and decides which picker to show (race first). `Client/Hud/RaceSelectionHud` is the LibGui picker.
+- Size: `Race/RaceSize` reads the synced body race (`PlayerEntityExt.getBodyRace`, a second DataTracker byte that `RaceStats.apply` sets to the active race, so it's NONE while `dndRaces` is off and clients don't need the gamerule). `mixin/PlayerDimensionsMixin` scales `getDimensions` (by `hitboxWidth` × `scale`) and `getActiveEyeHeight` (by `scale`) at RETURN, and recalculates the hitbox in `onTrackedDataSet` when the body race changes on a client. `mixin/PlayerEntityRendererMixin` scales the model in `scale(...)` by `modelWidth`, `scale`, `modelWidth`. All three skip a player in an Identity form (`BloodHunterControl.hasIdentityForm`); Identity's own HEAD injects return first anyway.
+- Head features: `Client/Render/RaceFeatures` builds the cuboids (`TexturedModelData`, no registered layers) and draws them in head space. `RaceFeatures.renderHead(matrices, consumers, light, head, race, ancestry, skin)` is the shared entry point for settlement NPCs; `RaceFeatures.PlayerFeature` is the player's feature renderer. Ears use the skin texture; the rest use `textures/entity/race/features.png`, tinted per race.
+- DevScript: `sizes` logs every player's pose, hitbox and eye height on the client (and the integrated server); `walk on|off` holds the forward key. Devscripts: `devscripts/race-sizes.txt`, and `race-sizes-lan-host.txt` with `race-sizes-lan-guest.txt` for how another player sees you.
 - DevScript: while a script runs the race picker stays shut, because the dev-world player has a class but no race and every script would stall. `racepicker on` lets it open; `racepick <race> [ancestry]` sends a pick packet like clicking a button. Devscript: `devscripts/race-pick.txt`.

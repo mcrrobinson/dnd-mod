@@ -1,0 +1,75 @@
+# Fighter subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-fighter.txt
+# Expect in latest.log:
+#  1. Champion: a forced natural 18 attack roll logs "[D20] ... 18 ... -> CRITICAL"; the sheet shows "crit on 18-20"
+#  2. Battle Master control: a forced 18 is a plain hit (no CRITICAL), forced 19 still crits (class 19-20)
+#  3. Battle Master blocking a zombie's hits with a shield: debug.log "[Subclass] Combat Superiority: ... +1 mana",
+#     at most once every 5 s; none as a Champion
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/time set noon
+/kill @e[type=husk]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s fighter
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s fighter.champion
+/clear @s
+/give @s minecraft:wooden_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 20
+/dndclass sheet @s
+# --- 1. Champion ---
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f]}
+wait 30
+/dndclass forceroll @s 18
+attack
+wait 30
+/dndclass forceroll @s 17
+attack
+wait 30
+# Champion blocking: no mana back (mana spent first)
+press key.dnd-classes.power-up
+wait 2
+/give @s minecraft:shield
+hotbar 1
+/kill @e[type=husk]
+/summon minecraft:husk 2.5 150 3.7 {Rotation:[180f,0f],Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d},{Name:"minecraft:generic.movement_speed",Base:0d}]}
+holduse on
+wait 120
+holduse off
+/kill @e[type=husk]
+# --- 2. Battle Master ---
+/dndclass subclass @s fighter.battle_master
+/dndclass sheet @s
+hotbar 0
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f]}
+wait 30
+/dndclass forceroll @s 18
+attack
+wait 30
+/dndclass forceroll @s 19
+attack
+wait 30
+/kill @e[type=husk]
+# --- 3. Combat Superiority: spend the mana on Super Regeneration, then block ---
+press key.dnd-classes.power-up
+wait 2
+hotbar 1
+/summon minecraft:husk 2.5 150 3.7 {Rotation:[180f,0f],Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d},{Name:"minecraft:generic.movement_speed",Base:0d}]}
+holduse on
+wait 240
+screenshot subclass-fighter-block
+holduse off
+/kill @e[type=husk]
+quit

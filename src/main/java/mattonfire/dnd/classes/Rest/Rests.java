@@ -39,6 +39,7 @@ public final class Rests {
     public static void register() {
         DndRules.register();
         CampfireRest.register();
+        BedRest.register();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTicks() % 20 != 0) {
                 return;
@@ -80,10 +81,45 @@ public final class Rests {
 
     /** Why the player can't start a long rest now, or null if they can. */
     public static Text canLongRest(ServerPlayerEntity player) {
-        if (day(player) <= RestState.get(player).lastLongRestDay) {
+        return canLongRest(player, day(player));
+    }
+
+    /**
+     * Why the player can't take a long rest that started on in-game day {@code startedDay}, or
+     * null if they can. One long rest per day: {@code startedDay} must be after
+     * {@link RestState#lastLongRestDay}.
+     */
+    public static Text canLongRest(ServerPlayerEntity player, long startedDay) {
+        if (startedDay <= RestState.get(player).lastLongRestDay) {
             return Text.literal("You've already had a long rest today.");
         }
         return RestEvents.ALLOW_REST.invoker().refuse(player, RestKind.LONG);
+    }
+
+    /**
+     * Gives the player a long rest now if they can have one, with no sleeping or time skip
+     * (tavern rooms, party camps, a DM's "the party rests" tool).
+     *
+     * @return why it was refused, or null if the rest was given
+     */
+    public static Text tryLongRest(ServerPlayerEntity player, RestSource source) {
+        Text refusal = canLongRest(player);
+        if (refusal == null) {
+            complete(player, RestKind.LONG, source);
+        }
+        return refusal;
+    }
+
+    /** The in-game day of the player's last long rest, -1 for never. */
+    public static long lastLongRestDay(ServerPlayerEntity player) {
+        return RestState.get(player).lastLongRestDay;
+    }
+
+    /** Forgets the player's last long rest, so they can take another today ({@code /dndclass rest <player> allow}). */
+    public static void forgetLongRest(ServerPlayerEntity player) {
+        RestState state = RestState.get(player);
+        state.lastLongRestDay = -1;
+        state.save(player);
     }
 
     /** Applies a rest's benefits on its own, counting today as the day it started. */

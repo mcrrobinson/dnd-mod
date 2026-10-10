@@ -1,0 +1,102 @@
+# Bed long rests (solo, a Cleric): sleeping through the night refills everything; a second sleep the same day
+# says "You've already had a long rest today."; the next night works again; damage wakes you with no rest;
+# a Downed player gets no rest. `/dndclass rest @s long` + `allow` first, so rests left in the run dir by earlier runs don't count.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/rests-long-bed.txt
+# Check logs/latest.log for the [CHAT] lines after each "[DevScript]" step; screenshots
+# bed-asleep, bed-rested, bed-already, bed-woken, bed-downed.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/difficulty easy
+/gamerule doDaylightCycle true
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule playersSleepingPercentage 100
+/gamerule dndRests true
+/weather clear
+/kill @e[type=!minecraft:player]
+/fill 4 149 6 16 149 18 minecraft:stone
+/fill 4 150 6 16 154 18 minecraft:air
+/setblock 10 150 12 minecraft:red_bed[facing=south,part=foot]
+/setblock 10 150 13 minecraft:red_bed[facing=south,part=head]
+/clear @s
+/dndclass set @s cleric
+/dndclass rest @s long
+/dndclass rest @s allow
+/dndclass resetprogress @s
+/effect clear @s
+/attribute @s minecraft:generic.max_health base set 20
+/effect give @s minecraft:instant_health 1 5
+/tp @s 10.5 150 10.5 0 40
+wait 20
+# --- A: night of day 100, drained: sleeping through the night refills everything
+/time set 13000
+/time add 2400000
+/time query day
+/dndclass charges @s 0
+/dndclass mana @s 0
+/effect give @s minecraft:weakness 600 0
+/damage @s 8 minecraft:magic
+wait 5
+/dndclass charges @s
+/data get entity @s Health
+clearchat
+use
+wait 40
+clearchat
+screenshot bed-asleep
+wait 120
+/time query day
+/time query daytime
+/dndclass charges @s
+/data get entity @s Health
+/execute if entity @s[nbt={ActiveEffects:[{Id:18}]}]
+wait 10
+screenshot bed-rested
+# --- B: back to the night of day 100: already rested today
+/tp @s 10.5 150 10.5 0 40
+/time set 2413000
+/dndclass charges @s 0
+clearchat
+use
+wait 10
+screenshot bed-already
+wait 150
+/time query day
+/dndclass charges @s
+# --- C: the night of day 101 works again
+/tp @s 10.5 150 10.5 0 40
+/time set 2437000
+/dndclass charges @s 0
+use
+wait 160
+/time query day
+/dndclass charges @s
+# --- D: night of day 102, woken by damage: no rest
+/tp @s 10.5 150 10.5 0 40
+/time set 2461000
+/dndclass charges @s 0
+clearchat
+use
+wait 40
+/damage @s 1 minecraft:generic
+wait 5
+screenshot bed-woken
+wait 20
+/dndclass charges @s
+/time query day
+# --- E: Downed (same night, still no rest taken): no rest
+/tp @s 10.5 150 10.5 0 40
+/dndclass down @s
+/dndclass stabilise @s
+wait 10
+clearchat
+use
+wait 160
+screenshot bed-downed
+/dndclass charges @s
+/dndclass revive @s
+wait 20
+/time set 1000
+quit

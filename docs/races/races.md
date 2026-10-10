@@ -66,6 +66,9 @@ They're hidden while you wear anything on your head, and while you're invisible 
 ### Saving
 Your race and ancestry are saved on your player, so they survive logging out, dying and leaving the End. Join and respawn only re-apply the race's modifiers, so they never stack.
 
+### Homes
+Halflings and Dwarves have a home settlement where they get a welcome, a healing hearth, kin prices and kin trust: see [Racial homes](racial-homes.md).
+
 ## Where to find it
 The race picker opens on its own. Your race is on the last page of the Class Guidebook.
 

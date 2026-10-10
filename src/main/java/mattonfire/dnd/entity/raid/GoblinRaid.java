@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModSounds;
-import mattonfire.dnd.entity.DwarfGrudges;
+import mattonfire.dnd.entity.SettlementGrudges;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.HobbitEntity;
@@ -619,7 +619,7 @@ public class GoblinRaid {
             mattonfire.dnd.faction.FactionEvents.raidWon(player, world, new Identifier(DnDClasses.MOD_ID, this.kind.id),
                     mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
             if (this.kind == Settlement.Kind.FORTRESS) {
-                DwarfGrudges.forgive(player, this.rally, RADIUS);
+                SettlementGrudges.forgive(player, this.rally, RADIUS);
             }
             if (advancement != null) {
                 AdvancementProgress progress = player.getAdvancementTracker().getProgress(advancement);

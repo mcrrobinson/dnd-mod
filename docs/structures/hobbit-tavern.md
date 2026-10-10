@@ -12,6 +12,7 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
     - 2 emeralds: 1 rabbit stew
     - 3 emeralds: 1 cake
   - **Buys (for 1 emerald):** 20 wheat, 24 potatoes, 22 carrots, 10 brown mushrooms or 6 pumpkins.
+  - **Halflings** pay 25% less (kin prices, see [Racial homes](../races/racial-homes.md)): rabbit stew 1, cake 2, and the innkeeper takes 15 wheat, 18 potatoes, 16 carrots, 7 mushrooms or 4 pumpkins. One-emerald trades stay at 1.
 - Right-clicking it with a finished bounty notice pays the bounty out.
 - **Reputation** ([Factions](../systems/factions.md)): each customer sees prices for their own standing with the hobbits: +50% at Unfriendly (rounded up, at least +1), -10% at Friendly, -25% at Honored, -40% at Exalted, never below 1. A cake costs 5 emeralds at Unfriendly and 2 at Exalted; the innkeeper wants 30 wheat at Unfriendly and 12 at Exalted. A player Hostile with the hobbits gets "<name> won't serve you.": no trades and no bounty payouts.
 

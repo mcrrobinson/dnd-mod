@@ -22,6 +22,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule (body sizes and head features: PR #130)
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages) and Dwarves (Dwarven Fortresses): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience (PR #135)
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does

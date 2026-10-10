@@ -82,7 +82,8 @@ import net.minecraft.util.Identifier;
  * {@link SlotActionType} name (default {@code pickup}; {@code quick_move} = shift-click, {@code swap} with
  * button 0-8 = number key, {@code throw} = Q)</li>
  * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory); on a merchant screen it
- *     also logs each trade with the price this player is shown ({@code trade <i>: ...})</li>
+ *     also logs each trade with the price this player is shown, after every modifier ({@code trade <i>: <price>
+ *     [+ <second>] -> <result> (base <count>, special <n>)})</li>
  * <li>{@code button <id>} clicks a screen button such as an enchanting option (0-2)</li>
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre

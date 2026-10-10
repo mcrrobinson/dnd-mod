@@ -89,7 +89,7 @@ Mountain Dwarves only spawn inside dwarven fortresses, including the dark halls,
 
 ## For developers
 - `entity/MountainDwarfEntity`: stats, equipment (`equip`), names, the king (`crown`), bartering and anger. It's `Angerable`; `setTarget` refuses players it has no grudge against, since the mod adds player-targeting goals to every mob.
-- `entity/DwarfGrudges`: the chest, barrel and gold block hooks (`witness`) and `forgive`, which `entity/raid/GoblinRaid` calls when a fortress raid is won.
+- `entity/SettlementGrudges`: the chest, barrel and gold block hooks (the `MOUNTAIN_DWARVES` rules, which call `MountainDwarfEntity.provoke`, with Dwarf kin trust from [Racial homes](../races/racial-homes.md)) and `forgive`, which `entity/raid/GoblinRaid` calls when a fortress raid is won.
 - Spawn cap: `ModSpawns.canDwarfSpawn`. Loot: `loot_tables/entities/mountain_dwarf.json`, `loot_tables/gameplay/dwarf_barter.json` and `dwarf_barter_honored.json`.
 - Reputation: `shouldAngerAt` is also true for players Hostile with the dwarves; barter refusal, second roll and table, and the witness range come from `faction/TierEffects`.
 - Devscripts: `mountain-dwarf-behaviour.txt`, `mountain-dwarf-grudge.txt`, `mountain-dwarf-lineup.txt`.

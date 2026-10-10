@@ -121,6 +121,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
                 return ActionResult.CONSUME;
             }
             this.setCustomer(player);
+            this.prepareOffersFor(player);
             this.sendOffers(player, this.getDisplayName(), 1);
         }
         return ActionResult.success(this.world.isClient);
@@ -137,25 +138,36 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         return true;
     }
 
+    /**
+     * Sets this customer's special prices: cleared, then each price modifier adds its share of the base
+     * price, so they stack (reputation tier, then the kin discount).
+     */
+    private void prepareOffersFor(PlayerEntity player) {
+        TradeOfferList offers = this.getOffers();
+        offers.forEach(TradeOffer::clearSpecialPrice);
+        this.applyReputationPrices(player, offers);
+        KinPrices.apply(this, player, offers);
+    }
+
     // ---- Merchant ----
 
     @Override
     public void setCustomer(@Nullable PlayerEntity customer) {
-        this.customer = customer;
-        if (!this.world.isClient) {
-            this.applyReputationPrices(customer);
+        if (customer == null && this.offers != null) {
+            this.offers.forEach(TradeOffer::clearSpecialPrice);
         }
+        this.customer = customer;
     }
 
     /**
      * Reputation price modifier: each customer sees prices for their own standing with the hobbits
-     * (Unfriendly +50%, Friendly -10%, Honored -25%, Exalted -40%), set as the offers' special price
-     * the way vanilla villagers apply gossip, and cleared when the customer leaves.
+     * (Unfriendly +50%, Friendly -10%, Honored -25%, Exalted -40%), added to the offers' special price
+     * the way vanilla villagers apply gossip. {@link #prepareOffersFor} clears the prices first, and they're
+     * cleared again when the customer leaves.
      */
-    private void applyReputationPrices(@Nullable PlayerEntity customer) {
-        ReputationTier tier = customer != null ? TierEffects.tierWith(customer, this) : ReputationTier.NEUTRAL;
-        for (TradeOffer offer : this.getOffers()) {
-            offer.clearSpecialPrice();
+    private void applyReputationPrices(PlayerEntity customer, TradeOfferList offers) {
+        ReputationTier tier = TierEffects.tierWith(customer, this);
+        for (TradeOffer offer : offers) {
             offer.increaseSpecialPrice(TierEffects.reputationPriceDelta(tier, offer.getOriginalFirstBuyItem().getCount()));
         }
     }

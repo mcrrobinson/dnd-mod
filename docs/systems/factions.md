@@ -19,8 +19,8 @@ Hobbits, Mountain Dwarves and goblins remember what you do. Each player has a st
 
 | Faction | Members | Settlements | Start | Rivals |
 |-|-|-|-|-|
-| Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral) | goblins -0.5 |
-| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral) | goblins -0.5 |
+| Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral); Halflings 150 (Friendly) | goblins -0.5 |
+| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral); Dwarves 150, Gnomes 100 (Friendly) | goblins -0.5 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5 |
 
 - **Sources**:
@@ -145,16 +145,16 @@ The entity tags `dndclasses:faction/<id>` and structure tags `dndclasses:faction
 
 ## Known limitations
 - Not yet: Friendly's earlier raid horn, Honored's extra innkeeper trade and free long rest, Exalted's double raid loot, the Honored barrel exception at the hoard, Exalted dwarves joining your fights and identifying items, and goblin aggro for opening a camp chief's chest. Quest and dialogue unlocks come with the quest tickets.
-- Hobbit gift cooldowns are per hobbit: the next gift waits for the cooldown of the player who got the last one.
+- Hobbit gift cooldowns are per hobbit: each gift starts that player's wait, and the next player gets a gift once their own wait has passed since it (or the last one's wait is over).
 - No Journal screen yet; the client keeps the synced values for it.
 - Bounty boards outside every faction's settlements credit every faction with a `bounties` reward.
 
 ## For developers
 - Code: `mattonfire.dnd.faction`. `Faction` (record + JSON parser), `Factions` (server data reload listener), `ReputationTier`, `Reputation` (API and storage), `FactionEvents` (kill/hit hooks, decay tick, and the calls below), `RepCommand`, `client/ClientReputation`.
 - API: `Reputation.get(player, faction)`, `tier(...)`, `factionOf(entity)`, `add(player, faction, delta, Source)`, and `change(player, source).add(...).add(..., Cap, limit).apply()` for one event touching several factions (one action-bar line).
-- Hooks in existing code: `FactionEvents.raidWon` (`GoblinRaid.win`), `bountyClaimed` (`BountyRewards.claim`), `traded` (`InnkeeperEntity.trade`, `MountainDwarfEntity` barter), `theftWitnessed` (`MountainDwarfEntity.witness`). The crowned dwarf gets the command tag `dndclasses.role.dwarf_king`.
+- Hooks in existing code: `FactionEvents.raidWon` (`GoblinRaid.win`), `bountyClaimed` (`BountyRewards.claim`), `traded` (`InnkeeperEntity.trade`, `MountainDwarfEntity` barter), `theftWitnessed` (`SettlementGrudges.witness`). The crowned dwarf gets the command tag `dndclasses.role.dwarf_king`.
 - Hooks: `Reputation.raceOf` gives the player's active race as `dndclasses:<race>` (`RaceLifecycle.activeRaceOf`, null with no race or `dndRaces` off) for `start_by_race`, and `Reputation.ignored` is `DungeonMaster::isDm`, so [Dungeon Masters](dungeon-master.md) don't gain or lose reputation.
 - Storage: player persistent data, `DndReputation` (faction id to value; missing = start) and `DndRepCaps` (`Day`, `DecayDay` and today's capped gains). Copied on respawn by `ClassLifecycle`.
 - Sync: S2C `dndclasses:reputation_sync` (count, then id, name key, colour, value per faction) on join, respawn, data pack reload and every change. The client logs `[Reputation] client sync: [...]`.
-- Tier effects: `TierEffects` holds every number and rule (`tierWith(player, npc|type|faction)`, `reputationPriceDelta`, `giftCooldown`, `refusesBarter`, `secondBarterRollChance`, `honoredBarter`, `witnessRange`, `goblinMayTarget`, `provoked`, `isMarked`, `raidChance`, `dcShift`). The NPCs only ask it: `InnkeeperEntity.applyReputationPrices` (special price per customer in `setCustomer`, cleared when they leave; other price modifiers stack with `increaseSpecialPrice`), `BountyBoardBlock.shuns`, `HobbitEntity` (flee goal, gift cooldown), `MountainDwarfEntity` (`shouldAngerAt`, barter, `witness` range), `GoblinWarriorEntity` (target goal predicate, `setTarget` filter, stand-down check; the Warlord inherits it and rallies its kin through `rallyAgainst`), `GoblinRaid.nearestDefender`, `GoblinRaids.maybeStartRaids`, `Persuasion.dc(player, target[, base])` (the hook for dialogue checks).
+- Tier effects: `TierEffects` holds every number and rule (`tierWith(player, npc|type|faction)`, `reputationPriceDelta`, `giftCooldown`, `refusesBarter`, `secondBarterRollChance`, `honoredBarter`, `witnessRange`, `goblinMayTarget`, `provoked`, `isMarked`, `raidChance`, `dcShift`). The NPCs only ask it: `InnkeeperEntity.applyReputationPrices` (special price per customer, added in `prepareOffersFor` after the prices are cleared and before `KinPrices.apply`, so the two stack; cleared when the customer leaves), `BountyBoardBlock.shuns`, `HobbitEntity` (flee goal, gift cooldown), `MountainDwarfEntity` (`shouldAngerAt`, barter), `SettlementGrudges` (the dwarves' witness range), `GoblinWarriorEntity` (target goal predicate, `setTarget` filter, stand-down check; the Warlord inherits it and rallies its kin through `rallyAgainst`), `GoblinRaid.nearestDefender`, `GoblinRaids.maybeStartRaids`, `Persuasion.dc(player, target[, base])` (the hook for dialogue checks).
 - Tests: `devscripts/rep-tiers.txt` (prices, refusals, flee, gifts, dwarf aggro, witness range, goblin targeting, Persuasion DC; the Persuasion part needs a test data pack faction `dndtest:villagers` with `"members": "minecraft:villager"` in the world), `rep-tiers-raid.txt` (raiders at Neutral and Hostile), `rep-tiers-barter.txt` (refusals and second rolls), `devscripts/faction-rep.txt` (kills, cap, Warlord, raid, death), `faction-rep-relog.txt`, `faction-rep-sources.txt` (trades, bounties, barter, hoard, King, betrayal, decay).

@@ -1,6 +1,7 @@
 package mattonfire.dnd.entity;
 
 import mattonfire.dnd.faction.TierEffects;
+import mattonfire.dnd.world.gen.HomeBonuses;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -74,7 +75,12 @@ public class HobbitEntity extends PathAwareEntity {
 
     @Nullable
     private BlockPos home;
+    /** The wait a hobbit without a saved {@code GiftWait} assumes (the Neutral 5 minutes). */
+    private static final int DEFAULT_GIFT_WAIT = 20 * 60 * 5;
+    /** Ticks left of the wait set by the last gift (that player's wait). */
     private int giftCooldown;
+    /** The wait the last gift set, so {@code giftWait - giftCooldown} is the time since it. */
+    private int giftWait = DEFAULT_GIFT_WAIT;
 
     public HobbitEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -193,17 +199,20 @@ public class HobbitEntity extends PathAwareEntity {
             return ActionResult.SUCCESS;
         }
         this.getLookControl().lookAt(player);
-        // The wait before the next gift depends on how the hobbits feel about this player; Hostile gets none.
-        int cooldown = TierEffects.giftCooldown(TierEffects.tierWith(player, this));
+        // The wait before the next gift depends on how the hobbits feel about this player (Hostile gets none),
+        // and Halflings wait less. Each asker needs their own wait to have passed since the last gift.
+        int tierWait = TierEffects.giftCooldown(TierEffects.tierWith(player, this));
+        int cooldown = tierWait < 0 ? tierWait : HomeBonuses.giftCooldown(player, tierWait);
         if (cooldown < 0) {
             player.sendMessage(Text.translatable("entity.dndclasses.hobbit.no_gift", this.getDisplayName())
                     .formatted(net.minecraft.util.Formatting.RED), true);
         }
-        if (cooldown < 0 || this.giftCooldown > 0) {
+        if (cooldown < 0 || this.giftCooldown > 0 && this.giftWait - this.giftCooldown < cooldown) {
             this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
             return ActionResult.CONSUME;
         }
         this.giftCooldown = cooldown;
+        this.giftWait = cooldown;
         ItemStack gift = new ItemStack(SNACKS[this.random.nextInt(SNACKS.length)], 1 + this.random.nextInt(3));
         if (!player.giveItemStack(gift)) {
             player.dropItem(gift, false);
@@ -245,6 +254,7 @@ public class HobbitEntity extends PathAwareEntity {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("Variant", this.getVariant());
         nbt.putInt("GiftCooldown", this.giftCooldown);
+        nbt.putInt("GiftWait", this.giftWait);
         if (this.home != null) {
             nbt.put("Home", NbtHelper.fromBlockPos(this.home));
         }
@@ -255,6 +265,7 @@ public class HobbitEntity extends PathAwareEntity {
         super.readCustomDataFromNbt(nbt);
         this.dataTracker.set(VARIANT, Math.floorMod(nbt.getInt("Variant"), VARIANTS));
         this.giftCooldown = nbt.getInt("GiftCooldown");
+        this.giftWait = nbt.contains("GiftWait") ? nbt.getInt("GiftWait") : DEFAULT_GIFT_WAIT;
         if (nbt.contains("Home")) {
             this.setHome(NbtHelper.toBlockPos(nbt.getCompound("Home")));
         }

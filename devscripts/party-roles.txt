@@ -1,0 +1,32 @@
+# Party roles: class picker role icons and tooltip, then the guidebook's Your role and Obstacles pages.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/party-roles.txt
+# Expect screenshots party-roles-picker (role icon on every button, Barbarian tooltip with Tank / Damage),
+# party-roles-guidebook-role (Your role: Tank, secondary Damage) and party-roles-guidebook-obstacles.
+wait 40
+closescreen
+/gamemode creative
+/dndclass set @s none
+wait 30
+hover 0 -30
+wait 5
+screenshot party-roles-picker
+hover 100 10
+wait 5
+screenshot party-roles-picker-2
+closescreen
+/clear @s
+/dndclass set @s barbarian
+wait 20
+hotbar 0
+use
+wait 10
+click 31 47
+click 31 47
+click 31 47
+wait 5
+screenshot party-roles-guidebook-role
+click 31 47
+wait 5
+screenshot party-roles-guidebook-obstacles
+closescreen
+quit

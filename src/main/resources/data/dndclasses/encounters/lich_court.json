@@ -1,0 +1,9 @@
+{
+  "name": "Lich Court",
+  "difficulty": "deadly",
+  "spread": 5,
+  "spawns": [
+    {"entity": "dndclasses:lich", "count": 1},
+    {"entity": "minecraft:skeleton", "count": 4}
+  ]
+}

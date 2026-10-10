@@ -1,0 +1,8 @@
+{
+  "name": "Restless Dead",
+  "difficulty": "medium",
+  "spread": 6,
+  "spawns": [
+    {"entity": "minecraft:zombie", "count": 6}
+  ]
+}

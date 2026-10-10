@@ -8,6 +8,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Race.DndRace;
+import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.dm.DungeonMaster;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.Entity;
@@ -39,16 +42,16 @@ public final class Reputation {
     static final String CAPS_KEY = "DndRepCaps";
 
     /**
-     * Area 6 (races) hook: the player's race id, for {@code start_by_race}. Null until races land;
-     * the races ticket sets this.
+     * The player's race id for {@code start_by_race} ({@code dndclasses:dwarf}), or null without a race
+     * or with {@code dndRaces} off.
      */
-    public static Function<ServerPlayerEntity, Identifier> raceOf = player -> null;
+    public static Function<ServerPlayerEntity, Identifier> raceOf = player -> {
+        DndRace race = RaceLifecycle.activeRaceOf(player);
+        return race == DndRace.NONE ? null : new Identifier(DnDClasses.MOD_ID, race.id());
+    };
 
-    /**
-     * Players whose actions don't change reputation. DM mode (PR #121, {@code DungeonMaster.isDm})
-     * sets this once both are merged; /rep set still works on them.
-     */
-    public static Predicate<ServerPlayerEntity> ignored = player -> false;
+    /** Players whose actions don't change reputation: Dungeon Masters. /rep set still works on them. */
+    public static Predicate<ServerPlayerEntity> ignored = DungeonMaster::isDm;
 
     /** What caused a change. Rivals only react to gains from sources that allow it. */
     public enum Source {

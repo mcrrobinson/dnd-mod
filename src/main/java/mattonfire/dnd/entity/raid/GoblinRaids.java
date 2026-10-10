@@ -128,7 +128,8 @@ public class GoblinRaids extends PersistentState {
             return;
         }
         for (ServerPlayerEntity player : world.getPlayers()) {
-            if (player.isSpectator() || player.isCreative() || world.random.nextInt(RAID_CHANCE) != 0) {
+            if (player.isSpectator() || player.isCreative() || mattonfire.dnd.dm.DungeonMaster.isDm(player)
+                    || world.random.nextInt(RAID_CHANCE) != 0) {
                 continue;
             }
             Optional<Settlement> settlement = Settlement.find(world, player.getBlockPos(), 2, NEAR_SETTLEMENT);

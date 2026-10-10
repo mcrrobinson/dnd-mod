@@ -87,7 +87,7 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
 | `members` (required) | Entity type id, entity type tag (`#ns:path`) or command tag (`@tag`) |
 | `settlements` | Structure id or structure tag (`#ns:path`): raid wins and bounty claims |
 | `start` | Standing before the player has done anything |
-| `start_by_race` | `{"<race id>": n}` starting standing by race (used once races land) |
+| `start_by_race` | `{"<race id>": n}` starting standing by [race](../races/races.md), e.g. `{"dndclasses:dwarf": 100}` |
 | `rivals` | `{"<faction>": factor}`, factor -1..0: share of each gain they lose |
 | `decay_per_day` | Points a negative standing recovers per in-game day |
 | `hit_member` / `kill_member` | Change for hitting / killing a member |
@@ -108,13 +108,12 @@ The entity tags `dndclasses:faction/<id>` and structure tags `dndclasses:faction
 - Tiers have no effects yet (prices, hostility, raids, quests come in a later ticket).
 - No Journal screen yet; the client keeps the synced values for it.
 - Bounty boards outside every faction's settlements credit every faction with a `bounties` reward.
-- Dungeon Masters (PR #121) still gain and lose reputation until both are merged and `Reputation.ignored` is set.
 
 ## For developers
 - Code: `mattonfire.dnd.faction`. `Faction` (record + JSON parser), `Factions` (server data reload listener), `ReputationTier`, `Reputation` (API and storage), `FactionEvents` (kill/hit hooks, decay tick, and the calls below), `RepCommand`, `client/ClientReputation`.
 - API: `Reputation.get(player, faction)`, `tier(...)`, `factionOf(entity)`, `add(player, faction, delta, Source)`, and `change(player, source).add(...).add(..., Cap, limit).apply()` for one event touching several factions (one action-bar line).
 - Hooks in existing code: `FactionEvents.raidWon` (`GoblinRaid.win`), `bountyClaimed` (`BountyRewards.claim`), `traded` (`InnkeeperEntity.trade`, `MountainDwarfEntity` barter), `theftWitnessed` (`MountainDwarfEntity.witness`). The crowned dwarf gets the command tag `dndclasses.role.dwarf_king`.
-- Stub hooks for other areas: `Reputation.raceOf` (races, for `start_by_race`) and `Reputation.ignored` (DM mode).
+- Hooks: `Reputation.raceOf` gives the player's active race as `dndclasses:<race>` (`RaceLifecycle.activeRaceOf`, null with no race or `dndRaces` off) for `start_by_race`, and `Reputation.ignored` is `DungeonMaster::isDm`, so [Dungeon Masters](dungeon-master.md) don't gain or lose reputation.
 - Storage: player persistent data, `DndReputation` (faction id to value; missing = start) and `DndRepCaps` (`Day`, `DecayDay` and today's capped gains). Copied on respawn by `ClassLifecycle`.
 - Sync: S2C `dndclasses:reputation_sync` (count, then id, name key, colour, value per faction) on join, respawn, data pack reload and every change. The client logs `[Reputation] client sync: [...]`.
 - Tests: `devscripts/faction-rep.txt` (kills, cap, Warlord, raid, death), `faction-rep-relog.txt`, `faction-rep-sources.txt` (trades, bounties, barter, hoard, King, betrayal, decay).

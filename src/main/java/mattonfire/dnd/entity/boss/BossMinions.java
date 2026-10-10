@@ -20,4 +20,12 @@ public final class BossMinions {
     public static boolean isMinion(Entity entity) {
         return entity.getCommandTags().contains(TAG);
     }
+
+    /**
+     * True for mobs that drop nothing and earn nothing: boss minions and mobs from {@code "loot": false}
+     * encounters ({@link mattonfire.dnd.dm.encounter.EncounterSpawner#NO_LOOT_TAG}).
+     */
+    public static boolean givesNothing(Entity entity) {
+        return isMinion(entity) || mattonfire.dnd.dm.encounter.EncounterSpawner.isNoLoot(entity);
+    }
 }

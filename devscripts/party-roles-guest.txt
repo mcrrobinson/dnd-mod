@@ -1,0 +1,61 @@
+# Party roles HUD test (guest side, Paladin = Tank): joins party-roles-host.txt's LAN game, keeps accepting
+# the party invite, then screenshots its own party HUD (the host shows with a leader star).
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25631 -PdevScript=devscripts/party-roles-guest.txt
+wait 40
+closescreen
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+/party list
+closescreen
+hud on
+wait 20
+screenshot party-roles-guest-1
+wait 60
+screenshot party-roles-guest-2
+quit

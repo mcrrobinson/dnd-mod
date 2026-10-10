@@ -27,7 +27,7 @@ public abstract class LavaDamageMixin {
 
         // Check if the entity is in lava
 
-        // The Ranger's Fireproof passive removes the extra lava damage.
+        // The Ranger's Planar Hardiness passive removes the extra lava damage.
         if (entity.isInLava() && !world.isClient && (((PlayerEntityExt) entity).getDndClass() == DndCharacter.RANGER)
                 && !(entity instanceof PlayerEntity player && Progression.hasPassive(player, "ranger.fireproof"))) {
 

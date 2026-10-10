@@ -1,0 +1,19 @@
+# DM toolkit, LAN guest. Run with -PdevRunDir=run-2 -PdevServer=localhost:25617 while dm-toolkit-host.txt runs.
+# Expect: dm-guest-veiled.png shows the empty platform (the DM stands 3 blocks ahead, Test passed proves it);
+# dm-guest-unveiled.png shows the DM.
+wait 60
+closescreen
+/tp @s 1000 151 1000 0 0
+wait 60
+/execute if entity @a[tag=host,distance=..5]
+hud off
+screenshot dm-guest-veiled
+hud on
+/execute as @a[tag=host] run dm veil off
+wait 40
+hud off
+screenshot dm-guest-unveiled
+hud on
+/execute as @a[tag=host] run dm veil on
+wait 40
+quit

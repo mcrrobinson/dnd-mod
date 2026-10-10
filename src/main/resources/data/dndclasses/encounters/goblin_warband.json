@@ -1,0 +1,9 @@
+{
+  "name": "Goblin Warband",
+  "difficulty": "deadly",
+  "spread": 5,
+  "spawns": [
+    {"entity": "dndclasses:goblin_warrior", "count": 5},
+    {"entity": "dndclasses:goblin_warlord", "count": 1}
+  ]
+}

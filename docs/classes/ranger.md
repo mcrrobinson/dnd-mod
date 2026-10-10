@@ -33,18 +33,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Rangers get 2 extra XP for each hostile mob killed with an arrow, or 4 if it was 20 or more blocks away.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Arrow Storm | Root | Active | 0 | 9 | The special above; 4 ranks |
 | Sharpshooter | Hunter | Passive | 1 | | Your arrows deal 25% more damage |
 | Volley | Hunter | Active | 1 | 4 | Fire a fan of 5 critical arrows, 10 degrees apart, where you're looking. You can't pick them up |
 | Hunter's Mark | Hunter | Passive | 1 | | Your arrows make targets glow for 10 s, and glowing targets take 20% more damage from all your attacks |
-| Fireproof | Survivalist | Passive | 1 | | Removes the 20-a-tick lava damage. Lava still burns like normal |
-| Snare | Survivalist | Active | 1 | 3 | Hostile mobs within 6 blocks get Slowness V for 5 s |
-| Natural Explorer | Survivalist | Passive | 1 | | 10% faster movement |
+| Planar Hardiness | Horizon Walker | Passive | 1 | | Removes the 20-a-tick lava damage. Lava still burns like normal |
+| Snare | Horizon Walker | Active | 1 | 3 | Hostile mobs within 6 blocks get Slowness V for 5 s |
+| Natural Explorer | Horizon Walker | Passive | 1 | | 10% faster movement |
 | Rain of Arrows | Capstone | Active | 2 | 9 | Arrows fall on a 6-block radius around the block you're looking at (up to 30 blocks away) for 3 s, 2 arrows a tick, 4 damage each. They don't hurt you |
 
 Hunter's Mark doesn't boost the arrow that applies the mark, only the hits after it. Rain of Arrows needs something to aim at: if you're looking at the sky, nothing happens and you keep your mana.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Hunter | Right | Sharpshooter (first node, open to both), Volley, Hunter's Mark | **Colossus Slayer**: your first arrow hit each second on a target below full health deals +3 damage |
+| Horizon Walker | Left | Planar Hardiness (first node, open to both), Snare, Natural Explorer | **Planar Warrior**: in the Nether and the End you deal 20% more damage and have Speed I |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> ranger` (see [Admin commands](../systems/admin-commands.md)).

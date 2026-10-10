@@ -24,18 +24,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Barbarians get 3 extra XP for each hostile mob they kill in melee.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Rage | Root | Active | 0 | 9 | Strength I for 8 s / Strength II for 10 s / Strength II for 12 s / Strength III for 12 s (ranks I-IV) |
-| Bloodlust | Berserker | Passive | 1 | | Heal 1 heart for every kill |
-| War Cry | Berserker | Active | 1 | 3 | Hostile mobs within 8 blocks get Weakness I and Slowness II for 6 s |
-| Fuelled by Rage | Berserker | Passive | 1 | | 30% more damage while below half health |
-| Thick Skin | Juggernaut | Passive | 1 | | +4 armor |
-| Ground Slam | Juggernaut | Active | 1 | 5 | 6 damage to everything within 5 blocks except players and your pets, knocking them back and up |
-| Unstoppable | Juggernaut | Passive | 1 | | +50% knockback resistance, and Slowness is removed every second |
+| Bloodlust | Path of the Berserker | Passive | 1 | | Heal 1 heart for every kill |
+| War Cry | Path of the Berserker | Active | 1 | 3 | Hostile mobs within 8 blocks get Weakness I and Slowness II for 6 s |
+| Fuelled by Rage | Path of the Berserker | Passive | 1 | | 30% more damage while below half health |
+| Bear Hide | Path of the Totem Warrior | Passive | 1 | | +4 armor |
+| Ground Slam | Path of the Totem Warrior | Active | 1 | 5 | 6 damage to everything within 5 blocks except players and your pets, knocking them back and up |
+| Unstoppable | Path of the Totem Warrior | Passive | 1 | | +50% knockback resistance, and Slowness is removed every second |
 | Titan | Capstone | Active | 2 | 9 | Strength III, Resistance I and Regeneration I for 20 s |
 
 Each branch unlocks in order from the root, and Titan needs the end of either branch. Ground Slam hits villagers and other people's animals too, so check who's standing next to you.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Path of the Berserker | Right | Bloodlust (first node, open to both), War Cry, Fuelled by Rage | **Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage) |
+| Path of the Totem Warrior | Left | Bear Hide (first node, open to both), Ground Slam, Unstoppable | **Bear Totem Spirit**: while Rage is active you take 15% less damage |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> barbarian` switches a player to the class. `/dndclass xp`, `unlock` and `equip` handle the skill tree (see [Admin commands](../systems/admin-commands.md)).

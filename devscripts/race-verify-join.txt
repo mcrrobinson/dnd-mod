@@ -1,0 +1,10 @@
+# After race-verify-rejoin.txt: a classed player without a race gets the heritage chat line on join and only the race picker.
+# Expect: [CHAT] Choose your heritage. Your class is unchanged.; rv-join shows the race picker.
+wait 40
+racepicker on
+wait 20
+screenshot rv-join
+racepick dwarf
+wait 20
+screenshot rv-join-picked
+quit

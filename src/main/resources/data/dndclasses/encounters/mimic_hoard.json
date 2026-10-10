@@ -1,0 +1,11 @@
+{
+  "name": "Mimic Hoard",
+  "difficulty": "medium",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:mimic", "count": 1}
+  ],
+  "chests": [
+    {"loot_table": "dndclasses:chests/dwarven_fortress_treasury", "count": 2}
+  ]
+}

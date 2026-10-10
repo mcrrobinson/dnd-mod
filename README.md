@@ -60,7 +60,7 @@ Every class has its own strengths, weaknesses, a special ability and a party rol
 <!-- class-table:end -->
 
 ### Races
-Players pick one of 8 races (Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling, Dragonborn) before their class. See [Races](docs/races/races.md).
+Players pick one of 8 races (Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling, Dragonborn) before their class. See [Races](docs/races/races.md). Dragonborn breathe their ancestry's element on R: see [Breath Weapon](docs/races/breath-weapon.md).
 
 ### Mana and Specials
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. Big specials also cost charges, which come back when you rest. See [Mana and class specials](docs/systems/mana.md), [Rests and charges](docs/systems/rests.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).

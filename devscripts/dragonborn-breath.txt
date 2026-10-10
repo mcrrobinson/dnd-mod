@@ -1,0 +1,67 @@
+# Dragonborn Breath Weapon, all three ancestries on frozen zombies.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dragonborn-breath.txt
+# Expect in latest.log: each zombie's Health below 20 after its breath (6 + class level / 2, halved on a DEX save),
+# "Test passed" for frosted ice on the pool, and the cooldown message in the screenshot after respawning.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doFireTick false
+/time set noon
+/effect give @s minecraft:resistance 600 4 true
+/fill -4 149 -4 12 149 12 minecraft:stone
+/fill -4 150 -4 12 154 12 minecraft:air
+/kill @e[type=zombie,distance=..40]
+# --- Ember ---
+/dndrace set @s dragonborn ember
+/summon zombie 3.5 150 6.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["breath"]}
+/tp @s 3.5 150 2.5 0 10
+wait 10
+press key.dnd-classes.racial
+wait 4
+screenshot dragonborn-breath-ember
+wait 20
+/data get entity @e[type=zombie,tag=breath,limit=1] Health
+/data get entity @e[type=zombie,tag=breath,limit=1] Fire
+# Pressing again during the cooldown only shows the "recharges in" message
+press key.dnd-classes.racial
+wait 2
+screenshot dragonborn-breath-cooldown
+/kill @e[type=zombie,tag=breath]
+# --- Frost (a short rest recharges the breath) ---
+/dndrace set @s dragonborn frost
+/dndclass rest @s short
+/fill 2 149 4 5 149 7 minecraft:water
+/summon zombie 3.5 150 9.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["breath"]}
+/tp @s 3.5 150 2.5 0 20
+wait 10
+press key.dnd-classes.racial
+wait 4
+screenshot dragonborn-breath-frost
+/execute if block 3 149 5 minecraft:frosted_ice
+/data get entity @e[type=zombie,tag=breath,limit=1] Health
+/data get entity @e[type=zombie,tag=breath,limit=1] active_effects
+/kill @e[type=zombie,tag=breath]
+/fill 2 149 4 5 149 7 minecraft:stone
+# --- Storm (arc to a second zombie behind the first) ---
+/dndrace set @s dragonborn storm
+/dndclass rest @s short
+/summon zombie 3.5 150 6.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["breath"]}
+/summon zombie 7.5 150 9.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["arc"]}
+/tp @s 3.5 150 2.5 0 10
+wait 10
+press key.dnd-classes.racial
+wait 3
+screenshot dragonborn-breath-storm
+/data get entity @e[type=zombie,tag=breath,limit=1] Health
+/data get entity @e[type=zombie,tag=arc,limit=1] Health
+# --- The cooldown survives death ---
+/kill @s
+wait 20
+respawn
+wait 40
+press key.dnd-classes.racial
+wait 2
+screenshot dragonborn-breath-after-death
+/kill @e[type=zombie,distance=..40]
+quit

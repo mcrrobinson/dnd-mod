@@ -67,7 +67,7 @@ The rest is **interrupted**, and you keep nothing (it doesn't use up a short res
 - a boss bar is showing to you
 - another system vetoes it (see Dungeons below; the downed state will too)
 
-Sneak + right-click the campfire again to get up. A rest is refused, with the reason on the action bar, when there are monsters near, a boss bar is up, you've already had **2 short rests** since your last long rest ("You've had 2 short rests: you need a long rest first."), or it's been under **3 minutes** since your last one ended ("You can short rest again in 2:41"). The 3 minutes are counted on the world clock, so they carry over a server restart.
+Sneak + right-click the campfire again to get up. A rest is refused, with the reason on the action bar, when there are monsters near, a boss bar is up, you've already had **2 short rests** since your last long rest ("You've had 2 short rests: you need a long rest first."), or it's been under **3 minutes** since your last one ended ("You can short rest again in 2:41"). The 3 minutes are counted on the world clock, so they carry over a server restart. A long rest resets the count of 2 but not the 3-minute wait.
 
 ### Dungeons
 Inside a dungeon whose boss is still alive (`DungeonRegistry.isInsideUncleared`), long rests are refused and short rests are only allowed in the Entrance, the Antechamber and rooms you've cleared: "This place is too dangerous to rest."

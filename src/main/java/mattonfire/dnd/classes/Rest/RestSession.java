@@ -137,7 +137,7 @@ public final class RestSession {
                 player.sendMessage(Text.literal("Short rest " + session.ticks / 20 + " / " + SHORT_REST_TICKS / 20
                         + " s").formatted(Formatting.GOLD), true);
                 ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.HAPPY_VILLAGER, player.getX(),
-                        player.getY() + 1.0, player.getZ(), 2, 0.3, 0.4, 0.3, 0);
+                        player.getY() + 0.2, player.getZ(), 2, 0.6, 0.1, 0.6, 0);
             }
         }
         // Companions are worked out before anyone's session ends, so two rests finishing on the
@@ -153,6 +153,7 @@ public final class RestSession {
             DnDClasses.LOGGER.info("[Rest] {} finished a short rest with {}", player.getEntityName(),
                     resting.stream().map(ServerPlayerEntity::getEntityName).toList());
             Rests.complete(player, RestKind.SHORT, RestSource.CAMPFIRE, resting, Rests.day(player));
+            player.sendMessage(Text.literal("Short rest complete").formatted(Formatting.GOLD), true);
             BardSkills.songOfRest(player, resting);
         }
     }

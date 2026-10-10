@@ -7,7 +7,9 @@ import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.icon.TextureIcon;
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.ClassInfo;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.DndCharacter;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.Text;
@@ -104,8 +106,9 @@ public class ClassSelectionHud extends LightweightGuiDescription {
 
         for (int i = 0; i < CLASSES.length; i++) {
             ClassOption option = CLASSES[i];
-            WButton button = new WButton(new TextureIcon(new Identifier(option.icon())), Text.translatable(
-                    "class.dndclasses." + option.name().toLowerCase(java.util.Locale.ROOT).replace(" ", "_")));
+            WButton button = new RoleButton(new TextureIcon(new Identifier(option.icon())), Text.translatable(
+                    "class.dndclasses." + option.name().toLowerCase(java.util.Locale.ROOT).replace(" ", "_")),
+                    ClassInfo.get(DndCharacter.fromValue(option.classID())));
             button.setOnClick(() -> packetConstructor(option.classID()));
             root.add(button, (i % COLUMNS) * BUTTON_CELLS, 1 + i / COLUMNS, BUTTON_CELLS, 1);
         }

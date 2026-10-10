@@ -1,0 +1,180 @@
+# Walks through the subclass PR's checklist with screenshots (v-*.png) and [CHAT] /dndclass progress lines.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclasses-verify.txt
+# Node centres from the screen centre: columns -80 / 0 / 80, rows 0-3 at dy -50 / -18 / 14 / 46; banners at (+-80, -49).
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/tp @s 4.5 150 1.5 0 30
+/dndclass set @s barbarian
+wait 10
+closescreen
+# Migration of a seeded save (if any)
+/dndclass progress @s
+/dndclass resetprogress @s
+# Level 2: only first nodes
+/dndclass xp @s set 120
+skill unlock barbarian.thick_skin
+wait 5
+skill unlock barbarian.ground_slam
+wait 5
+/dndclass progress @s
+press key.dnd-classes.skill-tree
+wait 10
+hover 80 14
+wait 3
+screenshot v-level2-needs-subclass
+hover -80 46
+wait 3
+screenshot v-bear-hide
+closescreen
+# Level 3 chat hint
+/dndclass xp @s add 200
+wait 5
+# Away from a table
+press key.dnd-classes.skill-tree
+wait 10
+hover -80 -49
+wait 3
+screenshot v-no-table-banner
+click -80 -49
+wait 5
+screenshot v-no-table-click
+closescreen
+# At the table
+/setblock 4 150 4 dndclasses:attunement_table
+wait 5
+use
+wait 10
+hover 0 110
+wait 3
+screenshot v-table-banners
+hover -80 -49
+wait 3
+screenshot v-banner-tooltip
+click -80 -49
+wait 5
+screenshot v-confirm
+widget No
+wait 5
+/dndclass progress @s
+screenshot v-after-no
+click -80 -49
+wait 5
+widget Yes
+wait 10
+/dndclass progress @s
+hover 80 14
+wait 3
+screenshot v-chosen-padlock
+skill unlock barbarian.bloodlust
+wait 5
+/dndclass progress @s
+closescreen
+# Clearing refunds the upper nodes and the capstone
+/dndclass xp @s set 2700
+skill unlock barbarian.ground_slam
+wait 3
+skill unlock barbarian.unstoppable
+wait 3
+skill unlock barbarian.titan
+wait 3
+/dndclass progress @s
+/dndclass subclass @s none
+/dndclass progress @s
+use
+wait 10
+skill subclass barbarian.berserker
+wait 10
+/dndclass progress @s
+closescreen
+# Paladin: Circle of Healing
+/dndclass set @s paladin
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 450
+skill unlock paladin.circle_of_healing
+wait 5
+/dndclass progress @s
+use
+wait 10
+hover 0 14
+wait 3
+screenshot v-paladin-any-oath
+skill subclass paladin.devotion
+wait 5
+skill unlock paladin.circle_of_healing
+wait 5
+/dndclass progress @s
+closescreen
+# Rogue Assassin
+/dndclass set @s rogue
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 450
+/dndclass subclass @s rogue.assassin
+skill unlock rogue.light_feet
+wait 5
+/dndclass progress @s
+press key.dnd-classes.skill-tree
+wait 10
+hover 0 14
+wait 3
+screenshot v-rogue-assassin
+closescreen
+# Renames
+/dndclass set @s ranger
+wait 10
+closescreen
+press key.dnd-classes.skill-tree
+wait 10
+hover -80 46
+wait 3
+screenshot v-planar-hardiness
+closescreen
+/dndclass set @s artificer
+wait 10
+closescreen
+press key.dnd-classes.skill-tree
+wait 10
+hover -80 14
+wait 3
+screenshot v-steel-defender
+closescreen
+/dndclass set @s warlock
+wait 10
+closescreen
+press key.dnd-classes.skill-tree
+wait 10
+hover -80 -18
+wait 3
+screenshot v-eldritch-hunger
+closescreen
+# Guidebook (Barbarian keeps its Berserker choice)
+/dndclass set @s barbarian
+wait 10
+closescreen
+/dndclass progress @s
+hotbar 0
+/item replace entity @s weapon.mainhand with dndclasses:class_guidebook
+/tp @s 4.5 150 1.5 180 -60
+wait 5
+use
+wait 10
+page 3
+wait 3
+screenshot v-guide-subclasses
+page 4
+wait 3
+screenshot v-guide-sub1
+page 5
+wait 3
+screenshot v-guide-sub2
+closescreen
+quit

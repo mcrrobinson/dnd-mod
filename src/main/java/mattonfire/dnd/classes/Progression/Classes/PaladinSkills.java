@@ -109,12 +109,17 @@ public class PaladinSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("paladin.devotion", "paladin.conquest");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active(DIVINE_JUDGMENT_ID, "Divine Judgment",
                         "A beam of holy light strikes the mob you look at and sets it alight; a shockwave hits hostiles around it. Undead take 50% more.",
                         "minecraft:lightning_rod", 9, 0, 1, 3),
-                // Devotion
+                // Oath of Devotion
                 passive("paladin.divine_smite", "Divine Smite", "Melee hits deal +4 damage to undead.",
                         "minecraft:golden_sword", 1, 2, 3, DIVINE_JUDGMENT_ID),
                 active("paladin.sacred_weapon", "Sacred Weapon",
@@ -123,7 +128,7 @@ public class PaladinSkills extends ClassSkills {
                 passive(AURA_OF_PROTECTION, "Aura of Protection",
                         "You and players within 8 blocks take 15% less damage.", "minecraft:beacon", 1, 2, 1,
                         "paladin.sacred_weapon"),
-                // Conquest
+                // Oath of Conquest
                 passive(HELLFORGED, "Hellforged", "The Nether no longer weakens you.", "minecraft:netherite_ingot",
                         1, 0, 3, DIVINE_JUDGMENT_ID),
                 active("paladin.divine_shield", "Divine Shield",
@@ -135,7 +140,7 @@ public class PaladinSkills extends ClassSkills {
                 active("paladin.avenging_angel", "Avenging Angel",
                         "Strength II, Regeneration II and Resistance II for 20 seconds; undead within 10 blocks burn.",
                         "minecraft:elytra", 9, 2, 1, 0, AURA_OF_PROTECTION, "paladin.aura_of_courage"),
-                // Mercy
+                // Shared by both oaths
                 active(CIRCLE_OF_HEALING, "Circle of Healing",
                         "Fully heals players within 10 blocks; party members within 24 blocks are healed too and get Absorption for 30 seconds.",
                         "minecraft:golden_apple", 7, 2, 1, 2, DIVINE_JUDGMENT_ID));

@@ -1,0 +1,13 @@
+# Second half of race-pick.txt: the race survives a rejoin, and a classless player with a race gets only the class picker.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/race-persist-check.txt
+# Expect in latest.log: dragonborn storm; screenshot race-class-picker shows the class picker (not the race picker).
+wait 40
+/dndrace get @s
+racepicker on
+/dndclass set @s none
+wait 20
+screenshot race-class-picker
+/dndclass set @s barbarian
+wait 10
+/dndclass get @s
+quit

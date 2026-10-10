@@ -1,0 +1,98 @@
+# Charges: a fresh Barbarian has 3, Rage spends 1, capstones 2, cheap actives 0,
+# a long rest refills them, dndRests false ignores them, and they survive death.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/rests-charges.txt
+# Output: [CHAT] lines from /dndclass charges in logs/latest.log;
+# run/screenshots/charges-full.png, charges-two.png, charges-none.png, charges-air.png, charges-tree.png
+wait 40
+closescreen
+/gamemode survival
+/gamerule dndRests true
+/gamerule dndChargeTrickleMinutes 10
+/dndclass set @s barbarian
+/dndclass resetprogress @s
+/effect clear @s
+/tp @s 0 150 0 0 0
+/effect give @s minecraft:levitation 600 255 true
+/dndclass rest @s long
+wait 10
+/dndclass charges @s
+wait 10
+clearchat
+wait 5
+screenshot charges-full
+# Rage x3 with mana refills between, then "No charges left"
+press key.dnd-classes.power-up
+wait 10
+/dndclass charges @s
+screenshot charges-two
+wait 370
+press key.dnd-classes.power-up
+wait 10
+/dndclass charges @s
+wait 370
+press key.dnd-classes.power-up
+wait 10
+/dndclass charges @s
+wait 370
+/effect clear @s minecraft:strength
+press key.dnd-classes.power-up
+wait 4
+screenshot charges-none
+/dndclass charges @s
+/execute if entity @s[nbt={ActiveEffects:[{Id:5}]}]
+# A long rest refills; the capstone (Titan) costs 2
+/dndclass rest @s long
+/dndclass unlock @s barbarian.titan
+/dndclass equip @s barbarian.titan
+wait 10
+/dndclass charges @s
+press key.dnd-classes.power-up
+wait 10
+/dndclass charges @s
+# The tree's footer and the hovered Titan's tooltip show the charge cost
+press key.dnd-classes.skill-tree
+wait 10
+hover 0 -50
+wait 5
+screenshot charges-tree
+closescreen
+# A cheap active (War Cry, 3 mana) costs no charge
+/dndclass unlock @s barbarian.war_cry
+/dndclass equip @s barbarian.war_cry
+wait 120
+press key.dnd-classes.power-up
+wait 10
+/dndclass charges @s
+# dndRests false: 0 charges and Titan still fires
+/gamerule dndRests false
+/dndclass charges @s 0
+/dndclass equip @s barbarian.titan
+/effect clear @s
+/effect give @s minecraft:levitation 600 255 true
+wait 370
+press key.dnd-classes.power-up
+wait 10
+/execute if entity @s[nbt={ActiveEffects:[{Id:5}]}]
+/gamerule dndRests true
+/dndclass charges @s
+# Gems move up with the air bubbles
+/effect clear @s
+/fill -2 148 -2 2 153 2 minecraft:glass
+/fill -1 149 -1 1 152 1 minecraft:water
+/tp @s 0 149 0 0 0
+wait 80
+clearchat
+wait 2
+screenshot charges-air
+/fill -2 148 -2 2 153 2 minecraft:air
+# Charges survive death
+/dndclass charges @s 1
+/kill @s
+wait 20
+respawn
+wait 40
+/dndclass charges @s
+/dndclass rest @s short
+/dndclass charges @s
+/dndclass hitdice @s
+quit

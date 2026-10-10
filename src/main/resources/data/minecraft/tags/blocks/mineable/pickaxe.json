@@ -1,4 +1,7 @@
 {
   "replace": false,
-  "values": ["dndclasses:fast_brewing_stand"]
+  "values": [
+    "dndclasses:fast_brewing_stand",
+    "dndclasses:lesser_arcane_seal"
+  ]
 }

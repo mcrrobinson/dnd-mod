@@ -8,6 +8,7 @@ import java.util.function.BiConsumer;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.dm.DungeonMaster;
+import mattonfire.dnd.classes.PlayerEntityExt;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -104,7 +105,7 @@ public class PartyEvents {
         }
     }
 
-    /** Sends every online party member the health of the rest of their party. */
+    /** Sends every online party member the health and class of the rest of their party. */
     public static void syncHud(MinecraftServer server) {
         PartyManager manager = PartyManager.get(server);
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
@@ -128,6 +129,9 @@ public class PartyEvents {
                 buf.writeFloat(member != null ? member.getAbsorptionAmount() : 0);
                 buf.writeBoolean(member != null && member.getWorld() == player.getWorld()
                         && member.squaredDistanceTo(player) <= PartyManager.SHARE_RADIUS * PartyManager.SHARE_RADIUS);
+                // Class id (DndCharacter value, 0 when offline or unknown) for the role icon.
+                buf.writeVarInt(member instanceof PlayerEntityExt ext && ext.getDndClass() != null
+                        ? ext.getDndClass().getValue() : 0);
             }
             ServerPlayNetworking.send(player, S2C_PARTY_HUD, buf);
         }

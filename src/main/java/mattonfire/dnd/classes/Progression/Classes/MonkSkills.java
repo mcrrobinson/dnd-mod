@@ -131,12 +131,17 @@ public class MonkSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("monk.open_hand", "monk.drunken_master");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("monk.flurry_rush", "Flurry Rush",
                         "Blink between the mob you're looking at and hostiles near it, landing a rapid chain of hits, then blink back.",
                         "minecraft:blaze_rod", 9, 0, 1, 3),
-                // Open Hand
+                // Way of the Open Hand
                 passive("monk.flurry_of_blows", "Flurry of Blows",
                         "Every 3rd hit in a row on the same target deals 50% more damage.", "minecraft:stick", 1, 2,
                         3, "monk.flurry_rush"),
@@ -145,7 +150,7 @@ public class MonkSkills extends ClassSkills {
                         2, 2, "monk.flurry_of_blows"),
                 passive("monk.deflect_missiles", "Deflect Missiles", "50% chance to ignore projectile damage.",
                         "minecraft:arrow", 1, 2, 1, "monk.stunning_strike"),
-                // Way of the Wind
+                // Way of the Drunken Master
                 passive("monk.slow_fall", "Slow Fall", "Take 75% less fall damage.", "minecraft:feather", 1, 0, 3,
                         "monk.flurry_rush"),
                 active("monk.step_of_the_wind", "Step of the Wind", "Dash about 8 blocks the way you're looking.",

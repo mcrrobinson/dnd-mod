@@ -7,6 +7,9 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.mixin.MouseAccessor;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
+import net.minecraft.client.gui.widget.PressableWidget;
 import mattonfire.dnd.classes.mixin.MinecraftClientInvoker;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -52,6 +55,7 @@ import net.minecraft.util.Identifier;
  * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
  *     {@code serverhitboxes measure} logs how far they are from the client's</li>
  * <li>{@code hud on|off} toggles the HUD (F1)</li>
+ * <li>{@code clearchat} clears the chat (F3+D), so it doesn't cover the HUD in a screenshot</li>
  * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join); a container screen is
  *     closed on the server too, like pressing Esc</li>
  * <li>{@code respawn} respawns the player if it's dead (a world saved mid-death loads dead)</li>
@@ -64,6 +68,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
  * <li>{@code holduse on|off} holds or releases the use (right) button, e.g. to keep drawing a bow</li>
+ * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
+ *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
  * <li>{@code press <key>} presses a key binding once, by translation key (e.g. {@code key.dnd-classes.power-up})</li>
  * <li>{@code perspective first|back|front} sets the camera (F5)</li>
  * <li>{@code slot <index> [action] [button]} clicks a slot of the open screen; action is a
@@ -74,8 +80,22 @@ import net.minecraft.util.Identifier;
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
- * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
- *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
+ * <li>{@code widget <label>} presses the open screen's button with that label (e.g. {@code Yes} in a confirm
+ *     dialog)</li>
+ * <li>{@code page <n|last>} turns an open book to page n (from 0) or the last page</li>
+ * <li>{@code hover <dx> <dy>} moves the cursor to GUI coordinates measured from the screen's centre, so the open
+ *     screen draws the tooltip there (take a screenshot after it)</li>
+ * <li>{@code skill unlock|equip|rankup|bestiary|subclass <id>} sends what clicking the skill tree screen would
+ *     (left-click, left-click at a table, right-click at a table, a bestiary entry, confirming a subclass), so
+ *     the server's checks apply</li>
+ * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
+ *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
+ * <li>{@code escape} sends the open screen an Escape key press, e.g. to check a picker ignores it</li>
+ * <li>{@code racepicker on|off}: while a script runs the race picker stays shut (the dev-world player has a class
+ *     but no race, so it would block every script). {@code on} lets it open, straight away if the player has no
+ *     race</li>
+ * <li>{@code racepick <race> [ancestry]} sends what clicking a race (or a Dragonborn ancestry) in the picker
+ *     would, e.g. {@code racepick elf}, {@code racepick dragonborn frost}; the server's one-pick check applies</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -93,6 +113,7 @@ public final class DevScript {
     private static final int WAIT_CHAT_TIMEOUT = 20 * 60 * 5;
     /** Messages received since the last {@code waitchat} step finished (so one sent early still counts). */
     private static final List<String> RECEIVED = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
+    private boolean mining;
 
     private DevScript(List<String> lines) {
         this.lines = lines;
@@ -166,6 +187,7 @@ public final class DevScript {
         }
         DnDClasses.LOGGER.info("[DevScript] Loaded {} ({} lines)", path, lines.size());
         DevScript script = new DevScript(lines);
+        PickerFlow.racePickerAllowed = false;
         ClientTickEvents.END_CLIENT_TICK.register(script::tick);
         net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME
                 .register((message, overlay) -> RECEIVED.add(message.getString()));
@@ -179,6 +201,11 @@ public final class DevScript {
         }
         // An unfocused window would otherwise open the pause menu and freeze the integrated server
         client.options.pauseOnLostFocus = false;
+        if (this.mining && client.crosshairTarget instanceof net.minecraft.util.hit.BlockHitResult hit
+                && hit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+            client.interactionManager.updateBlockBreakingProgress(hit.getBlockPos(), hit.getSide());
+            client.player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
+        }
         if (this.waitTicks > 0) {
             this.waitTicks--;
             return;
@@ -226,6 +253,7 @@ public final class DevScript {
                 }
             }
             case "hud" -> client.options.hudHidden = argument.equals("off");
+            case "clearchat" -> client.inGameHud.getChatHud().clear(false);
             case "closescreen" -> {
                 // setScreen(null) alone leaves a container open on the server (brewing stand, chest, ...)
                 if (client.currentScreen instanceof HandledScreen<?>) {
@@ -250,6 +278,12 @@ public final class DevScript {
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));
+            case "mine" -> {
+                this.mining = argument.equals("on");
+                if (!this.mining) {
+                    client.interactionManager.cancelBlockBreaking();
+                }
+            }
             case "hotbar" -> client.player.getInventory().selectedSlot = Integer.parseInt(argument);
             case "press" -> press(client, argument, lineNumber);
             case "perspective" -> client.options.setPerspective(switch (argument) {
@@ -281,7 +315,55 @@ public final class DevScript {
                     DnDClasses.LOGGER.warn("[DevScript] {}: click needs an open screen", lineNumber);
                 }
             }
+            case "widget" -> {
+                boolean found = false;
+                if (client.currentScreen != null) {
+                    for (var child : client.currentScreen.children()) {
+                        if (child instanceof PressableWidget widget && widget.getMessage().getString().equals(argument)) {
+                            widget.onPress();
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no button '{}' on the open screen", lineNumber, argument);
+                }
+            }
+            case "page" -> {
+                if (client.currentScreen instanceof BookScreen book) {
+                    book.setPage(argument.equals("last") ? Integer.MAX_VALUE / 2 : Integer.parseInt(argument));
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: page needs an open book", lineNumber);
+                }
+            }
+            case "hover" -> {
+                String[] args = argument.split("\\s+");
+                double scale = client.getWindow().getScaleFactor();
+                double x = (client.getWindow().getScaledWidth() / 2.0 + Double.parseDouble(args[0])) * scale;
+                double y = (client.getWindow().getScaledHeight() / 2.0 + Double.parseDouble(args[1])) * scale;
+                ((MouseAccessor) client.mouse).setX(x);
+                ((MouseAccessor) client.mouse).setY(y);
+            }
             case "skill" -> skill(argument.split("\\s+"), lineNumber);
+            case "tooltips" -> {
+                java.util.List<ItemStack> hotbar = new java.util.ArrayList<>();
+                for (int i = 0; i < 9; i++) {
+                    if (!client.player.getInventory().getStack(i).isEmpty()
+                            && (argument.isEmpty() || java.util.Arrays.asList(argument.split("\\s+")).contains(String.valueOf(i))))
+                        hotbar.add(client.player.getInventory().getStack(i));
+                }
+                client.setScreen(new TooltipPreviewScreen(hotbar));
+            }
+            case "escape" -> {
+                if (client.currentScreen != null) {
+                    client.currentScreen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE, 0, 0);
+                }
+                DnDClasses.LOGGER.info("[DevScript] screen after escape: {}", client.currentScreen == null ? "none"
+                        : client.currentScreen.getClass().getSimpleName());
+            }
+            case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
+            case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
     }
@@ -292,15 +374,28 @@ public final class DevScript {
             case "equip" -> Progression.C2S_EQUIP;
             case "rankup" -> Progression.C2S_RANK_UP;
             case "bestiary" -> Progression.C2S_BESTIARY_UNLOCK;
+            case "subclass" -> Progression.C2S_CHOOSE_SUBCLASS;
             default -> null;
         };
         if (packet == null || args.length < 2) {
-            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary <id>", lineNumber);
+            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass <id>", lineNumber);
             return;
         }
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(args[1]);
         ClientPlayNetworking.send(packet, buf);
+    }
+
+    private static void racePick(String[] args, int lineNumber) {
+        mattonfire.dnd.classes.Race.DndRace race = mattonfire.dnd.classes.Race.DndRace.byId(args[0]);
+        mattonfire.dnd.classes.Race.DragonAncestry ancestry = args.length > 1
+                ? mattonfire.dnd.classes.Race.DragonAncestry.byId(args[1])
+                : mattonfire.dnd.classes.Race.DragonAncestry.NONE;
+        if (race == null || ancestry == null) {
+            DnDClasses.LOGGER.warn("[DevScript] {}: racepick needs <race> [ember|frost|storm]", lineNumber);
+            return;
+        }
+        PickerFlow.sendPick(race, ancestry);
     }
 
     private static void press(MinecraftClient client, String translationKey, int lineNumber) {

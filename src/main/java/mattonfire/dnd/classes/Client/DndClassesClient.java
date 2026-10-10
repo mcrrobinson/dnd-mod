@@ -9,8 +9,6 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
-import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
@@ -63,10 +61,9 @@ public class DndClassesClient implements ClientModInitializer {
             if (client.player instanceof PlayerEntityExt ext) {
                 DndCharacter dndClass = DndCharacter.fromValue(classID);
                 ext.setDndClass(dndClass);
-                // The server applies the class's stats; the client only opens the picker.
-                if (dndClass == DndCharacter.NONE) {
-                    client.setScreen(new ModKeybinds(new ClassSelectionHud()));
-                }
+                // The server applies the class's stats; the client only opens the picker,
+                // after the race picker if the player still needs a race.
+                PickerFlow.onClass(client, dndClass);
             }
         });
     }
@@ -188,8 +185,21 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
+        PickerFlow.register();
+        // Magic items: "Rare weapon (Wizard only)" under the name
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
+            net.minecraft.text.Text line = mattonfire.dnd.magic.MagicNames.tooltipLine(stack);
+            if (line != null)
+                lines.add(Math.min(1, lines.size()), line);
+        });
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
+        mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();
+        // Arcane Seals are translucent glyph walls
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getTranslucent(),
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.LESSER_ARCANE_SEAL_BLOCK,
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK);
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
@@ -277,8 +287,20 @@ public class DndClassesClient implements ClientModInitializer {
             ClassProgress progress = ClassProgress.read(buf);
             client.execute(() -> ClassProgress.client = progress);
         });
+        ClientPlayNetworking.registerGlobalReceiver(mattonfire.dnd.classes.Abilities.AbilityScores.S2C_SHEET_SYNC,
+                (client, handler, buf, sender) -> {
+                    mattonfire.dnd.classes.Abilities.CharacterSheet sheet =
+                            mattonfire.dnd.classes.Abilities.CharacterSheet.read(buf);
+                    client.execute(() -> mattonfire.dnd.classes.Abilities.CharacterSheet.client = sheet);
+                });
         ClientPlayNetworking.registerGlobalReceiver(Progression.S2C_OPEN_ATTUNEMENT,
                 (client, handler, buf, sender) -> client.execute(() -> client.setScreen(new SkillTreeScreen(true))));
+
+        ClientPlayNetworking.registerGlobalReceiver(mattonfire.dnd.classes.Rest.RestSync.S2C_REST_STATE,
+                (client, handler, buf, sender) -> {
+                    mattonfire.dnd.classes.Rest.RestSnapshot rest = mattonfire.dnd.classes.Rest.RestSnapshot.read(buf);
+                    client.execute(() -> mattonfire.dnd.classes.Rest.RestSnapshot.client = rest);
+                });
 
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_SYNC_MANA,
                 DndClassesClient::setMana);

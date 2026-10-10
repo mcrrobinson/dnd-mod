@@ -112,15 +112,26 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         }
         if (!this.world.isClient) {
             this.setCustomer(player);
+            this.prepareOffersFor(player);
             this.sendOffers(player, this.getDisplayName(), 1);
         }
         return ActionResult.success(this.world.isClient);
+    }
+
+    /** Sets this customer's special prices: cleared, then each price modifier adds its share. */
+    private void prepareOffersFor(PlayerEntity player) {
+        TradeOfferList offers = this.getOffers();
+        offers.forEach(TradeOffer::clearSpecialPrice);
+        KinPrices.apply(this, player, offers);
     }
 
     // ---- Merchant ----
 
     @Override
     public void setCustomer(@Nullable PlayerEntity customer) {
+        if (customer == null && this.offers != null) {
+            this.offers.forEach(TradeOffer::clearSpecialPrice);
+        }
         this.customer = customer;
     }
 

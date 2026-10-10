@@ -45,7 +45,7 @@ Permission level 2.
 - `entity/raid/GoblinRaid`: one raid. It runs the waves, raid bar, music and raider steering, and gives the rewards.
 - `entity/raid/Settlement`: finds the nearest village or fortress and its rally point (the village green, or the gate's terrace).
 - `classes/Commands/GoblinRaidCommand`: the `/goblinraid` command.
-- `DwarfGrudges.forgive`: called for fortress defenders after a win. Raid music goes through `BossMusic` and `EventMusic`.
+- `SettlementGrudges.forgive`: called for fortress defenders after a win. Raid music goes through `BossMusic` and `EventMusic`.
 - Data files:
   - loot tables: `data/dndclasses/loot_tables/gameplay/goblin_raid_{hobbit_village,dwarven_fortress,wilds}.json`
   - advancement: `advancements/goblin_raid_defended.json`

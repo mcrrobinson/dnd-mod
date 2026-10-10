@@ -1,5 +1,7 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.world.gen.HomeBonuses;
+
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -189,7 +191,8 @@ public class HobbitEntity extends PathAwareEntity {
             return ActionResult.SUCCESS;
         }
         this.getLookControl().lookAt(player);
-        if (this.giftCooldown > 0) {
+        // Halflings only wait 2 of the 5 minutes since this hobbit's last gift.
+        if (GIFT_COOLDOWN - this.giftCooldown < HomeBonuses.giftCooldown(player, GIFT_COOLDOWN)) {
             this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
             return ActionResult.CONSUME;
         }

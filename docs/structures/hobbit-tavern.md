@@ -12,6 +12,7 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
     - 2 emeralds: 1 rabbit stew
     - 3 emeralds: 1 cake
   - **Buys (for 1 emerald):** 20 wheat, 24 potatoes, 22 carrots, 10 brown mushrooms or 6 pumpkins.
+  - **Halflings** pay 25% less (kin prices, see [Racial homes](../races/racial-homes.md)): rabbit stew 1, cake 2, and the innkeeper takes 15 wheat, 18 potatoes, 16 carrots, 7 mushrooms or 4 pumpkins. One-emerald trades stay at 1.
 - Right-clicking it with a finished bounty notice pays the bounty out.
 
 ### Mug of Ale

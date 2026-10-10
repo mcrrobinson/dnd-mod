@@ -22,6 +22,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages) and Dwarves (Dwarven Fortresses): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience (PR #PRNUM)
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does

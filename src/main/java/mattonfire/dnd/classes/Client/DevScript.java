@@ -75,7 +75,9 @@ import net.minecraft.util.Identifier;
  * <li>{@code slot <index> [action] [button]} clicks a slot of the open screen; action is a
  * {@link SlotActionType} name (default {@code pickup}; {@code quick_move} = shift-click, {@code swap} with
  * button 0-8 = number key, {@code throw} = Q)</li>
- * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory)</li>
+ * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory); on a trade screen it also
+ *     logs each offer with its price after discounts ({@code offer <i>: <price> [+ <second>] -> <result>
+ *     (base <count>)})</li>
  * <li>{@code button <id>} clicks a screen button such as an enchanting option (0-2)</li>
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
@@ -423,6 +425,16 @@ public final class DevScript {
             ItemStack stack = handler.slots.get(i).getStack();
             if (!stack.isEmpty()) {
                 DnDClasses.LOGGER.info("[DevScript] slot {}: {}", i, describe(stack));
+            }
+        }
+        if (handler instanceof net.minecraft.screen.MerchantScreenHandler merchant) {
+            net.minecraft.village.TradeOfferList offers = merchant.getRecipes();
+            for (int i = 0; i < offers.size(); i++) {
+                net.minecraft.village.TradeOffer offer = offers.get(i);
+                DnDClasses.LOGGER.info("[DevScript] offer {}: {}{} -> {} (base {})", i,
+                        describe(offer.getAdjustedFirstBuyItem()),
+                        offer.getSecondBuyItem().isEmpty() ? "" : " + " + describe(offer.getSecondBuyItem()),
+                        describe(offer.getSellItem()), offer.getOriginalFirstBuyItem().getCount());
             }
         }
     }

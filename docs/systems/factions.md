@@ -19,8 +19,8 @@ Hobbits, Mountain Dwarves and goblins remember what you do. Each player has a st
 
 | Faction | Members | Settlements | Start | Rivals |
 |-|-|-|-|-|
-| Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral) | goblins -0.5 |
-| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral) | goblins -0.5 |
+| Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral); Halflings 150 (Friendly) | goblins -0.5 |
+| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral); Dwarves 150, Gnomes 100 (Friendly) | goblins -0.5 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5 |
 
 - **Sources**:

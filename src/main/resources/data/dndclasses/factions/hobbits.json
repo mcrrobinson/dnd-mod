@@ -4,6 +4,7 @@
   "members": "#dndclasses:faction/hobbits",
   "settlements": "#dndclasses:faction/hobbits",
   "start": 0,
+  "start_by_race": {"dndclasses:halfling": 150},
   "rivals": {"dndclasses:goblins": -0.5},
   "decay_per_day": 5,
   "hit_member": -10,

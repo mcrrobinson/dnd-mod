@@ -3,6 +3,10 @@ package mattonfire.dnd.entity;
 import java.util.List;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.world.gen.HomeBonuses;
+import mattonfire.dnd.world.gen.RacialHomes;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -61,7 +65,7 @@ import org.jetbrains.annotations.Nullable;
  * A stout, bearded, armoured dwarf from the mountain fortresses. Neutral, like an iron golem:
  * it leaves players alone, hunts monsters near its home, and if a player hits it (or one of its
  * kin nearby) it and its kin fight back with their axes. Hand one a gold ingot and it trades
- * something from the mountain's depths for it.
+ * something from the mountain's depths for it. What angers them is in {@link SettlementGrudges}.
  */
 public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     public static final int VARIANTS = 6;
@@ -73,7 +77,6 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     private static final int KIN_GRUDGE_TICKS = 20 * 10;
     private static final int HOME_RANGE = 32;
     private static final int BARTER_COOLDOWN = 40;
-    private static final double WITNESS_RANGE = 16.0D;
 
     private static final String[] FIRST_NAMES = {
             "Thorin", "Balin", "Dwalin", "Gimli", "Gloin", "Oin", "Bombur", "Bofur", "Bifur", "Dori", "Nori", "Ori",
@@ -197,26 +200,16 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     }
 
     /**
-     * A player is meddling with the fortress (opening its chests, prising out its gold): every
-     * dwarf nearby who can see it happen turns on them.
+     * This dwarf saw {@code player} meddling with the fortress (see {@link SettlementGrudges}) and turns on
+     * them, with a growl if it wasn't angry already.
      */
-    public static void witness(PlayerEntity player, BlockPos pos) {
-        if (player.isCreative() || player.isSpectator()) {
-            return;
+    public void provoke(PlayerEntity player) {
+        if (!this.shouldAngerAt(player)) {
+            this.playSound(SoundEvents.ENTITY_VINDICATOR_AMBIENT, 1.0F, this.getSoundPitch());
         }
-        List<MountainDwarfEntity> dwarves = player.world.getEntitiesByClass(MountainDwarfEntity.class,
-                new net.minecraft.util.math.Box(pos).expand(WITNESS_RANGE), dwarf -> dwarf.canSee(player));
-        for (MountainDwarfEntity dwarf : dwarves) {
-            if (!dwarf.shouldAngerAt(player)) {
-                dwarf.playSound(SoundEvents.ENTITY_VINDICATOR_AMBIENT, 1.0F, dwarf.getSoundPitch());
-            }
-            dwarf.setAngryAt(player.getUuid());
-            dwarf.chooseRandomAngerTime();
-            dwarf.setTarget(player);
-        }
-        if (!dwarves.isEmpty() && player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
-            mattonfire.dnd.faction.FactionEvents.theftWitnessed(serverPlayer, dwarves.get(0));
-        }
+        this.setAngryAt(player.getUuid());
+        this.chooseRandomAngerTime();
+        this.setTarget(player);
     }
 
     // The mod gives every mob a player-targeting goal; dwarves only turn on players who wronged them.
@@ -256,6 +249,14 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
         ItemStack stack = player.getStackInHand(hand);
+        if (hand == Hand.MAIN_HAND && stack.isEmpty() && this.getCommandTags().contains(KING_TAG)
+                && RacialHomes.DWARVEN_FORTRESS.isHomeOf(RaceLifecycle.activeRaceOf(player))) {
+            if (!this.world.isClient) {
+                this.getLookControl().lookAt(player);
+                HomeBonuses.kingAudience((ServerPlayerEntity) player, this);
+            }
+            return ActionResult.success(this.world.isClient);
+        }
         if (!stack.isOf(Items.GOLD_INGOT)) {
             return super.interactMob(player, hand);
         }
@@ -281,10 +282,12 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     private void barter(PlayerEntity player) {
         ServerWorld world = (ServerWorld) this.world;
         LootTable table = world.getServer().getLootManager().getTable(BARTER_LOOT);
-        List<ItemStack> loot = table.generateLoot(new LootContext.Builder(world)
-                .parameter(LootContextParameters.THIS_ENTITY, this)
-                .random(this.random)
-                .build(LootContextTypes.BARTER));
+        // Kin (Dwarves, and Gnomes for now) get the rarer of two rolls.
+        List<ItemStack> loot = KinPrices.barter(world, player, this, BARTER_LOOT, () -> table.generateLoot(
+                new LootContext.Builder(world)
+                        .parameter(LootContextParameters.THIS_ENTITY, this)
+                        .random(this.random)
+                        .build(LootContextTypes.BARTER)));
         this.swingHand(Hand.OFF_HAND);
         for (ItemStack stack : loot) {
             LookTargetUtil.give(this, stack, player.getPos().add(0.0D, 1.0D, 0.0D));

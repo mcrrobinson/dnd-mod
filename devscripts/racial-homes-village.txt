@@ -1,0 +1,101 @@
+# Racial homes at the dev world's hobbit village (inn box 175 67 1327 to 189 79 1337, innkeeper at 181.5 67 1330.5).
+# Run on a fresh copy of run/: timeout 400 ./gradlew runClient -PdevRunDir=run-rh -PdevScript=devscripts/racial-homes-village.txt
+# Expect in latest.log:
+# - Human: no "[RacialHomes] Welcomed", empty inventory, innkeeper offers at base price.
+# - Halfling: one "Welcomed" line, a cake, 4 cookies and 2 ale (basket), /dndhome "hearth true", Regeneration in
+#   ActiveEffects, offers 25% cheaper ("offer 1: 1 ... (base 1)" stays 1, "offer 6: 1 emerald (base 2)", wheat 15 of 20).
+# - Leaving and coming back at once: no second welcome or basket.
+# - A frozen spider inside 16 blocks: no Regeneration; after killing it, Regeneration again.
+# - A hobbit 3500 ticks into its 6000-tick gift cooldown gives a Halfling a snack, refuses a Human.
+# - /rep: Halfling starts Friendly (150) with the Hobbits of the Shire.
+wait 40
+closescreen
+/time set 6000
+/gamerule doDaylightCycle false
+/gamemode survival
+/dndrace set @s human
+/clear @s
+/effect clear @s
+/tp @s 183 67 1333
+wait 300
+/fill 180 149 1330 184 149 1334 minecraft:glass
+/fill 178 149 1322 184 149 1328 minecraft:stone
+/fill 178 150 1322 184 153 1328 minecraft:air
+screenshot rh-human-inn
+/data get entity @s Inventory
+/dndhome
+/rep
+/summon dndclasses:innkeeper 179.5 150 1326.5 {NoAI:1b,Tags:["rhinn"],Rotation:[180f,0f]}
+/tp @s 179.5 150 1324.5 0 15
+hotbar 8
+wait 40
+use
+wait 10
+slots
+closescreen
+# Halfling: leave, switch, come back
+/tp @s 182 150 1332
+wait 40
+/dndrace set @s halfling
+wait 20
+/tp @s 183 67 1333 180 0
+waitchat welcome basket
+clearchat
+wait 5
+screenshot rh-halfling-welcome
+wait 100
+/data get entity @s Inventory
+/dndhome
+/rep
+wait 80
+/data get entity @s ActiveEffects
+/tp @s 179.5 150 1324.5 0 15
+wait 20
+use
+wait 10
+screenshot rh-halfling-trades
+slots
+closescreen
+# Leave and come straight back: no second welcome or basket
+/tp @s 182 150 1332
+wait 40
+/tp @s 183 67 1333
+wait 40
+/data get entity @s Inventory
+# A hostile mob within 16 blocks stops the hearth
+/effect clear @s
+wait 1
+/summon minecraft:spider 183 68 1335 {NoAI:1b,PersistenceRequired:1b,Tags:["rhspider"]}
+wait 140
+/data get entity @s ActiveEffects
+/data get entity @e[tag=rhspider,limit=1] Pos
+/kill @e[tag=rhspider]
+wait 140
+/data get entity @s ActiveEffects
+/say rh:near @e[distance=..24,type=!minecraft:player,type=!minecraft:item]
+# Outside the hearth (the village green): no Regeneration
+/tp @s 200 70 1352
+/effect clear @s
+wait 80
+/dndhome
+/data get entity @s ActiveEffects
+# Hobbit gifts: 2 minutes for a Halfling, 5 for everyone else
+/summon dndclasses:hobbit 181.5 150 1326.5 {NoAI:1b,GiftCooldown:3500,Tags:["rhhobbit"],Rotation:[180f,0f]}
+/clear @s
+/tp @s 181.5 150 1324.5 0 15
+wait 10
+use
+wait 10
+/data get entity @s Inventory
+/data get entity @e[tag=rhhobbit,limit=1] GiftCooldown
+/dndrace set @s human
+/clear @s
+/data merge entity @e[tag=rhhobbit,limit=1] {GiftCooldown:3500}
+wait 10
+use
+wait 10
+/data get entity @s Inventory
+/kill @e[tag=rhhobbit]
+/kill @e[tag=rhinn]
+/gamemode creative
+quit

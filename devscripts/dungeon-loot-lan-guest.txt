@@ -1,0 +1,28 @@
+# Dungeon loot, guest side: joins dungeon-loot-lan-host.txt (port 25612) and opens the Hoard Coffer when the
+# host says so (the host stands it in front of the coffer).
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25612 -PdevScript=devscripts/dungeon-loot-lan-guest.txt
+wait 40
+closescreen
+wait 60
+closescreen
+waitchat guest-open-1
+wait 10
+use
+wait 4
+screenshot dungeon-loot-guest-full
+waitchat guest-open-2
+wait 10
+use
+wait 4
+screenshot dungeon-loot-guest-claimed
+waitchat guest-open-3
+wait 10
+use
+wait 4
+screenshot dungeon-loot-guest-salvage
+waitchat guest-open-4
+wait 10
+use
+wait 4
+waitchat guest-quit
+quit

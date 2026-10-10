@@ -44,6 +44,17 @@ public final class DungeonEvents {
                 }
             });
 
+    /**
+     * A cleared dungeon filled up again (after its repopulation time, or {@code /dungeon reset}):
+     * every room is UNTOUCHED and the boss is back. Traps re-arm and puzzles shuffle on this.
+     */
+    public static final Event<Repopulated> REPOPULATED = EventFactory.createArrayBacked(Repopulated.class,
+            listeners -> (world, dungeon) -> {
+                for (Repopulated listener : listeners) {
+                    listener.onRepopulated(world, dungeon);
+                }
+            });
+
     private DungeonEvents() {
     }
 
@@ -65,5 +76,10 @@ public final class DungeonEvents {
     @FunctionalInterface
     public interface Cleared {
         void onCleared(ServerWorld world, DungeonState dungeon, List<ServerPlayerEntity> participants);
+    }
+
+    @FunctionalInterface
+    public interface Repopulated {
+        void onRepopulated(ServerWorld world, DungeonState dungeon);
     }
 }

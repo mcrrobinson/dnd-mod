@@ -1,7 +1,7 @@
 # Dungeons
 Underground adventure sites for a party: an entrance on the surface, a spiral stair down, and 11-13 rooms on a planned route to a boss and its treasure vault. Each dungeon has a name ("The Barrow of Ashmoor") and a Challenge tier (I-IV) that rises with distance from spawn.
 
-This page covers the framework and the first theme, the **Crypt**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); traps, the puzzle, class gates and loot arrive in later Dungeons tickets.
+This page covers the framework and the first theme, the **Crypt**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); loot and the Hoard Coffer are on [Dungeon loot](../systems/dungeon-loot.md); traps, the puzzle and class gates arrive in later Dungeons tickets.
 
 ## How it works
 - **Layout**: a 7x7 grid of 16x16 cells (112x112 blocks, one chunk per cell) centred on the structure's start chunk. The entrance is the middle cell; a random walk from it lays out the main path, in this order:
@@ -18,14 +18,14 @@ This page covers the framework and the first theme, the **Crypt**. Room fights, 
 | 7 | Encounter (small), in half of dungeons | 13x13 | 6 |
 | 8 | Mid-boss room | 15x15 | 8 |
 | 9 | Boss room, 2x2 cells, with a central dais | 31x31 | 12 |
-| 10 | Treasure vault (one placeholder chest) | 13x13 | 5 |
+| 10 | Treasure vault (the Hoard Coffer) | 13x13 | 5 |
 
 - **Side rooms**: every dungeon has a **secret room** (9x9, one chest) behind a bricked-up doorway of cracked stone bricks in an antechamber, encounter, puzzle or mid-boss room. Anyone can break through. Half of dungeons also get a **side vault** (11x11, one chest; its class gate comes later). So a dungeon has 11-13 rooms.
 - **Corridors**: 3 wide and 4 high, joining neighbouring rooms' 3x3 doorways across the gaps between cells.
 - **Shell**: every room and corridor fills its whole box. Walls, floor and ceiling are 2 blocks thick, with an outer skin of deepslate tiles, so caves, aquifers and lava can't flood in. Floors are propped up with cobbled deepslate (up to 16 blocks) over caves.
 - **Depth**: the floor is 20 blocks below the lowest of 25 ground samples over the grid (or below sea level, if that's lower), so even the boss room's roof stays at least 6 blocks under the surface. Only the entrance shows: a ring of mossy standing stones (some fallen, some with skulls) round the shaft top.
 - **Crypt palette**: stone bricks (some mossy or cracked), polished andesite floors, polished deepslate trim, chiselled stone accents, soul lanterns.
-- **Chests**: chests use `minecraft:chests/simple_dungeon` for now; 8% of them are Mimics. Dungeon loot comes in a later ticket.
+- **Chests**: one in each encounter room, the secret room and the side vault, with locked tier loot (`dndclasses:chests/dungeon/<theme>_<room>_t<tier>`); 8% of them are Mimics. See [Dungeon loot](../systems/dungeon-loot.md).
 - **No natural monster spawns** inside (`spawn_overrides.monster` is empty): every monster will come from an encounter.
 - **Music**: inside a dungeon you hear the dungeon track, Silent Footsteps (all dungeons are in `#dndclasses:music_dungeons`).
 
@@ -52,13 +52,13 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 - `/place structure dndclasses:crypt` builds one at your chunk, if the ground there passes the checks above ("Failed to place structure" otherwise).
 - `/dungeon info`: the dungeon you're in or standing over: name, theme, tier, entrance, floor level, bounds, whether it's cleared, and every room with its state. Op level 2, like the rest.
 - `/dungeon clear`: marks it cleared (boss defeated, every room cleared).
-- `/dungeon reset`: every room back to untouched and the boss available again.
+- `/dungeon reset`: repopulates it now: every room back to untouched and the boss available again (Hoard Coffer claims stay).
 - `/dungeon tier <1-4>`: changes its tier.
 - `/dungeon trigger <room>`: starts that room's fight now (see [Dungeon encounters](../systems/dungeon-encounters.md)).
 - `/dungeon cutaway`: for screenshots: removes everything from 3 blocks above the floor up to the sky over the dungeon. Destructive.
 
 ## Known limitations
-- No traps, puzzle, class gates or real loot yet.
+- No traps, puzzle or class gates yet.
 - A dungeon made with `/place structure` plays no dungeon music (vanilla `/place` doesn't record a structure start), but its wards and `/dungeon` commands work.
 - Only the Crypt theme exists. The Goblin Warren and Dwarven Ruin are placeholders in `DungeonTheme`.
 - Trees growing over the entrance can leave a canopy over the shaft (trunks are cleared out of it up to 7 blocks above the ground).

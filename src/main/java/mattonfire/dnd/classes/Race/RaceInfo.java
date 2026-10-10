@@ -24,9 +24,13 @@ import mattonfire.dnd.classes.DnDClasses;
  * The race picker, the pick chat message, the guidebook's heritage page, {@link RaceStats} and
  * {@link RaceAbilityBonuses} all read it, and {@code ./gradlew generateRaceTable} writes the table in
  * {@code docs/races/races.md} from it.
+ * <p>
+ * Body size ({@link RaceSize}): {@code scale} multiplies the hitbox height, eye height and model height;
+ * {@code hitboxWidth} the hitbox width and {@code modelWidth} the model's width and depth (both default to
+ * {@code scale} in the JSON).
  */
 public record RaceInfo(DndRace id, String name, String icon, String summary, Map<String, Integer> abilityBonuses,
-        String size, double scale, Stats stats, List<String> traits) {
+        String size, double scale, double hitboxWidth, double modelWidth, Stats stats, List<String> traits) {
 
     public static final String RESOURCE = "/data/" + DnDClasses.MOD_ID + "/race_info.json";
     /** Ability keys area 4's {@code Ability} enum is expected to match. */
@@ -62,7 +66,8 @@ public record RaceInfo(DndRace id, String name, String icon, String summary, Map
     private static Map<DndRace, RaceInfo> byRace;
 
     private record Entry(String id, String name, String icon, String summary, Map<String, Integer> abilityBonuses,
-            String size, Double scale, Map<String, Double> stats, List<String> traits) {
+            String size, Double scale, Double hitboxWidth, Double modelWidth, Map<String, Double> stats,
+            List<String> traits) {
     }
 
     private record Root(List<Entry> races) {
@@ -108,9 +113,11 @@ public record RaceInfo(DndRace id, String name, String icon, String summary, Map
                 Root root = new Gson().fromJson(reader, Root.class);
                 for (Entry e : root.races()) {
                     DndRace race = DndRace.valueOf(e.id());
+                    double scale = e.scale() == null ? 1.0 : e.scale();
                     map.put(race, new RaceInfo(race, e.name(), e.icon(), e.summary() == null ? "" : e.summary(),
-                            bonuses(e), e.size() == null ? "Medium" : e.size(),
-                            e.scale() == null ? 1.0 : e.scale(), stats(e.stats()),
+                            bonuses(e), e.size() == null ? "Medium" : e.size(), scale,
+                            e.hitboxWidth() == null ? scale : e.hitboxWidth(),
+                            e.modelWidth() == null ? scale : e.modelWidth(), stats(e.stats()),
                             e.traits() == null ? Collections.emptyList() : e.traits()));
                 }
             }

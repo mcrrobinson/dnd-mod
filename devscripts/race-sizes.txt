@@ -1,0 +1,227 @@
+# Racial body sizes: hitbox, eye height, gaps, the dndRaces gamerule, Wild Shape and head features.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/race-sizes.txt
+# Expect in latest.log ([DevScript] size lines, client and server agree):
+#  - human 0.600x1.800 eye 1.620; elf/halforc/tiefling the same; dwarf 0.600x1.530 eye 1.377;
+#    halfling/gnome 0.390x1.170 eye 1.053; dragonborn 0.600x1.890 eye 1.701. Marker Pos[1] = 150 + eye.
+#  - Halfling sneak-walks through the 1x1 tunnel (z ends past 207) and stays CROUCHING (0.390x0.975) when it
+#    lets go of sneak inside; a Human is stopped at the tunnel mouth (z about 202.7).
+#  - Dwarf in the 1.5-high gap is CROUCHING (eye 1.080), STANDING once out; Dragonborn STANDING in a 2-high tunnel.
+#  - /gamerule dndRaces false: the halfling is 0.600x1.800 again; true: 0.390x1.170.
+#  - Wolf Wild Shape as a halfling: the wolf's 0.600x0.850, back to 0.390x1.170 when it ends.
+# Screenshots: size-<race> (F5 front, hitboxes, a white+red wool pole two blocks high), crawl-halfling,
+#  crawl-human, dwarf-gap, face-<race> close-ups (FOV 30), wild-shape-halfling-wolf and -after.
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/gamemode survival
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:saturation 99999 1 true
+/tp @s 205.5 151 200.5 0 0
+wait 40
+/fill 195 149 195 216 149 216 minecraft:stone
+/fill 195 150 195 216 156 216 minecraft:air
+# Tunnel A: 1 high, 1 wide at x=200, z 203..207
+/fill 199 150 203 201 151 207 minecraft:stone
+/fill 200 150 203 200 150 207 minecraft:air
+# Tunnel B: 1.5 high (top slab ceiling) at x=210, z 203..207
+/fill 209 150 203 211 152 207 minecraft:stone
+/fill 210 150 203 210 151 207 minecraft:air
+/fill 210 151 203 210 151 207 minecraft:smooth_stone_slab[type=top]
+# Tunnel C: 2 high at x=214, z 203..207
+/fill 213 150 203 215 152 207 minecraft:stone
+/fill 214 150 203 214 151 207 minecraft:air
+# Measuring pole: white wool 0-1, red wool 1-2
+/setblock 204 150 203 minecraft:white_wool
+/setblock 204 151 203 minecraft:red_wool
+/dndclass set @s fighter
+wait 10
+closescreen
+hitboxes on
+hud off
+# --- every race, standing in the open ---
+/dndrace set @s human
+/tp @s 205.5 150 203.5 180 0
+wait 10
+sizes
+/execute at @s anchored eyes positioned ^ ^ ^ run summon minecraft:marker ~ ~ ~ {Tags:["dndeye"]}
+/data get entity @e[type=minecraft:marker,tag=dndeye,limit=1,sort=nearest] Pos[1]
+/kill @e[type=minecraft:marker,tag=dndeye]
+wait 2
+perspective front
+wait 10
+screenshot size-human
+/dndrace set @s elf
+wait 10
+sizes
+screenshot size-elf
+/dndrace set @s dwarf
+wait 10
+sizes
+/execute at @s anchored eyes positioned ^ ^ ^ run summon minecraft:marker ~ ~ ~ {Tags:["dndeye"]}
+/data get entity @e[type=minecraft:marker,tag=dndeye,limit=1,sort=nearest] Pos[1]
+/kill @e[type=minecraft:marker,tag=dndeye]
+wait 2
+screenshot size-dwarf
+/dndrace set @s halfling
+wait 10
+sizes
+/execute at @s anchored eyes positioned ^ ^ ^ run summon minecraft:marker ~ ~ ~ {Tags:["dndeye"]}
+/data get entity @e[type=minecraft:marker,tag=dndeye,limit=1,sort=nearest] Pos[1]
+/kill @e[type=minecraft:marker,tag=dndeye]
+wait 2
+screenshot size-halfling
+/dndrace set @s gnome
+wait 10
+sizes
+screenshot size-gnome
+/dndrace set @s halforc
+wait 10
+sizes
+screenshot size-halforc
+/dndrace set @s tiefling
+wait 10
+sizes
+screenshot size-tiefling
+/dndrace set @s dragonborn ember
+wait 10
+sizes
+/execute at @s anchored eyes positioned ^ ^ ^ run summon minecraft:marker ~ ~ ~ {Tags:["dndeye"]}
+/data get entity @e[type=minecraft:marker,tag=dndeye,limit=1,sort=nearest] Pos[1]
+/kill @e[type=minecraft:marker,tag=dndeye]
+wait 2
+screenshot size-dragonborn-ember
+/dndrace set @s dragonborn frost
+wait 10
+screenshot size-dragonborn-frost
+/dndrace set @s dragonborn storm
+wait 10
+screenshot size-dragonborn-storm
+# --- Head feature close-ups (no hitboxes, zoomed in) ---
+hitboxes off
+fov 30
+/dndrace set @s elf
+wait 10
+screenshot face-elf
+/dndrace set @s tiefling
+wait 10
+screenshot face-tiefling
+/dndrace set @s halforc
+wait 10
+screenshot face-halforc
+/dndrace set @s dragonborn ember
+wait 10
+screenshot face-dragonborn-ember
+/dndrace set @s dragonborn frost
+wait 10
+screenshot face-dragonborn-frost
+/dndrace set @s dragonborn storm
+wait 10
+screenshot face-dragonborn-storm
+/tp @s 205.5 150 203.5 225 0
+wait 10
+screenshot face-dragonborn-storm-side
+/dndrace set @s tiefling
+wait 10
+screenshot face-tiefling-side
+/tp @s 205.5 150 203.5 180 0
+fov 70
+hitboxes on
+/dndrace set @s dragonborn ember
+# --- Dragonborn fits a 2-high tunnel ---
+/tp @s 214.5 150 205.5 0 0
+wait 10
+sizes
+# --- Dwarf can't stand in a 1.5-high gap ---
+/dndrace set @s dwarf
+/tp @s 210.5 150 205.5 0 0
+wait 10
+sizes
+perspective back
+/tp @s 210.5 150 201.5 0 0
+wait 5
+/tp @s 210.5 150 204.5 0 0
+wait 10
+screenshot dwarf-gap
+/tp @s 210.5 150 201.5 0 0
+wait 10
+sizes
+# --- Human can't get into the 1x1 tunnel ---
+/dndrace set @s human
+/tp @s 200.5 150 201.5 0 0
+wait 10
+sneak on
+wait 5
+walk on
+wait 100
+walk off
+screenshot crawl-human
+sizes
+sneak off
+# --- Halfling crawls through it ---
+/dndrace set @s halfling
+/tp @s 200.5 150 201.5 0 0
+wait 10
+sneak on
+wait 5
+walk on
+wait 60
+walk off
+wait 5
+sneak off
+wait 10
+sizes
+screenshot crawl-halfling
+sneak on
+walk on
+wait 100
+walk off
+sneak off
+wait 10
+sizes
+# --- dndRaces off: normal size ---
+/tp @s 205.5 150 203.5 180 0
+/gamerule dndRaces false
+wait 10
+sizes
+/gamerule dndRaces true
+wait 10
+sizes
+# --- Wild Shape (wolf) as a halfling uses the wolf's size ---
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass rank @s druid.wild_shape 2
+/dndclass bestiary @s learn minecraft:wolf
+/dndclass bestiary @s unlock minecraft:wolf
+/dndclass progress @s
+/tp @s 205.5 150 203.5 180 0
+wait 200
+sneak on
+press key.dnd-classes.power-up
+wait 5
+sneak off
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+wait 5
+press key.dnd-classes.power-up
+wait 20
+sizes
+perspective front
+wait 5
+screenshot wild-shape-halfling-wolf
+wait 440
+sizes
+screenshot wild-shape-halfling-after
+perspective first
+hitboxes off
+fov 70
+/dndclass set @s fighter
+wait 10
+closescreen
+/dndclass resetprogress @s
+quit

@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Config.SaveRollsMode;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.mixin.MouseAccessor;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -67,7 +68,11 @@ import net.minecraft.util.Identifier;
  * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
- * <li>{@code forward on|off} holds or releases the walk forward key (e.g. to check movement is locked)</li>
+ * <li>{@code walk on|off} (or {@code forward on|off}) holds or releases the walk forward key, e.g. to crawl
+ *     into a gap or to check movement is locked</li>
+ * <li>{@code fov <30-110>} sets the field of view, e.g. 30 to zoom in on a third-person close-up</li>
+ * <li>{@code sizes} logs every player's pose, hitbox (width x height), eye height, position and body race as
+ * this client sees them, and in singleplayer as the integrated server sees them</li>
  * <li>{@code holduse on|off} holds or releases the use (right) button, e.g. to keep drawing a bow</li>
  * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
  *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
@@ -97,6 +102,8 @@ import net.minecraft.util.Identifier;
  *     race</li>
  * <li>{@code racepick <race> [ancestry]} sends what clicking a race (or a Dragonborn ancestry) in the picker
  *     would, e.g. {@code racepick elf}, {@code racepick dragonborn frost}; the server's one-pick check applies</li>
+ * <li>{@code saverolls full|compact|off|config} overrides the {@code saveRolls} client option for the rest of the
+ *     run ({@code config} goes back to the config file), to check each save-lane mode in one run</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -278,7 +285,9 @@ public final class DevScript {
             case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
-            case "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
+            case "walk", "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
+            case "sizes" -> logSizes(client);
+            case "fov" -> client.options.getFov().setValue(Integer.parseInt(argument));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));
             case "mine" -> {
                 this.mining = argument.equals("on");
@@ -366,6 +375,7 @@ public final class DevScript {
             }
             case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
             case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
+            case "saverolls" -> SaveRollsMode.setOverride(SaveRollsMode.byId(argument)); // else: the config file
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
     }
@@ -398,6 +408,25 @@ public final class DevScript {
             return;
         }
         PickerFlow.sendPick(race, ancestry);
+    }
+
+    private static void logSizes(MinecraftClient client) {
+        for (net.minecraft.entity.player.PlayerEntity p : client.world.getPlayers()) {
+            logSize("client", p);
+        }
+        if (client.getServer() != null) {
+            for (net.minecraft.entity.player.PlayerEntity p : client.getServer().getPlayerManager().getPlayerList()) {
+                logSize("server", p);
+            }
+        }
+    }
+
+    private static void logSize(String side, net.minecraft.entity.player.PlayerEntity p) {
+        DnDClasses.LOGGER.info("[DevScript] size {} {} race={} pose={} hitbox={}x{} eye={} pos={} {} {}", side,
+                p.getEntityName(), ((mattonfire.dnd.classes.PlayerEntityExt) p).getBodyRace().id(), p.getPose(),
+                String.format("%.3f", p.getWidth()), String.format("%.3f", p.getHeight()),
+                String.format("%.3f", p.getStandingEyeHeight()), String.format("%.2f", p.getX()),
+                String.format("%.2f", p.getY()), String.format("%.2f", p.getZ()));
     }
 
     private static void press(MinecraftClient client, String translationKey, int lineNumber) {

@@ -4,14 +4,14 @@ The detailed reference for the mod, one page per feature, grouped by area. The [
 Each page follows the same template: summary, How it works, Where to find it, Commands, Configuration, Known limitations, For developers.
 
 ## Classes
-- [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted
-- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you
-- [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target
-- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals
-- [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions
-- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special
-- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether
-- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
+- [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted; subclass features (PR #136)
+- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you; subclass features (PR #136)
+- [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target; subclass features (PR #136)
+- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals; subclass features (PR #136)
+- [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions; subclass features (PR #136)
+- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special; subclass features (PR #136)
+- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether; subclass features (PR #136)
+- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank; subclass features (PR #136)
 - [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
 - [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
@@ -21,7 +21,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
 
 ## Races
-- [Races](races/races.md): the race picker (before the class), 8 races with stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule (body sizes and head features: PR #130)
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
@@ -32,10 +32,11 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
-- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`
+- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check` (PR #128)
+- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles (PR #127)
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`, rolled from the character sheet (PR #127)
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
-- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items and `/dndmagic`
+- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items, attunement (3 bonds, the table's Items tab) and `/dndmagic` (PR #129)
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 - [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session

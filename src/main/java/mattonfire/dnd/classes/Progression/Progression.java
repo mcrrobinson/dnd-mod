@@ -157,6 +157,8 @@ public final class Progression {
         ServerPlayNetworking.send(player, S2C_SYNC, buf);
         // Level and class feed the character sheet (proficiency bonus, class scores)
         AbilityScores.invalidate(player);
+        // and the attunement slots (Artificer) and the Forge blessing (subclass)
+        mattonfire.dnd.magic.Attunement.sync(player);
     }
 
     /** Gives XP in the player's current class, announcing any level-up. */
@@ -355,7 +357,8 @@ public final class Progression {
         ServerPlayNetworking.send(player, S2C_OPEN_ATTUNEMENT, PacketByteBufs.empty());
     }
 
-    private static boolean atAttunementTable(ServerPlayerEntity player) {
+    /** Whether the player is within 8 blocks of the Attunement Table they last opened. */
+    public static boolean atAttunementTable(ServerPlayerEntity player) {
         BlockPos pos = OPEN_TABLES.get(player.getUuid());
         return pos != null && player.getWorld().getBlockState(pos).isOf(ModBlocks.ATTUNEMENT_TABLE)
                 && player.squaredDistanceTo(pos.toCenterPos()) <= ATTUNEMENT_REACH_SQ;

@@ -34,7 +34,8 @@ import net.minecraft.util.Identifier;
  * clicking an unlocked skill equips it and right-clicking ranks it up. Classes
  * with a bestiary get a second page listing the creatures they've learned,
  * unlocked there too. A banner over each branch names its subclass; from
- * class level 3, clicking one at a table chooses it (after a confirm).
+ * class level 3, clicking one at a table chooses it (after a confirm). At a
+ * table there's also an Items tab ({@link MagicItemsTab}) for attunement.
  */
 public class SkillTreeScreen extends Screen {
     private static final int PANEL_WIDTH = 260;
@@ -63,9 +64,21 @@ public class SkillTreeScreen extends Screen {
     private static final int HEADER_HEIGHT = 32;
     private static final int PADLOCK = 0xFFB0B0B8;
 
+    private enum Tab {
+        TREE("Tree"), MAGIC("Items"), BESTIARY("Bestiary");
+
+        final String label;
+
+        Tab(String label) {
+            this.label = label;
+        }
+    }
+
     private final boolean attuning;
+    private final MagicItemsTab magicTab = new MagicItemsTab();
     private int left;
     private int top;
+    private Tab tab = Tab.TREE;
     private boolean bestiaryPage;
     private int bestiaryScroll;
 
@@ -105,12 +118,28 @@ public class SkillTreeScreen extends Screen {
             return;
         }
 
+        List<Tab> tabs = tabs(progress);
+        if (!tabs.contains(tab)) {
+            tab = Tab.TREE;
+        }
+        bestiaryPage = tab == Tab.BESTIARY;
+        if (tabs.size() > 1) {
+            renderTabs(matrices, tabs, mouseX, mouseY);
+        }
+        if (tab == Tab.MAGIC) {
+            drawCenteredTextWithShadow(matrices, textRenderer, "Magic Items", centerX, top + 6, 0xFFFFFF);
+            ItemStack hoveredStack = magicTab.render(matrices, textRenderer, itemRenderer, left, top, PANEL_WIDTH,
+                    PANEL_HEIGHT, mouseX, mouseY);
+            super.render(matrices, mouseX, mouseY, delta);
+            if (hoveredStack != null) {
+                renderTooltip(matrices, hoveredStack, mouseX, mouseY);
+            }
+            return;
+        }
+
         renderHeader(matrices, progress, centerX);
 
-        if (!progress.usesBestiary()) {
-            bestiaryPage = false;
-        } else {
-            renderTabs(matrices, mouseX, mouseY);
+        {
             if (bestiaryPage) {
                 String hovered = renderBestiary(matrices, progress, mouseX, mouseY);
                 renderFooter(matrices, progress, centerX);
@@ -523,28 +552,45 @@ public class SkillTreeScreen extends Screen {
 
     // ---- Tabs and bestiary ----
 
-    private int tabX(boolean bestiary) {
-        return bestiary ? left + PANEL_WIDTH - 4 - textRenderer.getWidth("Bestiary") - 6 : left + 4;
+    /** Tree always; Items at a table; Bestiary for classes with one. */
+    private List<Tab> tabs(ClassProgress progress) {
+        List<Tab> tabs = new ArrayList<>();
+        tabs.add(Tab.TREE);
+        if (attuning) {
+            tabs.add(Tab.MAGIC);
+        }
+        if (progress.usesBestiary()) {
+            tabs.add(Tab.BESTIARY);
+        }
+        return tabs;
     }
 
-    private int tabWidth(boolean bestiary) {
-        return textRenderer.getWidth(bestiary ? "Bestiary" : "Tree") + 6;
+    /** Tree and Items on the left, Bestiary on the right. */
+    private int tabX(Tab tab) {
+        return switch (tab) {
+            case TREE -> left + 4;
+            case MAGIC -> left + 4 + tabWidth(Tab.TREE) + 2;
+            case BESTIARY -> left + PANEL_WIDTH - 4 - tabWidth(Tab.BESTIARY);
+        };
     }
 
-    private boolean isOverTab(boolean bestiary, double mouseX, double mouseY) {
-        int x = tabX(bestiary);
-        return mouseX >= x && mouseX < x + tabWidth(bestiary) && mouseY >= top + 4 && mouseY < top + 4 + TAB_HEIGHT;
+    private int tabWidth(Tab tab) {
+        return textRenderer.getWidth(tab.label) + 6;
     }
 
-    private void renderTabs(MatrixStack matrices, int mouseX, int mouseY) {
-        for (boolean bestiary : new boolean[] { false, true }) {
-            int x = tabX(bestiary);
-            boolean selected = bestiary == bestiaryPage;
-            boolean hover = isOverTab(bestiary, mouseX, mouseY);
-            fill(matrices, x, top + 4, x + tabWidth(bestiary), top + 4 + TAB_HEIGHT,
+    private boolean isOverTab(Tab tab, double mouseX, double mouseY) {
+        int x = tabX(tab);
+        return mouseX >= x && mouseX < x + tabWidth(tab) && mouseY >= top + 4 && mouseY < top + 4 + TAB_HEIGHT;
+    }
+
+    private void renderTabs(MatrixStack matrices, List<Tab> tabs, int mouseX, int mouseY) {
+        for (Tab each : tabs) {
+            int x = tabX(each);
+            boolean selected = each == tab;
+            boolean hover = isOverTab(each, mouseX, mouseY);
+            fill(matrices, x, top + 4, x + tabWidth(each), top + 4 + TAB_HEIGHT,
                     selected ? PANEL_BORDER : hover ? 0xFF303040 : 0xFF202028);
-            textRenderer.drawWithShadow(matrices, bestiary ? "Bestiary" : "Tree", x + 3, top + 6,
-                    selected ? 0xFFFFFF : 0xA0A0A0);
+            textRenderer.drawWithShadow(matrices, each.label, x + 3, top + 6, selected ? 0xFFFFFF : 0xA0A0A0);
         }
     }
 
@@ -660,6 +706,9 @@ public class SkillTreeScreen extends Screen {
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
+        if (tab == Tab.MAGIC) {
+            return magicTab.mouseScrolled(amount);
+        }
         if (bestiaryPage) {
             bestiaryScroll = Math.max(0, Math.min(maxBestiaryScroll(ClassProgress.client),
                     bestiaryScroll - (int) Math.signum(amount)));
@@ -681,13 +730,19 @@ public class SkillTreeScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         ClassProgress progress = ClassProgress.client;
-        if (button == 0 && progress.usesBestiary()) {
-            for (boolean bestiary : new boolean[] { false, true }) {
-                if (isOverTab(bestiary, mouseX, mouseY)) {
-                    bestiaryPage = bestiary;
+        List<Tab> tabs = tabs(progress);
+        if (button == 0 && tabs.size() > 1) {
+            for (Tab each : tabs) {
+                if (isOverTab(each, mouseX, mouseY)) {
+                    tab = each;
+                    bestiaryPage = each == Tab.BESTIARY;
                     return true;
                 }
             }
+        }
+
+        if (tab == Tab.MAGIC) {
+            return magicTab.mouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
         }
 
         if (bestiaryPage) {

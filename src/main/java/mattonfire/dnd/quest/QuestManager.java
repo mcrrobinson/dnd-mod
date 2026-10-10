@@ -527,20 +527,53 @@ public final class QuestManager extends PersistentState {
     /**
      * {@code player} spoke with an NPC with {@code role}: counts {@code talk} objectives for that role,
      * hands in {@code deliver} items for it and {@code collect} items for quests it gives, then pays
-     * out any finished quests it gives. NPC dialogue calls this; until it lands,
-     * {@code /quest admin <player> talk <role>} does.
+     * out any finished quests it gives. NPC dialogue calls this when it opens, and so does
+     * {@code /quest admin <player> talk <role>}.
      */
-    public void talkedTo(ServerPlayerEntity player, String role) {
+    public TalkResult talkedTo(ServerPlayerEntity player, String role) {
         if (QuestHooks.ignored.test(player)) {
-            return;
+            return new TalkResult(0, List.of());
         }
         // An objective can finish a stage and open the next, so go round until nothing changes.
-        for (int pass = 0; pass < 32 && this.handInOnce(player, role); pass++) {
+        int handIns = 0;
+        while (handIns < 32 && this.handInOnce(player, role, true)) {
+            handIns++;
         }
-        this.claim(player, role);
+        List<Text> rewarded = new ArrayList<>();
+        this.claim(player, quest -> role.equals(quest.giver())).forEach(quest -> rewarded.add(quest.title()));
+        return new TalkResult(handIns, List.copyOf(rewarded));
     }
 
-    private boolean handInOnce(ServerPlayerEntity player, String role) {
+    /** What {@link #talkedTo} did: how many objectives it counted or handed in, and which quests paid out. */
+    public record TalkResult(int handIns, List<Text> rewarded) {
+        public boolean any() {
+            return this.handIns > 0 || !this.rewarded.isEmpty();
+        }
+    }
+
+    /**
+     * Whether talking to an NPC with {@code role} would do anything for {@code player} right now: count a
+     * {@code talk} objective, take items for a {@code deliver} or {@code collect} objective, or pay out a
+     * finished quest it gives. Changes nothing. NPC dialogue asks this to decide whether to open.
+     */
+    public boolean hasBusinessWith(ServerPlayerEntity player, String role) {
+        if (QuestHooks.ignored.test(player)) {
+            return false;
+        }
+        if (this.handInOnce(player, role, false)) {
+            return true;
+        }
+        for (Identifier quest : this.unclaimed(player.getUuid())) {
+            QuestDefinition definition = Quests.get(quest);
+            if (definition != null && role.equals(definition.giver())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Finds the first objective talking to {@code role} would count; with {@code apply}, counts it. */
+    private boolean handInOnce(ServerPlayerEntity player, String role, boolean apply) {
         for (QuestInstance instance : this.instancesOf(player.getUuid())) {
             QuestDefinition quest = Quests.get(instance.quest());
             if (quest == null) {
@@ -554,22 +587,27 @@ public final class QuestManager extends PersistentState {
                     continue;
                 }
                 if (objective instanceof QuestObjective.Talk talk && talk.role().equals(role)) {
-                    this.advance(player.getServer(), instance, quest, i, 1);
+                    if (apply) {
+                        this.advance(player.getServer(), instance, quest, i, 1);
+                    }
                     return true;
                 }
-                if (objective instanceof QuestObjective.Deliver deliver && deliver.role().equals(role)) {
-                    int given = take(player, deliver.item(), needed);
-                    if (given > 0) {
+                if (objective instanceof QuestObjective.Deliver deliver && deliver.role().equals(role)
+                        && count(player, deliver.item()) > 0) {
+                    if (apply) {
+                        int given = take(player, deliver.item(), needed);
                         this.advance(player.getServer(), instance, quest, i, given);
-                        return true;
                     }
+                    return true;
                 }
                 if (objective instanceof QuestObjective.Collect collect && role.equals(quest.giver())
                         && count(player, collect.item()) >= needed) {
-                    if (collect.consume()) {
-                        take(player, collect.item(), needed);
+                    if (apply) {
+                        if (collect.consume()) {
+                            take(player, collect.item(), needed);
+                        }
+                        this.advance(player.getServer(), instance, quest, i, needed);
                     }
-                    this.advance(player.getServer(), instance, quest, i, needed);
                     return true;
                 }
             }
@@ -578,8 +616,8 @@ public final class QuestManager extends PersistentState {
     }
 
     /**
-     * {@code player} passed a d20 check for {@code skill} in dialogue. NPC dialogue will call this
-     * after its roll; until then only {@code /quest admin <player> pass <skill>} does.
+     * {@code player} passed a d20 check for {@code skill} in dialogue. NPC dialogue calls this after a
+     * successful roll, and so does {@code /quest admin <player> pass <skill>}.
      */
     public void checkPassed(ServerPlayerEntity player, String skill) {
         if (QuestHooks.ignored.test(player)) {
@@ -738,15 +776,15 @@ public final class QuestManager extends PersistentState {
      * quest's {@code rewards}. Returns how many quests paid out.
      */
     public int claim(ServerPlayerEntity player, @Nullable String role) {
-        return this.claim(player, quest -> role == null || role.equals(quest.giver()));
+        return this.claim(player, quest -> role == null || role.equals(quest.giver())).size();
     }
 
-    private int claim(ServerPlayerEntity player, java.util.function.Predicate<QuestDefinition> which) {
+    private List<QuestDefinition> claim(ServerPlayerEntity player, java.util.function.Predicate<QuestDefinition> which) {
         PlayerRecord record = this.players.get(player.getUuid());
+        List<QuestDefinition> paid = new ArrayList<>();
         if (record == null) {
-            return 0;
+            return paid;
         }
-        int paid = 0;
         for (Pending pending : List.copyOf(record.pending)) {
             if (pending.kind() != PendingKind.REWARD) {
                 continue;
@@ -769,7 +807,7 @@ public final class QuestManager extends PersistentState {
             }
             player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS,
                     0.8F, 1.2F);
-            paid++;
+            paid.add(quest);
         }
         this.needsSync.add(player.getUuid());
         return paid;
@@ -832,6 +870,15 @@ public final class QuestManager extends PersistentState {
             this.claim(player, quest -> quest.giver() == null);
         }
         QuestSync.send(player, this);
+    }
+
+    /** Sets a flag on an instance (dialogue choices, check attempts); returns false if it was already set. */
+    public boolean setFlag(QuestInstance instance, String flag) {
+        boolean added = instance.flags().add(flag);
+        if (added) {
+            this.markDirty();
+        }
+        return added;
     }
 
     // ---------------------------------------------------------------- admin

@@ -110,6 +110,12 @@ public class DungeonWardBlockEntity extends BlockEntity {
     /** Not saved: checks each tracked mob has been missing for, and when a failed start may retry. */
     private final Map<UUID, Integer> missing = new HashMap<>();
     private long nextTry;
+    /** A puzzle room's rune puzzle (see PuzzleRooms), or null. */
+    @Nullable
+    private mattonfire.dnd.dungeon.PuzzleState puzzle;
+    /** A class-check gate in this room (the gate room, a side vault), or null. */
+    @Nullable
+    private mattonfire.dnd.dungeon.GateState gate;
 
     public DungeonWardBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.DUNGEON_WARD_ENTITY, pos, state);
@@ -154,6 +160,26 @@ public class DungeonWardBlockEntity extends BlockEntity {
         return List.copyOf(this.spawnPoints);
     }
 
+    @Nullable
+    public mattonfire.dnd.dungeon.PuzzleState getPuzzle() {
+        return this.puzzle;
+    }
+
+    public void setPuzzle(@Nullable mattonfire.dnd.dungeon.PuzzleState puzzle) {
+        this.puzzle = puzzle;
+        this.markDirty();
+    }
+
+    @Nullable
+    public mattonfire.dnd.dungeon.GateState getGate() {
+        return this.gate;
+    }
+
+    public void setGate(@Nullable mattonfire.dnd.dungeon.GateState gate) {
+        this.gate = gate;
+        this.markDirty();
+    }
+
     public static void tick(World world, BlockPos pos, BlockState state, DungeonWardBlockEntity ward) {
         if (!(world instanceof ServerWorld server) || ward.roomId < 0 || ward.box == null
                 || Math.floorMod(server.getTime() + pos.asLong(), CHECK_INTERVAL) != 0) {
@@ -162,6 +188,16 @@ public class DungeonWardBlockEntity extends BlockEntity {
         BlockBox box = ward.box;
         List<ServerPlayerEntity> inside = server.getPlayers(player -> player.isAlive() && !player.isSpectator()
                 && !player.isCreative() && box.contains(player.getBlockPos()));
+        if (ward.puzzle != null || ward.gate != null) {
+            // Puzzles and gates keep up with resets even with nobody inside, so they're ready before anyone arrives.
+            DungeonState dungeon = ward.dungeon(server);
+            if (dungeon != null && ward.puzzle != null) {
+                mattonfire.dnd.dungeon.PuzzleRooms.tick(server, ward, ward.puzzle, dungeon, inside);
+            }
+            if (dungeon != null && ward.gate != null) {
+                mattonfire.dnd.dungeon.DungeonGates.tick(server, ward, ward.gate, dungeon);
+            }
+        }
         if (inside.isEmpty() && !ward.engaged) {
             return;
         }
@@ -183,8 +219,8 @@ public class DungeonWardBlockEntity extends BlockEntity {
             return;
         }
         if (!ward.role.combat()) {
-            // Rooms with no fight count as cleared once someone walks in.
-            if (!inside.isEmpty() && room.state() == RoomState.UNTOUCHED) {
+            // Rooms with no fight count as cleared once someone walks in (a puzzle room once it's solved).
+            if (!inside.isEmpty() && room.state() == RoomState.UNTOUCHED && (ward.puzzle == null || ward.puzzle.solved())) {
                 dungeon.setRoomState(room, RoomState.CLEARED);
                 DungeonEvents.ROOM_CLEARED.invoker().onRoomCleared(server, dungeon, room, inside);
             }
@@ -614,6 +650,12 @@ public class DungeonWardBlockEntity extends BlockEntity {
         nbt.put("Seals", seals);
         nbt.putLong("LastSeen", this.lastSeen);
         nbt.putInt("PartySize", this.partySize);
+        if (this.puzzle != null) {
+            nbt.put("Puzzle", this.puzzle.toNbt());
+        }
+        if (this.gate != null) {
+            nbt.put("Gate", this.gate.toNbt());
+        }
     }
 
     @Override
@@ -642,5 +684,7 @@ public class DungeonWardBlockEntity extends BlockEntity {
         }
         this.lastSeen = nbt.getLong("LastSeen");
         this.partySize = Math.max(1, nbt.getInt("PartySize"));
+        this.puzzle = nbt.contains("Puzzle") ? mattonfire.dnd.dungeon.PuzzleState.fromNbt(nbt.getCompound("Puzzle")) : null;
+        this.gate = nbt.contains("Gate") ? mattonfire.dnd.dungeon.GateState.fromNbt(nbt.getCompound("Gate")) : null;
     }
 }

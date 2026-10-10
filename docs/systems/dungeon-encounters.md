@@ -5,7 +5,7 @@ The dungeons themselves (layout, tier, rooms, `/dungeon`) are on [Dungeons](../s
 
 ## How it works
 ### Room fights
-Every room with a fight (Encounter small, Encounter large, Mid-boss room, Boss room) runs **UNTOUCHED -> ACTIVE -> CLEARED**. Rooms with no fight (antechamber, trap corridor, gate, puzzle, vault, side rooms) count as cleared as soon as someone walks in, as before.
+Every room with a fight (Encounter small, Encounter large, Mid-boss room, Boss room) runs **UNTOUCHED -> ACTIVE -> CLEARED**. Rooms with no fight (antechamber, trap corridor, gate, vault, side rooms) count as cleared as soon as someone walks in, as before. The puzzle room counts as cleared once it's solved (see [Dungeon puzzles and gates](dungeon-puzzles-and-gates.md)).
 
 1. **Trigger**: the room's ward checks every 10 ticks. The first survival/adventure player past the 2-block walls starts the fight; in the boss room you have to be 5 blocks further in. Nothing happens on Peaceful, and the room stays UNTOUCHED.
 2. **Spawn**: the encounter appears at the room's spawn points, furthest from you first, with a puff of smoke, a rattle and an evoker's summoning sound.

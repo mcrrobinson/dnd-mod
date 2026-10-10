@@ -25,6 +25,9 @@ import net.minecraft.world.Heightmap;
  * /dungeon reset         repopulate it now: every room untouched, the boss available again (coffer claims stay)
  * /dungeon tier <1-4>    change its challenge tier
  * /dungeon trigger <room> start that room's fight now, for your party (you needn't be in the room)
+ * /dungeon puzzle goto <0-3>      (testing) stand in front of a rune pillar (clockwise from north-west), facing it
+ * /dungeon puzzle prime right|wrong (testing) turn every rune to one short of the answer (or of a wrong one),
+ *                        so a single use on each pillar solves the puzzle (or burns)
  * /dungeon cutaway       (testing) remove everything from 3 blocks above its floor up to the sky,
  *                        so its layout can be screenshotted from above. Destructive.
  *
@@ -44,7 +47,64 @@ public class DungeonCommand {
                         .then(CommandManager.argument("tier", IntegerArgumentType.integer(1, 4)).executes(DungeonCommand::tier)))
                 .then(CommandManager.literal("trigger")
                         .then(CommandManager.argument("room", IntegerArgumentType.integer(0)).executes(DungeonCommand::trigger)))
+                .then(CommandManager.literal("puzzle")
+                        .then(CommandManager.literal("goto")
+                                .then(CommandManager.argument("pillar", IntegerArgumentType.integer(0, 3)).executes(DungeonCommand::puzzleGoto)))
+                        .then(CommandManager.literal("prime")
+                                .then(CommandManager.literal("right").executes(context -> puzzlePrime(context, true)))
+                                .then(CommandManager.literal("wrong").executes(context -> puzzlePrime(context, false)))))
                 .then(CommandManager.literal("cutaway").executes(DungeonCommand::cutaway)));
+    }
+
+    private static DungeonState.Room puzzleRoom(DungeonState d) throws CommandSyntaxException {
+        for (DungeonState.Room room : d.rooms()) {
+            if (room.role() == mattonfire.dnd.dungeon.RoomRole.PUZZLE) {
+                return room;
+            }
+        }
+        throw new SimpleCommandExceptionType(Text.literal("This dungeon has no puzzle room")).create();
+    }
+
+    private static int puzzleGoto(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        DungeonState d = find(context);
+        DungeonState.Room room = puzzleRoom(d);
+        int pillar = IntegerArgumentType.getInteger(context, "pillar");
+        BlockPos rune = mattonfire.dnd.dungeon.PuzzleRooms.pillarSpot(d, room, pillar);
+        // West pillars face east and east ones west: stand two blocks out in front, looking back at it.
+        boolean west = rune.getX() < room.box().getCenter().getX();
+        double x = rune.getX() + 0.5 + (west ? 2 : -2);
+        float yaw = west ? 90.0F : -90.0F;
+        source.getPlayerOrThrow().teleport(source.getWorld(), x, d.floorY() + 1, rune.getZ() + 0.5, yaw, 10.0F);
+        source.sendFeedback(Text.literal("At pillar " + pillar + ", rune " + rune.toShortString()), false);
+        return 1;
+    }
+
+    private static int puzzlePrime(CommandContext<ServerCommandSource> context, boolean right) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        DungeonState d = find(context);
+        DungeonState.Room room = puzzleRoom(d);
+        DungeonWardBlockEntity ward = DungeonCombat.ward(source.getWorld(), d, room);
+        if (ward == null || ward.getPuzzle() == null) {
+            throw new SimpleCommandExceptionType(Text.literal("The puzzle room's ward isn't loaded (or has no puzzle)")).create();
+        }
+        int[] targets = mattonfire.dnd.dungeon.PuzzleRooms.prime(source.getWorld(), ward.getPuzzle(), right);
+        source.sendFeedback(Text.literal("Runes primed: one use on each pillar makes them ["
+                + mattonfire.dnd.dungeon.PuzzleState.describe(targets) + "], " + (right ? "the answer" : "a wrong answer")), false);
+        return 1;
+    }
+
+    /** "unsolved, runes [moon, sun, eye, skull], answer [sun, (any), eye, skull], defaced #0 (sun), 1 wrong answer(s)". */
+    private static String describePuzzle(ServerWorld world, mattonfire.dnd.dungeon.PuzzleState puzzle) {
+        int[] glyphs = new int[puzzle.pillars().size()];
+        for (int i = 0; i < glyphs.length; i++) {
+            var state = world.getBlockState(puzzle.pillars().get(i));
+            glyphs[i] = state.getBlock() instanceof mattonfire.dnd.classes.Blocks.RuneBlock
+                    ? state.get(mattonfire.dnd.classes.Blocks.RuneBlock.GLYPH) : mattonfire.dnd.dungeon.PuzzleState.FREE;
+        }
+        return (puzzle.solved() ? "SOLVED" : "unsolved") + ", runes [" + mattonfire.dnd.dungeon.PuzzleState.describe(glyphs)
+                + "], answer [" + mattonfire.dnd.dungeon.PuzzleState.describe(puzzle.solution()) + "] (clockwise from north-west), defaced #"
+                + puzzle.defaced() + " (" + puzzle.defacedGlyph().id() + "), " + puzzle.wrongAnswers() + " wrong answer(s)";
     }
 
     private static DungeonState find(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -77,6 +137,15 @@ public class DungeonCommand {
             }
             source.sendFeedback(Text.literal("  #" + room.id() + " " + room.role().label() + ": " + room.state() + fight
                     + " at " + c.getX() + " " + d.floorY() + " " + c.getZ()), false);
+            DungeonWardBlockEntity extra = room.role() == mattonfire.dnd.dungeon.RoomRole.PUZZLE
+                    || room.role() == mattonfire.dnd.dungeon.RoomRole.GATE
+                    || room.role() == mattonfire.dnd.dungeon.RoomRole.SIDE_VAULT ? DungeonCombat.ward(world, d, room) : null;
+            if (extra != null && extra.getPuzzle() != null) {
+                source.sendFeedback(Text.literal("     puzzle: " + describePuzzle(world, extra.getPuzzle())), false);
+            }
+            if (extra != null && extra.getGate() != null) {
+                source.sendFeedback(Text.literal("     gate: " + mattonfire.dnd.dungeon.DungeonGates.describe(world, extra.getGate())), false);
+            }
         }
         // Soundness check over the loaded rooms: no water or lava inside, and every room but the
         // entrance roofed over by the ground

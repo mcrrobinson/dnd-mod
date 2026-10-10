@@ -1,0 +1,79 @@
+# Rune-pillar puzzle and class-check gates, in a crypt made with /place structure at 1200, 1200 (made fresh,
+# so it has this ticket's rooms; the dev world's natural crypt was generated before them).
+# Covers: /dungeon info's puzzle and gate lines, a wrong answer (vents burn, pillars shuffle), solving it with
+# `use` on each pillar (exit seal opens, room CLEARED), and /dungeon reset (unsolved, resealed, gate rebuilt).
+# Run on a scratch copy of the run dir: timeout 400 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-puzzle.txt
+# Check: [Puzzle], [Gate] and [CHAT] lines in logs/latest.log ("Test passed"), screenshots/dungeon-puzzle-*.png.
+wait 40
+closescreen
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/difficulty peaceful
+/gamemode spectator
+/tp @s 1200 150 1200
+wait 200
+/place structure dndclasses:crypt 1200 64 1200
+wait 100
+/effect give @s minecraft:night_vision 9999 0 true
+/dungeon info
+
+# 1. A wrong answer: one use on each pillar sets them to a wrong combination; the vents fire after 2 s.
+/gamemode survival
+/dungeon puzzle goto 0
+wait 40
+/dungeon puzzle prime wrong
+/dungeon info
+hud off
+screenshot dungeon-puzzle-room
+hud on
+use
+wait 5
+/dungeon puzzle goto 1
+wait 5
+use
+wait 5
+/dungeon puzzle goto 2
+wait 5
+use
+wait 5
+/dungeon puzzle goto 3
+wait 5
+use
+wait 50
+screenshot dungeon-puzzle-wrong
+/dungeon info
+
+# 2. The right answer: the exit seal opens and the room is CLEARED.
+/dungeon puzzle prime right
+/dungeon puzzle goto 0
+wait 5
+use
+wait 5
+/dungeon puzzle goto 1
+wait 5
+use
+wait 5
+/dungeon puzzle goto 2
+wait 5
+use
+wait 5
+/dungeon puzzle goto 3
+wait 5
+use
+wait 20
+screenshot dungeon-puzzle-solved
+/dungeon info
+
+# 3. Studying the murals (sneak + use, empty hand): an Investigation/Arcana roll; after a reset it can be tried again.
+/dungeon reset
+wait 40
+/dungeon info
+/dungeon puzzle goto 0
+wait 5
+sneak on
+use
+sneak off
+wait 10
+screenshot dungeon-puzzle-study
+quit

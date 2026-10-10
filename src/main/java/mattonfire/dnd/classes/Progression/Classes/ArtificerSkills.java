@@ -68,6 +68,11 @@ public class ArtificerSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("artificer.armorer", "artificer.battle_smith");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("artificer.arcane_armor", "Arcane Armor", "+8 armor and +4 armor toughness for 30 seconds.",
@@ -80,10 +85,10 @@ public class ArtificerSkills extends ClassSkills {
                         4, 1, 2, 2, "artificer.reinforced_plating"),
                 passive("artificer.thorned_plating", "Thorned Plating", "Mobs that hit you in melee take 2 damage.",
                         "minecraft:cactus", 1, 2, 1, "artificer.repair_field"),
-                // Artillerist
+                // Battle Smith
                 passive("artificer.tinkerer", "Tinkerer", "Tools and weapons lose durability half as often.",
                         "minecraft:smithing_table", 1, 0, 3, "artificer.arcane_armor"),
-                active("artificer.iron_defender", "Iron Defender", "An iron golem fights for you for 30 seconds.",
+                active("artificer.iron_defender", "Steel Defender", "An iron golem fights for you for 30 seconds.",
                         "minecraft:carved_pumpkin", 6, 1, 0, 2, "artificer.tinkerer"),
                 passive("artificer.overclock", "Overclock", "Haste I and 10% faster attacks.",
                         "minecraft:redstone", 1, 0, 1, "artificer.iron_defender"),

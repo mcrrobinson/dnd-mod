@@ -14,6 +14,8 @@ Right click the book to open it. It reads your **current** class each time you o
 | 4 | Your role: primary and secondary [party role](party-roles.md), what your class does in a party and what the role is for |
 | 5 | Obstacles you handle. Bold ones only your class can get past |
 
+If you have a [race](../races/races.md), two "Your heritage" pages follow at the back: the race (and Dragonborn ancestry), its summary, ability bonuses and stat modifiers, then its traits.
+
 Long entries carry over onto the next page instead of being cut off. If you haven't picked a class yet, the book describes every class.
 
 Picking a class prints the same pros, cons and special in chat.

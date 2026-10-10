@@ -20,15 +20,21 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
 - [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
 
+## Races
+- [Races](races/races.md): the race picker (before the class), 8 races with stat modifiers, `/dndrace` and the `dndRaces` gamerule (PR #119)
+
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
-- [Class progression](systems/class-progression.md): class levels, ability ranks at the Attunement Table and the Bard/Druid bestiary
-- [Admin commands](systems/admin-commands.md): `/dndclass get|set`
+- [Rests and charges](systems/rests.md): charges for major actives, short and long rests, Hit Dice (PR #120)
+- [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary (PR #116)
+- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD (PR #125)
+- [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll (PR #118)
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
+- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items and `/dndmagic` (PR #117)
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 
 ## Mobs

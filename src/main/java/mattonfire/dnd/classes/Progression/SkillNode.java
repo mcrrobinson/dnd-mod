@@ -30,6 +30,21 @@ public record SkillNode(String id, String name, String description, String icon,
         return requires.isEmpty();
     }
 
+    /**
+     * Charges it costs on top of its mana when rests are on (see {@code Rest.Charges}, which can
+     * override this per node): the root special 1, the row-0 capstone 2, any other active
+     * costing 7+ mana 1, everything else 0.
+     */
+    public int chargeCost() {
+        if (!isActive())
+            return 0;
+        if (isRoot())
+            return 1;
+        if (row == 0)
+            return 2;
+        return manaCost >= 7 ? 1 : 0;
+    }
+
     /** How many ranks it has, from its {@link Ranks}; 1 if it has none. */
     public int maxRank() {
         return Ranks.maxRank(id);

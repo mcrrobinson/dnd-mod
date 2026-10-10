@@ -1,0 +1,66 @@
+# Race picker, one-pick rule, modifiers without stacking, death persistence and the dndRaces gamerule. Then run race-persist-check.txt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/race-pick.txt
+# Expect in latest.log: race none at first; dwarf after the pick; "Ignored race pick elf" for the second pick;
+# after 5 /dndrace set switches one speed modifier of -0.08, max health class + 2, attack range 0;
+# dwarf again after dying; an error for dragonborn without an ancestry; dragonborn storm at the end.
+# Screenshots: race-picker (grid), race-ancestry (Dragonborn step), race-picked (chat intro), race-rule-off (no picker).
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+/dndclass set @s barbarian
+/dndrace set @s none
+/dndrace get @s
+racepicker on
+wait 20
+screenshot race-picker
+click 70 33
+wait 10
+screenshot race-ancestry
+racepick dwarf
+wait 20
+screenshot race-picked
+/dndrace get @s
+/attribute @s minecraft:generic.movement_speed modifier value get 5a1d7c2e-3b0f-4e11-9a6e-7d2c1f0e5b01
+/attribute @s minecraft:generic.max_health get
+# A second pick packet must be ignored
+racepick elf
+wait 10
+/dndrace get @s
+# Five switches, ending on dwarf
+/dndrace set @s elf
+/dndrace set @s dwarf
+/dndrace set @s halfling
+/attribute @s reach-entity-attributes:attack_range get
+/dndrace set @s dragonborn frost
+/dndrace set @s dwarf
+wait 5
+/attribute @s minecraft:generic.movement_speed get
+/attribute @s minecraft:generic.movement_speed modifier value get 5a1d7c2e-3b0f-4e11-9a6e-7d2c1f0e5b01
+/attribute @s minecraft:generic.max_health get
+/attribute @s minecraft:generic.knockback_resistance get
+/attribute @s reach-entity-attributes:attack_range get
+/dndrace set @s dragonborn
+/dndrace set @s notarace
+/dndrace list
+# Death keeps the race and its modifiers
+/kill @s
+wait 20
+respawn
+wait 40
+/dndrace get @s
+/attribute @s minecraft:generic.max_health get
+/attribute @s minecraft:generic.movement_speed get
+# Gamerule off: no picker, no modifiers
+/dndrace set @s none
+wait 20
+/gamerule dndRaces false
+wait 20
+screenshot race-rule-off
+/attribute @s minecraft:generic.max_health get
+/gamerule dndRaces true
+wait 20
+racepick dragonborn storm
+wait 10
+/dndrace get @s
+quit

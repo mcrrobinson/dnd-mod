@@ -21,6 +21,7 @@ import mattonfire.dnd.classes.Progression.Abilities;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModBlocks;
+import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.Registry.ModEntities;
@@ -128,6 +129,12 @@ public class DnDClasses implements ModInitializer {
                         if (mana < cost) {
                                 return;
                         }
+                        // Major actives also cost charges, which only rests restore (off with dndRests false)
+                        if (!Charges.canAfford(player, skill)) {
+                                player.sendMessage(Text.literal("No charges left: rest to recover")
+                                                .formatted(Formatting.RED), true);
+                                return;
+                        }
                         // A Beholder's anti-magic cone: the power fizzles and the mana is kept
                         if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)) {
                                 return;
@@ -139,6 +146,7 @@ public class DnDClasses implements ModInitializer {
                         if (success) {
                                 ManaManager.setMana(player, mana - cost);
                                 ManaManager.sync(player);
+                                Charges.spend(player, skill);
                                 ServerPlayNetworking.send(player,
                                                 DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
                                                 new PacketByteBuf(Unpooled.buffer()));
@@ -198,6 +206,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
                 // Before DwarfGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
+                mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
@@ -221,6 +230,7 @@ public class DnDClasses implements ModInitializer {
                 ModItems.registerModItems();
                 ModEffects.registerEffects();
                 ModPotions.registerPotions();
+                mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
                 ModEnchantments.registerEnchantments();
@@ -406,6 +416,9 @@ public class DnDClasses implements ModInitializer {
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndRaceCommand
+                                                .register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Party.PartyCommand
                                                 .register(dispatcher));
                 mattonfire.dnd.classes.Party.PartyEvents.register();
@@ -423,6 +436,8 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Progression.register();
                 ClassLifecycle.register();
+                mattonfire.dnd.classes.Race.RaceLifecycle.register();
+                mattonfire.dnd.classes.Rest.Rests.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

@@ -37,18 +37,28 @@ Wizards get 3 extra XP for each hostile mob killed with a staff, magic, an explo
 
 "Staff damage" below means a melee hit with an elemental staff, or a staff blast you set off yourself.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Arcane Explosion | Root | Active | 0 | 9 | The special above: 12 / 28 / 48 / 72-block radius and Resistance V for 2 / 3 / 4 / 5 s (ranks I-IV) |
-| Arcane Focus | Evocation | Passive | 1 | | 25% more staff damage |
-| Frost Nova | Evocation | Active | 1 | 4 | Freezes hostile mobs within 6 blocks for 3 s |
-| Spell Mastery | Evocation | Passive | 1 | | Your own blasts and meteors can't hurt you, and staff damage to frozen mobs is 50% higher |
-| Mage Armor | Abjuration | Passive | 1 | | +4 armor |
-| Arcane Shield | Abjuration | Active | 1 | 4 | Absorption II (4 hearts) for 15 s |
-| Fortitude | Abjuration | Passive | 1 | | +2 hearts of max health |
+| Arcane Focus | School of Evocation | Passive | 1 | | 25% more staff damage |
+| Frost Nova | School of Evocation | Active | 1 | 4 | Freezes hostile mobs within 6 blocks for 3 s |
+| Spell Mastery | School of Evocation | Passive | 1 | | Your own blasts and meteors can't hurt you, and staff damage to frozen mobs is 50% higher |
+| Mage Armor | School of Abjuration | Passive | 1 | | +4 armor |
+| Arcane Shield | School of Abjuration | Active | 1 | 4 | Absorption II (4 hearts) for 15 s |
+| Fortitude | School of Abjuration | Passive | 1 | | +2 hearts of max health |
 | Meteor Swarm | Capstone | Active | 2 | 9 | A fireball falls every 3 ticks around the spot you're looking at (up to 30 blocks, 5-block spread) for 3 s. Each explodes at power 1.5 without breaking blocks or starting fires |
 
 Frost Nova into a staff combo is the Evocation play: freeze them, then hit them for 50% more with Spell Mastery. Abjuration is the safer path and brings you up to 14 health with Fortitude. Without Spell Mastery, your own meteors can hurt you, so don't aim them at your feet.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| School of Evocation | Right | Arcane Focus (first node, open to both), Frost Nova, Spell Mastery | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt party members or their pets |
+| School of Abjuration | Left | Mage Armor (first node, open to both), Arcane Shield, Fortitude | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4) for 60 seconds |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> wizard` (see [Admin commands](../systems/admin-commands.md)).

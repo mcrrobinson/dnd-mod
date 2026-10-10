@@ -1,16 +1,21 @@
 package mattonfire.dnd.classes.Client.Hud;
 
+import mattonfire.dnd.classes.Rest.Charges;
+import mattonfire.dnd.classes.Rest.RestSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.ClassInfo;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
+import mattonfire.dnd.classes.Progression.Subclass;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.minecraft.client.gui.screen.ConfirmScreen;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.item.Item;
@@ -28,7 +33,8 @@ import net.minecraft.util.Identifier;
  * spend skill points, or from an Attunement Table ({@code attuning}) where
  * clicking an unlocked skill equips it and right-clicking ranks it up. Classes
  * with a bestiary get a second page listing the creatures they've learned,
- * unlocked there too.
+ * unlocked there too. A banner over each branch names its subclass; from
+ * class level 3, clicking one at a table chooses it (after a confirm).
  */
 public class SkillTreeScreen extends Screen {
     private static final int PANEL_WIDTH = 260;
@@ -51,6 +57,11 @@ public class SkillTreeScreen extends Screen {
     private static final int BESTIARY_ROWS = 7;
     private static final int CELL_WIDTH = 118;
     private static final int CELL_HEIGHT = 18;
+
+    private static final int HEADER_WIDTH = 96;
+    private static final int HEADER_TOP = 48;
+    private static final int HEADER_HEIGHT = 32;
+    private static final int PADLOCK = 0xFFB0B0B8;
 
     private final boolean attuning;
     private int left;
@@ -137,11 +148,21 @@ public class SkillTreeScreen extends Screen {
             }
         }
 
+        Subclass hoveredSubclass = null;
+        for (Subclass subclass : ClassTrees.subclasses(dndClass)) {
+            drawSubclassHeader(matrices, progress, subclass, mouseX, mouseY);
+            if (isOverHeader(subclass, mouseX, mouseY)) {
+                hoveredSubclass = subclass;
+            }
+        }
+
         renderFooter(matrices, progress, centerX);
         super.render(matrices, mouseX, mouseY, delta);
 
         if (hovered != null) {
             renderOrderedTooltip(matrices, tooltip(progress, hovered), mouseX, mouseY);
+        } else if (hoveredSubclass != null) {
+            renderOrderedTooltip(matrices, subclassTooltip(progress, hoveredSubclass), mouseX, mouseY);
         }
     }
 
@@ -180,7 +201,7 @@ public class SkillTreeScreen extends Screen {
 
         SkillNode active = progress.activeNode();
         drawTextWithShadow(matrices, textRenderer, Text.literal("Active: ").formatted(Formatting.GRAY)
-                .append(Text.literal(active.name() + " (" + active.manaCost() + " mana)")
+                .append(Text.literal(active.name() + " (" + active.manaCost() + " mana" + chargeSuffix(active) + ")")
                         .formatted(Formatting.AQUA)),
                 left + 12, y, 0xFFFFFF);
 
@@ -196,6 +217,8 @@ public class SkillTreeScreen extends Screen {
         String hint;
         if (bestiaryPage) {
             hint = attuning ? "Click a learned creature to unlock it." : "Creatures are unlocked at an Attunement Table.";
+        } else if (progress.canChooseSubclass()) {
+            hint = attuning ? "Choose your subclass: click a branch's banner." : "Choose your subclass at an Attunement Table.";
         } else {
             hint = attuning ? "Click to equip, right-click to rank up." : "Loadouts are changed at an Attunement Table.";
         }
@@ -245,6 +268,9 @@ public class SkillTreeScreen extends Screen {
         if (!unlocked) {
             fill(matrices, x, y, x + NODE_SIZE, y + NODE_SIZE, available ? 0x60000000 : 0xB0000000);
         }
+        if (!unlocked && progress.subclassLock(node) == ClassProgress.SubclassLock.OTHER_SUBCLASS) {
+            drawPadlock(matrices, x + NODE_SIZE - 7, y + 1);
+        }
         int maxRank = node.maxRank();
         if (maxRank > 1) {
             // One pip per rank along the bottom edge, lit up to the current rank.
@@ -265,7 +291,17 @@ public class SkillTreeScreen extends Screen {
         lines.add((node.isActive()
                 ? Text.literal("Active - " + node.manaCost() + " mana").formatted(Formatting.AQUA)
                 : Text.literal("Passive").formatted(Formatting.GREEN)).asOrderedText());
+        Text chargeLine = chargeLine(node);
+        if (chargeLine != null) {
+            lines.add(chargeLine.asOrderedText());
+        }
         lines.addAll(textRenderer.wrapLines(Text.literal(node.description()).formatted(Formatting.GRAY), 180));
+        Subclass owner = ClassTrees.subclassOf(node.id());
+        if (owner != null) {
+            lines.add(Text.literal(owner.name()).formatted(Formatting.LIGHT_PURPLE).asOrderedText());
+        } else if (ClassTrees.isShared(node)) {
+            lines.add(Text.literal("Any " + subclassTerm(progress)).formatted(Formatting.LIGHT_PURPLE).asOrderedText());
+        }
         addRankLines(lines, progress, node);
 
         Text status;
@@ -276,6 +312,13 @@ public class SkillTreeScreen extends Screen {
         } else if (progress.isUnlocked(node.id())) {
             status = Text.literal(attuning ? "Click to equip" : "Unlocked - equip at an Attunement Table")
                     .formatted(Formatting.GOLD);
+        } else if (progress.subclassLock(node) == ClassProgress.SubclassLock.NEEDS_SUBCLASS) {
+            String term = subclassTerm(progress);
+            String article = "aeiou".indexOf(term.charAt(0)) >= 0 ? "an " : "a ";
+            status = Text.literal("Needs " + article + term + " (level " + ClassProgress.SUBCLASS_LEVEL + ")")
+                    .formatted(Formatting.RED);
+        } else if (progress.subclassLock(node) == ClassProgress.SubclassLock.OTHER_SUBCLASS) {
+            status = Text.literal(owner.name() + " only").formatted(Formatting.RED);
         } else if (progress.canUnlock(node)) {
             status = Text.literal("Click to unlock (" + cost(node) + ")").formatted(Formatting.YELLOW);
         } else if (progress.isReachable(node)) {
@@ -291,6 +334,153 @@ public class SkillTreeScreen extends Screen {
             lines.add(rankStatus.asOrderedText());
         }
         return lines;
+    }
+
+    // ---- Subclasses ----
+
+    private int headerX(Subclass subclass) {
+        return left + PANEL_WIDTH / 2 + (subclass.col() - 1) * COL_SPACING - HEADER_WIDTH / 2;
+    }
+
+    private boolean isOverHeader(Subclass subclass, double mouseX, double mouseY) {
+        int x = headerX(subclass);
+        return mouseX >= x && mouseX < x + HEADER_WIDTH && mouseY >= top + HEADER_TOP
+                && mouseY < top + HEADER_TOP + HEADER_HEIGHT;
+    }
+
+    private static String subclassTerm(ClassProgress progress) {
+        ClassInfo info = ClassInfo.get(progress.dndClass);
+        return info == null ? "subclass" : info.subclassTerm();
+    }
+
+    /** The banner over a branch: the subclass's name, and its feature or how to choose it. */
+    private void drawSubclassHeader(MatrixStack matrices, ClassProgress progress, Subclass subclass, int mouseX,
+            int mouseY) {
+        int x = headerX(subclass);
+        int y = top + HEADER_TOP;
+        boolean chosen = progress.hasSubclass(subclass.id());
+        boolean other = !chosen && !progress.subclass.isEmpty();
+        boolean choosable = progress.canChooseSubclass();
+
+        int border;
+        Text status;
+        int nameColor;
+        if (chosen) {
+            border = GREEN;
+            nameColor = 0xFFE0B040;
+            status = Text.literal(subclass.featureName()).formatted(Formatting.AQUA);
+        } else if (other) {
+            border = 0xFF303038;
+            nameColor = 0x606060;
+            status = Text.literal("Sealed").formatted(Formatting.DARK_GRAY);
+        } else if (choosable) {
+            float pulse = (float) (Math.sin(System.currentTimeMillis() / 200.0) * 0.5 + 0.5);
+            int r = 0x90 + (int) (pulse * 0x50);
+            int g = 0x70 + (int) (pulse * 0x40);
+            border = 0xFF000000 | r << 16 | g << 8 | 0x30;
+            nameColor = 0xFFE0B040;
+            status = Text.literal(attuning ? "Click to choose" : "Choose at a table").formatted(Formatting.YELLOW);
+        } else {
+            border = 0xFF404048;
+            nameColor = 0xA0A0A0;
+            status = Text.literal("Level " + ClassProgress.SUBCLASS_LEVEL).formatted(Formatting.GRAY);
+        }
+        boolean hover = isOverHeader(subclass, mouseX, mouseY);
+        fill(matrices, x - 1, y - 1, x + HEADER_WIDTH + 1, y + HEADER_HEIGHT + 1, border);
+        fill(matrices, x, y, x + HEADER_WIDTH, y + HEADER_HEIGHT, hover ? 0xFF262636 : chosen ? 0xFF201C30 : 0xFF14141A);
+
+        List<OrderedText> name = textRenderer.wrapLines(Text.literal(subclass.name()), HEADER_WIDTH - 4);
+        if (name.size() > 2) {
+            name = name.subList(0, 2);
+        }
+        int lines = name.size() + 1;
+        int textY = y + (HEADER_HEIGHT - lines * 9) / 2 + 1;
+        int centerX = x + HEADER_WIDTH / 2;
+        for (OrderedText line : name) {
+            drawCenteredTextWithShadow(matrices, textRenderer, line, centerX, textY, nameColor);
+            textY += 9;
+        }
+        drawCenteredTextWithShadow(matrices, textRenderer, status.asOrderedText(), centerX, textY, 0xFFFFFF);
+    }
+
+    private List<OrderedText> subclassTooltip(ClassProgress progress, Subclass subclass) {
+        List<OrderedText> lines = new ArrayList<>();
+        lines.add(Text.literal(subclass.name()).formatted(Formatting.BOLD, Formatting.WHITE).asOrderedText());
+        if (!subclass.flavour().isEmpty()) {
+            lines.addAll(textRenderer.wrapLines(Text.literal(subclass.flavour())
+                    .formatted(Formatting.ITALIC, Formatting.GRAY), 200));
+        }
+        lines.add(Text.literal("Subclass feature: " + subclass.featureName()).formatted(Formatting.AQUA)
+                .asOrderedText());
+        lines.addAll(textRenderer.wrapLines(Text.literal(subclass.featureDescription())
+                .formatted(Formatting.GRAY), 200));
+        if (!subclass.featureReady()) {
+            lines.add(Text.literal("(not active yet)").formatted(Formatting.DARK_GRAY).asOrderedText());
+        }
+        lines.add(Text.literal("Free, and doesn't use a passive slot.").formatted(Formatting.DARK_AQUA)
+                .asOrderedText());
+
+        Text status;
+        if (progress.hasSubclass(subclass.id())) {
+            status = Text.literal("Your " + subclassTerm(progress)).formatted(Formatting.GREEN);
+        } else if (!progress.subclass.isEmpty()) {
+            status = Text.literal("Sealed: you chose " + progress.subclass().name()).formatted(Formatting.DARK_GRAY);
+        } else if (progress.level() < ClassProgress.SUBCLASS_LEVEL) {
+            status = Text.literal("Choose at class level " + ClassProgress.SUBCLASS_LEVEL)
+                    .formatted(Formatting.RED);
+        } else if (attuning) {
+            status = Text.literal("Click to choose. The other branch's upper nodes will be sealed.")
+                    .formatted(Formatting.YELLOW);
+        } else {
+            status = Text.literal("Choose at an Attunement Table").formatted(Formatting.GOLD);
+        }
+        lines.addAll(textRenderer.wrapLines(status, 200));
+        return lines;
+    }
+
+    /** A little padlock, 6 pixels wide, for nodes only the other subclass can have. */
+    private static void drawPadlock(MatrixStack matrices, int x, int y) {
+        // Shackle
+        fill(matrices, x + 1, y, x + 5, y + 1, PADLOCK);
+        fill(matrices, x + 1, y, x + 2, y + 3, PADLOCK);
+        fill(matrices, x + 4, y, x + 5, y + 3, PADLOCK);
+        // Body
+        fill(matrices, x, y + 3, x + 6, y + 8, PADLOCK);
+        fill(matrices, x + 2, y + 5, x + 4, y + 6, 0xFF303038);
+    }
+
+    private void confirmSubclass(Subclass subclass) {
+        ClassProgress progress = ClassProgress.client;
+        List<Subclass> all = ClassTrees.subclasses(progress.dndClass);
+        Subclass other = all.stream().filter(s -> s != subclass).findFirst().orElse(subclass);
+        String article = "AEIOU".indexOf(subclass.title().charAt(0)) >= 0 ? "an " : "a ";
+        Text title = Text.literal("Become " + article + subclass.title() + "?");
+        Text message = Text.literal(subclass.name() + " - " + subclass.featureName() + ": "
+                + subclass.featureDescription() + ".\n\n" + other.name()
+                + "'s upper nodes will be sealed. Only a Tome of Clear Thought can undo this.");
+        client.setScreen(new ConfirmScreen(yes -> {
+            if (yes) {
+                send(Progression.C2S_CHOOSE_SUBCLASS, subclass.id());
+            }
+            client.setScreen(this);
+        }, title, message));
+    }
+
+    /** "Costs N charge(s), recharges on a short/long rest", or null if it costs none or rests are off. */
+    private static Text chargeLine(SkillNode node) {
+        RestSnapshot rest = RestSnapshot.client;
+        int cost = Charges.cost(node);
+        if (!node.isActive() || cost <= 0 || !rest.enabled() || rest.max() <= 0) {
+            return null;
+        }
+        return Text.literal("Costs " + cost + " charge" + (cost == 1 ? "" : "s") + ", recharges on a "
+                + rest.rechargeGroup().label()).formatted(Formatting.LIGHT_PURPLE);
+    }
+
+    private static String chargeSuffix(SkillNode node) {
+        int cost = Charges.cost(node);
+        RestSnapshot rest = RestSnapshot.client;
+        return cost > 0 && rest.enabled() && rest.max() > 0 ? ", " + cost + " charge" + (cost == 1 ? "" : "s") : "";
     }
 
     private void addRankLines(List<OrderedText> lines, ClassProgress progress, SkillNode node) {
@@ -506,6 +696,17 @@ public class SkillTreeScreen extends Screen {
                 send(Progression.C2S_BESTIARY_UNLOCK, id);
             }
             return id != null || super.mouseClicked(mouseX, mouseY, button);
+        }
+
+        if (button == 0) {
+            for (Subclass subclass : ClassTrees.subclasses(progress.dndClass)) {
+                if (isOverHeader(subclass, mouseX, mouseY)) {
+                    if (attuning && progress.canChooseSubclass()) {
+                        confirmSubclass(subclass);
+                    }
+                    return true;
+                }
+            }
         }
 
         if (button == 0 || button == 1) {

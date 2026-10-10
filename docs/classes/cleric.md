@@ -32,18 +32,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Clerics get 3 extra XP for killing undead, and XP for mining ores outside creative: 1 per ore, or 3 for diamond, emerald and ancient debris.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Sanctuary | Root | Active | 0 | 9 | The special above: 6 / 9 / 12 / 15 s, party share from rank II (ranks I-IV) |
-| Preserve Life | Life | Passive | 1 | | Dropping below 30% health gives Regeneration II for 5 s, once a minute |
-| Cure Wounds | Life | Active | 1 | 4 | Heals you, other players and your pets within 8 blocks by 4 hearts |
-| Smite Undead | Life | Passive | 1 | | 50% more damage to undead |
-| Prospector | Forge | Passive | 1 | | 20% chance an ore drops its loot twice. Not with Silk Touch, and the XP orbs aren't doubled |
-| Radiance | Forge | Active | 1 | 4 | Everything within 8 blocks except players and your pets glows for 10 s; undead also burn for 5 s and take 4 damage |
-| Deep Delver | Forge | Passive | 1 | | Haste IV instead of Haste III |
+| Preserve Life | Life Domain | Passive | 1 | | Dropping below 30% health gives Regeneration II for 5 s, once a minute |
+| Cure Wounds | Life Domain | Active | 1 | 4 | Heals you, other players and your pets within 8 blocks by 4 hearts |
+| Smite Undead | Life Domain | Passive | 1 | | 50% more damage to undead |
+| Prospector | Forge Domain | Passive | 1 | | 20% chance an ore drops its loot twice. Not with Silk Touch, and the XP orbs aren't doubled |
+| Radiance | Forge Domain | Active | 1 | 4 | Everything within 8 blocks except players and your pets glows for 10 s; undead also burn for 5 s and take 4 damage |
+| Deep Delver | Forge Domain | Passive | 1 | | Haste IV instead of Haste III |
 | Divine Intervention | Capstone | Active | 2 | 9 | Fully heals you, other players and your pets within 10 blocks, puts out fire, clears harmful effects and gives Resistance III for 10 s |
 
 The Forge branch is the mining build: Prospector and Deep Delver together make strip mining much faster. The Life branch suits group play and undead-heavy places like strongholds.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more |
+| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once a day, make one held weapon or worn armor piece +1 until the next day, at an Attunement Table |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> cleric` (see [Admin commands](../systems/admin-commands.md)).

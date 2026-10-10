@@ -5,6 +5,8 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BowItemMixin",
+        "CrossbowItemMixin",
+        "ItemStackNameMixin",
         "PlayerEntityMixin",
         "SmiteDragonsMixin",
         "LavaDamageMixin",
@@ -58,12 +60,12 @@
     "client": [
         "AbstractClientPlayerEntityMixin",
         "LivingEntityRendererAccessor",
-        "MouseAccessor",
         "LivingEntityRendererMixin",
         "PlayerEntityRendererMixin",
         "BackgroundRendererMixin",
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
+        "MouseAccessor",
         "DoubleJumpMixin",
         "InGameHudMixin",
         "EntityRenderDispatcherMixin",

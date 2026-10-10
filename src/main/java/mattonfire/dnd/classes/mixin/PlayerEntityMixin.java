@@ -6,10 +6,15 @@ import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Classes.RangerSkills;
+import mattonfire.dnd.classes.Race.DndRace;
+import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.data.DataTracker;
+import net.minecraft.entity.data.TrackedData;
+import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BowItem;
 import net.minecraft.item.ItemStack;
@@ -28,6 +33,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PlayerEntity.class)
 public abstract class PlayerEntityMixin extends Entity implements PlayerEntityExt {
     private static final String DND_CLASS_KEY = "DndClass";
+    private static final String DND_RACE_KEY = "DndRace";
+    private static final String DND_ANCESTRY_KEY = "DndAncestry";
+    /**
+     * Race (low 4 bits) and Dragonborn ancestry (high 4 bits). On the DataTracker rather than a packet
+     * because every client needs every player's race (racial sizes and rendering). Registered only here.
+     */
+    @Unique
+    private static final TrackedData<Byte> DND$RACE = DataTracker.registerData(PlayerEntity.class,
+            TrackedDataHandlerRegistry.BYTE);
 
     boolean dropEntireStack;
     private DndCharacter dndClass;
@@ -47,11 +61,46 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         return this.dndClass;
     }
 
+    @Inject(method = "initDataTracker", at = @At("TAIL"))
+    private void dnd$initRaceTracker(CallbackInfo info) {
+        this.dataTracker.startTracking(DND$RACE, (byte) 0);
+    }
+
+    @Override
+    public DndRace getDndRace() {
+        try {
+            return DndRace.fromValue(this.dataTracker.get(DND$RACE) & 0x0F);
+        } catch (IllegalArgumentException e) {
+            return DndRace.NONE;
+        }
+    }
+
+    @Override
+    public DragonAncestry getDragonAncestry() {
+        try {
+            return DragonAncestry.fromValue((this.dataTracker.get(DND$RACE) >> 4) & 0x0F);
+        } catch (IllegalArgumentException e) {
+            return DragonAncestry.NONE;
+        }
+    }
+
+    @Override
+    public void setDndRace(DndRace race, DragonAncestry ancestry) {
+        DndRace r = race == null ? DndRace.NONE : race;
+        DragonAncestry a = ancestry == null || !r.hasAncestry() ? DragonAncestry.NONE : ancestry;
+        this.dataTracker.set(DND$RACE, (byte) (r.getValue() | (a.getValue() << 4)));
+        this.calculateDimensions();
+    }
+
     // Save the class with the player so rejoining keeps it instead of reopening the picker.
     @Inject(method = "writeCustomDataToNbt", at = @At("TAIL"))
     private void writeDndClass(NbtCompound nbt, CallbackInfo info) {
         if (this.dndClass != null && this.dndClass != DndCharacter.NONE) {
             nbt.putInt(DND_CLASS_KEY, this.dndClass.getValue());
+        }
+        if (getDndRace() != DndRace.NONE) {
+            nbt.putInt(DND_RACE_KEY, getDndRace().getValue());
+            nbt.putInt(DND_ANCESTRY_KEY, getDragonAncestry().getValue());
         }
     }
 
@@ -63,6 +112,21 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
             } catch (IllegalArgumentException e) {
                 this.dndClass = DndCharacter.NONE;
             }
+        }
+        if (nbt.contains(DND_RACE_KEY, NbtElement.INT_TYPE)) {
+            DndRace race;
+            DragonAncestry ancestry;
+            try {
+                race = DndRace.fromValue(nbt.getInt(DND_RACE_KEY));
+            } catch (IllegalArgumentException e) {
+                race = DndRace.NONE;
+            }
+            try {
+                ancestry = DragonAncestry.fromValue(nbt.getInt(DND_ANCESTRY_KEY));
+            } catch (IllegalArgumentException e) {
+                ancestry = DragonAncestry.NONE;
+            }
+            setDndRace(race, ancestry);
         }
     }
 

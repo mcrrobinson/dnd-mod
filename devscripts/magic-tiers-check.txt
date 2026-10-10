@@ -1,0 +1,59 @@
+# Magic item tiers: coloured names, tooltip line, +N gear and unidentified names.
+# timeout 300 ./gradlew runClient -PdevScript=devscripts/magic-tiers-check.txt
+wait 40
+closescreen
+/clear @s
+/time set day
+/dndmagic give @s dndclasses:staff_of_ice
+/dndmagic give @s minecraft:diamond_sword rare 2
+/dndmagic give @s minecraft:iron_sword uncommon 1 unidentified
+/dndmagic give @s dndclasses:rogue_chestplate
+/give @s minecraft:potion{Potion:"minecraft:strong_healing"}
+/dndmagic give @s minecraft:netherite_chestplate legendary 3
+/dndmagic give @s minecraft:bow very_rare 3
+/loot give @s loot dndclasses:magic/rare
+wait 10
+# +2 Diamond Sword: 1 base + 6 sword + 2 = 9
+hotbar 1
+wait 10
+/attribute @s minecraft:generic.attack_damage get
+/dndmagic info @s
+# Unidentified +1 Iron Sword: the bonus sleeps, 1 + 5 = 6
+hotbar 2
+wait 10
+/attribute @s minecraft:generic.attack_damage get
+/dndmagic info @s
+hotbar 7
+wait 5
+/dndmagic info @s
+# Let the chat fade so the held-item name popup shows
+wait 220
+hotbar 0
+wait 5
+screenshot magic-held-staff
+hotbar 1
+wait 5
+screenshot magic-held-sword
+hotbar 2
+wait 5
+screenshot magic-held-unidentified
+tooltips 0 1 2
+wait 10
+screenshot magic-tooltips-weapons
+closescreen
+tooltips 3 4
+wait 10
+screenshot magic-tooltips-armor-potion
+closescreen
+tooltips 5 6 7
+wait 10
+screenshot magic-tooltips-gear
+closescreen
+# Identify the iron sword: now +1 and named "+1 Iron Sword"
+hotbar 2
+/dndmagic identify @s
+wait 10
+/attribute @s minecraft:generic.attack_damage get
+wait 5
+screenshot magic-held-identified
+quit

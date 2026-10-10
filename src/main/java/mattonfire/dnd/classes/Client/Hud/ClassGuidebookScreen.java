@@ -6,6 +6,10 @@ import java.util.List;
 import mattonfire.dnd.classes.ClassInfo;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Race.DragonAncestry;
+import mattonfire.dnd.classes.Race.RaceInfo;
+import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.classes.Progression.ClassProgress;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -36,7 +40,8 @@ public final class ClassGuidebookScreen {
     public static void open(PlayerEntity player) {
         DndCharacter character = player instanceof PlayerEntityExt ext ? ext.getDndClass() : null;
         MinecraftClient client = MinecraftClient.getInstance();
-        List<Text> pages = buildPages(client.textRenderer, ClassInfo.get(character));
+        List<Text> pages = buildPages(client.textRenderer, ClassInfo.get(character),
+                RaceInfo.get(RaceLifecycle.raceOf(player)), RaceLifecycle.ancestryOf(player));
         client.setScreen(new BookScreen(new BookScreen.Contents() {
             @Override
             public int getPageCount() {
@@ -50,7 +55,7 @@ public final class ClassGuidebookScreen {
         }));
     }
 
-    static List<Text> buildPages(TextRenderer textRenderer, ClassInfo info) {
+    static List<Text> buildPages(TextRenderer textRenderer, ClassInfo info, RaceInfo race, DragonAncestry ancestry) {
         Pages pages = new Pages(textRenderer);
         if (info == null) {
             pages.section(
@@ -62,6 +67,9 @@ public final class ClassGuidebookScreen {
             }
         } else {
             classPages(pages, info, true);
+        }
+        if (race != null) {
+            heritagePage(pages, race, ancestry);
         }
         return pages.finish();
     }
@@ -94,6 +102,48 @@ public final class ClassGuidebookScreen {
         pages.section(special.toArray(Text[]::new));
 
         rolePages(pages, info);
+
+        if (!info.subclasses().isEmpty()) {
+            pages.section(Text.translatable("book.dndclasses.class_guidebook.subclasses")
+                    .formatted(Formatting.BOLD, Formatting.DARK_AQUA),
+                    Text.translatable("book.dndclasses.class_guidebook.subclasses_intro",
+                            ClassProgress.SUBCLASS_LEVEL));
+            for (ClassInfo.SubclassInfo sub : info.subclasses()) {
+                List<Text> lines = new ArrayList<>();
+                lines.add(Text.literal(sub.name()).formatted(Formatting.BOLD, Formatting.DARK_PURPLE));
+                if (yours && ClassProgress.client.dndClass == info.id() && ClassProgress.client.hasSubclass(sub.id())) {
+                    lines.add(Text.translatable("book.dndclasses.class_guidebook.your_subclass")
+                            .formatted(Formatting.ITALIC, Formatting.DARK_GREEN));
+                }
+                if (!sub.flavour().isEmpty()) {
+                    lines.add(Text.literal(sub.flavour()).formatted(Formatting.ITALIC));
+                }
+                lines.add(Text.literal(""));
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.subclass_feature",
+                        Text.literal(sub.featureName()).formatted(Formatting.BOLD)));
+                lines.add(Text.literal(sub.featureDescription() + "."));
+                pages.section(lines.toArray(Text[]::new));
+            }
+        }
+    }
+
+    /** "Your heritage": the race's summary, ability bonuses, body modifiers and traits. */
+    private static void heritagePage(Pages pages, RaceInfo race, DragonAncestry ancestry) {
+        List<Text> lines = new ArrayList<>();
+        lines.add(Text.literal(RaceLifecycle.displayName(race, ancestry)).formatted(Formatting.BOLD,
+                Formatting.DARK_BLUE));
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.your_heritage").formatted(Formatting.ITALIC));
+        lines.add(Text.literal(""));
+        lines.add(Text.literal(race.summary() + "."));
+        lines.add(Text.literal(""));
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.abilities", race.abilityText())
+                .formatted(Formatting.DARK_AQUA));
+        List<String> stats = race.stats().describe();
+        if (!stats.isEmpty()) {
+            lines.add(Text.literal(String.join(", ", stats)).formatted(Formatting.DARK_GREEN));
+        }
+        pages.section(lines.toArray(Text[]::new));
+        pages.section(bulletList("book.dndclasses.class_guidebook.traits", Formatting.DARK_PURPLE, race.traits()));
     }
 
     /** "Your role" page, then "Obstacles you handle" (bold entries are the ones only this class can handle). */

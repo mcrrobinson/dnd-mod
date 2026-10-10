@@ -163,6 +163,12 @@ public final class MagicData {
         return nbt == null ? 0 : nbt.getInt("charges");
     }
 
+    /** The charges, or {@code full} for a stack that has never stored any (a fresh item starts full). */
+    public static int charges(ItemStack stack, int full) {
+        NbtCompound nbt = get(stack);
+        return nbt != null && nbt.contains("charges", NbtElement.NUMBER_TYPE) ? nbt.getInt("charges") : full;
+    }
+
     public static void setCharges(ItemStack stack, int charges) {
         getOrCreate(stack).putInt("charges", charges);
     }

@@ -85,6 +85,10 @@ public final class PowerupOverlay {
             renderCharges(matrices, rest, x, y);
         }
 
+        // The Dragonborn Breath Weapon's cooldown, right of the pips
+        mattonfire.dnd.classes.Client.BreathWeaponClient.renderIcon(matrices, x + BAR_RIGHT + 2, y);
+        RenderSystem.setShaderColor(1.f, 1.f, 1.f, 1.f);
+
         // Underline the pips the equipped active costs, gold once it can be used.
         SkillNode active = ClassProgress.client.activeNode();
         if (active != null) {

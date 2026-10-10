@@ -36,6 +36,11 @@ public final class BardInstrumentSlot {
         if (Progression.classOf(player) != DndCharacter.BARD || player.isSpectator() || !player.isAlive()
                 || player.getItemCooldownManager().isCoolingDown(instrument()))
             return;
+        // An attuned Doss Lute in the inventory takes the slot's place.
+        if (mattonfire.dnd.magic.items.DossLuteItem.activeLute(player) != null) {
+            ((mattonfire.dnd.magic.items.DossLuteItem) ModItems.DOSS_LUTE).playEmpowered(player);
+            return;
+        }
         instrument().playAsBard(player);
     }
 }

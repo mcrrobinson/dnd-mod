@@ -178,6 +178,7 @@ public final class ClassLifecycle {
         }
         AttackRolls.forget(player.getUuid());
         SavingThrow.forget(player.getUuid());
+        mattonfire.dnd.classes.SkillChecks.Perception.forget(player.getUuid());
         AbilityScores.forget(player.getUuid());
         Featherfall.forget(player.getUuid());
         Lockpicking.pruneRetries(player.getWorld().getTime());

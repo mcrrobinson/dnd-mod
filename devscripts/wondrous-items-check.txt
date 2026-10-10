@@ -1,0 +1,65 @@
+# Wondrous items: Wand charges, Immovable Rod at y=150, Ring/Amulet bonuses, Bag of Holding contents,
+# Decanter, Tome. Not run by the implementing agent; for the human verifier.
+# timeout 400 ./gradlew runClient -PdevScript=devscripts/wondrous-items-check.txt
+wait 40
+closescreen
+/gamemode survival
+/clear @s
+/time set day
+/effect clear @s
+/tp @s 0.5 150 0.5 0 0
+/setblock 0 149 0 minecraft:glass
+/dndmagic give @s dndclasses:wand_of_magic_missiles
+/summon minecraft:zombie 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f]}
+/setblock 0 149 3 minecraft:glass
+wait 10
+# Wand: fire once at the zombie, 7 -> 6 charges
+hotbar 0
+look 0 0
+use
+wait 10
+/data get entity @s SelectedItem.tag.dndclasses_magic.charges
+screenshot wondrous-wand-tooltip
+# Ring of Protection: +2 armor once attuned
+/clear @s
+/dndmagic give @s dndclasses:ring_of_protection
+wait 5
+/attribute @s minecraft:generic.armor get
+/dndmagic attune @s
+wait 25
+/attribute @s minecraft:generic.armor get
+# Amulet of Health: +6 max health once attuned
+/clear @s
+/dndmagic release @s all
+/dndmagic give @s dndclasses:amulet_of_health
+wait 5
+/attribute @s minecraft:generic.max_health get
+/dndmagic attune @s
+wait 25
+/attribute @s minecraft:generic.max_health get
+/dndmagic release @s all
+# Bag of Holding: shift-click dirt in, close, check the bag's NBT
+/clear @s
+/dndmagic give @s dndclasses:bag_of_holding
+/give @s minecraft:dirt 5
+wait 5
+hotbar 0
+use
+wait 10
+slots
+slot 55 quick_move
+wait 5
+screenshot wondrous-bag-open
+closescreen
+wait 5
+/data get entity @s SelectedItem.tag.BagItems
+# Immovable Rod: at y=200 in mid-air, look down, fix the rod, stay up
+/clear @s
+/dndmagic give @s dndclasses:immovable_rod
+/tp @s 40.5 200 40.5 0 90
+use
+wait 60
+/execute if block 40 199 40 dndclasses:immovable_rod
+/data get entity @s Pos[1]
+screenshot wondrous-rod
+quit

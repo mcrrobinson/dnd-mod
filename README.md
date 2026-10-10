@@ -60,7 +60,7 @@ Every class has its own strengths, weaknesses, a special ability and a party rol
 <!-- class-table:end -->
 
 ### Races
-Players pick one of 8 races (Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling, Dragonborn) before their class. See [Races](docs/races/races.md).
+Players pick one of 8 races (Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling, Dragonborn) before their class. See [Races](docs/races/races.md). Dragonborn breathe their ancestry's element on R: see [Breath Weapon](docs/races/breath-weapon.md).
 
 ### Mana and Specials
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. Big specials also cost charges, which come back when you rest. See [Mana and class specials](docs/systems/mana.md), [Rests and charges](docs/systems/rests.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
@@ -81,6 +81,7 @@ Some actions roll a d20 plus your [ability score](docs/systems/ability-scores.md
 - [Staffs](docs/items/staffs.md): Staffs of Fire, Ice and Lightning, and the Monk Staff.
 - [Potions and brewing](docs/items/potions-and-brewing.md): the Alchemist's Fast Brewing Stand, the Potion of Freezing, and brewing stands that explode for non-Alchemists.
 - [Magic items](docs/systems/magic-items.md): D&D rarity tiers shown by name colour, +1/+2/+3 weapons and armor, attunement, unidentified loot and curses.
+- [Named magic items](docs/items/magic-items.md): the Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, protective rings and amulets, the Doss Lute and the Tome of Clear Thought.
 - [Bard instruments](docs/items/bard-instruments.md): the Lute, War Drum and Flute. When a Bard plays one, every player within 16 blocks gets Regeneration, Strength or Speed for 30 seconds.
 
 ### Enchantments

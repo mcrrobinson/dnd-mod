@@ -1,0 +1,6 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "dndclasses:item/decanter_of_endless_water"
+    }
+}

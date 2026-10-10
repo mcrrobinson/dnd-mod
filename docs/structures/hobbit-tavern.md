@@ -61,8 +61,8 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 | The Dragon's Lair | Find a dragon lair | 14 | major | 50 | 120 | 3 |
 
 What the spoils can contain:
-- **Minor spoils** (`gameplay/bounty_minor`): 1-2 rolls of food, ale, iron, gold, arrows or lapis, with a small chance of an enchanted book, an enchanted iron sword or a diamond.
-- **Major spoils** (`gameplay/bounty_major`): 2-3 rolls of gold, iron, diamonds, ale, golden apples, enchanted books, enchanted diamond tools or an enchanted iron chestplate, or bottles o' enchanting. There's a 1-in-~90 chance per roll of an enchanted golden apple.
+- **Minor spoils** (`gameplay/bounty_minor`): 1-2 rolls of food, ale, iron, gold, arrows or lapis, with a small chance of an enchanted book, an enchanted iron sword or a diamond. Plus a 10% chance of an Uncommon magic item and 5% of a Wand of Magic Missiles, both identified (bounty rewards are known goods, see [Magic loot](../systems/magic-loot.md)).
+- **Major spoils** (`gameplay/bounty_major`): 2-3 rolls of gold, iron, diamonds, ale, golden apples, enchanted books, enchanted diamond tools or an enchanted iron chestplate, or bottles o' enchanting. There's a 1-in-~90 chance per roll of an enchanted golden apple. Plus a 35% chance of an Uncommon (60) or Rare (40) magic item, and 3% each of a Periapt of Wound Closure and a Doss Lute, all identified.
 
 ## Where to find it / How to get it
 - Run `/locate structure dndclasses:hobbit_village`. Every village generates its inn, unless the terrain has no room for it.

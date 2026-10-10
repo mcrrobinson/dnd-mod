@@ -23,6 +23,8 @@ Each side doorway leads down a short corridor to a room. A fortress has four or 
 
 The treasury chests use `chests/dwarven_fortress_treasury`: gold blocks, diamonds, enchanted books, enchanted golden apples, Golden Horns and Knight armor, and a Pigstep disc.
 
+Magic items ([Magic loot](../systems/magic-loot.md)): each forge, barracks, mead hall and mine chest has a 15% chance of an Uncommon (75) or Rare (25) magic item, plus 3% of an Immovable Rod (forge), Periapt of Wound Closure (barracks) or Doss Lute (mead hall). Treasury chests have a 60% chance of an Uncommon (50), Rare (45) or Very Rare (5) item, plus 3% each of a Bag of Holding and an Amulet of Health. They're unidentified.
+
 The halls are buried in the mountain. Where the rock is too thin, the fortress piles more on top so you never see a room poking out of a hillside. Dwarves spawn in every room and keep turning up inside, and monsters never spawn there.
 
 ### Getting the treasure

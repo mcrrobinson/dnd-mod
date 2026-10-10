@@ -41,7 +41,7 @@ The Lich, its phylactery and its minions never hurt each other. Its minions crum
 **Music**: the Lich theme (120 bpm, D minor) loops for everyone who can see the boss bar.
 
 **Rewards**:
-- **Lich** (`entities/lich`): always 4-10 bones and 3-8 bottles o' enchanting. When killed by a player, also 150 XP, 3-6 diamonds, 2 treasure-enchanted books (level 30), 50% totem of undying, 35% wither skeleton skull and 25% 1-2 netherite scrap (+ Looting), plus the **Lichbane** advancement (challenge, +150 XP). Also, when killed by a player, 25% a [Mace of Disruption](../items/magic-items.md#mace-of-disruption) and 20% a [Phylactery Locket](../items/magic-items.md#phylactery-locket) (unidentified; added to `entities/lich` by `BossItemDrops`). The Lich only drops this table on its final death, from the smashed phylactery.
+- **Lich** (`entities/lich`): always 4-10 bones and 3-8 bottles o' enchanting. When killed by a player, also 150 XP, 3-6 diamonds, 2 treasure-enchanted books (level 30), 50% totem of undying, 35% wither skeleton skull and 25% 1-2 netherite scrap (+ Looting), plus the **Lichbane** advancement (challenge, +150 XP). Also, when killed by a player, 25% a [Mace of Disruption](../items/magic-items.md#mace-of-disruption) and 20% a [Phylactery Locket](../items/magic-items.md#phylactery-locket) (unidentified; added to `entities/lich` by `BossItemDrops`), one Very Rare (80%) or Legendary (20%) magic item and 10% a Tome of Clear Thought (unidentified; added by `MagicLoot`, see [Magic loot](../systems/magic-loot.md)). The Lich only drops this table on its final death, from the smashed phylactery.
 - **Phylactery** (`entities/phylactery`): 2-5 amethyst shards, plus a 25% chance of an echo shard when a player smashes it.
 
 ## Where to find it / How to get it

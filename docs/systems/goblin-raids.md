@@ -10,7 +10,7 @@ Goblin war parties raid hobbit villages, dwarven fortresses and elven enclaves i
 - **Bar and music**: everyone within 96 blocks sees a red raid bar. It counts down to the next wave, then shows the wave's remaining health. They also hear **Steel on Steel**.
 - **Victory**: the settlement cheers. Everyone who took part (in survival or adventure, in range at some point during the raid) gets:
   - Hero of the Village for 40 minutes
-  - a reward loot table: emeralds and food at a village; gold, iron, gems or an enchanted axe at a fortress; emeralds, arrows, berries, amethyst, an enchanted book or bow at an enclave (`gameplay/goblin_raid_elven_enclave`). Both can include the Steel on Steel disc.
+  - a reward loot table: emeralds and food at a village; gold, iron, gems or an enchanted axe at a fortress; emeralds, arrows, berries, amethyst, an enchanted book or bow at an enclave (`gameplay/goblin_raid_elven_enclave`). Both can include the Steel on Steel disc. Every reward table has a 20% chance of an Uncommon magic item (unidentified), and a village's 2% of The Burglar's Ring (see [Magic loot](magic-loot.md)).
   - 40 + 20 × waves XP
   - the Hold the Line advancement
   - reputation: +60 with the settlement's faction and -40 with the goblins (see [Factions](factions.md))

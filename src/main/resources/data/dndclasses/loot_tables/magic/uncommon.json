@@ -78,6 +78,36 @@
           "type": "minecraft:item",
           "name": "minecraft:trident",
           "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:cloak_of_protection",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:wand_of_magic_missiles",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:immovable_rod",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:bag_of_holding",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:decanter_of_endless_water",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:periapt_of_wound_closure",
+          "weight": 1
         }
       ],
       "functions": [

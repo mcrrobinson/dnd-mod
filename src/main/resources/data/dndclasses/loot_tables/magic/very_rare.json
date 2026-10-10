@@ -48,6 +48,26 @@
           "type": "minecraft:item",
           "name": "minecraft:trident",
           "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:frostbrand",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:tome_of_clear_thought",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:phylactery_locket",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:burglars_ring",
+          "weight": 1
         }
       ],
       "functions": [

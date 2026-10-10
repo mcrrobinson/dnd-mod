@@ -6,7 +6,7 @@ The home of a [Lightning Chaser](../mobs/dragons.md), on the very summit of a mo
 ## How it works
 - The lair sits on the highest point of a jagged, frozen or stony peak, with the mountain falling away on every side.
 - It's a ring of standing stones crowned with lightning rods, round a nest of logs and bones heaped with gold and a hoard chest.
-- **Hoard chest (`chests/dragon_lair`):** gold, copper, emeralds, diamonds and enchanted diamond gear, sometimes an enchanted golden apple, a trident or a Staff of Lightning.
+- **Hoard chest (`chests/dragon_lair`):** gold, copper, emeralds, diamonds and enchanted diamond gear, sometimes an enchanted golden apple, a trident or a Staff of Lightning. Every hoard chest also holds one magic item, Rare (70%) or Very Rare (30%), and 6% of them a pair of Storm-Chaser Boots (see [Magic loot](../systems/magic-loot.md)).
 - Each lair starts with one Lightning Chaser (sometimes two). It never strays more than about 24 blocks before circling back.
 - Once it's killed, the lair waits **3 in-game days** and then sends a new one (structure spawn override; never in peaceful or with another Lightning Chaser within 64 blocks). A chaser that left without dying (e.g. in peaceful) is replaced as soon as possible.
 

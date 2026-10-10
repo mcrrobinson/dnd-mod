@@ -154,9 +154,9 @@ A [Forge Domain Cleric](../classes/cleric.md)'s subclass feature. Once per long 
 - With the `dndRests` gamerule off there are no long rests: the blessing is once per in-game day and lasts until the next day (an admin `/dndclass rest <player> long` still ends it).
 
 ## Where to find it
-- The tier loot tables `dndclasses:magic/uncommon`, `magic/rare`, `magic/very_rare` and `magic/legendary` each give one unidentified +N item of that tier (iron/diamond swords, axes and armor, bows, crossbows and tridents; Legendary uses netherite). Nothing references them yet: chests, bosses and dungeons start pulling from them in later updates.
+- The tier loot tables `dndclasses:magic/uncommon`, `magic/rare`, `magic/very_rare` and `magic/legendary` each give one unidentified item of that tier: mostly +N gear (iron/diamond swords, axes and armor, bows, crossbows and tridents; Legendary uses netherite), sometimes a named [magic item](../items/magic-items.md). Mod and vanilla chests, bosses, Mimics, bounties, raids and dungeons roll on them: see [Magic loot](magic-loot.md).
 - Try one with `/loot give @s loot dndclasses:magic/rare`. About 1 in 10 Uncommon and Rare rolls is cursed.
-- Scroll of Identify: crafted (paper + lapis lazuli + amethyst shard, makes 2). Scroll of Remove Curse: `/give` only for now.
+- Scroll of Identify: crafted (paper + lapis lazuli + amethyst shard, makes 2). Scroll of Remove Curse: stronghold libraries (10%, see [Magic loot](magic-loot.md)). Scrolls of Identify are also in stronghold, mansion, bastion and ancient city chests.
 
 ## Commands
 Operator only (permission level 2).

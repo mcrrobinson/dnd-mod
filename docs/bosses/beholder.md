@@ -58,6 +58,8 @@ Below 50% health the bar turns red, every eye reopens, two different rays fire a
 | Diamonds | 3-6 | killed by a player |
 | Protection IV book, Feather Falling IV book or totem of undying | 1 | killed by a player, 30% chance (+5% per Looting level) |
 | [Eye of the Tyrant](../items/magic-items.md#eye-of-the-tyrant) (Legendary, unidentified) | 1 | killed by a player, 12% chance (+3% per Looting level) |
+| A Very Rare (80%) or Legendary (20%) magic item, unidentified ([Magic loot](../systems/magic-loot.md)) | 1 | killed by a player |
+| [Tome of Clear Thought](../items/magic-items.md#tome-of-clear-thought) (Very Rare, unidentified) | 1 | killed by a player, 10% chance |
 
 The player credited with the kill also gets **An Eye for an Eye**, a challenge advancement worth 150 XP.
 
@@ -72,7 +74,7 @@ The player credited with the kill also gets **An Eye for an Eye**, a challenge a
 ## Where to find it
 Beholders only live in **Beholder lairs**, which are rare (spacing 40 chunks, separation 16). A lair can generate under any Overworld biome except the deep dark, wherever its stair comes up on dry land.
 
-**The cavern** is a dome of radius 16 and height 12, with its floor somewhere between y=-38 and y=-19. A two-block deepslate shell keeps caves, water and lava out. The floor is a great eye of calcite and blackstone round a verdant froglight iris and an obsidian pupil, and the walls have crying obsidian, amethyst, dripstone and the odd shroomlight. Five petrified adventurers (grey armour stands, arms raised) stand round the floor. Against the west wall, a hoard of gold, bones and skulls surrounds a chest (`chests/beholder_lair`). The Beholder hovers 5 blocks above the middle of the floor.
+**The cavern** is a dome of radius 16 and height 12, with its floor somewhere between y=-38 and y=-19. A two-block deepslate shell keeps caves, water and lava out. The floor is a great eye of calcite and blackstone round a verdant froglight iris and an obsidian pupil, and the walls have crying obsidian, amethyst, dripstone and the odd shroomlight. Five petrified adventurers (grey armour stands, arms raised) stand round the floor. Against the west wall, a hoard of gold, bones and skulls surrounds a chest (`chests/beholder_lair`), which always holds a magic item (Rare 40%, Very Rare 45%, Legendary 15%), plus a 4% chance of an Immovable Rod and 2% of the Eye of the Tyrant. The Beholder hovers 5 blocks above the middle of the floor.
 
 **The way in** is a deepslate spiral stair that comes up 20 blocks east of the cavern's centre, inside a mossy ring of wall with a soul lantern, and a tunnel from its foot to the cavern.
 

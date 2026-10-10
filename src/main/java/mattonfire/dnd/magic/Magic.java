@@ -36,6 +36,7 @@ public final class Magic {
         MagicItems.registerDefaults();
         MagicGear.register();
         MagicItemLootFunction.register();
+        MagicLoot.register();
         Attunement.register();
         ForgeBlessing.register();
         Curse.register();

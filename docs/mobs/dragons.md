@@ -63,7 +63,7 @@ To tame one, right-click it with raw cod, raw salmon or tropical fish. Each fish
 
 A tamed Pikehorn bites and breathes fire at whatever you attack and whatever attacks you. It never turns on you, even if you hit it, and it won't go after creepers, ghasts, your other pets, tamed horses or players you can't hurt. Feed it a raw fish to heal it 4 health (2 hearts). It never despawns.
 
-It drops 0-2 leather and 0-2 cod (cooked if it died burning), each with up to 1 more per Looting level.
+It drops 0-2 leather and 0-2 cod (cooked if it died burning), each with up to 1 more per Looting level. Killed by a player, it has a 5% chance of dropping a [Decanter of Endless Water](../items/magic-items.md#decanter-of-endless-water) (unidentified).
 
 ### Saving throws
 Dragon breath and storms call for a **Dexterity** [saving throw](../systems/saving-throws.md): a d20 plus your DEX save bonus from the [character sheet](../systems/ability-scores.md) against the dragon's DC. The roll shows on the save lane beside the crosshair, for example `Fire breath (DEX) 13+2=15 vs 12 ✔ half damage, shorter burn`.

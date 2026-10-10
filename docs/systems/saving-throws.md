@@ -36,7 +36,7 @@ A save is rolled once per *exposure* (one breath, one ray, one grab), not on eve
 ![Ten saves in one tick: one row, ×10](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/saving-throws/saves-merge.png)
 
 ## Where to find it
-Monsters and traps call saves as their attacks get them. So far: [dragon breath and storms](../mobs/dragons.md#saving-throws) (DEX), [Beholder rays](../bosses/beholder.md#saving-throws) (DEX, STR, CON or WIS by eye) and the [Lich's](../bosses/lich.md) Frost Nova (CON) and Dread Presence (WIS). Grabs and generic poison are planned. A DM can call one at any time with `/dm save`.
+Monsters and traps call saves as their attacks get them. So far: [dragon breath and storms](../mobs/dragons.md#saving-throws) (DEX), [Beholder rays](../bosses/beholder.md#saving-throws) (DEX, STR, CON or WIS by eye) and the [Lich's](../bosses/lich.md) Frost Nova (CON) and Dread Presence (WIS). Generic saves against mob poison and wither, the Warden's sonic boom and the Ender Dragon's breath come from [data-driven rules](data-driven-saves.md). Grabs are planned. A DM can call one at any time with `/dm save`.
 
 ## Commands
 | Command | What it does |
@@ -63,7 +63,7 @@ See [Dungeon Master](dungeon-master.md) for who can use `/dm`.
 | `off` | Nothing is drawn. Natural 20s and 1s still play their sound |
 
 ## Known limitations
-- Only dragons, the Beholder and the Lich call the API so far; grabs and generic poison/wither saves are separate tickets.
+- Only dragons, the Beholder, the Lich, traps and the [data-driven rules](data-driven-saves.md) call the API so far. Grabs are a separate ticket.
 - The server's 10-tick throttle and merge only combine saves with the same name and outcome. Different saves arriving together go out one per 10 ticks.
 - In `full` mode a DM-called save with no effect text shows a trailing dash after the outcome on the big panel.
 
@@ -85,7 +85,8 @@ See [Dungeon Master](dungeon-master.md) for who can use `/dm`.
   - The exposure cache is keyed by target UUID, then attacker UUID + tag, by world time. It's pruned every 200 ticks and cleared for a player on disconnect (`SavingThrow.forget`, from `ClassLifecycle`).
 - `SaveResult`: `succeeded()`, `failed()`, `outcome()`, `roll()`, `fresh()` (false when it came from the exposure cache), `damage(full)`, `duration(ticks)` (half on a success), `withDamageMultipliers(onSuccess, onFailure[, note])` for Evasion-style features (with a note, the lane says "no damage (Evasion)").
 - Hooks: `SavingThrow.registerResultHook` changes a result before it's cached and shown (Evasion); `SavingThrow.registerReroll` gives a player's failed save a second roll, showing the first under the reroll's name (Indomitable). See [class save features](class-save-features.md).
-- `MobSaveInfo.register(type, labelKey, ability, dc, halvesDamage, effectKey)` returns an `Entry`; roll it with `SavingThrow.of(target, entry)` so the creature's listing and its attack use the same numbers. `MobSaveInfo.of(type)` lists them (for the Study card).
+- `MobSaveInfo.register(type, labelKey, ability, dc, halvesDamage, effectKey)` returns an `Entry`; roll it with `SavingThrow.of(target, entry)` so the creature's listing and its attack use the same numbers. `MobSaveInfo.of(type)` lists them (for the Study card), plus entries from `MobSaveInfo.registerProvider` (the data-driven rules).
+- `SavingThrow.savedThisTick(target)`: whether the target made any save this tick; the [data-driven rules](data-driven-saves.md) skip in that case.
 - Every `SAVE_LANE` roll sent with `D20.show` goes through `SavingThrow.send`: the 10-tick throttle and the merge by label + ability + outcome. The `dndclasses:d20_roll` packet has a trailing VarInt count after the detail text (1 for ordinary rolls).
 - Logs: each roll is a `[D20] <name> <label> <natural> <+mod> = <total> vs DC <dc> -> <outcome>` line; each save packet is a `[D20] save lane -> <player>: <label> <outcome> x<count>` line.
 - Client: `Client/Hud/SaveLaneHud.java` draws the rows; `DiceRollHud` routes SAVE_LANE packets to it (or to its own panel in `full` mode). `Config/SaveRollsMode` reads `saveRolls`; the DevScript step `saverolls full|compact|off|config` overrides it for a run.

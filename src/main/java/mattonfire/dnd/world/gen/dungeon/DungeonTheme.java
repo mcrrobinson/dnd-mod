@@ -15,7 +15,7 @@ import net.minecraft.util.math.random.Random;
  * Crypt palette until their own tickets give them one (no structure JSON uses them yet).
  */
 public enum DungeonTheme implements StringIdentifiable {
-    CRYPT("crypt", Palette.CRYPT, 1, 3, 4, 8),
+    CRYPT("crypt", Palette.CRYPT, 1, 3, 6, 16),
     // TODO(dungeons ticket 7): warren palette, cave-mouth entrance, goblin pools
     GOBLIN_WARREN("goblin_warren", Palette.CRYPT, 1, 4, 4, 8),
     // TODO(dungeons ticket 8): ruined dwarven palette, deep placement (y -30..0), dome boss room
@@ -67,6 +67,11 @@ public enum DungeonTheme implements StringIdentifiable {
 
     public int nameCount() {
         return this.names;
+    }
+
+    /** True for the Crypt: its boss is the Lich, whose phylactery waits in a reliquary off the boss room. */
+    public boolean hasReliquary() {
+        return this == CRYPT;
     }
 
     public String translationKey() {

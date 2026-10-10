@@ -88,7 +88,11 @@ public class HoardCofferBlockEntity extends BlockEntity {
             case FULL, SALVAGE -> {
                 boolean full = claim == DungeonState.CofferClaim.FULL;
                 Identifier table = full ? DungeonLoot.vaultTable(dungeon.tier()) : DungeonLoot.salvageTable();
-                List<ItemStack> loot = DungeonLoot.roll(world, table, Vec3d.ofCenter(pos), player);
+                List<ItemStack> loot = new java.util.ArrayList<>(DungeonLoot.roll(world, table, Vec3d.ofCenter(pos), player));
+                if (full) {
+                    // The theme's own extra (the Crypt's Staff of Ice chance at III-IV)
+                    loot.addAll(DungeonLoot.roll(world, DungeonLoot.themeVaultTable(dungeon.theme(), dungeon.tier()), Vec3d.ofCenter(pos), player));
+                }
                 int items = 0;
                 for (ItemStack stack : loot) {
                     items += stack.getCount();

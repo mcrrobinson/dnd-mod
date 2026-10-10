@@ -17,7 +17,9 @@ public enum RoomRole {
     BOSS("Boss room", true),
     VAULT("Treasure vault", false),
     SECRET("Secret room", false),
-    SIDE_VAULT("Side vault", false);
+    SIDE_VAULT("Side vault", false),
+    /** Crypt only: the side room off the boss room where the Lich keeps its phylactery. */
+    RELIQUARY("Reliquary", false);
 
     private final String label;
     private final boolean combat;
@@ -38,7 +40,7 @@ public enum RoomRole {
 
     /** Side rooms hang off the main path rather than lying on it. */
     public boolean branch() {
-        return this == SECRET || this == SIDE_VAULT;
+        return this == SECRET || this == SIDE_VAULT || this == RELIQUARY;
     }
 
     public static RoomRole byName(String name) {

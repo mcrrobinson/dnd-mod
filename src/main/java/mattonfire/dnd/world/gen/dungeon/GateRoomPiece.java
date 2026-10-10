@@ -64,6 +64,14 @@ public class GateRoomPiece extends DungeonPiece {
         b.light(alongX ? mid - 2 : centre, this.height, alongX ? centre : mid - 2, true);
         b.light(alongX ? mid + 2 : centre, this.height, alongX ? centre : mid + 2, true);
         this.gate(b, alongX, mid, centre, entry);
+        if (CryptDressing.applies(this)) {
+            for (int[] c : CryptDressing.corners(w, d)) {
+                if (b.dressing.nextFloat() < 0.6F) {
+                    CryptDressing.candles(b, c[0], 1, c[1]);
+                }
+            }
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.5F);
+        }
     }
 
     /** Sets the block {@code along} the path and {@code t} across it. */

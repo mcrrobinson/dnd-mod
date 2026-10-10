@@ -82,6 +82,9 @@ public class DungeonWardBlockEntity extends BlockEntity {
     public static final double BOSS_HEALTH_CAP = 3.45;
     public static final double BOSS_TIER_DAMAGE = 0.2;
     public static final float BOSS_T4_HEAL = 0.15F;
+    /** A dungeon Lich's leash round its boss room: the distance to its phylactery plus this, at least {@link #LAIR_LEASH_MIN}. */
+    public static final double LAIR_LEASH_MARGIN = 8.0D;
+    public static final double LAIR_LEASH_MIN = 28.0D;
     /** Class XP per player for a cleared room, times the tier. */
     public static final int ROOM_XP_PER_TIER = 10;
     public static final String XP_CHANNEL = "dungeon";
@@ -116,6 +119,12 @@ public class DungeonWardBlockEntity extends BlockEntity {
     /** A class-check gate in this room (the gate room, a side vault), or null. */
     @Nullable
     private mattonfire.dnd.dungeon.GateState gate;
+    /**
+     * Not saved: rooms that count as part of this one's fight, from the dungeon's plan. The boss room's
+     * are the Crypt's reliquary, where the Lich keeps its phylactery (see {@link #annex}).
+     */
+    @Nullable
+    private List<BlockBox> annex;
 
     public DungeonWardBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlocks.DUNGEON_WARD_ENTITY, pos, state);
@@ -185,9 +194,9 @@ public class DungeonWardBlockEntity extends BlockEntity {
                 || Math.floorMod(server.getTime() + pos.asLong(), CHECK_INTERVAL) != 0) {
             return;
         }
-        BlockBox box = ward.box;
+        List<BlockBox> area = ward.area(server);
         List<ServerPlayerEntity> inside = server.getPlayers(player -> player.isAlive() && !player.isSpectator()
-                && !player.isCreative() && box.contains(player.getBlockPos()));
+                && !player.isCreative() && inAny(area, player.getBlockPos()));
         if (ward.puzzle != null || ward.gate != null) {
             // Puzzles and gates keep up with resets even with nobody inside, so they're ready before anyone arrives.
             DungeonState dungeon = ward.dungeon(server);
@@ -227,6 +236,60 @@ public class DungeonWardBlockEntity extends BlockEntity {
             return;
         }
         ward.tickCombat(server, dungeon, room, inside);
+    }
+
+    /**
+     * The room's box, and for the boss room the boxes of its annex rooms (the Crypt's reliquary): a
+     * player there still counts as in the fight, the phylactery and the Lich are still followed there,
+     * and the doorway into it isn't sealed.
+     */
+    private List<BlockBox> area(ServerWorld server) {
+        if (this.role != RoomRole.BOSS) {
+            return List.of(this.box);
+        }
+        if (this.annex == null) {
+            // From the registry if the dungeon is known, else straight from the plan this ward carries.
+            DungeonState dungeon = DungeonRegistry.get(server).get(this.startKey);
+            if (dungeon == null && this.summary != null) {
+                dungeon = DungeonState.fromNbt(this.summary);
+            }
+            if (dungeon == null) {
+                return List.of(this.box);
+            }
+            List<BlockBox> annex = new ArrayList<>();
+            for (DungeonState.Room room : dungeon.rooms()) {
+                if (room.role() == RoomRole.RELIQUARY) {
+                    annex.add(room.box());
+                }
+            }
+            this.annex = List.copyOf(annex);
+        }
+        if (this.annex.isEmpty()) {
+            return List.of(this.box);
+        }
+        List<BlockBox> area = new ArrayList<>(this.annex.size() + 1);
+        area.add(this.box);
+        area.addAll(this.annex);
+        return area;
+    }
+
+    private static boolean inAny(List<BlockBox> boxes, BlockPos pos) {
+        for (BlockBox box : boxes) {
+            if (box.contains(pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** True if {@code pos} is in one of {@code boxes} grown by a block (a mob on a doorway still counts). */
+    private static boolean inAny(List<BlockBox> boxes, net.minecraft.util.math.Vec3d pos) {
+        for (BlockBox box : boxes) {
+            if (Box.from(box).expand(1.0D).contains(pos)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Nullable
@@ -390,8 +453,10 @@ public class DungeonWardBlockEntity extends BlockEntity {
         DungeonEncounterPools.Pool pool = DungeonEncounterPools.get(dungeon.theme());
         StructureBosses.BossType type = pool != null ? pool.boss() : StructureBosses.BossType.LICH;
         BlockPos stand = this.standingSpot(world, this.box.getCenter().withY(dungeon.floorY() + 1));
-        // The phylactery waits at the spawn point furthest from the way in (the reliquary comes in dungeons ticket 6).
-        BlockPos phylactery = this.spawnPoints.stream()
+        // The phylactery waits on the reliquary's altar (a Crypt's side room off this one); with no
+        // reliquary, at the spawn point furthest from the way in.
+        BlockPos reliquary = reliquarySpot(dungeon);
+        BlockPos phylactery = reliquary != null ? reliquary : this.spawnPoints.stream()
                 .max(java.util.Comparator.comparingDouble(p -> p.getSquaredDistance(trigger.getBlockPos())))
                 .orElse(stand);
         double mult = bossHealthMult(this.partySize);
@@ -400,7 +465,31 @@ public class DungeonWardBlockEntity extends BlockEntity {
             EncounterBuilder.tags(dungeon.startKey(), this.roomId).forEach(mob::addCommandTag);
             mob.addCommandTag(DungeonCombat.BOSS_TAG);
             this.tierBonus(mob, dungeon.tier());
+            if (reliquary != null && mob instanceof mattonfire.dnd.entity.LichEntity lich) {
+                // Home is the boss room, and the leash reaches across it and into the reliquary.
+                lich.setLair(stand, lairLeash(stand, reliquary));
+            }
         });
+    }
+
+    /** The phylactery's place in the dungeon's reliquary, or null if it has none (not a Crypt). */
+    @Nullable
+    public static BlockPos reliquarySpot(DungeonState dungeon) {
+        for (DungeonState.Room room : dungeon.rooms()) {
+            if (room.role() == RoomRole.RELIQUARY) {
+                return mattonfire.dnd.world.gen.dungeon.ReliquaryPiece.phylacterySpot(room.box(), dungeon.floorY());
+            }
+        }
+        return null;
+    }
+
+    /**
+     * How far a dungeon Lich may get from the middle of its boss room before it blinks home: far
+     * enough to stand anywhere in the reliquary ({@link #LAIR_LEASH_MARGIN} past the phylactery),
+     * and never less than the Lich's own leash.
+     */
+    public static double lairLeash(BlockPos lair, BlockPos phylactery) {
+        return Math.max(LAIR_LEASH_MIN, Math.sqrt(lair.getSquaredDistance(phylactery)) + LAIR_LEASH_MARGIN);
     }
 
     @Nullable
@@ -447,8 +536,12 @@ public class DungeonWardBlockEntity extends BlockEntity {
     /** Takes in tagged mobs that turned up in the room since (a phylactery, a reformed Lich, split cubes). */
     private void adopt(ServerWorld world, DungeonState dungeon) {
         String tag = EncounterBuilder.roomTag(dungeon.startKey(), this.roomId);
-        for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, Box.from(this.box).expand(1.0D),
-                e -> e.isAlive() && e.getCommandTags().contains(tag))) {
+        Set<LivingEntity> found = new java.util.LinkedHashSet<>();
+        for (BlockBox part : this.area(world)) {
+            found.addAll(world.getEntitiesByClass(LivingEntity.class, Box.from(part).expand(1.0D),
+                    e -> e.isAlive() && e.getCommandTags().contains(tag)));
+        }
+        for (LivingEntity entity : found) {
             if (this.mobs.add(entity.getUuid())) {
                 this.markDirty();
             }
@@ -464,18 +557,34 @@ public class DungeonWardBlockEntity extends BlockEntity {
             }
             if (DungeonChampion.isChampion(entity)) {
                 DungeonChampion.tick(world, entity);
+                for (Entity split : DungeonChampion.splitIfHurt(world, entity,
+                        EncounterBuilder.tags(dungeon.startKey(), this.roomId), this.partySize)) {
+                    if (this.mobs.add(split.getUuid())) {
+                        this.markDirty();
+                    }
+                }
             }
         }
     }
 
     /** Drops tracked mobs that are gone: dead, or missing from the room for {@link #MISSING_CHECKS} checks running. */
     private void prune(ServerWorld world) {
-        Box room = Box.from(this.box).expand(1.0D);
+        List<BlockBox> area = this.area(world);
         Iterator<UUID> it = this.mobs.iterator();
         while (it.hasNext()) {
             UUID id = it.next();
             Entity entity = world.getEntity(id);
-            if (entity != null && entity.isAlive() && room.contains(entity.getPos())) {
+            if (entity != null && entity.isAlive() && inAny(area, entity.getPos())) {
+                this.missing.remove(id);
+                continue;
+            }
+            if (entity != null && entity.isAlive() && entity.getCommandTags().contains(DungeonCombat.BOSS_TAG)) {
+                // The boss got out of its room (a blink through a wall): fetch it back rather than
+                // calling the fight off.
+                BlockPos home = this.standingSpot(world, this.box.getCenter().withY(this.box.getMinY() + 2));
+                entity.requestTeleport(home.getX() + 0.5D, home.getY(), home.getZ() + 0.5D);
+                DnDClasses.LOGGER.info("[Dungeon] room #{} boss {} left its room: brought back to {}", this.roomId,
+                        entity.getType().getUntranslatedName(), home.toShortString());
                 this.missing.remove(id);
                 continue;
             }
@@ -539,8 +648,10 @@ public class DungeonWardBlockEntity extends BlockEntity {
             DungeonChampion.removeBar(id);
         }
         if (this.role == RoomRole.BOSS) {
-            for (Entity minion : world.getEntitiesByClass(MobEntity.class, Box.from(this.box).expand(1.0D), BossMinions::isMinion)) {
-                minion.discard();
+            for (BlockBox part : this.area(world)) {
+                for (Entity minion : world.getEntitiesByClass(MobEntity.class, Box.from(part).expand(1.0D), BossMinions::isMinion)) {
+                    minion.discard();
+                }
             }
         }
         this.mobs.clear();
@@ -572,6 +683,9 @@ public class DungeonWardBlockEntity extends BlockEntity {
                 }
                 int ox = west ? x - 1 : east ? x + 1 : x;
                 int oz = north ? z - 1 : south ? z + 1 : z;
+                if (this.leadsToAnnex(world, x, z, ox - x, oz - z, dungeon.floorY() + 1)) {
+                    continue;
+                }
                 for (int y = dungeon.floorY() + 1; y <= dungeon.floorY() + DungeonPiece.DOOR_HEIGHT; y++) {
                     inner.set(x, y, z);
                     outer.set(ox, y, oz);
@@ -583,6 +697,26 @@ public class DungeonWardBlockEntity extends BlockEntity {
             }
         }
         return doorways;
+    }
+
+    /**
+     * True if walking out of the wall at (x, z) in direction (dx, dz) reaches one of the annex rooms
+     * within a few blocks (through the short corridor): that doorway stays open during the fight.
+     */
+    private boolean leadsToAnnex(ServerWorld world, int x, int z, int dx, int dz, int y) {
+        List<BlockBox> area = this.area(world);
+        if (area.size() <= 1) {
+            return false;
+        }
+        for (int k = 1; k <= 6; k++) {
+            BlockPos pos = new BlockPos(x + dx * k, y, z + dz * k);
+            for (int i = 1; i < area.size(); i++) {
+                if (area.get(i).contains(pos)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /** Fills every doorway with a seal, except where someone's standing (tried again next check). */

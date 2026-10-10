@@ -86,7 +86,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
-- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested) (PR #170)
+- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested)
 - [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow and Goblin Warrens behind a cave mouth, with a planned route to the Lich or the Goblin Warlord, a vault, theme dressing and a Challenge tier
 
 ## Enchantments

@@ -159,6 +159,8 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
             lich.setCustomName(Text2.fromJson(this.lichName));
         }
         lich.linkPhylactery(this);
+        // A dungeon's boss stays its dungeon's boss: the room's ward finds it again by these tags.
+        this.getCommandTags().stream().filter(tag -> tag.startsWith("dndclasses.dungeon")).forEach(lich::addCommandTag);
         lich.initialize(world, world.getLocalDifficulty(lich.getBlockPos()), SpawnReason.MOB_SUMMONED, null, null);
         lich.setPersistent();
         world.spawnEntityAndPassengers(lich);

@@ -565,6 +565,11 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     // ---------------------------------------------------------------- phylactery
 
+    /** True once this (dead) Lich's soul has fled to its phylactery to reform: not a true death. */
+    public boolean hasFledToPhylactery() {
+        return this.soulFled;
+    }
+
     /** Sets where the phylactery goes when the Lich first ticks (used by structure generation). */
     public void setPhylacterySpot(BlockPos pos) {
         this.phylacteryPos = pos;

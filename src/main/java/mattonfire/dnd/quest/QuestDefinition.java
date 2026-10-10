@@ -28,9 +28,12 @@ public record QuestDefinition(Identifier id, Text title, @Nullable Text descript
                               List<QuestAction> onAccept, List<QuestStage> stages, List<QuestAction> rewards) {
     public static final int MAX_ACTIVE = 8;
 
-    /** Quests that must be finished and minimum standings with factions. */
-    public record Requirements(List<Identifier> quests, Map<Identifier, ReputationTier> rep) {
-        static final Requirements NONE = new Requirements(List.of(), Map.of());
+    /**
+     * Quests that must all be finished, quests of which at least one must be finished
+     * ({@code any_quests}), and minimum standings with factions.
+     */
+    public record Requirements(List<Identifier> quests, List<Identifier> anyQuests, Map<Identifier, ReputationTier> rep) {
+        static final Requirements NONE = new Requirements(List.of(), List.of(), Map.of());
 
         static Requirements parse(@Nullable JsonElement element) {
             if (element == null) {
@@ -39,6 +42,8 @@ public record QuestDefinition(Identifier id, Text title, @Nullable Text descript
             JsonObject json = QuestJson.object(element, "requires");
             List<Identifier> quests = QuestJson.list(json, "quests",
                     value -> QuestJson.id(value.getAsString(), "required quest"));
+            List<Identifier> anyQuests = QuestJson.list(json, "any_quests",
+                    value -> QuestJson.id(value.getAsString(), "any_quests entry"));
             Map<Identifier, ReputationTier> rep = new LinkedHashMap<>();
             if (json.has("rep")) {
                 for (Map.Entry<String, JsonElement> entry : QuestJson.object(json.get("rep"), "requires.rep").entrySet()) {
@@ -55,7 +60,7 @@ public record QuestDefinition(Identifier id, Text title, @Nullable Text descript
                     rep.put(QuestJson.id(entry.getKey(), "requires.rep faction"), tier);
                 }
             }
-            return new Requirements(List.copyOf(quests), Map.copyOf(rep));
+            return new Requirements(List.copyOf(quests), List.copyOf(anyQuests), Map.copyOf(rep));
         }
     }
 

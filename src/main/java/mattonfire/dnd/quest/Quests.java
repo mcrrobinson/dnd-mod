@@ -56,7 +56,7 @@ public final class Quests {
             }
         }
         for (QuestDefinition quest : loaded.values()) {
-            for (Identifier required : quest.requires().quests()) {
+            for (Identifier required : concat(quest.requires().quests(), quest.requires().anyQuests())) {
                 if (!loaded.containsKey(required)) {
                     DnDClasses.LOGGER.warn("[Quests] Quest {} requires unknown quest {}", quest.id(), required);
                 }
@@ -64,6 +64,12 @@ public final class Quests {
         }
         quests = Collections.unmodifiableMap(loaded);
         DnDClasses.LOGGER.info("[Quests] Loaded {} quests: {}", loaded.size(), loaded.keySet());
+    }
+
+    private static java.util.List<Identifier> concat(java.util.List<Identifier> a, java.util.List<Identifier> b) {
+        java.util.List<Identifier> all = new java.util.ArrayList<>(a);
+        all.addAll(b);
+        return all;
     }
 
     public static Collection<QuestDefinition> all() {

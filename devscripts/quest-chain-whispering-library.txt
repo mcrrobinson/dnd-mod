@@ -1,0 +1,88 @@
+# Chain B, The Whispering Library (hobbit_elder, needs Friendly hobbits): 20 undead with Cursed Bone drops
+# (25%), hand 3 bones to the Thain, Arcana DC 12 (stronghold map + 2 eyes of ender, or just the eyes),
+# the stronghold and its phylactery, the Lich (only its final death counts), reward at the Thain:
+# 40 emeralds, 150 XP, 400 class XP, +150 hobbits, a rare magic item.
+# Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-chain-whispering-library.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/time set noon
+/effect give @s minecraft:resistance 900 4 true
+/dndclass set @s wizard
+wait 10
+closescreen
+/kill @e[tag=qc]
+/fill -4 149 -4 4 149 4 minecraft:glass
+/tp @s 0.5 150 0.5 0 25
+/clear @s
+/quest admin @s reset dndclasses:whispering_library/1
+# Neutral: not offered; Friendly: offered by the Thain
+/rep @s dndclasses:hobbits set 0
+/summon dndclasses:hobbit 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["qc","dndclasses.role.hobbit_elder"]}
+wait 10
+use
+wait 10
+screenshot qc-b-1-neutral
+closescreen
+/rep @s dndclasses:hobbits set 150
+use
+wait 10
+screenshot qc-b-2-offer
+button 0
+wait 5
+button 0
+wait 10
+closescreen
+# Stage 1: undead drop Cursed Bones (for participants only). Kill 8 zombies and see the bones drop.
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+/summon minecraft:zombie 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc","qcz"]}
+wait 10
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qcz,limit=1] 1000 minecraft:player_attack by @s
+wait 20
+screenshot qc-b-3-bones
+/quest info dndclasses:whispering_library/1
+# Shortcut the rest of stage 1: 3 bones and the kill count, then hand in at the Thain
+/clear @s dndclasses:cursed_bone
+/give @s dndclasses:cursed_bone 3
+/quest admin @s stage dndclasses:whispering_library/1 1
+/quest admin @s talk hobbit_elder
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:cursed_bone"}]}]
+# Stage 2: the Arcana topic (check rolls on the HUD; either way the story moves on)
+/quest admin @s stage dndclasses:whispering_library/1 2
+use
+wait 10
+screenshot qc-b-4-read
+button 0
+wait 40
+screenshot qc-b-5-read-result
+closescreen
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:ender_eye",Count:2b}]}]
+/quest info dndclasses:whispering_library/1
+# Stage 3: stronghold + phylactery (shortcut: stage 4); Stage 4: the Lich
+/quest admin @s stage dndclasses:whispering_library/1 4
+/summon dndclasses:lich 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc"]}
+wait 10
+/damage @e[type=dndclasses:lich,tag=qc,limit=1] 100000 minecraft:player_attack by @s
+wait 40
+/quest list
+/clear @s minecraft:emerald
+/quest admin @s talk hobbit_elder
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:40b}]}]
+/rep
+slots
+screenshot qc-b-6-rewarded
+quit

@@ -1,0 +1,78 @@
+{
+  "role": "dwarf_king",
+  "topics": [
+    {
+      "id": "goblin_menace/plea",
+      "text": "dialogue.dndclasses.goblin_menace.plea",
+      "requires": {
+        "quest": "dndclasses:goblin_menace/2",
+        "stage": 3
+      },
+      "check": {
+        "skill": "persuasion",
+        "dc": 13,
+        "success": "goblin_menace_blessing",
+        "failure": "goblin_menace_tribute",
+        "on_success": [
+          {
+            "type": "rep",
+            "factions": {
+              "dndclasses:mountain_dwarves": 65
+            }
+          },
+          {
+            "type": "set_flag",
+            "flag": "king_ally"
+          },
+          {
+            "type": "complete_stage",
+            "stage": 4
+          }
+        ],
+        "on_failure": [
+          {
+            "type": "set_flag",
+            "flag": "tribute"
+          },
+          {
+            "type": "complete_stage",
+            "stage": 3
+          }
+        ]
+      }
+    },
+    {
+      "id": "goblin_menace/tribute",
+      "text": "dialogue.dndclasses.goblin_menace.tribute_ask",
+      "requires": {
+        "quest": "dndclasses:goblin_menace/2",
+        "stage": 4
+      },
+      "goto": "goblin_menace_tribute"
+    }
+  ],
+  "nodes": {
+    "goblin_menace_blessing": {
+      "lines": [
+        "dialogue.dndclasses.goblin_menace.blessing.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "goblin_menace_tribute": {
+      "lines": [
+        "dialogue.dndclasses.goblin_menace.tribute.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    }
+  }
+}

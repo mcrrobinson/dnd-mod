@@ -45,7 +45,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 - [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids
-- [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`
+- [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session

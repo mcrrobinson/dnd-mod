@@ -1,0 +1,89 @@
+{
+  "role": "dwarf_king",
+  "topics": [
+    {
+      "id": "eye_below/truth",
+      "text": "dialogue.dndclasses.eye_below.truth",
+      "requires": {
+        "quest": "dndclasses:eye_below/1",
+        "stage": 1
+      },
+      "check": {
+        "skill": "insight",
+        "dc": 14,
+        "success": "eye_below_truth",
+        "failure": "eye_below_lie",
+        "on_success": [
+          {
+            "type": "set_flag",
+            "flag": "truth"
+          },
+          {
+            "type": "rep",
+            "factions": {
+              "dndclasses:mountain_dwarves": 25
+            }
+          }
+        ],
+        "on_failure": [
+          {
+            "type": "complete_stage",
+            "stage": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "eye_below/where",
+      "text": "dialogue.dndclasses.eye_below.where",
+      "requires": {
+        "quest": "dndclasses:eye_below/1",
+        "stage": 2
+      },
+      "actions": [
+        {
+          "type": "reveal",
+          "structure": "dndclasses:beholder_lair",
+          "radius": 150,
+          "fallback": "quest.dndclasses.eye_below.1.no_lair"
+        }
+      ],
+      "goto": "eye_below_where"
+    }
+  ],
+  "nodes": {
+    "eye_below_truth": {
+      "lines": [
+        "dialogue.dndclasses.eye_below.truth.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "eye_below_lie": {
+      "lines": [
+        "dialogue.dndclasses.eye_below.lie.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "eye_below_where": {
+      "lines": [
+        "dialogue.dndclasses.eye_below.where.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    }
+  }
+}

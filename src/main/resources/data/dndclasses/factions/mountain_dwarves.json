@@ -4,6 +4,7 @@
   "members": "#dndclasses:faction/mountain_dwarves",
   "settlements": "#dndclasses:faction/mountain_dwarves",
   "start": 0,
+  "start_by_race": {"dndclasses:dwarf": 150, "dndclasses:gnome": 100},
   "rivals": {"dndclasses:goblins": -0.5},
   "decay_per_day": 5,
   "hit_member": -15,

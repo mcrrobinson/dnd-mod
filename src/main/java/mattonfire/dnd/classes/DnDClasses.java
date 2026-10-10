@@ -122,6 +122,8 @@ public class DnDClasses implements ModInitializer {
                         if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
                                 return;
                         }
+                        // Firing a power gets you up from a short rest.
+                        mattonfire.dnd.classes.Rest.RestSession.cancel(player, "you used a power");
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
                         SkillNode skill = Progression.current(player).activeNode();
                         int cost = skill == null ? MANA_ICONS : skill.manaCost();
@@ -209,13 +211,15 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
-                // Before DwarfGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
+                // Before SettlementGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
-                mattonfire.dnd.entity.DwarfGrudges.register();
+                mattonfire.dnd.dungeon.DungeonCombat.register();
+                mattonfire.dnd.entity.SettlementGrudges.register();
+                mattonfire.dnd.world.gen.HomeBonuses.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.faction.FactionEvents.register();
                 CommandRegistrationCallback.EVENT.register(
@@ -223,6 +227,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.quest.QuestEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.quest.QuestCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndHomeCommand.register(dispatcher));
                 mattonfire.dnd.entity.boss.StructureBosses.register();
 
                 // Runs clientside right now.

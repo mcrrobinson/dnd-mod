@@ -1,0 +1,21 @@
+# Finds the dev world's hobbit village and dwarven fortress pieces with /dndhome pieces (boxes in [CHAT] lines).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/racial-homes-recon.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+wait 40
+closescreen
+/tp @s 182 72 1332
+wait 200
+/dndhome
+/execute as @e[type=dndclasses:innkeeper,distance=..200] run data get entity @s Pos
+/tp @s -7064 120 6536
+wait 900
+/dndhome
+/tp @s -7080 110 6536
+wait 200
+/dndhome
+/dndhome pieces
+/execute as @e[type=dndclasses:mountain_dwarf,distance=..200,tag=dndclasses.role.dwarf_king] run data get entity @s Pos
+wait 100
+quit

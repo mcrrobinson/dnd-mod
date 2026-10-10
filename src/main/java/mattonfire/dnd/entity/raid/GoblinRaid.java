@@ -9,13 +9,14 @@ import java.util.Set;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModSounds;
-import mattonfire.dnd.entity.DwarfGrudges;
+import mattonfire.dnd.entity.SettlementGrudges;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import mattonfire.dnd.entity.boss.BossMusic;
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.entity.Entity;
@@ -557,7 +558,12 @@ public class GoblinRaid {
         }
         for (ServerPlayerEntity player : players) {
             double distance = goblin.squaredDistanceTo(player);
-            if (distance < best && !player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
+            // Marked players are the horde's favourite target: they count as half as far away.
+            if (TierEffects.isMarked(player, goblin.getType())) {
+                distance /= 4.0D;
+            }
+            if (distance < best && !player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)
+                    && TierEffects.goblinMayTarget(goblin, player, false)) {
                 best = distance;
                 nearest = player;
             }
@@ -615,7 +621,7 @@ public class GoblinRaid {
             mattonfire.dnd.faction.FactionEvents.raidWon(player, world, new Identifier(DnDClasses.MOD_ID, this.kind.id),
                     mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
             if (this.kind == Settlement.Kind.FORTRESS) {
-                DwarfGrudges.forgive(player, this.rally, RADIUS);
+                SettlementGrudges.forgive(player, this.rally, RADIUS);
             }
             if (advancement != null) {
                 AdvancementProgress progress = player.getAdvancementTracker().getProgress(advancement);

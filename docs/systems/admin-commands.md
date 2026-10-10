@@ -45,6 +45,9 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndrace set <player> <race> [ancestry]` | Changes the race: removes the old race's modifiers, applies the new ones and prints the race summary. `none` clears the race and reopens the race picker |
 | `/dndrace list` | Lists online players with their race and class |
 
+| `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
+| `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |
+
 Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).
 
 ### Magic items
@@ -61,7 +64,7 @@ See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
 See [Goblin raids](goblin-raids.md) for the details.
 
 ### Dungeon Master
-`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze` let an op run a session: hide from the players, drop premade encounters and pause the scene. `/dm grant <player>` opens them to a non-op. See [Dungeon Master](dungeon-master.md).
+`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze` and `/dm check|save` let an op run a session: hide from the players, drop premade encounters and pause the scene. `/dm grant <player>` opens them to a non-op. See [Dungeon Master](dungeon-master.md).
 
 ### Useful vanilla commands
 - `/locate structure dndclasses:dragon_lair`, `dndclasses:hobbit_village`, `dndclasses:dwarven_fortress`, `dndclasses:goblin_camp`, `dndclasses:beholder_lair`
@@ -69,7 +72,7 @@ See [Goblin raids](goblin-raids.md) for the details.
 - `/give @s dndclasses:attunement_table` to skip the recipe while testing skills
 
 ## For developers
-- `Commands/DndClassCommand`, `Commands/DndRaceCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`. `/dndrace set` calls `RaceLifecycle.change`.
+- `Commands/DndClassCommand`, `Commands/DndRaceCommand`, `Commands/DndHomeCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`. `/dndrace set` calls `RaceLifecycle.change`.
 - `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
 - `sheet`, `score` and `forceroll` use `AbilityScores.sheet`, `AbilityScores.setOverride` and `D20.force`.
 - Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/ability-scores.txt`, `devscripts/rests-charges.txt`, `devscripts/race-pick.txt`.

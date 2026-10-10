@@ -10,7 +10,6 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.mixin.LootableContainerBlockEntityAccessor;
-import mattonfire.dnd.entity.MountainDwarfEntity;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -114,7 +113,7 @@ public final class Lockpicking {
             player.openHandledScreen(factory);
             player.incrementStat(Stats.CUSTOM.getOrCreateStat(Stats.OPEN_CHEST));
             PiglinBrain.onGuardedBlockInteracted(player, true);
-            MountainDwarfEntity.witness(player, pending.pos());
+            mattonfire.dnd.entity.SettlementGrudges.opened(player, pending.pos());
         }
         return true;
     }

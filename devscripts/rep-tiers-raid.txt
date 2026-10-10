@@ -1,0 +1,38 @@
+# Raiders and goblin standing, at the dev world's hobbit village (200, 1352).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/rep-tiers-raid.txt
+# Expect: at goblin Neutral no raider targets the player standing 3 blocks away (no "Test passed" after
+# "neutral-check"); at Hostile one does ("Test passed" after "hostile-check").
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+/dndclass set @s fighter
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/rep @s dndclasses:goblins set 0
+/tp @s 200 110 1352 0 60
+wait 100
+/goblinraid stop
+wait 20
+/goblinraid start
+waitchat Started goblin raid
+# The first wave comes 10 s (server time) after the start.
+wait 400
+/execute at @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] run tp @s ~3 ~ ~
+wait 100
+/execute at @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] run tp @s ~3 ~ ~
+wait 60
+/say neutral-check
+/execute as @e[type=dndclasses:goblin_warrior] on target if entity @s[type=minecraft:player]
+screenshot rep-raid-neutral
+/rep @s dndclasses:goblins set -600
+/execute at @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] run tp @s ~3 ~ ~
+wait 100
+/say hostile-check
+/execute as @e[type=dndclasses:goblin_warrior] on target if entity @s[type=minecraft:player]
+screenshot rep-raid-hostile
+/goblinraid stop
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 20
+quit

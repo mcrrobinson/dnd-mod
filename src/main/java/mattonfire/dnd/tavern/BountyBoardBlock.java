@@ -1,5 +1,8 @@
 package mattonfire.dnd.tavern;
 
+import mattonfire.dnd.faction.Faction;
+import mattonfire.dnd.faction.Factions;
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -24,6 +27,7 @@ import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
@@ -127,6 +131,13 @@ public class BountyBoardBlock extends BlockWithEntity {
         state = world.getBlockState(pos);
 
         ItemStack held = player.getStackInHand(hand);
+        // Hostile players can still read the board (sneak), but can't take or hand in notices.
+        boolean takesOrClaims = BountyNoticeItem.bounty(held) != null || hand == Hand.MAIN_HAND && !player.isSneaking();
+        if (takesOrClaims && shuns(serverPlayer, (ServerWorld) world, pos)) {
+            player.sendMessage(Text.translatable("bounty.dndclasses.shunned").formatted(Formatting.RED), true);
+            world.playSound(null, pos, SoundEvents.ENTITY_VILLAGER_NO, SoundCategory.BLOCKS, 1.0F, 1.0F);
+            return ActionResult.CONSUME;
+        }
         if (BountyNoticeItem.bounty(held) != null) {
             BountyRewards.claim(serverPlayer, held, Vec3d.ofCenter(pos));
             return ActionResult.CONSUME;
@@ -154,6 +165,26 @@ public class BountyBoardBlock extends BlockWithEntity {
         player.sendMessage(bounty.description().copy().formatted(Formatting.GRAY, Formatting.ITALIC), false);
         world.playSound(null, pos, SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1.0F, 1.0F);
         return ActionResult.CONSUME;
+    }
+
+    /**
+     * Whether the board's people are Hostile to {@code player}: the factions that reward bounties and
+     * whose settlement the board is in (any faction that rewards bounties, for a board out in the wild).
+     */
+    private static boolean shuns(ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
+        java.util.List<Faction> local = new java.util.ArrayList<>();
+        java.util.List<Faction> any = new java.util.ArrayList<>();
+        for (Faction faction : Factions.all()) {
+            if (faction.bountyMinor() == 0 && faction.bountyMajor() == 0) {
+                continue;
+            }
+            any.add(faction);
+            if (faction.isInSettlement(world, pos)) {
+                local.add(faction);
+            }
+        }
+        return (local.isEmpty() ? any : local).stream()
+                .anyMatch(faction -> TierEffects.refusesService(TierEffects.tierWith(player, faction)));
     }
 
     /** Which notice (0 = left, as seen from the front) the hit point is over. */

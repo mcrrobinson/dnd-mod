@@ -54,7 +54,9 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Hunter | Right | Sharpshooter (first node, open to both), Volley, Hunter's Mark | **Colossus Slayer**: your first arrow hit each second on a target below full health deals +3 damage |
 | Horizon Walker | Left | Planar Hardiness (first node, open to both), Snare, Natural Explorer | **Planar Warrior**: in the Nether and the End you deal 20% more damage and have Speed I |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Colossus Slayer** (Hunter): the first arrow each second that hits a target already below full health deals +3 damage (before Hunter's Mark's bonus).
+- **Planar Warrior** (Horizon Walker): in the Nether and the End all your damage is multiplied by 1.2, and you have Speed I there.
 
 ## Commands
 - `/dndclass set <player> ranger` (see [Admin commands](../systems/admin-commands.md)).

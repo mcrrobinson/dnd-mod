@@ -191,17 +191,29 @@ public class DndClassesClient implements ClientModInitializer {
         // Magic items: "Rare weapon (Wizard only)" under the name
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
             net.minecraft.text.Text line = mattonfire.dnd.magic.MagicNames.tooltipLine(stack);
+            int at = Math.min(1, lines.size());
             if (line != null)
-                lines.add(Math.min(1, lines.size()), line);
+                lines.add(at++, line);
+            net.minecraft.client.MinecraftClient mc = net.minecraft.client.MinecraftClient.getInstance();
+            java.util.UUID viewer = mc.player == null ? null : mc.player.getUuid();
+            for (net.minecraft.text.Text extra : mattonfire.dnd.magic.MagicNames.tooltipExtras(stack, viewer))
+                lines.add(Math.min(at++, lines.size()), extra);
         });
+        ClientPlayNetworking.registerGlobalReceiver(mattonfire.dnd.magic.Attunement.S2C_SYNC,
+                (client, handler, buf, sender) -> {
+                    mattonfire.dnd.magic.AttunementSnapshot snapshot = mattonfire.dnd.magic.AttunementSnapshot.read(buf);
+                    client.execute(() -> mattonfire.dnd.magic.AttunementSnapshot.client = snapshot);
+                });
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
+        mattonfire.dnd.classes.Client.Hud.SaveLaneHud.register();
         mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();
         // Arcane Seals are translucent glyph walls
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getTranslucent(),
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.LESSER_ARCANE_SEAL_BLOCK,
-                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK);
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK,
+                mattonfire.dnd.classes.Registry.ModBlocks.ARCANE_SEAL);
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
@@ -257,6 +269,8 @@ public class DndClassesClient implements ClientModInitializer {
             fireBreathEndTick = 0;
             fireBreathWorld = null;
             MySphereRenderState.shouldRenderSphere = false;
+            // No rest carries over to the next world (it would lock movement).
+            mattonfire.dnd.classes.Rest.RestSnapshot.client = mattonfire.dnd.classes.Rest.RestSnapshot.NONE;
         }));
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);

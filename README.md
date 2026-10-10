@@ -102,7 +102,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Hobbit Tavern](docs/structures/hobbit-tavern.md): every village inn has an innkeeper who trades food and ale, and a bounty board with daily hunts and expeditions.
 - [Goblin Camps](docs/structures/goblin-camps.md): palisaded war camps in forests and plains (`dndclasses:goblin_camp`).
 - [Dwarven Fortresses](docs/structures/dwarven-fortresses.md) carved into mountainsides (`dndclasses:dwarven_fortress`).
-- [Dungeons](docs/structures/dungeons.md): underground Crypts with a stair down to a planned route of rooms, a boss room and a vault (`/locate structure #dndclasses:dungeons`).
+- [Dungeons](docs/structures/dungeons.md): underground Crypts with a stair down to a planned route of rooms, a boss room and a vault (`/locate structure #dndclasses:dungeons`). Rooms seal and fill with monsters scaled to your party, up to a Lich; see [Dungeon encounters](docs/systems/dungeon-encounters.md).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.
 - Beholder Lairs: sealed domed caverns deep in the deepslate, reached by a spiral stair (`dndclasses:beholder_lair`). See [Beholder](docs/bosses/beholder.md).
 

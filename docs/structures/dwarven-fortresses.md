@@ -32,6 +32,18 @@ The dwarves are neutral until you cross them. If you open or break a chest or ba
 - The chests are locked. A [Rogue](../classes/rogue.md) can pick them (DC 15 in the treasury, DC 10 elsewhere, see [d20 skill checks](../systems/d20-skill-checks.md#lockpicking-rogue)). Anyone else has to break them and loses some of the loot. A picked lock still angers a dwarf that's watching.
 - Help the dwarves drive off a [goblin raid](../systems/goblin-raids.md). Every dwarf of that fortress forgives you.
 
+## For your race
+Dwarven Fortresses are the Dwarf home (see [Racial homes](../races/racial-homes.md)). A Dwarf gets:
+
+- a "Welcome home, Dwarf" title on arriving
+- Regeneration I in the great hall while no hostile mob is within 16 blocks
+- the rarer of two rolls when bartering gold with a dwarf
+- kin trust: opening chests in the forge, barracks, mead hall and mine doesn't anger the dwarves. The treasury, gold blocks and broken chests still do, but the first offence each in-game day only gets a warning growl.
+- an audience with the Dwarf King (right-click him with an empty hand), once per in-game day: 3 gold ingots or an enchanted iron tool
+- a Friendly (150) start with the Mountain Dwarves
+
+Gnomes also get the double barter roll here, and start at 100 (Friendly).
+
 ## Where to find it
 Meadow, Grove, Snowy Slopes, Jagged Peaks, Frozen Peaks, Stony Peaks, Windswept Hills, Windswept Gravelly Hills and Windswept Forest. Fortresses use a spacing of 16 chunks and a separation of 6, so they're fairly common in the mountains. The gate needs a steep mountainside with the ground in front clear, so not every spot in those biomes gets one.
 
@@ -41,5 +53,5 @@ Meadow, Grove, Snowy Slopes, Jagged Peaks, Frozen Peaks, Stony Peaks, Windswept 
 ## For developers
 - `world/gen/fortress/`: `DwarvenFortressStructure` finds the gate site, `FortressPlanner` lays out the gate, hall, throne room, treasury and side rooms (one `*Piece` each), and `CladdingPiece` heaps rock over anything the mountain doesn't cover. `FortressPiece` holds the shared loot ids.
 - Data: `worldgen/structure/dwarven_fortress.json` (dwarf spawn override, empty monster list), `worldgen/structure_set/dwarven_fortresses.json`, the `#dndclasses:has_structure/dwarven_fortress` biome tag and `loot_tables/chests/dwarven_fortress_*.json`.
-- Grudges: `entity/DwarfGrudges.java` and `MountainDwarfEntity.witness`.
+- Grudges: `entity/SettlementGrudges.java` (the `MOUNTAIN_DWARVES` rules, including Dwarf kin trust) and `MountainDwarfEntity.provoke`.
 - Devscripts: `dwarven-fortress-locate.txt`, `dwarven-fortress-survey.txt`.

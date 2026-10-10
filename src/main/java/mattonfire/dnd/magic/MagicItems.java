@@ -60,6 +60,8 @@ public final class MagicItems {
                     def.typeName(), def);
         }
         MagicTier tier = stored != null ? stored : potionTier(stack);
+        if (tier == null && MagicData.isForgeBlessed(stack))
+            tier = MagicTier.UNCOMMON; // a blessed mundane weapon is a +1 weapon until the blessing ends
         if (tier == null)
             return null;
         return new Info(tier, kindOf(item), false, Set.of(), typeOf(item), null);
@@ -125,6 +127,8 @@ public final class MagicItems {
         for (Item instrument : new Item[] { ModItems.LUTE, ModItems.DRUM, ModItems.FLUTE }) {
             register(MagicItemDef.of(instrument, MagicTier.COMMON, MagicKind.WONDROUS, "instrument"));
         }
+        register(MagicItemDef.of(ModItems.CLOAK_OF_PROTECTION, MagicTier.UNCOMMON, MagicKind.WONDROUS, "cloak")
+                .withAttunement());
         register(MagicItemDef.of(Tavern.ALE, MagicTier.COMMON, MagicKind.CONSUMABLE, "drink"));
         // The 14 class armor sets: every ArmorItem the mod registers
         for (Item item : Registries.ITEM) {

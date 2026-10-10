@@ -200,6 +200,7 @@ public class DnDClasses implements ModInitializer {
                 // Before DwarfGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.SkillChecks.D20.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
+                mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.entity.boss.StructureBosses.register();
@@ -411,6 +412,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Party.PartyEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.GoblinRaidCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DungeonCommand.register(dispatcher));
 
                 // tree feller enchantment
                 TreeFeller.register();

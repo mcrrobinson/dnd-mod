@@ -1,0 +1,21 @@
+# DM toolkit verification, the guest rejoining while frozen. See dm-verify-host.txt.
+wait 40
+closescreen
+waitchat H_CHECKED
+look 0 30
+attack
+wait 5
+screenshot verify-guest-frozen-attack
+wait 20
+attack
+wait 25
+press key.dnd-classes.power-up
+wait 20
+screenshot verify-guest-rejoined-frozen
+/me G2_DONE
+waitchat H_UNFROZEN
+wait 10
+press key.dnd-classes.power-up
+wait 20
+/me G2_DONE2
+quit

@@ -1,0 +1,8 @@
+{
+  "name": "Wyvern Pair",
+  "difficulty": "deadly",
+  "spread": 8,
+  "spawns": [
+    {"entity": "dndclasses:wyvern", "count": 2}
+  ]
+}

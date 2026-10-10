@@ -44,6 +44,10 @@ loom {
             if (project.hasProperty('devServer')) {
                 vmArg "-Ddnd.autoconnect=${project.property('devServer')}"
             }
+            // -PdevUser=<name> fixes the offline player name (and so its UUID), e.g. for a LAN guest that rejoins
+            if (project.hasProperty('devUser')) {
+                programArgs "--username", project.property('devUser')
+            }
             if (project.hasProperty('devScript')) {
                 vmArg "-Ddnd.devscript=${file(project.property('devScript')).absolutePath}"
             }

@@ -1,0 +1,8 @@
+{
+  "name": "Owlbear Ambush",
+  "difficulty": "medium",
+  "spread": 2,
+  "spawns": [
+    {"entity": "dndclasses:owlbear", "count": 1}
+  ]
+}

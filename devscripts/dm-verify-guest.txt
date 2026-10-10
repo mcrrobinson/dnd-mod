@@ -1,0 +1,40 @@
+# DM toolkit multiplayer verification, guest (non-op). See dm-verify-host.txt.
+wait 40
+closescreen
+/party leave
+/me G_JOINED
+wait 40
+/dm status
+/me G_TRIED
+waitchat H_GRANTED
+wait 10
+/dm status
+/dm grant @s
+/me G_GRANTTEST
+waitchat H_INVITED
+/party accept
+/me G_ACCEPTED
+waitchat H_VEILED
+wait 30
+screenshot verify-guest-veiled
+/me G_SHOT
+waitchat H_UNVEILED
+wait 30
+screenshot verify-guest-unveiled
+/me G_SHOT2
+waitchat H_DMOFF
+wait 30
+screenshot verify-guest-dm-off
+/me G_SHOT3
+waitchat H_FROZEN
+look 0 30
+wait 5
+attack
+wait 5
+attack
+press key.dnd-classes.power-up
+wait 20
+screenshot verify-guest-frozen
+/me G_TRIEDFROZEN
+waitchat H_QUIT
+quit

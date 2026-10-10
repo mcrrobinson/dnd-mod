@@ -596,6 +596,9 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
             phylactery.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
         }
         this.linkPhylactery(phylactery);
+        // Encounter tags carry over, so /dm encounter clear and "loot": false cover the phylactery too.
+        this.getCommandTags().stream().filter(tag -> !tag.equals(mattonfire.dnd.dm.DmFreeze.TAG))
+                .forEach(phylactery::addCommandTag);
         world.spawnEntity(phylactery);
     }
 

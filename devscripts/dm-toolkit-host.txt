@@ -1,0 +1,80 @@
+# DM toolkit, LAN host (the DM). Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dm-toolkit-host.txt
+# then, once "Started serving on" is in the log, dm-toolkit-guest.txt in run-2.
+# Expect in latest.log: zombie target checks (tag z_on_dm) "Test failed" while DM (then "Test passed" after /dm off),
+# "Encounter #N "Goblin Patrol": 2-3 mobs", clear removes them, frozen goblin Pos/Health unchanged.
+wait 40
+closescreen
+respawn
+/difficulty normal
+/publish true survival 25617
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tag @s add host
+/tp @s 1000 151 1003 180 0
+wait 20
+/fill 985 150 985 1020 150 1020 minecraft:stone
+/tp @s 1000 151 1003 180 0
+/gamemode survival
+wait 100
+/kill @e[type=!player,distance=..64]
+/dm encounter clear all
+/dm on
+/dm veil on
+/data get entity @s abilities
+# Zombie next to the veiled DM: never targets them over 10 s
+/summon minecraft:zombie 1003 151 1005 {Tags:["z"],PersistenceRequired:1b}
+wait 40
+/execute as @e[tag=z] on target if entity @s[tag=host] run tag @e[tag=z] add z_on_dm
+/execute if entity @e[tag=z_on_dm]
+wait 40
+/execute as @e[tag=z] on target if entity @s[tag=host] run tag @e[tag=z] add z_on_dm
+/execute if entity @e[tag=z_on_dm]
+wait 40
+/execute as @e[tag=z] on target if entity @s[tag=host] run tag @e[tag=z] add z_on_dm
+/execute if entity @e[tag=z_on_dm]
+wait 40
+/execute as @e[tag=z] on target if entity @s[tag=host] run tag @e[tag=z] add z_on_dm
+/execute if entity @e[tag=z_on_dm]
+wait 40
+/execute as @e[tag=z] on target if entity @s[tag=host] run tag @e[tag=z] add z_on_dm
+/execute if entity @e[tag=z_on_dm]
+# Control: out of DM mode the zombie goes for us
+/dm off
+wait 60
+/execute as @e[tag=z] on target if entity @s[tag=host] run tag @e[tag=z] add z_on_dm
+/execute if entity @e[tag=z_on_dm]
+/kill @e[tag=z]
+/dm on
+/dm veil on
+# Encounters
+/dm encounter list
+/dm encounter spawn goblin_patrol 1010 151 1010
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=dndclasses.dm_encounter]
+/dm encounter list
+/dm encounter clear all
+/execute if entity @e[type=dndclasses:goblin_warrior]
+# Frozen goblins: no movement, no damage, for 10 s
+/dm encounter spawn goblin_patrol 1006 151 1010 frozen
+/tp @s 1006 152 1004 0 20
+wait 10
+/execute positioned 1006 151 1010 run data get entity @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] Pos
+/execute positioned 1006 151 1010 run damage @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] 6 minecraft:player_attack
+/execute positioned 1006 151 1010 run data get entity @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] Health
+screenshot dm-frozen-goblins
+wait 200
+/execute positioned 1006 151 1010 run data get entity @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] Pos
+/execute positioned 1006 151 1010 run data get entity @e[type=dndclasses:goblin_warrior,limit=1,sort=nearest] Health
+/dm unfreeze all
+/dm encounter clear all
+/tp @s 1000 151 1003 180 0
+# Wait for the guest (dm-toolkit-guest.txt) to look at us
+wait 1500
+/dm status
+# Freeze ourselves (out of DM mode) for the rejoin check in dm-freeze-rejoin.txt
+/dm off
+/tp @s 1000 151 1003 180 0
+/dm freeze @s
+wait 20
+/data get entity @s Tags
+quit

@@ -54,7 +54,8 @@ public final class BountyRewards {
 
     /** One kill counts towards one notice: the first unfinished one for that kind of creature. */
     private static void onKill(ServerPlayerEntity player, LivingEntity killed) {
-        if (BossMinions.isMinion(killed)) {
+        // Dungeon Masters earn no bounty credit.
+        if (BossMinions.givesNothing(killed) || mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
             return;
         }
         PlayerInventory inventory = player.getInventory();

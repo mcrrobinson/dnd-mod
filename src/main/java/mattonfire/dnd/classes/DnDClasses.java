@@ -117,6 +117,10 @@ public class DnDClasses implements ModInitializer {
         private static void sendPowerupPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 server.execute(() -> {
+                        // Held by the Dungeon Master's freeze: no powers.
+                        if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
+                                return;
+                        }
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
                         SkillNode skill = Progression.current(player).activeNode();
                         int cost = skill == null ? MANA_ICONS : skill.manaCost();
@@ -411,6 +415,12 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Party.PartyEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.GoblinRaidCommand.register(dispatcher));
+                // Dungeon Master toolkit: /dm, the veil, encounters and freeze.
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.dm.DmCommand.register(dispatcher));
+                mattonfire.dnd.dm.DmVeil.register();
+                mattonfire.dnd.dm.DmFreeze.register();
+                mattonfire.dnd.dm.encounter.Encounters.register();
 
                 // tree feller enchantment
                 TreeFeller.register();

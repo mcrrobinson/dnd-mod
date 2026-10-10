@@ -1,5 +1,5 @@
 # Admin commands
-Commands for operators (permission level 2) to manage classes, class progress and goblin raids.
+Commands for operators (permission level 2) to manage classes, class progress, goblin raids and Dungeon Master sessions.
 
 ![Chat after /dndclass set, get, xp add and progress, and /goblinraid list](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/admin-commands-chat.png)
 
@@ -40,6 +40,9 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/goblinraid list` | Lists running raids |
 
 See [Goblin raids](goblin-raids.md) for the details.
+
+### Dungeon Master
+`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze` let an op run a session: hide from the players, drop premade encounters and pause the scene. `/dm grant <player>` opens them to a non-op. See [Dungeon Master](dungeon-master.md).
 
 ### Useful vanilla commands
 - `/locate structure dndclasses:dragon_lair`, `dndclasses:hobbit_village`, `dndclasses:dwarven_fortress`, `dndclasses:goblin_camp`, `dndclasses:beholder_lair`

@@ -106,5 +106,8 @@ At night, goblin war parties raid hobbit villages and dwarven fortresses in wave
 ### Admin Commands
 `/dndclass get <player>` and `/dndclass set <player> <class>` change a class without dying. See [Admin commands](docs/systems/admin-commands.md).
 
+### Dungeon Master
+An op can run a session with `/dm on`: hide behind a veil, drop premade encounters and freeze the scene. See [Dungeon Master](docs/systems/dungeon-master.md).
+
 ## Documentation
 [docs/README.md](docs/README.md) indexes every page: classes, systems, mobs, bosses, structures, enchantments, items, music, and developer notes (testing with DevScript, multipart mobs, the boss framework).

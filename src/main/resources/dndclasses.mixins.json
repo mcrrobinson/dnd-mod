@@ -53,7 +53,9 @@
         "RangerSwordPickupMixin",
         "BloodHunterSwordDropMixin",
         "ServerPlayerSwordDropMixin",
-        "StatusEffectMixin"
+        "StatusEffectMixin",
+        "ThreadedAnvilChunkStorageAccessor",
+        "DmEntityTrackerMixin"
     ],
     "client": [
         "AbstractClientPlayerEntityMixin",

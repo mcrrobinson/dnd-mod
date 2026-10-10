@@ -51,7 +51,7 @@ public final class ProgressionEvents {
             xp += skills.killXp(player, entity, source);
         }
         // Boss minions are endless; they give no class XP.
-        if (!BossMinions.isMinion(entity)) {
+        if (!BossMinions.givesNothing(entity)) {
             // Split with party members nearby, like vanilla XP; each gets it in their own class.
             PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp);
         }

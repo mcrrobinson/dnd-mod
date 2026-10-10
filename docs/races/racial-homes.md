@@ -1,5 +1,5 @@
 # Racial homes
-Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md) and Elves in [Elven Enclaves](../structures/elven-enclaves.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
+Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md), Elves in [Elven Enclaves](../structures/elven-enclaves.md) and Dragonborn in [Dragon Temples](../structures/dragon-temples.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
 
 ![A Halfling arriving at the Green Dragon inn: "Welcome home, Halfling", the welcome basket in the hotbar and Regeneration from the hearth](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-homes/rh-halfling-welcome.png)
 
@@ -46,6 +46,16 @@ Once a second the mod checks where each player is. A player is in a settlement w
 | Kin trust | The first time each in-game day you break a block of the Heart Tree or a talan where an elf can see, you're let off with "The Warden frowns at you." Killing animals, fire and the Heart Tree chest are never forgiven. |
 | Standing | Sylvan Court: 150 (Friendly) |
 
+### Dragonborn: Dragon Temples
+| Bonus | Value |
+|-|-|
+| Hearth | The sanctum with the three breath altars |
+| Kin prices | The Elder's trades. For example, the Smite Dragons book costs 13 emeralds instead of 18, a lair map 9 instead of 12, and he buys 6 blaze powder instead of 8. |
+| Blessing of the Ancestors | Right-click the altar of your ancestry once per in-game day: Breath Weapon cooldown halved and +2 breath damage for 20 minutes |
+| Rite of Rebirth | Right-click another ancestry's altar holding 10 diamonds to take that ancestry |
+| Kin trust | None: the temple law holds for Dragonborn too |
+| Standing | The Dragonsworn: 150 (Friendly) |
+
 ### Human: vanilla villages
 The first time a Human opens a villager's trades, that villager gains 10 `minor_positive` gossip about them, which makes its trades a little cheaper. Each villager does this once per player. Villages have no hearth, welcome or kin trust.
 
@@ -53,6 +63,7 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - [Hobbit Villages](../structures/hobbit-villages.md): `/locate structure dndclasses:hobbit_village`
 - [Dwarven Fortresses](../structures/dwarven-fortresses.md): `/locate structure dndclasses:dwarven_fortress`
 - [Elven Enclaves](../structures/elven-enclaves.md): `/locate structure dndclasses:elven_enclave`
+- [Dragon Temples](../structures/dragon-temples.md): `/locate structure dndclasses:dragon_temple`
 
 ## Commands
 - `/dndhome [player]` (operators): which racial home the player is in, the piece under their feet, and whether it's their own home and hearth.
@@ -73,8 +84,8 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - `world/gen/RacialHomes`: the registry. A `Home` has the structure id, home race, extra price-kin races, faction id, hearth piece type and an optional first-visit gift. `homeAt(world, pos)` returns a `Visit` (home plus `StructureStart`, with `pieceAt` and `inHearth`), `ownHomeAt(player)` only for the home race, `isHearth(player)` (a Safe Haven hook for rests), and `homeOfMember(npc)` maps an NPC to its home through `Reputation.factionOf`. A new settlement registers one `Home`.
 - `world/gen/HomeBonuses`: the 1 s tick (welcome, first-visit gift, hearth), `giftCooldown` (used by `HobbitEntity`), `kingAudience` (used by `MountainDwarfEntity`, with an `onKingAudience` quest hook) and the Human villager gossip (`UseEntityCallback`, remembered as a `dndclasses.kin_greeted.<uuid>` command tag on the villager).
 - `entity/KinPrices`: the kin discount, a separate special-price modifier. `InnkeeperEntity.prepareOffersFor` clears the special prices, then each modifier adds its share, so other modifiers such as reputation tiers stack with it. `KinPrices.barter` is the double roll for barterers. It reads entry weights from the loot table's JSON and logs `[KinPrices] Kin barter for ...`.
-- `entity/SettlementGrudges` (was `DwarfGrudges`): per-settlement `Rules` (what's protected, witnesses, provoke, warn, kin-trust `judge`). `MOUNTAIN_DWARVES` keeps the old behaviour for everyone but Dwarves; `SYLVAN_COURT` is the enclaves' Sylvan Law (`entity/SylvanLaw`), which adds the `HARM` and `FIRE` offences. `witness` logs `[Grudges] <rules> <offence> at <pos> by <player>: <n> witness(es), <verdict>`. `forgive` calms dwarves and Elf Wardens. `opened(player, pos)` is for containers opened another way (picked locks). `dailyWarning` stores the day in `DndKinTrust`. `D20.register()` must still run before `SettlementGrudges.register()`.
-- `world/gen/StructureProximity.near(context, set, radius)`: the "is another structure's start nearby" check, taken from `GoblinCampStructure`, for later settlements to reuse.
+- `entity/SettlementGrudges` (was `DwarfGrudges`): per-settlement `Rules` (what's protected, witnesses, provoke, warn, kin-trust `judge`). `MOUNTAIN_DWARVES` keeps the old behaviour for everyone but Dwarves; `SYLVAN_COURT` is the enclaves' Sylvan Law (`entity/SylvanLaw`), which adds the `HARM` and `FIRE` offences; `DRAGONSWORN` is the temples' law (`entity/TempleLaw`). `witness` logs `[Grudges] <rules> <offence> at <pos> by <player>: <n> witness(es), <verdict>`. `forgive` calms dwarves, Elf Wardens and Dragonborn Templars. `opened(player, pos)` is for containers opened another way (picked locks). `dailyWarning` stores the day in `DndKinTrust`. `D20.register()` must still run before `SettlementGrudges.register()`.
+- `world/gen/StructureProximity.near(context, set, radius)`: the "is another structure's start nearby" check, taken from `GoblinCampStructure`, for later settlements to reuse. `nearGenerating` also runs the other structure's site check, so only starts that really generate count (the Dragon Temple's lair rule).
 - Player persistent data: `DndHomeBaskets` (start-chunk longs of visited settlements), `DndKingAudienceDay`, `DndKinTrust`.
 - DevScript `slots` also logs a trade screen's offers with their adjusted prices.
 - Devscripts: `racial-homes-recon.txt`, `racial-homes-village.txt` and `racial-homes-fortress.txt` (run them on a fresh copy of `run/`, since the daily warning and first visit are saved), plus `mountain-dwarf-grudge.txt`.

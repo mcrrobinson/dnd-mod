@@ -93,6 +93,8 @@ public final class SettlementGrudges {
     public static final Rules MOUNTAIN_DWARVES = add(new DwarfRules());
     /** The elves of the enclaves guarding their trees, animals and Heart Tree chest. */
     public static final Rules SYLVAN_COURT = add(new SylvanLaw());
+    /** The Dragonborn guarding their temple's statues, altars and reliquary. */
+    public static final Rules DRAGONSWORN = add(new TempleLaw());
 
     private SettlementGrudges() {
     }
@@ -174,10 +176,11 @@ public final class SettlementGrudges {
         return Verdict.WARNING;
     }
 
-    /** Every settlement guard (dwarf or Elf Warden) within {@code range} of {@code pos} drops its grudge against {@code player}. */
+    /** Every settlement guard (dwarf, Elf Warden or Dragonborn Templar) within {@code range} of {@code pos} drops its grudge against {@code player}. */
     public static void forgive(PlayerEntity player, BlockPos pos, double range) {
         for (MobEntity guard : player.world.getEntitiesByClass(MobEntity.class, new Box(pos).expand(range),
-                mob -> mob.isAlive() && (mob instanceof MountainDwarfEntity || mob instanceof ElfWardenEntity))) {
+                mob -> mob.isAlive() && (mob instanceof MountainDwarfEntity || mob instanceof ElfWardenEntity
+                        || mob instanceof DragonbornTemplarEntity))) {
             net.minecraft.entity.mob.Angerable angerable = (net.minecraft.entity.mob.Angerable) guard;
             if (angerable.shouldAngerAt(player) || guard.getTarget() == player) {
                 angerable.stopAnger();

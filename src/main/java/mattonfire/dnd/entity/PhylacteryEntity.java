@@ -182,6 +182,7 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
         world.playSound(null, lich.getX(), lich.getY(), lich.getZ(), SoundEvents.ENTITY_WITHER_SPAWN,
                 SoundCategory.HOSTILE, 1.0F, 1.4F);
         lich.speak("reform");
+        lich.dreadPresence();
         PlayerEntity player = world.getClosestPlayer(lich, 24.0D);
         if (player != null && !player.isCreative() && !player.isSpectator()) {
             lich.setTarget(player);

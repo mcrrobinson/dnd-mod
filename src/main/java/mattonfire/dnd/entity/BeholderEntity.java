@@ -7,6 +7,7 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModSounds;
+import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.entity.ai.goal.BeholderAttackGoal;
 import mattonfire.dnd.entity.ai.goal.BeholderDriftGoal;
 import mattonfire.dnd.entity.boss.Boss;
@@ -51,6 +52,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
@@ -516,17 +518,50 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
         }
     }
 
+    /**
+     * A ray's effect, after the victim's save against it ({@link BossSaves}, DC 15, 16 enraged; one roll per
+     * ray): DEX against slowing (the sting still lands), STR against levitation, CON against enervation (half
+     * damage) and WIS against fear (just a moment's darkness).
+     */
     private void applyRay(Ray ray, LivingEntity victim) {
+        boolean enraged = this.isEnraged();
+        String tag = "ray:" + ray.id;
         switch (ray) {
             case SLOW -> {
+                SaveResult save = BossSaves.save(victim, this, BossSaves.SLOWING_RAY, enraged, tag, BossSaves.RAY_WINDOW)
+                        .onFailure(Text.translatable("save.dndclasses.effect.slowing_ray.failure")).roll();
                 victim.damage(this.world.getDamageSources().indirectMagic(this, this), 2.0F);
-                victim.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2), this);
+                if (save.failed()) {
+                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2), this);
+                }
             }
-            case LEVITATION -> victim.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 50, 1), this);
-            case DAMAGE -> victim.damage(this.world.getDamageSources().indirectMagic(this, this), this.isEnraged() ? 10.0F : 8.0F);
+            case LEVITATION -> {
+                SaveResult save = BossSaves.save(victim, this, BossSaves.TELEKINETIC_RAY, enraged, tag, BossSaves.RAY_WINDOW)
+                        .onFailure(Text.translatable("save.dndclasses.effect.telekinetic_ray.failure")).roll();
+                if (save.failed()) {
+                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 50, 1), this);
+                }
+            }
+            case DAMAGE -> {
+                DamageSource source = this.world.getDamageSources().indirectMagic(this, this);
+                float full = enraged ? 10.0F : 8.0F;
+                if (DragonSaves.isUnaffected(victim, source)) {
+                    victim.damage(source, full); // Nothing to save against
+                } else {
+                    victim.damage(source, BossSaves.roll(victim, this, BossSaves.ENERVATION_RAY, enraged, tag,
+                            BossSaves.RAY_WINDOW).damage(full));
+                }
+            }
             case FEAR -> {
-                victim.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, 160, 0), this);
-                victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 80, 0), this);
+                SaveResult save = BossSaves.save(victim, this, BossSaves.FEAR_RAY, enraged, tag, BossSaves.RAY_WINDOW)
+                        .tags("fear")
+                        .onFailure(Text.translatable("save.dndclasses.effect.fear_ray.failure")).roll();
+                if (save.failed()) {
+                    victim.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, 160, 0), this);
+                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 80, 0), this);
+                } else {
+                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 20, 0), this);
+                }
             }
         }
     }

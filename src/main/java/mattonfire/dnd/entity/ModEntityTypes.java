@@ -149,6 +149,24 @@ public class ModEntityTypes {
                     .build()
     );
 
+    /** A Dragonborn Templar, the guard of a Dragon Temple: the player model at 1.05x. */
+    public static final EntityType<DragonbornTemplarEntity> DRAGONBORN_TEMPLAR = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "dragonborn_templar"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DragonbornTemplarEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.63f, 2.05f))
+                    .build()
+    );
+
+    /** The Dragonborn Elder of a Dragon Temple, in the sanctum. */
+    public static final EntityType<DragonbornElderEntity> DRAGONBORN_ELDER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "dragonborn_elder"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, DragonbornElderEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.63f, 2.05f))
+                    .build()
+    );
+
     public static final EntityType<MimicEntity> MIMIC = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "mimic"),
@@ -216,6 +234,8 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(ELF_WARDEN, ElfWardenEntity.createElfWardenAttributes());
         FabricDefaultAttributeRegistry.register(ELF_SPEAKER, ElfMerchantEntity.createSpeakerAttributes());
         FabricDefaultAttributeRegistry.register(ELF_FLETCHER, ElfMerchantEntity.createFletcherAttributes());
+        FabricDefaultAttributeRegistry.register(DRAGONBORN_TEMPLAR, DragonbornTemplarEntity.createTemplarAttributes());
+        FabricDefaultAttributeRegistry.register(DRAGONBORN_ELDER, DragonbornElderEntity.createElderAttributes());
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());

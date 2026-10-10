@@ -43,10 +43,15 @@ public class BarbarianSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("barbarian.berserker", "barbarian.totem_warrior");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("barbarian.rage", "Rage", "Strength for a few seconds, stronger with each rank.", "minecraft:blaze_powder", 9, 0, 1, 3),
-                // Berserker
+                // Path of the Berserker
                 passive("barbarian.bloodlust", "Bloodlust", "Heal a heart every time you kill something.",
                         "minecraft:redstone", 1, 2, 3, "barbarian.rage"),
                 active("barbarian.war_cry", "War Cry",
@@ -54,8 +59,8 @@ public class BarbarianSkills extends ClassSkills {
                         2, 2, "barbarian.bloodlust"),
                 passive("barbarian.rage_fuelled", "Fuelled by Rage", "Deal 30% more damage below half health.",
                         "minecraft:fire_charge", 1, 2, 1, "barbarian.war_cry"),
-                // Juggernaut
-                passive("barbarian.thick_skin", "Thick Skin", "+4 armor.", "minecraft:leather_chestplate", 1, 0, 3,
+                // Path of the Totem Warrior
+                passive("barbarian.thick_skin", "Bear Hide", "+4 armor.", "minecraft:leather_chestplate", 1, 0, 3,
                         "barbarian.rage"),
                 active("barbarian.ground_slam", "Ground Slam",
                         "Slam the ground, hurting and throwing back mobs within 5 blocks.", "minecraft:anvil", 5, 1,

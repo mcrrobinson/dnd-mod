@@ -75,13 +75,18 @@ public class BloodHunterSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("bloodhunter.profane_soul", "bloodhunter.lycan");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("bloodhunter.blood_control", "Blood Control",
                         "Take control of the mob you're looking at for a while. It can resist, more often if it's strong; "
                                 + "a failure still costs the mana and a heart.", "minecraft:lead", 9,
                         0, 1, 3),
-                // Blood Curse
+                // Order of the Profane Soul
                 passive("bloodhunter.crimson_rite", "Crimson Rite", "Sword hits make targets bleed (Wither).",
                         "minecraft:redstone", 1, 2, 3, "bloodhunter.blood_control"),
                 active("bloodhunter.curse_of_binding", "Curse of Binding",
@@ -89,7 +94,7 @@ public class BloodHunterSkills extends ClassSkills {
                         2, "bloodhunter.crimson_rite"),
                 passive("bloodhunter.hemocraft", "Hemocraft", "Heal half a heart per sword hit at night.",
                         "minecraft:glistering_melon_slice", 1, 2, 1, "bloodhunter.curse_of_binding"),
-                // Lycan
+                // Order of the Lycan
                 passive("bloodhunter.sunshield", "Sunshield", "Swords deal 75% damage in the day instead of 50%.",
                         "minecraft:sunflower", 1, 0, 3, "bloodhunter.blood_control"),
                 active("bloodhunter.hybrid_transformation", "Hybrid Transformation",

@@ -39,18 +39,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Necromancers get 1 extra XP for killing a mob that has Wither, 1 XP when Wither you applied finishes a hostile mob, and 3 XP whenever one of their summons kills a hostile mob.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Raise Dead | Root | Active | 0 | 9 | The special above: 2 to 5 undead for 10 to 20 s (ranks I-V), plus a Bone Wyvern at V |
-| Bone Armor | Bone | Passive | 1 | | +3 armor |
-| Skeletal Archers | Bone | Active | 1 | 5 | Two skeletons with bows fight for you for 60 s |
-| Grave Pact | Bone | Passive | 1 | | Your summons within 48 blocks get Strength I and Resistance I |
-| Life Drain | Blight | Passive | 1 | | Heal 10% of the melee damage you deal |
-| Wither Cloud | Blight | Active | 1 | 4 | Leaves a 4-block cloud where you stand for 6 s. Hostile mobs in it get Wither II for 3 s, refreshed every second. It doesn't touch you or your summons |
-| Death's Embrace | Blight | Passive | 1 | | Your melee hits give Wither II for 3 s |
+| Bone Armor | Bonecaller | Passive | 1 | | +3 armor |
+| Skeletal Archers | Bonecaller | Active | 1 | 5 | Two skeletons with bows fight for you for 60 s |
+| Grave Pact | Bonecaller | Passive | 1 | | Your summons within 48 blocks get Strength I and Resistance I |
+| Life Drain | Plaguebringer | Passive | 1 | | Heal 10% of the melee damage you deal |
+| Wither Cloud | Plaguebringer | Active | 1 | 4 | Leaves a 4-block cloud where you stand for 6 s. Hostile mobs in it get Wither II for 3 s, refreshed every second. It doesn't touch you or your summons |
+| Death's Embrace | Plaguebringer | Passive | 1 | | Your melee hits give Wither II for 3 s |
 | Army of the Dead | Capstone | Active | 2 | 9 | Six undead, alternating zombies with iron swords and skeletons with bows, fight for you for 60 s |
 
 Summons from the skill tree last a full minute, wear fire resistance so daylight doesn't burn them, and drop no gear. Death's Embrace makes the wither on your hits long enough to do damage.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Bonecaller | Right | Bone Armor (first node, open to both), Skeletal Archers, Grave Pact | **Undying Servants**: your summons last 25% longer |
+| Plaguebringer | Left | Life Drain (first node, open to both), Wither Cloud, Death's Embrace | **Grim Harvest**: killing a mob that has your Wither heals you 2 hearts |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> necromancer` (see [Admin commands](../systems/admin-commands.md)).

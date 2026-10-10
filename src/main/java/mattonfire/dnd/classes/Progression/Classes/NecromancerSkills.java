@@ -114,12 +114,17 @@ public class NecromancerSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("necromancer.bonecaller", "necromancer.plaguebringer");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("necromancer.raise_dead", "Raise Dead",
                         "Undead rise to fight for you. More and stronger ones with each rank, up to a Bone Wyvern.",
                         "minecraft:rotten_flesh", 9, 0, 1, 3),
-                // Bone
+                // Bonecaller
                 passive("necromancer.bone_armor", "Bone Armor", "+3 armor.", "minecraft:bone_block", 1, 2, 3,
                         "necromancer.raise_dead"),
                 active("necromancer.skeletal_archers", "Skeletal Archers",
@@ -127,7 +132,7 @@ public class NecromancerSkills extends ClassSkills {
                         "necromancer.bone_armor"),
                 passive("necromancer.grave_pact", "Grave Pact", "Your summons get Strength and Resistance.",
                         "minecraft:skeleton_skull", 1, 2, 1, "necromancer.skeletal_archers"),
-                // Blight
+                // Plaguebringer
                 passive("necromancer.life_drain", "Life Drain", "Heal 10% of the melee damage you deal.",
                         "minecraft:fermented_spider_eye", 1, 0, 3, "necromancer.raise_dead"),
                 active("necromancer.wither_cloud", "Wither Cloud",

@@ -18,7 +18,7 @@ import net.minecraft.util.Identifier;
 
 /**
  * A player's progress in one class: XP, unlocked nodes, their ranks, the
- * equipped loadout (one active, up to two passives) and the bestiary. Shared by
+ * equipped loadout (one active, up to two passives), the subclass and the bestiary. Shared by
  * the server, which owns it, and the client, which gets a copy for the current
  * class.
  */
@@ -27,6 +27,8 @@ public class ClassProgress {
     public static final int[] LEVEL_XP = { 0, 40, 120, 250, 450, 700, 1000, 1350, 1750, 2200, 2700 };
     public static final int MAX_LEVEL = LEVEL_XP.length - 1;
     public static final int PASSIVE_SLOTS = 2;
+    /** Class level at which a subclass can be chosen. */
+    public static final int SUBCLASS_LEVEL = 3;
 
     /** The local player's progress, kept up to date by the server. Unused on the server. */
     public static ClassProgress client = new ClassProgress(DndCharacter.NONE);
@@ -42,6 +44,18 @@ public class ClassProgress {
     public final Set<String> learned = new LinkedHashSet<>();
     /** Learned entities unlocked at an Attunement Table. */
     public final Set<String> bestiary = new LinkedHashSet<>();
+    /** The chosen {@link Subclass} id, or "" before one is chosen. */
+    public String subclass = "";
+
+    /** What a subclass rule says about unlocking a node. */
+    public enum SubclassLock {
+        /** No rule stops it. */
+        OPEN,
+        /** A branch node above the first, or a shared one, before a subclass is chosen. */
+        NEEDS_SUBCLASS,
+        /** Belongs to the other subclass. */
+        OTHER_SUBCLASS
+    }
 
     /** Why a node can't go up a rank, or {@link #OK}. */
     public enum RankUp {
@@ -99,9 +113,110 @@ public class ClassProgress {
     }
 
     public boolean canUnlock(SkillNode node) {
-        return ClassTrees.belongsTo(node, dndClass) && isReachable(node) && points() >= node.pointCost();
+        return ClassTrees.belongsTo(node, dndClass) && isReachable(node) && points() >= node.pointCost()
+                && subclassLock(node) == SubclassLock.OPEN;
     }
 
+    /** Whether the subclass rules let this node be unlocked (ignoring points and requirements). */
+    public SubclassLock subclassLock(SkillNode node) {
+        Subclass owner = node == null ? null : ClassTrees.subclassOf(node.id());
+        if (owner == null && !ClassTrees.isShared(node))
+            return SubclassLock.OPEN;
+        if (subclass.isEmpty())
+            return SubclassLock.NEEDS_SUBCLASS;
+        return owner == null || owner.id().equals(subclass) ? SubclassLock.OPEN : SubclassLock.OTHER_SUBCLASS;
+    }
+
+    /** The chosen subclass, or null. */
+    public Subclass subclass() {
+        Subclass chosen = ClassTrees.subclass(subclass);
+        return chosen != null && chosen.dndClass() == dndClass ? chosen : null;
+    }
+
+    public boolean hasSubclass(String id) {
+        return !subclass.isEmpty() && subclass.equals(id);
+    }
+
+    /** Whether a subclass could be chosen now (the table is checked by the server). */
+    public boolean canChooseSubclass() {
+        return subclass.isEmpty() && level() >= SUBCLASS_LEVEL && !ClassTrees.subclasses(dndClass).isEmpty();
+    }
+
+    /**
+     * Takes away the nodes only this subclass can have, with their ranks and
+     * equips, then anything that needed them (the capstone). Points come back as
+     * {@link #points()} is worked out from what's unlocked.
+     *
+     * @return the points refunded
+     */
+    public int removeSubclassNodes(Subclass sub) {
+        int before = pointsSpent();
+        for (String id : sub.nodes()) {
+            removeNode(id);
+        }
+        pruneUnreachable();
+        return before - pointsSpent();
+    }
+
+    /** Removes unlocked nodes none of whose requirements are unlocked any more, until none are left. */
+    private void pruneUnreachable() {
+        boolean removed = true;
+        while (removed) {
+            removed = false;
+            for (String id : List.copyOf(unlocked)) {
+                SkillNode node = ClassTrees.node(id);
+                if (node != null && !node.isRoot() && node.requires().stream().noneMatch(this::isUnlocked)) {
+                    removeNode(id);
+                    removed = true;
+                }
+            }
+        }
+    }
+
+    private void removeNode(String id) {
+        unlocked.remove(id);
+        ranks.remove(id);
+        passives.remove(id);
+        if (active.equals(id)) {
+            active = "";
+        }
+    }
+
+    /**
+     * For progress saved before subclasses: picks the subclass from the branch
+     * the player has gone furthest down, and refunds the other branch's locked
+     * nodes if they own both.
+     *
+     * @return the points refunded, or -1 if no subclass was picked
+     */
+    public int migrateSubclass() {
+        List<Subclass> subs = ClassTrees.subclasses(dndClass);
+        if (subs.size() != 2 || !subclass.isEmpty())
+            return -1;
+        int[] spent = new int[2];
+        for (int i = 0; i < 2; i++) {
+            for (String id : subs.get(i).nodes()) {
+                if (unlocked.contains(id)) {
+                    SkillNode node = ClassTrees.node(id);
+                    spent[i] += node.pointCost() + Math.max(0, ranks.getOrDefault(id, 1) - 1) * Ranks.POINT_COST;
+                }
+            }
+        }
+        if (spent[0] == 0 && spent[1] == 0)
+            return -1;
+        int winner;
+        if (spent[0] != spent[1]) {
+            winner = spent[0] > spent[1] ? 0 : 1;
+        } else {
+            // A tie: the branch of the equipped active, else the right one.
+            winner = subs.get(1).nodes().contains(active) ? 1 : 0;
+        }
+        subclass = subs.get(winner).id();
+        Subclass loser = subs.get(1 - winner);
+        return spent[1 - winner] == 0 ? 0 : removeSubclassNodes(loser);
+    }
+
+    /** Why a node can't go up a rank, or {@link #OK}. */
     /** The node's rank, from 1 (also for locked nodes, so their values can be shown). */
     public int rank(String id) {
         return Math.max(1, Math.min(ranks.getOrDefault(id, 1), Ranks.maxRank(id)));
@@ -165,6 +280,7 @@ public class ClassProgress {
         nbt.put("ranks", rankNbt);
         nbt.put("learned", toList(learned));
         nbt.put("bestiary", toList(bestiary));
+        nbt.putString("subclass", subclass);
         return nbt;
     }
 
@@ -180,6 +296,7 @@ public class ClassProgress {
         }
         nbt.getList("learned", NbtElement.STRING_TYPE).forEach(e -> progress.learned.add(e.asString()));
         nbt.getList("bestiary", NbtElement.STRING_TYPE).forEach(e -> progress.bestiary.add(e.asString()));
+        progress.subclass = nbt.getString("subclass");
         return progress;
     }
 

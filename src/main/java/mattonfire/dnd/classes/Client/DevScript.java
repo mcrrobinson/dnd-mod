@@ -71,8 +71,9 @@ import net.minecraft.util.Identifier;
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
- * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
- *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
+ * <li>{@code skill unlock|equip|rankup|bestiary|subclass <id>} sends what clicking the skill tree screen would
+ *     (left-click, left-click at a table, right-click at a table, a bestiary entry, confirming a subclass), so
+ *     the server's checks apply</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -263,10 +264,11 @@ public final class DevScript {
             case "equip" -> Progression.C2S_EQUIP;
             case "rankup" -> Progression.C2S_RANK_UP;
             case "bestiary" -> Progression.C2S_BESTIARY_UNLOCK;
+            case "subclass" -> Progression.C2S_CHOOSE_SUBCLASS;
             default -> null;
         };
         if (packet == null || args.length < 2) {
-            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary <id>", lineNumber);
+            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass <id>", lineNumber);
             return;
         }
         PacketByteBuf buf = PacketByteBufs.create();

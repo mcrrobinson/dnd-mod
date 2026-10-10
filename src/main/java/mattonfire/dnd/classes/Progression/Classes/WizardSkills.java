@@ -88,12 +88,17 @@ public class WizardSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("wizard.evocation", "wizard.abjuration");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("wizard.arcane_explosion", "Arcane Explosion",
                         "An arcane blast around you that throws everything back. Grows with each rank.", "minecraft:end_crystal", 9, 0,
                         1, 3),
-                // Evocation
+                // School of Evocation
                 passive("wizard.arcane_focus", "Arcane Focus", "Staff hits and staff blasts deal 25% more damage.",
                         "minecraft:amethyst_shard", 1, 2, 3, "wizard.arcane_explosion"),
                 active("wizard.frost_nova", "Frost Nova", "Freeze mobs within 6 blocks for 3 seconds.",
@@ -101,7 +106,7 @@ public class WizardSkills extends ClassSkills {
                 passive("wizard.spell_mastery", "Spell Mastery",
                         "Your own blasts and meteors can't hurt you, and staff damage to frozen mobs is 50% higher.",
                         "minecraft:enchanted_book", 1, 2, 1, "wizard.frost_nova"),
-                // Abjuration
+                // School of Abjuration
                 passive("wizard.mage_armor", "Mage Armor", "+4 armor.", "minecraft:iron_chestplate", 1, 0, 3,
                         "wizard.arcane_explosion"),
                 active("wizard.arcane_shield", "Arcane Shield", "Absorption II (4 hearts) for 15 seconds.",

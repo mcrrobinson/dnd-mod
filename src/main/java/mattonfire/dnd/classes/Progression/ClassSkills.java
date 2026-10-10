@@ -15,7 +15,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * subclass in {@code Progression.Classes}, listed in {@link ClassTrees}.
  *
  * The hooks are only called for players whose current class this is, with
- * that class's progress, so check {@code progress.hasPassive(id)} for passives.
+ * that class's progress, so check {@code progress.hasPassive(id)} for passives
+ * and {@code progress.hasSubclass(id)} for subclass features.
  */
 public abstract class ClassSkills {
     public abstract DndCharacter dndClass();
@@ -25,6 +26,18 @@ public abstract class ClassSkills {
      * the same shape, see {@link ClassTrees}.
      */
     public abstract List<SkillNode> nodes();
+
+    /**
+     * The class's two subclass ids: the right branch (column 2, listed first in
+     * {@link #nodes()}) then the left. {@link ClassTrees} works out which nodes
+     * each one locks; the text is in {@code class_info.json}.
+     */
+    public abstract List<String> subclassIds();
+
+    /** The class's two subclasses, right branch first. */
+    public final List<Subclass> subclasses() {
+        return ClassTrees.subclasses(dndClass());
+    }
 
     /** Registers any extra event hooks. Called once at startup. */
     public void register() {

@@ -37,19 +37,31 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Paladins get 3 extra XP for killing undead, and 1 extra for a hostile kill while another player is within 16 blocks.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Divine Judgment | Root | Active | 0 | 9 | The special above |
-| Divine Smite | Devotion | Passive | 1 | | +4 melee damage to undead |
-| Sacred Weapon | Devotion | Active | 1 | 4 | Strength I for 15 s, and your melee hits set targets on fire for 4 s |
-| Aura of Protection | Devotion | Passive | 1 | | You and players within 8 blocks take 15% less damage. Several auras don't stack |
-| Hellforged | Conquest | Passive | 1 | | The Nether no longer weakens you |
-| Divine Shield | Conquest | Active | 1 | 5 | Absorption III and no knockback for 15 s |
-| Aura of Courage | Conquest | Passive | 1 | | Weakness and Slowness are removed from you and players within 8 blocks every second |
-| Circle of Healing | Mercy | Active | 2 | 7 | Fully heals every player within 10 blocks. You and party members within 24 blocks are fully healed and get Absorption I for 30 s |
+| Divine Smite | Oath of Devotion | Passive | 1 | | +4 melee damage to undead |
+| Sacred Weapon | Oath of Devotion | Active | 1 | 4 | Strength I for 15 s, and your melee hits set targets on fire for 4 s |
+| Aura of Protection | Oath of Devotion | Passive | 1 | | You and players within 8 blocks take 15% less damage. Several auras don't stack |
+| Hellforged | Oath of Conquest | Passive | 1 | | The Nether no longer weakens you |
+| Divine Shield | Oath of Conquest | Active | 1 | 5 | Absorption III and no knockback for 15 s |
+| Aura of Courage | Oath of Conquest | Passive | 1 | | Weakness and Slowness are removed from you and players within 8 blocks every second |
+| Circle of Healing | Any oath | Active | 2 | 7 | Fully heals every player within 10 blocks. You and party members within 24 blocks are fully healed and get Absorption I for 30 s |
 | Avenging Angel | Capstone | Active | 2 | 9 | Strength II, Regeneration II and Resistance II for 20 s; undead within 10 blocks are set on fire every second for the whole time |
 
 The effects from your own skills aren't potions, so they apply to you.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your oath's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Oath of Devotion | Right | Divine Smite (first node, open to both), Sacred Weapon, Aura of Protection | **Purity of Spirit**: you're immune to Wither and Poison, and undead deal you 15% less damage |
+| Oath of Conquest | Left | Hellforged (first node, open to both), Divine Shield, Aura of Courage | **Conquering Presence**: Divine Judgment's shockwave frightens hostile mobs for 3 seconds |
+
+The features aren't active yet; they come with the subclass feature cards.
+
+Circle of Healing sits between the branches and is open to either oath once you've chosen one.
 
 ## Commands
 - `/dndclass set <player> paladin` (see [Admin commands](../systems/admin-commands.md)).

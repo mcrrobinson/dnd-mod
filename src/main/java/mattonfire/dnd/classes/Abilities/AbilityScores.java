@@ -87,10 +87,27 @@ public final class AbilityScores {
         Cached cached = CACHE.get(player.getUuid());
         if (cached == null || anyDynamic && player.age - cached.builtAt() >= DYNAMIC_REFRESH_TICKS
                 || player.age < cached.builtAt()) {
+            CharacterSheet previous = cached == null ? null : cached.sheet();
             cached = new Cached(build(player), player.age);
             CACHE.put(player.getUuid(), cached);
+            if (previous != null && !previous.equals(cached.sheet())) {
+                send(player, cached.sheet()); // a dynamic source changed it (an aura, Rage): keep the client's copy fresh
+            }
         }
         return cached.sheet();
+    }
+
+    /**
+     * The player's last built sheet without rebuilding it, or null if there's none. For contributors that read
+     * another player's sheet (a Paladin's aura reads the Paladin's CHA), where a rebuild could loop back.
+     */
+    @Nullable
+    public static CharacterSheet peek(PlayerEntity player) {
+        if (player.getWorld().isClient) {
+            return CharacterSheet.client;
+        }
+        Cached cached = CACHE.get(player.getUuid());
+        return cached == null ? null : cached.sheet();
     }
 
     public static int score(PlayerEntity player, Ability ability) {
@@ -116,9 +133,13 @@ public final class AbilityScores {
     /** Rebuilds the player's sheet and sends it to their client. Call when a contributor's input changes. */
     public static void invalidate(PlayerEntity player) {
         CACHE.remove(player.getUuid());
+        send(player, sheet(player));
+    }
+
+    private static void send(PlayerEntity player, CharacterSheet sheet) {
         if (player instanceof ServerPlayerEntity serverPlayer && serverPlayer.networkHandler != null) {
             PacketByteBuf buf = PacketByteBufs.create();
-            sheet(player).write(buf);
+            sheet.write(buf);
             ServerPlayNetworking.send(serverPlayer, S2C_SHEET_SYNC, buf);
         }
     }
@@ -183,6 +204,7 @@ public final class AbilityScores {
                 }
             }
         });
+        ClassSaveFeatures.register();
     }
 
     private static void classContribution(PlayerEntity player, Contribution c) {

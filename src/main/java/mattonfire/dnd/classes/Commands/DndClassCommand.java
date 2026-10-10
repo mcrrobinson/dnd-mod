@@ -131,7 +131,16 @@ public class DndClassCommand {
                                 .then(CommandManager.literal("short")
                                         .executes(context -> rest(context, RestKind.SHORT)))
                                 .then(CommandManager.literal("long")
-                                        .executes(context -> rest(context, RestKind.LONG)))))
+                                        .executes(context -> rest(context, RestKind.LONG)))
+                                .then(CommandManager.literal("allow")
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context,
+                                                    "player");
+                                            Rests.forgetLongRest(player);
+                                            context.getSource().sendFeedback(Text.literal(player.getEntityName()
+                                                    + " can take a long rest again today"), true);
+                                            return 1;
+                                        }))))
                 .then(CommandManager.literal("charges")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::restInfo)

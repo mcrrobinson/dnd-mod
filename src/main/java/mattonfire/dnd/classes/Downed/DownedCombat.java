@@ -122,7 +122,7 @@ public final class DownedCombat {
                     .getOptionalMemory(MemoryModuleType.ATTACK_TARGET).filter(t -> t == player).isPresent()) {
                 mob.getBrain().forget(MemoryModuleType.ATTACK_TARGET);
             }
-            DnDClasses.LOGGER.info("[Downed] {} stops targeting Downed {}", mob.getEntityName(),
+            DnDClasses.LOGGER.info("[Downed] {} stops targeting Downed {}", mob.getName().getString(),
                     player.getEntityName());
         }
     }

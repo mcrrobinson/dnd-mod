@@ -24,6 +24,8 @@ The shorter view is the main cost. You'll spot mobs and landmarks late on the su
 
 A ring of particles shows the circle: at the party reach, or a small 2-block ring at rank I. Bosses (Wyvern, Lightning Chaser, Frost Drake, Lich, Goblin Warlord) and their minions pick targets through the same code as other mobs, so they ignore you too.
 
+**Remove Curse.** Sneak + right-click another player with an empty hand (or sneak + right-click the air to target yourself) to break a [cursed item's bond](../systems/magic-items.md#remove-curse): 6 mana, d20 + 5 against DC 10 (Uncommon) to 19 (Legendary), shown on the dice HUD. A failure spends the mana and you can try again after 60 s.
+
 ### Tips
 Sanctuary is an escape button: use it when a cave fight goes wrong and walk out. Early on it only lasts 6 seconds, so start walking straight away. Mobs ignore you, but they still hit anything else, so it won't protect pets or villagers.
 

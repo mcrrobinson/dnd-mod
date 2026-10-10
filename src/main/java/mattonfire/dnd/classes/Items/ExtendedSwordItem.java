@@ -75,7 +75,14 @@ public class ExtendedSwordItem extends SwordItem {
             }
             return TypedActionResult.fail(player.getStackInHand(hand));
         }
-
+        if (mattonfire.dnd.magic.MagicData.isDormant(player.getStackInHand(hand))) {
+            // Unidentified: its magic sleeps until it's identified
+            if (!world.isClient) {
+                player.sendMessage(Text.translatable("magic.dndclasses.tooltip.unidentified").formatted(Formatting.GRAY),
+                        true);
+            }
+            return TypedActionResult.fail(player.getStackInHand(hand));
+        }
 
         if (!world.isClient) {
             ServerWorld serverWorld = (ServerWorld) world;

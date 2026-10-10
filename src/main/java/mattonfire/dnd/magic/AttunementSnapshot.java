@@ -18,8 +18,13 @@ import net.minecraft.text.Text;
  */
 public record AttunementSnapshot(int slots, List<Bond> bonds, int forge, int channelSlot, int channelTicks,
         long receivedAt) {
-    /** One bond: the item's id, its name when bonded, and whether a curse holds it. */
-    public record Bond(UUID uuid, String item, Text name, boolean cursed) {
+    /**
+     * One bond: the item's id, its name when bonded, and whether a curse holds it.
+     *
+     * @param curse the {@link Curse} id, or "" (a cursed bond from before curses existed may have none)
+     * @param tier  the item's {@link MagicTier} id when bonded (Remove Curse's DC), or ""
+     */
+    public record Bond(UUID uuid, String item, Text name, boolean cursed, String curse, String tier) {
     }
 
     public static AttunementSnapshot client = new AttunementSnapshot(Attunement.BASE_SLOTS, List.of(), 0, -1, 0, 0);
@@ -47,6 +52,8 @@ public record AttunementSnapshot(int slots, List<Bond> bonds, int forge, int cha
             buf.writeString(bond.item());
             buf.writeText(bond.name());
             buf.writeBoolean(bond.cursed());
+            buf.writeString(bond.curse());
+            buf.writeString(bond.tier());
         }
         buf.writeVarInt(forge);
         buf.writeVarInt(channelSlot);
@@ -58,7 +65,8 @@ public record AttunementSnapshot(int slots, List<Bond> bonds, int forge, int cha
         int n = buf.readVarInt();
         List<Bond> bonds = new ArrayList<>();
         for (int i = 0; i < n; i++)
-            bonds.add(new Bond(buf.readUuid(), buf.readString(), buf.readText(), buf.readBoolean()));
+            bonds.add(new Bond(buf.readUuid(), buf.readString(), buf.readText(), buf.readBoolean(), buf.readString(),
+                    buf.readString()));
         return new AttunementSnapshot(slots, bonds, buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
                 System.currentTimeMillis());
     }

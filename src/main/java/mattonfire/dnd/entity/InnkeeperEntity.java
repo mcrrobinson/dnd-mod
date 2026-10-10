@@ -116,6 +116,19 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         if (hand != Hand.MAIN_HAND || !this.isAlive() || this.customer != null) {
             return ActionResult.PASS;
         }
+        // Identification for emeralds: sneak, emeralds in hand, the unidentified item in the offhand
+        if (player.isSneaking() && held.isOf(Items.EMERALD)) {
+            if (!this.world.isClient) {
+                this.getLookControl().lookAt(player);
+                if (this.refusesHostile(player)) {
+                    return ActionResult.CONSUME;
+                }
+                if (mattonfire.dnd.magic.Identify.innkeeperService((ServerPlayerEntity) player)) {
+                    this.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, this.getSoundPitch());
+                }
+            }
+            return ActionResult.success(this.world.isClient);
+        }
         if (!this.world.isClient) {
             if (this.refusesHostile(player)) {
                 return ActionResult.CONSUME;

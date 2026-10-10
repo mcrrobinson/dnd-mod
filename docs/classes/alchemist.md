@@ -27,7 +27,7 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 How the features work:
 - **Mutagen** (Mutagenist): drinking any potion with an effect also gives you Strength I for 10 s (not lengthened by Potent Brews). Water and other effectless bottles don't count, and nor do splash or lingering potions.
-- **Transmuter's Eye** (Transmuter): Instant Health from a potion you drink heals 50% more (Healing: 3 hearts instead of 2; Healing II: 6 instead of 4). Identifying potions on pickup comes with the identification card.
+- **Transmuter's Eye** (Transmuter): Instant Health from a potion you drink heals 50% more (Healing: 3 hearts instead of 2; Healing II: 6 instead of 4). A Transmuter also identifies every unidentified [potion](../systems/magic-items.md#identification) that enters their inventory.
 
 ## Known limitations
 - The class blurb mentions random potion backfires. They aren't implemented.

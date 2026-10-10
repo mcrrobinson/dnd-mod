@@ -587,6 +587,16 @@ public class ModItems {
         public static final Item CLOAK_OF_PROTECTION = registerItem("cloak_of_protection",
                         new Item(new FabricItemSettings().maxCount(1)));
 
+        /** Common scroll: identifies the unidentified magic item in the other hand. */
+        public static final Item SCROLL_OF_IDENTIFY = registerItem("scroll_of_identify",
+                        new mattonfire.dnd.magic.items.ScrollItem(mattonfire.dnd.magic.items.ScrollItem.Spell.IDENTIFY,
+                                        new FabricItemSettings().maxCount(16)));
+
+        /** Rare scroll: Remove Curse on yourself. */
+        public static final Item SCROLL_OF_REMOVE_CURSE = registerItem("scroll_of_remove_curse",
+                        new mattonfire.dnd.magic.items.ScrollItem(mattonfire.dnd.magic.items.ScrollItem.Spell.REMOVE_CURSE,
+                                        new FabricItemSettings().maxCount(16)));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

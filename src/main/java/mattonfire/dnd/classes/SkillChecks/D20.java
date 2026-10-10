@@ -56,6 +56,8 @@ public final class D20 {
     public static final String LOCKPICKING = "skill.dndclasses.lockpicking";
     public static final String PERSUASION = "skill.dndclasses.persuasion";
     public static final String ATTACK = "skill.dndclasses.attack";
+    /** A Cleric's Remove Curse, or a Scroll of Remove Curse (magic items). */
+    public static final String REMOVE_CURSE = "skill.dndclasses.remove_curse";
 
     /** Roll flag: show the player their total but not the DC or the outcome (secret DM rolls). */
     public static final int FLAG_SECRET = 1;
@@ -350,7 +352,7 @@ public final class D20 {
             }
             int total = total();
             Outcome outcome;
-            if (natural == 1) {
+            if (natural <= fumbleRange(player)) {
                 outcome = Outcome.FUMBLE;
             } else if (natural >= critRange) {
                 outcome = Outcome.CRITICAL;
@@ -399,6 +401,23 @@ public final class D20 {
     }
 
     private static final List<Reroll> REROLLS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /** Sources that widen a roller's fumble range past a natural 1 (the Ill Omen curse: 1-2). */
+    private static final List<java.util.function.ToIntFunction<LivingEntity>> FUMBLE_RANGES =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /** Registers a source of a wider fumble range: it returns the highest natural that fumbles (1 = normal). */
+    public static void registerFumbleRange(java.util.function.ToIntFunction<LivingEntity> range) {
+        FUMBLE_RANGES.add(range);
+    }
+
+    /** The highest natural that fumbles for this roller: 1 unless a source widens it. */
+    public static int fumbleRange(LivingEntity roller) {
+        int range = 1;
+        for (java.util.function.ToIntFunction<LivingEntity> source : FUMBLE_RANGES)
+            range = Math.max(range, source.applyAsInt(roller));
+        return range;
+    }
 
     public static void registerReroll(Reroll reroll) {
         REROLLS.add(reroll);

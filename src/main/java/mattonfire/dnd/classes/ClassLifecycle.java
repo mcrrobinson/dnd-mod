@@ -7,6 +7,8 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.classes.Race.RaceStats;
 import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.SkillChecks.AttackRolls;
 import mattonfire.dnd.classes.SkillChecks.Lockpicking;
@@ -52,6 +54,8 @@ public final class ClassLifecycle {
             if (dndClass != DndCharacter.NONE) {
                 ClassStats.apply(player, dndClass);
             }
+            // Race first: the client opens the race picker before the class picker.
+            RaceLifecycle.onJoin(player);
             // NONE makes the client open the class picker.
             sendClass(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, dndClass);
         });
@@ -61,6 +65,7 @@ public final class ClassLifecycle {
             if (newPlayer instanceof PlayerEntityExt ext) {
                 ext.setDndClass(classOf(oldPlayer));
             }
+            RaceLifecycle.copy(oldPlayer, newPlayer);
             NbtCompound oldData = ((IEntityDataSaver) oldPlayer).getPersistentData();
             NbtCompound newData = ((IEntityDataSaver) newPlayer).getPersistentData();
             for (String key : oldData.getKeys()) {
@@ -70,11 +75,17 @@ public final class ClassLifecycle {
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
             DndCharacter dndClass = classOf(newPlayer);
+            // Race modifiers before the health below, so a Dwarf's extra heart counts.
+            RaceLifecycle.afterRespawn(newPlayer);
             if (dndClass != DndCharacter.NONE) {
                 ClassStats.apply(newPlayer, dndClass);
+            }
+            if (dndClass != DndCharacter.NONE || newPlayer.getMaxHealth() != 20.0f) {
                 // The new entity got its health while it still had vanilla max health.
                 newPlayer.setHealth(alive ? Math.min(oldPlayer.getHealth(), newPlayer.getMaxHealth())
                         : newPlayer.getMaxHealth());
+            }
+            if (dndClass != DndCharacter.NONE) {
                 ClassGuidebook.giveIfMissing(newPlayer);
                 if (!alive) {
                     DnDClasses.sendRespawnHint(newPlayer);
@@ -134,6 +145,8 @@ public final class ClassLifecycle {
             ext.setDndClass(dndClass);
         }
         ClassStats.apply(player, dndClass);
+        // Race modifiers stay through a class change; re-applying is idempotent.
+        RaceStats.apply(player);
         Float health = ClassStats.pickHealth(dndClass);
         if (health != null) {
             player.setHealth(health);

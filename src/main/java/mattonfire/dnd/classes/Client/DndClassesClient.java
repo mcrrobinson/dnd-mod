@@ -9,8 +9,6 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
-import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
 import mattonfire.dnd.classes.Misc.DoubleJumpEffect;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.particle.ModParticles;
@@ -63,10 +61,9 @@ public class DndClassesClient implements ClientModInitializer {
             if (client.player instanceof PlayerEntityExt ext) {
                 DndCharacter dndClass = DndCharacter.fromValue(classID);
                 ext.setDndClass(dndClass);
-                // The server applies the class's stats; the client only opens the picker.
-                if (dndClass == DndCharacter.NONE) {
-                    client.setScreen(new ModKeybinds(new ClassSelectionHud()));
-                }
+                // The server applies the class's stats; the client only opens the picker,
+                // after the race picker if the player still needs a race.
+                PickerFlow.onClass(client, dndClass);
             }
         });
     }
@@ -188,6 +185,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
+        PickerFlow.register();
         // Magic items: "Rare weapon (Wizard only)" under the name
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
             net.minecraft.text.Text line = mattonfire.dnd.magic.MagicNames.tooltipLine(stack);

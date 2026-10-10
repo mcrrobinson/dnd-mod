@@ -77,7 +77,7 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code widget <label>} presses the open screen's button with that label (e.g. {@code Yes} in a confirm
  *     dialog)</li>
- * <li>{@code page <n>} turns an open book to page n (from 0)</li>
+ * <li>{@code page <n|last>} turns an open book to page n (from 0) or the last page</li>
  * <li>{@code hover <dx> <dy>} moves the cursor to GUI coordinates measured from the screen's centre, so the open
  *     screen draws the tooltip there (take a screenshot after it)</li>
  * <li>{@code skill unlock|equip|rankup|bestiary|subclass <id>} sends what clicking the skill tree screen would
@@ -85,6 +85,12 @@ import net.minecraft.util.Identifier;
  *     the server's checks apply</li>
  * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
  *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
+ * <li>{@code escape} sends the open screen an Escape key press, e.g. to check a picker ignores it</li>
+ * <li>{@code racepicker on|off}: while a script runs the race picker stays shut (the dev-world player has a class
+ *     but no race, so it would block every script). {@code on} lets it open, straight away if the player has no
+ *     race</li>
+ * <li>{@code racepick <race> [ancestry]} sends what clicking a race (or a Dragonborn ancestry) in the picker
+ *     would, e.g. {@code racepick elf}, {@code racepick dragonborn frost}; the server's one-pick check applies</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -169,6 +175,7 @@ public final class DevScript {
         }
         DnDClasses.LOGGER.info("[DevScript] Loaded {} ({} lines)", path, lines.size());
         DevScript script = new DevScript(lines);
+        PickerFlow.racePickerAllowed = false;
         ClientTickEvents.END_CLIENT_TICK.register(script::tick);
     }
 
@@ -282,7 +289,7 @@ public final class DevScript {
             }
             case "page" -> {
                 if (client.currentScreen instanceof BookScreen book) {
-                    book.setPage(Integer.parseInt(argument));
+                    book.setPage(argument.equals("last") ? Integer.MAX_VALUE / 2 : Integer.parseInt(argument));
                 } else {
                     DnDClasses.LOGGER.warn("[DevScript] {}: page needs an open book", lineNumber);
                 }
@@ -305,6 +312,15 @@ public final class DevScript {
                 }
                 client.setScreen(new TooltipPreviewScreen(hotbar));
             }
+            case "escape" -> {
+                if (client.currentScreen != null) {
+                    client.currentScreen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE, 0, 0);
+                }
+                DnDClasses.LOGGER.info("[DevScript] screen after escape: {}", client.currentScreen == null ? "none"
+                        : client.currentScreen.getClass().getSimpleName());
+            }
+            case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
+            case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
     }
@@ -325,6 +341,18 @@ public final class DevScript {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeString(args[1]);
         ClientPlayNetworking.send(packet, buf);
+    }
+
+    private static void racePick(String[] args, int lineNumber) {
+        mattonfire.dnd.classes.Race.DndRace race = mattonfire.dnd.classes.Race.DndRace.byId(args[0]);
+        mattonfire.dnd.classes.Race.DragonAncestry ancestry = args.length > 1
+                ? mattonfire.dnd.classes.Race.DragonAncestry.byId(args[1])
+                : mattonfire.dnd.classes.Race.DragonAncestry.NONE;
+        if (race == null || ancestry == null) {
+            DnDClasses.LOGGER.warn("[DevScript] {}: racepick needs <race> [ember|frost|storm]", lineNumber);
+            return;
+        }
+        PickerFlow.sendPick(race, ancestry);
     }
 
     private static void press(MinecraftClient client, String translationKey, int lineNumber) {

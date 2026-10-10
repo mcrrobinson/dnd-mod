@@ -7,6 +7,7 @@ The full reference, one page per feature, is in [docs/](docs/README.md).
 - [Building](#building)
 - [Features](#features)
   - [Player Classes](#player-classes)
+  - [Races](#races)
   - [Mana and Specials](#mana-and-specials)
   - [Class Progression](#class-progression)
   - [Parties](#parties)
@@ -58,6 +59,9 @@ Every class has its own strengths, weaknesses and a special ability. Players pic
 | **[Alchemist](docs/classes/alchemist.md)** | Can brew potions only the Alchemist knows<br>Brewing stands are safe: a stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, such as hopper-fed ones, are safe) | Cannot enchant (enchanting table or enchanted books on an anvil) | **Transmute**: throw your held potion (or an unstable brew) as a lingering cloud with stronger effects, buffing allies and harming mobs. Bigger and longer-lasting with ranks |
 <!-- class-table:end -->
 
+### Races
+Players pick one of 8 races (Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling, Dragonborn) before their class. See [Races](docs/races/races.md).
+
 ### Mana and Specials
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. Big specials also cost charges, which come back when you rest. See [Mana and class specials](docs/systems/mana.md), [Rests and charges](docs/systems/rests.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
 
@@ -105,7 +109,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 At night, goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and hear raid music, and defenders who win are rewarded. Start one by hand with `/goblinraid start`. See [Goblin raids](docs/systems/goblin-raids.md).
 
 ### Admin Commands
-`/dndclass get <player>` and `/dndclass set <player> <class>` change a class without dying. See [Admin commands](docs/systems/admin-commands.md).
+`/dndclass get <player>` and `/dndclass set <player> <class>` change a class without dying, and `/dndrace get|set|list` manages races. See [Admin commands](docs/systems/admin-commands.md).
 
 ## Documentation
 [docs/README.md](docs/README.md) indexes every page: classes, systems, mobs, bosses, structures, enchantments, items, music, and developer notes (testing with DevScript, multipart mobs, the boss framework).

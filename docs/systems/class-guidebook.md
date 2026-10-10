@@ -12,6 +12,8 @@ Right click the book to open it. It reads your **current** class each time you o
 | 2 | Cons |
 | 3 | Special ability, and the key Power Up is bound to (`Z` by default) with where to rebind it (Options > Controls > Key Binds > D&D Classes) |
 
+If you have a [race](../races/races.md), two "Your heritage" pages follow at the back: the race (and Dragonborn ancestry), its summary, ability bonuses and stat modifiers, then its traits.
+
 Long entries carry over onto the next page instead of being cut off. If you haven't picked a class yet, the book describes every class.
 
 Picking a class prints the same pros, cons and special in chat.

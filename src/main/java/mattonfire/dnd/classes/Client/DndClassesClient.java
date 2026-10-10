@@ -280,6 +280,12 @@ public class DndClassesClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(Progression.S2C_OPEN_ATTUNEMENT,
                 (client, handler, buf, sender) -> client.execute(() -> client.setScreen(new SkillTreeScreen(true))));
 
+        ClientPlayNetworking.registerGlobalReceiver(mattonfire.dnd.classes.Rest.RestSync.S2C_REST_STATE,
+                (client, handler, buf, sender) -> {
+                    mattonfire.dnd.classes.Rest.RestSnapshot rest = mattonfire.dnd.classes.Rest.RestSnapshot.read(buf);
+                    client.execute(() -> mattonfire.dnd.classes.Rest.RestSnapshot.client = rest);
+                });
+
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_SYNC_MANA,
                 DndClassesClient::setMana);
 

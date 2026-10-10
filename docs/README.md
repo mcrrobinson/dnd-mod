@@ -23,8 +23,9 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
+- [Rests and charges](systems/rests.md): charges for major actives, short and long rests, Hit Dice (PR #REST)
 - [Class progression](systems/class-progression.md): class levels, ability ranks at the Attunement Table and the Bard/Druid bestiary
-- [Admin commands](systems/admin-commands.md): `/dndclass get|set`
+- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges
 - [Party](systems/party.md): group up with other players
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data

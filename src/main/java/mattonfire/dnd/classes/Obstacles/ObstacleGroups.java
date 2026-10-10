@@ -120,6 +120,24 @@ public final class ObstacleGroups {
         return group.size();
     }
 
+    /** A per-type integer kept in the group's {@code Data} (read from {@code origin}; 0 if unset). */
+    public static int dataInt(World world, BlockPos origin, String key) {
+        return world.getBlockEntity(origin) instanceof ObstacleBlockEntity be ? be.data().getInt(key) : 0;
+    }
+
+    /**
+     * Writes a per-type integer to the {@code Data} of every block in the group, so it reads the same
+     * whichever block is clicked next (a Holy Ward's potion count, a Blood Seal's payments).
+     */
+    public static void setDataInt(World world, BlockPos origin, String key, int value) {
+        for (BlockPos pos : group(world, origin)) {
+            if (world.getBlockEntity(pos) instanceof ObstacleBlockEntity be) {
+                be.data().putInt(key, value);
+                be.markDirty();
+            }
+        }
+    }
+
     /** Sets the reseal time of every block in the group. Returns the group size. */
     public static int setResealTicks(World world, BlockPos origin, int ticks) {
         List<BlockPos> group = group(world, origin);

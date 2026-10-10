@@ -1,0 +1,156 @@
+# Divine and death obstacles (Cleric, Paladin, Necromancer, Blood Hunter). Not run by the agent that wrote it.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-divine.txt
+# Expect (screenshots + log):
+#  Cleric: a rigged 18 opens the Holy Ward ("Test passed"); a rigged 18 consecrates the altar, whose spawner stops
+#   (no [Obstacle] spawns, the altar shows its consecrated top: state=open).
+#  Fighter (fallbacks): three thrown Potions of Healing open a second Holy Ward ("doused 1/3".."3/3" in the log);
+#   smashing the second altar raises 4 undead; smashing the Ossuary Gate raises 4 skeletons + a wither skeleton.
+#  Dread Ward: a Fighter standing in the zone gets Frightened, Slowness IV and Weakness II (ActiveEffects in the log);
+#   a Paladin standing there has no ActiveEffects.
+#  Necromancer: a rigged 18 opens an Ossuary Gate; walking past a crypt sleeper doesn't wake it, a Fighter does.
+#  Blood Hunter: right-clicking a Blood Seal takes 4 health and opens it. A Fighter alone pays 16 health.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 14 149 40 minecraft:stone
+/fill 0 150 0 14 156 40 minecraft:air
+
+# Cleric: Holy Ward (Medium)
+/dndobstacle place 3 150 5 5 151 5 dndclasses:holy_ward medium
+/dndclass set @s cleric
+wait 5
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 3.5 0 20
+wait 10
+screenshot divine-cleric-ward-hint
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 4 150 5 dndclasses:holy_ward[state=open]
+screenshot divine-cleric-ward-open
+
+# Cleric: Desecrated Altar with a zombie spawner 4 blocks away
+/setblock 10 150 5 minecraft:spawner{SpawnData:{entity:{id:"minecraft:zombie"}},Delay:20}
+/setblock 9 150 3 dndclasses:desecrated_altar
+/tp @s 9.5 150 1.5 0 30
+wait 10
+screenshot divine-altar-hint
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 9 150 3 dndclasses:desecrated_altar[state=open]
+/kill @e[type=minecraft:zombie]
+wait 200
+/execute if entity @e[type=minecraft:zombie,distance=..20]
+screenshot divine-altar-consecrated
+
+# Fighter: a second Holy Ward, doused with three Potions of Healing
+/dndobstacle place 3 150 12 5 151 12 dndclasses:holy_ward hard
+/dndclass set @s fighter
+wait 5
+/clear @s
+/tp @s 4.5 150 9.5 0 20
+wait 10
+screenshot divine-fighter-ward-hint
+/give @s minecraft:splash_potion{Potion:"minecraft:healing"} 3
+hotbar 0
+use
+wait 30
+use
+wait 30
+use
+wait 30
+/execute if block 4 150 12 dndclasses:holy_ward[state=open]
+screenshot divine-fighter-ward-doused
+
+# Fighter: smash a second altar (4 undead rise)
+/kill @e[type=!minecraft:player]
+/setblock 9 150 12 dndclasses:desecrated_altar
+/give @s minecraft:diamond_pickaxe
+hotbar 1
+/tp @s 9.5 150 10.5 0 40
+mine on
+wait 80
+mine off
+/execute if entity @e[type=minecraft:zombie,distance=..8]
+screenshot divine-fighter-altar-smashed
+
+# Dread Ward: Fighter frightened, then shielded as a Paladin
+/kill @e[type=!minecraft:player]
+/dndobstacle place 2 150 18 2 152 18 dndclasses:dread_ward medium
+/dndobstacle place 6 150 18 6 152 18 dndclasses:dread_ward medium
+/tp @s 4.5 150 18.5 0 0
+wait 30
+/data get entity @s ActiveEffects
+/effect clear @s
+screenshot divine-dread-fighter
+/dndclass set @s paladin
+wait 30
+/effect clear @s
+wait 25
+/data get entity @s ActiveEffects
+screenshot divine-dread-paladin
+
+# Ossuary Gate: Fighter smashes one, Necromancer commands another
+/dndclass set @s fighter
+/dndobstacle place 3 150 24 5 151 24 dndclasses:ossuary_gate medium
+/tp @s 4.5 150 22.5 0 30
+hotbar 1
+mine on
+wait 40
+mine off
+/execute if entity @e[type=minecraft:wither_skeleton,distance=..10]
+screenshot divine-ossuary-smashed
+/kill @e[type=!minecraft:player]
+/dndobstacle place 9 150 24 11 151 24 dndclasses:ossuary_gate medium
+/dndclass set @s necromancer
+/clear @s
+/tp @s 10.5 150 22.5 0 20
+wait 10
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 10 150 24 dndclasses:ossuary_gate[state=open]
+screenshot divine-ossuary-necromancer
+
+# Crypt Sleepers: a Necromancer walks past, a Fighter wakes it
+/summon minecraft:zombie 10.5 150 30.5 {NoAI:1b,Tags:["dndclasses.sleeper"],PersistenceRequired:1b}
+/tp @s 10.5 150 28.5 0 0
+wait 30
+/execute if entity @e[type=minecraft:zombie,tag=dndclasses.sleeper]
+/dndclass set @s fighter
+wait 30
+/execute unless entity @e[type=minecraft:zombie,tag=dndclasses.sleeper]
+/kill @e[type=minecraft:zombie]
+
+# Blood Seal: Blood Hunter pays 4, Fighter alone pays 16
+/dndobstacle place 3 150 36 5 151 36 dndclasses:blood_seal medium
+/dndobstacle place 9 150 36 11 151 36 dndclasses:blood_seal medium
+/dndclass set @s bloodhunter
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+/tp @s 4.5 150 34.5 0 20
+wait 10
+screenshot divine-blood-hint
+/data get entity @s Health
+use
+wait 5
+/data get entity @s Health
+/execute if block 4 150 36 dndclasses:blood_seal[state=open]
+/dndclass set @s fighter
+/effect give @s minecraft:instant_health 1 5
+/tp @s 10.5 150 34.5 0 20
+wait 10
+/data get entity @s Health
+use
+wait 5
+/data get entity @s Health
+/execute if block 10 150 36 dndclasses:blood_seal[state=open]
+screenshot divine-blood-fighter
+quit

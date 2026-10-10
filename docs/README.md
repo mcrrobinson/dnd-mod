@@ -31,7 +31,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 
 ## Mobs
-- [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn
+- [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn (PR #115)
 - [Bone Wyvern](mobs/bone-wyvern.md): the Necromancer's small undead dragon from Raise Dead rank V
 - [Goblins](mobs/goblins.md): Goblin Warriors in Nether Fortresses and goblin camps
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
@@ -50,7 +50,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits
-- [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source
+- [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source (PR #115)
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music

@@ -55,6 +55,10 @@ public final class DeathSaves {
     /** The 6-second save of a Downed, unstable player. */
     static void rollSave(ServerPlayerEntity player, Downed.State state) {
         D20.Roll roll = roll(player, LABEL, DC, DeathSaveModifier.EVENT.invoker().mode(player));
+        if (!roll.outcome().succeeded() && DeathSaveModifier.EVENT.invoker().rerollFailure(player)) {
+            DnDClasses.LOGGER.info("[Downed] {} rerolls a failed death save", player.getEntityName());
+            roll = roll(player, LABEL, DC, DeathSaveModifier.EVENT.invoker().mode(player));
+        }
         switch (roll.outcome()) {
             case CRITICAL -> {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.death_save.critical"));

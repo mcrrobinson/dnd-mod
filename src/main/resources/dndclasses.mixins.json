@@ -65,6 +65,7 @@
         "LivingEntityInvoker",
         "DownedServerPlayerMixin",
         "DownedPlayerManagerMixin",
+        "DownedHealMixin",
         "DownedTargetMixin"
     ],
     "client": [

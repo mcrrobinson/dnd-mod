@@ -19,6 +19,7 @@ import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.LivingEntity;
@@ -108,7 +109,7 @@ public class FighterSkills extends ClassSkills {
                         "Dropping below 25% health heals 3 hearts (once a minute).",
                         "minecraft:glistering_melon_slice", 1, 0, 1, "fighter.riposte"),
                 active("fighter.indomitable", "Indomitable",
-                        "Resistance II, Strength II and no knockback for 15 seconds.",
+                        "Resistance II, Strength II and no knockback for 15 seconds. Once each time you're Downed, reroll a failed death save.",
                         "minecraft:netherite_chestplate", 9, 2, 1, 0, "fighter.brawler", "fighter.second_wind"));
     }
 
@@ -122,6 +123,29 @@ public class FighterSkills extends ClassSkills {
                         EntityAttributeModifier.Operation.ADDITION),
                 new AttributeBonus("fighter.defensive_style", EntityAttributes.GENERIC_ARMOR_TOUGHNESS, 2,
                         EntityAttributeModifier.Operation.ADDITION));
+    }
+
+    /** Fighters who've used Indomitable's death save reroll in their current Downed spell. */
+    private static final java.util.Set<UUID> INDOMITABLE_REROLLED = new java.util.HashSet<>();
+
+    /**
+     * Indomitable on death saves: a Downed Fighter who has unlocked it rerolls one failed death save each time
+     * they're Downed. Registered from {@code Revives}.
+     */
+    public static boolean indomitableReroll(ServerPlayerEntity player) {
+        if (Progression.classOf(player) != DndCharacter.FIGHTER
+                || !Progression.current(player).isUnlocked("fighter.indomitable")
+                || !INDOMITABLE_REROLLED.add(player.getUuid())) {
+            return false;
+        }
+        player.sendMessage(net.minecraft.text.Text.literal("Indomitable! You reroll the failed save.")
+                .formatted(net.minecraft.util.Formatting.GOLD), false);
+        return true;
+    }
+
+    /** A new Downed spell: Indomitable's reroll is back. */
+    public static void resetIndomitableReroll(ServerPlayerEntity player) {
+        INDOMITABLE_REROLLED.remove(player.getUuid());
     }
 
     @Override

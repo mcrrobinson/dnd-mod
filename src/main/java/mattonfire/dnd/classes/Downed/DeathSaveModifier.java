@@ -37,6 +37,16 @@ public interface DeathSaveModifier {
                     }
                     return Advantage.resolve(adv, dis);
                 }
+
+                @Override
+                public boolean rerollFailure(ServerPlayerEntity player) {
+                    for (DeathSaveModifier listener : listeners) {
+                        if (listener.rerollFailure(player)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                }
             });
 
     /** A flat bonus (or penalty) to the player's next death save. */
@@ -45,5 +55,13 @@ public interface DeathSaveModifier {
     /** Advantage or disadvantage on the player's next death save (e.g. a party wipe at a boss). */
     default Advantage mode(ServerPlayerEntity player) {
         return Advantage.NORMAL;
+    }
+
+    /**
+     * Called when a death save fails: return true to reroll it (Fighter Indomitable). The first listener that
+     * returns true uses up its reroll; the second roll stands.
+     */
+    default boolean rerollFailure(ServerPlayerEntity player) {
+        return false;
     }
 }

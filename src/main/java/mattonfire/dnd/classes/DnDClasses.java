@@ -152,9 +152,10 @@ public class DnDClasses implements ModInitializer {
                                 return;
                         }
 
-                        boolean success = skill == null
+                        // Heals the skill lands on others count as outside heals: they revive Downed players
+                        boolean success = mattonfire.dnd.classes.Downed.Revives.asHealer(player, () -> skill == null
                                         ? PowerUpEffect.play(server, player, Progression.classOf(player))
-                                        : Abilities.activate(player, skill);
+                                        : Abilities.activate(player, skill));
                         if (success) {
                                 ManaManager.setMana(player, mana - cost);
                                 ManaManager.sync(player);
@@ -484,6 +485,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Race.RaceLifecycle.register();
                 mattonfire.dnd.classes.Rest.Rests.register();
                 mattonfire.dnd.classes.Downed.DownedEvents.register();
+                mattonfire.dnd.classes.Downed.Revives.register();
+                mattonfire.dnd.classes.Downed.Stabilise.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

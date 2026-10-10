@@ -42,7 +42,7 @@ Paladins get 3 extra XP for killing undead, and 1 extra for a hostile kill while
 | Divine Judgment | Root | Active | 0 | 9 | The special above |
 | Divine Smite | Oath of Devotion | Passive | 1 | | +4 melee damage to undead |
 | Sacred Weapon | Oath of Devotion | Active | 1 | 4 | Strength I for 15 s, and your melee hits set targets on fire for 4 s |
-| Aura of Protection | Oath of Devotion | Passive | 1 | | You and players within 8 blocks take 15% less damage. Several auras don't stack |
+| Aura of Protection | Oath of Devotion | Passive | 1 | | You and players within 8 blocks take 15% less damage and get +2 on [death saves](../systems/death-saves.md). Several auras don't stack |
 | Hellforged | Oath of Conquest | Passive | 1 | | The Nether no longer weakens you |
 | Divine Shield | Oath of Conquest | Active | 1 | 5 | Absorption III and no knockback for 15 s |
 | Aura of Courage | Oath of Conquest | Passive | 1 | | Weakness and Slowness are removed from you and players within 8 blocks every second |

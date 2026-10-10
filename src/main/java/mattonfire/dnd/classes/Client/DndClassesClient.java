@@ -163,6 +163,9 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Render.LayeredArmorRenderer.registerAll();
         mattonfire.dnd.faction.client.ClientReputation.register();
         mattonfire.dnd.quest.client.ClientQuests.register();
+        // Journal (J) and the quest tracker in the top-right corner
+        mattonfire.dnd.classes.Client.Hud.QuestJournalScreen.register();
+        mattonfire.dnd.classes.Client.Hud.QuestTrackerHud.register();
         mattonfire.dnd.classes.Client.Hud.DialogueScreen.register();
         // The model has see-through quads like the vanilla brewing stand, which draw black on the default solid layer
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
@@ -195,6 +198,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
         PickerFlow.register();
+        BreathWeaponClient.register();
         // Magic items: "Rare weapon (Wizard only)" under the name
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
             net.minecraft.text.Text line = mattonfire.dnd.magic.MagicNames.tooltipLine(stack);

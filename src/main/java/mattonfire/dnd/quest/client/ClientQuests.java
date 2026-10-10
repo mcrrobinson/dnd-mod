@@ -26,7 +26,7 @@ public final class ClientQuests {
 
     public record Active(int instance, Identifier quest, Text title, Identifier chain, String giver, boolean tracked,
                          int stage, int stages, Text stageTitle, Text stageText, List<Objective> objectives,
-                         List<Participant> participants) {
+                         List<Participant> participants, Text description, Text rewards) {
     }
 
     public record Finished(Identifier quest, Text title, Identifier chain, boolean rewardWaiting) {
@@ -34,6 +34,8 @@ public final class ClientQuests {
 
     private static volatile List<Active> active = List.of();
     private static volatile List<Finished> finished = List.of();
+    /** False until the first sync after joining, so the quests you log in with don't toast. */
+    private static volatile boolean synced;
 
     private ClientQuests() {
     }
@@ -63,8 +65,10 @@ public final class ClientQuests {
                 for (int j = 0; j < participantCount; j++) {
                     participants.add(new Participant(buf.readString(), buf.readBoolean()));
                 }
+                Text description = buf.readText();
+                Text rewards = buf.readText();
                 readActive.add(new Active(instance, quest, title, chain, giver, tracked, stage, stages, stageTitle,
-                        stageText, List.copyOf(objectives), List.copyOf(participants)));
+                        stageText, List.copyOf(objectives), List.copyOf(participants), description, rewards));
             }
             int finishedCount = buf.readVarInt();
             List<Finished> readFinished = new ArrayList<>(finishedCount);
@@ -74,8 +78,14 @@ public final class ClientQuests {
             List<Active> newActive = Collections.unmodifiableList(readActive);
             List<Finished> newFinished = Collections.unmodifiableList(readFinished);
             client.execute(() -> {
+                List<Active> before = active;
+                boolean first = !synced;
                 active = newActive;
                 finished = newFinished;
+                synced = true;
+                if (!first) {
+                    QuestToasts.onSync(client, before, newActive, newFinished);
+                }
                 DnDClasses.LOGGER.info("[Quests] client sync: active {}, finished {}", newActive.stream()
                         .map(quest -> quest.quest() + " stage " + (quest.stage() + 1) + " " + quest.objectives().stream()
                                 .map(objective -> objective.progress() + "/" + objective.count()).toList()
@@ -86,6 +96,7 @@ public final class ClientQuests {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             active = List.of();
             finished = List.of();
+            synced = false;
         });
     }
 
@@ -95,5 +106,22 @@ public final class ClientQuests {
 
     public static List<Finished> finished() {
         return finished;
+    }
+
+    /** The quest the tracker shows: the one marked tracked, else the newest. Null with no active quests. */
+    public static Active tracked() {
+        List<Active> current = active;
+        for (Active quest : current) {
+            if (quest.tracked()) {
+                return quest;
+            }
+        }
+        Active newest = null;
+        for (Active quest : current) {
+            if (newest == null || quest.instance() > newest.instance()) {
+                newest = quest;
+            }
+        }
+        return newest;
     }
 }

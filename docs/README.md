@@ -29,7 +29,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
-- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session (PR #TBD)
+- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session (PR #121)
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn

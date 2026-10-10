@@ -21,7 +21,7 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 How the features work:
 - **Power Armor** (Armorer): Arcane Armor lasts 45 s instead of 30 s. While it's on (Mechanical Titan's included) you have +0.5 knockback resistance.
-- **Battle Ready** (Battle Smith): +2 damage on your melee hits with a magic weapon whose magic is awake (a weapon with a [magic tier](../systems/magic-items.md), +N gear included, that's identified). Unidentified weapons and mundane ones get nothing.
+- **Battle Ready** (Battle Smith): +2 damage on your melee hits with a magic weapon whose magic is working for you (a weapon with a [magic tier](../systems/magic-items.md), +N gear included, that's identified, and attuned if it needs attunement). Unidentified weapons and mundane ones get nothing.
 
 ## For developers
 - `Misc/ArtificerDamage`, `Misc/ArtificerCrafting` (+ `mixin/CraftingResultSlotMixin`, `CraftingQuickMoveMixin`), `mixin/EnchantingTableMixin`, `Effects/ArmorBuffEffect`.

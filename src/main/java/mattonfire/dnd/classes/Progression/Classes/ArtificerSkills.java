@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.magic.MagicData;
 import mattonfire.dnd.magic.MagicItems;
 import mattonfire.dnd.magic.MagicKind;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -185,17 +184,20 @@ public class ArtificerSkills extends ClassSkills {
         }
     }
 
-    /** Battle Ready: a magic weapon (of the Weapon kind) whose magic is awake, i.e. identified. */
-    public static boolean isAwakeMagicWeapon(ItemStack stack) {
+    /**
+     * Battle Ready: a magic weapon (of the Weapon kind) whose magic works for the player: identified, and
+     * attuned if it needs it ({@code Attunement.isActive}).
+     */
+    public static boolean isAwakeMagicWeapon(PlayerEntity player, ItemStack stack) {
         MagicItems.Info info = MagicItems.info(stack);
-        return info != null && info.kind() == MagicKind.WEAPON && !MagicData.isDormant(stack);
+        return info != null && info.kind() == MagicKind.WEAPON && mattonfire.dnd.magic.Attunement.isActive(player, stack);
     }
 
     @Override
     public float modifyDealtDamage(PlayerEntity player, ClassProgress progress, LivingEntity target,
             DamageSource source, float amount) {
         if (progress.hasSubclass(BATTLE_SMITH) && source.getSource() == player
-                && isAwakeMagicWeapon(player.getMainHandStack())) {
+                && isAwakeMagicWeapon(player, player.getMainHandStack())) {
             amount += BATTLE_READY_DAMAGE;
         }
         return amount;

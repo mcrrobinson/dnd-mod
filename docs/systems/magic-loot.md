@@ -26,6 +26,8 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Dragon lair](../structures/dragon-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Storm-Chaser Boots 6% |
 | [Frost lair](../structures/frost-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Frostbrand 8% |
 | [Beholder](../bosses/beholder.md) lair chest | 1 roll: Rare (40) / Very Rare (45) / Legendary (15) | Immovable Rod 4%, Eye of the Tyrant 2% |
+| [Dragon Temple](../structures/dragon-temples.md) reliquary (`chests/dragon_temple_reliquary`) | 1 roll: Rare (90) / Very Rare (10) | its Staffs of Fire, Ice and Lightning stay at 4% each |
+| Dragon Temple cell chests and storeroom barrels (`chests/dragon_temple_cell`) | 8%: Uncommon | |
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
 | [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md) (player kill) | 50%: Rare | their trophies (boss drops) |
 | [Lich](../bosses/lich.md) (final kill), [Beholder](../bosses/beholder.md) (player kill) | 1 roll: Very Rare (80) / Legendary (20) | Tome of Clear Thought 10% each, plus their trophies |

@@ -1,0 +1,10 @@
+{
+  "role": "dwarf_king",
+  "greeting": {
+    "default": "dialogue.dndclasses.dwarf_king.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.dwarf_king.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.dwarf_king.greeting.friendly",
+    "honored": "dialogue.dndclasses.dwarf_king.greeting.honored",
+    "exalted": "dialogue.dndclasses.dwarf_king.greeting.exalted"
+  }
+}

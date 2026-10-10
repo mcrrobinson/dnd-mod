@@ -19,6 +19,14 @@ public abstract class TrackTargetGoalMixin {
     @Shadow
     public abstract void stop();
 
+    /** The Beacon curse: a mob chasing a cursed player keeps after them from twice as far. */
+    @Inject(method = "getFollowRange", at = @At("RETURN"), cancellable = true)
+    private void dndclasses$beaconFollowRange(CallbackInfoReturnable<Double> cir) {
+        double range = mattonfire.dnd.magic.Curse.modifyFollowRange(this.mob.getTarget(), cir.getReturnValueD());
+        if (range != cir.getReturnValueD())
+            cir.setReturnValue(range);
+    }
+
     @Inject(method = "shouldContinue", at = @At("RETURN"), cancellable = true)
     protected void identity_shouldContinue(CallbackInfoReturnable<Boolean> cir) {
         // NO-OP

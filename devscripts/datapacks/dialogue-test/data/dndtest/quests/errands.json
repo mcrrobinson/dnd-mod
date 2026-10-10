@@ -1,0 +1,14 @@
+{
+  "title": "Errands for the Thain",
+  "description": "The Thain wants a word passed to the innkeeper, and some bread fetched.",
+  "giver": "hobbit_elder",
+  "stages": [
+    {"text": "Tell the innkeeper the Thain sends his regards.",
+     "objectives": [{"type": "talk", "role": "innkeeper"}]},
+    {"text": "Bring the innkeeper two loaves of bread.",
+     "objectives": [{"type": "deliver", "item": "minecraft:bread", "count": 2, "role": "innkeeper"}]},
+    {"text": "Return to the Thain.",
+     "objectives": [{"type": "check", "skill": "insight", "dc": 10}]}
+  ],
+  "rewards": [{"type": "emeralds", "count": 2}]
+}

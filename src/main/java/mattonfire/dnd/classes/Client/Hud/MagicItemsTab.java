@@ -10,6 +10,7 @@ import io.netty.buffer.Unpooled;
 import mattonfire.dnd.magic.Attunement;
 import mattonfire.dnd.magic.AttunementSnapshot;
 import mattonfire.dnd.magic.ForgeBlessing;
+import mattonfire.dnd.magic.Identify;
 import mattonfire.dnd.magic.MagicData;
 import mattonfire.dnd.magic.MagicItems;
 import mattonfire.dnd.magic.MagicKind;
@@ -60,7 +61,8 @@ final class MagicItemsTab {
             if (stack.isEmpty())
                 continue;
             MagicItems.Info info = MagicItems.info(stack);
-            boolean magic = info != null && info.kind() != MagicKind.POTION && info.kind() != MagicKind.CONSUMABLE;
+            boolean magic = info != null && info.kind() != MagicKind.POTION && info.kind() != MagicKind.CONSUMABLE
+                    && info.kind() != MagicKind.SCROLL;
             boolean blessable = snapshot.forge() == 1 && ForgeBlessing.canBless(player, i, stack);
             if (magic || blessable)
                 slots.add(i);
@@ -148,6 +150,13 @@ final class MagicItemsTab {
             MagicItems.Info info = MagicItems.info(stack);
             boolean bonded = info != null && player.getUuid().equals(MagicData.attunedTo(stack));
             Text status = null;
+            if (info != null && !MagicData.isIdentified(stack) && !channeling) {
+                // Spends a Scroll of Identify from the inventory
+                right -= BUTTON_WIDTH;
+                button(matrices, text, right, rowY + 2, "Identify", mouseX, mouseY,
+                        () -> sendSlot(Identify.C2S_IDENTIFY, slot));
+                right -= 4;
+            }
             if (channeling) {
                 status = Text.literal("attuning...").formatted(Formatting.LIGHT_PURPLE);
             } else if (info != null && info.attunement()) {
@@ -164,9 +173,8 @@ final class MagicItemsTab {
                             () -> sendSlot(Attunement.C2S_ATTUNE, slot));
                     right -= 4;
                 }
-            } else if (info != null) {
-                status = Text.literal(MagicData.isIdentified(stack) ? "no attunement" : "unidentified")
-                        .formatted(Formatting.DARK_GRAY);
+            } else if (info != null && MagicData.isIdentified(stack)) {
+                status = Text.literal("no attunement").formatted(Formatting.DARK_GRAY);
             }
             if (snapshot.forge() == 1 && ForgeBlessing.canBless(player, slot, stack)) {
                 right -= BUTTON_WIDTH;

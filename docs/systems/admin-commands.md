@@ -31,6 +31,7 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |
 | `/dndclass mana <player> <pips>` | Sets a player's mana (0-9 pips), for testing actives without waiting for it to regenerate |
 | `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
+| `/dndclass rest <player> allow` | Forgets the player's last long rest, so they can take another today (in a bed, say) |
 | `/dndclass charges <player> [n]` | Prints charges, recharge group, Hit Dice and short rests left; `n` sets the charges (capped at the class's max) |
 | `/dndclass hitdice <player> [n]` | Prints the same; `n` sets the Hit Dice left (capped at the pool) |
 | `/dndclass sheet <player>` | Prints the player's [character sheet](ability-scores.md): scores, saves, skills and passives |

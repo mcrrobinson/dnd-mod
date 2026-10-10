@@ -1,0 +1,179 @@
+# DEX saves against dragon breath and storms (see docs/mobs/dragons.md, "Saving throws").
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dragon-dex-saves.txt
+# Each attack runs twice, rigged with /dndclass forceroll: a natural 1 (failed save) and a natural 20 (made it).
+# Check run/logs/latest.log:
+# - one "[D20] <player> Fire breath ..." line per breath (four hits share it), then "save lane ->";
+# - [CHAT] Health before and after each Wyvern breath: the nat 20 loss is about half the nat 1 loss;
+# - Frost Drake breath: ActiveEffects mid-breath has Slowness 100 ticks plus Freeze on a 1, Slowness 50 and
+#   no Freeze on a 20; hail: Health -5 and Freeze on a 1, -2.5 and no Freeze on a 20;
+# - Lightning storm: Fire 160 on a 1, 80 on a 20, and one save for the three bolts;
+# - a tamed Pikehorn's breath on a husk logs "[D20] Husk Fire breath ..." with no "save lane" line.
+# Screenshots: run/screenshots/dex-save-*.png show the save lane beside the crosshair.
+/time set day
+/weather clear
+/gamerule naturalRegeneration false
+/gamerule doMobLoot false
+/gamerule mobGriefing false
+/kill @e[type=!player]
+respawn
+wait 40
+closescreen
+/fill -20 149 -20 20 149 26 stone
+/fill -20 150 -20 20 164 26 air
+/gamemode survival
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/attribute @s minecraft:generic.max_health get
+
+# ---- Wyvern fire breath (DC 12), natural 1 ----
+/effect give @s instant_health 1 9 true
+/tp @s 0 150 6 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 1
+/summon dndclasses:wyvern 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 44
+clearchat
+screenshot dex-save-wyvern-fail
+wait 31
+/kill @e[type=dndclasses:wyvern]
+/data get entity @s Fire
+wait 120
+/data get entity @s Health
+
+# ---- Wyvern fire breath, natural 20 ----
+/effect give @s instant_health 1 9 true
+/tp @s 0 150 6 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 20
+/summon dndclasses:wyvern 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 44
+clearchat
+screenshot dex-save-wyvern-pass
+wait 31
+/kill @e[type=dndclasses:wyvern]
+/data get entity @s Fire
+wait 120
+/data get entity @s Health
+
+# ---- Frost Drake frost breath (DC 14), natural 1 then natural 20 ----
+/effect give @s instant_health 1 9 true
+/tp @s 0 150 6 180 -12
+wait 5
+/dndclass forceroll @s 1
+/summon dndclasses:frost_drake 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 46
+clearchat
+screenshot dex-save-frost-fail
+/data get entity @s ActiveEffects
+wait 30
+/kill @e[type=dndclasses:frost_drake]
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+/tp @s 0 150 6 180 -12
+/dndclass forceroll @s 20
+/summon dndclasses:frost_drake 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 46
+clearchat
+screenshot dex-save-frost-pass
+/data get entity @s ActiveEffects
+wait 30
+/kill @e[type=dndclasses:frost_drake]
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+
+# ---- Frost Drake hailstorm (DC 14): out of the breath's reach, so it calls hail ----
+/tp @s 0 150 12 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 1
+/summon dndclasses:frost_drake 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 22
+/data get entity @s Health
+/data get entity @s ActiveEffects
+clearchat
+screenshot dex-save-hail-fail
+/kill @e[type=dndclasses:frost_drake]
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+/tp @s 0 150 12 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 20
+/summon dndclasses:frost_drake 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 22
+/data get entity @s Health
+/data get entity @s ActiveEffects
+clearchat
+screenshot dex-save-hail-pass
+/kill @e[type=dndclasses:frost_drake]
+/effect clear @s
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+wait 60
+
+# ---- Lightning Chaser storm (DC 14): three bolts, one save ----
+/tp @s 0 150 12 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 1
+/summon dndclasses:lightning_chaser 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 22
+/data get entity @s Health
+/data get entity @s Fire
+clearchat
+screenshot dex-save-storm-fail
+/kill @e[type=dndclasses:lightning_chaser]
+/execute at @s run setblock ~ ~ ~ water
+wait 3
+/execute at @s run setblock ~ ~ ~ air
+/effect give @s instant_health 1 9 true
+wait 60
+/tp @s 0 150 12 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 20
+/summon dndclasses:lightning_chaser 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 22
+/data get entity @s Health
+/data get entity @s Fire
+clearchat
+screenshot dex-save-storm-pass
+/kill @e[type=dndclasses:lightning_chaser]
+/execute at @s run setblock ~ ~ ~ water
+wait 3
+/execute at @s run setblock ~ ~ ~ air
+/effect give @s instant_health 1 9 true
+/fill -20 150 -20 20 164 26 air
+wait 40
+
+# ---- A tamed River Pikehorn breathes on a husk: the husk rolls silently ----
+/dndclass forceroll @s clear
+/tp @s 0 150 -2 180 10
+/summon minecraft:husk 0 150 -4 {NoAI:1b,Rotation:[0f,0f],Health:200f,Attributes:[{Name:"generic.max_health",Base:200d}]}
+/summon dndclasses:river_pikehorn 0 150 4 {Rotation:[180f,0f]}
+/data modify entity @e[type=dndclasses:river_pikehorn,limit=1] Owner set from entity @s UUID
+wait 10
+attack
+wait 100
+clearchat
+screenshot dex-save-pikehorn-tamed
+/data get entity @e[type=minecraft:husk,limit=1] Health
+/kill @e[type=!player]
+
+/gamerule naturalRegeneration true
+/gamerule doMobLoot true
+/gamerule mobGriefing true
+/effect clear @s
+/execute at @s run setblock ~ ~ ~ water
+wait 3
+/execute at @s run setblock ~ ~ ~ air
+/gamemode creative
+quit

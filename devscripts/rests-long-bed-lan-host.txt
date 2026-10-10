@@ -1,0 +1,95 @@
+# Bed long rests with two players (host side), with rests-long-bed-lan-guest.txt. playersSleepingPercentage 100,
+# so one sleeper alone can't skip the night:
+#  1. the host sleeps alone: after 20 s asleep it gets the long rest, the night carries on and the host stays in bed;
+#     the guest (awake) gets nothing
+#  2. the guest gets into bed too: once it's fully asleep (5 s) the night is skipped and the guest gets its rest
+#     (the host, already rested today, gets nothing more)
+#  3. in a party, with the guest Downed nearby, the host's bed rest is refused: "You can't rest while Guest is Downed."
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/rests-long-bed-lan-host.txt
+# then, once the log says "Started serving on":
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25614 -PdevScript=devscripts/rests-long-bed-lan-guest.txt
+wait 40
+closescreen
+respawn
+/gamemode survival
+/difficulty easy
+/gamerule doDaylightCycle true
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule playersSleepingPercentage 100
+/gamerule dndRests true
+/weather clear
+/kill @e[type=!minecraft:player]
+/party leave
+/fill 4 149 6 16 149 18 minecraft:stone
+/fill 4 150 6 16 154 18 minecraft:air
+/setblock 10 150 12 minecraft:red_bed[facing=south,part=foot]
+/setblock 10 150 13 minecraft:red_bed[facing=south,part=head]
+/setblock 13 150 12 minecraft:blue_bed[facing=south,part=foot]
+/setblock 13 150 13 minecraft:blue_bed[facing=south,part=head]
+/clear @s
+/dndclass set @s cleric
+/dndclass rest @s long
+/dndclass rest @s allow
+/effect clear @s
+/tp @s 10.5 150 10.5 0 40
+/time set 6000
+/publish false survival 25614
+waitchat guest-ready
+wait 20
+/clear Guest
+/dndclass set Guest fighter
+/dndclass rest Guest long
+/dndclass rest Guest allow
+/effect clear Guest
+/tp Guest 13.5 150 9 0 30
+# --- 1: night of day 200; the host sleeps alone
+/time set 4813000
+/dndclass charges @s 0
+/dndclass charges Guest 0
+wait 5
+clearchat
+use
+wait 200
+clearchat
+screenshot lan-host-asleep-10s
+wait 260
+/time query day
+/time query daytime
+/data get entity @s SleepingX
+/dndclass charges @s
+/dndclass charges Guest
+wait 5
+screenshot lan-host-rested
+/me host-rested
+wait 60
+# --- 2: the guest gets into bed too: the night is skipped, the guest rests
+/tp Guest 13.5 150 10.5 0 40
+wait 10
+/me guest-sleep-now
+wait 200
+/time query day
+/time query daytime
+/dndclass charges Guest
+/dndclass charges @s
+# --- 3: party; guest Downed nearby: the host's rest is refused
+/party invite Guest
+waitchat joined the party
+/tp @s 10.5 150 10.5 0 40
+/tp Guest 13.5 150 9 0 30
+/time set 4837000
+/dndclass charges @s 0
+/dndclass down Guest
+/dndclass stabilise Guest
+wait 10
+clearchat
+use
+wait 20
+screenshot lan-host-refused-downed
+wait 120
+/dndclass charges @s
+/dndclass revive Guest
+/me host-done
+wait 40
+/time set 6000
+quit

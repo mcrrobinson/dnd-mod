@@ -30,6 +30,11 @@ public record MagicItemDef(Item item, MagicTier tier, MagicKind kind, boolean at
         return new MagicItemDef(item, tier, kind, attunement, Set.of(characters), fixedCurse, typeName);
     }
 
+    /** A built-in curse ({@link Curse} id), applied whenever the item is rolled as loot. */
+    public MagicItemDef withCurse(Curse curse) {
+        return new MagicItemDef(item, tier, kind, attunement, classes, curse.id, typeName);
+    }
+
     public MagicItemDef withAttunement() {
         return new MagicItemDef(item, tier, kind, true, classes, fixedCurse, typeName);
     }

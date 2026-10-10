@@ -72,7 +72,7 @@ public final class Attunement {
     /** 3 seconds at the table. */
     public static final int CHANNEL_TICKS = 60;
 
-    private static final String DATA_KEY = "dndAttunement";
+    static final String DATA_KEY = "dndAttunement";
 
     /** A channel in progress at a table. */
     private record Channel(int slot, UUID item, int endTick) {
@@ -124,7 +124,8 @@ public final class Attunement {
                 name = null;
             }
             bonds.add(new AttunementSnapshot.Bond(nbt.getUuid("uuid"), nbt.getString("item"),
-                    name != null ? name : Text.literal(nbt.getString("item")), nbt.getBoolean("cursed")));
+                    name != null ? name : Text.literal(nbt.getString("item")), nbt.getBoolean("cursed"),
+                    nbt.getString("curse"), nbt.getString("tier")));
         }
         return bonds;
     }
@@ -137,9 +138,12 @@ public final class Attunement {
             nbt.putString("item", bond.item());
             nbt.putString("name", Text.Serializer.toJson(bond.name()));
             nbt.putBoolean("cursed", bond.cursed());
+            nbt.putString("curse", bond.curse());
+            nbt.putString("tier", bond.tier());
             list.add(nbt);
         }
         ((IEntityDataSaver) player).getPersistentData().put(DATA_KEY, list);
+        Curse.onBondsChanged(player);
     }
 
     public static @Nullable AttunementSnapshot.Bond bond(PlayerEntity player, UUID uuid) {
@@ -251,26 +255,135 @@ public final class Attunement {
             player.sendMessage(refusal.copy().formatted(Formatting.RED), false);
             return false;
         }
-        UUID uuid = MagicData.ensureUuid(stack);
-        MagicData.setIdentified(stack, true);
-        String curse = MagicData.curse(stack);
-        if (!curse.isEmpty())
-            MagicData.setCurseKnown(stack, true);
-        MagicData.setAttunedTo(stack, player.getUuid(), player.getName().getString());
-
-        List<AttunementSnapshot.Bond> bonds = bonds(player);
-        bonds.add(new AttunementSnapshot.Bond(uuid, Registries.ITEM.getId(stack.getItem()).toString(),
-                stack.getName().copy(), !curse.isEmpty()));
-        saveBonds(player, bonds);
-        sync(player);
-        MagicEffects.updateAttributes(player);
-
+        Curse curse = Curse.byId(MagicData.curse(stack));
+        List<AttunementSnapshot.Bond> bonds = addBond(player, stack);
         player.sendMessage(Text.literal("You attune to ").formatted(Formatting.AQUA).append(stack.toHoverableText())
                 .append(Text.literal(". (" + bonds.size() + "/" + slots(player) + " bonds)").formatted(Formatting.AQUA)),
                 false);
+        if (curse != null) {
+            player.sendMessage(Text.translatable("magic.dndclasses.curse.binds", stack.toHoverableText(),
+                    curse.displayName().formatted(Formatting.RED)).formatted(Formatting.DARK_RED), false);
+            player.sendMessage(curse.description().formatted(Formatting.GRAY, Formatting.ITALIC), false);
+        }
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE,
                 SoundCategory.PLAYERS, 1.0F, 0.8F);
         return true;
+    }
+
+    /**
+     * Writes the bond on both sides: identifies the item, reveals its curse (cursed armor also gets Curse of
+     * Binding), marks it bonded and adds it to the player's list.
+     */
+    private static List<AttunementSnapshot.Bond> addBond(ServerPlayerEntity player, ItemStack stack) {
+        UUID uuid = MagicData.ensureUuid(stack);
+        MagicData.setIdentified(stack, true);
+        Curse curse = Curse.byId(MagicData.curse(stack));
+        if (curse != null) {
+            MagicData.setCurseKnown(stack, true);
+            Curse.addBinding(stack);
+        }
+        MagicData.setAttunedTo(stack, player.getUuid(), player.getName().getString());
+        MagicItems.Info info = MagicItems.info(stack);
+
+        List<AttunementSnapshot.Bond> bonds = bonds(player);
+        bonds.removeIf(b -> b.uuid().equals(uuid));
+        bonds.add(new AttunementSnapshot.Bond(uuid, Registries.ITEM.getId(stack.getItem()).toString(),
+                stack.getName().copy(), curse != null, curse == null ? "" : curse.id,
+                info == null ? "" : info.tier().id));
+        saveBonds(player, bonds);
+        sync(player);
+        MagicEffects.updateAttributes(player);
+        return bonds;
+    }
+
+    /**
+     * A curse binds the item to the player ({@link Curse#bind}): no table, no refusal. It takes a slot even if
+     * that puts the player over their limit.
+     */
+    static void bindCursed(ServerPlayerEntity player, ItemStack stack) {
+        addBond(player, stack);
+    }
+
+    /**
+     * Remove Curse succeeded: the cursed bond ends (the item stays cursed and identified). A cursed item still
+     * worn or held is moved into the main inventory (or dropped if it's full) so it doesn't bind again at once,
+     * and armor loses the Curse of Binding the curse put on it.
+     *
+     * @return the freed bond, or null if there was none
+     */
+    public static @Nullable AttunementSnapshot.Bond breakCurse(ServerPlayerEntity player, UUID uuid) {
+        AttunementSnapshot.Bond bond = bond(player, uuid);
+        if (bond == null)
+            return null;
+        List<AttunementSnapshot.Bond> bonds = bonds(player);
+        bonds.removeIf(b -> b.uuid().equals(uuid));
+        saveBonds(player, bonds);
+        PlayerInventory inventory = player.getInventory();
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
+            if (!uuid.equals(MagicData.uuid(stack)))
+                continue;
+            MagicData.setAttunedTo(stack, null);
+            Curse.removeBinding(stack);
+            boolean equipped = i == inventory.selectedSlot || i >= PlayerInventory.MAIN_SIZE;
+            if (equipped) {
+                inventory.setStack(i, ItemStack.EMPTY);
+                int free = -1;
+                for (int j = PlayerInventory.getHotbarSize(); j < PlayerInventory.MAIN_SIZE; j++) {
+                    if (inventory.getStack(j).isEmpty()) {
+                        free = j;
+                        break;
+                    }
+                }
+                if (free >= 0)
+                    inventory.setStack(free, stack);
+                else
+                    player.dropItem(stack, false, true);
+            }
+        }
+        sync(player);
+        MagicEffects.updateAttributes(player);
+        return bond;
+    }
+
+    /** Takes off the Curse of Binding a curse put on this item (for {@code /dndmagic uncurse}). */
+    public static void removeCurseBinding(ItemStack stack) {
+        Curse.removeBinding(stack);
+    }
+
+    /** The bond a Remove Curse aims at: the cursed item in the main hand, else the first cursed bond. */
+    public static @Nullable AttunementSnapshot.Bond cursedBond(PlayerEntity player) {
+        List<AttunementSnapshot.Bond> bonds = bonds(player);
+        UUID held = MagicData.uuid(player.getMainHandStack());
+        for (AttunementSnapshot.Bond bond : bonds)
+            if (bond.cursed() && bond.uuid().equals(held))
+                return bond;
+        for (AttunementSnapshot.Bond bond : bonds)
+            if (bond.cursed())
+                return bond;
+        return null;
+    }
+
+    /**
+     * Admin uncurse ({@code /dndmagic uncurse}): the bond with this item stops being cursed, or ends if the item
+     * doesn't need attunement.
+     */
+    public static void uncurseBond(ServerPlayerEntity player, ItemStack stack) {
+        UUID uuid = MagicData.uuid(stack);
+        AttunementSnapshot.Bond bond = uuid == null ? null : bond(player, uuid);
+        if (bond == null)
+            return;
+        MagicItems.Info info = MagicItems.info(stack);
+        List<AttunementSnapshot.Bond> bonds = bonds(player);
+        bonds.removeIf(b -> b.uuid().equals(uuid));
+        if (info != null && info.attunement()) {
+            bonds.add(new AttunementSnapshot.Bond(uuid, bond.item(), bond.name(), false, "", bond.tier()));
+        } else {
+            MagicData.setAttunedTo(stack, null);
+        }
+        saveBonds(player, bonds);
+        sync(player);
+        MagicEffects.updateAttributes(player);
     }
 
     /**

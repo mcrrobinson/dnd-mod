@@ -1,0 +1,44 @@
+{
+  "role": "innkeeper",
+  "greeting": {
+    "default": "dialogue.dndclasses.innkeeper.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.innkeeper.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.innkeeper.greeting.friendly",
+    "honored": "dialogue.dndclasses.innkeeper.greeting.honored",
+    "exalted": "dialogue.dndclasses.innkeeper.greeting.exalted"
+  },
+  "topics": [
+    {
+      "id": "innkeeper/goblin_news",
+      "text": "dialogue.dndclasses.innkeeper.goblins",
+      "requires": {"quest": "dndclasses:goblin_menace/1", "state": "active"},
+      "goto": "goblin_news"
+    },
+    {
+      "id": "innkeeper/advance",
+      "text": "dialogue.dndclasses.innkeeper.advance",
+      "requires": {"quest": "dndclasses:goblin_menace/1", "state": "active"},
+      "check": {
+        "skill": "persuasion",
+        "dc": 14,
+        "success": "advance_yes",
+        "failure": "advance_no",
+        "on_success": [{"type": "emeralds", "count": 3}]
+      }
+    }
+  ],
+  "nodes": {
+    "goblin_news": {
+      "lines": ["dialogue.dndclasses.innkeeper.goblins.lines"],
+      "options": [{"text": "dialogue.dndclasses.innkeeper.back", "goto": "hub"}]
+    },
+    "advance_yes": {
+      "lines": ["dialogue.dndclasses.innkeeper.advance.yes"],
+      "options": [{"text": "dialogue.dndclasses.innkeeper.back", "goto": "hub"}]
+    },
+    "advance_no": {
+      "lines": ["dialogue.dndclasses.innkeeper.advance.no"],
+      "options": [{"text": "dialogue.dndclasses.innkeeper.back", "goto": "hub"}]
+    }
+  }
+}

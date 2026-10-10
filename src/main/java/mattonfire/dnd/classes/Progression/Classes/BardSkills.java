@@ -193,7 +193,7 @@ public class BardSkills extends ClassSkills {
     @Override
     public void register() {
         BardCompanions.register();
-        // Bardic Lore. Identifying magic items on pickup comes with the identification card.
+        // Bardic Lore. Lore Bards also identify magic items on pickup (magic.Identify.lore).
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/bard_lore"), (player, c) -> {
             if (Progression.classOf(player) == DndCharacter.BARD && Progression.current(player).hasSubclass(LORE)) {
                 c.skillBonus(Skill.PERSUASION, BARDIC_LORE_PERSUASION, "Bardic Lore");

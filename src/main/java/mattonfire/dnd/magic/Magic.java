@@ -38,6 +38,9 @@ public final class Magic {
         MagicItemLootFunction.register();
         Attunement.register();
         ForgeBlessing.register();
+        Curse.register();
+        Identify.register();
+        RemoveCurse.register();
         registerEffects();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> MagicCommand
                 .register(dispatcher));

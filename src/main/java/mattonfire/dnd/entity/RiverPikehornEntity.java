@@ -48,6 +48,8 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
             .part("tail", "tail1", "tail2")
             .pair("wing", "wing_left", "wing_membrane_left", "wing_cont_left");
     private final DragonPart[] parts;
+    /** DEX save DC against the breath. */
+    public static final int BREATH_SAVE_DC = 10;
     private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(RiverPikehornEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(RiverPikehornEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
     private final FireBreath fireBreath;
@@ -67,6 +69,11 @@ public class RiverPikehornEntity extends TameableEntity implements GeoEntity, Mu
     protected void initDataTracker() {
         super.initDataTracker();
         FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
+    }
+
+    @Override
+    public int getBreathSaveDc() {
+        return BREATH_SAVE_DC;
     }
 
     @Override

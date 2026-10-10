@@ -75,7 +75,12 @@ public final class D20 {
         }
     }
 
+    /** Dev only: every d20 lands on this (1-20), set by the DevScript {@code d20} step; 0 = random. */
+    public static volatile int devForcedRoll = 0;
+
     public static int d20(PlayerEntity player) {
+        if (devForcedRoll > 0 && net.fabricmc.loader.api.FabricLoader.getInstance().isDevelopmentEnvironment())
+            return devForcedRoll;
         return 1 + player.getRandom().nextInt(20);
     }
 
@@ -98,6 +103,9 @@ public final class D20 {
         if (!(player instanceof ServerPlayerEntity serverPlayer)) {
             return;
         }
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[D20] {} {}: natural {} + {} = {} vs DC {} -> {}",
+                player.getName().getString(), roll.skill(), roll.natural(), roll.modifier(), roll.total(), roll.dc(),
+                roll.outcome());
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         roll.write(buf);
         buf.writeText(detail);

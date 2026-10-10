@@ -73,6 +73,8 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
  *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
+ * <li>{@code d20 <1-20>|off} makes every d20 roll land on that number (singleplayer: the integrated server shares
+ *     the setting), e.g. {@code d20 20} to force a crit; rolls are logged with a [D20] prefix</li>
  * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
  *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
  * </ul>
@@ -255,6 +257,8 @@ public final class DevScript {
                 }
             }
             case "skill" -> skill(argument.split("\\s+"), lineNumber);
+            case "d20" -> mattonfire.dnd.classes.SkillChecks.D20.devForcedRoll = argument.equals("off") ? 0
+                    : Integer.parseInt(argument);
             case "tooltips" -> {
                 java.util.List<ItemStack> hotbar = new java.util.ArrayList<>();
                 for (int i = 0; i < 9; i++) {

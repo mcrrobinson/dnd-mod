@@ -1,0 +1,72 @@
+# Verifies the rest of the magic-foundation PR: +N bow arrows, Wizard Helmet / water bottle tooltips,
+# the +N attack-roll modifier on a forced crit, and the four magic/<tier> loot tables.
+# timeout 400 ./gradlew runClient -PdevScript=devscripts/magic-verify.txt
+wait 40
+closescreen
+/dndclass set @s wizard
+wait 40
+closescreen
+/gamemode survival
+/clear @s
+/time set day
+/effect clear @s
+/tp @s 0.5 150 0.5 0 0
+/setblock 0 149 0 minecraft:glass
+/give @s minecraft:bow
+/dndmagic give @s minecraft:bow rare 2
+/give @s dndclasses:wizard_helmet
+/give @s minecraft:potion{Potion:"minecraft:water"}
+/dndmagic give @s minecraft:diamond_sword rare 2
+/give @s minecraft:diamond_sword
+/give @s minecraft:arrow 64
+wait 10
+# Plain bow: arrow damage 2.0
+look 0 -60
+hotbar 0
+wait 5
+holduse on
+wait 25
+holduse off
+wait 1
+/data get entity @e[type=minecraft:arrow,limit=1,sort=nearest] damage
+/kill @e[type=minecraft:arrow]
+# +2 bow: 2.0 * 1.2 = 2.4
+hotbar 1
+wait 5
+holduse on
+wait 25
+holduse off
+wait 1
+/data get entity @e[type=minecraft:arrow,limit=1,sort=nearest] damage
+/kill @e[type=minecraft:arrow]
+tooltips 2 3
+wait 10
+screenshot magic-verify-helmet-water
+closescreen
+# Forced natural 20 against a frozen zombie: Wizard bonus 3, +2 sword shows 5
+d20 20
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}]}
+look 0 10
+hotbar 4
+wait 30
+attack
+wait 4
+screenshot magic-verify-crit-plus2
+hotbar 5
+wait 40
+attack
+wait 4
+screenshot magic-verify-crit-plain
+d20 off
+/kill @e[type=minecraft:zombie,distance=..10]
+/clear @s
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/very_rare
+/loot give @s loot dndclasses:magic/legendary
+wait 10
+tooltips 0 1 2 3
+wait 10
+screenshot magic-verify-loot-tiers
+closescreen
+quit

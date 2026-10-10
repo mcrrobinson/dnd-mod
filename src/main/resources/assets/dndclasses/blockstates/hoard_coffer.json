@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "dndclasses:block/hoard_coffer" },
+    "facing=east": { "model": "dndclasses:block/hoard_coffer", "y": 90 },
+    "facing=south": { "model": "dndclasses:block/hoard_coffer", "y": 180 },
+    "facing=west": { "model": "dndclasses:block/hoard_coffer", "y": 270 }
+  }
+}

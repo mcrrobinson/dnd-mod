@@ -1,5 +1,5 @@
 # Quests
-Quests are multi-step stories written as data files. A quest has stages, each stage has objectives (slay, find, speak with, gather, deliver, pass a check, defend), and finishing a stage moves the story on. If you're in a party, everyone nearby shares the quest: anyone's kills count for all, and every participant gets the full reward. This page covers the engine and its commands. NPC dialogue, the Journal screen and the launch quest chains come in later tickets; until then quests are started and handed in with `/quest admin`.
+Quests are multi-step stories written as data files. A quest has stages, each stage has objectives (slay, find, speak with, gather, deliver, pass a check, defend), and finishing a stage moves the story on. If you're in a party, everyone nearby shares the quest: anyone's kills count for all, and every participant gets the full reward. This page covers the engine and its commands. NPCs offer quests, take hand-ins and pay rewards through [NPC dialogue](dialogue.md); the Journal screen and the launch quest chains come in later tickets.
 
 ![Chat after a party's shared quest: progress, "Quest complete", and both players paid in full](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/quest-engine/quest-lan-host-rewarded.png)
 
@@ -14,7 +14,7 @@ Quests are multi-step stories written as data files. A quest has stages, each st
 | `talk` | a participant speaks with an NPC with the role |
 | `collect` | the participant handing in at the quest's giver has the items (`consume` takes them) |
 | `deliver` | a participant gives the items to an NPC with the role (always taken; can be handed in a few at a time) |
-| `check` | a participant passes a d20 check in dialogue (stub: nothing offers checks yet) |
+| `check` | a participant passes a d20 check offered in [dialogue](dialogue.md) |
 | `defend` | a goblin raid on that kind of settlement (`hobbit_village`, `dwarven_fortress`) is won with a participant taking part |
 
 - **Quest drops**: a `kill` objective can have a `quest_drop`, an item that drops from matching kills with a chance. It only drops for quest participants, only the killer can pick it up, and it vanishes after 2 minutes, so it can't be farmed outside the quest.
@@ -77,22 +77,20 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
 }
 ```
 
-- `chain` defaults to the id's folder (`dndclasses:goblin_menace`). `giver` is an NPC role; leave it out to pay rewards at once. `requires` and `rumour_weight` are for dialogue and Rumour notices (later tickets).
+- `chain` defaults to the id's folder (`dndclasses:goblin_menace`). `giver` is an NPC role; leave it out to pay rewards at once. `requires` decides what dialogue offers; `rumour_weight` is for Rumour notices (later ticket).
 - Objective fields: `kill` (`entity` id or `#tag`, `count`, `within_structure`, `quest_drop`), `visit` (`structure` id or `#tag`), `talk` (`role`), `collect` (`item` id or `#tag`, `count`, `consume`, default true), `deliver` (`item`, `count`, `role`), `check` (`skill`, `dc`), `defend` (`settlement`). Every objective takes an optional `text`.
 - Actions: `give` (`item`, `count`, `nbt` as SNBT), `loot` (`table`), `magic_item` (`rarity`: `common`, `uncommon`, `rare`, `very_rare`, `legendary`), `emeralds` (`count`), `xp` / `class_xp` (`amount`), `rep` (`factions`: id to delta), `reveal` (`structure`, `radius` in chunks, default 100, `fallback` text), `narrate` (`text`), `start_quest` (`quest`), `set_flag` (`flag`), `advancement` (`advancement`).
 - `magic_item` rolls from the loot table `dndclasses:gameplay/quest_reward_<rarity>`: a weapon or armour piece made a magic item of that rarity (identified) with the `dndclasses:magic_item` loot function. Edit those tables to change the pool.
 
 ## Known limitations
-- No NPC dialogue yet: nobody offers quests or pays rewards in-game, so quests are started and handed in with `/quest admin` (`start`, `talk`).
 - No Journal or tracker HUD yet; the client receives the quest data (`dndclasses:quest_sync`) but only logs it.
-- `check` objectives have no d20 roll yet: dialogue will offer them.
 - Dev clients get a random player name each launch, so per-player quest state seems to vanish between runs; pass `-PdevUser=<name>` to keep one.
 
 ## For developers
 - Package `mattonfire.dnd.quest`:
   - `Quests`: server-data reload listener for `quests/**.json`.
   - `QuestDefinition`, `QuestStage`, `QuestObjective` (sealed: `Kill`, `Visit`, `Talk`, `Collect`, `Deliver`, `Check`, `Defend`) and `QuestAction` (sealed, one record per action) parse the files. `QuestJson` has the shared parsing helpers and id-or-tag matchers.
-  - `QuestManager` (`PersistentState` `dndclasses_quests`): instances, per-player finished quests, tracked quest and pending actions (rewards at the giver, missed stage actions). Its API for the next tickets: `whyCantStart`, `start`, `join`, `talkedTo(player, role)` (dialogue calls this), `checkPassed(player, skill)`, `claim`.
+  - `QuestManager` (`PersistentState` `dndclasses_quests`): instances, per-player finished quests, tracked quest and pending actions (rewards at the giver, missed stage actions). Its API for the next tickets: `whyCantStart`, `start`, `join`, `talkedTo(player, role)` (dialogue calls this; returns a `TalkResult`), `hasBusinessWith`, `checkPassed(player, skill)`, `claim`.
   - `QuestEvents`: kill hook (`AFTER_KILLED_OTHER_ENTITY`, pets credit their owner), visit tick, `onRaidWon` (called from `GoblinRaid.win`), `onPartyLeft` (called from `/party leave` and `/party kick`).
   - `QuestSync` (S2C `dndclasses:quest_sync`, debounced to once a second) and `client/ClientQuests` (the data the Journal will read).
   - `QuestHooks`: `magicItem` (set by the magic items ticket) and `ignored` (`DungeonMaster::isDm`: DMs in DM mode never join quests or make progress).

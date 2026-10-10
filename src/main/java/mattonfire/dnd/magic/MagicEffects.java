@@ -87,6 +87,7 @@ public final class MagicEffects {
     }
 
     public static void onKill(ServerPlayerEntity player, LivingEntity killed, DamageSource source) {
+        Curse.onKill(player, killed, source);
         for (Active a : active(player))
             a.effect().onKill(player, a.stack(), killed, source);
     }
@@ -94,6 +95,8 @@ public final class MagicEffects {
     /** Once a second: item ticks, and the item attribute bonuses put on or taken off. */
     public static void secondTick(ServerPlayerEntity player) {
         Attunement.secondTick(player);
+        Identify.secondTick(player);
+        Curse.secondTick(player);
         List<Active> active = active(player);
         for (Active a : active)
             a.effect().secondTick(player, a.stack());

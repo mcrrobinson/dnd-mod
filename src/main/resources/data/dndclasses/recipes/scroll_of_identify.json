@@ -1,0 +1,13 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "category": "misc",
+    "ingredients": [
+        { "item": "minecraft:paper" },
+        { "item": "minecraft:lapis_lazuli" },
+        { "item": "minecraft:amethyst_shard" }
+    ],
+    "result": {
+        "item": "dndclasses:scroll_of_identify",
+        "count": 2
+    }
+}

@@ -18,7 +18,7 @@ Each trap has one **trigger tile** (`dndclasses:trap_trigger`) that looks like t
 - Traps are set off by survival/adventure players, mobs and dropped items standing on a tile. Creative and spectator players don't set them off. An arrow (or any projectile) that hits a tile sets the trap off too.
 - The darts can't be picked up. Rogues still dodge them with Danger Sense, and the Rogue's poison immunity applies.
 - Saves use the save lane (the [saving throws](saving-throws.md) API, with the `trap` tag for advantage filters). One save per trap per victim, even if the trap hits several times.
-- A trap goes off once and is then **spent**. Spent and disarmed traps **re-arm** when the dungeon is reset (`/dungeon reset`, and later repopulation): within a second of the trap's chunk being loaded, a pit's floor comes back and the tile rises again.
+- A trap goes off once and is then **spent**. Spent and disarmed traps **re-arm** when the dungeon is reset (`/dungeon reset`, or natural repopulation; see [Dungeon loot](dungeon-loot.md)): within a second of the trap's chunk being loaded, a pit's floor comes back and the tile rises again.
 
 ### Spotting
 Every half second, each player within 6 blocks of an armed trap is checked by the `TrapSense` rule. If they spot it, its tiles (or the needle's chest) are outlined in orange dust that only they can see, and the first time they're told "You spot a dart trap" on the action bar. By default:
@@ -39,7 +39,7 @@ The trap corridor of every dungeon (room 3 on the Crypt's route), on rows 3-12 o
 Only dungeons generated after this change have traps. Corridors generated before it stay empty.
 
 ## Commands
-- `/dungeon reset` re-arms every spent or disarmed trap (as each one's chunk loads).
+- `/dungeon reset` (and natural repopulation) re-arms every spent or disarmed trap (as each one's chunk loads).
 - `/dungeon tier <1-4>` changes the trap DCs and damage.
 - `/execute if block <x y z> dndclasses:trap_trigger[armed=true]` tests a trap; `/data get block <x y z>` shows its kind, links and state.
 - `/dndclass forceroll` rigs the next d20 (for testing disarms and saves).
@@ -56,7 +56,7 @@ None.
 ## For developers
 - Blocks: `classes/Blocks/TrapTriggerBlock` (+ `TrapTriggerBlockEntity`, all the trap logic), `DartLauncherBlock`, `FlameVentBlock`, `CrumblingFloorBlock`, `TrapKind`, registered in `TrapBlocks`. All are unbreakable and drop nothing.
 - Block entity NBT: `Kind` (dart/flame/pit/needle), `StartKey`, `Tier`, `Armed`, `Disarmed`, `SpentAt` (the dungeon's reset count when spent), `Linked` (launchers, vents, the chest), `Crumbles`, `Ladder`, plus running effects.
-- Re-arming: `DungeonState.resets()` goes up on every `reset()`. A trap whose `SpentAt` differs re-arms itself. Repopulation that goes through `reset()` re-arms traps for free.
+- Re-arming: `DungeonState.resets()` goes up on every `reset()`. A trap whose `SpentAt` differs re-arms itself. Repopulation (`DungeonRegistry.repopulate`, used by both the timed repopulation and `/dungeon reset`) calls `reset()`, so it re-arms traps too.
 - Disarm and needles: `classes/SkillChecks/TrapDisarm` (label `D20.DISARM`, Thieves' Tools). `Lockpicking` calls `TrapDisarm.lockFailed` / `lockForced`.
 - Spotting rule: `TrapSense.set(...)` replaces the default.
 - Generation: `TrapCorridorPiece` lays out the traps from the piece seed. `DungeonPiece.Builder.chest` adds needles at T2+.

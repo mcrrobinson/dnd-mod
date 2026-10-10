@@ -1,0 +1,10 @@
+{
+  "role": "hobbit_elder",
+  "greeting": {
+    "default": "dialogue.dndclasses.hobbit_elder.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.hobbit_elder.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.hobbit_elder.greeting.friendly",
+    "honored": "dialogue.dndclasses.hobbit_elder.greeting.honored",
+    "exalted": "dialogue.dndclasses.hobbit_elder.greeting.exalted"
+  }
+}

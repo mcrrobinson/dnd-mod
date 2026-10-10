@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
 import mattonfire.dnd.classes.DnDClasses;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.entity.BlockEntity;
 import mattonfire.dnd.world.gen.dungeon.DungeonPiece;
 import mattonfire.dnd.world.gen.dungeon.DungeonStructure;
@@ -43,6 +44,11 @@ public class DungeonRegistry extends PersistentState {
     public static final TagKey<Structure> DUNGEONS = TagKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "dungeons"));
 
     private static final int WARD_SEARCH_CHUNKS = 4;
+    /** A cleared dungeon fills up again after 7 in-game days (on the game clock or the day clock)... */
+    public static final long REPOPULATE_TICKS = 7L * 24000L;
+    /** ...once nobody has been inside it for 30 s. */
+    public static final long REPOPULATE_EMPTY_TICKS = 600L;
+    private static final int REPOPULATE_CHECK_INTERVAL = 100;
 
     private final Map<Long, DungeonState> dungeons = new HashMap<>();
 
@@ -248,7 +254,55 @@ public class DungeonRegistry extends PersistentState {
     /** Clears the dungeon (boss down, every room open) and tells everyone listening. */
     public static void clear(ServerWorld world, DungeonState state) {
         state.markCleared(world.getTime());
+        state.setClearedAtDay(world.getTimeOfDay());
         DungeonEvents.CLEARED.invoker().onCleared(world, state, playersInside(world, state));
+    }
+
+    /**
+     * Ticks until a cleared dungeon may repopulate (0 = due, once it's empty), or -1 if it isn't
+     * cleared. Counts on both the game clock and the day clock, so sleeping and {@code /time add}
+     * bring it closer.
+     */
+    public static long repopulatesIn(ServerWorld world, DungeonState state) {
+        if (!state.isCleared()) {
+            return -1L;
+        }
+        long elapsed = world.getTime() - state.clearedAt();
+        if (state.clearedAtDay() >= 0) {
+            elapsed = Math.max(elapsed, world.getTimeOfDay() - state.clearedAtDay());
+        }
+        return Math.max(0L, REPOPULATE_TICKS - elapsed);
+    }
+
+    /**
+     * Fresh monsters and a fresh boss: every room back to UNTOUCHED (traps and the puzzle hook in
+     * through {@link DungeonEvents#REPOPULATED}). Hoard Coffer claims stay, so players who already
+     * had their roll get the salvage roll after the next clear. Also what {@code /dungeon reset} does.
+     */
+    public static void repopulate(ServerWorld world, DungeonState state) {
+        state.reset();
+        DnDClasses.LOGGER.info("[Dungeon] {} repopulated (cleared {} time(s) so far)", state.startKey(), state.clears());
+        DungeonEvents.REPOPULATED.invoker().onRepopulated(world, state);
+    }
+
+    /** Every few seconds: repopulates cleared dungeons whose time is up and that have stood empty a while. */
+    public static void register() {
+        ServerTickEvents.END_WORLD_TICK.register(world -> {
+            if (world.getTime() % REPOPULATE_CHECK_INTERVAL != 0) {
+                return;
+            }
+            DungeonRegistry registry = world.getPersistentStateManager().get(DungeonRegistry::fromNbt, ID);
+            if (registry == null) {
+                return;
+            }
+            for (DungeonState state : registry.all()) {
+                if (state.isCleared() && repopulatesIn(world, state) == 0L
+                        && world.getTime() - state.lastOccupied() >= REPOPULATE_EMPTY_TICKS
+                        && playersInside(world, state).isEmpty()) {
+                    repopulate(world, state);
+                }
+            }
+        });
     }
 
     /** A ward saw players in the dungeon at {@code time}. */

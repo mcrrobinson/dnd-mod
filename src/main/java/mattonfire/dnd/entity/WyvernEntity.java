@@ -63,6 +63,8 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
             // Server-side parts follow these, in step with the client (see DragonFlightAnimation)
             .animations(DragonFlightAnimation.NAMES);
     private final DragonPart[] parts;
+    /** DEX save DC against the breath (Wyvern, Ember Wyvern and Bone Wyvern). */
+    public static final int BREATH_SAVE_DC = 12;
     private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
     private static final TrackedData<Byte> BODY_ANIMATION = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -162,6 +164,11 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
     /** Ticks after a fire breath ends before the next attack. */
     public int getBreathCooldown() {
         return 60;
+    }
+
+    @Override
+    public int getBreathSaveDc() {
+        return BREATH_SAVE_DC;
     }
 
     @Override

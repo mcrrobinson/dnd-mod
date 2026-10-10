@@ -2,10 +2,12 @@ package mattonfire.dnd.entity;
 
 import java.util.UUID;
 
+import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.particle.ModParticles;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
@@ -45,6 +47,9 @@ public class FireBreath {
     protected static final double CONE_TAN = Math.tan(Math.toRadians(10.0));
     // How far the aim moves towards the target each tick while breathing (0..1)
     private static final float TRACKING = 0.12F;
+    /** Seconds alight after a hit, and after a hit on a successful DEX save. */
+    public static final int BURN_SECONDS = 5;
+    public static final int BURN_SECONDS_SAVED = 2;
 
     protected final TameableEntity dragon;
     private final DragonPart head;
@@ -170,11 +175,41 @@ public class FireBreath {
                 0.5F + this.dragon.getRandom().nextFloat() * 0.2F);
     }
 
-    /** Something caught in the cone (damage cooldowns limit how often this lands). */
+    /**
+     * Something caught in the cone (damage cooldowns limit how often this lands). It makes a DEX save once per
+     * breath: a success halves the damage and burns for {@link #BURN_SECONDS_SAVED} instead of
+     * {@link #BURN_SECONDS}.
+     */
     protected void hit(LivingEntity living) {
-        if (living.damage(this.dragon.getDamageSources().create(DamageTypes.IN_FIRE, this.dragon), this.damage)) {
-            living.setOnFireFor(5);
+        DamageSource source = this.dragon.getDamageSources().create(DamageTypes.IN_FIRE, this.dragon);
+        if (DragonSaves.isUnaffected(living, source)) {
+            return;
         }
+        SaveResult save = this.save(living);
+        if (living.damage(source, save.damage(this.damage))) {
+            living.setOnFireFor(save.succeeded() ? BURN_SECONDS_SAVED : BURN_SECONDS);
+        }
+    }
+
+    /** The victim's DEX save against this breath: rolled on the first hit, reused for the rest of the breath. */
+    protected SaveResult save(LivingEntity living) {
+        return DragonSaves.save(living, this.dragon, this.saveLabel(), this.saveDc(), this.saveEffect(), "breath",
+                DragonSaves.BREATH_WINDOW);
+    }
+
+    /** The DEX save DC, from the dragon ({@link FireBreather#getBreathSaveDc()}). */
+    protected int saveDc() {
+        return this.dragon instanceof FireBreather breather ? breather.getBreathSaveDc() : WyvernEntity.BREATH_SAVE_DC;
+    }
+
+    /** What the save is called on the save lane. */
+    protected String saveLabel() {
+        return DragonSaves.FIRE_BREATH;
+    }
+
+    /** What a successful save does, shown on the save lane. */
+    protected String saveEffect() {
+        return DragonSaves.FIRE_BREATH_EFFECT;
     }
 
     /** Where the flame meets a block, every 5 ticks with mobGriefing on: sometimes lights a fire. */

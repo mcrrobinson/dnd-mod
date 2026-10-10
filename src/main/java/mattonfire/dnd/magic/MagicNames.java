@@ -103,6 +103,12 @@ public final class MagicNames {
                         .formatted(Formatting.GRAY));
             }
         }
+        Curse curse = Curse.byId(MagicData.curse(stack));
+        if (curse != null && MagicData.isCurseKnown(stack) && MagicData.isIdentified(stack)) {
+            lines.add(Text.translatable("magic.dndclasses.tooltip.cursed", curse.displayName())
+                    .formatted(Formatting.DARK_RED));
+            lines.add(Text.literal("  ").append(curse.description()).formatted(Formatting.GRAY, Formatting.ITALIC));
+        }
         if (MagicData.isForgeBlessed(stack))
             lines.add(Text.translatable("magic.dndclasses.tooltip.forge_blessing").formatted(Formatting.GOLD));
         return lines;

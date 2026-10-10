@@ -69,16 +69,31 @@ The rest is **interrupted**, and you keep nothing (it doesn't use up a short res
 
 Sneak + right-click the campfire again to get up. A rest is refused, with the reason on the action bar, when there are monsters near, a boss bar is up, you've already had **2 short rests** since your last long rest ("You've had 2 short rests: you need a long rest first."), or it's been under **3 minutes** since your last one ended ("You can short rest again in 2:41"). The 3 minutes are counted on the world clock, so they carry over a server restart. A long rest resets the count of 2 but not the 3-minute wait.
 
+### Long rests in beds
+**Sleep in a bed** at night (or in a thunderstorm) to take a long rest. You get the long rest benefits above: full health, mana and charges, half your Hit Dice back, the short-rest count reset and Poison, Wither, Hunger, Weakness, Slowness and Mining Fatigue cleared. Chat says "Long rest: health, mana and charges restored".
+
+You get it when either:
+- the **night is skipped** while you're fully asleep (5 s in bed, as vanilla needs), or
+- you've been asleep **20 seconds**. This is for servers where not enough players sleep to skip the night (`playersSleepingPercentage`): lie in bed for 20 s and you get the rest while the night carries on. A bar fills left of the charge gems while you sleep.
+
+Everyone who was fully asleep when the night was skipped gets the rest. Players who stayed up don't.
+
+- **Once per in-game day.** The rest counts for the day you got into bed, so sleeping every night works (the night of day N counts as day N, the next night is day N+1). A second sleep the same day says "You've already had a long rest today." You can still sleep and skip the night as usual; you just don't rest.
+- **Woken up early:** getting up after you've fallen asleep, before the rest is done, gives nothing ("You got up before you'd rested: no long rest."). Taking damage wakes you with nothing too ("You were woken up: no long rest.").
+- **Refused** (with the reason in chat) while you're Downed, while a party member within 32 blocks is Downed, during a boss fight, and inside a dungeon whose boss is alive. These are checked when you get into bed and again when the rest completes. Vanilla still keeps you out of bed with monsters within 8 blocks.
+
 ### Dungeons
 Inside a dungeon whose boss is still alive (`DungeonRegistry.isInsideUncleared`), long rests are refused and short rests are only allowed in the Entrance, the Antechamber and rooms you've cleared: "This place is too dangerous to rest."
 
 ## Where to find it
 - Short rests: any lit campfire (above).
-- `/dndclass rest` for admins. Bed and tavern long rests and party camps are coming.
+- Long rests: any bed, at night.
+- `/dndclass rest` for admins. Tavern rooms and party camps are coming.
 
 ## Commands
 Permission level 2.
 - `/dndclass rest <player> short|long`: gives the player that rest's benefits, ignoring its limits. It still counts towards them (a long rest uses up today's).
+- `/dndclass rest <player> allow`: forgets the player's last long rest, so they can take another today.
 - `/dndclass charges <player> [n]`: prints charges, recharge group, Hit Dice and short rests left; with `n`, sets the charges (capped at the max).
 - `/dndclass hitdice <player> [n]`: prints the same; with `n`, sets the Hit Dice left (capped at the pool).
 
@@ -90,7 +105,7 @@ Permission level 2.
 
 ## Known limitations
 - No sitting pose yet: you stand still while resting.
-- Long rests only come from `/dndclass rest` so far.
+- With `doDaylightCycle false` a skipped night still wakes everyone (vanilla) and the sleepers who were fully asleep get their rest, even though the clock doesn't move.
 - Level-ups raise your max but don't hand out the new charge; rest to fill it.
 
 ## For developers
@@ -99,6 +114,9 @@ Permission level 2.
   - `Charges`: the max table, `cost(node)` (`SkillNode.chargeCost()` unless `Charges.overrideCost(id, n)` replaced it), `canAfford`, `spend` (temporary charges first), `restore`, `set`, the trickle.
   - `Rests`: `canShortRest` / `canLongRest` return a refusal `Text` or null; `complete(player, kind, source[, companions, startedDay])` applies the benefits without checking limits. A bed rest that skips the night should pass the evening's day as `startedDay`.
   - `RestEvents.AFTER_REST` (items that recharge on a rest, quests) and `RestEvents.ALLOW_REST` (refuse a rest with a reason: dungeons, downed players, curses).
+  - `BedRest`: bed long rests. `EntitySleepEvents.START_SLEEPING` checks `Rests.canLongRest` and starts an in-memory session (`UUID -> session`: rule, day it started, ticks asleep), ticked from `END_SERVER_TICK`; the rest completes at the rule's ticks asleep (`BED_TICKS`, 400) or, via `ServerWorldMixin` on `wakeSleepingPlayers` HEAD (`BedRest.onSleepersWoken`), when the night is skipped with the player fully asleep (100 ticks). `STOP_SLEEPING` and `ServerLivingEntityEvents.ALLOW_DAMAGE` end the session with nothing. Completion re-asks `Rests.canLongRest(player, startedDay)` and calls `Rests.complete(..., startedDay)`.
+  - `BedRest.RULE`: an event asked when a player gets into bed; return a `BedRest.Rule(source, asleepTicks)` to make that bed a different rest (the tavern Room Key: `TAVERN`, 200 ticks), or null for the default `Rule.BED`. `BedRest.isResting(player)`.
+  - `Rests.canLongRest(player, startedDay)`, `Rests.tryLongRest(player, source)` (a long rest now with no sleeping or time skip, if allowed: tavern rooms, camps, a DM tool), `Rests.lastLongRestDay(player)`, `Rests.forgetLongRest(player)`.
   - `HitDice`: die sizes and spending. `HitDice.conModifier` adds the CON modifier from the [character sheet](ability-scores.md) to each die.
   - `RestSync`: S2C `dndclasses:rest_state` with a `RestSnapshot` (also `RestSnapshot.client`), sent on join, respawn, every change and once a second if something moved. `RestSync.setSession` / `clearSession` show a rest in progress as a bar left of the gems.
   - `DndRules`: the five gamerules.
@@ -109,4 +127,4 @@ Permission level 2.
 - `ClassSkills` hooks: `rechargeGroup()`, `shortRestCharges(player, state, max)` (Wizard overrides it), `onShortRest(player, companions)`.
 - `DnDClasses.sendPowerupPacket` checks `Charges.canAfford` after the mana check and calls `Charges.spend` on success. `ClassLifecycle.change` calls `Charges.onClassChange`.
 - HUD: `Client/Hud/PowerupOverlay.renderCharges`, textures `textures/power/charge_full|empty|temp.png`.
-- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-party-host.txt` + `rests-party-guest.txt` (two clients: resting together, Song of Rest from a party Bard), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).
+- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-party-host.txt` + `rests-party-guest.txt` (two clients: resting together, Song of Rest from a party Bard), `devscripts/rests-long-bed.txt` (bed rest through the night, "already rested", the next night, woken by damage, Downed), `devscripts/rests-long-bed-lan-host.txt` + `rests-long-bed-lan-guest.txt` (two clients on port 25614: the 20 s rest without a night skip, the guest's rest on the skip, a Downed party member refuses it), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).

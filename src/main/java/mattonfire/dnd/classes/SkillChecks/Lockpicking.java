@@ -129,7 +129,16 @@ public final class Lockpicking {
                 && !path.equals("chests/spawn_bonus_chest");
     }
 
+    /**
+     * Dungeon chests ({@code dndclasses:chests/dungeon/..._t<tier>}) use their tier's DC, 12/13/15/17
+     * (+2 in a side vault, see {@link mattonfire.dnd.dungeon.DungeonLoot#lockDc}); the hard hoards 15;
+     * everything else 10.
+     */
     public static int dcFor(Identifier table) {
+        Integer dungeon = mattonfire.dnd.dungeon.DungeonLoot.lockDc(table);
+        if (dungeon != null) {
+            return dungeon;
+        }
         return HARD_TABLES.contains(table.toString()) ? HARD_DC : DC;
     }
 

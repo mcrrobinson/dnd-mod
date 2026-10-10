@@ -17,6 +17,7 @@ import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
 import mattonfire.dnd.magic.Attunement;
 import mattonfire.dnd.magic.AttunementSnapshot;
+import mattonfire.dnd.magic.Curse;
 import mattonfire.dnd.magic.MagicData;
 import mattonfire.dnd.magic.MagicItemLootFunction;
 import mattonfire.dnd.magic.MagicItems;
@@ -44,13 +45,18 @@ import net.minecraft.util.Identifier;
  *                                  ignores the table and curses)
  * /dndmagic bonds &lt;player&gt;      (lists the bonds and slots)
  *
- * Given items are identified unless "unidentified" is added. Later tickets add curse and uncurse.
+ * /dndmagic curse &lt;player&gt; &lt;curse&gt; [known]   (curses the main-hand item; unknown unless "known")
+ * /dndmagic uncurse &lt;player&gt;    (lifts the main-hand item's curse; its cursed bond becomes a normal one)
+ *
+ * Given items are identified unless "unidentified" is added.
  */
 public final class MagicCommand {
     private static final DynamicCommandExceptionType UNKNOWN_ITEM = new DynamicCommandExceptionType(
             id -> Text.literal("Unknown item: " + id));
     private static final DynamicCommandExceptionType UNKNOWN_TIER = new DynamicCommandExceptionType(
             id -> Text.literal("Unknown tier: " + id + " (common, uncommon, rare, very_rare, legendary)"));
+    private static final DynamicCommandExceptionType UNKNOWN_CURSE = new DynamicCommandExceptionType(
+            id -> Text.literal("Unknown curse: " + id + " (bloodthirst, frailty, ill_omen, beacon, sun_sick, gluttony)"));
     private static final SimpleCommandExceptionType EMPTY_HAND = new SimpleCommandExceptionType(
             Text.literal("Hold the item in your main hand."));
 
@@ -78,6 +84,16 @@ public final class MagicCommand {
                 .then(CommandManager.literal("identify")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(MagicCommand::identify)))
+                .then(CommandManager.literal("curse")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.argument("curse", StringArgumentType.word())
+                                        .suggests((c, b) -> CommandSource.suggestMatching(
+                                                Arrays.stream(Curse.values()).map(k -> k.id), b))
+                                        .executes(c -> curse(c, false))
+                                        .then(CommandManager.literal("known").executes(c -> curse(c, true))))))
+                .then(CommandManager.literal("uncurse")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(MagicCommand::uncurse)))
                 .then(CommandManager.literal("attune")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(MagicCommand::attune)))
@@ -132,6 +148,39 @@ public final class MagicCommand {
         ItemStack stack = held(context);
         MagicData.setIdentified(stack, true);
         context.getSource().sendFeedback(Text.literal("Identified: ").append(stack.toHoverableText()), true);
+        return 1;
+    }
+
+    private static int curse(CommandContext<ServerCommandSource> context, boolean known)
+            throws CommandSyntaxException {
+        ItemStack stack = held(context);
+        String id = StringArgumentType.getString(context, "curse");
+        Curse curse = Curse.byId(id);
+        if (curse == null)
+            throw UNKNOWN_CURSE.create(id);
+        if (MagicItems.info(stack) == null) {
+            context.getSource().sendError(Text.literal("Only magic items can be cursed (/dndmagic give it a tier)."));
+            return 0;
+        }
+        MagicData.setCurse(stack, curse.id);
+        MagicData.setCurseKnown(stack, known);
+        context.getSource().sendFeedback(Text.literal("Cursed ").append(stack.toHoverableText()).append(" with ")
+                .append(curse.displayName()), true);
+        return 1;
+    }
+
+    private static int uncurse(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        ItemStack stack = held(context);
+        if (MagicData.curse(stack).isEmpty()) {
+            context.getSource().sendError(Text.literal("That item isn't cursed."));
+            return 0;
+        }
+        Attunement.uncurseBond(player, stack);
+        MagicData.setCurse(stack, "");
+        MagicData.setCurseKnown(stack, false);
+        Attunement.removeCurseBinding(stack);
+        context.getSource().sendFeedback(Text.literal("Lifted the curse on ").append(stack.toHoverableText()), true);
         return 1;
     }
 

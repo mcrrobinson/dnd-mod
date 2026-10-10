@@ -129,7 +129,8 @@ public final class DiceRollHud {
         };
     }
 
-    private static void render(MatrixStack matrices, float tickDelta) {
+    /** Draws the current roll; also called by {@link DialogueScreen} so rolls show over its panel. */
+    static void render(MatrixStack matrices, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (roll == null || client.player == null) {
             return;

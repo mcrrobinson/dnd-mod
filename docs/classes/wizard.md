@@ -12,6 +12,8 @@ Picking the class sets your health to 10.
 
 **Elemental staffs.** Only Wizards can cast or hit with the [Staffs of Fire, Ice and Lightning](../items/staffs.md). Other classes get "Only Wizards can wield elemental staffs!".
 
+**Arcane training.** Every unidentified [magic item](../systems/magic-items.md#identification) that enters your inventory is identified within a second, curse included ("Your arcane training reveals: +2 Diamond Sword (Rare, cursed: Bloodthirst)"). It doesn't bind you, so you can check the party's loot.
+
 **Iron armor at most.** Any armor piece with more armor points than iron in its slot (diamond, netherite, the other classes' sets) is taken off into your inventory, or dropped if your inventory is full, with "Wizards can't wear armor heavier than iron!". The Wizard set is allowed.
 
 **Immune to Freeze**, so you can't freeze yourself with a [Staff of Ice](../items/staffs.md).

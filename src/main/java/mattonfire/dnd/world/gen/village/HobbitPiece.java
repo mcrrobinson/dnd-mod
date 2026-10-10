@@ -435,6 +435,13 @@ public abstract class HobbitPiece extends StructurePiece {
         }
 
         void hobbit(int x, int y, int z, EntityType<? extends HobbitEntity> type) {
+            this.hobbit(x, y, z, type, hobbit -> {
+            });
+        }
+
+        /** Places a hobbit and lets {@code setup} change it before it's added (e.g. the village elder). */
+        void hobbit(int x, int y, int z, EntityType<? extends HobbitEntity> type,
+                    java.util.function.Consumer<HobbitEntity> setup) {
             float yaw = this.random.nextFloat() * 360.0F;
             BlockPos pos = this.pos(x, y, z);
             if (!this.chunkBox.contains(pos)) {
@@ -447,6 +454,7 @@ public abstract class HobbitPiece extends StructurePiece {
             hobbit.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
             hobbit.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
             hobbit.setHome(pos);
+            setup.accept(hobbit);
             this.world.spawnEntityAndPassengers(hobbit);
         }
     }

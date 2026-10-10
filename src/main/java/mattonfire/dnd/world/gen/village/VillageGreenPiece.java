@@ -1,5 +1,8 @@
 package mattonfire.dnd.world.gen.village;
 
+import mattonfire.dnd.entity.HobbitEntity;
+import mattonfire.dnd.entity.ModEntityTypes;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -93,6 +96,8 @@ public class VillageGreenPiece extends HobbitPiece {
         b.hobbit(13, 1, 13);
         b.hobbit(8, 1, 13);
         b.hobbit(10, 1, 15);
+        // The Thain, the village elder who gives quests, holds court by the party tree.
+        b.hobbit(7, 1, 10, ModEntityTypes.HOBBIT, HobbitEntity::makeElder);
         if (b.chance(0.5F)) {
             b.hobbit(13, 1, 8);
         }

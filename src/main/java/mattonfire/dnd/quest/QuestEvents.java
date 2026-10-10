@@ -29,6 +29,7 @@ public final class QuestEvents {
 
     public static void register() {
         Quests.register();
+        mattonfire.dnd.quest.dialogue.DialogueEvents.register();
         ServerEntityCombatEvents.AFTER_KILLED_OTHER_ENTITY.register((world, killer, killed) -> {
             ServerPlayerEntity player = responsible(killer);
             if (player != null) {

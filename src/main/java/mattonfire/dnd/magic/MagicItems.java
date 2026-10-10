@@ -129,6 +129,8 @@ public final class MagicItems {
         }
         register(MagicItemDef.of(ModItems.CLOAK_OF_PROTECTION, MagicTier.UNCOMMON, MagicKind.WONDROUS, "cloak")
                 .withAttunement());
+        register(MagicItemDef.of(ModItems.SCROLL_OF_IDENTIFY, MagicTier.COMMON, MagicKind.SCROLL, "scroll"));
+        register(MagicItemDef.of(ModItems.SCROLL_OF_REMOVE_CURSE, MagicTier.RARE, MagicKind.SCROLL, "scroll"));
         register(MagicItemDef.of(Tavern.ALE, MagicTier.COMMON, MagicKind.CONSUMABLE, "drink"));
         // The 14 class armor sets: every ArmorItem the mod registers
         for (Item item : Registries.ITEM) {

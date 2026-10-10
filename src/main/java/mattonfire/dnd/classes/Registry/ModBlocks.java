@@ -6,6 +6,8 @@ import mattonfire.dnd.classes.Blocks.AttunementTableBlock;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlock;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
 import mattonfire.dnd.classes.Blocks.FastBrewingStandBlock;
+import mattonfire.dnd.classes.Blocks.HoardCofferBlock;
+import mattonfire.dnd.classes.Blocks.HoardCofferBlockEntity;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -42,6 +44,14 @@ public class ModBlocks {
                                         .suffocates((state, world, pos) -> false)
                                         .blockVision((state, world, pos) -> false));
 
+        /** A dungeon treasure vault's per-player loot coffer (see HoardCofferBlockEntity). Unbreakable. */
+        public static final HoardCofferBlock HOARD_COFFER = new HoardCofferBlock(
+                        FabricBlockSettings.of(Material.WOOD).strength(-1.0F, 3600000.0F).dropsNothing().nonOpaque()
+                                        .luminance(state -> 4).sounds(BlockSoundGroup.WOOD));
+
+        public static final BlockEntityType<HoardCofferBlockEntity> HOARD_COFFER_ENTITY = FabricBlockEntityTypeBuilder
+                        .create(HoardCofferBlockEntity::new, HOARD_COFFER).build(null);
+
         public static void registerBlocks() {
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "arcane_seal"), ARCANE_SEAL);
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "dungeon_ward"), DUNGEON_WARD);
@@ -55,5 +65,8 @@ public class ModBlocks {
                                 FAST_BREWING_STAND_BLOCK);
                 Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, "fast_brewing_stand"),
                                 new BlockItem(FAST_BREWING_STAND_BLOCK, new FabricItemSettings().maxCount(64)));
+                Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "hoard_coffer"), HOARD_COFFER);
+                Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, "hoard_coffer"),
+                                HOARD_COFFER_ENTITY);
         }
 }

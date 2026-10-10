@@ -3,7 +3,7 @@ Items have a D&D rarity, shown by the colour of their name: Common, Uncommon, Ra
 
 ![Tooltips of the Staff of Ice (Rare, Wizard only), a +2 Diamond Sword and an Unidentified Sword](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/magic-foundation/magic-tooltips-weapons.png)
 
-This page covers rarity tiers, item magic data, +N gear and attunement. Identification flows, curses and the named magic items come in later updates.
+This page covers rarity tiers, item magic data, +N gear, attunement, identification and curses. The named magic items come in a later update.
 
 ## How it works
 ### Rarity tiers
@@ -50,7 +50,65 @@ Any sword, axe, trident, bow, crossbow or armor piece can be magic gear:
 ### Unidentified items
 A stack can be unidentified. It's then named `Unidentified <type>` in its rarity colour (you can sense its power): Unidentified Sword, Axe, Bow, Crossbow, Trident, Helmet, Chestplate, Leggings, Boots, Staff, Potion, Instrument, Wondrous Item, and so on. Its tooltip says "Unidentified. Its magic sleeps." and nothing else about its magic.
 
-While unidentified the item only works as its base item: a +2 sword hits like a plain sword. `/dndmagic identify` wakes it up. Wizards identifying on pickup, the Scroll of Identify and paying for identification come in a later update.
+While unidentified the item only works as its base item: a +2 sword hits like a plain sword, a cloak gives no armor, and an elemental staff won't cast ("Unidentified. Its magic sleeps."). **Curses don't sleep**: see [Curses](#curses).
+
+### Identification
+Identifying an item wakes its magic and reveals its curse, if it has one. Chat shows what it is, e.g. `Your arcane training reveals: +2 Diamond Sword (Rare, cursed: Bloodthirst)`.
+
+| Way | How |
+|-|-|
+| **Wizard, Artificer, Lore Bard** | Every unidentified item that enters their inventory is identified within a second ("Your arcane training reveals: ..."). It doesn't bond them, so the party's Wizard can check the loot for everyone |
+| **Transmuter Alchemist** | The same, for potions only ("Your alchemist's eye reveals: ...") |
+| **Scroll of Identify** | Hold the scroll in one hand and the unidentified item in the other, then right-click. The scroll is used up only if it identifies something |
+| **Attunement Table** | The Items tab shows **Identify** next to every unidentified item. It spends a Scroll of Identify from your inventory ("Identifying an item at the table uses a Scroll of Identify. You have none.") |
+| **Short rest** | Finishing a [short rest](rests.md) identifies one item: the main hand's, else the offhand's, else the first one carried ("While you rest, you study your loot: ...") |
+| **Innkeeper** | At a Hobbit Tavern, hold emeralds in your main hand and the item in your offhand, then sneak + right-click the innkeeper. Price: Common 2, Uncommon 4, Rare 8, Very Rare 16, Legendary 32 emeralds. (A sage NPC will take this over once settlements have one) |
+| **Attuning**, or a curse binding | Both identify the item |
+
+**Scroll of Identify**: Common scroll, stacks to 16. Crafted shapeless from paper + lapis lazuli + amethyst shard, which makes 2.
+
+### Curses
+About 1 in 10 magic items from random loot is cursed, and you only find out when it's too late: an unidentified cursed item looks like any other.
+
+| Tier | Curse chance (random loot) |
+|-|-|
+| Common | 0% |
+| Uncommon, Rare | 10% |
+| Very Rare | 8% |
+| Legendary | 0% (only named items with a built-in curse) |
+
+Potions, drinks and scrolls are never cursed. Identified loot (bounty rewards) is only cursed when its loot table asks for it.
+
+**Binding.** A cursed item binds to you:
+- armor: as soon as you wear it,
+- anything else: once you've held it in your main hand or offhand for 3 seconds.
+
+Chat says `A curse takes hold: [+1 Iron Helmet] binds itself to you (Frailty). Only Remove Curse can break the bond.` The item is identified, its curse shows in its tooltip (`Cursed: Frailty` and what it does), and it takes one of your attunement slots, even if that puts you over your limit. Cursed armor also gets vanilla **Curse of Binding**, so it can't be taken off. A cursed bond **can't be unattuned or released** at the table (the Items tab shows it as `cursed`, with no button), and its drawback applies **while the bond lasts, wherever the item is**: throwing it in a chest doesn't help. Knowing an item is cursed doesn't protect you: equip it and it binds.
+
+| Curse | Drawback |
+|-|-|
+| Bloodthirst | Every 60 s without a hostile kill, you take 1 magic damage ("Your cursed blade thirsts for blood.") |
+| Frailty | -4 max health |
+| Ill Omen | Natural 1s **and 2s** fumble on every d20 roll (attacks, checks, lockpicking), and saving throws have disadvantage |
+| Beacon | Hostile mobs that can see you come for you from twice their follow range (up to 48 blocks), and chase you twice as far |
+| Sun-sick | Weakness I in daylight while outdoors (the sky above your head) |
+| Gluttony | Hunger drains 50% faster |
+
+### Remove Curse
+Remove Curse breaks a cursed bond. The item stays cursed and identified, but you're no longer bound to it: it's moved off your head or out of your hand into your inventory (or dropped if that's full), its Curse of Binding is gone and you can throw it away. Wear or hold it again and it binds again.
+
+- **Cleric**: sneak + right-click another player with an empty hand, or sneak + right-click the air with an empty hand to target yourself. It costs **6 mana** and rolls **d20 + 5** against the item's rarity, shown on the dice HUD (to the target too):
+
+  | Item tier | DC |
+  |-|-|
+  | Common, Uncommon | 10 |
+  | Rare | 13 |
+  | Very Rare | 16 |
+  | Legendary | 19 |
+
+  On a failure the mana is spent and the Cleric can try again after 60 s. It targets the cursed item in the target's main hand, else their first cursed bond. With no curse to break, nothing is spent.
+- **Scroll of Remove Curse**: Rare scroll. Right-click to read it on yourself: it breaks a curse on an Uncommon or Rare item for sure, and rolls d20 + 3 against the DC above for Very Rare and Legendary ones. It's used up either way, unless you carry no curse. It isn't sold or found anywhere yet (sages and stronghold libraries come later); get it with `/give @s dndclasses:scroll_of_remove_curse`.
+
 
 ### Attunement
 Strong magic items only work once you've **attuned** to them: bonded yourself to the item. On anyone else it's just its base item.
@@ -64,9 +122,9 @@ Strong magic items only work once you've **attuned** to them: bonded yourself to
 | Time | 3 seconds at the table, with a channel bar and enchanting glyphs. Moving more than 8 blocks from the table, or the item leaving its inventory slot, cancels it |
 | Class | an item made for certain classes (`requires attunement by a Cleric or Paladin`) can only be attuned by them. A **Thief** Rogue ignores this (Use Magic Device) |
 | Ownership | an item bonded to someone else can't be attuned ("That item is attuned to Steve.") |
-| Attuning | identifies the item (and will reveal a curse, once curses exist) |
+| Attuning | identifies the item and reveals its curse, which then binds you |
 | Where it must be | weapons and staffs: in the main hand. Armor: worn. Wondrous items (cloaks, rings, amulets, belts, wands): anywhere in your inventory, including the offhand |
-| Unattune | free at the table. A cursed bond can't be ended (curses update) |
+| Unattune | free at the table. A cursed bond can't be ended: only [Remove Curse](#remove-curse) breaks it |
 | Lost items | the bond stays when the item drops on death or goes into a chest, and works again when you pick it up. If it's gone for good, the tab lists the bond as **missing** with a **Release** button |
 | Death and relog | bonds are kept |
 | Anti-magic | in a Beholder's anti-magic cone every attuned item's magic is off (its bonuses come off at once and return within a second after the effect ends), and you can't attune |
@@ -96,7 +154,8 @@ A [Forge Domain Cleric](../classes/cleric.md)'s subclass feature. Once per long 
 
 ## Where to find it
 - The tier loot tables `dndclasses:magic/uncommon`, `magic/rare`, `magic/very_rare` and `magic/legendary` each give one unidentified +N item of that tier (iron/diamond swords, axes and armor, bows, crossbows and tridents; Legendary uses netherite). Nothing references them yet: chests, bosses and dungeons start pulling from them in later updates.
-- Try one with `/loot give @s loot dndclasses:magic/rare`.
+- Try one with `/loot give @s loot dndclasses:magic/rare`. About 1 in 10 Uncommon and Rare rolls is cursed.
+- Scroll of Identify: crafted (paper + lapis lazuli + amethyst shard, makes 2). Scroll of Remove Curse: `/give` only for now.
 
 ## Commands
 Operator only (permission level 2).
@@ -105,10 +164,14 @@ Operator only (permission level 2).
 |-|-|
 | `/dndmagic give <player> <item> [tier] [plus] [unidentified]` | Gives an identified magic item. `tier` is `common`, `uncommon`, `rare`, `very_rare` or `legendary` (overrides a registered item's tier); `plus` is 0-3 and only applies to weapons and armor (default 0). Add `unidentified` to give it unidentified. Example: `/dndmagic give @s minecraft:diamond_sword rare 2` |
 | `/dndmagic identify <player>` | Identifies the item in the player's main hand |
+| `/dndmagic curse <player> <curse> [known]` | Curses the main-hand item (`bloodthirst`, `frailty`, `ill_omen`, `beacon`, `sun_sick`, `gluttony`). The curse is hidden unless `known` is added. It binds whoever equips or holds it |
+| `/dndmagic uncurse <player>` | Lifts the main-hand item's curse for good. If the player is bound to it, the bond stops being cursed (or ends, for an item that doesn't need attunement) |
 | `/dndmagic info <player>` | Prints the main-hand item's tier, identified flag, +N, whether it's active for the player, and raw magic data |
 | `/dndmagic attune <player>` | Attunes the player to their main-hand item, with no table or channel (the slot, class and ownership checks still apply) |
 | `/dndmagic release <player> [all\|<n>]` | Ends the bond with the main-hand item, every bond, or bond `n` from `/dndmagic bonds`. Ignores the table and curses |
 | `/dndmagic bonds <player>` | Lists the player's bonds (`carried` or `missing`, `cursed`) and slots |
+
+`/dndmagic release` ignores curses, so an admin can always free a player.
 
 ## Known limitations
 - The item's true identity is in its NBT, which the client can see, so a modified client could read unidentified items.
@@ -117,6 +180,10 @@ Operator only (permission level 2).
 - Anti-magic turns off attunement items, but not the attribute bonus of +N gear (no attunement), which comes from the item itself and doesn't know who holds it. The +N attack-roll and arrow bonuses also stay on.
 - A bond released while its item was away stays written on the item until the owner carries it again (then it's cleared). Until then, someone else can only attune to it while the owner is online.
 - Two of the same attunement item don't stack.
+- Beacon doesn't yet make mobs spawn nearer at night; it only widens how far they notice and chase you.
+- Bloodthirst's 60 s timer restarts on a relog.
+- The Scroll of Remove Curse has no source yet, and the innkeeper stands in for the sage.
+- The scroll textures are placeholders.
 - The Cloak of Protection's texture is a placeholder.
 
 ## For developers
@@ -130,7 +197,11 @@ Operator only (permission level 2).
   - `ForgeBlessing`: the Forge Domain Cleric's blessing (`cleric.forge`): `forgeBlessing`, `forgeBy` (the Cleric) and `forgeKey` (`rest:<long rests so far>`, plus `/day:<day>` with rests off) on the item, the used key `dndForgeBlessingUsed` and the long-rest count `dndForgeLongRests` in the Cleric's persistent data, and a once-a-second check that ends stale blessings.
   - `MagicGear`: +N attribute modifiers through Fabric's `ModifyItemAttributeModifiersCallback`, the arrow damage multiplier and the attack-roll bonus.
   - `MagicNames`: the coloured / "+N" / "Unidentified" name and the tooltip line.
-  - `MagicItemLootFunction`: the loot function `dndclasses:magic_item`.
+  - `MagicItemLootFunction`: the loot function `dndclasses:magic_item`, and `rollCurse` (a def's `fixedCurse`, else the tier's chance).
+  - `Curse`: the 6 curses, the per-player cache of the curses in their bonds (`Curse.active` / `has`), bind-on-equip/hold (`secondTick`), the drawback hooks (Bloodthirst/Sun-sick/Beacon in `secondTick`, Frailty as a max-health modifier, Gluttony through `mixin/CurseExhaustionMixin`, Beacon's chase range through `mixin/TrackTargetGoalMixin`, Ill Omen through `D20.registerFumbleRange` and a disadvantage on all saves from the `dndclasses:curse/ill_omen` sheet contributor), and the Curse of Binding it adds (`addedBinding` on the item, so only that one is removed). Bonds store `curse` and `tier` next to `cursed`.
+  - `Identify`: the class lore (`lore(player)`), the once-a-second pickup scan, `reveal(player, stack, how)` (chat key `magic.dndclasses.identify.<how>`), the short-rest hook, the packet `identify_item {slot}` (table button, spends a scroll) and the innkeeper service (`InnkeeperEntity.interactMob`).
+  - `RemoveCurse`: the Cleric cast (`Misc/ClericHandler`'s `UseEntityCallback` for another player; the client's `mixin/RemoveCurseUseMixin` sends `remove_curse_self` for sneak + use on the air), the scroll, DCs and the retry timer. Rolls use `D20.REMOVE_CURSE` (`skill.dndclasses.remove_curse`). `Attunement.breakCurse` ends the bond and moves the item off the player.
+  - `items/ScrollItem`: Scroll of Identify and Scroll of Remove Curse.
 - `mixin/ItemStackNameMixin` (`getName` RETURN) applies `MagicNames.decorateName`. Vanilla wraps `getName()` in the rarity colour, and the colour set on our text wins.
 - The tooltip line is added in `Client/DndClassesClient` through `ItemTooltipCallback`.
 - Bow damage: `mixin/BowItemMixin` (wraps `World.spawnEntity` in `onStoppedUsing`); crossbows: `mixin/CrossbowItemMixin` (`createArrow` RETURN). Attack roll: `SkillChecks/AttackRolls`.
@@ -138,7 +209,7 @@ Operator only (permission level 2).
   ```json
   { "function": "dndclasses:magic_item", "tier": "rare", "plus": 2, "identified": false, "curse_chance": 0.1, "theme": "crypt" }
   ```
-  All fields are optional. `rarity` is accepted as an alias for `tier`. `plus` defaults to the tier's +N for weapons and armor. `identified` defaults to false. `curse_chance` is read but not rolled yet (curses ticket). `theme` is for dungeon themes and isn't used yet.
+  All fields are optional. `rarity` is accepted as an alias for `tier`. `plus` defaults to the tier's +N for weapons and armor. `identified` defaults to false. `curse_chance` defaults to the tier's chance for unidentified loot and to 0 for identified loot; set it to 0 for loot that must never be cursed. `theme` is for dungeon themes and isn't used yet.
 - The Items tab: `Client/Hud/MagicItemsTab`, drawn by `SkillTreeScreen` when opened from a table.
 - Commands: `Commands/MagicCommand`.
-- Devscripts: `devscripts/magic-tiers-check.txt` gives one of each, checks `/attribute` damage and screenshots the tooltips with the DevScript `tooltips` step. `devscripts/attunement.txt` checks attunement end to end (the tab, the cap, anti-magic, death, short rest, the Forge blessing, Thief, Artificer slots), then `devscripts/attunement-relog.txt` checks the bond after a relog.
+- Devscripts: `devscripts/magic-tiers-check.txt` gives one of each, checks `/attribute` damage and screenshots the tooltips with the DevScript `tooltips` step. `devscripts/attunement.txt` checks attunement end to end (the tab, the cap, anti-magic, death, short rest, the Forge blessing, Thief, Artificer slots), then `devscripts/attunement-relog.txt` checks the bond after a relog. `devscripts/curses.txt` walks through identification, every curse, binding and Remove Curse (not yet run).

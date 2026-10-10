@@ -1,0 +1,17 @@
+# Dungeon loot, step 1: builds a fresh crypt with /place structure at -600, 600 (the dev world's natural
+# crypt generated before the loot tables existed) and prints its rooms, so dungeon-loot*.txt know where
+# the vault, the encounter rooms and the secret room are. Run once per run dir.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dungeon-loot-recon.txt
+# Check: "/dungeon info" [CHAT] lines in logs/latest.log.
+wait 40
+closescreen
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/gamemode spectator
+/tp @s -600 150 600
+wait 500
+/place structure dndclasses:crypt -600 64 600
+wait 100
+/dungeon info
+quit

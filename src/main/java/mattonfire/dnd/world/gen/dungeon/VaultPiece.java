@@ -46,6 +46,12 @@ public class VaultPiece extends DungeonPiece {
         if (this.role() == RoomRole.SIDE_VAULT && !this.doors.isEmpty()) {
             this.gate(b, this.doors.get(0));
         }
+        if (CryptDressing.applies(this)) {
+            for (int[] c : CryptDressing.corners(this.width(), this.depth())) {
+                CryptDressing.candles(b, c[0], 1, c[1]);
+            }
+            CryptDressing.cornerCobwebs(b, this.width(), this.depth(), this.height, 0.5F);
+        }
     }
 
     /** Bars the doorway's inner wall layer with the side vault's strict gate. */

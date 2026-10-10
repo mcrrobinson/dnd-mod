@@ -7,7 +7,10 @@ import net.minecraft.block.CampfireBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockBox;
 
-/** The safe room at the foot of the stair: a cold campfire to rest by, before the first fight. */
+/**
+ * The safe room at the foot of the stair: a cold campfire to rest by, before the first fight. In
+ * the Crypt, sarcophagi line its walls.
+ */
 public class AntechamberPiece extends DungeonPiece {
     public AntechamberPiece(Info info, BlockBox box, long seed, int roomId, RoomRole role, int height, List<Door> doors) {
         super(DungeonStructures.ANTECHAMBER, info, box, seed, roomId, role, height, doors);
@@ -29,5 +32,10 @@ public class AntechamberPiece extends DungeonPiece {
         b.light(w - 3, 1, 2, false);
         b.light(2, 1, d - 3, false);
         b.light(w - 3, 1, d - 3, false);
+        if (CryptDressing.applies(this)) {
+            // The dead laid out along the walls, either side of the doorways
+            CryptDressing.wallSarcophagi(b, w, d, 3, 0.5F);
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.6F);
+        }
     }
 }

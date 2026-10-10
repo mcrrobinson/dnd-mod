@@ -49,7 +49,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
-- [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons
+- [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion (splits at half health) and the Lich boss leashed to its reliquary
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault
 - [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, spotting, Rogue disarming and re-arming on reset
@@ -82,7 +82,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board and rentable rooms (Room Keys, Well Rested)
-- [Dungeons](structures/dungeons.md): underground multi-room Crypts with a stair, a planned route to a boss and vault, and a Challenge tier
+- [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow, with a planned route to the Lich and its reliquary, a vault, crypt dressing and a Challenge tier
 
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance

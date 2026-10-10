@@ -5,6 +5,7 @@ Writes into src/main/resources/data/dndclasses/loot_tables/:
   chests/dungeon/<theme>_<room>_t<tier>.json   room chests (encounter, secret, side_vault) per theme and tier
   chests/dungeon/vault_t<tier>.json            the Hoard Coffer's first roll per player
   chests/dungeon/vault_salvage.json            the Hoard Coffer's roll after a repopulation
+  chests/dungeon/<theme>_vault_t<tier>.json    the theme's extra on a full coffer roll (Crypt: Staff of Ice at III-IV)
   gameplay/dungeon_elite_t<tier>.json          the extra roll a Veteran drops
 
 Chests carry their tier in the table name, so vanilla opening works and Lockpicking.dcFor can read
@@ -158,6 +159,21 @@ def vault(t):
     ])
 
 
+# The theme's extra on a full Hoard Coffer roll: (item, chance) from this tier on (design 2.9)
+THEME_STAFF = {"crypt": ("dndclasses:staff_of_ice", 0.15, 3)}
+
+
+def theme_vault(theme, t):
+    """A theme's extra coffer roll: its staff, by chance, from its tier on; otherwise nothing."""
+    pools = []
+    if theme in THEME_STAFF:
+        staff, chance, lo = THEME_STAFF[theme]
+        if t >= lo:
+            pools.append({"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": chance}],
+                          "entries": [{"type": "minecraft:item", "name": staff}]})
+    return table("minecraft:chest", pools)
+
+
 def tier_condition(lo, hi=4):
     return [{"condition": "dndclasses:dungeon_tier", "min": lo, "max": hi}]
 
@@ -214,6 +230,8 @@ def main():
             write(f"chests/dungeon/{theme}_secret_t{t}", secret(theme, t))
             write(f"chests/dungeon/{theme}_side_vault_t{t}", side_vault(theme, t))
         write(f"chests/dungeon/vault_t{t}", vault(t))
+        for theme in THEME_STAFF:
+            write(f"chests/dungeon/{theme}_vault_t{t}", theme_vault(theme, t))
         write(f"gameplay/dungeon_elite_t{t}", elite(t))
     write("chests/dungeon/vault_salvage", salvage())
 

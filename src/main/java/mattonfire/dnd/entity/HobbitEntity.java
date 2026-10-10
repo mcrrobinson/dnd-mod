@@ -1,5 +1,6 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -54,7 +55,7 @@ public class HobbitEntity extends PathAwareEntity {
 
     private static final int DAY_RANGE = 24;
     private static final int NIGHT_RANGE = 3;
-    private static final int GIFT_COOLDOWN = 20 * 60 * 5;
+    private static final float HOSTILE_FLEE_DISTANCE = 8.0F;
 
     private static final Item[] SNACKS = {
             Items.BREAD, Items.APPLE, Items.COOKIE, Items.PUMPKIN_PIE, Items.BAKED_POTATO,
@@ -93,6 +94,9 @@ public class HobbitEntity extends PathAwareEntity {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4D));
         this.goalSelector.add(2, new FleeEntityGoal<>(this, HostileEntity.class, 10.0F, 0.9D, 1.3D));
+        // Players Hostile with the hobbits are kept at a distance.
+        this.goalSelector.add(2, new FleeEntityGoal<>(this, PlayerEntity.class, HOSTILE_FLEE_DISTANCE, 0.9D, 1.3D,
+                player -> TierEffects.fleesFrom(TierEffects.tierWith((PlayerEntity) player, this))));
         this.goalSelector.add(3, new LongDoorInteractGoal(this, true));
         this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.8D));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.6D));
@@ -189,11 +193,17 @@ public class HobbitEntity extends PathAwareEntity {
             return ActionResult.SUCCESS;
         }
         this.getLookControl().lookAt(player);
-        if (this.giftCooldown > 0) {
+        // The wait before the next gift depends on how the hobbits feel about this player; Hostile gets none.
+        int cooldown = TierEffects.giftCooldown(TierEffects.tierWith(player, this));
+        if (cooldown < 0) {
+            player.sendMessage(Text.translatable("entity.dndclasses.hobbit.no_gift", this.getDisplayName())
+                    .formatted(net.minecraft.util.Formatting.RED), true);
+        }
+        if (cooldown < 0 || this.giftCooldown > 0) {
             this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
             return ActionResult.CONSUME;
         }
-        this.giftCooldown = GIFT_COOLDOWN;
+        this.giftCooldown = cooldown;
         ItemStack gift = new ItemStack(SNACKS[this.random.nextInt(SNACKS.length)], 1 + this.random.nextInt(3));
         if (!player.giveItemStack(gift)) {
             player.dropItem(gift, false);

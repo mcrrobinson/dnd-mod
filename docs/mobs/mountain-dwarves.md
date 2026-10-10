@@ -29,15 +29,29 @@ It wears an iron helmet 45% of the time, a golden one 30%, a chainmail one 10%, 
 ### Who it fights
 A dwarf stays within 32 blocks of the spot it spawned and hunts monsters in that area, except creepers. A sleeping [Mimic](mimic.md) passes for a chest, so dwarves ignore it until it wakes.
 
-It turns on a player for two reasons:
+It turns on a player for three reasons:
 
 - **You hit it.** It stays angry for 30 to 50 seconds. Its kin nearby join in, and for 10 seconds after you hit a dwarf any other dwarf counts you as an enemy.
-- **You touch the hoard.** Open or break a chest (trapped ones too) or a barrel, or break a block of gold, where a dwarf within 16 blocks can see you, and every dwarf that saw it turns on you with a growl. Sneaking with an item in your hand places the item instead of opening the chest, so it doesn't count. Creative and spectator players are never noticed.
+- **You touch the hoard.** Open or break a chest (trapped ones too) or a barrel, or break a block of gold, where a dwarf within 16 blocks can see you, and every dwarf that saw it turns on you with a growl. Sneaking with an item in your hand places the item instead of opening the chest, so it doesn't count. Creative and spectator players are never noticed. Players Unfriendly or worse with the dwarves are noticed from 24 blocks.
+- **You're Hostile with the dwarves** ([Factions](../systems/factions.md)): every dwarf attacks you on sight.
 
 Help drive off a [goblin raid](../systems/goblin-raids.md) on the fortress and every dwarf within 96 blocks forgives you.
 
 ### Bartering
 Right-click a dwarf with a gold ingot and it takes the ingot and hands you something from the mountain's depths. It shakes its head instead if it's fighting, angry with you, or traded in the last 2 seconds.
+
+Your standing with the dwarves changes bartering:
+
+| Tier | Barter |
+|-|-|
+| Hostile | Never (it attacks you) |
+| Unfriendly | Refuses half the time and the gold stays with you |
+| Neutral | As below |
+| Friendly | 15% chance of a second roll |
+| Honored | 30% second roll, from the honored table |
+| Exalted | 50% second roll, from the honored table |
+
+The honored table (`gameplay/dwarf_barter_honored`) is the table below with diamonds at weight 6, plus an iron chestplate enchanted at levels 10-25 (weight 3) and a common magic iron pickaxe (3) or iron helmet (2).
 
 | Item | Count | Weight |
 |-|-|-|
@@ -76,5 +90,6 @@ Mountain Dwarves only spawn inside dwarven fortresses, including the dark halls,
 ## For developers
 - `entity/MountainDwarfEntity`: stats, equipment (`equip`), names, the king (`crown`), bartering and anger. It's `Angerable`; `setTarget` refuses players it has no grudge against, since the mod adds player-targeting goals to every mob.
 - `entity/DwarfGrudges`: the chest, barrel and gold block hooks (`witness`) and `forgive`, which `entity/raid/GoblinRaid` calls when a fortress raid is won.
-- Spawn cap: `ModSpawns.canDwarfSpawn`. Loot: `loot_tables/entities/mountain_dwarf.json` and `loot_tables/gameplay/dwarf_barter.json`.
+- Spawn cap: `ModSpawns.canDwarfSpawn`. Loot: `loot_tables/entities/mountain_dwarf.json`, `loot_tables/gameplay/dwarf_barter.json` and `dwarf_barter_honored.json`.
+- Reputation: `shouldAngerAt` is also true for players Hostile with the dwarves; barter refusal, second roll and table, and the witness range come from `faction/TierEffects`.
 - Devscripts: `mountain-dwarf-behaviour.txt`, `mountain-dwarf-grudge.txt`, `mountain-dwarf-lineup.txt`.

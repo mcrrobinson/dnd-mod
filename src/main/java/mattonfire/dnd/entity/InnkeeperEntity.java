@@ -1,5 +1,7 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.faction.ReputationTier;
+import mattonfire.dnd.faction.TierEffects;
 import mattonfire.dnd.tavern.BountyNoticeItem;
 import mattonfire.dnd.tavern.BountyRewards;
 import mattonfire.dnd.tavern.Tavern;
@@ -18,6 +20,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.village.Merchant;
 import net.minecraft.village.TradeOffer;
@@ -102,6 +105,9 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         if (BountyNoticeItem.bounty(held) != null) {
             if (!this.world.isClient) {
                 this.getLookControl().lookAt(player);
+                if (this.refusesHostile(player)) {
+                    return ActionResult.CONSUME;
+                }
                 boolean paid = BountyRewards.claim((ServerPlayerEntity) player, held, this.getPos());
                 this.playSound(paid ? SoundEvents.ENTITY_VILLAGER_YES : SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
             }
@@ -111,10 +117,24 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
             return ActionResult.PASS;
         }
         if (!this.world.isClient) {
+            if (this.refusesHostile(player)) {
+                return ActionResult.CONSUME;
+            }
             this.setCustomer(player);
             this.sendOffers(player, this.getDisplayName(), 1);
         }
         return ActionResult.success(this.world.isClient);
+    }
+
+    /** Hostile with the hobbits: no trade, no bounty payout. */
+    private boolean refusesHostile(PlayerEntity player) {
+        if (!TierEffects.refusesService(TierEffects.tierWith(player, this))) {
+            return false;
+        }
+        player.sendMessage(Text.translatable("entity.dndclasses.innkeeper.refuses", this.getDisplayName())
+                .formatted(Formatting.RED), true);
+        this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
+        return true;
     }
 
     // ---- Merchant ----
@@ -122,6 +142,22 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
     @Override
     public void setCustomer(@Nullable PlayerEntity customer) {
         this.customer = customer;
+        if (!this.world.isClient) {
+            this.applyReputationPrices(customer);
+        }
+    }
+
+    /**
+     * Reputation price modifier: each customer sees prices for their own standing with the hobbits
+     * (Unfriendly +50%, Friendly -10%, Honored -25%, Exalted -40%), set as the offers' special price
+     * the way vanilla villagers apply gossip, and cleared when the customer leaves.
+     */
+    private void applyReputationPrices(@Nullable PlayerEntity customer) {
+        ReputationTier tier = customer != null ? TierEffects.tierWith(customer, this) : ReputationTier.NEUTRAL;
+        for (TradeOffer offer : this.getOffers()) {
+            offer.clearSpecialPrice();
+            offer.increaseSpecialPrice(TierEffects.reputationPriceDelta(tier, offer.getOriginalFirstBuyItem().getCount()));
+        }
     }
 
     @Nullable

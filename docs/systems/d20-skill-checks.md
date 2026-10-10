@@ -25,7 +25,7 @@ Anyone else who tries to open a locked chest gets "Locked. A Rogue could pick it
 Creative and spectator players ignore locks.
 
 ### Persuasion (Bard)
-Sneak and right click a villager with an empty main hand. The villager must have a job (not a nitwit or unemployed) and must not be a baby, asleep or already trading. The roll is a Persuasion check: d20 + CHA modifier + expertise (+6 at level 1, +8 at level 5, +10 at level 9 for a Bard's CHA 15) against DC 12. You get one try per villager, per player, per in-game day.
+Sneak and right click a villager with an empty main hand. The villager must have a job (not a nitwit or unemployed) and must not be a baby, asleep or already trading. The roll is a Persuasion check: d20 + CHA modifier + expertise (+6 at level 1, +8 at level 5, +10 at level 9 for a Bard's CHA 15) against DC 12, shifted by your standing with the target's [faction](factions.md) (Unfriendly +3 ... Exalted -6; plain villagers have none). You get one try per villager, per player, per in-game day.
 
 | Result | Effect |
 |-|-|

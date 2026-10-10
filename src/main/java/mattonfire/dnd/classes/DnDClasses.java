@@ -122,6 +122,8 @@ public class DnDClasses implements ModInitializer {
                         if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
                                 return;
                         }
+                        // Firing a power gets you up from a short rest.
+                        mattonfire.dnd.classes.Rest.RestSession.cancel(player, "you used a power");
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
                         SkillNode skill = Progression.current(player).activeNode();
                         int cost = skill == null ? MANA_ICONS : skill.manaCost();

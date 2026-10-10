@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.faction.ReputationTier;
+import mattonfire.dnd.faction.TierEffects;
 import mattonfire.dnd.world.gen.HomeBonuses;
 import mattonfire.dnd.world.gen.RacialHomes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -72,6 +74,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(MountainDwarfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     public static final Identifier BARTER_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_barter");
+    /** What dwarves barter to players they honour (Honored and Exalted). */
+    public static final Identifier HONORED_BARTER_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_barter_honored");
     private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
     /** How long after hitting a dwarf a player still counts as its kin's enemy. */
     private static final int KIN_GRUDGE_TICKS = 20 * 10;
@@ -230,6 +234,13 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
                 && player.age - player.getLastAttackTime() < KIN_GRUDGE_TICKS;
     }
 
+    /** Angry at the player it holds a grudge against, and at anyone Hostile with the dwarves, on sight. */
+    @Override
+    public boolean shouldAngerAt(LivingEntity entity) {
+        return Angerable.super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
+                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
+    }
+
     @Override
     public boolean canPickUpLoot() {
         return false;
@@ -268,26 +279,36 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
             this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
             return ActionResult.CONSUME;
         }
+        ReputationTier tier = TierEffects.tierWith(player, this);
+        this.barterCooldown = BARTER_COOLDOWN;
+        if (TierEffects.refusesBarter(tier, this.random)) {
+            // Unfriendly: a shake of the head, and the gold stays with the player.
+            player.sendMessage(Text.translatable("entity.dndclasses.mountain_dwarf.refuses", this.getDisplayName())
+                    .formatted(net.minecraft.util.Formatting.RED), true);
+            this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
+            return ActionResult.CONSUME;
+        }
         if (!player.getAbilities().creativeMode) {
             stack.decrement(1);
         }
-        this.barterCooldown = BARTER_COOLDOWN;
-        this.barter(player);
+        this.barter(player, tier);
         if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
             mattonfire.dnd.faction.FactionEvents.traded(serverPlayer, this);
         }
         return ActionResult.CONSUME;
     }
 
-    private void barter(PlayerEntity player) {
+    private void barter(PlayerEntity player, ReputationTier tier) {
         ServerWorld world = (ServerWorld) this.world;
-        LootTable table = world.getServer().getLootManager().getTable(BARTER_LOOT);
+        Identifier tableId = TierEffects.honoredBarter(tier) ? HONORED_BARTER_LOOT : BARTER_LOOT;
+        LootTable table = world.getServer().getLootManager().getTable(tableId);
         // Kin (Dwarves, and Gnomes for now) get the rarer of two rolls.
-        List<ItemStack> loot = KinPrices.barter(world, player, this, BARTER_LOOT, () -> table.generateLoot(
-                new LootContext.Builder(world)
-                        .parameter(LootContextParameters.THIS_ENTITY, this)
-                        .random(this.random)
-                        .build(LootContextTypes.BARTER)));
+        List<ItemStack> loot = new java.util.ArrayList<>(
+                KinPrices.barter(world, player, this, tableId, () -> this.rollBarter(world, table)));
+        // Friends of the mountain sometimes get a second helping.
+        if (this.random.nextFloat() < TierEffects.secondBarterRollChance(tier)) {
+            loot.addAll(this.rollBarter(world, table));
+        }
         this.swingHand(Hand.OFF_HAND);
         for (ItemStack stack : loot) {
             LookTargetUtil.give(this, stack, player.getPos().add(0.0D, 1.0D, 0.0D));
@@ -295,6 +316,13 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         this.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, this.getSoundPitch());
         world.spawnParticles(ParticleTypes.HAPPY_VILLAGER, this.getX(), this.getEyeY() + 0.3D, this.getZ(),
                 5, 0.3D, 0.2D, 0.3D, 0.0D);
+    }
+
+    private List<ItemStack> rollBarter(ServerWorld world, LootTable table) {
+        return table.generateLoot(new LootContext.Builder(world)
+                .parameter(LootContextParameters.THIS_ENTITY, this)
+                .random(this.random)
+                .build(LootContextTypes.BARTER));
     }
 
     // ---- Angerable ----

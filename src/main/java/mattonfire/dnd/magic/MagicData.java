@@ -106,12 +106,43 @@ public final class MagicData {
     }
 
     public static void setAttunedTo(ItemStack stack, @Nullable UUID player) {
+        setAttunedTo(stack, player, "");
+    }
+
+    /** Bonds the stack to a player, remembering their name for "Attuned to &lt;player&gt;"; null clears both. */
+    public static void setAttunedTo(ItemStack stack, @Nullable UUID player, String playerName) {
         if (player == null) {
             NbtCompound nbt = get(stack);
-            if (nbt != null)
+            if (nbt != null) {
                 nbt.remove("attunedTo");
+                nbt.remove("attunedName");
+            }
         } else {
             getOrCreate(stack).putUuid("attunedTo", player);
+            getOrCreate(stack).putString("attunedName", playerName);
+        }
+    }
+
+    /** The bonded player's name when they attuned, or "". */
+    public static String attunedName(ItemStack stack) {
+        NbtCompound nbt = get(stack);
+        return nbt == null ? "" : nbt.getString("attunedName");
+    }
+
+    // --- Blessing of the Forge (Forge Domain Cleric): +1 until the holder's next long rest ---
+
+    public static boolean isForgeBlessed(ItemStack stack) {
+        NbtCompound nbt = get(stack);
+        return nbt != null && nbt.getBoolean("forgeBlessing");
+    }
+
+    public static void setForgeBlessed(ItemStack stack, boolean blessed) {
+        if (blessed) {
+            getOrCreate(stack).putBoolean("forgeBlessing", true);
+        } else {
+            NbtCompound nbt = get(stack);
+            if (nbt != null)
+                nbt.remove("forgeBlessing");
         }
     }
 
@@ -137,15 +168,21 @@ public final class MagicData {
     }
 
     /**
-     * Whether the item's magic is asleep. Today that's while it's unidentified; the attunement ticket adds
-     * the bond, class and anti-magic checks in {@code Attunement.isActive(player, stack)}.
+     * Whether the item's magic is asleep on its own, whoever holds it: while it's unidentified. The checks
+     * that need the holder (bond, class, anti-magic) are in {@link Attunement#isActive}.
      */
     public static boolean isDormant(ItemStack stack) {
         return !isIdentified(stack);
     }
 
-    /** The +N that actually applies: 0 while dormant. */
+    /** The +N shown in the name: the stored +N plus a Forge blessing's +1, at most +3. */
+    public static int displayPlus(ItemStack stack) {
+        int plus = Math.max(0, plus(stack)) + (isForgeBlessed(stack) ? 1 : 0);
+        return Math.min(MagicGear.MAX_PLUS, plus);
+    }
+
+    /** The +N that actually applies: {@link #displayPlus}, or 0 while dormant. */
     public static int activePlus(ItemStack stack) {
-        return isDormant(stack) ? 0 : Math.max(0, plus(stack));
+        return isDormant(stack) ? 0 : displayPlus(stack);
     }
 }

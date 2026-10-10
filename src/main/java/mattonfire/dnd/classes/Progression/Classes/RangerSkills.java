@@ -4,7 +4,9 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
@@ -32,6 +34,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 
 public class RangerSkills extends ClassSkills {
     /**
@@ -68,6 +71,16 @@ public class RangerSkills extends ClassSkills {
     private static final float RAIN_SPEED = 2.0F;
     private static final double RAIN_ARROW_DAMAGE = 4.0;
     private static final String RAIN_TAG = "dndclasses.ranger_rain";
+
+    public static final String HUNTER = "ranger.hunter";
+    public static final String HORIZON_WALKER = "ranger.horizon_walker";
+    /** Colossus Slayer: extra damage of the first arrow hit each second on a hurt target. */
+    public static final float COLOSSUS_SLAYER_DAMAGE = 3.0F;
+    public static final int COLOSSUS_SLAYER_COOLDOWN_TICKS = 20;
+    /** Planar Warrior: damage dealt in the Nether and the End is multiplied by this. */
+    public static final float PLANAR_WARRIOR_MULTIPLIER = 1.2F;
+    /** World time each Hunter's Colossus Slayer is ready again. */
+    private static final Map<UUID, Long> COLOSSUS_READY = new HashMap<>();
 
     /** A Rain of Arrows still falling. */
     private record Rain(UUID owner, ServerWorld world, Vec3d center, long endTime) {
@@ -208,6 +221,17 @@ public class RangerSkills extends ClassSkills {
         if (arrow && progress.hasPassive("ranger.sharpshooter")) {
             amount *= SHARPSHOOTER_BONUS;
         }
+        // Colossus Slayer: checked before this hit lands, so the target was already hurt.
+        if (arrow && progress.hasSubclass(HUNTER) && target.getHealth() < target.getMaxHealth()) {
+            long now = player.getWorld().getTime();
+            if (now >= COLOSSUS_READY.getOrDefault(player.getUuid(), 0L)) {
+                COLOSSUS_READY.put(player.getUuid(), now + COLOSSUS_SLAYER_COOLDOWN_TICKS);
+                amount += COLOSSUS_SLAYER_DAMAGE;
+            }
+        }
+        if (progress.hasSubclass(HORIZON_WALKER) && isPlanar(player)) {
+            amount *= PLANAR_WARRIOR_MULTIPLIER;
+        }
         if (progress.hasPassive("ranger.hunters_mark")) {
             // Checked before marking, so the hit that marks isn't boosted.
             if (target.hasStatusEffect(StatusEffects.GLOWING)) {
@@ -218,6 +242,25 @@ public class RangerSkills extends ClassSkills {
             }
         }
         return amount;
+    }
+
+    /** Planar Warrior's worlds: the Nether and the End. */
+    public static boolean isPlanar(PlayerEntity player) {
+        return player.getWorld().getRegistryKey() == World.NETHER || player.getWorld().getRegistryKey() == World.END;
+    }
+
+    @Override
+    public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
+        // Planar Warrior: Speed I, kept topped up like the Bard's auras.
+        if (progress.hasSubclass(HORIZON_WALKER) && isPlanar(player)) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 60, 0, true, false, true));
+        }
+    }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        long now = player.getWorld().getTime();
+        COLOSSUS_READY.values().removeIf(t -> now >= t);
     }
 
     @Override

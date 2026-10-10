@@ -90,6 +90,7 @@ public class InstrumentItem extends Item {
                 Text.translatable(buff.getTranslationKey()), listeners.size()), true);
         setCooldown(user, BARD_COOLDOWN_TICKS);
         if (user instanceof ServerPlayerEntity player) {
+            BardSkills.combatInspiration(player, listeners, BUFF_TICKS);
             BardSkills.charmAnimals(player);
         }
     }

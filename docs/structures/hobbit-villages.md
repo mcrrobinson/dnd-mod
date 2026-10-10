@@ -41,7 +41,7 @@ Hobbit Villages are the Halfling home (see [Racial homes](../races/racial-homes.
 - a "Welcome home, Halfling" title on arriving, and a Shire welcome basket (1 cake, 4 cookies, 2 Mugs of Ale) on the first visit to each village
 - Regeneration I in the Green Dragon inn while no hostile mob is within 16 blocks
 - 25% off the innkeeper's trades
-- hobbit gifts every 2 minutes instead of 5
+- hobbit gifts every 2 minutes instead of 5 (2/5 of the wait for your reputation tier)
 - a Friendly (150) start with the Hobbits of the Shire
 
 ## Where to find it

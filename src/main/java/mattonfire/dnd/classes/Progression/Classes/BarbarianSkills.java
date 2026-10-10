@@ -4,7 +4,10 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.enemiesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
@@ -16,6 +19,8 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
+import net.minecraft.entity.damage.DamageTypes;
+import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
@@ -36,6 +41,21 @@ public class BarbarianSkills extends ClassSkills {
             .seconds("Duration", 8, 10, 12, 12);
 
     private static final int MELEE_KILL_BONUS_XP = 3;
+
+    public static final String BERSERKER = "barbarian.berserker";
+    public static final String TOTEM_WARRIOR = "barbarian.totem_warrior";
+    /** Frenzy: each melee kill while raging adds this much Rage... */
+    public static final int FRENZY_TICKS_PER_KILL = 2 * 20;
+    /** ...up to this much per Rage. */
+    public static final int FRENZY_MAX_TICKS = 6 * 20;
+    /** Bear Totem Spirit: damage taken while raging is multiplied by this. */
+    public static final float BEAR_TOTEM_MULTIPLIER = 0.85F;
+
+    /** A Rage in progress: the world time it ends and how much Frenzy has added to it. */
+    private record RageState(long endTime, int amplifier, int frenzyTicks) {
+    }
+
+    private static final Map<UUID, RageState> RAGES = new HashMap<>();
 
     @Override
     public DndCharacter dndClass() {
@@ -116,6 +136,45 @@ public class BarbarianSkills extends ClassSkills {
         return true;
     }
 
+    /**
+     * The root special, Rage; called from the BARBARIAN case in {@code PowerUpEffect}. Strength for the
+     * rank's duration, remembered so the subclass features know Rage is on.
+     */
+    public static void rage(PlayerEntity player) {
+        int ticks = RAGE.ticks(player, "Duration");
+        int amplifier = RAGE.amplifier(player, "Strength");
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, amplifier));
+        RAGES.put(player.getUuid(), new RageState(player.getWorld().getTime() + ticks, amplifier, 0));
+    }
+
+    /** Whether the player's Rage is on: started and not run out or drunk away with milk. */
+    public static boolean isRaging(PlayerEntity player) {
+        RageState rage = RAGES.get(player.getUuid());
+        if (rage == null)
+            return false;
+        if (player.getWorld().getTime() >= rage.endTime() || !player.hasStatusEffect(StatusEffects.STRENGTH)) {
+            RAGES.remove(player.getUuid());
+            return false;
+        }
+        return true;
+    }
+
+    /** Frenzy: a melee kill while raging adds 2 s to the Rage, at most 6 s per Rage. */
+    private static void frenzy(ServerPlayerEntity player) {
+        if (!isRaging(player))
+            return;
+        RageState rage = RAGES.get(player.getUuid());
+        int add = Math.min(FRENZY_TICKS_PER_KILL, FRENZY_MAX_TICKS - rage.frenzyTicks());
+        if (add <= 0)
+            return;
+        long endTime = rage.endTime() + add;
+        int remaining = (int) (endTime - player.getWorld().getTime());
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, remaining, rage.amplifier()));
+        RAGES.put(player.getUuid(), new RageState(endTime, rage.amplifier(), rage.frenzyTicks() + add));
+        ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.ANGRY_VILLAGER, player.getX(),
+                player.getEyeY() + 0.3, player.getZ(), 3, 0.3, 0.2, 0.3, 0);
+    }
+
     @Override
     public int killXp(ServerPlayerEntity player, LivingEntity killed, DamageSource source) {
         return killed instanceof Monster && source.getSource() == player ? MELEE_KILL_BONUS_XP : 0;
@@ -126,6 +185,9 @@ public class BarbarianSkills extends ClassSkills {
         if (progress.hasPassive("barbarian.bloodlust")) {
             player.heal(2.0F);
         }
+        if (progress.hasSubclass(BERSERKER) && source.getSource() == player) {
+            frenzy(player);
+        }
     }
 
     @Override
@@ -135,6 +197,21 @@ public class BarbarianSkills extends ClassSkills {
             return amount * 1.3F;
         }
         return amount;
+    }
+
+    @Override
+    public float modifyTakenDamage(PlayerEntity player, ClassProgress progress, DamageSource source, float amount) {
+        // Bear Totem Spirit: not against the void, /kill or starving.
+        if (progress.hasSubclass(TOTEM_WARRIOR) && isRaging(player)
+                && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY) && !source.isOf(DamageTypes.STARVE)) {
+            return amount * BEAR_TOTEM_MULTIPLIER;
+        }
+        return amount;
+    }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        RAGES.remove(player.getUuid());
     }
 
     @Override

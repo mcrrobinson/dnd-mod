@@ -18,6 +18,8 @@ The **Goblin Warrior** is slow but tough and hits hard.
 
 It's immune to fire and lava. It hunts players and iron golems, and it fights back against zombified piglins that hit it.
 
+Which players it goes for depends on their standing with the goblins ([Factions](../systems/factions.md)). Players start Hostile (-600), and goblins attack them on sight. At Unfriendly a goblin only notices you within 6 blocks or once you hit a goblin; at Neutral or better, only once you hit one. This covers camp and Nether goblins, raiders and the Warlord's waves.
+
 Its swing is telegraphed. When you're in reach it raises its club, and the hit lands 10 ticks (half a second) later, but only if you're still in reach. After that it can't swing again for 2 seconds.
 
 It drops 0-3 gold nuggets and 0-1 leather, each with up to 1 more per Looting level.
@@ -41,4 +43,5 @@ It drops 0-3 gold nuggets and 0-1 leather, each with up to 1 more per Looting le
 - `entity/GoblinWarriorEntity`: stats and the slow swing (`SlowMeleeAttackGoal`, `ATTACK_INTERVAL` 40 ticks, `WIND_UP` 10 ticks). GeckoLib, with an `attack_controller` for one-shot animations that the Warlord reuses.
 - Fortress spawns: `classes/mixin/SpawnHelperMixin`.
 - Loot: `loot_tables/entities/goblin_warrior.json`.
-- Devscript: `goblin-warrior.txt`.
+- Reputation: the player target goal's predicate and a `setTarget` filter use `TierEffects.goblinMayTarget`; `mobTick` drops a player target that's no longer allowed. `rallyAgainst` lets the Warlord call its kin onto whoever hit it.
+- Devscripts: `goblin-warrior.txt`, `rep-tiers.txt` (goblin standing).

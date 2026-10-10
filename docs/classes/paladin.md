@@ -59,7 +59,9 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Oath of Devotion | Right | Divine Smite (first node, open to both), Sacred Weapon, Aura of Protection | **Purity of Spirit**: you're immune to Wither and Poison, and undead deal you 15% less damage |
 | Oath of Conquest | Left | Hellforged (first node, open to both), Divine Shield, Aura of Courage | **Conquering Presence**: Divine Judgment's shockwave frightens hostile mobs for 3 seconds |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Purity of Spirit** (Devotion): Wither and Poison can't be applied to you, from any source, and any you had are cleared. Damage from undead attackers (zombies, skeletons' arrows, the Lich...) is multiplied by 0.85.
+- **Conquering Presence** (Conquest): Divine Judgment's target and every hostile mob its shockwave hits get Frightened (their attacks deal half damage) for 3 s.
 
 Circle of Healing sits between the branches and is open to either oath once you've chosen one.
 

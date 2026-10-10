@@ -229,7 +229,7 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
                 && !(attacker instanceof GoblinWarriorEntity)) {
             for (GoblinWarriorEntity goblin : this.nearbyGoblins()) {
                 if (goblin.getTarget() == null) {
-                    goblin.setTarget(attacker);
+                    goblin.rallyAgainst(attacker);
                 }
             }
         }

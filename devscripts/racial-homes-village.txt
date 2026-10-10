@@ -3,7 +3,7 @@
 # Expect in latest.log:
 # - Human: no "[RacialHomes] Welcomed", empty inventory, innkeeper offers at base price.
 # - Halfling: one "Welcomed" line, a cake, 4 cookies and 2 ale (basket), /dndhome "hearth true", Regeneration in
-#   ActiveEffects, offers 25% cheaper ("offer 1: 1 ... (base 1)" stays 1, "offer 6: 1 emerald (base 2)", wheat 15 of 20).
+#   ActiveEffects, offers 25% cheaper ("trade 1: 1 ... (base 1, ...)" stays 1, "trade 6: 1 emerald (base 2, ...)", wheat 13 of 20: the kin -5 plus Friendly -2).
 # - Leaving and coming back at once: no second welcome or basket.
 # - A frozen spider inside 16 blocks: no Regeneration; after killing it, Regeneration again.
 # - A hobbit 3500 ticks into its 6000-tick gift cooldown gives a Halfling a snack, refuses a Human.

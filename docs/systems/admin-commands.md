@@ -54,6 +54,8 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 
 | `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
 | `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |
+| `/dndhome temple [ember\|frost\|storm]` | Teleports you into the nearest [Dragon Temple](../structures/dragon-temples.md)'s sanctum, in front of that breath altar |
+| `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
 Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).
 

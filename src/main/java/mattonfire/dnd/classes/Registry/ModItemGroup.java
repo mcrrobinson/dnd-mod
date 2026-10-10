@@ -107,6 +107,8 @@ public class ModItemGroup {
             entries.add(ModItems.ELF_WARDEN_SPAWN_EGG);
             entries.add(ModItems.ELF_SPEAKER_SPAWN_EGG);
             entries.add(ModItems.ELF_FLETCHER_SPAWN_EGG);
+            entries.add(ModItems.DRAGONBORN_TEMPLAR_SPAWN_EGG);
+            entries.add(ModItems.DRAGONBORN_ELDER_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARLORD_SPAWN_EGG);
             entries.add(ModItems.MAGMAMUNCHER_ALPHA_SPAWN_EGG);
             entries.add(ModItems.EMBER_WYVERN_SPAWN_EGG);

@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.RollKind;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,7 +23,8 @@ import net.minecraft.util.ActionResult;
  * <li>Natural 20: a critical hit, doing double damage. Fighters (Improved Critical) crit on 19-20.</li>
  * <li>Natural 1: a fumble; the swing misses completely.</li>
  * </ul>
- * The modifier shown is the class's attack bonus (ability modifier + proficiency).
+ * The modifier shown is the sheet's attack bonus (the better of STR and DEX modifier, plus proficiency);
+ * attacks don't miss against armour, so it's for display only.
  */
 public final class AttackRolls {
     /**
@@ -51,19 +53,16 @@ public final class AttackRolls {
                     || player.getAttackCooldownProgress(0.5f) < 0.9f) {
                 return ActionResult.PASS;
             }
-            DndCharacter dndClass = D20.classOf(player);
-            int natural = D20.d20(player);
-            int bonus = attackBonus(dndClass);
-            if (natural == 1) {
-                D20.Roll roll = new D20.Roll(D20.Skill.ATTACK, natural, bonus, 0, D20.Outcome.FUMBLE);
+            D20.Roll roll = D20.roll(player).label(D20.ATTACK).kind(RollKind.ATTACK)
+                    .modifier(attackBonus(player)).critRange(critRange(player)).roll();
+            if (roll.outcome() == D20.Outcome.FUMBLE) {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.fumble"));
                 player.resetLastAttackedTicks();
                 world.playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE, SoundCategory.PLAYERS, 1.0f, 0.8f);
                 return ActionResult.FAIL;
             }
-            if (natural >= critRange(dndClass)) {
-                D20.Roll roll = new D20.Roll(D20.Skill.ATTACK, natural, bonus, 0, D20.Outcome.CRITICAL);
+            if (roll.outcome() == D20.Outcome.CRITICAL) {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical"));
                 CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
             }
@@ -71,21 +70,14 @@ public final class AttackRolls {
         });
     }
 
-    /** Ability modifier + proficiency for a melee attack, roughly as the class would have at level 5. */
-    public static int attackBonus(DndCharacter dndClass) {
-        return switch (dndClass) {
-            case BARBARIAN, FIGHTER, PALADIN -> 7;
-            case RANGER, ROGUE, MONK, BLOODHUNTER -> 6;
-            case CLERIC, DRUID -> 5;
-            case BARD, WARLOCK, NECROMANCER, ARTIFICER -> 4;
-            case WIZARD, ALCHEMIST -> 3;
-            default -> 2;
-        };
+    /** The better of STR and DEX modifier, plus proficiency, from the character sheet. */
+    public static int attackBonus(PlayerEntity player) {
+        return AbilityScores.sheet(player).attackBonus();
     }
 
-    /** The lowest natural roll that crits. */
-    public static int critRange(DndCharacter dndClass) {
-        return dndClass == DndCharacter.FIGHTER ? 19 : 20;
+    /** The lowest natural roll that crits (20; Fighters 19; subclasses can lower it on the sheet). */
+    public static int critRange(PlayerEntity player) {
+        return AbilityScores.sheet(player).critRange();
     }
 
     /** Whether this swing at the target is the one that rolled the crit; drops a stale mark. */

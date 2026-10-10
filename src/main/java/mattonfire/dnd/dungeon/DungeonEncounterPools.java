@@ -39,7 +39,8 @@ import net.minecraft.util.JsonHelper;
  * {
  *   "boss": "lich",                                     // StructureBosses.BossType
  *   "champion": {"entity": "dndclasses:gelatinous_cube", "name": "dungeon.dndclasses.champion.ossuary_cube",
- *                "absorbed_loot": "minecraft:chests/simple_dungeon", "absorbed_stacks": 3},
+ *                "absorbed_loot": "minecraft:chests/simple_dungeon", "absorbed_stacks": 3,
+ *                "chained": false},                  // true: starts chained, breaks free (Grimclaw)
  *   "tiers": {
  *     "1": [{"entity": "minecraft:zombie", "weight": 10}, {"entity": "minecraft:skeleton", "weight": 8}],
  *     "3": [{"entity": "minecraft:wither_skeleton", "weight": 3, "threat": 3}]
@@ -66,8 +67,13 @@ public final class DungeonEncounterPools {
     public record Entry(Encounter.Spawn spawn, int weight, double threat) {
     }
 
-    /** The mid-boss: an ordinary mob made into a champion by {@link DungeonChampion}. */
-    public record Champion(EntityType<?> entity, String nameKey, @Nullable Identifier absorbedLoot, int absorbedStacks) {
+    /**
+     * The mid-boss: an ordinary mob made into a champion by {@link DungeonChampion}. A {@code chained}
+     * champion (the Warren's Grimclaw) starts held in its chains and breaks free a moment later, or
+     * as soon as it's hurt ({@link DungeonChampion#tickChained}).
+     */
+    public record Champion(EntityType<?> entity, String nameKey, @Nullable Identifier absorbedLoot, int absorbedStacks,
+                           boolean chained) {
     }
 
     /** One theme's pool. */
@@ -152,7 +158,7 @@ public final class DungeonEncounterPools {
                     .orElseThrow(() -> new JsonParseException("unknown champion " + id));
             champion = new Champion(type, JsonHelper.getString(c, "name", type.getTranslationKey()),
                     c.has("absorbed_loot") ? new Identifier(JsonHelper.getString(c, "absorbed_loot")) : null,
-                    JsonHelper.getInt(c, "absorbed_stacks", 0));
+                    JsonHelper.getInt(c, "absorbed_stacks", 0), JsonHelper.getBoolean(c, "chained", false));
         }
         StructureBosses.BossType boss = StructureBosses.BossType.byName(JsonHelper.getString(json, "boss", "lich"));
         return new Pool(tiers, champion, boss);

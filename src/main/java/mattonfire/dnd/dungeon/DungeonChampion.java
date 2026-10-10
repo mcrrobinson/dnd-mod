@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.entity.GelatinousCubeEntity;
+import mattonfire.dnd.entity.OwlbearEntity;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -22,6 +23,8 @@ import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
@@ -33,7 +36,10 @@ import net.minecraft.util.math.Vec3d;
  *
  * Max health is x3 for one player, +0.3 of the base per extra player (4 players: x3.9); damage
  * +25%, knockback resistance +0.3. A Gelatinous Cube champion (the Crypt's Ossuary Cube) splits
- * once at half health, shedding ordinary cubes ({@link #splitIfHurt}).
+ * once at half health, shedding ordinary cubes ({@link #splitIfHurt}). A chained champion (the
+ * Goblin Warren's Grimclaw, an Owlbear) appears held in its chains with no AI and breaks free
+ * {@link #CHAIN_TICKS} later, or as soon as it's hurt ({@link #tickChained}); an Owlbear champion
+ * charges every 4 s instead of 6 below half health ({@link OwlbearEntity#FURY_TAG}).
  */
 public final class DungeonChampion {
     public static final String TAG = "dndclasses.dungeon_champion";
@@ -51,6 +57,11 @@ public final class DungeonChampion {
     public static final int SPLIT_COUNT = 2;
     public static final int SPLIT_COUNT_SOLO = 1;
     private static final String SPLIT_TAG = "dndclasses.dungeon_champion_split";
+    /** A chained champion strains at its chains this long before it breaks free (unless it's hurt first). */
+    public static final int CHAIN_TICKS = 60;
+    public static final String CHAINED_TAG = "dndclasses.dungeon_champion_chained";
+    /** When each chained champion breaks free (server thread only; a champion missing here after a restart breaks free at once). */
+    private static final Map<UUID, Long> CHAINED_UNTIL = new HashMap<>();
 
     private static final UUID HEALTH_ID = UUID.fromString("c4a1d7e2-55b0-4c1e-a7f3-0d9e2b6c1a01");
     private static final UUID DAMAGE_ID = UUID.fromString("c4a1d7e2-55b0-4c1e-a7f3-0d9e2b6c1a02");
@@ -63,7 +74,10 @@ public final class DungeonChampion {
     }
 
     public static void register() {
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> BARS.clear());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            BARS.clear();
+            CHAINED_UNTIL.clear();
+        });
     }
 
     public static double healthMult(int partySize) {
@@ -79,6 +93,15 @@ public final class DungeonChampion {
         mob.setCustomName(Text.translatable(champion.nameKey()));
         mob.setCustomNameVisible(false);
         mob.addCommandTag(TAG);
+        if (mob instanceof OwlbearEntity) {
+            mob.addCommandTag(OwlbearEntity.FURY_TAG);
+        }
+        if (champion.chained()) {
+            mob.setAiDisabled(true);
+            mob.addCommandTag(CHAINED_TAG);
+            CHAINED_UNTIL.put(mob.getUuid(), world.getTime() + CHAIN_TICKS);
+            world.playSound(null, mob.getBlockPos(), SoundEvents.BLOCK_CHAIN_PLACE, SoundCategory.HOSTILE, 2.0F, 0.6F);
+        }
         if (mob instanceof GelatinousCubeEntity cube && champion.absorbedLoot() != null && champion.absorbedStacks() > 0) {
             // The Ossuary Cube starts with a few things already inside it, which it drops when it dies.
             LootTable table = world.getServer().getLootManager().getTable(champion.absorbedLoot());
@@ -102,8 +125,46 @@ public final class DungeonChampion {
         return entity.getCommandTags().contains(TAG);
     }
 
+    /**
+     * A chained champion breaks free once its time is up or as soon as it's hurt: its AI comes back,
+     * it roars, the chains clatter, and it turns on the nearest player. Until then its chains rattle.
+     * Returns true if it broke free now.
+     */
+    public static boolean tickChained(ServerWorld world, LivingEntity champion) {
+        if (!champion.getCommandTags().contains(CHAINED_TAG) || !(champion instanceof MobEntity mob)) {
+            return false;
+        }
+        long until = CHAINED_UNTIL.getOrDefault(champion.getUuid(), 0L);
+        boolean hurt = champion.getHealth() < champion.getMaxHealth() || champion.hurtTime > 0;
+        if (!hurt && world.getTime() < until) {
+            if (world.random.nextInt(3) == 0) {
+                world.playSound(null, champion.getBlockPos(), SoundEvents.BLOCK_CHAIN_STEP, SoundCategory.HOSTILE, 1.5F, 0.5F);
+            }
+            return false;
+        }
+        CHAINED_UNTIL.remove(champion.getUuid());
+        champion.removeScoreboardTag(CHAINED_TAG);
+        mob.setAiDisabled(false);
+        world.playSound(null, champion.getBlockPos(), SoundEvents.BLOCK_CHAIN_BREAK, SoundCategory.HOSTILE, 2.0F, 0.6F);
+        world.playSound(null, champion.getBlockPos(), SoundEvents.ENTITY_POLAR_BEAR_WARNING, SoundCategory.HOSTILE, 2.5F, 0.5F);
+        world.spawnParticles(net.minecraft.particle.ParticleTypes.CRIT, champion.getX(), champion.getBodyY(0.5D), champion.getZ(),
+                30, 0.8D, 0.6D, 0.8D, 0.2D);
+        if (champion instanceof OwlbearEntity owlbear) {
+            owlbear.triggerAnim("attack_controller", OwlbearEntity.ROAR);
+        }
+        net.minecraft.entity.player.PlayerEntity target = world.getClosestPlayer(champion.getX(), champion.getY(), champion.getZ(),
+                BAR_RANGE, net.minecraft.predicate.entity.EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+        if (target != null) {
+            mob.setTarget(target);
+        }
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Dungeon] champion {} broke its chains ({})",
+                champion.getType().getUntranslatedName(), hurt ? "hurt" : "time");
+        return true;
+    }
+
     /** Updates the champion's bar: its health, and the players within {@link #BAR_RANGE} blocks. */
     public static void tick(ServerWorld world, LivingEntity champion) {
+        tickChained(world, champion);
         ServerBossBar bar = BARS.computeIfAbsent(champion.getUuid(), id -> {
             ServerBossBar b = new ServerBossBar(champion.getDisplayName(), BossBar.Color.WHITE, BossBar.Style.NOTCHED_10);
             b.setDarkenSky(false);
@@ -159,6 +220,7 @@ public final class DungeonChampion {
 
     /** Takes the champion's bar down (it died, or the fight was abandoned). */
     public static void removeBar(UUID champion) {
+        CHAINED_UNTIL.remove(champion);
         ServerBossBar bar = BARS.remove(champion);
         if (bar != null) {
             bar.clearPlayers();

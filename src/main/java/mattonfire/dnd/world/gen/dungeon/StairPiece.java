@@ -109,7 +109,7 @@ public class StairPiece extends DungeonPiece {
             int[] from = RING[(cell + RING.length - 1) % RING.length];
             int[] to = RING[cell];
             Direction facing = Direction.fromVector(to[0] - from[0], 0, to[1] - from[1]);
-            return Blocks.STONE_BRICK_STAIRS.getDefaultState().with(StairsBlock.FACING, facing == null ? Direction.NORTH : facing);
+            return b.palette.stairs().getDefaultState().with(StairsBlock.FACING, facing == null ? Direction.NORTH : facing);
         }
         if (y > 4 && (y - 4) % 12 == 0 && y < topY - 2 && Math.floorMod(start + 4, RING.length) == cell) {
             return b.palette.light(true);

@@ -11,13 +11,12 @@ import net.minecraft.util.math.random.Random;
  * A dungeon's theme: its block palette, how deep it is, which tiers it can roll and the word lists
  * its name is made from (lang keys {@code dungeon.dndclasses.<theme>.place.<n>} and {@code .name.<n>}).
  *
- * Only the Crypt is finished; the Goblin Warren and Dwarven Ruin are placeholders that reuse the
- * Crypt palette until their own tickets give them one (no structure JSON uses them yet).
+ * The Crypt and the Goblin Warren are finished; the Dwarven Ruin is a placeholder that reuses the
+ * Crypt palette until its own ticket gives it one (no structure JSON uses it yet).
  */
 public enum DungeonTheme implements StringIdentifiable {
     CRYPT("crypt", Palette.CRYPT, 1, 3, 6, 16),
-    // TODO(dungeons ticket 7): warren palette, cave-mouth entrance, goblin pools
-    GOBLIN_WARREN("goblin_warren", Palette.CRYPT, 1, 4, 4, 8),
+    GOBLIN_WARREN("goblin_warren", Palette.WARREN, 1, 4, 4, 8),
     // TODO(dungeons ticket 8): ruined dwarven palette, deep placement (y -30..0), dome boss room
     DWARVEN_RUIN("dwarven_ruin", Palette.CRYPT, 2, 4, 4, 8);
 
@@ -90,6 +89,7 @@ public enum DungeonTheme implements StringIdentifiable {
     /** The blocks a theme builds with. Every room asks the palette, so themes share their geometry. */
     public static class Palette {
         static final Palette CRYPT = new Palette();
+        static final Palette WARREN = new WarrenPalette();
 
         /** The outer, waterproof skin of every room: keeps caves, aquifers and lava out. */
         public BlockState shell() {
@@ -141,6 +141,79 @@ public enum DungeonTheme implements StringIdentifiable {
 
         public BlockState surfaceWall() {
             return Blocks.MOSSY_STONE_BRICK_WALL.getDefaultState();
+        }
+
+        /** The steps of the entrance's spiral stair. */
+        public Block stairs() {
+            return Blocks.STONE_BRICK_STAIRS;
+        }
+    }
+
+    /**
+     * The Goblin Warren: rough-hewn tunnels dug out of the rock and shored up with timber, the
+     * palisade's spruce logs from {@code GoblinCampPiece}, coarse earth underfoot and plain lanterns.
+     */
+    static class WarrenPalette extends Palette {
+        @Override
+        public BlockState wall(Random random) {
+            float r = random.nextFloat();
+            return (r < 0.45F ? Blocks.COBBLESTONE : r < 0.65F ? Blocks.STONE : r < 0.8F ? Blocks.MOSSY_COBBLESTONE
+                    : r < 0.92F ? Blocks.ANDESITE : Blocks.TUFF).getDefaultState();
+        }
+
+        @Override
+        public BlockState floor(Random random) {
+            float r = random.nextFloat();
+            return (r < 0.45F ? Blocks.COARSE_DIRT : r < 0.65F ? Blocks.PACKED_MUD : r < 0.8F ? Blocks.ROOTED_DIRT
+                    : r < 0.92F ? Blocks.COBBLESTONE : Blocks.DIRT).getDefaultState();
+        }
+
+        /** Timber shoring along the foot of the walls and round the doorways. */
+        @Override
+        public BlockState trim() {
+            return Blocks.SPRUCE_LOG.getDefaultState();
+        }
+
+        @Override
+        public BlockState accent() {
+            return Blocks.STRIPPED_SPRUCE_LOG.getDefaultState();
+        }
+
+        @Override
+        public Block pillar() {
+            return Blocks.SPRUCE_LOG;
+        }
+
+        /** A tunnel the goblins filled in with packed earth: plain to see once you look for it, quick to dig. */
+        @Override
+        public BlockState secretWall() {
+            return Blocks.COARSE_DIRT.getDefaultState();
+        }
+
+        @Override
+        public BlockState light(boolean hanging) {
+            return Blocks.LANTERN.getDefaultState().with(net.minecraft.block.LanternBlock.HANGING, hanging);
+        }
+
+        @Override
+        public BlockState foundation() {
+            return Blocks.COBBLESTONE.getDefaultState();
+        }
+
+        @Override
+        public BlockState surface(Random random) {
+            float r = random.nextFloat();
+            return (r < 0.4F ? Blocks.COBBLESTONE : r < 0.7F ? Blocks.MOSSY_COBBLESTONE : Blocks.STONE).getDefaultState();
+        }
+
+        @Override
+        public BlockState surfaceWall() {
+            return Blocks.SPRUCE_FENCE.getDefaultState();
+        }
+
+        @Override
+        public Block stairs() {
+            return Blocks.COBBLESTONE_STAIRS;
         }
     }
 }

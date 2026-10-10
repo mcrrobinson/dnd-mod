@@ -1,0 +1,31 @@
+{
+    "boss": "goblin_warlord",
+    "champion": {
+        "entity": "dndclasses:owlbear",
+        "name": "dungeon.dndclasses.champion.grimclaw",
+        "chained": true
+    },
+    "tiers": {
+        "1": [
+            {"entity": "dndclasses:goblin_warrior", "weight": 6},
+            {"entity": "minecraft:spider", "weight": 8},
+            {"entity": "minecraft:cave_spider", "weight": 4},
+            {"entity": "minecraft:wolf", "weight": 6}
+        ],
+        "2": [
+            {"entity": "dndclasses:goblin_warrior", "weight": 10},
+            {"entity": "minecraft:spider", "weight": 6},
+            {"entity": "minecraft:cave_spider", "weight": 5}
+        ],
+        "3": [
+            {"entity": "dndclasses:goblin_warrior", "weight": 12},
+            {"entity": "minecraft:spider", "weight": 5},
+            {"entity": "minecraft:cave_spider", "weight": 6}
+        ],
+        "4": [
+            {"entity": "dndclasses:goblin_warrior", "weight": 14},
+            {"entity": "minecraft:spider", "weight": 4},
+            {"entity": "minecraft:cave_spider", "weight": 6}
+        ]
+    }
+}

@@ -28,7 +28,7 @@ A Veteran (an elite encounter mob) that a player kills drops one extra roll from
 ### The Hoard Coffer
 A dark-oak, gold-banded coffer on the plinth in the treasure vault. It can't be broken, and it isn't a container, so hoppers can't drain it.
 - **Before the boss dies** it stays shut: "The Hoard Coffer is sealed until the dungeon's master falls".
-- **First use after a clear**: the player gets `chests/dungeon/vault_t<tier>` straight into their inventory (what doesn't fit drops at their feet). That's 4-6 treasure rolls and **one guaranteed magic item** from the [magic item](magic-items.md) tables. Like other random loot, it's unidentified. On top comes the theme's own extra, `chests/dungeon/<theme>_vault_t<tier>`: in a Crypt at III or IV, a **15% chance of a Staff of Ice** (nothing at I-II, and nothing for themes without one).
+- **First use after a clear**: the player gets `chests/dungeon/vault_t<tier>` straight into their inventory (what doesn't fit drops at their feet). That's 4-6 treasure rolls and **one guaranteed magic item** from the [magic item](magic-items.md) tables. Like other random loot, it's unidentified. On top comes the theme's own extra, `chests/dungeon/<theme>_vault_t<tier>`: in a Crypt at III or IV, a **15% chance of a Staff of Ice** (nothing at I-II); in a Goblin Warren at every tier, the **Warlord's war chest**, one roll of the goblin camp chief's chest (`dndclasses:chests/goblin_camp`); nothing for themes without one.
 
 | Tier | Vault magic item |
 |-|-|

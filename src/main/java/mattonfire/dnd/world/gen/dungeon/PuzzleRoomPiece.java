@@ -100,6 +100,12 @@ public class PuzzleRoomPiece extends DungeonPiece {
                 CryptDressing.candles(b, c[0], 1, c[1]);
             }
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.5F);
+        } else if (WarrenDressing.applies(this)) {
+            // Lanterns on the floor under the murals (the goblins can't read either)
+            for (int[] c : CryptDressing.corners(w, d)) {
+                b.setIfAir(c[0], 1, c[1], b.palette.light(false));
+            }
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.4F);
         }
     }
 

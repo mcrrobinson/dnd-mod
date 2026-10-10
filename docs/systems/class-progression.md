@@ -43,7 +43,7 @@ All 30 subclasses ("Right" is the branch listed first in the code, column 2):
 | Bard | College of Valor | `bard.valor` | Right | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
 | Bard | College of Lore | `bard.lore` | Left | **Bardic Lore**: +2 to Persuasion checks |
 | Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Life Domain healing is 25% stronger |
-| Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest, make a weapon or armor piece +1 until your next long rest, at an Attunement Table |
+| Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest (once per in-game day with the `dndRests` gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab ([details](magic-items.md#blessing-of-the-forge)) |
 | Druid | Circle of the Moon | `druid.moon` | Right | **Primal Strike**: your attacks deal +2 damage in animal form |
 | Druid | Circle of the Land | `druid.land` | Left | **Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss |
 | Fighter | Champion | `fighter.champion` | Right | **Superior Critical**: melee attack rolls crit on 18-20 |

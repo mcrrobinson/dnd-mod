@@ -2,11 +2,11 @@
 # Expect in latest.log:
 #  1. Life: Cure Wounds heals 10 (5 hearts); Preserve Life's Regeneration (Id 10) ~125 ticks; Divine Intervention gives
 #     Absorption (Id 22)
-#  2. Forge control (before the switch): sneak-using the table as a Life Cleric leaves the sword without dndclasses_magic
-#  3. Forge: sneak-use the Attunement Table with an iron sword: chat "Blessing of the Forge: Iron Sword is now +1",
-#     SelectedItem has dndclasses_magic {plus:1,forgeBy,forgeKey:"day:N"}; a second try keeps plus 1;
-#     the next day: "The Blessing of the Forge on Iron Sword fades." and plus 0
-#  4. With rests on: bless again ("rest:-1"), /dndclass rest long -> fades
+#  2. Forge control (before the switch): a Life Cleric's Items tab has no Bless +1, the sword stays without dndclasses_magic
+#  3. Forge: Bless +1 in the Attunement Table's Items tab with an iron sword: chat "Blessing of the Forge: Iron Sword is now +1",
+#     SelectedItem has dndclasses_magic {forgeBlessing:1b,forgeBy,forgeKey:"rest:N/day:N"}; a second try changes nothing;
+#     attack damage 5.67 -> 6.67; the next day: "The Blessing of the Forge on Iron Sword fades." and 5.67 again
+#  4. With rests on: bless again (forgeKey "rest:N"), /dndclass rest long -> fades
 #  5. Forge control: Cure Wounds heals 8
 wait 40
 closescreen
@@ -65,27 +65,38 @@ wait 3
 /setblock 2 150 4 dndclasses:attunement_table
 /give @s minecraft:iron_sword
 hotbar 0
-sneak on
 wait 3
+/attribute @s minecraft:generic.attack_damage get
 use
+wait 10
+click -84 -104
+wait 5
+click 95 -21
+wait 10
+closescreen
 wait 3
-sneak off
 /data get entity @s SelectedItem
 # --- 3. Forge ---
 /dndclass subclass @s cleric.forge
 wait 3
-sneak on
-wait 3
 use
-wait 3
-sneak off
-/data get entity @s SelectedItem
+wait 10
+click -84 -104
+wait 5
+click 95 -21
+wait 10
 screenshot subclass-cleric-forge
-sneak on
+closescreen
 wait 3
+/data get entity @s SelectedItem
 use
+wait 10
+click -84 -104
+wait 5
+click 95 -21
+wait 10
+closescreen
 wait 3
-sneak off
 /data get entity @s SelectedItem
 /attribute @s minecraft:generic.attack_damage get
 /time add 24000
@@ -94,11 +105,14 @@ wait 40
 /attribute @s minecraft:generic.attack_damage get
 # --- 4. With rests on ---
 /gamerule dndRests true
-sneak on
-wait 3
 use
+wait 10
+click -84 -104
+wait 5
+click 95 -21
+wait 10
+closescreen
 wait 3
-sneak off
 /data get entity @s SelectedItem
 /dndclass rest @s long
 wait 40

@@ -12,8 +12,9 @@ import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.D20;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
-import mattonfire.dnd.classes.SkillChecks.SkillModifiers;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
@@ -70,11 +71,12 @@ public final class ObstacleHintHud {
         List<Line> lines = new ArrayList<>();
         lines.add(new Line(ObstacleText.name(type, tier).formatted(Formatting.BOLD), 0xC89BFF));
         Eligibility eligibility = type.eligibility(D20.classOf(player));
-        D20.Skill skill = type.skill();
+        Skill skill = type.skill();
         if (player.isCreative()) {
             lines.add(new Line(Text.translatable("obstacle.dndclasses.hint.creative"), 0xA0A0A0));
         } else if (eligibility.canTry() && skill != null) {
-            int modifier = SkillModifiers.modifier(player, skill, eligibility);
+            // The synced character sheet: the same bonus the server rolls with
+            int modifier = AbilityScores.sheet(player).check(skill);
             lines.add(new Line(ObstacleText.you(type), 0x9CE89C));
             lines.add(new Line(Text.translatable(type.allowsTakeYourTime(tier) ? "obstacle.dndclasses.hint.roll"
                     : "obstacle.dndclasses.hint.roll_only", Text.translatable(skill.translationKey()),

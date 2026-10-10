@@ -54,7 +54,7 @@
       "obstacles": ["**Desecrated Altars**: consecrate them to stop nearby spawners and heal the party (only you)", "Holy Wards"],
       "subclasses": [
         {"id": "cleric.life", "name": "Life Domain", "title": "Life Cleric", "flavour": "A healer first, and a scourge of the undead.", "feature": "**Disciple of Life**: Cure Wounds heals 25% more, Preserve Life's and Sanctuary's party Regeneration last 25% longer, and Divine Intervention also gives Absorption I for 10 seconds", "featureReady": true},
-        {"id": "cleric.forge", "name": "Forge Domain", "title": "Forge Cleric", "flavour": "Blessed hammer, blessed ore, blessed steel.", "feature": "**Blessing of the Forge**: once per long rest (once a day with rests off), sneak and use an Attunement Table holding a weapon or armor piece to make it one better (+1, up to +3) until your next long rest", "featureReady": true}
+        {"id": "cleric.forge", "name": "Forge Domain", "title": "Forge Cleric", "flavour": "Blessed hammer, blessed ore, blessed steel.", "feature": "**Blessing of the Forge**: once per long rest (once per in-game day with the dndRests gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab", "featureReady": true}
       ],
       "abilities": {"STR": 13, "DEX": 10, "CON": 14, "INT": 8, "WIS": 15, "CHA": 12},
       "saves": ["WIS", "CHA"],

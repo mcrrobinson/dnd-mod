@@ -69,6 +69,8 @@ wait 60
 /execute if entity @e[tag=rh,distance=..5]
 /data get entity @e[tag=rh,limit=1] Pos
 /kill @e[tag=rh]
+/kill @e[type=minecraft:item]
+/clear @s
 /summon dndclasses:hobbit 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["rh"]}
 wait 5
 use

@@ -5,11 +5,19 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.spawnSummon;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
+import mattonfire.dnd.classes.ManaManager;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.registry.tag.BlockTags;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Ranks;
@@ -53,6 +61,15 @@ public class DruidSkills extends ClassSkills {
     private static final int ANIMAL_KILL_XP = 3;
     private static final int FORM_KILL_BONUS_XP = 4;
     private static final int WOLF_LIFETIME_TICKS = 60 * 20;
+
+    public static final String MOON = "druid.moon";
+    public static final String LAND = "druid.land";
+    /** Primal Strike: extra damage of every attack in animal form. */
+    public static final float PRIMAL_STRIKE_DAMAGE = 2.0F;
+    /** Natural Recovery: seconds on natural ground per mana pip. */
+    public static final int NATURAL_RECOVERY_SECONDS = 30;
+    /** Natural Recovery: seconds each Land Druid has spent on natural ground towards the next pip. */
+    private static final Map<UUID, Integer> NATURAL_RECOVERY = new HashMap<>();
 
     @Override
     public DndCharacter dndClass() {
@@ -164,9 +181,51 @@ public class DruidSkills extends ClassSkills {
     }
 
     @Override
+    public float modifyDealtDamage(PlayerEntity player, ClassProgress progress, LivingEntity target,
+            DamageSource source, float amount) {
+        // Primal Strike: the form's own attacks, not arrows or skills.
+        if (progress.hasSubclass(MOON) && source.getSource() == player && Druid.isTransformed(player)) {
+            return amount + PRIMAL_STRIKE_DAMAGE;
+        }
+        return amount;
+    }
+
+    /** Natural Recovery's ground: grass, moss, leaves (and the plants on them). */
+    public static boolean onNaturalGround(PlayerEntity player) {
+        if (!player.isOnGround())
+            return false;
+        BlockState below = player.getWorld().getBlockState(player.getBlockPos().down());
+        BlockState feet = player.getWorld().getBlockState(player.getBlockPos());
+        return isNatural(below) || feet.isOf(Blocks.MOSS_CARPET) || isNatural(feet);
+    }
+
+    private static boolean isNatural(BlockState state) {
+        return state.isOf(Blocks.GRASS_BLOCK) || state.isOf(Blocks.MOSS_BLOCK) || state.isOf(Blocks.MOSS_CARPET)
+                || state.isIn(BlockTags.LEAVES);
+    }
+
+    @Override
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
         if (progress.hasPassive("druid.hardy_form") && Druid.isTransformed(player)) {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, true, false, true));
         }
+        // Natural Recovery: time on natural ground adds up; every 30 seconds of it is a mana pip.
+        if (progress.hasSubclass(LAND) && player.isAlive() && onNaturalGround(player)) {
+            int seconds = NATURAL_RECOVERY.getOrDefault(player.getUuid(), 0) + 1;
+            if (seconds >= NATURAL_RECOVERY_SECONDS && !ManaManager.hasFullMana(player)) {
+                ManaManager.regenerateMana(player);
+                mattonfire.dnd.classes.DnDClasses.LOGGER.debug("[Subclass] Natural Recovery: {} +1 mana, now {}",
+                        player.getEntityName(), ManaManager.getMana(player));
+                ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.HAPPY_VILLAGER, player.getX(),
+                        player.getY() + 0.2, player.getZ(), 6, 0.4, 0.1, 0.4, 0);
+                seconds = 0;
+            }
+            NATURAL_RECOVERY.put(player.getUuid(), Math.min(seconds, NATURAL_RECOVERY_SECONDS));
+        }
+    }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        NATURAL_RECOVERY.remove(player.getUuid());
     }
 }

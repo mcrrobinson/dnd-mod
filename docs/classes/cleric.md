@@ -50,10 +50,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more |
-| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once a day, make one held weapon or worn armor piece +1 until the next day, at an Attunement Table |
+| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Life Domain healing is 25% stronger |
+| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once per long rest, make a weapon or armor piece +1 until your next long rest, at an Attunement Table |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Disciple of Life** (Life): Cure Wounds heals 5 hearts instead of 4. Preserve Life's Regeneration II lasts 6.25 s instead of 5 s, and Sanctuary's party Regeneration lasts 25% longer (6.25 / 10 / 12.5 s at ranks II-IV). Divine Intervention already heals fully, so it also gives Absorption I (2 hearts) for 10 s.
+- **Blessing of the Forge** (Forge): sneak and use an Attunement Table with a weapon (sword, axe, trident, bow, crossbow) or armor piece in your main hand. It becomes one better (+1, up to +3; see [magic items](../systems/magic-items.md)) until your next long rest. Once per long rest; with the `dndRests` gamerule off, once per in-game day, lasting until the next day. The +1 comes off the item wherever it is once its Cleric has rested (checked once a second while the Cleric is online), or if the Cleric stops being a Forge Cleric. Unidentified items and +3 items can't be blessed. The Magic Items tab of the attunement card will get a button for it.
 
 ## Commands
 - `/dndclass set <player> cleric` (see [Admin commands](../systems/admin-commands.md)).

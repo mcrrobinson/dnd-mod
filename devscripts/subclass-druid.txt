@@ -1,0 +1,57 @@
+# Druid subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-druid.txt
+# Expect in latest.log:
+#  1. Moon in pig form: /damage 5 by the player leaves the 0-armor husk at 13 (5 + 2)
+#  2. Land in pig form: 15 (no Primal Strike)
+#  3. Land on grass: debug.log "[Subclass] Natural Recovery: ... +1 mana" after the power-up spends mana; none as Moon
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=husk]
+/kill @e[type=pig]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/fill 0 149 0 8 149 8 minecraft:grass_block
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass bestiary @s unlock minecraft:pig
+/dndclass subclass @s druid.moon
+/clear @s
+/tp @s 2.5 150 2.5 0 20
+wait 700
+# --- Moon: Natural Recovery control (on grass 35 s, then spend mana) ---
+press key.dnd-classes.power-up
+wait 60
+/data get entity @s "mattonfire.dnd.classes".druidFormExpiry
+# --- 1. Primal Strike ---
+/summon minecraft:husk 2.5 150 5.5 {NoAI:1b,Health:20f,Attributes:[{Name:"minecraft:generic.armor",Base:0d}],Rotation:[180f,0f]}
+wait 3
+/damage @e[type=husk,limit=1] 5 minecraft:generic by @s
+wait 3
+/data get entity @e[type=husk,limit=1] Health
+screenshot subclass-druid-moon-pig
+/kill @e[type=husk]
+# --- 2. Land ---
+/dndclass subclass @s druid.land
+wait 700
+press key.dnd-classes.power-up
+wait 60
+/data get entity @s "mattonfire.dnd.classes".druidFormExpiry
+/summon minecraft:husk 2.5 150 5.5 {NoAI:1b,Health:20f,Attributes:[{Name:"minecraft:generic.armor",Base:0d}],Rotation:[180f,0f]}
+wait 3
+/damage @e[type=husk,limit=1] 5 minecraft:generic by @s
+wait 3
+/data get entity @e[type=husk,limit=1] Health
+/kill @e[type=husk]
+quit

@@ -1,0 +1,119 @@
+# Cleric subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-cleric.txt
+# Expect in latest.log:
+#  1. Life: Cure Wounds heals 10 (5 hearts); Preserve Life's Regeneration (Id 10) ~125 ticks; Divine Intervention gives
+#     Absorption (Id 22)
+#  2. Forge control (before the switch): sneak-using the table as a Life Cleric leaves the sword without dndclasses_magic
+#  3. Forge: sneak-use the Attunement Table with an iron sword: chat "Blessing of the Forge: Iron Sword is now +1",
+#     SelectedItem has dndclasses_magic {plus:1,forgeBy,forgeKey:"day:N"}; a second try keeps plus 1;
+#     the next day: "The Blessing of the Forge on Iron Sword fades." and plus 0
+#  4. With rests on: bless again ("rest:-1"), /dndclass rest long -> fades
+#  5. Forge control: Cure Wounds heals 8
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=husk]
+/kill @e[type=pig]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s cleric
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 900
+/dndclass subclass @s cleric.life
+/dndclass unlock @s cleric.preserve_life
+/dndclass unlock @s cleric.cure_wounds
+/dndclass equip @s cleric.cure_wounds
+/clear @s
+/tp @s 2.5 150 2.5 0 20
+wait 40
+# --- 1. Life ---
+/effect give @s minecraft:instant_health 1 10
+wait 5
+/data get entity @s Health
+/damage @s 12 minecraft:generic
+wait 2
+/data get entity @s Health
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s Health
+# Preserve Life: drop below 30%
+wait 15
+/damage @s 13 minecraft:generic
+wait 30
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/effect clear @s
+/dndclass unlock @s cleric.smite_undead
+/dndclass unlock @s cleric.divine_intervention
+/dndclass equip @s cleric.divine_intervention
+wait 200
+press key.dnd-classes.power-up
+wait 3
+/data get entity @s ActiveEffects
+/effect clear @s
+# --- 2. Life at the table: no blessing ---
+/setblock 2 150 4 dndclasses:attunement_table
+/give @s minecraft:iron_sword
+hotbar 0
+sneak on
+wait 3
+use
+wait 3
+sneak off
+/data get entity @s SelectedItem
+# --- 3. Forge ---
+/dndclass subclass @s cleric.forge
+wait 3
+sneak on
+wait 3
+use
+wait 3
+sneak off
+/data get entity @s SelectedItem
+screenshot subclass-cleric-forge
+sneak on
+wait 3
+use
+wait 3
+sneak off
+/data get entity @s SelectedItem
+/attribute @s minecraft:generic.attack_damage get
+/time add 24000
+wait 40
+/data get entity @s SelectedItem
+/attribute @s minecraft:generic.attack_damage get
+# --- 4. With rests on ---
+/gamerule dndRests true
+sneak on
+wait 3
+use
+wait 3
+sneak off
+/data get entity @s SelectedItem
+/dndclass rest @s long
+wait 40
+/data get entity @s SelectedItem
+/gamerule dndRests false
+# --- 5. Forge: Cure Wounds back to 8 ---
+/dndclass unlock @s cleric.preserve_life
+/dndclass unlock @s cleric.cure_wounds
+/dndclass equip @s cleric.cure_wounds
+/effect give @s minecraft:instant_health 1 10
+wait 200
+/damage @s 10 minecraft:generic
+wait 2
+/data get entity @s Health
+press key.dnd-classes.power-up
+wait 3
+/data get entity @s Health
+quit

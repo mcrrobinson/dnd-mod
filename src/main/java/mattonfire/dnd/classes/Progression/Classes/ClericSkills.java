@@ -11,6 +11,22 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.IEntityDataSaver;
+import mattonfire.dnd.classes.Registry.ModBlocks;
+import mattonfire.dnd.classes.Rest.DndRules;
+import mattonfire.dnd.classes.Rest.RestState;
+import mattonfire.dnd.classes.Rest.Rests;
+import mattonfire.dnd.magic.MagicData;
+import mattonfire.dnd.magic.MagicGear;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.Hand;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
@@ -75,8 +91,23 @@ public class ClericSkills extends ClassSkills {
         return SANCTUARY_PARTY_REGEN[SANCTUARY.rank(player) - 1] - 1;
     }
 
+    /** How long Sanctuary's party Regeneration lasts; 25% longer for a Life Cleric (Disciple of Life). */
     public static int sanctuaryPartyRegenTicks(PlayerEntity player) {
-        return SANCTUARY_PARTY_REGEN_SECONDS[SANCTUARY.rank(player) - 1] * 20;
+        return discipleOfLife(player, SANCTUARY_PARTY_REGEN_SECONDS[SANCTUARY.rank(player) - 1] * 20);
+    }
+
+    /** Whether the player is a Life Cleric. */
+    public static boolean isLife(PlayerEntity player) {
+        return Progression.classOf(player) == DndCharacter.CLERIC && Progression.current(player).hasSubclass(LIFE);
+    }
+
+    /** Disciple of Life: a heal (or a healing effect's ticks) 25% bigger for a Life Cleric. */
+    private static float discipleOfLife(PlayerEntity player, float amount) {
+        return isLife(player) ? amount * DISCIPLE_OF_LIFE : amount;
+    }
+
+    private static int discipleOfLife(PlayerEntity player, int ticks) {
+        return isLife(player) ? Math.round(ticks * DISCIPLE_OF_LIFE) : ticks;
     }
 
     private static final int UNDEAD_KILL_BONUS_XP = 3;
@@ -89,6 +120,15 @@ public class ClericSkills extends ClassSkills {
     private static final float SMITE_MULTIPLIER = 1.5F;
     private static final float PROSPECTOR_CHANCE = 0.2F;
     private static final float RADIANCE_DAMAGE = 4.0F;
+
+    public static final String LIFE = "cleric.life";
+    public static final String FORGE = "cleric.forge";
+    /** Disciple of Life: the Life Domain's healing is multiplied by this. */
+    public static final float DISCIPLE_OF_LIFE = 1.25F;
+    /** Disciple of Life: Divine Intervention's overflow, as Absorption I for its 10 seconds. */
+    private static final int DISCIPLE_ABSORPTION_TICKS = 200;
+    /** Blessing of the Forge: persistent-data key holding the rest the blessing was last used in. */
+    private static final String FORGE_USED_KEY = "dndForgeBlessing";
 
     /** Server tick each player's Preserve Life is ready again at. */
     private static final Map<UUID, Integer> PRESERVE_LIFE_READY = new HashMap<>();
@@ -131,6 +171,7 @@ public class ClericSkills extends ClassSkills {
 
     @Override
     public void register() {
+        registerForgeBlessing();
         PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
             if (!(player instanceof ServerPlayerEntity serverPlayer) || player.isCreative()
                     || Progression.classOf(player) != DndCharacter.CLERIC || !isOre(state)) {
@@ -152,6 +193,110 @@ public class ClericSkills extends ClassSkills {
         });
     }
 
+    /**
+     * Blessing of the Forge's trigger until the Attunement Table gets its Magic Items tab: sneak and use
+     * an Attunement Table with the weapon or armor piece in your main hand.
+     */
+    private static void registerForgeBlessing() {
+        UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
+            if (world.isClient || hand != Hand.MAIN_HAND || !player.isSneaking()
+                    || !world.getBlockState(hit.getBlockPos()).isOf(ModBlocks.ATTUNEMENT_TABLE)
+                    || !(player instanceof ServerPlayerEntity cleric)
+                    || Progression.classOf(player) != DndCharacter.CLERIC
+                    || !Progression.current(player).hasSubclass(FORGE)
+                    || !MagicGear.canHavePlus(player.getMainHandStack().getItem())) {
+                return ActionResult.PASS;
+            }
+            blessingOfTheForge(cleric, player.getMainHandStack());
+            return ActionResult.SUCCESS;
+        });
+        // Blessings end with the Cleric's next long rest (or the next day with rests off), wherever the item is.
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (server.getTicks() % 20 == 0) {
+                for (ServerPlayerEntity holder : server.getPlayerManager().getPlayerList()) {
+                    endStaleBlessings(server, holder);
+                }
+            }
+        });
+    }
+
+    /** Which rest a Forge blessing belongs to: the last long rest, or the day with rests off. */
+    private static String forgeRestKey(ServerPlayerEntity player) {
+        return DndRules.rests(player.getWorld()) ? "rest:" + RestState.get(player).lastLongRestDay
+                : "day:" + Rests.day(player);
+    }
+
+    /**
+     * Blessing of the Forge: the item becomes one better (+1, up to +{@value MagicGear#MAX_PLUS}) until
+     * the Cleric's next long rest. Once per long rest.
+     *
+     * @return whether the item was blessed
+     */
+    public static boolean blessingOfTheForge(ServerPlayerEntity player, ItemStack stack) {
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        String key = forgeRestKey(player);
+        Text refusal = null;
+        if (key.equals(data.getString(FORGE_USED_KEY))) {
+            refusal = Text.literal(DndRules.rests(player.getWorld())
+                    ? "You've used Blessing of the Forge since your last long rest."
+                    : "You've used Blessing of the Forge today.");
+        } else if (!MagicGear.canHavePlus(stack.getItem())) {
+            refusal = Text.literal("Only a weapon or a piece of armor can be blessed.");
+        } else if (!MagicData.isIdentified(stack)) {
+            refusal = Text.literal("Identify it before you bless it.");
+        } else if (MagicData.plus(stack) >= MagicGear.MAX_PLUS) {
+            refusal = Text.literal("It can't be made any better.");
+        }
+        if (refusal != null) {
+            player.sendMessage(refusal.copy().formatted(Formatting.RED), true);
+            return false;
+        }
+        MagicData.setPlus(stack, MagicData.plus(stack) + 1);
+        NbtCompound magic = MagicData.getOrCreate(stack);
+        magic.putUuid("forgeBy", player.getUuid());
+        magic.putString("forgeKey", key);
+        data.putString(FORGE_USED_KEY, key);
+        player.sendMessage(Text.literal("Blessing of the Forge: ").formatted(Formatting.GOLD)
+                .append(stack.getName().copy().formatted(Formatting.YELLOW))
+                .append(Text.literal(" is now +" + MagicData.plus(stack) + " until your next long rest.")
+                        .formatted(Formatting.GOLD)),
+                false);
+        ServerWorld world = (ServerWorld) player.getWorld();
+        world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ANVIL_USE, SoundCategory.PLAYERS, 0.8F, 1.2F);
+        world.spawnParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 1.2, player.getZ(), 15, 0.4, 0.3,
+                0.4, 0.01);
+        return true;
+    }
+
+    /** Whether the stack carries a Forge blessing. */
+    public static boolean isForgeBlessed(ItemStack stack) {
+        NbtCompound magic = MagicData.get(stack);
+        return magic != null && magic.containsUuid("forgeBy");
+    }
+
+    /** Takes the +1 back off the holder's items whose blessing has run out (its Cleric is online). */
+    private static void endStaleBlessings(MinecraftServer server, ServerPlayerEntity holder) {
+        var inventory = holder.getInventory();
+        for (int i = 0; i < inventory.size(); i++) {
+            ItemStack stack = inventory.getStack(i);
+            if (!isForgeBlessed(stack))
+                continue;
+            NbtCompound magic = MagicData.get(stack);
+            ServerPlayerEntity cleric = server.getPlayerManager().getPlayer(magic.getUuid("forgeBy"));
+            if (cleric == null)
+                continue; // Can't tell yet; checked again once they're back
+            boolean stillForge = Progression.classOf(cleric) == DndCharacter.CLERIC
+                    && Progression.current(cleric).hasSubclass(FORGE);
+            if (stillForge && magic.getString("forgeKey").equals(forgeRestKey(cleric)))
+                continue;
+            MagicData.setPlus(stack, Math.max(0, MagicData.plus(stack) - 1));
+            magic.remove("forgeBy");
+            magic.remove("forgeKey");
+            holder.sendMessage(Text.literal("The Blessing of the Forge on ").formatted(Formatting.GRAY)
+                    .append(stack.getName()).append(Text.literal(" fades.").formatted(Formatting.GRAY)), false);
+        }
+    }
+
     private static boolean isOre(BlockState state) {
         return state.isIn(ConventionalBlockTags.ORES) || state.isOf(Blocks.ANCIENT_DEBRIS);
     }
@@ -171,7 +316,7 @@ public class ClericSkills extends ClassSkills {
         switch (node.id()) {
             case "cleric.cure_wounds" -> {
                 for (LivingEntity ally : alliesNear(player, 8)) {
-                    ally.heal(CURE_WOUNDS_HEAL);
+                    ally.heal(discipleOfLife(player, CURE_WOUNDS_HEAL));
                     world.spawnParticles(ParticleTypes.HEART, ally.getX(), ally.getY() + 1.5, ally.getZ(), 4, 0.4,
                             0.3, 0.4, 0);
                 }
@@ -199,6 +344,11 @@ public class ClericSkills extends ClassSkills {
                     }
                     harmful.forEach(ally::removeStatusEffect);
                     ally.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 200, 2));
+                    if (isLife(player)) {
+                        // A full heal can't be 25% bigger, so the extra becomes Absorption.
+                        ally.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION,
+                                DISCIPLE_ABSORPTION_TICKS, 0));
+                    }
                     world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, ally.getX(), ally.getY() + 1, ally.getZ(),
                             30, 0.5, 0.8, 0.5, 0.2);
                 }
@@ -233,7 +383,7 @@ public class ClericSkills extends ClassSkills {
             return;
         }
         PRESERVE_LIFE_READY.put(player.getUuid(), now + PRESERVE_LIFE_COOLDOWN);
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, discipleOfLife(player, 100), 1));
         effects(player, SoundEvents.ENTITY_PLAYER_LEVELUP, ParticleTypes.HEART, 8);
     }
 

@@ -5,11 +5,15 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.enemiesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.Misc.BardCompanions;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
@@ -18,6 +22,9 @@ import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.util.Identifier;
 import mattonfire.dnd.entity.boss.Boss;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -91,6 +98,16 @@ public class BardSkills extends ClassSkills {
     private static final int CRESCENDO_TICKS = 400;
     private static final float JACK_DAMAGE_MULTIPLIER = 1.1F;
 
+    public static final String VALOR = "bard.valor";
+    public static final String LORE = "bard.lore";
+    /** Combat Inspiration: armor for everyone who gets a Valor Bard's instrument buff, for as long as it. */
+    public static final double COMBAT_INSPIRATION_ARMOR = 2;
+    private static final UUID COMBAT_INSPIRATION_ID = UUID.nameUUIDFromBytes("dndclasses:bard.valor".getBytes());
+    /** Bardic Lore: added to Persuasion checks. */
+    public static final int BARDIC_LORE_PERSUASION = 2;
+    /** Server tick each inspired player's armor runs out. */
+    private static final Map<UUID, Integer> INSPIRED_UNTIL = new HashMap<>();
+
     @Override
     public DndCharacter dndClass() {
         return DndCharacter.BARD;
@@ -138,6 +155,25 @@ public class BardSkills extends ClassSkills {
     @Override
     public void register() {
         BardCompanions.register();
+        // Bardic Lore. Identifying magic items on pickup comes with the identification card.
+        AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/bard_lore"), (player, c) -> {
+            if (Progression.classOf(player) == DndCharacter.BARD && Progression.current(player).hasSubclass(LORE)) {
+                c.skillBonus(Skill.PERSUASION, BARDIC_LORE_PERSUASION, "Bardic Lore");
+            }
+        });
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (INSPIRED_UNTIL.isEmpty() || server.getTicks() % 20 != 0)
+                return;
+            int now = server.getTicks();
+            INSPIRED_UNTIL.entrySet().removeIf(entry -> {
+                ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
+                if (player != null && now < entry.getValue())
+                    return false;
+                if (player != null)
+                    setInspiredArmor(player, false);
+                return true; // Run out, or logged off (the modifier is temporary, so it went with them)
+            });
+        });
         mattonfire.dnd.classes.Music.BardInstrumentSlot.register();
         // Kills by a bard's pets aren't the bard's own kills, so their XP is handed out here.
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
@@ -195,6 +231,39 @@ public class BardSkills extends ClassSkills {
             }
         }
         return true;
+    }
+
+    /**
+     * Combat Inspiration: a Valor Bard's instrument also gives everyone who got its buff +2 armor for
+     * the buff's length. Called from {@code InstrumentItem.playAsBard}.
+     */
+    public static void combatInspiration(ServerPlayerEntity bard, List<PlayerEntity> listeners, int ticks) {
+        if (Progression.classOf(bard) != DndCharacter.BARD || !Progression.current(bard).hasSubclass(VALOR))
+            return;
+        int until = bard.getServer().getTicks() + ticks;
+        for (PlayerEntity listener : listeners) {
+            if (listener instanceof ServerPlayerEntity player) {
+                setInspiredArmor(player, true);
+                INSPIRED_UNTIL.put(player.getUuid(), until);
+            }
+        }
+    }
+
+    /** Whether the player has Combat Inspiration's armor. */
+    public static boolean isInspired(PlayerEntity player) {
+        EntityAttributeInstance armor = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
+        return armor != null && armor.getModifier(COMBAT_INSPIRATION_ID) != null;
+    }
+
+    private static void setInspiredArmor(ServerPlayerEntity player, boolean on) {
+        EntityAttributeInstance armor = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
+        if (armor == null)
+            return;
+        armor.removeModifier(COMBAT_INSPIRATION_ID);
+        if (on) {
+            armor.addTemporaryModifier(new EntityAttributeModifier(COMBAT_INSPIRATION_ID, "Combat Inspiration",
+                    COMBAT_INSPIRATION_ARMOR, EntityAttributeModifier.Operation.ADDITION));
+        }
     }
 
     @Override

@@ -6,37 +6,45 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:netherite_ingot",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:totem_of_undying",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:enchanted_golden_apple",
-          "weight": 1,
+          "name": "minecraft:netherite_sword",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 2,
-                "max": 2
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:book",
-          "weight": 2,
+          "name": "minecraft:netherite_chestplate",
           "functions": [
             {
-              "function": "minecraft:enchant_with_levels",
-              "levels": 30,
-              "treasure": true
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:trident",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
             }
           ]
         }

@@ -6,37 +6,45 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:iron_ingot",
-          "weight": 3,
+          "name": "minecraft:iron_sword",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 4
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "common",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:golden_apple",
-          "weight": 1
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:book",
-          "weight": 1
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:book",
-          "weight": 2,
+          "name": "minecraft:iron_chestplate",
           "functions": [
             {
-              "function": "minecraft:enchant_with_levels",
-              "levels": 10,
-              "treasure": false
+              "function": "dndclasses:magic_item",
+              "tier": "common",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "common",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:iron_helmet",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "common",
+              "identified": true
             }
           ]
         }

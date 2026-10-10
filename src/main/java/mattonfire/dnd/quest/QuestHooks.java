@@ -2,11 +2,12 @@ package mattonfire.dnd.quest;
 
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import mattonfire.dnd.dm.DungeonMaster;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
- * Hooks for systems that aren't merged yet. Each one has a safe default; the owning ticket sets it.
+ * Hooks into other systems. {@code magicItem} waits for the magic items ticket; {@code ignored} is DM mode.
  */
 public final class QuestHooks {
     /**
@@ -17,11 +18,10 @@ public final class QuestHooks {
     public static BiFunction<ServerPlayerEntity, String, ItemStack> magicItem = (player, rarity) -> null;
 
     /**
-     * Players who don't take part in quests: DM mode (PR #121, {@code DungeonMaster.isDm}) sets this
-     * once both are merged. Ignored players are never added as participants and their kills, visits
-     * and raids give no progress.
+     * Players who don't take part in quests: DMs in DM mode. Ignored players are never added as
+     * participants and their kills, visits, raids and NPC talks give no progress.
      */
-    public static Predicate<ServerPlayerEntity> ignored = player -> false;
+    public static Predicate<ServerPlayerEntity> ignored = DungeonMaster::isDm;
 
     private QuestHooks() {
     }

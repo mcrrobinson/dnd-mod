@@ -6,55 +6,56 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:diamond",
-          "weight": 3,
+          "name": "minecraft:iron_sword",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 2
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "uncommon",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:golden_apple",
-          "weight": 2,
+          "name": "minecraft:iron_chestplate",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 2
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "uncommon",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:experience_bottle",
-          "weight": 2,
+          "name": "minecraft:bow",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 4,
-                "max": 8
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "uncommon",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:book",
-          "weight": 2,
+          "name": "minecraft:iron_axe",
           "functions": [
             {
-              "function": "minecraft:enchant_with_levels",
-              "levels": 20,
-              "treasure": false
+              "function": "dndclasses:magic_item",
+              "tier": "uncommon",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:shield",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "uncommon",
+              "identified": true
             }
           ]
         }

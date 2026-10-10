@@ -26,6 +26,7 @@ Quests are multi-step stories written as data files. A quest has stages, each st
   - Leaving the party (or being removed) gives you your own copy of each shared quest at its current progress; the party keeps the original.
   - **Rewards aren't split**: when the quest is finished, each participant has its rewards waiting at the giver (any NPC with the giver's role). A quest with no giver pays out straight away. Rewards wait across restarts and logouts.
   - Stage actions for a participant who is offline run when they next join.
+- **Dungeon Masters**: a player in DM mode (`/dm on`) is never added to a quest and their kills, visits and raids don't count.
 - **Limits**: 8 active quests per player. Quests never expire. A quest is done once unless it's `repeatable` (with a cooldown in days).
 - **Feedback**: progress shows on the action bar ("Slay goblins 4/6"); stage completion and the finished quest go to chat with a sound.
 
@@ -79,14 +80,13 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
 - `chain` defaults to the id's folder (`dndclasses:goblin_menace`). `giver` is an NPC role; leave it out to pay rewards at once. `requires` and `rumour_weight` are for dialogue and Rumour notices (later tickets).
 - Objective fields: `kill` (`entity` id or `#tag`, `count`, `within_structure`, `quest_drop`), `visit` (`structure` id or `#tag`), `talk` (`role`), `collect` (`item` id or `#tag`, `count`, `consume`, default true), `deliver` (`item`, `count`, `role`), `check` (`skill`, `dc`), `defend` (`settlement`). Every objective takes an optional `text`.
 - Actions: `give` (`item`, `count`, `nbt` as SNBT), `loot` (`table`), `magic_item` (`rarity`: `common`, `uncommon`, `rare`, `very_rare`, `legendary`), `emeralds` (`count`), `xp` / `class_xp` (`amount`), `rep` (`factions`: id to delta), `reveal` (`structure`, `radius` in chunks, default 100, `fallback` text), `narrate` (`text`), `start_quest` (`quest`), `set_flag` (`flag`), `advancement` (`advancement`).
-- `magic_item` rolls from the loot table `dndclasses:gameplay/quest_reward_<rarity>` until magic items are in.
+- `magic_item` rolls from the loot table `dndclasses:gameplay/quest_reward_<rarity>`: a weapon or armour piece made a magic item of that rarity (identified) with the `dndclasses:magic_item` loot function. Edit those tables to change the pool.
 
 ## Known limitations
 - No NPC dialogue yet: nobody offers quests or pays rewards in-game, so quests are started and handed in with `/quest admin` (`start`, `talk`).
 - No Journal or tracker HUD yet; the client receives the quest data (`dndclasses:quest_sync`) but only logs it.
 - `check` objectives have no d20 roll yet: dialogue will offer them.
 - Dev clients get a random player name each launch, so per-player quest state seems to vanish between runs; pass `-PdevUser=<name>` to keep one.
-- DMs still get quest progress until the DM toolkit hooks in (`QuestHooks.ignored`).
 
 ## For developers
 - Package `mattonfire.dnd.quest`:
@@ -95,6 +95,6 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
   - `QuestManager` (`PersistentState` `dndclasses_quests`): instances, per-player finished quests, tracked quest and pending actions (rewards at the giver, missed stage actions). Its API for the next tickets: `whyCantStart`, `start`, `join`, `talkedTo(player, role)` (dialogue calls this), `checkPassed(player, skill)`, `claim`.
   - `QuestEvents`: kill hook (`AFTER_KILLED_OTHER_ENTITY`, pets credit their owner), visit tick, `onRaidWon` (called from `GoblinRaid.win`), `onPartyLeft` (called from `/party leave` and `/party kick`).
   - `QuestSync` (S2C `dndclasses:quest_sync`, debounced to once a second) and `client/ClientQuests` (the data the Journal will read).
-  - `QuestHooks`: `magicItem` (set by the magic items ticket) and `ignored` (set to `DungeonMaster::isDm` by the DM toolkit).
+  - `QuestHooks`: `magicItem` (set by the magic items ticket) and `ignored` (`DungeonMaster::isDm`: DMs in DM mode never join quests or make progress).
 - `LichEntity.soulFled()` tells a reforming death from the real one.
 - Devscripts: `quest-engine.txt` + `quest-engine-restart.txt` (sample quest, rewards, admin commands, saved progress), `quest-engine-objectives.txt` (every objective and action, using the test data pack in `devscripts/datapacks/quest-engine-test`, which also has two broken files) and `quest-engine-lan-host.txt` / `quest-engine-lan-guest.txt` (party sharing, join, fork). Run them with `-PdevUser=QuestDev`.

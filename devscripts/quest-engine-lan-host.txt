@@ -20,7 +20,7 @@ closescreen
 /quest admin @s reset dndclasses:goblin_menace/1
 /clear @s minecraft:emerald
 /publish false survival 25637
-wait 1400
+wait 2400
 /list
 /party invite @a[tag=!qhost,limit=1]
 wait 200

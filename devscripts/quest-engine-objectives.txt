@@ -35,9 +35,11 @@ wait 5
 /spreadplayers -408 1096 0 1 false @s
 wait 60
 /quest list
+# Clear the camp's goblins (they'd fight, and could grab the drops) and loose items
+/kill @e[type=#dndclasses:goblins,distance=..48]
 /kill @e[type=minecraft:item,distance=..8]
-/execute at @s run summon minecraft:zombie ~ ~ ~1 {NoAI:1b,Tags:["qo"]}
-/execute at @s run summon minecraft:zombie ~ ~ ~1 {NoAI:1b,Tags:["qo"]}
+/execute at @s run summon minecraft:zombie ~ ~ ~ {NoAI:1b,Tags:["qo"]}
+/execute at @s run summon minecraft:zombie ~ ~ ~ {NoAI:1b,Tags:["qo"]}
 wait 5
 /execute as @e[tag=qo] run damage @s 1000 minecraft:player_attack by @p
 wait 40
@@ -83,9 +85,11 @@ wait 400
 /quest admin @s talk hobbit_elder
 /execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:2b}]}]
 /execute if entity @s[nbt={Inventory:[{id:"minecraft:filled_map"}]}]
+/execute if entity @s[nbt={Inventory:[{tag:{dndclasses_magic:{tier:"uncommon"}}}]}]
+/data get entity @s Inventory[{tag:{dndclasses_magic:{tier:"uncommon"}}}]
 /rep
+wait 40
 slots
-wait 10
 screenshot quest-objectives-rewards
 # Follow-up has no giver: paid the moment it's done
 /tp @s 0.5 150 0.5 0 0

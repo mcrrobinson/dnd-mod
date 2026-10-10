@@ -6,46 +6,56 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:netherite_scrap",
-          "weight": 2,
+          "name": "minecraft:diamond_sword",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 1,
-                "max": 2
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "very_rare",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:enchanted_golden_apple",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:diamond",
-          "weight": 2,
+          "name": "minecraft:diamond_chestplate",
           "functions": [
             {
-              "function": "minecraft:set_count",
-              "count": {
-                "min": 4,
-                "max": 6
-              }
+              "function": "dndclasses:magic_item",
+              "tier": "very_rare",
+              "identified": true
             }
           ]
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:book",
-          "weight": 2,
+          "name": "minecraft:diamond_helmet",
           "functions": [
             {
-              "function": "minecraft:enchant_with_levels",
-              "levels": 30,
-              "treasure": true
+              "function": "dndclasses:magic_item",
+              "tier": "very_rare",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "very_rare",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:trident",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "very_rare",
+              "identified": true
             }
           ]
         }

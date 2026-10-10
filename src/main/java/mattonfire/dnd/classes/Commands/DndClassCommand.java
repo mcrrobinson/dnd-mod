@@ -489,7 +489,9 @@ public class DndClassCommand {
                 .append(Text.translatable(Skill.INSIGHT.translationKey()))
                 .append(" " + sheet.passive(Skill.INSIGHT) + ", ")
                 .append(Text.translatable(Skill.STEALTH.translationKey()))
-                .append(" " + sheet.passive(Skill.STEALTH)), false);
+                .append(" " + sheet.passive(Skill.STEALTH) + String.format(" (sneaking: noticed at x%.2f range)",
+                        0.8 * mattonfire.dnd.classes.SkillChecks.Stealth.factor(sheet.passive(Skill.STEALTH)))),
+                false);
         for (CharacterSheet.Line line : sheet.lines()) {
             if (!line.source().equals(displayName(sheet.dndClass()))) {
                 source.sendFeedback(Text.literal("  " + line.source() + ": " + line.target() + " " + line.detail())

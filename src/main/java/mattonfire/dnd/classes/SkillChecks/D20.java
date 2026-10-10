@@ -540,5 +540,7 @@ public final class D20 {
         Persuasion.register();
         AttackRolls.register();
         TrapDisarm.register();
+        Perception.register();
+        Stealth.register();
     }
 }

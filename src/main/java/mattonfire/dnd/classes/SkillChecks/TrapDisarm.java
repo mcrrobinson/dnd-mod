@@ -75,7 +75,7 @@ public final class TrapDisarm {
         }
         boolean rogue = D20.classOf(player) == DndCharacter.ROGUE;
         if (!rogue) {
-            if (trap.isArmed() && TrapSense.get().spots(serverPlayer, trap, trap.dc())) {
+            if (trap.isArmed() && trap.spottedBy(serverPlayer)) {
                 player.sendMessage(Text.translatable("trap.dndclasses.rogue_only"), true);
                 return ActionResult.CONSUME;
             }

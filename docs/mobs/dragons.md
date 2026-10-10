@@ -39,7 +39,7 @@ The **Lightning Chaser** takes turns at range: one fire breath, then a lightning
 | Dragon | Always | Killed by a player |
 |-|-|-|
 | Wyvern | 1-3 leather, 0-2 phantom membranes | 2-5 gold nuggets |
-| Ember Wyvern | 1-3 magma cream, 0-2 blaze powder | 2-6 gold nuggets; 5% chance of a netherite scrap (+2% per Looting level) |
+| Ember Wyvern | 1-3 magma cream, 0-2 blaze powder | 2-6 gold nuggets; 5% chance of a netherite scrap (+2% per Looting level); 2% chance of a [Staff of Fire](../items/staffs.md) (+1% per Looting level) |
 | Lightning Chaser | 2-5 phantom membranes, 1-3 copper blocks | 2-5 diamonds; 15% chance of a [Staff of Lightning](../items/staffs.md) (+5% per Looting level) |
 
 Looting adds up to 1 more of each item per level, and up to 2 more phantom membranes from a Lightning Chaser. Copper blocks and gold nuggets don't go up with Looting.

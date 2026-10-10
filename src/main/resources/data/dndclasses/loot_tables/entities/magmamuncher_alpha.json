@@ -80,6 +80,16 @@
           ]
         }
       ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {"condition": "minecraft:killed_by_player"},
+        {"condition": "minecraft:random_chance_with_looting", "chance": 0.25, "looting_multiplier": 0.05}
+      ],
+      "entries": [
+        {"type": "minecraft:item", "name": "dndclasses:staff_of_fire"}
+      ]
     }
   ]
 }

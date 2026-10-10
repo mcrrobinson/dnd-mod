@@ -1,0 +1,5 @@
+{
+  "title": "Follow-up (no giver)",
+  "stages": [{"text": "Slay a zombie.", "objectives": [{"type": "kill", "entity": "minecraft:zombie"}]}],
+  "rewards": [{"type": "give", "item": "minecraft:diamond", "count": 1}]
+}

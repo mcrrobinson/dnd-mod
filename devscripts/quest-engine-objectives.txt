@@ -1,0 +1,111 @@
+# Quest engine objectives and actions, using the test quests in devscripts/datapacks/quest-engine-test
+# (copy it to run/saves/New World/datapacks/ first). Covers: malformed files skipped, on_accept,
+# visit, kill within_structure + quest_drop, deliver, talk, collect, check (admin pass), stage
+# actions (set_flag, narrate, give, start_quest), defend (a /goblinraid at the dev world's hobbit
+# village), rewards at the giver (emeralds, rep, magic_item fallback table, reveal map, loot), a
+# no-giver quest paid at once, and the Lich's final death. Check [CHAT] and [Quests] in the log.
+# Run: timeout 600 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine-objectives.txt
+wait 40
+closescreen
+/datapack enable "file/quest-engine-test"
+/difficulty normal
+/gamemode survival
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/clear @s
+/quest admin @s reset dndtest:sampler
+/quest admin @s reset dndtest:followup
+/quest admin @s reset dndtest:lich
+/quest admin @s reset dndclasses:goblin_menace/1
+/rep @s dndclasses:mountain_dwarves set 0
+/fill -6 149 -6 6 149 6 minecraft:glass
+/tp @s 0.5 150 0.5 0 0
+/kill @e[type=minecraft:zombie]
+/quest info dndtest:broken
+/quest admin @s start dndtest:sampler
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:compass"}]}]
+# A zombie outside the camp doesn't count
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qo"]}
+wait 5
+/damage @e[tag=qo,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/quest list
+# Into the goblin camp: the visit counts within a second
+/spreadplayers -408 1096 0 1 false @s
+wait 60
+/quest list
+/kill @e[type=minecraft:item,distance=..8]
+/execute at @s run summon minecraft:zombie ~ ~ ~1 {NoAI:1b,Tags:["qo"]}
+/execute at @s run summon minecraft:zombie ~ ~ ~1 {NoAI:1b,Tags:["qo"]}
+wait 5
+/execute as @e[tag=qo] run damage @s 1000 minecraft:player_attack by @p
+wait 40
+# Stage 1 done: narration, 2 paper; 2 bones dropped and picked up (owned by the killer)
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:paper",Count:2b}]}]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:bone",Count:2b}]}]
+/quest list
+screenshot quest-objectives-camp
+/give @s minecraft:oak_planks 4
+/quest admin @s talk innkeeper
+/quest admin @s talk dwarf_king
+/quest list
+/quest admin @s talk hobbit_elder
+/quest admin @s pass persuasion
+# Stage 2 done: bones and 3 planks taken (1 left), follow-up quest started
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:bone"}]}]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:oak_planks",Count:1b}]}]
+/quest list
+# Defend: a raid on the hobbit village, cleared with /kill
+/tp @s 200 110 1352 0 60
+wait 100
+/kill @e[type=#dndclasses:dragons]
+/goblinraid stop
+wait 20
+/goblinraid start
+wait 240
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/goblinraid list
+/quest list
+# Rewards at the elder: 2 emeralds, +10 dwarves, an uncommon reward-table item, a map, dungeon loot
+/clear @s minecraft:emerald
+/quest admin @s talk hobbit_elder
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:2b}]}]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:filled_map"}]}]
+/rep
+slots
+wait 10
+screenshot quest-objectives-rewards
+# Follow-up has no giver: paid the moment it's done
+/tp @s 0.5 150 0.5 0 0
+/execute at @s run summon minecraft:zombie ~ ~ ~2 {NoAI:1b,Tags:["qo"]}
+wait 5
+/execute as @e[tag=qo] run damage @s 1000 minecraft:player_attack by @p
+wait 10
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:diamond"}]}]
+# The Lich: a death that flees to the phylactery doesn't count; smashing it while reforming does
+/quest admin @s start dndtest:lich
+/summon dndclasses:lich 0.5 150 4.5 {Tags:["ql"]}
+wait 60
+/execute if entity @e[type=dndclasses:phylactery,distance=..30]
+/damage @e[tag=ql,limit=1] 10000 minecraft:player_attack by @s
+wait 20
+/quest list
+/execute as @e[type=dndclasses:phylactery,distance=..30] run damage @s 10000 minecraft:player_attack by @p
+wait 20
+/quest list
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:nether_star"}]}]
+/kill @e[type=dndclasses:lich]
+/kill @e[type=dndclasses:phylactery]
+quit

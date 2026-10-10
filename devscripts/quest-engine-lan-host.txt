@@ -1,0 +1,99 @@
+# Party-shared quests over LAN. Two clients:
+#  1. timeout 600 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine-lan-host.txt
+#  2. once its log says "Started serving on": timeout 600 ./gradlew runClient -PdevRunDir=run-2
+#     -PdevName=QuestGuest -PdevServer=localhost:25637 -PdevScript=devscripts/quest-engine-lan-guest.txt
+# The guest has no cheats, so the host runs its commands with /execute as. Expect in the host log:
+# both on one instance, 3 kills each finish it for both, each gets the full 5 emeralds; a member
+# out of range gets a [Join] offer, one already on it is skipped, /quest join adds them; leaving the
+# party forks the quest.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/tag @s add qhost
+/fill -6 149 -6 6 149 6 minecraft:glass
+/fill 99 149 -1 101 149 1 minecraft:glass
+/tp @s 0.5 150 0.5 0 0
+/kill @e[tag=ql]
+/party leave
+/quest admin @s reset dndclasses:goblin_menace/1
+/clear @s minecraft:emerald
+/publish false survival 25637
+wait 1400
+/list
+/party invite @a[tag=!qhost,limit=1]
+wait 200
+/party invite @a[tag=!qhost,limit=1]
+wait 100
+/party list
+/tp @a[tag=!qhost] 2.5 150 0.5 0 0
+/effect give @a[tag=!qhost] minecraft:resistance 900 4 true
+/quest admin @a[tag=!qhost] reset dndclasses:goblin_menace/1
+/clear @a[tag=!qhost] minecraft:emerald
+# Shared start: one instance, 2 participants
+/quest admin @s start dndclasses:goblin_menace/1
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+wait 10
+# Host kills 3, guest kills 3
+/damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+wait 2
+/quest list
+/execute as @a[tag=!qhost] run quest list
+/execute as @a[tag=!qhost] run damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+/execute as @a[tag=!qhost] run damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+wait 2
+/execute as @a[tag=!qhost] run quest info dndclasses:goblin_menace/1
+screenshot quest-lan-host-progress
+/execute as @a[tag=!qhost] run damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/quest list
+/execute as @a[tag=!qhost] run quest list
+# Both claim the full reward at the innkeeper
+/quest admin @a talk innkeeper
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:5b}]}]
+/execute if entity @a[tag=!qhost,nbt={Inventory:[{id:"minecraft:emerald",Count:5b}]}]
+wait 10
+screenshot quest-lan-host-rewarded
+# Join offer: the guest, 100 blocks away, starts the quest alone; the host gets a [Join] line
+/quest admin @a reset dndclasses:goblin_menace/1
+/tp @a[tag=!qhost] 100.5 150 0.5 0 0
+wait 20
+/quest admin @a[tag=!qhost] start dndclasses:goblin_menace/1
+# Skip: back in range, the host starts it; the guest already has it and is skipped with a message
+/tp @a[tag=!qhost] 2.5 150 0.5 0 0
+wait 20
+/quest admin @s start dndclasses:goblin_menace/1
+/quest info dndclasses:goblin_menace/1
+# The guest drops their own copy and joins the host's with /quest join
+/execute as @a[tag=!qhost] run quest abandon dndclasses:goblin_menace/1
+/execute as @a[tag=!qhost] run quest join
+/quest info dndclasses:goblin_menace/1
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+/summon dndclasses:goblin_warrior 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["ql"]}
+wait 10
+/damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+wait 2
+/execute as @a[tag=!qhost] run quest list
+# Fork: the guest leaves the party and keeps a copy at 2/6; the host's next kill doesn't move it
+/execute as @a[tag=!qhost] run party leave
+/damage @e[tag=ql,limit=1] 1000 minecraft:player_attack by @s
+wait 2
+/quest list
+/execute as @a[tag=!qhost] run quest list
+wait 10
+screenshot quest-lan-host-fork
+/quest admin @a reset dndclasses:goblin_menace/1
+/party leave
+/tag @s remove qhost
+wait 100
+quit

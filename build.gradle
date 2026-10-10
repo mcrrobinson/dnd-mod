@@ -44,6 +44,11 @@ loom {
             if (project.hasProperty('devServer')) {
                 vmArg "-Ddnd.autoconnect=${project.property('devServer')}"
             }
+            // -PdevName=Dev fixes the player name (and so its offline UUID) across runs; by default
+            // each launch is a new random PlayerNNN. Needed to check per-UUID world data after a restart.
+            if (project.hasProperty('devName')) {
+                programArgs "--username", project.property('devName').toString()
+            }
             if (project.hasProperty('devScript')) {
                 vmArg "-Ddnd.devscript=${file(project.property('devScript')).absolutePath}"
             }

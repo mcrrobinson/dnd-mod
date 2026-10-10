@@ -1,0 +1,30 @@
+# Guest for quest-engine-lan-host.txt: joins the host's LAN game, accepts its party invite and stays
+# while the host runs the test. Its own chat (quest started/progress/rewards) lands in its log.
+wait 40
+closescreen
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+/party accept
+wait 100
+wait 160
+screenshot quest-lan-guest-rewarded
+wait 1500
+quit

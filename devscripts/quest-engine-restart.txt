@@ -1,0 +1,11 @@
+# Run after quest-engine.txt: the half-done quest is still at 3/6 after the world was closed and
+# reopened. Run: timeout 300 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine-restart.txt
+wait 40
+closescreen
+/quest list
+/quest info dndclasses:goblin_menace/1
+wait 10
+screenshot quest-engine-restart
+/quest admin @s reset dndclasses:goblin_menace/1
+/quest list
+quit

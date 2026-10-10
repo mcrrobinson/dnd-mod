@@ -354,6 +354,24 @@ public final class QuestManager extends PersistentState {
         return instance;
     }
 
+    /** The newest quest a party member is on that {@code player} could join, or null. */
+    @Nullable
+    public QuestInstance latestOffer(ServerPlayerEntity player) {
+        Party party = PartyManager.get(player.getServer()).getParty(player.getUuid());
+        if (party == null) {
+            return null;
+        }
+        QuestInstance latest = null;
+        for (QuestInstance instance : this.instances.values()) {
+            if (!instance.participants().contains(player.getUuid()) && instance.participants().stream().anyMatch(party::contains)
+                    && this.instanceOf(player.getUuid(), instance.quest()) == null
+                    && (latest == null || instance.id() > latest.id())) {
+                latest = instance;
+            }
+        }
+        return latest;
+    }
+
     /** Leaves a quest; the others keep it. Returns the quest's title. */
     public Text abandon(ServerPlayerEntity player, Identifier questId) throws QuestException {
         QuestInstance instance = this.instanceOf(player.getUuid(), questId);
@@ -560,8 +578,8 @@ public final class QuestManager extends PersistentState {
     }
 
     /**
-     * {@code player} passed a d20 check for {@code skill} in dialogue. Stub for NPC dialogue: nothing
-     * calls it yet.
+     * {@code player} passed a d20 check for {@code skill} in dialogue. NPC dialogue will call this
+     * after its roll; until then only {@code /quest admin <player> pass <skill>} does.
      */
     public void checkPassed(ServerPlayerEntity player, String skill) {
         if (QuestHooks.ignored.test(player)) {
@@ -742,7 +760,8 @@ public final class QuestManager extends PersistentState {
             }
             record.pending.remove(pending);
             this.markDirty();
-            player.sendMessage(Text.translatable("quest.dndclasses.rewarded", quest.title()).formatted(Formatting.GOLD), false);
+            player.sendMessage(Text.translatable("quest.dndclasses.rewarded", quest.title(),
+                    QuestCommand.describe(quest.rewards()).formatted(Formatting.WHITE)).formatted(Formatting.GOLD), false);
             DnDClasses.LOGGER.info("[Quests] {}: rewards paid to {}", quest.id(), player.getEntityName());
             QuestAction.Context context = new QuestAction.Context(this, player.getServer(), player, quest, null);
             for (QuestAction action : quest.rewards()) {

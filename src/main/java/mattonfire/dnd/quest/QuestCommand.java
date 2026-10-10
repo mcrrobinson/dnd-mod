@@ -31,10 +31,11 @@ import net.minecraft.util.Identifier;
  * /quest list                                   your active and finished quests
  * /quest info &lt;quest&gt;                            details of one (any loaded quest, for ops)
  * /quest track|abandon &lt;quest&gt;
- * /quest join &lt;instance&gt;                         join a quest a party member started
+ * /quest join [instance]                         join a quest a party member started (newest if no number)
  * /quest admin &lt;players&gt; start|complete|reset &lt;quest&gt;      (op)
  * /quest admin &lt;players&gt; stage &lt;quest&gt; &lt;n&gt;              (op)
  * /quest admin &lt;players&gt; talk &lt;role&gt;   as if they spoke with an NPC with that role (op)
+ * /quest admin &lt;players&gt; pass &lt;skill&gt;  as if they passed a dialogue check (op)
  * </pre>
  */
 public final class QuestCommand {
@@ -69,6 +70,7 @@ public final class QuestCommand {
                         .then(CommandManager.argument("quest", IdentifierArgumentType.identifier()).suggests(MY_QUESTS)
                                 .executes(QuestCommand::abandon)))
                 .then(CommandManager.literal("join")
+                        .executes(QuestCommand::joinLatest)
                         .then(CommandManager.argument("instance", IntegerArgumentType.integer(1))
                                 .executes(QuestCommand::join)))
                 .then(CommandManager.literal("admin")
@@ -90,7 +92,10 @@ public final class QuestCommand {
                                                         .executes(context -> admin(context, "stage")))))
                                 .then(CommandManager.literal("talk")
                                         .then(CommandManager.argument("role", StringArgumentType.word())
-                                                .executes(QuestCommand::talk))))));
+                                                .executes(QuestCommand::talk)))
+                                .then(CommandManager.literal("pass")
+                                        .then(CommandManager.argument("skill", StringArgumentType.word())
+                                                .executes(QuestCommand::pass))))));
     }
 
     private static QuestDefinition quest(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
@@ -290,21 +295,40 @@ public final class QuestCommand {
         }
     }
 
+    private static int joinLatest(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        QuestManager manager = QuestManager.get(context.getSource().getServer());
+        QuestInstance offer = manager.latestOffer(player);
+        if (offer == null) {
+            context.getSource().sendError(Text.translatable("quest.dndclasses.error.no_offer"));
+            return 0;
+        }
+        try {
+            manager.join(player, offer.id());
+            return 1;
+        } catch (QuestManager.QuestException e) {
+            context.getSource().sendError(e.text());
+            return 0;
+        }
+    }
+
     private static int admin(CommandContext<ServerCommandSource> context, String action) throws CommandSyntaxException {
         ServerCommandSource source = context.getSource();
         Collection<ServerPlayerEntity> players = EntityArgumentType.getPlayers(context, "players");
         QuestManager manager = QuestManager.get(source.getServer());
         QuestDefinition quest = quest(context);
         int done = 0;
+        java.util.Set<UUID> added = new java.util.HashSet<>();
         for (ServerPlayerEntity player : players) {
             try {
                 switch (action) {
                     case "start" -> {
-                        if (manager.instanceOf(player.getUuid(), quest.id()) != null) {
+                        if (added.contains(player.getUuid())) {
                             // Already added by an earlier target's party.
                             continue;
                         }
                         QuestInstance instance = manager.start(player, quest, true);
+                        added.addAll(instance.participants());
                         source.sendFeedback(Text.literal("Started " + quest.id() + " for " + player.getEntityName()
                                 + " (#" + instance.id() + ", " + instance.participants().size() + " participants)"), true);
                     }
@@ -339,6 +363,17 @@ public final class QuestCommand {
         for (ServerPlayerEntity player : EntityArgumentType.getPlayers(context, "players")) {
             manager.talkedTo(player, role);
             source.sendFeedback(Text.literal(player.getEntityName() + " spoke with the " + role), true);
+        }
+        return 1;
+    }
+
+    private static int pass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        String skill = StringArgumentType.getString(context, "skill");
+        QuestManager manager = QuestManager.get(source.getServer());
+        for (ServerPlayerEntity player : EntityArgumentType.getPlayers(context, "players")) {
+            manager.checkPassed(player, skill);
+            source.sendFeedback(Text.literal(player.getEntityName() + " passed a " + skill + " check"), true);
         }
         return 1;
     }

@@ -33,7 +33,8 @@ import net.minecraft.util.math.RotationAxis;
 /**
  * The save lane: saving throws as compact rows to the right of the crosshair, so they never take the big roll
  * panel ({@link DiceRollHud}) away from a check. Each row is a small die that spins for a moment, then one line,
- * e.g. {@code DEX save 13+4=17 vs 14 ✔ half damage}, held for 2 seconds before it fades.
+ * e.g. {@code DEX save 13+4=17 vs 14 ✔ half damage}, held for 2 seconds before it fades. A line too wide for the
+ * screen gives up parts until it fits ({@link #fit}).
  * <ul>
  * <li>At most {@link #MAX_ROWS} rows; a new one pushes out the oldest.</li>
  * <li>A save with the same label and outcome as a row still showing adds to that row's "x N" count and
@@ -164,21 +165,54 @@ public final class SaveLaneHud {
     }
 
     /**
-     * The line after the die: label, sum, a tick or cross, then the detail ("half damage"; natural 20s and 1s say
-     * so) and the repeat count. {@code withDetail} false leaves the detail out when space is short.
+     * How much a line gives up to fit beside the crosshair. Each level keeps everything the next one drops, so
+     * the outcome (tick or cross, in the outcome colour) and the repeat count always stay.
      */
-    static MutableText line(D20.Roll roll, Text detail, int count, boolean landed, boolean withDetail) {
-        MutableText line = label(roll).formatted(Formatting.BOLD);
+    static final int FULL = 0;
+    /** Drops the detail ("half damage"). */
+    static final int NO_DETAIL = 1;
+    /** Also drops the ability suffix of a named save ("Frost breath (DEX)" becomes "Frost breath"). */
+    static final int NO_ABILITY = 2;
+    /** Also drops "vs DC" and the second die of advantage or disadvantage. */
+    static final int NO_DC = 3;
+    /** Also drops the "Nat 20" / "Nat 1" word (the die face still shows it) and the bold label. */
+    static final int MINIMAL = 4;
+    static final int MOST_COMPACT = MINIMAL;
+
+    /**
+     * The line after the die: label, sum, a tick or cross, then the detail ("half damage"; natural 20s and 1s say
+     * so) and the repeat count. {@code compact} ({@link #FULL} to {@link #MINIMAL}) leaves parts out when space is
+     * short; {@code maxLabelWidth} (pixels, or a negative number for no limit) trims the label with an ellipsis.
+     */
+    static MutableText line(TextRenderer text, D20.Roll roll, Text detail, int count, boolean landed, int compact,
+            int maxLabelWidth) {
+        MutableText label = compact >= NO_ABILITY ? roll.label().copy() : label(roll);
+        if (compact >= NO_ABILITY && roll.ability() != null && roll.kind() == RollKind.SAVE
+                && roll.label().getContent() instanceof TranslatableTextContent t
+                && t.getKey().equals(roll.ability().saveTranslationKey())) {
+            label = label(roll); // a plain save keeps its short "DEX save" label
+        }
+        boolean bold = compact < MINIMAL;
+        if (maxLabelWidth >= 0) {
+            String full = label.getString();
+            int width = bold ? text.getWidth(label.copy().formatted(Formatting.BOLD)) : text.getWidth(full);
+            if (width > maxLabelWidth) {
+                String ellipsis = "\u2026";
+                int room = Math.max(0, maxLabelWidth - text.getWidth(ellipsis) - (bold ? full.length() : 0));
+                label = Text.literal(text.trimToWidth(full, room).stripTrailing() + ellipsis);
+            }
+        }
+        MutableText line = bold ? label.formatted(Formatting.BOLD) : label;
         if (!landed) {
             return line.append(Text.literal(" ...").formatted(Formatting.GRAY).styled(s -> s.withBold(false)));
         }
         MutableText sum = Text.literal(" " + roll.natural());
-        if (roll.natural2() > 0) {
+        if (roll.natural2() > 0 && compact < NO_DC) {
             sum.append(Text.literal("(" + roll.natural2() + (roll.mode() == Advantage.ADVANTAGE ? " adv)" : " dis)"))
                     .formatted(Formatting.DARK_GRAY));
         }
         sum.append(Text.literal((roll.modifier() < 0 ? "-" : "+") + Math.abs(roll.modifier()) + "=" + roll.total()));
-        if (roll.dc() > 0 && !roll.secret()) {
+        if (roll.dc() > 0 && !roll.secret() && compact < NO_DC) {
             sum.append(Text.translatable("save.dndclasses.lane.vs", roll.dc()));
         }
         line.append(sum.styled(s -> s.withBold(false).withColor(0xD0D0D0)));
@@ -187,11 +221,12 @@ public final class SaveLaneHud {
         }
         if (!roll.secret()) {
             MutableText tail = Text.literal(roll.outcome().succeeded() ? " \u2714" : " \u2718");
-            if (roll.outcome() == D20.Outcome.CRITICAL || roll.outcome() == D20.Outcome.FUMBLE) {
+            if ((roll.outcome() == D20.Outcome.CRITICAL || roll.outcome() == D20.Outcome.FUMBLE)
+                    && compact < MINIMAL) {
                 tail.append(" ").append(Text.translatable("save.dndclasses.lane." + roll.outcome().name()
                         .toLowerCase(Locale.ROOT)));
             }
-            if (withDetail && !detail.getString().isEmpty()) {
+            if (compact < NO_DETAIL && !detail.getString().isEmpty()) {
                 tail.append(" ").append(detail);
             }
             line.append(tail.styled(s -> s.withBold(false).withColor(color(roll.outcome()))));
@@ -202,6 +237,24 @@ public final class SaveLaneHud {
         return line;
     }
 
+    /**
+     * The most detailed line that fits in {@code maxWidth} pixels: drop parts level by level, then trim the label
+     * with an ellipsis. If even that is too wide (a tiny window), the caller scales the line down.
+     */
+    static Text fit(TextRenderer text, D20.Roll roll, Text detail, int count, boolean landed, int maxWidth) {
+        Text line = null;
+        for (int compact = FULL; compact <= MOST_COMPACT; compact++) {
+            line = line(text, roll, detail, count, landed, compact, -1);
+            if (text.getWidth(line) <= maxWidth) {
+                return line;
+            }
+        }
+        // Everything but the label, measured with the label trimmed to just its ellipsis
+        int rest = text.getWidth(line(text, roll, detail, count, landed, MOST_COMPACT, 0)) - text.getWidth("\u2026");
+        int room = Math.max(text.getWidth("\u2026") + 12, maxWidth - rest);
+        return line(text, roll, detail, count, landed, MOST_COMPACT, room);
+    }
+
     private static void render(MatrixStack matrices, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (ROWS.isEmpty() || client.player == null || client.options.hudHidden) {
@@ -210,6 +263,9 @@ public final class SaveLaneHud {
         TextRenderer text = client.textRenderer;
         int screenWidth = client.getWindow().getScaledWidth();
         int left = screenWidth / 2 + 22;
+        int minX = screenWidth / 2 + 8; // slide left on a narrow screen, but never over the crosshair
+        int maxRight = screenWidth - 3;
+        int maxText = maxRight - minX - DIE_SIZE - 4;
         int top = client.getWindow().getScaledHeight() / 2 - 8;
         RenderSystem.enableBlend();
         for (int i = 0; i < ROWS.size(); i++) {
@@ -219,13 +275,11 @@ public final class SaveLaneHud {
             float fade = MathHelper.clamp((SPIN_TICKS + HOLD_TICKS + FADE_TICKS - life) / FADE_TICKS, 0.0f, 1.0f);
             int alpha = Math.max(8, (int) (fade * 255)) << 24;
             int y = top + i * ROW_HEIGHT;
-            Text line = line(row.roll, row.detail, row.count, !spinning, true);
-            if (left + DIE_SIZE + 4 + text.getWidth(line) > screenWidth - 3) {
-                line = line(row.roll, row.detail, row.count, !spinning, false); // narrow screen: drop the detail
-            }
-            int width = DIE_SIZE + 4 + text.getWidth(line);
-            // Still too wide (tiny window): slide left, but never over the crosshair
-            int x = Math.max(screenWidth / 2 + 8, Math.min(left, screenWidth - 3 - width));
+            Text line = fit(text, row.roll, row.detail, row.count, !spinning, maxText);
+            int lineWidth = text.getWidth(line);
+            float scale = lineWidth > maxText && maxText > 0 ? Math.max(0.5f, maxText / (float) lineWidth) : 1.0f;
+            int width = DIE_SIZE + 4 + MathHelper.ceil(lineWidth * scale);
+            int x = Math.max(minX, Math.min(left, maxRight - width));
             DrawableHelper.fill(matrices, x - 2, y - 1, x + width + 3, y + DIE_SIZE + 1,
                     (int) (fade * 0x80) << 24);
 
@@ -249,7 +303,15 @@ public final class SaveLaneHud {
             }
             matrices.pop();
 
-            text.drawWithShadow(matrices, line, x + DIE_SIZE + 4, y + 4, 0xFFFFFF | alpha);
+            if (scale < 1.0f) {
+                matrices.push();
+                matrices.translate(x + DIE_SIZE + 4, y + 8 - 4 * scale, 0);
+                matrices.scale(scale, scale, 1.0f);
+                text.drawWithShadow(matrices, line, 0, 0, 0xFFFFFF | alpha);
+                matrices.pop();
+            } else {
+                text.drawWithShadow(matrices, line, x + DIE_SIZE + 4, y + 4, 0xFFFFFF | alpha);
+            }
         }
         RenderSystem.disableBlend();
     }

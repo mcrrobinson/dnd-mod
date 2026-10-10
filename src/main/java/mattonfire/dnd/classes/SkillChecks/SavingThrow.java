@@ -79,6 +79,9 @@ public final class SavingThrow {
     /** Player UUID to their throttle state. */
     private static final Map<UUID, Lane> LANES = new HashMap<>();
 
+    /** Target UUID to the world time of its last save (fresh or cached), so generic saves don't roll twice. */
+    private static final Map<UUID, Long> LAST_SAVE = new HashMap<>();
+
     /**
      * Changes a save's result after the roll, before it's cached, shown or returned (Evasion turns a half-damage
      * DEX save into 0 / half). Runs for every target, players or not; return the result unchanged to skip.
@@ -267,6 +270,7 @@ public final class SavingThrow {
         /** Rolls (or reuses the exposure's result), shows it, and returns the result. */
         public SaveResult roll() {
             long now = target.getWorld().getTime();
+            markSaved(target, now);
             if (exposureKey != null) {
                 Map<String, Cached> byTarget = EXPOSURES.get(target.getUuid());
                 Cached cached = byTarget == null ? null : byTarget.get(exposureKey);
@@ -423,6 +427,7 @@ public final class SavingThrow {
             long time = server.getOverworld().getTime();
             EXPOSURES.values().forEach(m -> m.values().removeIf(c -> c.expiresAt() <= time));
             EXPOSURES.values().removeIf(Map::isEmpty);
+            LAST_SAVE.values().removeIf(t -> t < time - 1);
         }
     }
 
@@ -430,6 +435,21 @@ public final class SavingThrow {
     public static synchronized void forget(UUID player) {
         EXPOSURES.remove(player);
         LANES.remove(player);
+        LAST_SAVE.remove(player);
+    }
+
+    private static synchronized void markSaved(LivingEntity target, long now) {
+        LAST_SAVE.put(target.getUuid(), now);
+    }
+
+    /**
+     * Whether {@code target} has already made a save (rolled or reused from an exposure) this tick. The data-driven
+     * saves ({@link SaveRules}) check it so damage or an effect whose own code already rolled a save (a trap's
+     * needle, a dragon's breath) isn't saved against twice.
+     */
+    public static synchronized boolean savedThisTick(LivingEntity target) {
+        Long last = LAST_SAVE.get(target.getUuid());
+        return last != null && last == target.getWorld().getTime();
     }
 
     static void register() {

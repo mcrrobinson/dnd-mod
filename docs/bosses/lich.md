@@ -19,7 +19,7 @@ The Lich, its phylactery and its minions never hurt each other. Its minions crum
 
 **Dread Presence**: as it passes 60% and 30% health, and when it reforms, a wave of dread rolls out (a chat line, a ring of souls and the elder guardian's curse). Every player within 24 blocks (not creative or spectator) makes a **WIS save**, DC 15 (16 below 30%), or is **Frightened** for 8 s: your attacks deal half damage. Necromancers, its rivals, have advantage on the save. It's one save per player per wave, even when one big hit passes both thresholds at once.
 
-**Saving throws** show on the [save lane](../systems/saving-throws.md) beside the crosshair, and studying the Lich (V) lists them. The Wither Bolt's wither has no save yet (generic poison and wither saves are a later ticket).
+**Saving throws** show on the [save lane](../systems/saving-throws.md) beside the crosshair, and studying the Lich (V) lists them. The Wither Bolt's wither allows a **CON save** DC 15 for half the duration, from the [data-driven](../systems/data-driven-saves.md) `wither` rule.
 
 **Phases** (boss bar visible within 48 blocks):
 - **Start** (purple bar): waves of 2, at most 4 minions at once.

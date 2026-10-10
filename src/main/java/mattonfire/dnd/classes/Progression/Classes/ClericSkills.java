@@ -258,7 +258,8 @@ public class ClericSkills extends ClassSkills {
         data.putString(FORGE_USED_KEY, key);
         player.sendMessage(Text.literal("Blessing of the Forge: ").formatted(Formatting.GOLD)
                 .append(stack.getName().copy().formatted(Formatting.YELLOW))
-                .append(Text.literal(" is now +" + MagicData.plus(stack) + " until your next long rest.")
+                .append(Text.literal(" is now +" + MagicData.plus(stack)
+                        + (DndRules.rests(player.getWorld()) ? " until your next long rest." : " until tomorrow."))
                         .formatted(Formatting.GOLD)),
                 false);
         ServerWorld world = (ServerWorld) player.getWorld();

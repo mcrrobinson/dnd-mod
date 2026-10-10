@@ -94,7 +94,7 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
                         subclasses.add(new SubclassInfo(sub.id(), sub.name(), sub.title(),
                                 sub.flavour() == null ? "" : sub.flavour(),
                                 colon < 0 ? feature : feature.substring(0, colon),
-                                colon < 0 ? "" : feature.substring(colon + 2),
+                                colon < 0 ? "" : capitalize(feature.substring(colon + 2)),
                                 sub.featureReady() != null && sub.featureReady()));
                     }
                     map.put(character, new ClassInfo(character, e.name(), orEmpty(e.pros()), orEmpty(e.cons()),
@@ -106,6 +106,10 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
             DnDClasses.LOGGER.error("Couldn't load class info from " + RESOURCE, e);
         }
         return map;
+    }
+
+    private static String capitalize(String text) {
+        return text.isEmpty() ? text : Character.toUpperCase(text.charAt(0)) + text.substring(1);
     }
 
     private static <T> List<T> orEmpty(@Nullable List<T> list) {

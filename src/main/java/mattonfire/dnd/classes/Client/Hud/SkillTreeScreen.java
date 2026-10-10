@@ -307,7 +307,9 @@ public class SkillTreeScreen extends Screen {
             status = Text.literal(attuning ? "Click to equip" : "Unlocked - equip at an Attunement Table")
                     .formatted(Formatting.GOLD);
         } else if (progress.subclassLock(node) == ClassProgress.SubclassLock.NEEDS_SUBCLASS) {
-            status = Text.literal("Needs a " + subclassTerm(progress) + " (level " + ClassProgress.SUBCLASS_LEVEL + ")")
+            String term = subclassTerm(progress);
+            String article = "aeiou".indexOf(term.charAt(0)) >= 0 ? "an " : "a ";
+            status = Text.literal("Needs " + article + term + " (level " + ClassProgress.SUBCLASS_LEVEL + ")")
                     .formatted(Formatting.RED);
         } else if (progress.subclassLock(node) == ClassProgress.SubclassLock.OTHER_SUBCLASS) {
             status = Text.literal(owner.name() + " only").formatted(Formatting.RED);

@@ -35,8 +35,18 @@ Tips:
 ### Monk's Staff
 The Monk's Staff is the only weapon a [Monk](../classes/monk.md) can attack with (bare fists also work). It has no right click ability.
 
+Anyone can craft it from 3 sticks in a diagonal line, either way round:
+
+```
+    S
+  S
+S
+```
+
 ## How to get it
-None of the staffs can be crafted.
+The elemental staffs can't be crafted.
+
+- **Monk's Staff:** craft it from 3 sticks in a diagonal line (see [Monk's Staff](#monks-staff)).
 
 - **Staff of Lightning:** a 15% drop (+5% per level of Looting) from a [Lightning Chaser](../mobs/dragons.md) killed by a player. Each chest in a [dragon lair](../structures/dragon-lairs.md) hoard also has a 25% chance to hold one.
 - **All four:** the D&D Classes creative tab.
@@ -50,5 +60,6 @@ None of the staffs can be crafted.
 - `Items/ExtendedSwordItem`: staff behaviour by item id, `canWield` for the Wizard check, `BEAM_RANGE` and the cast and restore timings.
 - `Items/ScheduledBlockRestore`: a per-world `PersistentState` (`data/dndclasses_staff_restores.dat`) that puts blocks back.
 - `Items/MonkStaff`, `Effects/FreezeEffect`. The melee Wizard check is an `AttackEntityCallback` in `Progression/Classes/WizardSkills`.
+- Recipe: `recipes/monk_staff.json`.
 - Unused loot tables `chests/staff_of_fire.json`, `staff_of_ice.json`, `staff_of_lightning.json` and `monk_staff.json` each give one staff; nothing references them yet.
 - Devscripts: `devscripts/staff-fire-dupe.txt`, `staff-restore-persist-a.txt` then `-b.txt`.

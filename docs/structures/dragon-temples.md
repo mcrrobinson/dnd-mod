@@ -41,8 +41,8 @@ Each seen offence costs 40 standing with the Dragonsworn. There's no kin trust: 
 ### Loot
 | Loot table | Found in | Contents |
 |-|-|-|
-| `chests/dragon_temple_reliquary` | the reliquary behind the Ember altar | 3-5 of: 2-6 gold ingots, 4-12 gold nuggets, 1-2 diamonds, a Smite Dragons or Protection book, a golden apple, bottles o' enchanting; plus 4% each of the Staff of Fire, Staff of Ice and Staff of Lightning |
-| `chests/dragon_temple_cell` | cell chests and storeroom barrels | bread, mutton, potatoes, dried kelp, candles, books, paper, ink, a book and quill; always 1 emerald |
+| `chests/dragon_temple_reliquary` | the reliquary behind the Ember altar | 3-5 of: 2-6 gold ingots, 4-12 gold nuggets, 1-2 diamonds, a Smite Dragons or Protection book, a golden apple, bottles o' enchanting; plus 4% each of the Staff of Fire, Staff of Ice and Staff of Lightning; plus one [magic loot](../systems/magic-loot.md) roll: Rare (90) / Very Rare (10) |
+| `chests/dragon_temple_cell` | cell chests and storeroom barrels | bread, mutton, potatoes, dried kelp, candles, books, paper, ink, a book and quill; always 1 emerald; 8% an Uncommon [magic item](../systems/magic-loot.md) |
 
 The reliquary is [locked](../systems/d20-skill-checks.md#lockpicking-rogue) at DC 15, and opening it where a Dragonborn can see is an offence. Cell chests aren't locked.
 

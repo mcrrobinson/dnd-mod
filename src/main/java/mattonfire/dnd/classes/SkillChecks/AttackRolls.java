@@ -26,7 +26,9 @@ import net.minecraft.util.ActionResult;
  * Every full-strength melee swing at a living mob rolls a d20 attack roll. Only the extremes do
  * anything, and only they are shown on the HUD:
  * <ul>
- * <li>Natural 20: a critical hit, doing double damage. Fighters (Improved Critical) crit on 19-20.</li>
+ * <li>Natural 20: a critical hit, doing double damage (x2.5 for a Half-Orc, Savage Attacks). Fighters
+ * (Improved Critical) crit on 19-20.</li>
+ * <li>Halfling Lucky (the sheet's {@code rerollNaturalOnes}) rerolls a natural 1 once.</li>
  * <li>Natural 1: a fumble; the swing misses completely.</li>
  * </ul>
  * The modifier shown is the sheet's attack bonus (the better of STR and DEX modifier, plus proficiency);
@@ -88,7 +90,8 @@ public final class AttackRolls {
             }
             D20.Roll roll = D20.roll(player).label(D20.ATTACK).kind(RollKind.ATTACK)
                     .modifier(attackBonus(player) + mattonfire.dnd.magic.MagicGear.attackBonus(player.getMainHandStack()))
-                    .critRange(critRange(player)).roll();
+                    .critRange(critRange(player))
+                    .rerollNaturalOnes(AbilityScores.sheet(player).rerollNaturalOnes()).roll();
             String autoCrit = roll.outcome() == D20.Outcome.CRITICAL ? null : autoCrit(player, entity);
             if (autoCrit != null) {
                 // A guaranteed crit can't fumble either
@@ -137,7 +140,9 @@ public final class AttackRolls {
     }
 
     public static float criticalDamage(PlayerEntity player, Entity target, float amount) {
-        return !player.getWorld().isClient && isCritical(player, target) ? amount * 2.0f : amount;
+        return !player.getWorld().isClient && isCritical(player, target)
+                ? amount * mattonfire.dnd.classes.Race.RaceTraits.critMultiplier(player)
+                : amount;
     }
 
     public static void endAttack(PlayerEntity player, Entity target) {

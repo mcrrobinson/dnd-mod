@@ -182,6 +182,9 @@ public final class SaveLaneHud {
             sum.append(Text.translatable("save.dndclasses.lane.vs", roll.dc()));
         }
         line.append(sum.styled(s -> s.withBold(false).withColor(0xD0D0D0)));
+        if (roll.rerolled() > 0) {
+            line.append(Text.literal(" \u2618").styled(s -> s.withBold(false).withColor(0x55FF55))); // Halfling Lucky
+        }
         if (!roll.secret()) {
             MutableText tail = Text.literal(roll.outcome().succeeded() ? " \u2714" : " \u2718");
             if (roll.outcome() == D20.Outcome.CRITICAL || roll.outcome() == D20.Outcome.FUMBLE) {

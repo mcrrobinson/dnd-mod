@@ -130,6 +130,9 @@ public final class DiceRollHud {
     }
 
     /** Draws the current roll; also called by {@link DialogueScreen} so rolls show over its panel. */
+    /** How long the Lucky clover flashes after the die settles. */
+    private static final int LUCKY_FLASH_TICKS = 12;
+
     static void render(MatrixStack matrices, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (roll == null || client.player == null) {
@@ -161,6 +164,12 @@ public final class DiceRollHud {
             line.append(" " + (roll.modifier() < 0 ? "- " : "+ ") + Math.abs(roll.modifier()) + " = " + roll.total());
             if (roll.dc() > 0 && !roll.secret()) {
                 line.append(Text.translatable("skill.dndclasses.vs_dc", roll.dc()));
+            }
+            if (roll.rerolled() > 0) {
+                // Halfling Lucky: a clover that flashes as the die settles
+                boolean flash = age - ROLL_TICKS < LUCKY_FLASH_TICKS && (age / 3) % 2 == 0;
+                line.append(Text.translatable("skill.dndclasses.lucky")
+                        .formatted(flash ? Formatting.WHITE : Formatting.GREEN));
             }
             sum = line;
             outcome = roll.secret() ? detail.copy()

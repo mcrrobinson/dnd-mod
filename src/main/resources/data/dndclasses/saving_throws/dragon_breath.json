@@ -1,0 +1,11 @@
+{
+    "damage_type": "minecraft:indirect_magic",
+    "ability": "CON",
+    "dc_by_source": {
+        "minecraft:ender_dragon": 14
+    },
+    "on_success": "half",
+    "label": "save.dndclasses.dragon_breath_cloud",
+    "tags": ["breath"],
+    "window": 600
+}

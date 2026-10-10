@@ -818,6 +818,40 @@ def dice_fumble(rng):
     return finish_sting(out, 2.1, wet=0.25, room=0.7)
 
 
+# ---------------------------------------------------------------- downed and death saves
+
+def downed_thud(rng):
+    # Going Downed: a body hitting the ground, then a low, falling minor chord
+    out = buf(1.6)
+    mix(out, drum(0.6, 110, 38, 0.05, 0.22, click=0.5, rng=rng), 0.0, 0.9)
+    dust = svf(noise(0.25, rng), 900, 0.7, "low")
+    mix(out, apply(dust, env_ar(len(dust), 0.002, 0.08)), 0.0, 0.4)
+    for k, m in enumerate((50, 53, 57)):
+        mix(out, bell(1.3, hz(m), decay=0.6, bright=0.4), 0.06 + k * 0.03, 0.22)
+    mix(out, bell(1.0, hz(49), decay=0.5, bright=0.4), 0.45, 0.2)
+    return finish_sting(out, 1.5, wet=0.3, room=0.8)
+
+
+def downed_heartbeat(rng):
+    # One slow "lub-dub": two muffled low thumps
+    out = buf(0.7)
+    mix(out, drum(0.3, 70, 40, 0.03, 0.09, click=0.05, rng=rng), 0.0, 1.0)
+    mix(out, drum(0.3, 62, 36, 0.03, 0.08, click=0.05, rng=rng), 0.17, 0.7)
+    out = svf(out, 400, 0.7, "low")
+    out = reverb(out, wet=0.1, room=0.5)
+    return normalize(out[:ns(0.7)], -2.0, -18.0)
+
+
+def revived(rng):
+    # Back on your feet: a soft breath of noise and a gentle rising major triad
+    out = buf(1.8)
+    breath = svf(noise(0.5, rng), 1200, 1.2, "band")
+    mix(out, apply(breath, env_points(len(breath), [(0, 0), (0.25, 1), (0.5, 0)])), 0.0, 0.25)
+    for k, m in enumerate((67, 71, 74, 79)):
+        mix(out, bell(1.4, hz(m), decay=0.8, bright=0.9), 0.1 + k * 0.09, 0.4)
+    return finish_sting(out, 1.7, wet=0.35, room=0.85)
+
+
 SOUNDS = {
     "sting_barbarian": sting_barbarian,
     "sting_bard": sting_bard,
@@ -845,6 +879,9 @@ SOUNDS = {
     "dice_failure": dice_failure,
     "dice_critical": dice_critical,
     "dice_fumble": dice_fumble,
+    "downed_thud": downed_thud,
+    "downed_heartbeat": downed_heartbeat,
+    "revived": revived,
 }
 
 

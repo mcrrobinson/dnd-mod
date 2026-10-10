@@ -1,11 +1,15 @@
 package mattonfire.dnd.classes.Client.Hud;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 import mattonfire.dnd.classes.ClassInfo;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PartyRole;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.Party.PartyEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -14,14 +18,25 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
+import net.minecraft.util.math.MathHelper;
 
 /**
  * Top-left list of the other party members with their role icon and a health bar each. The server
- * sends the data every half second (see {@link PartyEvents#syncHud}).
+ * sends the data every half second (see {@link PartyEvents#syncHud}). A Downed member shows
+ * "DOWNED ●●○ ✕○○" (passes, fails) in red, or "STABLE" in yellow, over a pulsing bar.
  */
 public final class PartyHud {
     private record Member(String name, boolean leader, boolean online, float health, float maxHealth,
-            float absorption, boolean nearby, int classId) {
+            float absorption, boolean nearby, int classId, UUID uuid, byte downed, int passes, int fails) {
+        boolean isDowned() {
+            return online && (downed & Downed.BIT_DOWNED) != 0;
+        }
+
+        boolean isStable() {
+            return (downed & Downed.BIT_STABLE) != 0;
+        }
     }
 
     private static final int X = 4;
@@ -31,6 +46,7 @@ public final class PartyHud {
     private static final int ROW_HEIGHT = 18;
 
     private static volatile List<Member> members = List.of();
+    private static volatile Set<UUID> memberIds = Set.of();
 
     private PartyHud() {
     }
@@ -41,12 +57,26 @@ public final class PartyHud {
             List<Member> received = new ArrayList<>(count);
             for (int i = 0; i < count; i++) {
                 received.add(new Member(buf.readString(), buf.readBoolean(), buf.readBoolean(), buf.readFloat(),
-                        buf.readFloat(), buf.readFloat(), buf.readBoolean(), buf.readVarInt()));
+                        buf.readFloat(), buf.readFloat(), buf.readBoolean(), buf.readVarInt(), buf.readUuid(),
+                        buf.readByte(), buf.readByte(), buf.readByte()));
             }
             members = List.copyOf(received);
+            Set<UUID> ids = new HashSet<>();
+            for (Member member : received) {
+                ids.add(member.uuid());
+            }
+            memberIds = Set.copyOf(ids);
         });
-        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> members = List.of());
+        ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
+            members = List.of();
+            memberIds = Set.of();
+        });
         HudRenderCallback.EVENT.register((matrices, tickDelta) -> render(matrices));
+    }
+
+    /** Whether this player is in the local player's party (not counting the local player). */
+    public static boolean isMember(UUID uuid) {
+        return memberIds.contains(uuid);
     }
 
     private static void render(MatrixStack matrices) {
@@ -77,7 +107,7 @@ public final class PartyHud {
             }
             text.drawWithShadow(matrices, name, nameX, y, nameColor);
 
-            String status = statusOf(member);
+            Text status = statusOf(member);
             text.drawWithShadow(matrices, status, X + width + 2 - text.getWidth(status), y,
                     member.online() ? 0xFF5555 : 0x555555);
 
@@ -86,6 +116,15 @@ public final class PartyHud {
             if (member.online() && member.maxHealth() > 0) {
                 float fraction = Math.min(1, Math.max(0, member.health() / member.maxHealth()));
                 int filled = Math.round(width * fraction);
+                if (member.isDowned()) {
+                    // A Downed member's bar is a dim red strip that pulses (yellow once stable)
+                    float pulse = 0.5f + 0.5f * MathHelper.sin((client.player.age + client.getTickDelta()) * 0.3f);
+                    int alpha = 0x60 + (int) (0x9F * pulse);
+                    DrawableHelper.fill(matrices, X, barY, X + width, barY + BAR_HEIGHT,
+                            alpha << 24 | (member.isStable() ? 0xE0C030 : 0xC02020));
+                    y += ROW_HEIGHT;
+                    continue;
+                }
                 DrawableHelper.fill(matrices, X, barY, X + filled, barY + BAR_HEIGHT, healthColor(fraction));
 
                 if (member.absorption() > 0) {
@@ -102,10 +141,22 @@ public final class PartyHud {
         return (member.leader() ? "★ " : "") + member.name();
     }
 
-    private static String statusOf(Member member) {
-        return member.online()
+    private static Text statusOf(Member member) {
+        if (member.isDowned()) {
+            if (member.isStable()) {
+                return Text.translatable("hud.dndclasses.party.stable").formatted(Formatting.YELLOW, Formatting.BOLD);
+            }
+            int passes = Math.min(3, member.passes());
+            int fails = Math.min(3, member.fails());
+            return Text.translatable("hud.dndclasses.party.downed").formatted(Formatting.RED, Formatting.BOLD)
+                    .append(Text.literal(" " + "\u25CF".repeat(passes) + "\u25CB".repeat(3 - passes))
+                            .styled(st -> st.withBold(false).withColor(Formatting.GREEN)))
+                    .append(Text.literal(" " + "\u2715".repeat(fails) + "\u25CB".repeat(3 - fails))
+                            .styled(st -> st.withBold(false).withColor(Formatting.RED)));
+        }
+        return Text.literal(member.online()
                 ? (member.health() <= 0 ? "dead" : Math.round(member.health()) + "/" + Math.round(member.maxHealth()))
-                : "offline";
+                : "offline");
     }
 
     /** Primary role of a class id from the packet, or null for no class. */

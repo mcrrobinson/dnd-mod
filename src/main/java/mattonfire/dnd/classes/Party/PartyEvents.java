@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.dm.DungeonMaster;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -105,7 +106,7 @@ public class PartyEvents {
         }
     }
 
-    /** Sends every online party member the health and class of the rest of their party. */
+    /** Sends every online party member the health, class and Downed status of the rest of their party. */
     public static void syncHud(MinecraftServer server) {
         PartyManager manager = PartyManager.get(server);
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
@@ -132,6 +133,13 @@ public class PartyEvents {
                 // Class id (DndCharacter value, 0 when offline or unknown) for the role icon.
                 buf.writeVarInt(member instanceof PlayerEntityExt ext && ext.getDndClass() != null
                         ? ext.getDndClass().getValue() : 0);
+                // Downed status (Downed bits: 1 downed, 2 stable) and the death save tally, for the party HUD
+                // and the ally outline (the client matches the UUID against the players it can see).
+                buf.writeUuid(uuid);
+                Downed.Snapshot downed = member == null ? null : Downed.snapshot(member);
+                buf.writeByte(downed == null ? 0 : Downed.BIT_DOWNED | (downed.stable() ? Downed.BIT_STABLE : 0));
+                buf.writeByte(downed == null ? 0 : downed.passes());
+                buf.writeByte(downed == null ? 0 : downed.fails());
             }
             ServerPlayNetworking.send(player, S2C_PARTY_HUD, buf);
         }

@@ -19,6 +19,7 @@ The boss of every Nether Fortress: a big, crowned Goblin Warrior that guards the
 ## Rewards
 - 4-9 gold ingots (+0-2 per Looting level).
 - Killed by a player: 60 XP, 1-3 diamonds, 50% (+10%/Looting) netherite scrap, and 25% (+5%/Looting) a randomly enchanted golden helmet.
+- Killed by a player: 35% the [Warlord's Warhorn](../items/magic-items.md#warlords-warhorn) (Rare, unidentified).
 
 ## Commands
 - `/summon dndclasses:goblin_warlord`

@@ -54,6 +54,7 @@ Below 50% health the bar turns red, every eye reopens, two different rays fire a
 | Amethyst shards | 4-9 (+0-2 per Looting level) | always |
 | Diamonds | 3-6 | killed by a player |
 | Protection IV book, Feather Falling IV book or totem of undying | 1 | killed by a player, 30% chance (+5% per Looting level) |
+| [Eye of the Tyrant](../items/magic-items.md#eye-of-the-tyrant) (Legendary, unidentified) | 1 | killed by a player, 12% chance (+3% per Looting level) |
 
 The player credited with the kill also gets **An Eye for an Eye**, a challenge advancement worth 150 XP.
 

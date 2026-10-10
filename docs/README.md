@@ -46,7 +46,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons
 
 ## Mobs
-- [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn
+- [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn; DEX saves against breath and storms
 - [Bone Wyvern](mobs/bone-wyvern.md): the Necromancer's small undead dragon from Raise Dead rank V
 - [Goblins](mobs/goblins.md): Goblin Warriors in Nether Fortresses and goblin camps
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts

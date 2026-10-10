@@ -28,7 +28,7 @@ A save is rolled once per *exposure* (one breath, one ray, one grab), not on eve
 ![Ten saves in one tick: one row, ×10](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/saving-throws/saves-merge.png)
 
 ## Where to find it
-Monsters and traps call saves as their attacks get them (dragon breath, Beholder rays, the Lich, grabs and generic poison are planned). A DM can call one at any time with `/dm save`.
+Monsters and traps call saves as their attacks get them. So far: [dragon breath and storms](../mobs/dragons.md#saving-throws) (DEX). Beholder rays, the Lich, grabs and generic poison are planned. A DM can call one at any time with `/dm save`.
 
 ## Commands
 | Command | What it does |
@@ -55,7 +55,7 @@ See [Dungeon Master](dungeon-master.md) for who can use `/dm`.
 | `off` | Nothing is drawn. Natural 20s and 1s still play their sound |
 
 ## Known limitations
-- No monster calls the API yet; the attack saves (dragons, Beholder, Lich, grabs, poison) are separate tickets.
+- Only dragons call the API so far; the other attack saves (Beholder, Lich, grabs, poison) are separate tickets.
 - The server's 10-tick throttle and merge only combine saves with the same name and outcome. Different saves arriving together go out one per 10 ticks.
 - In `full` mode a DM-called save with no effect text shows a trailing dash after the outcome on the big panel.
 

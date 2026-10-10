@@ -82,6 +82,8 @@ public abstract class LairDragonEntity extends TameableEntity implements GeoEnti
             // Server-side parts follow these, in step with the client (see DragonFlightAnimation)
             .animations(DragonFlightAnimation.NAMES);
     private final DragonPart[] parts;
+    /** DEX save DC against the breath (Lightning Chaser and Frost Drake). */
+    public static final int BREATH_SAVE_DC = 14;
     private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(LairDragonEntity.class, TrackedDataHandlerRegistry.INTEGER);
     private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(LairDragonEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
     private static final TrackedData<Byte> BODY_ANIMATION = DataTracker.registerData(LairDragonEntity.class, TrackedDataHandlerRegistry.BYTE);
@@ -174,6 +176,11 @@ public abstract class LairDragonEntity extends TameableEntity implements GeoEnti
         super.initDataTracker();
         FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
         DragonFlightAnimation.track(this.dataTracker, BODY_ANIMATION);
+    }
+
+    @Override
+    public int getBreathSaveDc() {
+        return BREATH_SAVE_DC;
     }
 
     @Override

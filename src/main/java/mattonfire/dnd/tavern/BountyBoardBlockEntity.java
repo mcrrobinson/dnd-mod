@@ -12,10 +12,18 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-/** Remembers which bounties are pinned to a board today. */
+/**
+ * Remembers which bounties are pinned to a board today, and whether the last slot holds a Rumour
+ * (a quest lead) instead of a bounty.
+ */
 public class BountyBoardBlockEntity extends BlockEntity {
+    /** Daily chance that the last notice is a Rumour instead of a bounty. */
+    public static final float RUMOUR_CHANCE = 0.2F;
+    public static final int RUMOUR_SLOT = BountyBoardBlock.SLOTS - 1;
+
     private long day = Long.MIN_VALUE;
     private final Bounty[] posted = new Bounty[BountyBoardBlock.SLOTS];
+    private boolean rumour;
 
     public BountyBoardBlockEntity(BlockPos pos, BlockState state) {
         super(Tavern.BOUNTY_BOARD_ENTITY, pos, state);
@@ -29,10 +37,11 @@ public class BountyBoardBlockEntity extends BlockEntity {
         }
         this.day = today;
         List<Bounty> drawn = Bounty.draw(world.getRandom(), this.posted.length);
+        this.rumour = !world.isClient && QuestLeadItem.anyRumours() && world.getRandom().nextFloat() < RUMOUR_CHANCE;
         BlockState state = world.getBlockState(this.pos);
         for (int i = 0; i < this.posted.length; i++) {
-            this.posted[i] = i < drawn.size() ? drawn.get(i) : null;
-            state = state.with(BountyBoardBlock.NOTICES[i], this.posted[i] != null);
+            this.posted[i] = i < drawn.size() && !this.isRumour(i) ? drawn.get(i) : null;
+            state = state.with(BountyBoardBlock.NOTICES[i], this.posted[i] != null || this.isRumour(i));
         }
         world.setBlockState(this.pos, state);
         this.markDirty();
@@ -45,6 +54,7 @@ public class BountyBoardBlockEntity extends BlockEntity {
     public void startBare(World world) {
         this.day = world.getTimeOfDay() / 24000L;
         BlockState state = world.getBlockState(this.pos);
+        this.rumour = false;
         for (int i = 0; i < this.posted.length; i++) {
             this.posted[i] = null;
             if (state.contains(BountyBoardBlock.NOTICES[i])) {
@@ -53,6 +63,11 @@ public class BountyBoardBlockEntity extends BlockEntity {
         }
         world.setBlockState(this.pos, state);
         this.markDirty();
+    }
+
+    /** Whether {@code slot} holds today's Rumour (only ever the last slot). */
+    public boolean isRumour(int slot) {
+        return this.rumour && slot == RUMOUR_SLOT;
     }
 
     @Nullable
@@ -69,6 +84,7 @@ public class BountyBoardBlockEntity extends BlockEntity {
             list.add(NbtString.of(bounty == null ? "" : bounty.id));
         }
         nbt.put("Posted", list);
+        nbt.putBoolean("Rumour", this.rumour);
     }
 
     @Override
@@ -78,6 +94,10 @@ public class BountyBoardBlockEntity extends BlockEntity {
         NbtList list = nbt.getList("Posted", NbtElement.STRING_TYPE);
         for (int i = 0; i < this.posted.length; i++) {
             this.posted[i] = i < list.size() ? Bounty.byId(list.getString(i)) : null;
+        }
+        this.rumour = nbt.getBoolean("Rumour");
+        if (this.rumour) {
+            this.posted[RUMOUR_SLOT] = null;
         }
     }
 }

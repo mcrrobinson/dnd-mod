@@ -215,6 +215,24 @@ public sealed interface QuestAction {
         }
     }
 
+    /**
+     * Finishes the quest instance's current stage (optionally only if it's on {@code stage}, 1-based,
+     * or 0 for any), running its {@code on_complete}. For dialogue branches where every path moves on.
+     */
+    record CompleteStage(int stage) implements QuestAction {
+        @Override
+        public void run(Context context) {
+            if (context.instance() != null) {
+                context.manager().completeStageFromAction(context.server(), context.instance(), context.quest(), this.stage);
+            }
+        }
+
+        @Override
+        public boolean perInstance() {
+            return true;
+        }
+    }
+
     record Advancement(Identifier advancement) implements QuestAction {
         @Override
         public void run(Context context) {
@@ -290,6 +308,7 @@ public sealed interface QuestAction {
             case "narrate" -> new Narrate(QuestJson.text(json.get("text"), "text"));
             case "start_quest" -> new StartQuest(QuestJson.id(json, "quest"));
             case "set_flag" -> new SetFlag(QuestJson.string(json, "flag"));
+            case "complete_stage" -> new CompleteStage(QuestJson.integer(json, "stage", 0, 0, 64));
             case "advancement" -> new Advancement(QuestJson.id(json, "advancement"));
             default -> throw new IllegalArgumentException("unknown action type \"" + type + "\"");
         };

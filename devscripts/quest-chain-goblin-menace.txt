@@ -1,0 +1,76 @@
+# Chain A, The Goblin Menace: Trouble on the Road (6 goblins) then The Warlord's Trail (camp map,
+# 3 camp goblins -> War Orders + fortress map, deliver to the King, Persuasion or 8 gold tribute,
+# kill a Warlord) and the reward at the innkeeper: 30 emeralds, 120 XP, 300 class XP, +100 hobbits,
+# +60 dwarves, -150 goblins, an uncommon magic item.
+# Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-chain-goblin-menace.txt
+# Check: [Quests] lines (stage n/5 complete, "revealed dndclasses:goblin_camp at ..." near -408 1096 in the
+# dev world), [CHAT] "Test passed", /rep output, and the qc-a-*.png screenshots.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/time set noon
+/effect give @s minecraft:resistance 900 4 true
+/dndclass set @s fighter
+wait 10
+closescreen
+/kill @e[tag=qc]
+/fill -4 149 -4 4 149 4 minecraft:glass
+/clear @s
+/quest admin @s reset dndclasses:goblin_menace/1
+/quest admin @s reset dndclasses:goblin_menace/2
+/rep @s dndclasses:hobbits set 0
+/rep @s dndclasses:mountain_dwarves set 0
+/rep @s dndclasses:goblins set -600
+# Step 1, shortcut: finish Trouble on the Road and claim at the innkeeper (5 emeralds)
+/quest admin @s start dndclasses:goblin_menace/1
+/quest admin @s complete dndclasses:goblin_menace/1
+/quest admin @s talk innkeeper
+# The innkeeper now offers The Warlord's Trail: accept it in dialogue
+/summon dndclasses:innkeeper 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["qc"]}
+/tp @s 0.5 150 0.5 0 25
+wait 10
+use
+wait 10
+screenshot qc-a-1-offer
+# [Quest] The Warlord's Trail -> I'll do it.
+button 0
+wait 5
+button 0
+wait 20
+# On accept: a map to the nearest goblin camp
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:filled_map"}]}]
+screenshot qc-a-2-accepted
+closescreen
+/quest info dndclasses:goblin_menace/2
+# Stage 1: kill 3 goblins inside a goblin camp. Shortcut: jump to stage 2 (skipped stages' actions
+# don't run, so hand over the orders stage 1 would give)
+/quest admin @s stage dndclasses:goblin_menace/2 2
+/give @s dndclasses:goblin_war_orders
+# Stage 2: deliver the orders to the Dwarf King (any NPC with the role)
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:goblin_war_orders"}]}]
+/quest info dndclasses:goblin_menace/2
+# Stage 3: Persuasion DC 13 at the King. Failure path: the King asks for tribute (stage 4)
+/quest admin @s stage dndclasses:goblin_menace/2 4
+/give @s minecraft:gold_ingot 8
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:gold_ingot"}]}]
+/rep
+# Stage 5: kill a Goblin Warlord (frozen)
+/quest info dndclasses:goblin_menace/2
+/summon dndclasses:goblin_warlord 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc"]}
+wait 10
+/damage @e[type=dndclasses:goblin_warlord,tag=qc,limit=1] 100000 minecraft:player_attack by @s
+wait 20
+/quest list
+# Reward at the innkeeper
+/clear @s minecraft:emerald
+/quest admin @s talk innkeeper
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:30b}]}]
+/rep
+/dndclass progress @s
+slots
+screenshot qc-a-3-rewarded
+wait 10
+quit

@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    "#dndclasses:goblins",
+    "dndclasses:hobbit",
+    "dndclasses:mountain_dwarf",
+    "dndclasses:wood_elf",
+    "dndclasses:elf_warden",
+    "dndclasses:elf_speaker",
+    "dndclasses:elf_fletcher",
+    "minecraft:villager",
+    "minecraft:wandering_trader",
+    "minecraft:witch",
+    "minecraft:pillager",
+    "minecraft:vindicator",
+    "minecraft:evoker",
+    "minecraft:illusioner",
+    "minecraft:piglin",
+    "minecraft:piglin_brute"
+  ]
+}

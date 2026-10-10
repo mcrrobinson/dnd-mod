@@ -141,6 +141,13 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     private BlockPos phylacteryPos;
     /** True when the Lich died but its soul fled to the phylactery: no loot, XP or advancement. */
     private boolean soulFled;
+    /**
+     * A lair the Lich keeps to, or null: a dungeon's boss room ({@link #setLair}). With a lair, home
+     * is the lair rather than the phylactery, and the leash is measured from it.
+     */
+    @Nullable
+    private BlockPos lair;
+    private double lairLeash = LEASH_RANGE;
 
     private boolean greeted;
     private final Set<UUID> taunted = new HashSet<>();
@@ -265,6 +272,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         if (phylactery != null) {
             this.tickPhylacteryLink(world, phylactery, now);
         }
+        this.tickLairLeash(now);
 
         LivingEntity target = this.getTarget();
         if (this.casting != null) {
@@ -573,7 +581,36 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     /** Sets where the phylactery goes when the Lich first ticks (used by structure generation). */
     public void setPhylacterySpot(BlockPos pos) {
         this.phylacteryPos = pos;
-        this.setPositionTarget(pos, HOME_RADIUS);
+        this.setPositionTarget(this.lair != null ? this.lair : pos, HOME_RADIUS);
+    }
+
+    /**
+     * Gives the Lich a lair to keep to (a dungeon's boss room, whose reliquary holds the phylactery):
+     * it wanders round {@code centre}, and whenever it's more than {@code leash} blocks from it, it
+     * blinks back. Without a lair it keeps to its phylactery within {@value #LEASH_RANGE} blocks.
+     */
+    public void setLair(BlockPos centre, double leash) {
+        this.lair = centre.toImmutable();
+        this.lairLeash = leash;
+        this.setPositionTarget(this.lair, HOME_RADIUS);
+    }
+
+    @Nullable
+    public BlockPos getLair() {
+        return this.lair;
+    }
+
+    public double getLairLeash() {
+        return this.lairLeash;
+    }
+
+    /** The lair's leash: lured further than its reach from the lair, the Lich blinks home. */
+    private void tickLairLeash(long now) {
+        if (this.lair != null && this.age % 20 == 0 && this.casting == null && now >= this.nextBlink
+                && Math.sqrt(this.getBlockPos().getSquaredDistance(this.lair)) > this.lairLeash) {
+            this.nextBlink = now + 100;
+            this.blink(this.lair, 2.0D, 5.0D);
+        }
     }
 
     /** Links this Lich to an existing phylactery (a reformed Lich), so it doesn't make a new one. */
@@ -581,7 +618,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         this.phylacteryState = PhylacteryState.LINKED;
         this.phylacteryUuid = phylactery.getUuid();
         this.phylacteryPos = phylactery.getBlockPos();
-        this.setPositionTarget(this.phylacteryPos, HOME_RADIUS);
+        this.setPositionTarget(this.lair != null ? this.lair : this.phylacteryPos, HOME_RADIUS);
         phylactery.setLich(this);
     }
 
@@ -632,7 +669,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
             Vec3d p = from.lerp(to, t);
             world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, p.x, p.y, p.z, 1, 0.02D, 0.02D, 0.02D, 0.0D);
         }
-        if (this.age % 20 == 0 && distance > LEASH_RANGE && this.casting == null && now >= this.nextBlink) {
+        if (this.lair == null && this.age % 20 == 0 && distance > LEASH_RANGE && this.casting == null && now >= this.nextBlink) {
             this.nextBlink = now + 100;
             this.blink(this.phylacteryPos, 2.0D, 5.0D);
         }
@@ -802,6 +839,10 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         if (this.phylacteryPos != null) {
             nbt.put("PhylacteryPos", NbtHelper.fromBlockPos(this.phylacteryPos));
         }
+        if (this.lair != null) {
+            nbt.put("Lair", NbtHelper.fromBlockPos(this.lair));
+            nbt.putDouble("LairLeash", this.lairLeash);
+        }
     }
 
     @Override
@@ -822,6 +863,10 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         if (nbt.contains("PhylacteryPos")) {
             this.phylacteryPos = NbtHelper.toBlockPos(nbt.getCompound("PhylacteryPos"));
             this.setPositionTarget(this.phylacteryPos, HOME_RADIUS);
+        }
+        if (nbt.contains("Lair")) {
+            this.setLair(NbtHelper.toBlockPos(nbt.getCompound("Lair")),
+                    nbt.contains("LairLeash") ? nbt.getDouble("LairLeash") : LEASH_RANGE);
         }
     }
 

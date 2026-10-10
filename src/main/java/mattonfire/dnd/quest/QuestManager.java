@@ -191,6 +191,18 @@ public final class QuestManager extends PersistentState {
                         other != null ? other.title() : Text.literal(required.toString()));
             }
         }
+        List<Identifier> anyOf = quest.requires().anyQuests();
+        if (!anyOf.isEmpty() && anyOf.stream().noneMatch(required -> this.hasFinished(uuid, required))) {
+            MutableText names = Text.empty();
+            for (int i = 0; i < anyOf.size(); i++) {
+                QuestDefinition other = Quests.get(anyOf.get(i));
+                if (i > 0) {
+                    names.append(Text.translatable("quest.dndclasses.error.or"));
+                }
+                names.append(other != null ? other.title() : Text.literal(anyOf.get(i).toString()));
+            }
+            return Text.translatable("quest.dndclasses.error.requires_quest", names);
+        }
         for (Map.Entry<Identifier, ReputationTier> entry : quest.requires().rep().entrySet()) {
             Faction faction = Factions.get(entry.getKey());
             if (faction != null && !Reputation.tier(player, faction).atLeast(entry.getValue())) {
@@ -710,6 +722,24 @@ public final class QuestManager extends PersistentState {
             if (instance.progress(i) < objectives.get(i).count()) {
                 return;
             }
+        }
+        this.completeStage(server, instance, quest);
+    }
+
+    /**
+     * The {@code complete_stage} action: finishes the instance's current stage as if its objectives
+     * were done (runs its {@code on_complete}, moves on or finishes the quest). With {@code stage}
+     * (1-based) set, only when the instance is on that stage. Dialogue branches use it, e.g. a failed
+     * check that still moves the story on.
+     */
+    void completeStageFromAction(MinecraftServer server, QuestInstance instance, QuestDefinition quest, int stage) {
+        if (this.instances.get(instance.id()) != instance || !instance.quest().equals(quest.id())) {
+            return;
+        }
+        if (stage > 0 && instance.stage() + 1 != stage) {
+            DnDClasses.LOGGER.info("[Quests] #{} {}: complete_stage {} skipped, on stage {}", instance.id(), quest.id(),
+                    stage, instance.stage() + 1);
+            return;
         }
         this.completeStage(server, instance, quest);
     }

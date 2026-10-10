@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:owlbear",
+    "dndclasses:river_pikehorn",
+    "dndclasses:magmamuncher",
+    "dndclasses:magmamuncher_alpha",
+    "minecraft:spider",
+    "minecraft:cave_spider",
+    "minecraft:silverfish",
+    "minecraft:hoglin",
+    "minecraft:ravager",
+    "minecraft:wolf",
+    "minecraft:polar_bear",
+    "minecraft:bee"
+  ]
+}

@@ -29,7 +29,8 @@ import net.minecraft.world.gen.structure.Structure;
  * order of {@link RoomRole}: entrance, antechamber, small encounter, trap corridor, large
  * encounter, gate, puzzle, (sometimes another small encounter), mid-boss, then the 2x2-cell boss
  * room and the vault behind it. The trap corridor and the gate room are walked straight through.
- * Then 1-2 side rooms branch off: always a secret room, half the time a side vault.
+ * A Crypt then gets its reliquary off the boss room (where the Lich keeps its phylactery), and
+ * 1-2 side rooms branch off: always a secret room, half the time a side vault.
  *
  * Every room sits in the middle of its cell(s); corridors fill the gaps between neighbouring rooms'
  * walls. Everything is on one floor, {@link #DEPTH} blocks below the lowest ground around.
@@ -64,6 +65,7 @@ public final class DungeonPlanner {
             case CHAMPION -> new Size(15, 8);
             case BOSS -> new Size(2 * CELL - 1, 12);
             case SECRET -> new Size(9, 4);
+            case RELIQUARY -> new Size(ReliquaryPiece.SIZE, ReliquaryPiece.HEIGHT);
         };
     }
 
@@ -126,7 +128,8 @@ public final class DungeonPlanner {
         List<RoomRole> path = mainPath(random);
         for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
             Grid grid = new Grid();
-            if (grid.walk(random, path) && grid.placeBoss(random) && grid.placeVault(random) && grid.placeBranches(random)) {
+            if (grid.walk(random, path) && grid.placeBoss(random) && grid.placeVault(random)
+                    && (!theme.hasReliquary() || grid.placeReliquary(random)) && grid.placeBranches(random)) {
                 return Optional.of(new Layout(info, site, grid, random));
             }
         }
@@ -292,6 +295,43 @@ public final class DungeonPlanner {
             return true;
         }
 
+        /**
+         * The Crypt's reliquary, where the Lich keeps its phylactery: a side room through a door in the
+         * boss room's wall (any free cell beside it), so the phylactery is about 25 blocks from the
+         * boss's dais, inside the Lich's leash.
+         */
+        boolean placeReliquary(Random random) {
+            Room boss = null;
+            for (Room room : this.rooms) {
+                if (room.role == RoomRole.BOSS) {
+                    boss = room;
+                }
+            }
+            if (boss == null) {
+                return false;
+            }
+            List<int[]> options = new ArrayList<>();
+            for (int i = 0; i < 2; i++) {
+                for (int j = 0; j < 2; j++) {
+                    int cx = boss.x + i;
+                    int cz = boss.z + j;
+                    for (Direction d : Direction.Type.HORIZONTAL) {
+                        if (this.free(cx + d.getOffsetX(), cz + d.getOffsetZ())) {
+                            options.add(new int[]{cx, cz, d.getId()});
+                        }
+                    }
+                }
+            }
+            if (options.isEmpty()) {
+                return false;
+            }
+            int[] pick = options.get(random.nextInt(options.size()));
+            Direction d = Direction.byId(pick[2]);
+            Room reliquary = this.add(RoomRole.RELIQUARY, pick[0] + d.getOffsetX(), pick[1] + d.getOffsetZ(), 1);
+            this.links.add(new Link(boss, reliquary, pick[0], pick[1], d, false));
+            return true;
+        }
+
         /** A secret room (needed) and, half the time, a side vault, each off a room on the main path. */
         boolean placeBranches(Random random) {
             List<RoomRole> branches = new ArrayList<>(List.of(RoomRole.SECRET));
@@ -403,6 +443,7 @@ public final class DungeonPlanner {
                 case BOSS -> new BossRoomPiece(info, box, seed, room.id, room.role, h, room.doors);
                 case VAULT, SIDE_VAULT -> new VaultPiece(info, box, seed, room.id, room.role, h, room.doors);
                 case SECRET -> new SecretRoomPiece(info, box, seed, room.id, room.role, h, room.doors);
+                case RELIQUARY -> new ReliquaryPiece(info, box, seed, room.id, room.role, h, room.doors);
                 case ENTRANCE -> throw new IllegalStateException();
             };
         }

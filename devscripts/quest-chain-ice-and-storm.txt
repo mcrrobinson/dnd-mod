@@ -1,0 +1,47 @@
+# Chain C, Ice and Storm (dwarf_king, needs Friendly dwarves): frost lair map on accept, visit it,
+# kill a Frost Drake, show the King a trophy (#dndclasses:quest/frost_drake_trophies, not taken),
+# dragon lair map, kill a Lightning Chaser, reward at the King: 40 emeralds, 150 XP, 400 class XP,
+# +150 dwarves, a rare magic item from the dwarven pool.
+# Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-chain-ice-and-storm.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/time set noon
+/effect give @s minecraft:resistance 900 4 true
+wait 10
+closescreen
+/kill @e[tag=qc]
+/fill -6 149 -6 6 149 6 minecraft:glass
+/tp @s 0.5 150 0.5 0 25
+/clear @s
+/quest admin @s reset dndclasses:ice_and_storm/1
+/rep @s dndclasses:mountain_dwarves set 150
+/quest admin @s start dndclasses:ice_and_storm/1
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:filled_map"}]}]
+/quest info dndclasses:ice_and_storm/1
+# Stage 2: Frost Drake (frozen) + trophy at the King
+/quest admin @s stage dndclasses:ice_and_storm/1 2
+/summon dndclasses:frost_drake 0.5 152 -5.5 {NoAI:1b,NoGravity:1b,Tags:["qc"]}
+wait 10
+/damage @e[type=dndclasses:frost_drake,tag=qc,limit=1] 100000 minecraft:player_attack by @s
+wait 40
+/give @s minecraft:blue_ice
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:blue_ice"}]}]
+/quest info dndclasses:ice_and_storm/1
+# Stage 3: Lightning Chaser (frozen)
+/kill @e[type=item]
+/summon dndclasses:lightning_chaser 0.5 152 -5.5 {NoAI:1b,NoGravity:1b,Tags:["qc"]}
+wait 10
+/damage @e[type=dndclasses:lightning_chaser,tag=qc,limit=1] 100000 minecraft:player_attack by @s
+wait 40
+/kill @e[type=item]
+/quest list
+/clear @s minecraft:emerald
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:40b}]}]
+/rep
+slots
+screenshot qc-c-rewarded
+quit

@@ -1,0 +1,39 @@
+{
+  "title": "quest.dndclasses.eye_below.1.title",
+  "description": "quest.dndclasses.eye_below.1.description",
+  "chain": "dndclasses:eye_below",
+  "giver": "dwarf_king",
+  "requires": {
+    "any_quests": ["dndclasses:goblin_menace/2", "dndclasses:ice_and_storm/1"],
+    "rep": {"dndclasses:mountain_dwarves": "honored"}
+  },
+  "stages": [
+    {
+      "title": "quest.dndclasses.eye_below.1.stage.1.title",
+      "text": "quest.dndclasses.eye_below.1.stage.1",
+      "objectives": [
+        {"type": "check", "skill": "insight", "dc": 14, "text": "quest.dndclasses.eye_below.1.objective.insight"}
+      ],
+      "on_complete": [
+        {"type": "reveal", "structure": "dndclasses:beholder_lair", "radius": 150, "fallback": "quest.dndclasses.eye_below.1.no_lair"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.eye_below.1.stage.2.title",
+      "text": "quest.dndclasses.eye_below.1.stage.2",
+      "objectives": [
+        {"type": "kill", "entity": "dndclasses:beholder", "count": 1, "text": "quest.dndclasses.eye_below.1.objective.beholder"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.eye_below.1.narrate.beholder"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 64},
+    {"type": "xp", "amount": 250},
+    {"type": "class_xp", "amount": 600},
+    {"type": "rep", "factions": {"dndclasses:mountain_dwarves": 200}},
+    {"type": "magic_item", "rarity": "very_rare"}
+  ]
+}

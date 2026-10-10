@@ -88,7 +88,7 @@ public final class DungeonCombat {
     }
 
     private static void bossDefeated(ServerWorld world, DungeonState dungeon, DungeonState.Room room, LivingEntity boss) {
-        List<ServerPlayerEntity> players = playersIn(world, room);
+        List<ServerPlayerEntity> players = playersInBossArea(world, dungeon, room);
         DnDClasses.LOGGER.info("[Dungeon] boss {} of {} defeated with {} player(s) in the boss room",
                 boss.getType().getUntranslatedName(), dungeon.startKey(), players.size());
         DungeonEvents.BOSS_DEFEATED.invoker().onBossDefeated(world, dungeon, boss, players);
@@ -114,6 +114,24 @@ public final class DungeonCombat {
         for (ServerPlayerEntity player : world.getPlayers()) {
             if (player.isAlive() && !player.isSpectator() && !player.isCreative() && room.box().contains(player.getBlockPos())) {
                 players.add(player);
+            }
+        }
+        return players;
+    }
+
+    /**
+     * Players in the boss room or its reliquary (where the killing blow on a phylactery lands): the
+     * boss kill's participants.
+     */
+    public static List<ServerPlayerEntity> playersInBossArea(ServerWorld world, DungeonState dungeon, DungeonState.Room boss) {
+        List<ServerPlayerEntity> players = playersIn(world, boss);
+        for (DungeonState.Room room : dungeon.rooms()) {
+            if (room.role() == RoomRole.RELIQUARY) {
+                for (ServerPlayerEntity player : playersIn(world, room)) {
+                    if (!players.contains(player)) {
+                        players.add(player);
+                    }
+                }
             }
         }
         return players;

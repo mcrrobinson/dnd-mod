@@ -624,6 +624,34 @@ public class ModItems {
         public static final Item TOME_OF_CLEAR_THOUGHT = registerItem("tome_of_clear_thought",
                         new mattonfire.dnd.magic.items.TomeOfClearThoughtItem(new FabricItemSettings().maxCount(16)));
 
+        // Boss and monster magic items (design 5, section 3.7, items 10-18 and 20); defs and effects in magic/items/BossItems
+        public static final Item WARLORDS_WARHORN = registerItem("warlords_warhorn",
+                        new mattonfire.dnd.magic.items.WarlordsWarhornItem(new FabricItemSettings().maxCount(1)));
+        public static final Item HEART_OF_THE_FURNACE = registerItem("heart_of_the_furnace",
+                        new mattonfire.dnd.magic.items.DescribedItem(new FabricItemSettings().maxCount(1).fireproof()));
+        /** Diamond boots' stats (3 armor, 2 toughness, diamond durability). */
+        public static final Item STORM_CHASER_BOOTS = registerItem("storm_chaser_boots",
+                        new mattonfire.dnd.magic.items.DescribedItem.Armor(net.minecraft.item.ArmorMaterials.DIAMOND,
+                                        net.minecraft.item.ArmorItem.Type.BOOTS, new FabricItemSettings()));
+        public static final Item WYVERN_SCALE_CLOAK = registerItem("wyvern_scale_cloak",
+                        new mattonfire.dnd.magic.items.DescribedItem(new FabricItemSettings().maxCount(1)));
+        public static final Item BELT_OF_OWLBEAR_MIGHT = registerItem("belt_of_owlbear_might",
+                        new mattonfire.dnd.magic.items.DescribedItem(new FabricItemSettings().maxCount(1)));
+        /** 8 attack damage (1 + iron's 2 + 5), 1.4 attack speed (4 - 2.6). */
+        public static final Item MACE_OF_DISRUPTION = registerItem("mace_of_disruption",
+                        new mattonfire.dnd.magic.items.NamedWeaponItem(net.minecraft.item.ToolMaterials.IRON, 5, -2.6F,
+                                        "item.dndclasses.mace_of_disruption.tooltip", true, new FabricItemSettings()));
+        /** 9 attack damage (1 + diamond's 3 + 5), 1.6 attack speed (4 - 2.4). */
+        public static final Item FROSTBRAND = registerItem("frostbrand",
+                        new mattonfire.dnd.magic.items.NamedWeaponItem(net.minecraft.item.ToolMaterials.DIAMOND, 5, -2.4F,
+                                        "item.dndclasses.frostbrand.tooltip", false, new FabricItemSettings()));
+        public static final Item PHYLACTERY_LOCKET = registerItem("phylactery_locket",
+                        new mattonfire.dnd.magic.items.PhylacteryLocketItem(new FabricItemSettings().maxCount(1)));
+        public static final Item BURGLARS_RING = registerItem("burglars_ring",
+                        new mattonfire.dnd.magic.items.BurglarsRingItem(new FabricItemSettings().maxCount(1)));
+        public static final Item EYE_OF_THE_TYRANT = registerItem("eye_of_the_tyrant",
+                        new mattonfire.dnd.magic.items.EyeOfTheTyrantItem(new FabricItemSettings().maxCount(1)));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

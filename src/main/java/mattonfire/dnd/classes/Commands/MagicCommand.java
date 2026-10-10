@@ -56,7 +56,7 @@ public final class MagicCommand {
     private static final DynamicCommandExceptionType UNKNOWN_TIER = new DynamicCommandExceptionType(
             id -> Text.literal("Unknown tier: " + id + " (common, uncommon, rare, very_rare, legendary)"));
     private static final DynamicCommandExceptionType UNKNOWN_CURSE = new DynamicCommandExceptionType(
-            id -> Text.literal("Unknown curse: " + id + " (bloodthirst, frailty, ill_omen, beacon, sun_sick, gluttony)"));
+            id -> Text.literal("Unknown curse: " + id + " (bloodthirst, frailty, ill_omen, beacon, sun_sick, gluttony, rings_call)"));
     private static final SimpleCommandExceptionType EMPTY_HAND = new SimpleCommandExceptionType(
             Text.literal("Hold the item in your main hand."));
 

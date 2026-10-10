@@ -1,6 +1,7 @@
 package mattonfire.dnd.entity;
 
 import mattonfire.dnd.tavern.Tavern;
+import mattonfire.dnd.tavern.TavernRooms;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
@@ -8,7 +9,10 @@ import net.minecraft.item.Items;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
-/** What an innkeeper sells (food and drink) and buys (the village's produce). Restocks daily. */
+/**
+ * What an innkeeper sells (food, drink and a room for the night) and buys (the village's produce).
+ * Restocks daily.
+ */
 final class InnkeeperTrades {
     private static final int MAX_USES = 12;
     private static final int MERCHANT_XP = 2;
@@ -34,7 +38,20 @@ final class InnkeeperTrades {
         offers.add(buy(Items.CARROT, 22));
         offers.add(buy(Items.BROWN_MUSHROOM, 10));
         offers.add(buy(Items.PUMPKIN, 6));
+        addMissing(offers);
         return offers;
+    }
+
+    /** Adds the trades a saved innkeeper from an older version doesn't have yet (the Room Key). */
+    static void addMissing(TradeOfferList offers) {
+        if (offers.stream().noneMatch(InnkeeperTrades::isRoomKey)) {
+            // A room for the night: the key is stamped with the inn and the day as it's sold.
+            offers.add(sell(TavernRooms.PRICE, Tavern.ROOM_KEY, 1));
+        }
+    }
+
+    static boolean isRoomKey(TradeOffer offer) {
+        return offer.getSellItem().isOf(Tavern.ROOM_KEY);
     }
 
     private static TradeOffer sell(int emeralds, ItemConvertible item, int count) {

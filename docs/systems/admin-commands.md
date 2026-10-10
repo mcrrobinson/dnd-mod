@@ -37,6 +37,7 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass sheet <player>` | Prints the player's [character sheet](ability-scores.md): scores, saves, skills and passives |
 | `/dndclass score <player> <ability> <1-30>\|clear` | Overrides one ability score (or clears the override), for testing |
 | `/dndclass forceroll <player> <n...>\|clear` | Rigs the player's next d20 naturals, for tests |
+| `/dndclass lore <player> list\|forget [entity]` | Lists the creature types the player has studied, or forgets one (or all) so Study rolls again; see [Creature study](creature-study.md) |
 | `/dndclass down <player>` | Downs the player (death saves), even with nobody near. See [Downed and death saves](death-saves.md) |
 | `/dndclass stabilise <player>` | A Downed player stops rolling and stands up on their own in 30 s |
 | `/dndclass revive <player> [hp]` | A Downed player stands up with `hp` HP (default 1) |

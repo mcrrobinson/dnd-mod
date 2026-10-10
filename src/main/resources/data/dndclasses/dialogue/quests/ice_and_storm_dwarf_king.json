@@ -1,0 +1,81 @@
+{
+  "role": "dwarf_king",
+  "topics": [
+    {
+      "id": "ice_and_storm/expedition",
+      "text": "dialogue.dndclasses.ice_and_storm.expedition",
+      "requires": {
+        "quest": "dndclasses:ice_and_storm/1",
+        "stage": 1
+      },
+      "actions": [
+        {
+          "type": "reveal",
+          "structure": "dndclasses:frost_lair",
+          "fallback": "quest.dndclasses.ice_and_storm.1.no_lair"
+        }
+      ],
+      "goto": "ice_and_storm_expedition"
+    },
+    {
+      "id": "ice_and_storm/drake",
+      "text": "dialogue.dndclasses.ice_and_storm.drake",
+      "requires": {
+        "quest": "dndclasses:ice_and_storm/1",
+        "stage": 2
+      },
+      "goto": "ice_and_storm_drake"
+    },
+    {
+      "id": "ice_and_storm/storm",
+      "text": "dialogue.dndclasses.ice_and_storm.storm",
+      "requires": {
+        "quest": "dndclasses:ice_and_storm/1",
+        "stage": 3
+      },
+      "actions": [
+        {
+          "type": "reveal",
+          "structure": "dndclasses:dragon_lair",
+          "fallback": "quest.dndclasses.ice_and_storm.1.no_peak"
+        }
+      ],
+      "goto": "ice_and_storm_storm"
+    }
+  ],
+  "nodes": {
+    "ice_and_storm_expedition": {
+      "lines": [
+        "dialogue.dndclasses.ice_and_storm.expedition.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "ice_and_storm_drake": {
+      "lines": [
+        "dialogue.dndclasses.ice_and_storm.drake.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "ice_and_storm_storm": {
+      "lines": [
+        "dialogue.dndclasses.ice_and_storm.storm.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    }
+  }
+}

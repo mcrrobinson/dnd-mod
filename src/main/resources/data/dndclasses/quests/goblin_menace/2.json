@@ -1,0 +1,69 @@
+{
+  "title": "quest.dndclasses.goblin_menace.2.title",
+  "description": "quest.dndclasses.goblin_menace.2.description",
+  "chain": "dndclasses:goblin_menace",
+  "giver": "innkeeper",
+  "requires": {"quests": ["dndclasses:goblin_menace/1"]},
+  "on_accept": [
+    {"type": "reveal", "structure": "dndclasses:goblin_camp", "fallback": "quest.dndclasses.goblin_menace.2.no_camp"}
+  ],
+  "stages": [
+    {
+      "title": "quest.dndclasses.goblin_menace.2.stage.1.title",
+      "text": "quest.dndclasses.goblin_menace.2.stage.1",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:goblins", "count": 3, "within_structure": "dndclasses:goblin_camp",
+         "text": "quest.dndclasses.goblin_menace.2.objective.camp"}
+      ],
+      "on_complete": [
+        {"type": "give", "item": "dndclasses:goblin_war_orders"},
+        {"type": "narrate", "text": "quest.dndclasses.goblin_menace.2.narrate.orders"},
+        {"type": "reveal", "structure": "dndclasses:dwarven_fortress", "fallback": "quest.dndclasses.goblin_menace.2.no_fortress"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.goblin_menace.2.stage.2.title",
+      "text": "quest.dndclasses.goblin_menace.2.stage.2",
+      "objectives": [
+        {"type": "deliver", "item": "dndclasses:goblin_war_orders", "count": 1, "role": "dwarf_king",
+         "text": "quest.dndclasses.goblin_menace.2.objective.orders"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.goblin_menace.2.stage.3.title",
+      "text": "quest.dndclasses.goblin_menace.2.stage.3",
+      "objectives": [
+        {"type": "check", "skill": "persuasion", "dc": 13, "text": "quest.dndclasses.goblin_menace.2.objective.persuade"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.goblin_menace.2.stage.4.title",
+      "text": "quest.dndclasses.goblin_menace.2.stage.4",
+      "objectives": [
+        {"type": "deliver", "item": "minecraft:gold_ingot", "count": 8, "role": "dwarf_king",
+         "text": "quest.dndclasses.goblin_menace.2.objective.tribute"}
+      ],
+      "on_complete": [
+        {"type": "rep", "factions": {"dndclasses:mountain_dwarves": 15}}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.goblin_menace.2.stage.5.title",
+      "text": "quest.dndclasses.goblin_menace.2.stage.5",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:bounty/goblin_warlords", "count": 1,
+         "text": "quest.dndclasses.goblin_menace.2.objective.warlord"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.goblin_menace.2.narrate.warlord"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 30},
+    {"type": "xp", "amount": 120},
+    {"type": "class_xp", "amount": 300},
+    {"type": "rep", "factions": {"dndclasses:hobbits": 100, "dndclasses:mountain_dwarves": 60, "dndclasses:goblins": -150}},
+    {"type": "magic_item", "rarity": "uncommon"}
+  ]
+}

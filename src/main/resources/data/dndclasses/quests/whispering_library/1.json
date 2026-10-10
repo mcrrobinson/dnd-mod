@@ -1,0 +1,59 @@
+{
+  "title": "quest.dndclasses.whispering_library.1.title",
+  "description": "quest.dndclasses.whispering_library.1.description",
+  "chain": "dndclasses:whispering_library",
+  "giver": "hobbit_elder",
+  "requires": {"rep": {"dndclasses:hobbits": "friendly"}},
+  "rumour_weight": 2,
+  "stages": [
+    {
+      "title": "quest.dndclasses.whispering_library.1.stage.1.title",
+      "text": "quest.dndclasses.whispering_library.1.stage.1",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:bounty/undead", "count": 20,
+         "quest_drop": {"item": "dndclasses:cursed_bone", "chance": 0.25},
+         "text": "quest.dndclasses.whispering_library.1.objective.undead"},
+        {"type": "collect", "item": "dndclasses:cursed_bone", "count": 3, "consume": true,
+         "text": "quest.dndclasses.whispering_library.1.objective.bones"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.whispering_library.1.stage.2.title",
+      "text": "quest.dndclasses.whispering_library.1.stage.2",
+      "objectives": [
+        {"type": "check", "skill": "arcana", "dc": 12, "text": "quest.dndclasses.whispering_library.1.objective.read"}
+      ],
+      "on_complete": [
+        {"type": "give", "item": "minecraft:ender_eye", "count": 2}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.whispering_library.1.stage.3.title",
+      "text": "quest.dndclasses.whispering_library.1.stage.3",
+      "objectives": [
+        {"type": "visit", "structure": "minecraft:stronghold", "text": "quest.dndclasses.whispering_library.1.objective.stronghold"},
+        {"type": "kill", "entity": "dndclasses:phylactery", "count": 1, "text": "quest.dndclasses.whispering_library.1.objective.phylactery"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.whispering_library.1.narrate.jar"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.whispering_library.1.stage.4.title",
+      "text": "quest.dndclasses.whispering_library.1.stage.4",
+      "objectives": [
+        {"type": "kill", "entity": "dndclasses:lich", "count": 1, "text": "quest.dndclasses.whispering_library.1.objective.lich"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.whispering_library.1.narrate.lich"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 40},
+    {"type": "xp", "amount": 150},
+    {"type": "class_xp", "amount": 400},
+    {"type": "rep", "factions": {"dndclasses:hobbits": 150}},
+    {"type": "magic_item", "rarity": "rare"}
+  ]
+}

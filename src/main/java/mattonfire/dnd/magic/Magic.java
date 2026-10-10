@@ -43,6 +43,7 @@ public final class Magic {
         RemoveCurse.register();
         registerEffects();
         mattonfire.dnd.magic.items.WondrousItems.register();
+        mattonfire.dnd.magic.items.BossItems.register();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> MagicCommand
                 .register(dispatcher));
     }

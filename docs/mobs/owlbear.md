@@ -33,7 +33,7 @@ A swipe that lands has a 35% chance to turn into a hug. This only works on targe
 It rears up and holds the target in front of it for 3 seconds with heavy Slowness, crushing it for 3 damage every half second. The crush ignores the usual hit cooldown. Deal 6 damage to the owlbear yourself, in total, to break free early; hits from anyone else don't count. When the hug ends it tosses the target aside. It hugs at most once every 8 seconds.
 
 ### Drops
-2-5 feathers (up to 2 more per Looting level), 1-3 leather and 1-2 raw chicken (cooked if it died burning), each of those with up to 1 more per Looting level.
+2-5 feathers (up to 2 more per Looting level), 1-3 leather and 1-2 raw chicken (cooked if it died burning), each of those with up to 1 more per Looting level. Killed by a player, it has an 8% chance (+2% per Looting level) to drop a [Belt of Owlbear Might](../items/magic-items.md#belt-of-owlbear-might) (Rare, unidentified).
 
 ### Druid form
 Killing an owlbear as a [Druid](../classes/druid.md) adds it to the Druid's bestiary. It is a tier IV form, so it can be unlocked at an Attunement Table once Wild Shape is rank IV. The form lasts as long as Wild Shape's rank allows (30 seconds at rank IV) and needs the Identity mod.

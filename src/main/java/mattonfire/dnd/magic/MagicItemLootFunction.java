@@ -51,6 +51,11 @@ public class MagicItemLootFunction extends ConditionalLootFunction {
         this.theme = theme;
     }
 
+    /** An unidentified roll of a registered item at its own tier, cursed only by its built-in curse or the tier default. */
+    public static ConditionalLootFunction.Builder<?> unidentified() {
+        return builder(conditions -> new MagicItemLootFunction(conditions, null, null, false, -1.0F, null));
+    }
+
     static void register() {
         Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(DnDClasses.MOD_ID, "magic_item"), TYPE);
     }

@@ -36,7 +36,7 @@ Dungeon traps use the same passive Perception rule (see [Dungeon traps](dungeon-
 
 ### Search (V)
 Press **V** (Search / Study, rebindable under D&D Classes in Controls):
-- Looking at a creature within 16 blocks: that will be **Study** (a Lore/Insight check, still to come). Until then it Searches too.
+- Looking at a creature within 16 blocks: you **Study** it, a Lore or Insight check (see [Creature study](creature-study.md)). Players and armour stands still Search.
 - Otherwise you **Search**: a Perception roll on the main d20 panel, with a **10 s cooldown** ("You can search again in Ns.").
   - Everything hidden within **8 blocks** whose DC the total meets is revealed. A natural 20 finds everything in range; a natural 1 finds nothing.
   - **Mimics** (DC 13): a red glow outline for 5 s, "That chest has teeth. It's a mimic!", and the breathing puffs from then on. A dormant mimic counts as hidden, not as a creature to Study.
@@ -58,7 +58,6 @@ Everywhere: sneaking, any dormant mimic, and dungeon trap corridors.
 
 ## Known limitations
 - No Character tab yet: passives show in `/dndclass sheet` only.
-- Study (V on a creature) isn't built yet; the key Searches instead.
 - The mimic tell and who found a trap by Search are kept in memory only, so after a restart the tell can come again.
 - Only the chestplate counts for heavy armour.
 - Stealth only shrinks detection range; it doesn't stop mobs that are already chasing you or that you hit.

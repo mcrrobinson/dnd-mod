@@ -225,7 +225,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         super.setTarget(target);
     }
 
-    private boolean hasGrudgeAgainst(PlayerEntity player) {
+    /** Whether this dwarf holds a grudge against {@code player} right now (also read by an Insight Study). */
+    public boolean hasGrudgeAgainst(PlayerEntity player) {
         if (player == this.getAttacker() || this.shouldAngerAt(player)) {
             return true;
         }

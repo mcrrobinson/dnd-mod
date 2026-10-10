@@ -43,6 +43,12 @@ public final class Persuasion {
     private Persuasion() {
     }
 
+    /** True if {@code player} already tried to persuade {@code villager} today (Insight reads this). */
+    public static boolean triedToday(PlayerEntity player, Entity villager) {
+        Long lastDay = LAST_TRIED.get(villager.getUuidAsString() + "/" + player.getUuidAsString());
+        return lastDay != null && lastDay == player.getWorld().getTimeOfDay() / 24000L;
+    }
+
     /**
      * The DC to persuade {@code target}: {@link #DC} shifted by the player's standing with its faction
      * (Hostile +5, Unfriendly +3, Friendly -2, Honored -4, Exalted -6). Dialogue checks use the same shift.

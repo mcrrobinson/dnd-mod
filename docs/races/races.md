@@ -23,7 +23,7 @@ Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, G
 | **Gnome** | INT +2, DEX +1 | Small (0.65) | Attack reach -0.5 blocks | **Darkvision**: caves are dim but readable<br>**Gnome Cunning**: 30% less damage from magic<br>**Tinker**: crafting a redstone component has a 25% chance to make one extra |
 | **Half-Orc** | STR +2, CON +1 | Medium (1.0) | none | **Darkvision**: caves are dim but readable<br>**Relentless Endurance**: once every 10 minutes, a killing blow leaves you at 1 HP instead<br>**Savage Attacks**: critical hits deal x2.5 instead of x2 |
 | **Tiefling** | CHA +2, INT +1 | Medium (1.0) | none | **Darkvision**: caves are dim but readable<br>**Hellish Resistance**: half damage from fire, lava and burning<br>**Hellish Rebuke**: a melee attacker is set on fire (20 second cooldown) |
-| **Dragonborn** | STR +2, CHA +1 | Tall (1.05) | none | **Draconic Ancestry**: Ember (fire), Frost or Storm (lightning)<br>**Breath Weapon**: breathe your ancestry's element in a cone (R key, see [Breath Weapon](breath-weapon.md))<br>**Draconic Resistance**: half damage from your ancestry's element |
+| **Dragonborn** | STR +2, CHA +1 | Tall (1.05) | none | **Draconic Ancestry**: Ember (fire), Frost or Storm (lightning)<br>**Breath Weapon**: breathe your ancestry's element in a cone (R key)<br>**Draconic Resistance**: half damage from your ancestry's element |
 <!-- race-table:end -->
 
 - **Stat modifiers** are live now. They're attribute modifiers on top of your class's base values, so a race and a class never overwrite each other, and switching class keeps them. Speed is a percentage of your class's base speed: a Barbarian Dwarf walks at 0.08 × 0.92 = 0.0736.

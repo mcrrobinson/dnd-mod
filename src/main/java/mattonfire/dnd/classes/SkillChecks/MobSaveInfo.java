@@ -40,6 +40,22 @@ public final class MobSaveInfo {
 
     private static final Map<EntityType<?>, List<Entry>> ENTRIES = new LinkedHashMap<>();
 
+    /**
+     * Entries that come from somewhere reloadable (the data-driven {@link SaveRules}), asked each time rather than
+     * stored, so a datapack reload is seen straight away.
+     */
+    @FunctionalInterface
+    public interface Provider {
+        List<Entry> entries(EntityType<?> type);
+    }
+
+    private static final List<Provider> PROVIDERS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /** Adds a source of entries listed after the registered ones. */
+    public static void registerProvider(Provider provider) {
+        PROVIDERS.add(provider);
+    }
+
     private MobSaveInfo() {
     }
 
@@ -51,9 +67,16 @@ public final class MobSaveInfo {
     }
 
     /** A creature's saves, in registration order (empty if none). */
-    public static synchronized List<Entry> of(EntityType<?> type) {
-        List<Entry> entries = ENTRIES.get(type);
-        return entries == null ? List.of() : Collections.unmodifiableList(new ArrayList<>(entries));
+    public static List<Entry> of(EntityType<?> type) {
+        List<Entry> entries;
+        synchronized (MobSaveInfo.class) {
+            List<Entry> registered = ENTRIES.get(type);
+            entries = registered == null ? new ArrayList<>() : new ArrayList<>(registered);
+        }
+        for (Provider provider : PROVIDERS) {
+            entries.addAll(provider.entries(type));
+        }
+        return Collections.unmodifiableList(entries);
     }
 
     public static synchronized Map<EntityType<?>, List<Entry>> all() {

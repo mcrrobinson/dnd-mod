@@ -1,0 +1,8 @@
+{
+    "damage_type": "minecraft:sonic_boom",
+    "ability": "CON",
+    "dc": 15,
+    "on_success": "half",
+    "label": "save.dndclasses.sonic_boom",
+    "tags": ["thunder"]
+}

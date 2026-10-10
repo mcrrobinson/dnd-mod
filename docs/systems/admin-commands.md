@@ -52,6 +52,7 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndrace get <player>` | Prints the player's race (and Dragonborn ancestry), or `none` |
 | `/dndrace set <player> <race> [ancestry]` | Changes the race: removes the old race's modifiers, applies the new ones and prints the race summary. `none` clears the race and reopens the race picker |
 | `/dndrace list` | Lists online players with their race and class |
+| `/dndrace cooldowns <player> [reset]` | Prints the racial cooldowns left (Relentless Endurance, Hellish Rebuke, Breath Weapon); `reset` readies them all |
 
 | `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
 | `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |

@@ -47,6 +47,7 @@ public final class RaceLifecycle {
     public static void register() {
         RaceAbilityBonuses.register();
         BreathWeapon.register();
+        RaceTraits.register();
         ServerPlayNetworking.registerGlobalReceiver(C2S_RACE_PICK, (server, player, handler, buf, sender) -> {
             int race = buf.readVarInt();
             int ancestry = buf.readVarInt();

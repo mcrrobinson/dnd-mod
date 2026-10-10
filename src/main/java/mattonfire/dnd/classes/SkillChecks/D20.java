@@ -22,6 +22,8 @@ import mattonfire.dnd.classes.Abilities.CharacterSheet;
 import mattonfire.dnd.classes.Abilities.RollKind;
 import mattonfire.dnd.classes.Abilities.RollQuery;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -104,7 +106,7 @@ public final class D20 {
     public enum Display {
         /** The big panel under the crosshair. */
         MAIN,
-        /** The compact saving-throw rows beside the crosshair (drawn on the main panel until that lane exists). */
+        /** The compact saving-throw rows beside the crosshair ({@code SaveLaneHud}). */
         SAVE_LANE,
         /** Logged but never sent (non-player and passive rolls). */
         SILENT
@@ -192,13 +194,17 @@ public final class D20 {
         }
     }
 
-    /** A raw roll builder. {@link SkillCheck} fills one in from the character sheet. */
-    public static Builder roll(PlayerEntity player) {
-        return new Builder(player);
+    /**
+     * A raw roll builder. {@link SkillCheck} fills one in from the character sheet. Non-players can roll too
+     * (silent mob saves, see {@link SavingThrow}); they have no sheet, so {@link Builder#sheetAdvantage} does
+     * nothing for them.
+     */
+    public static Builder roll(LivingEntity roller) {
+        return new Builder(roller);
     }
 
     public static final class Builder {
-        private final PlayerEntity player;
+        private final LivingEntity player;
         private Text label = Text.literal("d20");
         @Nullable
         private Ability ability;
@@ -213,7 +219,7 @@ public final class D20 {
         private Display display = Display.MAIN;
         private int flags;
 
-        private Builder(PlayerEntity player) {
+        private Builder(LivingEntity player) {
             this.player = player;
         }
 
@@ -288,7 +294,8 @@ public final class D20 {
 
         /** Applies the advantage sources on the player's sheet that match this roll. */
         public Builder sheetAdvantage(RollQuery query) {
-            return player.getWorld().isClient ? this : mode(AbilityScores.sheet(player).advantage(query));
+            return player.getWorld().isClient || !(player instanceof PlayerEntity p) ? this
+                    : mode(AbilityScores.sheet(p).advantage(query));
         }
 
         /** The lowest natural that is a CRITICAL (attacks: the sheet's crit range). */
@@ -361,7 +368,7 @@ public final class D20 {
     }
 
     /** One natural d20: the next rigged value if any ({@code /dndclass forceroll}), else random. */
-    public static int d20(PlayerEntity player) {
+    public static int d20(LivingEntity player) {
         synchronized (FORCED) {
             Deque<Integer> forced = FORCED.get(player.getUuid());
             if (forced != null && !forced.isEmpty()) {
@@ -376,7 +383,7 @@ public final class D20 {
     }
 
     /** Rigs the player's next naturals (each 1-20), in order. */
-    public static void force(PlayerEntity player, Collection<Integer> naturals) {
+    public static void force(Entity player, Collection<Integer> naturals) {
         synchronized (FORCED) {
             FORCED.computeIfAbsent(player.getUuid(), k -> new ArrayDeque<>()).addAll(naturals);
         }
@@ -401,23 +408,40 @@ public final class D20 {
                 .kind(skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK).modifier(modifier).dc(dc).roll();
     }
 
-    /** Shows the roll on the player's HUD, with a line saying what came of it. SILENT rolls aren't sent. */
+    /**
+     * Shows the roll on the player's HUD, with a line saying what came of it. SILENT rolls aren't sent.
+     * SAVE_LANE rolls go through {@link SavingThrow#send}, which throttles them and merges repeats.
+     */
     public static void show(PlayerEntity player, Roll roll, Text detail) {
         if (!(player instanceof ServerPlayerEntity serverPlayer) || roll.display() == Display.SILENT) {
             return;
         }
+        if (roll.display() == Display.SAVE_LANE) {
+            SavingThrow.send(serverPlayer, roll, detail);
+            return;
+        }
+        send(serverPlayer, roll, detail, 1);
+    }
+
+    /**
+     * Sends one roll packet as is. {@code count} is how many identical rolls it stands for (the save lane's
+     * "x3"); it's written after the detail, and older readers that stop at the detail just ignore it.
+     */
+    static void send(ServerPlayerEntity player, Roll roll, Text detail, int count) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         roll.write(buf);
         buf.writeText(detail);
-        ServerPlayNetworking.send(serverPlayer, S2C_ROLL, buf);
+        buf.writeVarInt(count);
+        ServerPlayNetworking.send(player, S2C_ROLL, buf);
     }
 
     /**
      * {@code [D20] <player> <label> <natural>[ (<other> adv|dis)] <+mod> = <total>[ vs DC <dc>] -> <outcome>},
      * for logs and DevScript tests.
      */
-    public static void log(PlayerEntity player, Roll roll) {
-        StringBuilder line = new StringBuilder("[D20] ").append(player.getEntityName()).append(' ')
+    public static void log(Entity player, Roll roll) {
+        String name = player instanceof PlayerEntity ? player.getEntityName() : player.getName().getString();
+        StringBuilder line = new StringBuilder("[D20] ").append(name).append(' ')
                 .append(labelForLog(roll.label())).append(' ').append(roll.natural());
         if (roll.natural2() > 0) {
             line.append(" (").append(roll.natural2()).append(' ')
@@ -454,6 +478,7 @@ public final class D20 {
 
     public static void register() {
         Lockpicking.register();
+        SavingThrow.register();
         Persuasion.register();
         AttackRolls.register();
     }

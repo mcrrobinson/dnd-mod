@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Config.SaveRollsMode;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.mixin.MouseAccessor;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
@@ -96,6 +97,8 @@ import net.minecraft.util.Identifier;
  *     race</li>
  * <li>{@code racepick <race> [ancestry]} sends what clicking a race (or a Dragonborn ancestry) in the picker
  *     would, e.g. {@code racepick elf}, {@code racepick dragonborn frost}; the server's one-pick check applies</li>
+ * <li>{@code saverolls full|compact|off|config} overrides the {@code saveRolls} client option for the rest of the
+ *     run ({@code config} goes back to the config file), to check each save-lane mode in one run</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -364,6 +367,7 @@ public final class DevScript {
             }
             case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
             case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
+            case "saverolls" -> SaveRollsMode.setOverride(SaveRollsMode.byId(argument)); // else: the config file
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
     }

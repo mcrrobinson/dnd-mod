@@ -32,6 +32,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
+- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
 - [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data

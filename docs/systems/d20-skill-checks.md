@@ -36,6 +36,9 @@ Sneak and right click a villager with an empty main hand. The villager must have
 
 Gossip is vanilla reputation, so it lowers or raises that villager's prices the same way curing a zombie villager does. It spreads to nearby villagers and fades slowly over time. Persuade the villagers whose trades you use most.
 
+### Arcana (Wizard, Warlock)
+Dispelling an Arcane Seal rolls Arcana: d20 + 5 for a level 0 Wizard (+3 plus proficiency) or d20 + 3 for a level 0 Warlock (+1 plus proficiency), against the seal's DC (10, 13, 15 or 18). Proficiency rises to +3 at class level 4 and +4 at level 8. See [Class-gated obstacles](obstacles.md).
+
 ### Attack rolls (everyone)
 Every full-strength melee swing (attack cooldown at 90% or more) at a living mob rolls a d20. Armor stands don't count. Wait for the cooldown bar to fill if you want your crits.
 
@@ -64,7 +67,7 @@ Locked chests are the loot chests in structures: dungeons, mineshafts, temples, 
 
 ## For developers
 - `classes/SkillChecks/D20.java` holds the roll, the `Skill` and `Outcome` enums, and the `dndclasses:d20_roll` S2C packet (`D20.show`).
-- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
+- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and take their modifier from `SkillModifiers`. `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
 - Mixins: `mixin/LootableContainerBlockEntityAccessor` reads the chest's loot table, and `mixin/PlayerAttackRollMixin` applies crit damage and plays the crit effects.
 - `Client/Hud/DiceRollHud.java` draws the HUD panel with `textures/gui/d20.png` (made by `tools/d20_texture.py`).
 - Sounds are `dndclasses:dice.roll`, `.success`, `.failure`, `.critical` and `.fumble`, made by `tools/music-gen/music_gen.py dice_*`.

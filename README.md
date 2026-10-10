@@ -68,7 +68,7 @@ Classes level up to 10 with class XP. Each level gives a skill point to spend on
 `/party` lets players group up: shared XP, no friendly fire, a party health HUD and a party-aware Cleric special. See [Party](docs/systems/party.md).
 
 ### d20 Skill Checks
-Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Rogues pick the locks of dungeon and lair loot chests, Bards persuade villagers for better prices, and melee attacks crit on a natural 20 and fumble on a natural 1. See [D20 skill checks](docs/systems/d20-skill-checks.md).
+Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Rogues pick the locks of dungeon and lair loot chests, Bards persuade villagers for better prices, and melee attacks crit on a natural 20 and fumble on a natural 1. See [D20 skill checks](docs/systems/d20-skill-checks.md). Some obstacles, starting with Arcane Seals, need the right class to get past; see [Class-gated obstacles](docs/systems/obstacles.md).
 
 ### Armor and Items
 - [Armor](docs/items/armor.md): 14 class-themed sets. A full set gives a bonus to anyone, boosted for the classes it's made for.

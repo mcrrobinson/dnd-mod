@@ -20,6 +20,8 @@ import net.minecraft.util.Identifier;
  * <li>{@link Lockpicking}: Rogues pick the locks of dungeon and lair loot chests</li>
  * <li>{@link Persuasion}: Bards talk villagers into better prices</li>
  * <li>{@link AttackRolls}: every full-strength melee swing rolls; natural 20 crits, natural 1 fumbles</li>
+ * <li>{@code Obstacles.ObstacleInteractions}: class-gated obstacles (Arcane Seals), with modifiers from
+ * {@link SkillModifiers}</li>
  * </ul>
  */
 public final class D20 {
@@ -31,7 +33,9 @@ public final class D20 {
     public enum Skill {
         LOCKPICKING,
         PERSUASION,
-        ATTACK;
+        ATTACK,
+        /** Class-gated obstacles: dispelling Arcane Seals ({@code classes/Obstacles}). */
+        ARCANA;
 
         public String translationKey() {
             return "skill.dndclasses." + name().toLowerCase();

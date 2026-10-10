@@ -1,0 +1,22 @@
+# Guest for rests-long-bed-lan-host.txt: watches the host rest alone while the night carries on, then sleeps
+# itself (the night is skipped and it gets its long rest), then joins the host's party.
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25614 -PdevScript=devscripts/rests-long-bed-lan-guest.txt
+wait 40
+closescreen
+respawn
+wait 60
+/party leave
+/me guest-ready
+waitchat host-rested
+clearchat
+screenshot lan-guest-night-continues
+waitchat guest-sleep-now
+use
+wait 160
+screenshot lan-guest-rested
+waitchat invited you
+wait 10
+/party accept
+waitchat host-done
+wait 20
+quit

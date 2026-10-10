@@ -1,6 +1,7 @@
 package mattonfire.dnd.entity;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import net.minecraft.block.AbstractFireBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.EntityType;
@@ -24,9 +25,11 @@ import org.joml.Vector3f;
 
 /** The storm dragon of the mountain summits: fire breath and a lightning storm, guarding a dragon lair. */
 public class LightningChaserEntity extends LairDragonEntity {
-    /** Like a real bolt: 5 damage to anything within 3 blocks (and up to 6 above). */
+    /** Like a real bolt: 5 damage to anything within 3 blocks (and up to 6 above); half on a DEX save. */
     private static final float STRIKE_DAMAGE = 5.0F;
     private static final double STRIKE_RADIUS = 3.0;
+    /** Seconds alight after a bolt (half on a successful DEX save). */
+    private static final int STRIKE_BURN_SECONDS = 8;
 
     public static final RegistryKey<Structure> LAIR_STRUCTURE =
             RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "dragon_lair"));
@@ -83,8 +86,14 @@ public class LightningChaserEntity extends LairDragonEntity {
         Box area = new Box(x - STRIKE_RADIUS, y - STRIKE_RADIUS, z - STRIKE_RADIUS,
                 x + STRIKE_RADIUS, y + 6.0D + STRIKE_RADIUS, z + STRIKE_RADIUS);
         for (LivingEntity victim : this.world.getEntitiesByClass(LivingEntity.class, area, this::isStormVictim)) {
-            if (victim.damage(source, STRIKE_DAMAGE)) {
-                victim.setOnFireFor(8);
+            if (DragonSaves.isUnaffected(victim, source)) {
+                continue;
+            }
+            // One DEX save for the whole storm: the three bolts land in the same tick
+            SaveResult save = DragonSaves.save(victim, this, DragonSaves.LIGHTNING_STORM, DragonSaves.STORM_DC,
+                    DragonSaves.LIGHTNING_STORM_EFFECT, "storm", DragonSaves.STORM_WINDOW);
+            if (victim.damage(source, save.damage(STRIKE_DAMAGE))) {
+                victim.setOnFireFor(save.duration(STRIKE_BURN_SECONDS));
             }
         }
 

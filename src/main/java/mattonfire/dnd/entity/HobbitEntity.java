@@ -54,6 +54,9 @@ public class HobbitEntity extends PathAwareEntity {
     public static final int VARIANTS = 6;
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HobbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
+    /** Command tag of the village's elder, the Thain: a quest giver (see {@code DialogueManager}). */
+    public static final String ELDER_TAG = "dndclasses.role.hobbit_elder";
+
     private static final int DAY_RANGE = 24;
     private static final int NIGHT_RANGE = 3;
     private static final float HOSTILE_FLEE_DISTANCE = 8.0F;
@@ -139,6 +142,14 @@ public class HobbitEntity extends PathAwareEntity {
         this.setPersistent();
         this.setHome(this.getBlockPos());
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    }
+
+    /** Makes this hobbit the village's elder: "Thain <surname>", with the hobbit_elder role. */
+    public void makeElder() {
+        String name = this.getCustomName() != null ? this.getCustomName().getString() : SURNAMES[0];
+        String surname = name.contains(" ") ? name.substring(name.lastIndexOf(' ') + 1) : name;
+        this.setCustomName(Text.translatable("entity.dndclasses.hobbit.elder", surname));
+        this.addCommandTag(ELDER_TAG);
     }
 
     // The mod gives every mob a player-targeting goal; hobbits never pick fights.

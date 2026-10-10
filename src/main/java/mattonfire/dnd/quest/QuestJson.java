@@ -26,18 +26,18 @@ import org.jetbrains.annotations.Nullable;
  * Parsing helpers for quest files. Every failure throws {@link IllegalArgumentException} with a
  * message naming the field, which the loader logs next to the file name.
  */
-final class QuestJson {
+public final class QuestJson {
     private QuestJson() {
     }
 
-    static JsonObject object(JsonElement element, String what) {
+    public static JsonObject object(JsonElement element, String what) {
         if (element == null || !element.isJsonObject()) {
             throw new IllegalArgumentException(what + " must be an object");
         }
         return element.getAsJsonObject();
     }
 
-    static String string(JsonObject json, String key) {
+    public static String string(JsonObject json, String key) {
         JsonElement element = json.get(key);
         if (element == null || !element.isJsonPrimitive() || !element.getAsJsonPrimitive().isString()) {
             throw new IllegalArgumentException("missing or non-string field \"" + key + "\"");
@@ -46,11 +46,11 @@ final class QuestJson {
     }
 
     @Nullable
-    static String optString(JsonObject json, String key) {
+    public static String optString(JsonObject json, String key) {
         return json.has(key) ? string(json, key) : null;
     }
 
-    static int integer(JsonObject json, String key, int fallback, int min, int max) {
+    public static int integer(JsonObject json, String key, int fallback, int min, int max) {
         JsonElement element = json.get(key);
         if (element == null) {
             return fallback;
@@ -65,7 +65,7 @@ final class QuestJson {
         return (int) value;
     }
 
-    static double number(JsonObject json, String key, double fallback, double min, double max) {
+    public static double number(JsonObject json, String key, double fallback, double min, double max) {
         JsonElement element = json.get(key);
         if (element == null) {
             return fallback;
@@ -80,7 +80,7 @@ final class QuestJson {
         return value;
     }
 
-    static boolean bool(JsonObject json, String key, boolean fallback) {
+    public static boolean bool(JsonObject json, String key, boolean fallback) {
         JsonElement element = json.get(key);
         if (element == null) {
             return fallback;
@@ -91,7 +91,7 @@ final class QuestJson {
         return element.getAsBoolean();
     }
 
-    static Identifier id(String value, String what) {
+    public static Identifier id(String value, String what) {
         try {
             return new Identifier(value);
         } catch (InvalidIdentifierException e) {
@@ -99,12 +99,12 @@ final class QuestJson {
         }
     }
 
-    static Identifier id(JsonObject json, String key) {
+    public static Identifier id(JsonObject json, String key) {
         return id(string(json, key), "field \"" + key + "\"");
     }
 
     /** A list field; missing means empty. Each element is parsed with {@code parser}. */
-    static <T> List<T> list(JsonObject json, String key, Function<JsonElement, T> parser) {
+    public static <T> List<T> list(JsonObject json, String key, Function<JsonElement, T> parser) {
         JsonElement element = json.get(key);
         List<T> result = new ArrayList<>();
         if (element == null) {
@@ -128,7 +128,7 @@ final class QuestJson {
      * Text in a quest file: a plain string is a translation key that falls back to itself (so DM
      * datapacks can write literal text), an object or list is a full JSON text component.
      */
-    static MutableText text(JsonElement element, String what) {
+    public static MutableText text(JsonElement element, String what) {
         if (element == null) {
             throw new IllegalArgumentException("missing text \"" + what + "\"");
         }
@@ -149,12 +149,12 @@ final class QuestJson {
     }
 
     @Nullable
-    static MutableText optText(JsonObject json, String key) {
+    public static MutableText optText(JsonObject json, String key) {
         return json.has(key) ? text(json.get(key), key) : null;
     }
 
     /** A name for a tag or id path: {@code dndclasses:bounty/undead} becomes "undead". */
-    static String shortName(Identifier id) {
+    public static String shortName(Identifier id) {
         String path = id.getPath();
         return path.substring(path.lastIndexOf('/') + 1).replace('_', ' ');
     }

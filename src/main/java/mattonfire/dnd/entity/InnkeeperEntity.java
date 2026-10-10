@@ -36,6 +36,8 @@ import org.jetbrains.annotations.Nullable;
  * notices from the tavern's bounty board.
  */
 public class InnkeeperEntity extends HobbitEntity implements Merchant {
+    /** Command tag that makes an NPC a quest giver with the innkeeper's dialogue (see {@code DialogueManager}). */
+    public static final String ROLE_TAG = "dndclasses.role.innkeeper";
     private static final double MAX_CUSTOMER_DISTANCE = 8.0D;
 
     @Nullable
@@ -57,6 +59,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         }
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Tavern.ALE));
         this.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0.0F);
+        this.addCommandTag(ROLE_TAG);
         return data;
     }
 
@@ -262,5 +265,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         if (nbt.contains("Offers")) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
+        // Innkeepers spawned before roles existed (command tags are read before this).
+        this.addCommandTag(ROLE_TAG);
     }
 }

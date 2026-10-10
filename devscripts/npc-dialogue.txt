@@ -1,0 +1,162 @@
+# NPC dialogue: innkeeper offers The Goblin Menace 1 (accept with button steps), topic page, Persuasion
+# check rolled on the HUD (one try), "Let's trade" opens the merchant, Hostile "won't speak", sneak skips
+# dialogue, Goodbye closes, reward hand-in at the innkeeper, then fall-through to trading when there's
+# nothing to say. Then a plain hobbit tagged hobbit_elder gives the test quest from
+# devscripts/datapacks/dialogue-test (copy it to run/saves/New World/datapacks/ first): talk + deliver
+# at the innkeeper, an Insight check at the elder, reward at the elder.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/npc-dialogue.txt
+# Check: [Dialogue], [D20], [Quests] and [CHAT] lines in the log, and the nd-*.png screenshots.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/time set noon
+/effect give @s minecraft:resistance 900 4 true
+/kill @e[tag=nd]
+/fill -4 149 -4 4 149 4 minecraft:glass
+/quest admin @s reset dndclasses:goblin_menace/1
+/quest admin @s reset dndtest:errands
+/rep @s dndclasses:hobbits set 0
+/clear @s
+/summon dndclasses:innkeeper 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["nd"]}
+/summon dndclasses:hobbit 0.5 150 -1.5 {NoAI:1b,Rotation:[0f,0f],Tags:["nd","nd_elder"]}
+wait 5
+/data get entity @e[type=dndclasses:innkeeper,tag=nd,limit=1] Tags
+# A plain hobbit becomes a quest giver with a role tag
+/tag @e[tag=nd_elder] add dndclasses.role.hobbit_elder
+/tp @s 0.5 150 0.5 0 25
+wait 10
+# 1. Innkeeper: hub with the quest offer, trade and goodbye
+use
+wait 10
+clearchat
+screenshot nd-1-hub
+# Offer page, then accept
+button 0
+wait 10
+clearchat
+screenshot nd-2-offer
+button 0
+wait 10
+clearchat
+screenshot nd-3-accepted
+/quest list
+# Topic page and back
+button 0
+wait 10
+clearchat
+screenshot nd-4-topic
+button 0
+wait 10
+# Persuasion check (rigged natural 20): rolls on the HUD, pays 3 emeralds, then the option is gone
+/dndclass forceroll @s 20
+button 1
+wait 6
+screenshot nd-5-persuasion
+wait 20
+/clear @s minecraft:emerald 0
+button 0
+wait 10
+clearchat
+screenshot nd-6-hub-after-check
+# Let's trade (index 1 now: goblin news, trade, goodbye)
+button 1
+wait 10
+screenshot nd-7-trade
+slots
+closescreen
+wait 5
+# Hostile: won't speak
+/rep @s dndclasses:hobbits set -600
+clearchat
+use
+wait 3
+screenshot nd-8-hostile
+/rep @s dndclasses:hobbits set 0
+wait 10
+# Sneaking skips the dialogue: straight to trading
+sneak on
+use
+wait 10
+screenshot nd-9-sneak-trade
+closescreen
+sneak off
+wait 5
+# Goodbye closes
+use
+wait 10
+button 2
+wait 10
+screenshot nd-10-goodbye
+# Finish the quest: the reward waits at the innkeeper
+/quest admin @s complete dndclasses:goblin_menace/1
+wait 25
+use
+wait 10
+clearchat
+screenshot nd-11-reward
+/clear @s minecraft:emerald 0
+closescreen
+wait 5
+# Nothing left to say: the innkeeper just trades
+use
+wait 10
+screenshot nd-12-fallthrough
+closescreen
+wait 5
+# 2. The elder (a tagged hobbit) offers the test quest; talk to it with an empty hand
+hotbar 8
+/tp @s 0.5 150 0.5 180 25
+wait 5
+use
+wait 10
+clearchat
+screenshot nd-13-elder-hub
+button 0
+wait 10
+button 0
+wait 10
+closescreen
+/quest list
+# Talk objective at the innkeeper
+/tp @s 0.5 150 0.5 0 25
+wait 5
+use
+wait 10
+screenshot nd-14-talk
+closescreen
+wait 25
+/quest list
+# Deliver 2 bread
+/give @s minecraft:bread 2
+wait 5
+use
+wait 10
+closescreen
+wait 25
+/clear @s minecraft:bread 0
+/quest list
+# Insight check at the elder finishes the quest; the next talk pays the reward
+/tp @s 0.5 150 0.5 180 25
+wait 5
+use
+wait 10
+clearchat
+screenshot nd-15-elder-check
+/dndclass forceroll @s 20
+button 0
+wait 8
+clearchat
+screenshot nd-16-elder-truth
+closescreen
+wait 25
+use
+wait 10
+clearchat
+screenshot nd-17-elder-reward
+closescreen
+/clear @s minecraft:emerald 0
+/quest list
+/kill @e[tag=nd]
+wait 10
+quit

@@ -1,0 +1,38 @@
+# Tries /place structure dndclasses:crypt at a few spots, to find terrain it accepts (scratch run).
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-recon.txt
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 600 150 600
+wait 120
+/place structure dndclasses:crypt 600 64 600
+wait 20
+/tp @s -600 150 600
+wait 120
+/place structure dndclasses:crypt -600 64 600
+wait 20
+/tp @s 600 150 -600
+wait 120
+/place structure dndclasses:crypt 600 64 -600
+wait 20
+/tp @s -600 150 -600
+wait 120
+/place structure dndclasses:crypt -600 64 -600
+wait 20
+/tp @s 1200 150 0
+wait 120
+/place structure dndclasses:crypt 1200 64 0
+wait 20
+/tp @s 0 150 1200
+wait 120
+/place structure dndclasses:crypt 0 64 1200
+wait 20
+/tp @s -1200 150 0
+wait 120
+/place structure dndclasses:crypt -1200 64 0
+wait 20
+/tp @s 0 150 -1200
+wait 120
+/place structure dndclasses:crypt 0 64 -1200
+wait 20
+quit

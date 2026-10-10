@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "dndclasses:block/dungeon_ward"
+    }
+  }
+}

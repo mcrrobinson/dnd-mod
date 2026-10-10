@@ -214,6 +214,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.SkillChecks.D20.register();
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
+                mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.faction.FactionEvents.register();
@@ -432,6 +433,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Party.PartyEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.GoblinRaidCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DungeonCommand.register(dispatcher));
                 // Dungeon Master toolkit: /dm, the veil, encounters and freeze.
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.dm.DmCommand.register(dispatcher));

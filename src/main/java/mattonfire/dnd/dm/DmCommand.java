@@ -48,6 +48,8 @@ import net.minecraft.util.math.Box;
  * /dm encounter clear &lt;n&gt; | all                  remove an encounter's mobs, no drops
  * /dm freeze &lt;targets&gt; | radius [r]              pause mobs and players (default r 24)
  * /dm unfreeze &lt;targets&gt; | radius [r] | all
+ * /dm check &lt;players&gt; &lt;skill&gt; &lt;dc&gt; [adv|dis] [silent]    skill check on each player's d20 panel
+ * /dm save &lt;targets&gt; &lt;ability&gt; &lt;dc&gt; [adv|dis] [silent]  saving throw on the save lane ({@link DmRolls})
  * </pre>
  */
 public final class DmCommand {
@@ -103,6 +105,8 @@ public final class DmCommand {
                                 .then(CommandManager.argument("n", IntegerArgumentType.integer(1))
                                         .executes(context -> clear(context,
                                                 IntegerArgumentType.getInteger(context, "n"))))))
+                .then(DmRolls.check())
+                .then(DmRolls.save())
                 .then(CommandManager.literal("freeze")
                         .then(CommandManager.literal("radius")
                                 .executes(context -> freezeRadius(context, DEFAULT_RADIUS, true))

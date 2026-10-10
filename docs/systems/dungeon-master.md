@@ -47,6 +47,9 @@ The launch set:
 | `wyvern_pair` | 2 Wyverns | deadly |
 | `lich_court` | the Lich (which places its phylactery) and 4 skeletons | deadly |
 
+### Calling for rolls
+`/dm save @a dex 14` makes every player roll a Dexterity save: it pops up on their [save lane](saving-throws.md) and each result comes back to you in chat (`Player: Dexterity Save 13 +4 = 17 vs DC 14 -> SUCCESS`). `/dm check @p stealth 15` does the same with a skill check on the big d20 panel. Add `adv` or `dis` for advantage or disadvantage, and `silent` to roll without showing the players. Mobs can be targets of `/dm save` too (flat +1, nothing shown). For command blocks: a roll nobody succeeds at makes the command fail, so `execute store success` gives 1 or 0, and `execute store result` gives the total (one target) or how many succeeded.
+
 ### Freeze
 `/dm freeze <targets>`, `/dm freeze radius [r]` (mobs and players within `r` blocks, default 24), `/dm unfreeze <targets>`, `/dm unfreeze radius [r]` and `/dm unfreeze all`.
 - **Mobs** stop thinking (`NoAI`) and moving, glow, and hang in place if they were in the air (`NoGravity`). Their old `NoAI`, `NoGravity` and glowing are kept and put back on unfreeze.
@@ -71,6 +74,8 @@ Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets 
 | `/dm encounter clear <n>\|all` | Remove an encounter's mobs, no drops |
 | `/dm freeze <targets>\|radius [r]` | Pause mobs and players |
 | `/dm unfreeze <targets>\|radius [r]\|all` | Let them go |
+| `/dm check <players> <skill> <dc> [adv\|dis] [silent]` | A skill check on each player's big d20 panel, reported to you |
+| `/dm save <targets> <ability> <dc> [adv\|dis] [silent]` | A saving throw on the save lane; mobs roll +1 silently. See [Saving throws](saving-throws.md) |
 
 Encounter ids tab-complete. Ids from this mod can be written without the namespace (`goblin_patrol`); others need it (`mypack:bandits`).
 

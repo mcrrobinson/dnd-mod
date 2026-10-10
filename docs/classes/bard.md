@@ -73,9 +73,11 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
 | College of Valor | Right | Inspiring Presence (first node, open to both), Thunderwave, Battle Hymn | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
-| College of Lore | Left | Silver Tongue (first node, open to both), Song of Rest, Jack of All Trades | **Bardic Lore**: +2 to Persuasion checks, and you identify magic items when you pick them up |
+| College of Lore | Left | Silver Tongue (first node, open to both), Song of Rest, Jack of All Trades | **Bardic Lore**: +2 to Persuasion checks |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Combat Inspiration** (Valor): when you play an instrument, every player who gets its buff (within 16 blocks, you included) also gets +2 armor for 30 s. Playing again restarts the 30 s.
+- **Bardic Lore** (Lore): +2 to Persuasion on your character sheet, so the villager persuasion roll and any other Persuasion check include it (it shows as "Bardic Lore" in the roll's breakdown). Identifying magic items on pickup comes with the identification card.
 
 ## Commands
 - `/dndclass set <player> bard` (see [Admin commands](../systems/admin-commands.md)).

@@ -37,7 +37,7 @@ public final class MagicNames {
             name = Text.empty().append(original);
         } else {
             name = Text.empty();
-            int plus = MagicData.plus(stack);
+            int plus = MagicData.displayPlus(stack);
             if (plus > 0)
                 name.append("+" + plus + " ");
             name.append(potionRename(stack, original));
@@ -85,6 +85,27 @@ public final class MagicNames {
             line.append(" ").append(Text.translatable("magic.dndclasses.tooltip.only", classList(classes)));
         }
         return line.formatted(Formatting.GRAY, Formatting.ITALIC);
+    }
+
+    /**
+     * The lines after tooltip line 2: "Attuned" (aqua) for the viewer's own bond, "Attuned to &lt;player&gt;"
+     * (grey) for someone else's, and a Forge blessing.
+     */
+    public static List<Text> tooltipExtras(ItemStack stack, @Nullable java.util.UUID viewer) {
+        List<Text> lines = new ArrayList<>();
+        java.util.UUID owner = MagicData.attunedTo(stack);
+        if (owner != null) {
+            if (owner.equals(viewer)) {
+                lines.add(Text.translatable("magic.dndclasses.tooltip.attuned").formatted(Formatting.AQUA));
+            } else {
+                String name = MagicData.attunedName(stack);
+                lines.add(Text.translatable("magic.dndclasses.tooltip.attuned_to", name.isEmpty() ? "?" : name)
+                        .formatted(Formatting.GRAY));
+            }
+        }
+        if (MagicData.isForgeBlessed(stack))
+            lines.add(Text.translatable("magic.dndclasses.tooltip.forge_blessing").formatted(Formatting.GOLD));
+        return lines;
     }
 
     /** "Wizard", "Cleric or Paladin", "Wizard, Necromancer or Warlock". */

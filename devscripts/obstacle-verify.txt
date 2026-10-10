@@ -1,6 +1,9 @@
 # Verifies the Arcane Seal rolls over many tries. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-verify.txt
 # Expect in the log: [Obstacle] roll lines; each SUCCESS/CRITICAL followed ~26 ticks later by "solved ... 9 blocks opened, +5";
 # FAILURE stings 2 (health drops by 2), FUMBLE stings 4 and gives weakness; "lost focus" after moving and after /damage.
+# First, rigged rolls with modifiers from the character sheet (Wizard Arcana +4, then +7 with an INT 20 override):
+#  [D20] ... skill.dndclasses.arcana 6 +4 = 10 vs DC 10 -> SUCCESS; 5 +4 = 9 -> FAILURE; 1 -> FUMBLE; 20 -> CRITICAL;
+#  with INT 20 the hint shows +7 (obstacle-verify-hint-int20) and 3 +7 = 10 -> SUCCESS.
 wait 40
 closescreen
 /gamemode survival
@@ -17,7 +20,49 @@ wait 5
 /clear @s
 /effect clear @s
 /tp @s 4.5 150 3.5 0 20
+/dndclass score @s INT clear
+/dndclass forceroll @s clear
+/dndclass sheet @s
 wait 20
+screenshot obstacle-verify-hint-sheet
+/dndclass forceroll @s 6 5 1 20
+use
+wait 20
+screenshot obstacle-verify-rigged-success
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-rigged-failure
+wait 15
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-rigged-fumble
+wait 90
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-rigged-critical
+wait 15
+/dndobstacle reset 4 151 5
+/dndclass score @s INT 20
+/dndclass sheet @s
+wait 10
+screenshot obstacle-verify-hint-int20
+/dndclass forceroll @s 3
+use
+wait 20
+screenshot obstacle-verify-rigged-int20
+wait 15
+/dndobstacle reset 4 151 5
+/dndclass score @s INT clear
+wait 2
+# Random rolls
 /effect give @s minecraft:instant_health 1 5
 wait 2
 use

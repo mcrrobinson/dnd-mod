@@ -145,7 +145,7 @@ Tooltips show `Attuned` in aqua on your own bonded items, and `Attuned to <playe
 |-|-|-|
 | Cloak of Protection | Uncommon wondrous item | +1 armor and +1 armor toughness (anywhere in the inventory). The +1 to saving throws comes with the saving throws update |
 
-The full set of named items (Ring of Protection, Frostbrand, ...) comes in a later update; the Cloak is the first.
+The wondrous and utility items (Ring of Protection, Amulet of Health, Periapt of Wound Closure, Doss Lute, the Wand, Bag, Decanter, Rod and Tome) are on their own page: [Magic items](../items/magic-items.md). The boss and monster items come in a later update.
 
 ### Blessing of the Forge
 A [Forge Domain Cleric](../classes/cleric.md)'s subclass feature. Once per long rest, at an Attunement Table's Items tab, **Bless +1** makes the weapon in your hand (main or offhand) or a piece of armor you wear +1 (a mundane item becomes a green "+1 Iron Sword"; a +2 item becomes +3; +3 and unidentified items can't be blessed). Chat says `Blessing of the Forge: [Iron Sword] is now +1 until your next long rest.` and the tooltip `Blessing of the Forge: +1 until a long rest`.

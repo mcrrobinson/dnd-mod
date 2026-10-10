@@ -94,6 +94,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
+- [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought
 
 ## Music
 - [Music](music.md): event music, class stings and music discs

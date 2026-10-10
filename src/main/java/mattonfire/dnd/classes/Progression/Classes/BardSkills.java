@@ -387,6 +387,7 @@ public class BardSkills extends ClassSkills {
                 break;
             }
             BardCompanions.adopt(mob, player);
+            mattonfire.dnd.magic.items.DossLuteItem.empowerCompanion(mob, player);
             world.spawnParticles(ParticleTypes.HEART, mob.getX(), mob.getBodyY(1), mob.getZ(), 4, 0.3, 0.3, 0.3, 0);
             count++;
             adopted++;

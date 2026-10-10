@@ -45,8 +45,8 @@ import net.minecraft.util.Identifier;
  * <li>{@link Lockpicking}: Rogues pick the locks of dungeon and lair loot chests (Thieves' Tools)</li>
  * <li>{@link Persuasion}: Bards talk villagers into better prices (Persuasion)</li>
  * <li>{@link AttackRolls}: every full-strength melee swing rolls; natural 20 crits, natural 1 fumbles</li>
- * <li>{@code Obstacles.ObstacleInteractions}: class-gated obstacles (Arcane Seals), with modifiers from
- * {@link SkillModifiers}</li>
+ * <li>{@code Obstacles.ObstacleInteractions}: class-gated obstacles (Arcane Seals), through
+ * {@link SkillCheck}</li>
  * </ul>
  */
 public final class D20 {
@@ -64,25 +64,6 @@ public final class D20 {
     private static final Map<UUID, Deque<Integer>> FORCED = new HashMap<>();
 
     private D20() {
-    }
-
-    /**
-     * The original three-value label enum, kept so older callers still compile.
-     *
-     * @deprecated use {@link SkillCheck} with a {@link mattonfire.dnd.classes.Abilities.Skill}, or
-     *             {@link #roll(PlayerEntity)} with a label
-     */
-    @Deprecated
-    public enum Skill {
-        LOCKPICKING,
-        PERSUASION,
-        ATTACK,
-        /** Class-gated obstacles: dispelling Arcane Seals ({@code classes/Obstacles}). */
-        ARCANA;
-
-        public String translationKey() {
-            return "skill.dndclasses." + name().toLowerCase();
-        }
     }
 
     public enum Outcome {
@@ -133,14 +114,6 @@ public final class D20 {
     public record Roll(Text label, @Nullable Ability ability, RollKind kind, int natural, int natural2,
             Advantage mode, int rerolled, int modifier, List<Bonus> bonuses, int dc, Outcome outcome,
             Display display, int flags) {
-
-        /** Old-style roll: single die, label from the old enum. */
-        @Deprecated
-        public Roll(Skill skill, int natural, int modifier, int dc, Outcome outcome) {
-            this(Text.translatable(skill.translationKey()), null,
-                    skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK, natural, 0, Advantage.NORMAL, 0,
-                    modifier, List.of(), dc, outcome, Display.MAIN, 0);
-        }
 
         public int total() {
             return natural + modifier;
@@ -218,6 +191,8 @@ public final class D20 {
         private boolean rerollNaturalOnes;
         private Display display = Display.MAIN;
         private int flags;
+        /** A fixed natural instead of rolling (0: roll). */
+        private int taken;
 
         private Builder(LivingEntity player) {
             this.player = player;
@@ -319,12 +294,25 @@ public final class D20 {
             return this;
         }
 
+        /**
+         * "Take" a natural instead of rolling, e.g. 20 for an obstacle you take your time over. No die
+         * is rolled (rigged rolls are left alone), advantage and rerolls don't apply, and the taken
+         * natural is never a CRITICAL or a FUMBLE: it succeeds or fails on the total alone.
+         */
+        public Builder take(int natural) {
+            this.taken = natural;
+            return this;
+        }
+
         public Builder secret() {
             return flags(FLAG_SECRET);
         }
 
         /** Rolls and logs it. Show it with {@link D20#show}. */
         public Roll roll() {
+            if (taken > 0) {
+                return taken();
+            }
             Advantage mode = Advantage.resolve(advantages, disadvantages);
             int rerolled = 0;
             int a = d20(player);
@@ -343,10 +331,7 @@ public final class D20 {
                 natural = mode == Advantage.ADVANTAGE ? Math.max(a, b) : Math.min(a, b);
                 natural2 = natural == a ? b : a;
             }
-            int total = modifier;
-            for (Bonus bonus : bonuses) {
-                total += bonus.amount();
-            }
+            int total = total();
             Outcome outcome;
             if (natural == 1) {
                 outcome = Outcome.FUMBLE;
@@ -357,10 +342,28 @@ public final class D20 {
             } else {
                 outcome = Outcome.SUCCESS;
             }
-            Roll roll = new Roll(label, ability, kind, natural, natural2, mode, rerolled, total, List.copyOf(bonuses),
-                    dc, outcome, display, flags);
+            return finish(new Roll(label, ability, kind, natural, natural2, mode, rerolled, total,
+                    List.copyOf(bonuses), dc, outcome, display, flags));
+        }
+
+        private int total() {
+            int total = modifier;
+            for (Bonus bonus : bonuses) {
+                total += bonus.amount();
+            }
+            return total;
+        }
+
+        private Roll taken() {
+            int total = total();
+            Outcome outcome = dc <= 0 || taken + total >= dc ? Outcome.SUCCESS : Outcome.FAILURE;
+            return finish(new Roll(label, ability, kind, taken, 0, Advantage.NORMAL, 0, total, List.copyOf(bonuses),
+                    dc, outcome, display, flags));
+        }
+
+        private Roll finish(Roll roll) {
             // Every swing rolls an attack; only the ones that do something are worth a log line
-            if (kind != RollKind.ATTACK || outcome != Outcome.SUCCESS) {
+            if (roll.kind() != RollKind.ATTACK || roll.outcome() != Outcome.SUCCESS) {
                 log(player, roll);
             }
             return roll;
@@ -395,17 +398,6 @@ public final class D20 {
             Deque<Integer> forced = FORCED.remove(player);
             return forced == null ? 0 : forced.size();
         }
-    }
-
-    /**
-     * Rolls d20 + modifier against a DC with no sheet bonus.
-     *
-     * @deprecated use {@link SkillCheck#check}, which takes the modifier from the character sheet
-     */
-    @Deprecated
-    public static Roll check(PlayerEntity player, Skill skill, int modifier, int dc) {
-        return roll(player).label(skill.translationKey())
-                .kind(skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK).modifier(modifier).dc(dc).roll();
     }
 
     /**

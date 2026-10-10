@@ -71,9 +71,14 @@
         "DownedPlayerManagerMixin",
         "DownedHealMixin",
         "DownedTargetMixin",
-        "StealthMixin"
+        "StealthMixin",
+        "SavingThrowMixin"
     ],
     "client": [
+        "DownedHudMixin",
+        "DownedOutlineMixin",
+        "DownedOutlineColorMixin",
+        "DownedNameTagMixin",
         "AbstractClientPlayerEntityMixin",
         "LivingEntityRendererAccessor",
         "LivingEntityRendererMixin",

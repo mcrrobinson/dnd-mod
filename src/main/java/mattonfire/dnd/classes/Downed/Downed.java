@@ -11,6 +11,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Party.PartyManager;
+import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.mixin.LivingEntityInvoker;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -30,8 +31,6 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -143,6 +142,21 @@ public final class Downed {
         return new int[] { state.passes, state.fails, ((state.stable ? state.stableLeft : state.nextSave) + 19) / 20 };
     }
 
+    /** What the downed HUD shows: the tally, ticks to the next save (or to standing up) and the give-up hold. */
+    public record Snapshot(int passes, int fails, boolean stable, int ticksLeft, int giveUpHeld) {
+    }
+
+    /** The player's tally for the HUDs ({@link DownedHudSync}, the party HUD), or null if not Downed. Server only. */
+    @Nullable
+    public static Snapshot snapshot(ServerPlayerEntity player) {
+        State state = STATES.get(player.getUuid());
+        if (state == null) {
+            return null;
+        }
+        return new Snapshot(state.passes, state.fails, state.stable, state.stable ? state.stableLeft : state.nextSave,
+                state.giveUpHeld);
+    }
+
     @Nullable
     static State state(ServerPlayerEntity player) {
         return STATES.get(player.getUuid());
@@ -187,8 +201,8 @@ public final class Downed {
         apply(player, state);
         save(player, state);
 
-        player.world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_BIG_FALL,
-                SoundCategory.PLAYERS, 1.0F, 0.6F);
+        player.world.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.PLAYER_DOWNED,
+                SoundCategory.PLAYERS, 1.0F, 1.0F);
         player.sendMessage(Text.literal("You're Downed! ").formatted(Formatting.RED, Formatting.BOLD)
                 .append(Text.literal("Death save every 6 s: 3 passes and you're stable, 3 fails and you die. "
                         + "Hold the power-up key to give up.").formatted(Formatting.GRAY)), false);
@@ -240,8 +254,8 @@ public final class Downed {
     static void standUpEffects(ServerPlayerEntity player) {
         GRACE.put(player.getUuid(), player.getServer().getTicks() + GRACE_TICKS);
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 60, 0));
-        player.world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_LEVELUP,
-                SoundCategory.PLAYERS, 0.6F, 1.4F);
+        player.world.playSound(null, player.getX(), player.getY(), player.getZ(), ModSounds.PLAYER_REVIVED,
+                SoundCategory.PLAYERS, 0.8F, 1.0F);
         ((ServerWorld) player.world).spawnParticles(ParticleTypes.HEART, player.getX(), player.getY() + 1.0D,
                 player.getZ(), 6, 0.4D, 0.4D, 0.4D, 0.0D);
     }
@@ -427,31 +441,8 @@ public final class Downed {
                     continue;
                 }
             }
-            if (state.age % 20 == 0) {
-                player.sendMessage(statusLine(state), true);
-            }
+            // The tally, countdown and give-up hold reach the player's DownedHud through DownedHudSync.
         }
-    }
-
-    /** The action bar line: "DOWNED  ●●○  ✕○○  next save 4 s  (hold Z to give up)". */
-    static Text statusLine(State state) {
-        if (state.stable) {
-            return Text.literal("STABLE").formatted(Formatting.YELLOW, Formatting.BOLD)
-                    .append(Text.literal("  standing up in " + (state.stableLeft + 19) / 20 + " s")
-                            .formatted(Formatting.GRAY));
-        }
-        MutableText line = Text.literal("DOWNED  ").formatted(Formatting.RED, Formatting.BOLD);
-        line.append(Text.literal("●".repeat(state.passes) + "○".repeat(PASSES_TO_STABLE - state.passes) + "  ")
-                .formatted(Formatting.GREEN).styled(s -> s.withBold(false)));
-        line.append(Text.literal("✕".repeat(state.fails) + "○".repeat(FAILS_TO_DIE - state.fails) + "  ")
-                .formatted(Formatting.RED).styled(s -> s.withBold(false)));
-        line.append(Text.literal("next save in " + (state.nextSave + 19) / 20 + " s")
-                .formatted(Formatting.GRAY).styled(s -> s.withBold(false)));
-        if (state.giveUpHeld > 0) {
-            line.append(Text.literal("  giving up...").formatted(Formatting.DARK_RED)
-                    .styled(s -> s.withBold(false)));
-        }
-        return line;
     }
 
     /** Whether the player is holding the give-up key (C2S hold packet). */

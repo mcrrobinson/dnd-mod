@@ -52,7 +52,9 @@ public final class ObstacleHintHud {
     private static void render(MatrixStack matrices) {
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity player = client.player;
-        if (player == null || client.world == null || client.currentScreen != null || player.isSpectator()) {
+        // Downed: the downed panel sits here instead
+        if (player == null || client.world == null || client.currentScreen != null || player.isSpectator()
+                || mattonfire.dnd.classes.Downed.Downed.is(player)) {
             return;
         }
         HitResult hit = client.crosshairTarget;

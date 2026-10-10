@@ -160,8 +160,12 @@ public class BountyBoardBlock extends BlockWithEntity {
             player.sendMessage(Text.translatable("bounty.dndclasses.taken_already").formatted(Formatting.GRAY), true);
             return ActionResult.CONSUME;
         }
-        world.setBlockState(pos, state.with(NOTICES[slot], false));
         ItemStack notice = BountyNoticeItem.create(bounty);
+        // A dungeon clearance needs a dungeon to send them to; if there's none, the notice stays up.
+        if (bounty.isDungeon() && !DungeonBounties.bindTaken(serverPlayer, (ServerWorld) world, pos, notice)) {
+            return ActionResult.CONSUME;
+        }
+        world.setBlockState(pos, state.with(NOTICES[slot], false));
         if (!player.giveItemStack(notice)) {
             player.dropItem(notice, false);
         }

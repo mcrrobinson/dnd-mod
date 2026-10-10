@@ -16,7 +16,7 @@ The player who creates the party leads it. If the leader leaves, the member who 
 
 **Downed instead of dead.** At 0 HP with a party member within 64 blocks you go [Downed](death-saves.md) instead of dying. Members bring you back by holding right-click on you for 3 seconds (stabilise, then again to help you up), by healing you (Cure Wounds, Circle of Healing, a splash Healing potion), or by feeding you a Potion of Healing, a golden apple or a Mug of Ale.
 
-**Party HUD.** The top-left corner lists the other members, updated every half second. Each entry shows the member's [party role](party-roles.md) icon, the name (with a ★ for the leader), HP as text, and a health bar that is green above 50%, yellow above 25% and red below that. A gold strip shows absorption. A grey name means that member is out of XP range, and dark grey means they're offline. The HUD hides with F1 and the F3 debug screen.
+**Party HUD.** The top-left corner lists the other members, updated every half second. Each entry shows the member's [party role](party-roles.md) icon, the name (with a ★ for the leader), HP as text, and a health bar that is green above 50%, yellow above 25% and red below that. A gold strip shows absorption. A grey name means that member is out of XP range, and dark grey means they're offline. A [Downed](death-saves.md) member shows `DOWNED ●●○ ✕○○` (passes and fails) in red in place of their HP, or `STABLE` in yellow, over a pulsing bar; they're also outlined in red through walls within 64 blocks. The HUD hides with F1 and the F3 debug screen.
 
 **Cleric special.** It reaches party members too:
 
@@ -49,7 +49,7 @@ Every player can use these. No op is needed.
   - Helpers: `areInSameParty(a, b)` and `nearbyMembers(player, radius)`.
 - `Party/Party.java`: one party's member list (the first member is the leader).
 - `Party/PartyCommand.java`: the `/party` commands.
-- `Party/PartyEvents.java`: the friendly-fire check (`ServerLivingEntityEvents.ALLOW_DAMAGE`, which maps a tamed attacker to its owner), the HUD sync packet (`dndclasses:party_hud`, which carries each member's class id for the role icon) and XP sharing.
+- `Party/PartyEvents.java`: the friendly-fire check (`ServerLivingEntityEvents.ALLOW_DAMAGE`, which maps a tamed attacker to its owner), the HUD sync packet (`dndclasses:party_hud`, which carries each member's class id for the role icon, and their UUID, Downed status byte and death save passes and fails) and XP sharing.
   - Other XP systems share through `shareXp(player, amount, channel, grant)`. For example `ProgressionEvents.onKill` calls `PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp)`.
 - `mixin/ExperienceOrbEntityMixin.java`: redirects the orb's `addExperience` call to `shareXp`.
 - `Client/Hud/PartyHud.java`: the client receiver and HUD drawing.

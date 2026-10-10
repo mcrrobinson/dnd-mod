@@ -31,7 +31,7 @@
       "title": "quest.dndclasses.whispering_library.1.stage.3.title",
       "text": "quest.dndclasses.whispering_library.1.stage.3",
       "objectives": [
-        {"type": "visit", "structure": "minecraft:stronghold", "text": "quest.dndclasses.whispering_library.1.objective.stronghold"},
+        {"type": "visit", "structure": "#dndclasses:quest/lich_lairs", "text": "quest.dndclasses.whispering_library.1.objective.stronghold"},
         {"type": "kill", "entity": "dndclasses:phylactery", "count": 1, "text": "quest.dndclasses.whispering_library.1.objective.phylactery"}
       ],
       "on_complete": [

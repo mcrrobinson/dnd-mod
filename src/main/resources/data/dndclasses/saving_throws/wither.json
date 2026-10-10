@@ -1,0 +1,14 @@
+{
+    "effect": "minecraft:wither",
+    "ability": "CON",
+    "default_dc": 12,
+    "dc_by_source": {
+        "minecraft:wither_skeleton": 13,
+        "dndclasses:lich": 15,
+        "minecraft:wither": 15
+    },
+    "on_success": "half_duration",
+    "hostile_source_only": true,
+    "label": "save.dndclasses.wither",
+    "tags": ["wither", "necrotic"]
+}

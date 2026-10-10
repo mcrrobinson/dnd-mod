@@ -1,0 +1,185 @@
+# Reputation tiers applied to NPCs. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/rep-tiers.txt
+# Expect in the log ([DevScript]/[CHAT]/[D20]) and screenshots (rep-*.png):
+# - innkeeper trades: Unfriendly cake 5 emeralds (base 3), wheat 30 (base 20); Exalted cake 2, wheat 12; Hostile: no screen
+# - bounty board refuses a Hostile player (rep-board-hostile)
+# - hobbit: Hostile flees out of 5 blocks, no gift; gift cooldown 18000 at Unfriendly, 3000 at Exalted
+# - dwarf: Neutral no target, Hostile targets the player; hoard witness at 20 blocks only when Unfriendly
+# - goblin: Neutral untouched for 5 s next to it, Unfriendly ignores at 10 blocks but targets at 4, Hostile targets
+# - Persuasion DC 12 +3 at Unfriendly (15) and -6 at Exalted (6), with the test datapack faction dndtest:villagers
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+# Not a Bard: hostile mobs ignore Bards, which would hide the goblin results.
+/dndclass set @s fighter
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/kill @e[type=!minecraft:player,distance=..60]
+/fill -12 149 -12 24 149 24 minecraft:stone
+/fill -12 150 -12 24 154 24 minecraft:air
+/clear @s
+/tp @s 0.5 150 0.5 0 35
+wait 40
+
+# ---- Innkeeper prices ----
+/summon dndclasses:innkeeper 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["rt"]}
+/rep @s dndclasses:hobbits set -200
+wait 5
+use
+wait 10
+slots
+screenshot rep-innkeeper-unfriendly
+closescreen
+wait 5
+/rep @s dndclasses:hobbits set 800
+wait 5
+use
+wait 10
+slots
+screenshot rep-innkeeper-exalted
+closescreen
+wait 5
+/rep @s dndclasses:hobbits set -600
+wait 5
+use
+wait 3
+screenshot rep-innkeeper-hostile
+slots
+closescreen
+/kill @e[tag=rt]
+
+# ---- Bounty board (Hostile) ----
+/setblock 0 151 3 minecraft:stone
+/setblock 0 151 2 dndclasses:bounty_board[facing=north]
+look 0 0
+wait 5
+use
+wait 3
+screenshot rep-board-hostile
+/setblock 0 151 2 minecraft:air
+/setblock 0 151 3 minecraft:air
+look 0 35
+
+# ---- Hobbits: flee and gifts ----
+/summon dndclasses:hobbit 0.5 150 3.5 {Tags:["rh"]}
+wait 60
+/execute if entity @e[tag=rh,distance=..5]
+/data get entity @e[tag=rh,limit=1] Pos
+/kill @e[tag=rh]
+/summon dndclasses:hobbit 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["rh"]}
+wait 5
+use
+wait 3
+screenshot rep-hobbit-hostile-gift
+/data get entity @e[tag=rh,limit=1] GiftCooldown
+/rep @s dndclasses:hobbits set -200
+/clear @s
+wait 3
+use
+wait 3
+/data get entity @e[tag=rh,limit=1] GiftCooldown
+/data merge entity @e[tag=rh,limit=1] {GiftCooldown:0}
+/rep @s dndclasses:hobbits set 800
+/clear @s
+wait 3
+use
+wait 3
+/data get entity @e[tag=rh,limit=1] GiftCooldown
+/kill @e[tag=rh]
+/clear @s
+/rep @s dndclasses:hobbits set 0
+
+# ---- Dwarves: Hostile aggro ----
+/rep @s dndclasses:mountain_dwarves set 0
+/summon dndclasses:mountain_dwarf 0.5 150 6.5 {Tags:["rd"]}
+wait 60
+/execute as @e[tag=rd] on target if entity @s[type=minecraft:player]
+/data get entity @e[tag=rd,limit=1] AngryAt
+/rep @s dndclasses:mountain_dwarves set -600
+wait 60
+/execute as @e[tag=rd] on target if entity @s[type=minecraft:player]
+screenshot rep-dwarf-hostile
+/kill @e[tag=rd]
+/rep @s dndclasses:mountain_dwarves set 0
+
+# ---- Dwarves: hoard witness range (20 blocks) ----
+/kill @e[type=minecraft:item]
+/clear @s
+/tp @s 0.5 150 0.5 0 35
+/setblock 0 150 2 minecraft:chest
+/summon dndclasses:mountain_dwarf 0.5 150 21.5 {NoAI:1b,Rotation:[180f,0f],Tags:["rw"]}
+wait 5
+use
+wait 5
+screenshot rep-witness-neutral
+closescreen
+/data get entity @e[tag=rw,limit=1] AngryAt
+/rep @s dndclasses:mountain_dwarves set -200
+wait 5
+use
+wait 5
+screenshot rep-witness-unfriendly
+closescreen
+/data get entity @e[tag=rw,limit=1] AngryAt
+/rep
+/kill @e[tag=rw]
+/setblock 0 150 2 minecraft:air
+/rep @s dndclasses:mountain_dwarves set 0
+
+# ---- Goblins ----
+/rep @s dndclasses:goblins set 0
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {Tags:["rg"]}
+/data get entity @s Health
+wait 100
+/execute as @e[tag=rg] on target if entity @s[type=minecraft:player]
+/data get entity @s Health
+screenshot rep-goblin-neutral
+/kill @e[tag=rg]
+/rep @s dndclasses:goblins set -200
+/summon dndclasses:goblin_warrior 0.5 150 10.5 {NoAI:1b,Tags:["rg"]}
+/data merge entity @e[tag=rg,limit=1] {NoAI:0b}
+wait 60
+/execute as @e[tag=rg] on target if entity @s[type=minecraft:player]
+/kill @e[tag=rg]
+/summon dndclasses:goblin_warrior 0.5 150 4.5 {Tags:["rg"]}
+wait 60
+/execute as @e[tag=rg] on target if entity @s[type=minecraft:player]
+/kill @e[tag=rg]
+/rep @s dndclasses:goblins set -600
+/summon dndclasses:goblin_warrior 0.5 150 12.5 {Tags:["rg"]}
+wait 60
+/execute as @e[tag=rg] on target if entity @s[type=minecraft:player]
+/kill @e[tag=rg]
+
+# ---- Persuasion DC (needs the dndtest:villagers datapack faction) ----
+/rep @s dndtest:villagers set -200
+/dndclass set @s bard
+/kill @e[type=minecraft:item]
+/clear @s
+/tp @s 0.5 150 0.5 0 35
+/summon minecraft:villager 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:librarian",level:2,type:"minecraft:plains"},Tags:["rv"]}
+wait 10
+sneak on
+wait 3
+use
+wait 20
+screenshot rep-persuade-unfriendly
+sneak off
+/time add 24000
+/rep @s dndtest:villagers set 800
+wait 10
+sneak on
+wait 3
+use
+wait 20
+screenshot rep-persuade-exalted
+sneak off
+/kill @e[tag=rv]
+/rep @s dndtest:villagers set 0
+/rep @s dndclasses:goblins set -600
+/dndclass set @s fighter
+wait 20
+quit

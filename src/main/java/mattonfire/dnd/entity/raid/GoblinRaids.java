@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.faction.TierEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -129,7 +131,8 @@ public class GoblinRaids extends PersistentState {
         }
         for (ServerPlayerEntity player : world.getPlayers()) {
             if (player.isSpectator() || player.isCreative() || mattonfire.dnd.dm.DungeonMaster.isDm(player)
-                    || world.random.nextInt(RAID_CHANCE) != 0) {
+                    // Players Marked by the goblins draw raids twice as often.
+                    || world.random.nextInt(TierEffects.raidChance(player, ModEntityTypes.GOBLIN_WARRIOR, RAID_CHANCE)) != 0) {
                 continue;
             }
             Optional<Settlement> settlement = Settlement.find(world, player.getBlockPos(), 2, NEAR_SETTLEMENT);

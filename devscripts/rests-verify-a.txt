@@ -1,0 +1,53 @@
+# Rest core checks, part A (part B runs after a relog): Hit Dice after damage, the Wizard's
+# Arcane Recovery, the gems and underline with dndRests on/off, then 1 charge left for the relog check.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/rests-verify-a.txt, then rests-verify-b.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule dndRests true
+/tp @s 0 150 0 0 0
+/effect give @s minecraft:levitation 600 255 true
+# Hit Dice: a level-4 Barbarian has 4 d12s; a short rest after damage spends up to 2
+/dndclass set @s barbarian
+/dndclass resetprogress @s
+/dndclass xp @s set 450
+/dndclass rest @s long
+/effect give @s minecraft:instant_damage 1 1 true
+wait 10
+/data get entity @s Health
+/dndclass rest @s short
+wait 5
+/data get entity @s Health
+/dndclass hitdice @s
+# Wizard: first short rest after a long rest +2, the next +1
+/dndclass set @s wizard
+/dndclass resetprogress @s
+/dndclass rest @s long
+/dndclass charges @s 0
+/dndclass rest @s short
+/dndclass charges @s
+/dndclass charges @s 0
+/dndclass rest @s short
+/dndclass charges @s
+# Underline grey at 0 charges with full mana; gems hidden with dndRests false
+/dndclass set @s barbarian
+/dndclass rest @s long
+/dndclass charges @s 0
+wait 20
+clearchat
+wait 3
+screenshot verify-zero-charges
+/gamerule dndRests false
+wait 30
+clearchat
+wait 3
+screenshot verify-rests-off
+/gamerule dndRests true
+wait 30
+clearchat
+wait 3
+screenshot verify-rests-on
+# Leave 1 charge for the relog check
+/dndclass charges @s 1
+wait 10
+quit

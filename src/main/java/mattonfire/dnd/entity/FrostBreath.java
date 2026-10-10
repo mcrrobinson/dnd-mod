@@ -2,11 +2,13 @@ package mattonfire.dnd.entity;
 
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.particle.ModParticles;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -30,10 +32,10 @@ import org.joml.Vector3f;
  * alight, and with mobGriefing on it freezes water and drifts snow where it lands.
  */
 public class FrostBreath extends FireBreath {
-    /** Slowness II for 5 seconds. */
+    /** Slowness II for 5 seconds (2.5 on a successful save). */
     public static final int SLOWNESS_TICKS = 100;
     public static final int SLOWNESS_AMPLIFIER = 1;
-    /** The Freeze effect (held in place) for 2 seconds. */
+    /** The Freeze effect (held in place) for 2 seconds; a successful save avoids it. */
     public static final int FREEZE_TICKS = 40;
     private static final BlockState WATER_SOURCE = Blocks.WATER.getDefaultState();
 
@@ -54,13 +56,32 @@ public class FrostBreath extends FireBreath {
                 0.5F + this.dragon.getRandom().nextFloat() * 0.2F);
     }
 
+    /** A successful DEX save halves the damage and the Slowness and avoids the Freeze. */
     @Override
     protected void hit(LivingEntity living) {
-        if (living.damage(ModDamageTypes.of(this.dragon.world, ModDamageTypes.FROST_BREATH, this.dragon), this.damage)) {
-            living.extinguish();
-            living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, SLOWNESS_TICKS, SLOWNESS_AMPLIFIER), this.dragon);
-            living.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, FREEZE_TICKS, 0), this.dragon);
+        DamageSource source = ModDamageTypes.of(this.dragon.world, ModDamageTypes.FROST_BREATH, this.dragon);
+        if (DragonSaves.isUnaffected(living, source)) {
+            return;
         }
+        SaveResult save = this.save(living);
+        if (living.damage(source, save.damage(this.damage))) {
+            living.extinguish();
+            living.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, save.duration(SLOWNESS_TICKS),
+                    SLOWNESS_AMPLIFIER), this.dragon);
+            if (save.failed()) {
+                living.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, FREEZE_TICKS, 0), this.dragon);
+            }
+        }
+    }
+
+    @Override
+    protected String saveLabel() {
+        return DragonSaves.FROST_BREATH;
+    }
+
+    @Override
+    protected String saveEffect() {
+        return DragonSaves.FROST_BREATH_EFFECT;
     }
 
     /** Sometimes freezes the water it lands on (frosted ice, like Frost Walker) or drifts snow onto the ground. */

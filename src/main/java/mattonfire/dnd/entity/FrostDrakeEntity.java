@@ -3,6 +3,7 @@ package mattonfire.dnd.entity;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -30,7 +31,10 @@ import org.joml.Vector3f;
  * instead of fire and a hailstorm instead of lightning. Immune to freezing, weak to fire.
  */
 public class FrostDrakeEntity extends LairDragonEntity {
-    /** Each hailstone: 5 damage to anything within 3 blocks (and up to 3 above), and frozen for 2 seconds. */
+    /**
+     * Each hailstone: 5 damage to anything within 3 blocks (and up to 3 above), and frozen for 2 seconds. A
+     * successful DEX save halves the damage and avoids the Freeze.
+     */
     private static final float HAIL_DAMAGE = 5.0F;
     private static final double HAIL_RADIUS = 3.0;
     private static final int HAIL_FREEZE_TICKS = 40;
@@ -96,7 +100,13 @@ public class FrostDrakeEntity extends LairDragonEntity {
         Box area = new Box(x - HAIL_RADIUS, y - HAIL_RADIUS, z - HAIL_RADIUS,
                 x + HAIL_RADIUS, y + 3.0D + HAIL_RADIUS, z + HAIL_RADIUS);
         for (LivingEntity victim : this.world.getEntitiesByClass(LivingEntity.class, area, this::isStormVictim)) {
-            if (victim.damage(source, HAIL_DAMAGE)) {
+            if (DragonSaves.isUnaffected(victim, source)) {
+                continue;
+            }
+            // One DEX save for the whole hailstorm: the three hailstones land in the same tick
+            SaveResult save = DragonSaves.save(victim, this, DragonSaves.HAILSTORM, DragonSaves.STORM_DC,
+                    DragonSaves.HAILSTORM_EFFECT, "storm", DragonSaves.STORM_WINDOW);
+            if (victim.damage(source, save.damage(HAIL_DAMAGE)) && save.failed()) {
                 victim.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, HAIL_FREEZE_TICKS, 0), this);
             }
         }

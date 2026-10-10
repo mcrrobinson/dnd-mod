@@ -1,0 +1,30 @@
+# Downed in a LAN party (guest side), with downed-lan-host.txt. Screenshots the host crawling (downed-lan-guest-sees-host
+# and the hitbox), then logs out while downed. Run (after the host says "Started serving on"):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25683 -PdevScript=devscripts/downed-lan-guest.txt
+wait 40
+closescreen
+respawn
+wait 60
+/party leave
+/me guest-ready
+waitchat invited you to their party
+/party accept
+waitchat host-downed
+wait 20
+clearchat
+screenshot downed-lan-guest-sees-host
+hitboxes on
+wait 5
+screenshot downed-lan-guest-sees-host-hitbox
+hitboxes off
+waitchat left the party.
+/party leave
+waitchat invited you to their party
+/party accept
+waitchat guest-downed
+wait 20
+clearchat
+perspective back
+wait 10
+screenshot downed-lan-guest-crawl
+quit

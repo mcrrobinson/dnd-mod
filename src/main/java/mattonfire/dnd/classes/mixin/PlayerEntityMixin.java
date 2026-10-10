@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.mixin;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
@@ -10,6 +11,7 @@ import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityPose;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.data.DataTracker;
@@ -28,6 +30,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PlayerEntity.class)
@@ -42,6 +46,14 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     @Unique
     private static final TrackedData<Byte> DND$RACE = DataTracker.registerData(PlayerEntity.class,
             TrackedDataHandlerRegistry.BYTE);
+
+    /** Downed state bits ({@code Downed}): every client needs them to draw the crawl pose. */
+    @Unique
+    private static final TrackedData<Byte> DND$DOWNED = DataTracker.registerData(PlayerEntity.class,
+            TrackedDataHandlerRegistry.BYTE);
+    /** Damage past 0 HP of the last hit, for the massive damage rule. */
+    @Unique
+    private float dnd$overflow;
 
     boolean dropEntireStack;
     private DndCharacter dndClass;
@@ -64,6 +76,53 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     @Inject(method = "initDataTracker", at = @At("TAIL"))
     private void dnd$initRaceTracker(CallbackInfo info) {
         this.dataTracker.startTracking(DND$RACE, (byte) 0);
+        this.dataTracker.startTracking(DND$DOWNED, (byte) 0);
+    }
+
+    @Override
+    public byte getDownedBits() {
+        return this.dataTracker.get(DND$DOWNED);
+    }
+
+    @Override
+    public void setDownedBits(byte bits) {
+        this.dataTracker.set(DND$DOWNED, bits);
+    }
+
+    @Override
+    public float getLastDamageOverflow() {
+        return this.dnd$overflow;
+    }
+
+    /** Records how far below 0 HP a hit goes (the argument is the new health, before clamping). */
+    @ModifyArg(method = "applyDamage", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/player/PlayerEntity;setHealth(F)V"))
+    private float dnd$recordOverflow(float newHealth) {
+        this.dnd$overflow = Math.max(0.0F, -newHealth);
+        return newHealth;
+    }
+
+    /** Downed players crawl, on every side (remote clients run updatePose too). */
+    @Inject(method = "updatePose", at = @At("HEAD"), cancellable = true)
+    private void dnd$downedPose(CallbackInfo info) {
+        if (Downed.is((PlayerEntity) (Object) this)) {
+            this.setPose(EntityPose.SWIMMING);
+            info.cancel();
+        }
+    }
+
+    @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
+    private void dnd$noDownedJump(CallbackInfo info) {
+        if (Downed.is((PlayerEntity) (Object) this)) {
+            info.cancel();
+        }
+    }
+
+    @Inject(method = "checkFallFlying", at = @At("HEAD"), cancellable = true)
+    private void dnd$noDownedGliding(CallbackInfoReturnable<Boolean> cir) {
+        if (Downed.is((PlayerEntity) (Object) this)) {
+            cir.setReturnValue(false);
+        }
     }
 
     @Override

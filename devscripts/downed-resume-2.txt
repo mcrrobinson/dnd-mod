@@ -1,0 +1,14 @@
+# Server stop keeps the Downed state (part 2 of 2, after downed-resume-1.txt): expect "[Downed] ... resumed Downed
+# (1 passes, 1 fails)" in the log and /dndclass downed showing the same tally with a fresh 6 s timer.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/downed-resume-2.txt
+wait 40
+closescreen
+/dndclass downed @s
+clearchat
+perspective back
+wait 10
+screenshot downed-resume-crawl
+perspective first
+/dndclass revive @s 10
+/dndclass downed @s
+quit

@@ -24,6 +24,7 @@ import mattonfire.dnd.classes.Abilities.Contribution;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassTrees;
@@ -35,6 +36,7 @@ import mattonfire.dnd.classes.Rest.HitDice;
 import mattonfire.dnd.classes.Rest.RestKind;
 import mattonfire.dnd.classes.Rest.RestSnapshot;
 import mattonfire.dnd.classes.Rest.RestSource;
+import mattonfire.dnd.classes.Rest.RestState;
 import mattonfire.dnd.classes.Rest.RestSync;
 import mattonfire.dnd.classes.Rest.Rests;
 import net.minecraft.command.CommandSource;
@@ -67,6 +69,11 @@ import net.minecraft.util.Identifier;
  * /dndclass sheet <player>                    (ability scores, saves, skills, passives)
  * /dndclass score <player> <ability> <value>|clear   (admin override of one score)
  * /dndclass forceroll <player> <n...>|clear   (rigs the player's next d20 naturals, for tests)
+ * /dndclass down <player>                     (Downed, death saves, even with nobody near)
+ * /dndclass stabilise <player>                (a Downed player stops rolling and stands up in 30 s)
+ * /dndclass revive <player> [hp]              (a Downed player stands up, default 1 HP)
+ * /dndclass downed <player>                   (prints the death save tally)
+ * /dndclass laststand <player> [ready]        (Last Stand cooldown; ready clears it)
  *
  * Changes a player's class without them having to die. Setting "none" clears the
  * class and reopens the class picker on their client.
@@ -172,6 +179,44 @@ public class DndClassCommand {
                                         }))
                                 .then(CommandManager.argument("naturals", StringArgumentType.greedyString())
                                         .executes(DndClassCommand::forceRoll))))
+                .then(CommandManager.literal("down")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(context -> {
+                                    ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                    if (Downed.is(player) || !player.isAlive()) {
+                                        context.getSource().sendError(Text.literal(player.getEntityName()
+                                                + " is already Downed or dead"));
+                                        return 0;
+                                    }
+                                    Downed.down(player, player.getDamageSources().generic());
+                                    return downedInfo(context);
+                                })))
+                .then(CommandManager.literal("stabilise")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(context -> {
+                                    ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                    if (!Downed.is(player)) {
+                                        context.getSource().sendError(Text.literal(player.getEntityName()
+                                                + " isn't Downed"));
+                                        return 0;
+                                    }
+                                    Downed.stabilise(player);
+                                    return downedInfo(context);
+                                })))
+                .then(CommandManager.literal("revive")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(context -> revive(context, 1))
+                                .then(CommandManager.argument("hp", IntegerArgumentType.integer(1))
+                                        .executes(context -> revive(context,
+                                                IntegerArgumentType.getInteger(context, "hp"))))))
+                .then(CommandManager.literal("laststand")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(context -> lastStand(context, false))
+                                .then(CommandManager.literal("ready")
+                                        .executes(context -> lastStand(context, true)))))
+                .then(CommandManager.literal("downed")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(DndClassCommand::downedInfo)))
                 .then(CommandManager.literal("resetprogress")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::resetProgress))));
@@ -246,6 +291,49 @@ public class DndClassCommand {
         Rests.complete(player, kind, RestSource.ADMIN);
         context.getSource().sendFeedback(Text.literal("Gave " + player.getEntityName() + " a " + kind.label()), true);
         return restInfo(context);
+    }
+
+    private static int revive(CommandContext<ServerCommandSource> context, int hp) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        if (!Downed.is(player)) {
+            context.getSource().sendError(Text.literal(player.getEntityName() + " isn't Downed"));
+            return 0;
+        }
+        Downed.revive(player, hp);
+        context.getSource().sendFeedback(Text.literal("Revived " + player.getEntityName() + " with "
+                + (int) player.getHealth() + " HP"), true);
+        return 1;
+    }
+
+    /** Prints (or clears) the Last Stand cooldown; returns the seconds left. */
+    private static int lastStand(CommandContext<ServerCommandSource> context, boolean ready)
+            throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        RestState state = RestState.get(player);
+        if (ready) {
+            state.lastStandReadyAt = 0;
+            state.save(player);
+        }
+        long left = Math.max(0, (state.lastStandReadyAt - player.getServer().getOverworld().getTime() + 19) / 20);
+        context.getSource().sendFeedback(Text.literal(player.getEntityName() + ": Last Stand "
+                + (left == 0 ? "ready" : "in " + left + " s")), false);
+        return (int) left;
+    }
+
+    /** Prints a player's Downed state; returns 1 if Downed. */
+    private static int downedInfo(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        int[] tally = Downed.tally(player);
+        if (tally == null) {
+            context.getSource().sendFeedback(Text.literal(player.getEntityName() + " isn't Downed"), false);
+            return 0;
+        }
+        boolean stable = Downed.isStable(player);
+        context.getSource().sendFeedback(Text.literal(player.getEntityName() + ": Downed"
+                + (stable ? ", stable, standing up in " + tally[2] + " s"
+                        : ", " + tally[0] + " passes, " + tally[1] + " fails, next save in " + tally[2] + " s")),
+                false);
+        return 1;
     }
 
     /** Prints charges, Hit Dice and short rests left; returns the charges. */

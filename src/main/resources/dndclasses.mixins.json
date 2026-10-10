@@ -57,7 +57,10 @@
         "ServerPlayerSwordDropMixin",
         "StatusEffectMixin",
         "ThreadedAnvilChunkStorageAccessor",
-        "DmEntityTrackerMixin"
+        "DmEntityTrackerMixin",
+        "LivingEntityInvoker",
+        "DownedServerPlayerMixin",
+        "DownedPlayerManagerMixin"
     ],
     "client": [
         "AbstractClientPlayerEntityMixin",

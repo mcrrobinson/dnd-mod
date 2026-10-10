@@ -122,6 +122,10 @@ public class DnDClasses implements ModInitializer {
                         if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
                                 return;
                         }
+                        // Downed: no specials (holding the key gives up instead, see DownedEvents).
+                        if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
+                                return;
+                        }
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
                         SkillNode skill = Progression.current(player).activeNode();
                         int cost = skill == null ? MANA_ICONS : skill.manaCost();
@@ -280,6 +284,10 @@ public class DnDClasses implements ModInitializer {
 
                                 if (currentTick % MANA_TICKS_PER_INCREMENT == 0) {
                                         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+                                                // Downed players don't regain mana
+                                                if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
+                                                        continue;
+                                                }
                                                 ManaManager.regenerateMana(player);
                                         }
                                 }
@@ -457,6 +465,7 @@ public class DnDClasses implements ModInitializer {
                 ClassLifecycle.register();
                 mattonfire.dnd.classes.Race.RaceLifecycle.register();
                 mattonfire.dnd.classes.Rest.Rests.register();
+                mattonfire.dnd.classes.Downed.DownedEvents.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

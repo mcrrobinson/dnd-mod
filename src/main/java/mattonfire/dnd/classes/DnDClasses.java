@@ -217,6 +217,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
+                mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();
                 mattonfire.dnd.world.gen.HomeBonuses.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();

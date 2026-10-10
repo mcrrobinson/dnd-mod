@@ -1,0 +1,44 @@
+# Two-player scaling, host side. Opens the world on port 25647, waits for dungeon-encounter-lan-guest.txt
+# to join (start it once "Started serving on" is in this client's log), brings both players into the
+# crypt's antechamber and walks the host into room #2 and then the boss room.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dungeon-encounter-lan-host.txt
+#      timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25647 -PdevScript=devscripts/dungeon-encounter-lan-guest.txt
+# Check: "[Dungeon] room #2 ... party 2 ... budget 8.16" and "Max Health for entity Lich is 405.0" in the host's log.
+wait 40
+closescreen
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/difficulty normal
+/gamemode spectator
+/tp @s 263 150 967
+wait 200
+/dungeon reset
+/kill @e[tag=dndclasses.dungeon]
+/publish false survival 25647
+waitchat joined the game
+wait 200
+/list
+/gamemode survival @a
+/effect give @a minecraft:night_vision 9999 0 true
+/effect give @a minecraft:resistance 9999 4 true
+/tp @a 247 43 967 90 0
+wait 60
+/tp @s 262 43 967 90 10
+wait 40
+/dungeon info
+/kill @e[tag=dndclasses.dungeon]
+wait 30
+/tp @a 287 43 987 180 0
+wait 40
+/tp @s 287 43 983 180 0
+wait 40
+/execute as @e[type=dndclasses:lich] run attribute @s minecraft:generic.max_health get
+/execute as @e[type=dndclasses:phylactery] run attribute @s minecraft:generic.max_health get
+/data get entity @e[type=dndclasses:lich,limit=1] Health
+clearchat
+screenshot dungeon-enc-lan-boss
+wait 20
+/kill @e[tag=dndclasses.dungeon]
+/dungeon reset
+quit

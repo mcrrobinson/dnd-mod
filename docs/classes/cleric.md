@@ -51,7 +51,7 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
 | Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more |
-| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once a day, make one held weapon or worn armor piece +1 until the next day, at an Attunement Table |
+| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once per long rest, make one held weapon or worn armor piece +1 until the next long rest, from an Attunement Table's Items tab ([details](../systems/magic-items.md#blessing-of-the-forge)) |
 
 The features aren't active yet; they come with the subclass feature cards.
 

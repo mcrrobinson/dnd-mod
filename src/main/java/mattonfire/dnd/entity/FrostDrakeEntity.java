@@ -39,7 +39,8 @@ public class FrostDrakeEntity extends LairDragonEntity {
     private static final double HAIL_RADIUS = 3.0;
     private static final int HAIL_FREEZE_TICKS = 40;
     /** Fire hurts it this much more. */
-    private static final float FIRE_WEAKNESS = 1.5F;
+    /** Fire damage multiplier (also shown by a natural 20 Study). */
+    public static final float FIRE_WEAKNESS = 1.5F;
 
     public static final RegistryKey<Structure> LAIR_STRUCTURE =
             RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "frost_lair"));

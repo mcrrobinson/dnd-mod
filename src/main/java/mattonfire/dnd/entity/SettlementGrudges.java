@@ -95,6 +95,8 @@ public final class SettlementGrudges {
     public static final Rules SYLVAN_COURT = add(new SylvanLaw());
     /** The Dragonborn guarding their temple's statues, altars and reliquary. */
     public static final Rules DRAGONSWORN = add(new TempleLaw());
+    /** The orcs of the strongholds guarding the War Chief's hoard. */
+    public static final Rules BLOODTUSK_HORDE = add(new OrcLaw());
 
     private SettlementGrudges() {
     }

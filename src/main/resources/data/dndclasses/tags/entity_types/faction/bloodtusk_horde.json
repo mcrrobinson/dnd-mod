@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:orc_warrior",
+    "dndclasses:orc_archer",
+    "dndclasses:orc_quartermaster",
+    "dndclasses:orc_war_chief"
+  ]
+}

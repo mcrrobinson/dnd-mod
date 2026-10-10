@@ -24,7 +24,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Dragonborn Breath Weapon](races/breath-weapon.md): R breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [d20 and combat racial traits](races/combat-traits.md): Halfling Lucky rerolls natural 1s (clover on the HUD), Half-Orc Savage Attacks (x2.5 crits) and Relentless Endurance (1 HP instead of dying, 10 min), Tiefling Hellish Rebuke (melee attackers burn, 20 s)
-- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves) and Dragonborn (Dragon Temples): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves), Dragonborn (Dragon Temples) and Half-Orcs (Orc Strongholds): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth, the Rally and the Trial of Strength
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
@@ -65,6 +65,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
 - [Dragonborn](mobs/dragonborn.md): breath-weapon Templars and the Elder merchant of the dragon temples
+- [Orcs](mobs/orcs.md): the Bloodtusk Horde's Warriors, crossbow Archers, the Quartermaster merchant and the Trial's Champion; hostile except to Half-Orcs, allied with goblins
 - [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves
 - [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
@@ -75,6 +76,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Goblin Warlord](bosses/goblin-warlord.md): Nether Fortress boss that summons goblin waves
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
+- [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
 
 ## Structures
@@ -84,6 +86,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home
+- [Orc Strongholds](structures/orc-strongholds.md): palisaded badlands warcamps with a gatehouse, Great Longhouse, Fighting Pit, smithy and yurts; hostile except to Half-Orcs; the Trial of Strength makes you Blood-Sworn; the Half-Orc home
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested)

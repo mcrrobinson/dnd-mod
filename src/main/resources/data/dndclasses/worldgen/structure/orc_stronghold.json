@@ -1,0 +1,23 @@
+{
+  "type": "dndclasses:orc_stronghold",
+  "biomes": "#dndclasses:has_structure/orc_stronghold",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "beard_thin",
+  "spawn_overrides": {
+    "creature": {
+      "bounding_box": "full",
+      "spawns": [
+        {
+          "type": "dndclasses:orc_warrior",
+          "weight": 1,
+          "minCount": 1,
+          "maxCount": 1
+        }
+      ]
+    },
+    "monster": {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

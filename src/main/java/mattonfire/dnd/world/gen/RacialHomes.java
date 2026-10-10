@@ -13,6 +13,7 @@ import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Reputation;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
+import mattonfire.dnd.world.gen.stronghold.OrcStrongholdStructures;
 import mattonfire.dnd.world.gen.temple.DragonTempleStructures;
 import mattonfire.dnd.world.gen.village.HobbitVillageStructures;
 import net.minecraft.entity.Entity;
@@ -53,6 +54,9 @@ public final class RacialHomes {
     /** The hearth is the sanctum with the three breath altars. */
     public static final Home DRAGON_TEMPLE = register(new Home(id("dragon_temple"), DndRace.DRAGONBORN, Set.of(),
             id("dragonsworn"), DragonTempleStructures.SANCTUM, null));
+    /** The hearth is the Great Longhouse. Entering also rallies a Half-Orc ({@link HomeBonuses#RALLY_DURATION}). */
+    public static final Home ORC_STRONGHOLD = register(new Home(id("orc_stronghold"), DndRace.HALFORC, Set.of(),
+            id("bloodtusk_horde"), OrcStrongholdStructures.LONGHOUSE, null));
 
     private RacialHomes() {
     }

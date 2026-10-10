@@ -72,10 +72,14 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
     /**
      * Goblin standing decides who's fair game: players at goblin Neutral or better are left alone unless
      * they start something, and at Unfriendly only once they come within parley range. This covers every
-     * way a goblin picks a target (its goals, raids, the Warlord's waves).
+     * way a goblin picks a target (its goals, raids, the Warlord's waves). Orcs are allies and never targeted.
      */
     @Override
     public void setTarget(@Nullable LivingEntity target) {
+        // Allied with the Bloodtusk Horde: goblins never go for orcs.
+        if (target instanceof OrcEntity) {
+            return;
+        }
         if (target instanceof PlayerEntity player && !this.world.isClient
                 && target != this.getTarget() && !TierEffects.goblinMayTarget(this, player, false)) {
             return;
@@ -96,6 +100,15 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
                 && !TierEffects.goblinMayTarget(this, player, true)) {
             super.setTarget(null);
         }
+    }
+
+    @Override
+    public boolean damage(net.minecraft.entity.damage.DamageSource source, float amount) {
+        // No friendly fire from the horde's crossbows and axes.
+        if (source.getAttacker() instanceof OrcEntity) {
+            return false;
+        }
+        return super.damage(source, amount);
     }
 
     @Override

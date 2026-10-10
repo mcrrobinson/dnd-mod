@@ -61,6 +61,8 @@ public final class HomeBonuses {
     public static final int HALFLING_GIFT_COOLDOWN = 20 * 60 * 2;
     /** The Neutral wait the Halfling one is scaled from: Halflings wait 2/5 of their tier's wait. */
     private static final int NORMAL_GIFT_COOLDOWN = 20 * 60 * 5;
+    /** Rally: a Half-Orc entering an Orc Stronghold gets Strength I for 30 s, once per visit (each welcome). */
+    public static final int RALLY_DURATION = 20 * 30;
     /** Gossip a villager gains for a Human the first time they trade. */
     public static final int HUMAN_KIN_GOSSIP = 10;
 
@@ -128,6 +130,10 @@ public final class HomeBonuses {
                 Text.translatable("race.dndclasses." + race.id())).formatted(Formatting.GOLD)));
         DnDClasses.LOGGER.info("[RacialHomes] Welcomed {} home to {} at chunk {}", player.getEntityName(),
                 visit.home().structure(), visit.start().getPos());
+        if (visit.home() == RacialHomes.ORC_STRONGHOLD) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, RALLY_DURATION, 0));
+            player.sendMessage(Text.translatable("message.dndclasses.home.orc_rally").formatted(Formatting.DARK_RED), false);
+        }
         if (visit.home().firstVisit() != null && firstVisit(player, visit)) {
             visit.home().firstVisit().accept(player);
         }

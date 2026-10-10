@@ -132,6 +132,11 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.DRAGONBORN_TEMPLAR, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canTemplarSpawn);
 
+        // Orc Warriors only spawn inside orc strongholds (the structure's spawn_overrides), inside the
+        // palisade, at most MAX_ORCS_NEARBY orcs within 48 blocks.
+        SpawnRestriction.register(ModEntityTypes.ORC_WARRIOR, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canOrcSpawn);
+
         // Beholders only live in their underground lairs (the structure's spawn_overrides), which
         // get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.BEHOLDER, SpawnRestriction.Location.ON_GROUND,
@@ -200,6 +205,32 @@ public class ModSpawns {
         return reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION
                 || inTemplePiece(world, pos) && world.getEntitiesByClass(mattonfire.dnd.entity.DragonbornTemplarEntity.class,
                 new Box(pos).expand(48.0D), e -> true).size() < MAX_TEMPLARS_NEARBY;
+    }
+
+    public static final int MAX_ORCS_NEARBY = 12;
+
+    private static boolean canOrcSpawn(EntityType<mattonfire.dnd.entity.OrcWarriorEntity> type, ServerWorldAccess world,
+                                       SpawnReason reason, BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        if (reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION) {
+            return true;
+        }
+        if (world.getDifficulty() == Difficulty.PEACEFUL) {
+            return false;
+        }
+        StructureStart start = world.toServerWorld().getStructureAccessor().getStructureContaining(pos,
+                mattonfire.dnd.world.gen.stronghold.OrcStrongholdStructures.KEY);
+        if (!start.hasChildren()) {
+            return false;
+        }
+        BlockPos center = start.getBoundingBox().getCenter();
+        double dx = pos.getX() - center.getX();
+        double dz = pos.getZ() - center.getZ();
+        double wall = mattonfire.dnd.world.gen.stronghold.OrcStrongholdStructure.PALISADE - 1;
+        return dx * dx + dz * dz <= wall * wall
+                && world.getEntitiesByClass(mattonfire.dnd.entity.OrcEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_ORCS_NEARBY;
     }
 
     /** Whether {@code pos} is inside one of a dragon temple's pieces. */

@@ -167,6 +167,24 @@ public class ModEntityTypes {
                     .build()
     );
 
+    /** An Orc Warrior of an Orc Stronghold: the player model at 1.1x tall, 1.15x wide. */
+    public static final EntityType<OrcWarriorEntity> ORC_WARRIOR = orc("orc_warrior", OrcWarriorEntity::new, 0.69f, 2.0f);
+    /** An Orc Archer on a stronghold's gate towers. */
+    public static final EntityType<OrcArcherEntity> ORC_ARCHER = orc("orc_archer", OrcArcherEntity::new, 0.69f, 2.0f);
+    /** The Orc Quartermaster at a stronghold's smithy. */
+    public static final EntityType<OrcQuartermasterEntity> ORC_QUARTERMASTER = orc("orc_quartermaster", OrcQuartermasterEntity::new, 0.69f, 2.0f);
+    /** The Orc Champion of the Trial of Strength: 1.15x tall, 1.2x wide. */
+    public static final EntityType<OrcChampionEntity> ORC_CHAMPION = orc("orc_champion", OrcChampionEntity::new, 0.72f, 2.07f);
+    /** The Orc War Chief, a stronghold's boss: 1.25x tall, 1.3x wide. */
+    public static final EntityType<OrcWarChiefEntity> ORC_WAR_CHIEF = orc("orc_war_chief", OrcWarChiefEntity::new, 0.78f, 2.25f);
+
+    private static <T extends OrcEntity> EntityType<T> orc(String name, EntityType.EntityFactory<T> factory, float width, float height) {
+        return Registry.register(Registries.ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, name),
+                FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, factory)
+                        .dimensions(EntityDimensions.fixed(width, height))
+                        .build());
+    }
+
     public static final EntityType<MimicEntity> MIMIC = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "mimic"),
@@ -246,6 +264,11 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(ELF_FLETCHER, ElfMerchantEntity.createFletcherAttributes());
         FabricDefaultAttributeRegistry.register(DRAGONBORN_TEMPLAR, DragonbornTemplarEntity.createTemplarAttributes());
         FabricDefaultAttributeRegistry.register(DRAGONBORN_ELDER, DragonbornElderEntity.createElderAttributes());
+        FabricDefaultAttributeRegistry.register(ORC_WARRIOR, OrcWarriorEntity.createOrcWarriorAttributes());
+        FabricDefaultAttributeRegistry.register(ORC_ARCHER, OrcArcherEntity.createOrcArcherAttributes());
+        FabricDefaultAttributeRegistry.register(ORC_QUARTERMASTER, OrcQuartermasterEntity.createOrcQuartermasterAttributes());
+        FabricDefaultAttributeRegistry.register(ORC_CHAMPION, OrcChampionEntity.createOrcChampionAttributes());
+        FabricDefaultAttributeRegistry.register(ORC_WAR_CHIEF, OrcWarChiefEntity.createOrcWarChiefAttributes());
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());

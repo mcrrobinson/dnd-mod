@@ -41,6 +41,12 @@ import net.minecraft.util.math.BlockPos;
  * each and checks a dragon lair or frost lair starts within 10 chunks of it (logged as {@code [TempleSurvey]}).
  * /dndhome temple [ember|frost|storm]: teleports you to the nearest Dragon Temple's sanctum, two blocks in front
  * of that breath altar (Ember by default) and looking at it, so a script can {@code use} it.
+ * /dndhome stronghold [pit|seat|hoard|smithy|gate]: teleports you to that spot of the nearest Orc Stronghold
+ * (the pit floor looking at the war drum, by default).
+ * /dndhome strongholdsurvey [grid] [spacing]: from a grid of points round you, finds the nearest Orc Stronghold
+ * to each and checks it stands in the badlands with all its pieces (logged as {@code [StrongholdSurvey]}).
+ * /dndhome bloodsworn <players> <true|false>: sets or clears Blood-Sworn at the stronghold you stand in.
+ * /dndhome trialreset <players>: forgets today's lost Trial at the stronghold you stand in.
  */
 public final class DndHomeCommand {
     private DndHomeCommand() {
@@ -62,6 +68,25 @@ public final class DndHomeCommand {
                                 .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
                                         .executes(context -> templeSurvey(context, IntegerArgumentType.getInteger(context, "grid"),
                                                 IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("stronghold")
+                        .executes(context -> StrongholdCommands.teleport(context, "pit"))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> StrongholdCommands.teleport(context, StringArgumentType.getString(context, "spot")))))
+                .then(CommandManager.literal("strongholdsurvey")
+                        .executes(context -> StrongholdCommands.survey(context, 3, 2000))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> StrongholdCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 2000))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> StrongholdCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("bloodsworn")
+                        .then(CommandManager.argument("players", EntityArgumentType.players())
+                                .then(CommandManager.argument("sworn", com.mojang.brigadier.arguments.BoolArgumentType.bool())
+                                        .executes(context -> StrongholdCommands.bloodSworn(context, EntityArgumentType.getPlayers(context, "players"),
+                                                com.mojang.brigadier.arguments.BoolArgumentType.getBool(context, "sworn"))))))
+                .then(CommandManager.literal("trialreset")
+                        .then(CommandManager.argument("players", EntityArgumentType.players())
+                                .executes(context -> StrongholdCommands.trialReset(context, EntityArgumentType.getPlayers(context, "players")))))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
                         .executes(context -> info(context, EntityArgumentType.getPlayer(context, "player")))));
     }

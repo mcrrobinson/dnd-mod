@@ -777,6 +777,22 @@ public class ModItems {
         public static final Item HALFLING_SLING = registerItem("halfling_sling",
                 new mattonfire.dnd.classes.Items.racial.HalflingSlingItem(new FabricItemSettings().maxDamage(250)));
 
+        /** Dropped by goblin warriors (25%); the orc Quartermaster buys 3 for 2 emeralds. */
+        public static final Item GOBLIN_WAR_TOKEN = registerItem("goblin_war_token", new Item(new FabricItemSettings()));
+        /** Strength I for 60 s, Nausea for 5 s; sold by the orc Quartermaster. */
+        public static final Item GROG = registerItem("grog",
+                new mattonfire.dnd.classes.Items.GrogItem(new FabricItemSettings()));
+        public static final Item ORC_WARRIOR_SPAWN_EGG = registerItem("orc_warrior_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ORC_WARRIOR, 0x5E7A3A, 0x6B4A2E, new FabricItemSettings()));
+        public static final Item ORC_ARCHER_SPAWN_EGG = registerItem("orc_archer_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ORC_ARCHER, 0x5E7A3A, 0x8E2B1F, new FabricItemSettings()));
+        public static final Item ORC_QUARTERMASTER_SPAWN_EGG = registerItem("orc_quartermaster_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ORC_QUARTERMASTER, 0x5E7A3A, 0x3A3A3A, new FabricItemSettings()));
+        public static final Item ORC_CHAMPION_SPAWN_EGG = registerItem("orc_champion_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ORC_CHAMPION, 0x4A6230, 0xC9C9C9, new FabricItemSettings()));
+        public static final Item ORC_WAR_CHIEF_SPAWN_EGG = registerItem("orc_war_chief_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ORC_WAR_CHIEF, 0x3E5228, 0xE0A82E, new FabricItemSettings()));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

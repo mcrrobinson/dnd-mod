@@ -22,7 +22,9 @@ Which players it goes for depends on their standing with the goblins ([Factions]
 
 Its swing is telegraphed. When you're in reach it raises its club, and the hit lands 10 ticks (half a second) later, but only if you're still in reach. After that it can't swing again for 2 seconds.
 
-It drops 0-3 gold nuggets and 0-1 leather, each with up to 1 more per Looting level.
+It drops 0-3 gold nuggets and 0-1 leather, each with up to 1 more per Looting level. Killed by a player, 25% of them also drop a **Goblin War Token**, which the [orc](orcs.md) Quartermaster buys (3 for 2 emeralds).
+
+Goblins are allied with the Bloodtusk Horde of the [Orc Strongholds](../structures/orc-strongholds.md): goblins and orcs never target or hurt each other.
 
 ### Tips
 - Watch for the raised club and step back. If you're out of reach when the half second is up, the swing misses.

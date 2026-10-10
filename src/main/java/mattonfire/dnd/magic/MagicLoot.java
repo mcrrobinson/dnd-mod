@@ -120,6 +120,11 @@ public final class MagicLoot {
         chest("dragon_temple_cell", 0.08F, tier(u, 1));
         chest("dragon_temple_reliquary", 1.0F, tier(r, 90), tier(vr, 10));
 
+        // Orc Strongholds
+        chest("orc_stronghold_yurt", 0.05F, tier(u, 1));
+        chest("orc_stronghold_armory", 0.15F, tier(u, 75), tier(r, 25));
+        chest("orc_stronghold_hoard", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
+
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 
@@ -127,6 +132,7 @@ public final class MagicLoot {
         // entities/mimic_magic (JSON, 25% Uncommon + 10% Bag of Holding) on top of the chest it replaced.
         entity("goblin_warlord", 0.50F, tier(r, 1));
         entity("magmamuncher_alpha", 0.50F, tier(r, 1));
+        entity("orc_war_chief", 0.50F, tier(r, 1));
         entity("lich", 1.0F, tier(vr, 80), tier(l, 20));
         entity("lich", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         entity("beholder", 1.0F, tier(vr, 80), tier(l, 20));

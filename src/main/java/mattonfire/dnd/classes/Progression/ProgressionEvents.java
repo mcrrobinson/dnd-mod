@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.Progression;
 
 import mattonfire.dnd.classes.Party.PartyEvents;
 import mattonfire.dnd.entity.boss.BossMinions;
+import mattonfire.dnd.magic.MagicEffects;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
@@ -15,7 +16,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * Hands out kill XP and passes game events to the player's class's
- * {@link ClassSkills}.
+ * {@link ClassSkills}, then to their active magic items ({@link MagicEffects}).
  */
 public final class ProgressionEvents {
     /** Every class gets this for killing a hostile mob. */
@@ -62,6 +63,7 @@ public final class ProgressionEvents {
         if (skills != null) {
             skills.onKill(player, Progression.current(player), entity, source);
         }
+        MagicEffects.onKill(player, entity, source);
     }
 
     private static void secondTick(ServerPlayerEntity player) {
@@ -90,6 +92,7 @@ public final class ProgressionEvents {
         if (skills != null) {
             skills.secondTick(player, progress);
         }
+        MagicEffects.secondTick(player);
     }
 
     /**
@@ -106,6 +109,7 @@ public final class ProgressionEvents {
             if (skills != null) {
                 amount = skills.modifyDealtDamage(player, progress, target, source, amount);
             }
+            amount = MagicEffects.modifyDealtDamage(player, target, source, amount);
         }
 
         if (target instanceof PlayerEntity player) {
@@ -114,6 +118,7 @@ public final class ProgressionEvents {
             if (skills != null) {
                 amount = skills.modifyTakenDamage(player, progress, source, amount);
             }
+            amount = MagicEffects.modifyTakenDamage(player, source, amount);
         }
         return amount;
     }

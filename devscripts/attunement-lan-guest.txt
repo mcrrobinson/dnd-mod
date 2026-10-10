@@ -1,0 +1,12 @@
+# Guest half of attunement-lan-host.txt. Expect the screenshot attune-guest-tooltip to show "Attuned to Attuner".
+wait 40
+closescreen
+waitchat lan-host-done
+hotbar 0
+tooltips 0
+wait 10
+screenshot attune-guest-tooltip
+closescreen
+/me guest-done
+wait 20
+quit

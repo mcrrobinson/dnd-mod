@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/portcullis"
+    },
+    "state=open": {
+      "model": "dndclasses:block/obstacle_empty"
+    }
+  }
+}

@@ -38,6 +38,9 @@ public final class ObstacleText {
 
     /** "A Wizard or Warlock could dispel it". */
     public static MutableText who(ObstacleType type) {
+        if (type.ownWhoText()) {
+            return Text.translatable(type.translationKey() + ".who");
+        }
         return Text.translatable("obstacle.dndclasses.who", solverList(type),
                 Text.translatable(type.translationKey() + ".verb"));
     }

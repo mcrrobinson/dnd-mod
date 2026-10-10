@@ -17,6 +17,9 @@ import org.jetbrains.annotations.Nullable;
  * <li>{@link #GREATER_SEAL}: a Greater Arcane Seal. Wizards only, no bypass: side vaults only.</li>
  * <li>{@link #RUBBLE}: a cave-in of cobblestone and gravel anyone can dig through (Barbarians and Fighters
  * will feel at home; there's no check yet).</li>
+ * <li>{@link #COLLAPSED_PASSAGE}: a Collapsed Passage obstacle. Barbarians and Fighters (and Paladins) heave it
+ * clear with Athletics; anyone can mine through it and risk a cave-in.</li>
+ * <li>{@link #HEAVY_BOULDER}: a Heavy Boulder. Barbarians only (TNT shifts it, loudly): side vaults only.</li>
  * <li>{@link #LOCKED_DOOR}: an iron door. Its lever "key" is in a locked chest by the door: a Rogue
  * picks the lock, anyone else smashes the chest (and may break a lever or two).</li>
  * </ul>
@@ -27,7 +30,9 @@ public enum GateKind {
     ARCANE_SEAL(true, false, DndCharacter.WIZARD, DndCharacter.WARLOCK),
     GREATER_SEAL(false, true, DndCharacter.WIZARD),
     RUBBLE(true, false),
-    LOCKED_DOOR(true, false, DndCharacter.ROGUE);
+    LOCKED_DOOR(true, false, DndCharacter.ROGUE),
+    COLLAPSED_PASSAGE(true, false, DndCharacter.BARBARIAN, DndCharacter.FIGHTER, DndCharacter.PALADIN),
+    HEAVY_BOULDER(true, true, DndCharacter.BARBARIAN);
 
     /** Something anyone can do to get past (mine, dig, smash the key chest). */
     private final boolean bypass;
@@ -61,6 +66,8 @@ public enum GateKind {
         return switch (this) {
             case ARCANE_SEAL -> ObstacleTypes.LESSER_ARCANE_SEAL;
             case GREATER_SEAL -> ObstacleTypes.GREATER_ARCANE_SEAL;
+            case COLLAPSED_PASSAGE -> ObstacleTypes.COLLAPSED_PASSAGE;
+            case HEAVY_BOULDER -> ObstacleTypes.HEAVY_BOULDER;
             default -> null;
         };
     }

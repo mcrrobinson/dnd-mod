@@ -1,6 +1,8 @@
 package mattonfire.dnd.classes.Obstacles;
 
+import mattonfire.dnd.classes.Obstacles.types.WinchType;
 import net.minecraft.block.Block;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -49,5 +51,34 @@ public final class ObstaclePlacer {
             }
         }
         return placed;
+    }
+
+    /**
+     * Lays a chasm's retracted bridge: the top layer of the gap, {@code length} blocks from
+     * {@code nearCorner} along {@code along} and {@code width} blocks to its right. The pit under it is the
+     * structure's to dig. Returns the blocks placed.
+     */
+    public static int chasm(WorldAccess world, @Nullable BlockBox chunkBox, BlockPos nearCorner, Direction along,
+            int length, int width, Tier tier, boolean critical, long groupSeed) {
+        BlockPos far = nearCorner.offset(along, length - 1).offset(along.rotateYClockwise(), width - 1);
+        return box(world, chunkBox, nearCorner, far, ObstacleTypes.CHASM, tier, critical, groupSeed);
+    }
+
+    /**
+     * Places a winch (a portcullis winch or a bridge winch) linked to the obstacle group at {@code target}.
+     * The target must already be placed if it's in the same chunk; if it isn't (or isn't placed yet), the
+     * winch finds the nearest one on first use. Returns false if it was outside {@code chunkBox}.
+     */
+    public static boolean winch(WorldAccess world, @Nullable BlockBox chunkBox, BlockPos pos,
+            WinchType type, BlockPos target, Tier tier, long groupSeed) {
+        if (!place(world, chunkBox, pos, type, tier, false, groupSeed)) {
+            return false;
+        }
+        if (world.getBlockEntity(pos) instanceof ObstacleBlockEntity be) {
+            be.data().put(WinchType.TARGET_KEY,
+                    NbtHelper.fromBlockPos(target));
+            be.markDirty();
+        }
+        return true;
     }
 }

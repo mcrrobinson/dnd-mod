@@ -2,6 +2,12 @@
   "replace": false,
   "values": [
     "dndclasses:lesser_arcane_seal",
-    "dndclasses:greater_arcane_seal"
+    "dndclasses:greater_arcane_seal",
+    "dndclasses:collapsed_passage",
+    "dndclasses:portcullis",
+    "dndclasses:portcullis_winch",
+    "dndclasses:chasm",
+    "dndclasses:bridge_winch",
+    "dndclasses:crumbling_ledge"
   ]
 }

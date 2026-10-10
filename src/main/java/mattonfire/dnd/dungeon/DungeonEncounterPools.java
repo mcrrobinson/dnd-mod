@@ -40,7 +40,9 @@ import net.minecraft.util.JsonHelper;
  *   "boss": "lich",                                     // StructureBosses.BossType
  *   "champion": {"entity": "dndclasses:gelatinous_cube", "name": "dungeon.dndclasses.champion.ossuary_cube",
  *                "absorbed_loot": "minecraft:chests/simple_dungeon", "absorbed_stacks": 3,
- *                "chained": false},                  // true: starts chained, breaks free (Grimclaw)
+ *                "chained": false,                   // true: starts chained, breaks free (Grimclaw)
+ *                "base_health": 40,                  // optional: its max health before the champion multiplier
+ *                "gallery": false},                  // true: a mimic hiding among the gallery's chests (Mimic Matriarch)
  *   "tiers": {
  *     "1": [{"entity": "minecraft:zombie", "weight": 10}, {"entity": "minecraft:skeleton", "weight": 8}],
  *     "3": [{"entity": "minecraft:wither_skeleton", "weight": 3, "threat": 3}]
@@ -70,10 +72,13 @@ public final class DungeonEncounterPools {
     /**
      * The mid-boss: an ordinary mob made into a champion by {@link DungeonChampion}. A {@code chained}
      * champion (the Warren's Grimclaw) starts held in its chains and breaks free a moment later, or
-     * as soon as it's hurt ({@link DungeonChampion#tickChained}).
+     * as soon as it's hurt ({@link DungeonChampion#tickChained}). A {@code gallery} champion (the Ruin's
+     * Mimic Matriarch) waits disguised among the mid-boss room's chests with two more mimics
+     * ({@link DungeonChampion#tickMatriarch}). {@code baseHealth} (0 = the mob's own) is its max
+     * health before the champion multiplier.
      */
     public record Champion(EntityType<?> entity, String nameKey, @Nullable Identifier absorbedLoot, int absorbedStacks,
-                           boolean chained) {
+                           boolean chained, double baseHealth, boolean gallery) {
     }
 
     /** One theme's pool. */
@@ -158,7 +163,8 @@ public final class DungeonEncounterPools {
                     .orElseThrow(() -> new JsonParseException("unknown champion " + id));
             champion = new Champion(type, JsonHelper.getString(c, "name", type.getTranslationKey()),
                     c.has("absorbed_loot") ? new Identifier(JsonHelper.getString(c, "absorbed_loot")) : null,
-                    JsonHelper.getInt(c, "absorbed_stacks", 0), JsonHelper.getBoolean(c, "chained", false));
+                    JsonHelper.getInt(c, "absorbed_stacks", 0), JsonHelper.getBoolean(c, "chained", false),
+                    JsonHelper.getDouble(c, "base_health", 0.0D), JsonHelper.getBoolean(c, "gallery", false));
         }
         StructureBosses.BossType boss = StructureBosses.BossType.byName(JsonHelper.getString(json, "boss", "lich"));
         return new Pool(tiers, champion, boss);

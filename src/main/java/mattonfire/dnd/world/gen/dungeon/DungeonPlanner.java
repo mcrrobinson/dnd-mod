@@ -33,7 +33,8 @@ import net.minecraft.world.gen.structure.Structure;
  * 1-2 side rooms branch off: always a secret room, half the time a side vault.
  *
  * Every room sits in the middle of its cell(s); corridors fill the gaps between neighbouring rooms'
- * walls. Everything is on one floor, {@link #DEPTH} blocks below the lowest ground around.
+ * walls. Everything is on one floor, {@link #DEPTH} blocks below the lowest ground around (the
+ * Dwarven Ruin: deeper still, at y -30..0; see {@link DungeonTheme#deep()}).
  */
 public final class DungeonPlanner {
     public static final int CELL = 16;
@@ -543,6 +544,12 @@ public final class DungeonPlanner {
                 return Optional.empty();
             }
             int floorY = Math.min(lowest, seaLevel) - DEPTH;
+            if (theme.deep()) {
+                // The Dwarven Ruin: deep down, at a level of its own between y -30 and 0 (drawn from a
+                // random seeded by the position, so the site check gives the same answer every time).
+                Random depth = Random.create(this.context.seed() ^ chunk.toLong() * 0x9E3779B97F4A7C15L);
+                floorY = Math.min(floorY, MathHelper.nextBetween(depth, DungeonTheme.DEEP_MIN_Y, DungeonTheme.DEEP_MAX_Y));
+            }
             if (floorY - 4 <= this.context.world().getBottomY()) {
                 return Optional.empty();
             }

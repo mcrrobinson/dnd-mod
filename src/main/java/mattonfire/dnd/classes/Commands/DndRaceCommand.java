@@ -26,6 +26,7 @@ import net.minecraft.text.Text;
  * /dndrace get <player>
  * /dndrace set <player> <race> [ancestry]
  * /dndrace list
+ * /dndrace cooldowns <player> [reset]   (Relentless Endurance, Hellish Rebuke and Breath Weapon cooldowns)
  *
  * Operator control of races. Setting "none" clears the race and reopens the race picker.
  */
@@ -60,7 +61,32 @@ public final class DndRaceCommand {
                                                         builder))
                                                 .executes(context -> set(context,
                                                         StringArgumentType.getString(context, "ancestry")))))))
+                .then(CommandManager.literal("cooldowns")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(context -> cooldowns(context, false))
+                                .then(CommandManager.literal("reset")
+                                        .executes(context -> cooldowns(context, true)))))
                 .then(CommandManager.literal("list").executes(DndRaceCommand::list)));
+    }
+
+    private static int cooldowns(CommandContext<ServerCommandSource> context, boolean reset)
+            throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        if (reset) {
+            mattonfire.dnd.classes.Race.RaceTraits.reset(player);
+            mattonfire.dnd.classes.Race.BreathWeapon.reset(player);
+        }
+        long relentless = mattonfire.dnd.classes.Race.RaceTraits.relentlessRemaining(player);
+        long rebuke = mattonfire.dnd.classes.Race.RaceTraits.rebukeRemaining(player);
+        long breath = mattonfire.dnd.classes.Race.BreathWeapon.remainingTicks(player);
+        context.getSource().sendFeedback(Text.literal(player.getEntityName() + (reset ? " (reset)" : "")
+                + ": Relentless Endurance " + seconds(relentless) + ", Hellish Rebuke " + seconds(rebuke)
+                + ", Breath Weapon " + seconds(breath)), true);
+        return 1;
+    }
+
+    private static String seconds(long ticks) {
+        return ticks <= 0 ? "ready" : (ticks + 19) / 20 + " s";
     }
 
     private static String describe(ServerPlayerEntity player) {

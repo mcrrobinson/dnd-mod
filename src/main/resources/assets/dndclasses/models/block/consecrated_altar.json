@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "side": "dndclasses:block/consecrated_altar_side",
+    "top": "dndclasses:block/consecrated_altar_top",
+    "bottom": "minecraft:block/polished_blackstone"
+  }
+}

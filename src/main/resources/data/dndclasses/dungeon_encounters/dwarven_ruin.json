@@ -1,0 +1,94 @@
+{
+    "boss": "beholder",
+    "champion": {
+        "entity": "dndclasses:mimic",
+        "name": "dungeon.dndclasses.champion.mimic_matriarch",
+        "base_health": 40,
+        "gallery": true
+    },
+    "tiers": {
+        "2": [
+            {
+                "entity": "minecraft:skeleton",
+                "weight": 8,
+                "initialize": false,
+                "nbt": "{CustomName:'{\"translate\":\"dungeon.dndclasses.dwarven_ruin.revenant\"}',HandItems:[{id:\"minecraft:iron_axe\",Count:1b},{}],ArmorItems:[{},{},{id:\"minecraft:chainmail_chestplate\",Count:1b},{id:\"minecraft:iron_helmet\",Count:1b}],HandDropChances:[0f,0f],ArmorDropChances:[0f,0f,0f,0f]}"
+            },
+            {
+                "entity": "minecraft:skeleton",
+                "weight": 5,
+                "initialize": false,
+                "nbt": "{CustomName:'{\"translate\":\"dungeon.dndclasses.dwarven_ruin.bowman\"}',HandItems:[{id:\"minecraft:bow\",Count:1b},{}],ArmorItems:[{},{},{},{id:\"minecraft:iron_helmet\",Count:1b}],HandDropChances:[0.085f,0f],ArmorDropChances:[0f,0f,0f,0f]}"
+            },
+            {
+                "entity": "minecraft:cave_spider",
+                "weight": 6
+            },
+            {
+                "entity": "dndclasses:gelatinous_cube",
+                "weight": 2
+            },
+            {
+                "entity": "dndclasses:mimic",
+                "weight": 1,
+                "nbt": "{Dormant:0b}"
+            }
+        ],
+        "3": [
+            {
+                "entity": "minecraft:skeleton",
+                "weight": 8,
+                "initialize": false,
+                "nbt": "{CustomName:'{\"translate\":\"dungeon.dndclasses.dwarven_ruin.revenant\"}',HandItems:[{id:\"minecraft:iron_axe\",Count:1b},{}],ArmorItems:[{id:\"minecraft:iron_boots\",Count:1b},{},{id:\"minecraft:iron_chestplate\",Count:1b},{id:\"minecraft:iron_helmet\",Count:1b}],HandDropChances:[0f,0f],ArmorDropChances:[0f,0f,0f,0f]}",
+                "threat": 2
+            },
+            {
+                "entity": "minecraft:skeleton",
+                "weight": 5,
+                "initialize": false,
+                "nbt": "{CustomName:'{\"translate\":\"dungeon.dndclasses.dwarven_ruin.bowman\"}',HandItems:[{id:\"minecraft:bow\",Count:1b},{}],ArmorItems:[{},{},{id:\"minecraft:chainmail_chestplate\",Count:1b},{id:\"minecraft:iron_helmet\",Count:1b}],HandDropChances:[0.085f,0f],ArmorDropChances:[0f,0f,0f,0f]}"
+            },
+            {
+                "entity": "minecraft:cave_spider",
+                "weight": 6
+            },
+            {
+                "entity": "dndclasses:gelatinous_cube",
+                "weight": 3
+            },
+            {
+                "entity": "dndclasses:mimic",
+                "weight": 2,
+                "nbt": "{Dormant:0b}"
+            }
+        ],
+        "4": [
+            {
+                "entity": "minecraft:skeleton",
+                "weight": 8,
+                "initialize": false,
+                "nbt": "{CustomName:'{\"translate\":\"dungeon.dndclasses.dwarven_ruin.revenant\"}',HandItems:[{id:\"minecraft:diamond_axe\",Count:1b},{}],ArmorItems:[{id:\"minecraft:iron_boots\",Count:1b},{id:\"minecraft:iron_leggings\",Count:1b},{id:\"minecraft:iron_chestplate\",Count:1b},{id:\"minecraft:iron_helmet\",Count:1b}],HandDropChances:[0f,0f],ArmorDropChances:[0f,0f,0f,0f]}",
+                "threat": 2.5
+            },
+            {
+                "entity": "minecraft:skeleton",
+                "weight": 5,
+                "initialize": false,
+                "nbt": "{CustomName:'{\"translate\":\"dungeon.dndclasses.dwarven_ruin.bowman\"}',HandItems:[{id:\"minecraft:bow\",Count:1b},{}],ArmorItems:[{},{},{id:\"minecraft:iron_chestplate\",Count:1b},{id:\"minecraft:iron_helmet\",Count:1b}],HandDropChances:[0.085f,0f],ArmorDropChances:[0f,0f,0f,0f]}"
+            },
+            {
+                "entity": "minecraft:cave_spider",
+                "weight": 5
+            },
+            {
+                "entity": "dndclasses:gelatinous_cube",
+                "weight": 4
+            },
+            {
+                "entity": "dndclasses:mimic",
+                "weight": 3,
+                "nbt": "{Dormant:0b}"
+            }
+        ]
+    }
+}

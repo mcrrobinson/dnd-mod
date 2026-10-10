@@ -225,6 +225,7 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
         DownedClient.register();
+        mattonfire.dnd.classes.Client.Hud.DownedHud.register();
         StabiliseClient.register();
         mattonfire.dnd.classes.Client.Hud.SaveLaneHud.register();
         mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();

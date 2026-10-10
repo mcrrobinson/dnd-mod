@@ -13,10 +13,16 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import mattonfire.dnd.dungeon.DungeonRegistry;
+import mattonfire.dnd.world.gen.dungeon.DungeonTheme;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.World;
 
 /**
- * The jobs hobbits pin to the tavern's bounty board. Each is either a hunt (slay a number of
- * creatures in an entity type tag) or an expedition (set foot inside a structure). Which
+ * The jobs hobbits pin to the tavern's bounty board. Each is a hunt (slay a number of
+ * creatures in an entity type tag), an expedition (set foot inside a structure) or a dungeon
+ * clearance (clear the dungeon the notice was bound to when taken, see {@link DungeonBounties}). Which
  * creatures count is data: the {@code dndclasses:goblins}, {@code dndclasses:wyverns} and
  * {@code dndclasses:bounty/*} entity type tags.
  */
@@ -30,7 +36,11 @@ public enum Bounty {
     BARROW_WIGHTS("barrow_wights", hunt("bounty/undead"), 15, 6, Tier.MINOR, 25, 40, 10),
     BRIGANDS("brigands", hunt("bounty/brigands"), 5, 10, Tier.MINOR, 30, 60, 6),
     DWARF_FORTRESS("dwarf_fortress", explore("dwarven_fortress"), 1, 10, Tier.MAJOR, 40, 100, 6),
-    DRAGON_LAIR("dragon_lair", explore("dragon_lair"), 1, 14, Tier.MAJOR, 50, 120, 3);
+    DRAGON_LAIR("dragon_lair", explore("dragon_lair"), 1, 14, Tier.MAJOR, 50, 120, 3),
+    // Dungeon bounties: posted only if a structure of that theme is registered (see isAvailable)
+    CLEAR_BARROW("clear_barrow", DungeonTheme.CRYPT, 14, 60, 150, 4),
+    SMOKE_WARREN("smoke_warren", DungeonTheme.GOBLIN_WARREN, 16, 70, 180, 4),
+    LOST_HOLD("lost_hold", DungeonTheme.DWARVEN_RUIN, 20, 90, 220, 3);
 
     /** How generous the spoils are: which loot table the reward is rolled from. */
     public enum Tier {
@@ -49,7 +59,10 @@ public enum Bounty {
     public final TagKey<EntityType<?>> targets;
     @Nullable
     public final RegistryKey<Structure> destination;
-    /** Kills needed for a hunt; 1 for an expedition. */
+    /** For a dungeon clearance: the theme of dungeon to clear. */
+    @Nullable
+    public final DungeonTheme dungeon;
+    /** Kills needed for a hunt; 1 for an expedition or a clearance. */
     public final int count;
     public final int emeralds;
     public final Tier tier;
@@ -61,18 +74,24 @@ public enum Bounty {
     public final int weight;
 
     Bounty(String id, TagKey<EntityType<?>> targets, int count, int emeralds, Tier tier, int xp, int classXp, int weight) {
-        this(id, targets, null, count, emeralds, tier, xp, classXp, weight);
+        this(id, targets, null, null, count, emeralds, tier, xp, classXp, weight);
     }
 
     Bounty(String id, RegistryKey<Structure> destination, int count, int emeralds, Tier tier, int xp, int classXp, int weight) {
-        this(id, null, destination, count, emeralds, tier, xp, classXp, weight);
+        this(id, null, destination, null, count, emeralds, tier, xp, classXp, weight);
     }
 
-    Bounty(String id, @Nullable TagKey<EntityType<?>> targets, @Nullable RegistryKey<Structure> destination, int count,
-           int emeralds, Tier tier, int xp, int classXp, int weight) {
+    /** A dungeon clearance: always MAJOR, one dungeon. */
+    Bounty(String id, DungeonTheme dungeon, int emeralds, int xp, int classXp, int weight) {
+        this(id, null, null, dungeon, 1, emeralds, Tier.MAJOR, xp, classXp, weight);
+    }
+
+    Bounty(String id, @Nullable TagKey<EntityType<?>> targets, @Nullable RegistryKey<Structure> destination,
+           @Nullable DungeonTheme dungeon, int count, int emeralds, Tier tier, int xp, int classXp, int weight) {
         this.id = id;
         this.targets = targets;
         this.destination = destination;
+        this.dungeon = dungeon;
         this.count = count;
         this.emeralds = emeralds;
         this.tier = tier;
@@ -91,6 +110,27 @@ public enum Bounty {
 
     public boolean isHunt() {
         return this.targets != null;
+    }
+
+    /** A dungeon clearance: bound to one dungeon when taken, done when it's cleared. */
+    public boolean isDungeon() {
+        return this.dungeon != null;
+    }
+
+    /**
+     * Whether this bounty can be posted in {@code world}: a dungeon clearance needs a registered
+     * dungeon structure of its theme; every other bounty always can.
+     */
+    public boolean isAvailable(World world) {
+        if (this.dungeon == null) {
+            return true;
+        }
+        return world instanceof ServerWorld server && DungeonRegistry.isRegistered(server, this.dungeon);
+    }
+
+    /** Emeralds paid for this bounty against a dungeon of {@code challengeTier}: +25% per tier over I. */
+    public int emeraldsFor(int challengeTier) {
+        return Math.round(this.emeralds * (1.0F + 0.25F * (Math.max(1, challengeTier) - 1)));
     }
 
     public Text title() {
@@ -113,7 +153,13 @@ public enum Bounty {
 
     /** Draws {@code n} different bounties, weighted by {@link #weight}. */
     public static List<Bounty> draw(Random random, int n) {
+        return draw(random, n, bounty -> true);
+    }
+
+    /** Draws {@code n} different bounties out of those that pass {@code available}, weighted by {@link #weight}. */
+    public static List<Bounty> draw(Random random, int n, Predicate<Bounty> available) {
         List<Bounty> pool = new ArrayList<>(List.of(values()));
+        pool.removeIf(available.negate());
         List<Bounty> drawn = new ArrayList<>();
         while (drawn.size() < n && !pool.isEmpty()) {
             int total = pool.stream().mapToInt(b -> b.weight).sum();

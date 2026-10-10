@@ -20,6 +20,12 @@ import org.jetbrains.annotations.Nullable;
  * <li>{@link #COLLAPSED_PASSAGE}: a Collapsed Passage obstacle. Barbarians and Fighters (and Paladins) heave it
  * clear with Athletics; anyone can mine through it and risk a cave-in.</li>
  * <li>{@link #HEAVY_BOULDER}: a Heavy Boulder. Barbarians only (TNT shifts it, loudly): side vaults only.</li>
+ * <li>{@link #HOLY_WARD}: a Holy Ward. Clerics (and Paladins) open it with Religion; anyone can douse it with
+ * three thrown Potions of Healing.</li>
+ * <li>{@link #OSSUARY_GATE}: an Ossuary Gate. Necromancers command it open; anyone can smash it, and fight the
+ * skeletons that rise from it.</li>
+ * <li>{@link #BLOOD_SEAL}: a Blood Seal. A Blood Hunter opens it for 2 hearts; anyone else pays 8, shared by up to
+ * three players. A lone player with little health can't pay it: side vaults only.</li>
  * <li>{@link #LOCKED_DOOR}: an iron door. Its lever "key" is in a locked chest by the door: a Rogue
  * picks the lock, anyone else smashes the chest (and may break a lever or two).</li>
  * </ul>
@@ -32,7 +38,10 @@ public enum GateKind {
     RUBBLE(true, false),
     LOCKED_DOOR(true, false, DndCharacter.ROGUE),
     COLLAPSED_PASSAGE(true, false, DndCharacter.BARBARIAN, DndCharacter.FIGHTER, DndCharacter.PALADIN),
-    HEAVY_BOULDER(true, true, DndCharacter.BARBARIAN);
+    HEAVY_BOULDER(true, true, DndCharacter.BARBARIAN),
+    HOLY_WARD(true, false, DndCharacter.CLERIC, DndCharacter.PALADIN),
+    OSSUARY_GATE(true, false, DndCharacter.NECROMANCER),
+    BLOOD_SEAL(true, true, DndCharacter.BLOODHUNTER);
 
     /** Something anyone can do to get past (mine, dig, smash the key chest). */
     private final boolean bypass;
@@ -68,6 +77,9 @@ public enum GateKind {
             case GREATER_SEAL -> ObstacleTypes.GREATER_ARCANE_SEAL;
             case COLLAPSED_PASSAGE -> ObstacleTypes.COLLAPSED_PASSAGE;
             case HEAVY_BOULDER -> ObstacleTypes.HEAVY_BOULDER;
+            case HOLY_WARD -> ObstacleTypes.HOLY_WARD;
+            case OSSUARY_GATE -> ObstacleTypes.OSSUARY_GATE;
+            case BLOOD_SEAL -> ObstacleTypes.BLOOD_SEAL;
             default -> null;
         };
     }

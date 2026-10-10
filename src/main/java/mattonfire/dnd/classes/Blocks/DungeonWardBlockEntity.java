@@ -397,10 +397,7 @@ public class DungeonWardBlockEntity extends BlockEntity {
         } else {
             List<String> extra = new ArrayList<>();
             if (this.role == RoomRole.CHAMPION) {
-                MobEntity champion = this.spawnChampion(world, dungeon, room);
-                if (champion != null) {
-                    spawned.add(champion);
-                }
+                spawned.addAll(this.spawnChampion(world, dungeon, room));
             }
             EncounterBuilder.Spawned encounter = EncounterBuilder.spawn(world, dungeon, room, this.spawnPoints, party,
                     trigger.getBlockPos(), extra);
@@ -452,7 +449,10 @@ public class DungeonWardBlockEntity extends BlockEntity {
     private MobEntity spawnBoss(ServerWorld world, DungeonState dungeon, ServerPlayerEntity trigger) {
         DungeonEncounterPools.Pool pool = DungeonEncounterPools.get(dungeon.theme());
         StructureBosses.BossType type = pool != null ? pool.boss() : StructureBosses.BossType.LICH;
-        BlockPos stand = this.standingSpot(world, this.box.getCenter().withY(dungeon.floorY() + 1));
+        // The Beholder floats in the middle of the Ruin's dome; everyone else stands on the dais
+        BlockPos dome = mattonfire.dnd.world.gen.dungeon.BossRoomPiece.domeCentre(this.box, dungeon.floorY());
+        BlockPos stand = type == StructureBosses.BossType.BEHOLDER ? dome
+                : this.standingSpot(world, this.box.getCenter().withY(dungeon.floorY() + 1));
         // The phylactery waits on the reliquary's altar (a Crypt's side room off this one); with no
         // reliquary, at the spawn point furthest from the way in.
         BlockPos reliquary = reliquarySpot(dungeon);
@@ -468,6 +468,10 @@ public class DungeonWardBlockEntity extends BlockEntity {
             if (reliquary != null && mob instanceof mattonfire.dnd.entity.LichEntity lich) {
                 // Home is the boss room, and the leash reaches across it and into the reliquary.
                 lich.setLair(stand, lairLeash(stand, reliquary));
+            }
+            if (mob instanceof mattonfire.dnd.entity.BeholderEntity beholder) {
+                // Home is the middle of the dome, and it stays inside it (well clear of the doorways)
+                beholder.setHome(dome, BEHOLDER_HOME_RADIUS);
             }
         });
     }
@@ -492,21 +496,71 @@ public class DungeonWardBlockEntity extends BlockEntity {
         return Math.max(LAIR_LEASH_MIN, Math.sqrt(lair.getSquaredDistance(phylactery)) + LAIR_LEASH_MARGIN);
     }
 
-    @Nullable
-    private MobEntity spawnChampion(ServerWorld world, DungeonState dungeon, DungeonState.Room room) {
+    /** How far from the middle of the Ruin's dome its Beholder may go (the dome's radius, less room for its bulk). */
+    public static final double BEHOLDER_HOME_RADIUS = mattonfire.dnd.world.gen.dungeon.BossRoomPiece.DOME_RADIUS - 4;
+
+    /** The champion (first) and anything that comes with it (the Matriarch's mimics); empty if the theme has none. */
+    private List<Entity> spawnChampion(ServerWorld world, DungeonState dungeon, DungeonState.Room room) {
         DungeonEncounterPools.Pool pool = DungeonEncounterPools.get(dungeon.theme());
         if (pool == null || pool.champion() == null) {
-            return null;
+            return List.of();
         }
         DungeonEncounterPools.Champion champion = pool.champion();
+        if (champion.gallery()) {
+            List<Entity> gallery = this.spawnGallery(world, dungeon, room, champion);
+            if (!gallery.isEmpty()) {
+                return gallery;
+            }
+        }
         Encounter.Spawn spawn = new Encounter.Spawn(champion.entity(), 1, 1, 1.0F, new NbtCompound(), true, List.of());
         Entity entity = EncounterBuilder.spawnOne(world, spawn, this.box.getCenter().withY(dungeon.floorY() + 1),
                 EncounterBuilder.tags(dungeon.startKey(), room.id()));
         if (!(entity instanceof MobEntity mob)) {
-            return null;
+            return List.of();
         }
         DungeonChampion.make(world, mob, champion, this.partySize);
-        return mob;
+        return List.of(mob);
+    }
+
+    /**
+     * The Ruin's gallery: the Matriarch and {@code GALLERY_MIMICS - 1} ordinary mimics, all disguised as
+     * chests, in the gallery spots generation left empty ({@code ChampionRoomPiece.gallerySpots}), with
+     * the gallery's loot. Empty if the room has no free spots (not a gallery), so the champion comes the
+     * usual way.
+     */
+    private List<Entity> spawnGallery(ServerWorld world, DungeonState dungeon, DungeonState.Room room,
+                                      DungeonEncounterPools.Champion champion) {
+        List<mattonfire.dnd.world.gen.dungeon.ChampionRoomPiece.GallerySpot> free = new ArrayList<>();
+        for (var spot : mattonfire.dnd.world.gen.dungeon.ChampionRoomPiece.gallerySpots(this.box, dungeon.floorY())) {
+            if (world.getBlockState(spot.pos()).isAir()) {
+                free.add(spot);
+            }
+        }
+        if (free.isEmpty()) {
+            return List.of();
+        }
+        java.util.Collections.shuffle(free, new java.util.Random(world.random.nextLong()));
+        int count = Math.min(free.size(), mattonfire.dnd.world.gen.dungeon.ChampionRoomPiece.GALLERY_MIMICS);
+        net.minecraft.util.Identifier loot = mattonfire.dnd.dungeon.DungeonLoot.chestTable(dungeon.theme(), "gallery", dungeon.tier());
+        List<Entity> spawned = new ArrayList<>();
+        for (int i = 0; i < count; i++) {
+            var spot = free.get(i);
+            mattonfire.dnd.entity.MimicEntity mimic = mattonfire.dnd.entity.MimicEntity.disguised(world, spot.pos(), spot.facing(), loot);
+            if (mimic == null) {
+                continue;
+            }
+            EncounterBuilder.tags(dungeon.startKey(), room.id()).forEach(mimic::addCommandTag);
+            if (i == 0) {
+                DungeonChampion.make(world, mimic, champion, this.partySize);
+                mimic.addCommandTag(DungeonChampion.MATRIARCH_TAG);
+            }
+            world.spawnEntity(mimic);
+            spawned.add(mimic);
+        }
+        DnDClasses.LOGGER.info("[Dungeon] room #{} gallery: the {} and {} mimic(s) hide among the chests at {}", this.roomId,
+                champion.entity().getUntranslatedName(), spawned.size() - 1,
+                free.subList(0, count).stream().map(s -> s.pos().toShortString()).toList());
+        return spawned;
     }
 
     /** T3+: bosses hit 20% harder. */

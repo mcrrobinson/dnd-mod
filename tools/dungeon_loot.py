@@ -6,7 +6,9 @@ Writes into src/main/resources/data/dndclasses/loot_tables/:
   chests/dungeon/vault_t<tier>.json            the Hoard Coffer's first roll per player
   chests/dungeon/vault_salvage.json            the Hoard Coffer's roll after a repopulation
   chests/dungeon/<theme>_vault_t<tier>.json    the theme's extra on a full coffer roll (Crypt: Staff of Ice at III-IV;
-                                               Goblin Warren: the Warlord's war chest, a goblin camp chief's chest)
+                                               Goblin Warren: the Warlord's war chest, a goblin camp chief's chest;
+                                               Dwarven Ruin: Staff of Lightning, a dwarven heirloom)
+  chests/dungeon/ruin_gallery_t<tier>.json     the five real chests of the Ruin's Mimic Matriarch gallery
   gameplay/dungeon_elite_t<tier>.json          the extra roll a Veteran drops
 
 Chests carry their tier in the table name, so vanilla opening works and Lockpicking.dcFor can read
@@ -161,7 +163,11 @@ def vault(t):
 
 
 # The theme's extra on a full Hoard Coffer roll: (item, chance) from this tier on (design 2.9)
-THEME_STAFF = {"crypt": ("dndclasses:staff_of_ice", 0.15, 3)}
+THEME_STAFF = {"crypt": ("dndclasses:staff_of_ice", 0.15, 3), "ruin": ("dndclasses:staff_of_lightning", 0.15, 1)}
+# Dwarven heirlooms (the racial gear): one piece, by chance, on a full coffer roll and in the gallery
+HEIRLOOMS = [("dndclasses:dwarven_waraxe", 3), ("dndclasses:dwarven_plate_helmet", 2), ("dndclasses:dwarven_plate_chestplate", 1),
+             ("dndclasses:dwarven_plate_leggings", 1), ("dndclasses:dwarven_plate_boots", 2)]
+THEME_HEIRLOOM = {"ruin": 0.25}
 # The theme's plunder on a full Hoard Coffer roll, every tier: one roll of another table
 THEME_PLUNDER = {"warren": "dndclasses:chests/goblin_camp"}
 
@@ -171,12 +177,33 @@ def theme_vault(theme, t):
     pools = []
     if theme in THEME_PLUNDER:
         pools.append({"rolls": 1, "entries": [ref(THEME_PLUNDER[theme])]})
+    if theme in THEME_HEIRLOOM:
+        pools.append(heirloom_pool(THEME_HEIRLOOM[theme]))
     if theme in THEME_STAFF:
         staff, chance, lo = THEME_STAFF[theme]
         if t >= lo:
             pools.append({"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": chance}],
                           "entries": [{"type": "minecraft:item", "name": staff}]})
     return table("minecraft:chest", pools)
+
+
+def heirloom_pool(chance):
+    """One dwarven heirloom (a Dwarven Waraxe or a piece of Dwarven Plate), with {chance}."""
+    return {"rolls": 1, "conditions": [{"condition": "minecraft:random_chance", "chance": chance}],
+            "entries": [item(n, w) for n, w in HEIRLOOMS]}
+
+
+def gallery(theme, t):
+    """One of the five real chests in the Ruin's gallery: lighter than a secret room, now and then an heirloom."""
+    entries = flavour(theme) + [
+        item("minecraft:gold_ingot", 12, 1, scale(t, 3)),
+        item("minecraft:emerald", 8, 1, scale(t, 2)),
+        item("minecraft:iron_ingot", 10, 1, scale(t, 3)),
+        item("minecraft:diamond", 2 + t, 1, 1),
+        book(t, 4),
+        potion("minecraft:healing", 6),
+    ]
+    return table("minecraft:chest", [{"rolls": rolls(2, 4), "entries": entries}, heirloom_pool(0.04 + 0.02 * t)])
 
 
 def tier_condition(lo, hi=4):
@@ -234,8 +261,9 @@ def main():
             write(f"chests/dungeon/{theme}_encounter_t{t}", encounter(theme, t))
             write(f"chests/dungeon/{theme}_secret_t{t}", secret(theme, t))
             write(f"chests/dungeon/{theme}_side_vault_t{t}", side_vault(theme, t))
+        write(f"chests/dungeon/ruin_gallery_t{t}", gallery("ruin", t))
         write(f"chests/dungeon/vault_t{t}", vault(t))
-        for theme in sorted(set(THEME_STAFF) | set(THEME_PLUNDER)):
+        for theme in sorted(set(THEME_STAFF) | set(THEME_PLUNDER) | set(THEME_HEIRLOOM)):
             write(f"chests/dungeon/{theme}_vault_t{t}", theme_vault(theme, t))
         write(f"gameplay/dungeon_elite_t{t}", elite(t))
     write("chests/dungeon/vault_salvage", salvage())

@@ -26,6 +26,8 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Dragon lair](../structures/dragon-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Storm-Chaser Boots 6% |
 | [Frost lair](../structures/frost-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Frostbrand 8% |
 | [Beholder](../bosses/beholder.md) lair chest | 1 roll: Rare (40) / Very Rare (45) / Legendary (15) | Immovable Rod 4%, Eye of the Tyrant 2% |
+| [Dragon Temple](../structures/dragon-temples.md) reliquary (`chests/dragon_temple_reliquary`) | 1 roll: Rare (90) / Very Rare (10) | its Staffs of Fire, Ice and Lightning stay at 4% each |
+| Dragon Temple cell chests and storeroom barrels (`chests/dragon_temple_cell`) | 8%: Uncommon | |
 | [Orc stronghold](../structures/orc-strongholds.md) yurt chests (`chests/orc_stronghold_yurt`) | 5%: Uncommon | |
 | Orc stronghold armoury (`chests/orc_stronghold_armory`) | 15%: Uncommon (75) / Rare (25) | |
 | Orc stronghold hoard (`chests/orc_stronghold_hoard`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | |

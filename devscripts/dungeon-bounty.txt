@@ -1,0 +1,51 @@
+# Dungeon bounty: take "Clear the Barrow" from a board next to the dev world's natural crypt (entrance near
+# 247 150 983, floor y=42), get a map to it, clear it with /dungeon clear while inside, and claim the reward.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dungeon-bounty.txt
+# Check in logs/latest.log: "[Bounty] clear_barrow bound to dungeon ...", a filled_map with DungeonStartKey in the
+# Inventory dump, "[Bounty] ... completed clear_barrow", the notice's Progress:1, then emeralds after the claim
+# (18 at Challenge II, 21 at III). Screenshots: dungeon-bounty-*.png.
+wait 40
+closescreen
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set noon
+/gamemode spectator
+/tp @s 247 150 983
+wait 300
+/dungeon reset
+/gamemode survival
+/effect give @s minecraft:resistance 9999 4 true
+/effect give @s minecraft:night_vision 9999 0 true
+/clear @s
+/fill 260 149 960 266 149 966 minecraft:stone
+/fill 260 150 960 266 153 966 minecraft:air
+/fill 260 150 966 266 152 966 minecraft:oak_planks
+/setblock 263 151 965 dndclasses:bounty_board[facing=north]
+/data merge block 263 151 965 {Day:0L,Posted:["clear_barrow","clear_barrow","clear_barrow"],Rumour:0b}
+/tp @s 263.5 150 963.2 0 0
+wait 10
+# 1. Take the notice: the board locates the nearest uncleared crypt and pins a map to the notice
+use
+wait 20
+screenshot dungeon-bounty-take
+/data get entity @s Inventory
+hotbar 1
+wait 10
+screenshot dungeon-bounty-map
+# 2. Clear the dungeon from inside it
+/tp @s 247 43 967 90 0
+wait 40
+/dungeon clear
+wait 10
+/data get entity @s Inventory[{id:"dndclasses:bounty_notice"}]
+# 3. Hand it in
+/tp @s 263.5 150 963.2 0 0
+hotbar 0
+wait 10
+use
+wait 10
+screenshot dungeon-bounty-claim
+/data get entity @s Inventory
+/clear @s minecraft:emerald 0
+quit

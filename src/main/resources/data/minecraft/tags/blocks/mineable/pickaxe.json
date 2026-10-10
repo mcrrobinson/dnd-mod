@@ -4,6 +4,8 @@
     "dndclasses:fast_brewing_stand",
     "dndclasses:lesser_arcane_seal",
     "dndclasses:collapsed_passage",
-    "dndclasses:portcullis"
+    "dndclasses:portcullis",
+    "dndclasses:desecrated_altar",
+    "dndclasses:ossuary_gate"
   ]
 }

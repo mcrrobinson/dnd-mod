@@ -180,14 +180,22 @@ public final class SettlementGrudges {
 
     /** Every settlement guard (dwarf, Elf Warden or Dragonborn Templar) within {@code range} of {@code pos} drops its grudge against {@code player}. */
     public static void forgive(PlayerEntity player, BlockPos pos, double range) {
-        for (MobEntity guard : player.world.getEntitiesByClass(MobEntity.class, new Box(pos).expand(range),
+        forgive(player, new Box(pos).expand(range));
+    }
+
+    /** Every settlement guard in {@code area} drops its grudge against {@code player}. Returns how many did. */
+    public static int forgive(PlayerEntity player, Box area) {
+        int forgiven = 0;
+        for (MobEntity guard : player.world.getEntitiesByClass(MobEntity.class, area,
                 mob -> mob.isAlive() && (mob instanceof MountainDwarfEntity || mob instanceof ElfWardenEntity
                         || mob instanceof DragonbornTemplarEntity))) {
             net.minecraft.entity.mob.Angerable angerable = (net.minecraft.entity.mob.Angerable) guard;
             if (angerable.shouldAngerAt(player) || guard.getTarget() == player) {
                 angerable.stopAnger();
+                forgiven++;
             }
         }
+        return forgiven;
     }
 
     /**

@@ -23,7 +23,6 @@ public class OwlbearChargeGoal extends Goal {
     private static final int WINDUP_TICKS = 20;
     private static final int MAX_CHARGE_TICKS = 30;
     private static final double CHARGE_SPEED = 0.65D;
-    private static final int COOLDOWN = 120;
     private static final float DAMAGE_MULTIPLIER = 1.5F;
     private static final double KNOCKBACK = 1.5D;
     private static final int STUN_TICKS = 50;
@@ -166,6 +165,6 @@ public class OwlbearChargeGoal extends Goal {
     public void stop() {
         this.owlbear.setCharging(false);
         this.owlbear.setVelocity(this.owlbear.getVelocity().multiply(0.3D, 1.0D, 0.3D));
-        this.nextChargeTime = this.owlbear.getWorld().getTime() + COOLDOWN;
+        this.nextChargeTime = this.owlbear.getWorld().getTime() + this.owlbear.chargeCooldown();
     }
 }

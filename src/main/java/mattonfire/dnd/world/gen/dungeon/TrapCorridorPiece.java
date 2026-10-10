@@ -61,7 +61,7 @@ public class TrapCorridorPiece extends DungeonPiece {
             }
         }
         this.traps(b);
-        if (CryptDressing.applies(this)) {
+        if (CryptDressing.applies(this) || WarrenDressing.applies(this)) {
             // Cobwebs along the top of the hall, out of the way of the darts
             for (int i = 1; i < length - 1; i++) {
                 for (int side : new int[]{2, 4}) {

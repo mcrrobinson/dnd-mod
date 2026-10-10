@@ -18,6 +18,9 @@ import net.minecraft.world.Heightmap;
  * over it, with a stone-lined passage (3 wide, under a stone lintel, with two tall door stones and a
  * capstone at its mouth) cut into one side, and a ring of {@value #BARROW_STONES} weathered standing
  * stones round it, some toppled.</li>
+ * <li>The Goblin Warren: a <b>cave mouth</b>, a rocky knoll heaped over the top of the stair, with a
+ * timber-shored tunnel into one side, a crude palisade of stakes round it (the goblin camp's, from
+ * {@code GoblinCampPiece}) with skull-topped gate posts where the trail comes in, and goblin totems.</li>
  * <li>Other themes (until their own tickets dress them): a ring of standing stones round the shaft top.</li>
  * </ul>
  */
@@ -54,7 +57,7 @@ public class EntrancePiece extends DungeonPiece {
     }
 
     private static BlockBox box(Info info, int cx, int cz, int top) {
-        if (info.theme() == DungeonTheme.CRYPT) {
+        if (info.theme() == DungeonTheme.CRYPT || info.theme() == DungeonTheme.GOBLIN_WARREN) {
             return new BlockBox(cx - BARROW_RADIUS, top - 8, cz - BARROW_RADIUS, cx + BARROW_RADIUS, top + 8, cz + BARROW_RADIUS);
         }
         return new BlockBox(cx - RADIUS, top - 2, cz - RADIUS, cx + RADIUS, top + 5, cz + RADIUS);
@@ -70,6 +73,8 @@ public class EntrancePiece extends DungeonPiece {
     protected void build(Builder b) {
         if (this.theme() == DungeonTheme.CRYPT && this.width() == 2 * BARROW_RADIUS + 1) {
             this.barrow(b);
+        } else if (this.theme() == DungeonTheme.GOBLIN_WARREN && this.width() == 2 * BARROW_RADIUS + 1) {
+            this.caveMouth(b);
         } else {
             this.ring(b);
         }
@@ -262,5 +267,235 @@ public class EntrancePiece extends DungeonPiece {
             return Integer.MIN_VALUE;
         }
         return b.world.getTopY(Heightmap.Type.OCEAN_FLOOR_WG, pos.getX(), pos.getZ()) - 1 - this.info.floorY();
+    }
+
+    // ---------------------------------------------------------------- the Goblin Warren's cave mouth
+
+    /** Palisade stakes stand this far from the middle of the shaft (the barrow's stone ring). */
+    private static final int PALISADE = STONE_RING;
+    /** Stakes are left out within this angle (degrees) either side of the trail into the mouth. */
+    private static final double TRAIL_GAP = 12.0D;
+    /** Wood for the stakes, as in the goblin camp's palisade. */
+    private static final net.minecraft.block.Block[] STAKES = {Blocks.SPRUCE_LOG, Blocks.SPRUCE_LOG, Blocks.OAK_LOG, Blocks.STRIPPED_SPRUCE_LOG};
+
+    private void caveMouth(Builder b) {
+        int ground = this.top - this.info.floorY();
+        int c = BARROW_RADIUS;
+        // As for the barrow: everything the layout depends on is drawn first, and every texture
+        // comes from a random of its own position, so each chunk builds the same knoll.
+        Direction mouth = Direction.fromHorizontal(b.random.nextInt(4));
+        long seed = b.random.nextLong();
+        this.knoll(b, ground, c, seed);
+        this.tunnel(b, ground, c, mouth, seed);
+        this.palisade(b, c, mouth, seed);
+        this.totems(b, c, mouth, seed);
+    }
+
+    /** A random of its own for one position, so a block looks the same whichever chunk builds it. */
+    private static Random at(long seed, int x, int y, int z) {
+        return Random.create(seed ^ (x * 341873128712L + y * 9_123_456_789L + z * 132897987541L));
+    }
+
+    private static BlockState rock(Random r) {
+        float f = r.nextFloat();
+        return (f < 0.45F ? Blocks.STONE : f < 0.7F ? Blocks.COBBLESTONE : f < 0.85F ? Blocks.MOSSY_COBBLESTONE
+                : Blocks.ANDESITE).getDefaultState();
+    }
+
+    /** The knoll's skin: scrubby, stony ground. */
+    private static BlockState knollTop(Random r) {
+        float f = r.nextFloat();
+        return (f < 0.35F ? Blocks.GRASS_BLOCK : f < 0.6F ? Blocks.COARSE_DIRT : f < 0.8F ? Blocks.MOSSY_COBBLESTONE
+                : Blocks.STONE).getDefaultState();
+    }
+
+    /**
+     * A rocky knoll the size of the barrow's mound, a block higher or lower here and there, heaped
+     * only into air, plants and water, and roofed over the shaft, so the stair is reached through the tunnel.
+     */
+    private void knoll(Builder b, int ground, int c, long seed) {
+        for (int x = 0; x < this.width(); x++) {
+            for (int z = 0; z < this.depth(); z++) {
+                int dx = x - c;
+                int dz = z - c;
+                Random r = at(seed, x, 0, z);
+                if (Math.max(Math.abs(dx), Math.abs(dz)) <= SHAFT) {
+                    b.set(x, ground + MOUND_TOP, z, b.palette.shell());
+                    b.set(x, ground + MOUND_TOP + 1, z, knollTop(r));
+                    continue;
+                }
+                int h = moundHeight(Math.sqrt(dx * dx + dz * dz));
+                if (h <= 0) {
+                    continue;
+                }
+                h = Math.max(1, h + r.nextInt(3) - 1);
+                for (int y = ground - 4; y <= ground + h; y++) {
+                    BlockState now = b.get(x, y, z);
+                    if (now == null) {
+                        break;
+                    }
+                    if (now.isAir() || now.isReplaceable() || !now.getFluidState().isEmpty()) {
+                        b.set(x, y, z, y == ground + h ? knollTop(r) : r.nextFloat() < 0.7F ? rock(r) : Blocks.DIRT.getDefaultState());
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * The tunnel into the knoll: 3 wide and {@value #PASSAGE_HEIGHT} high from the shaft out to
+     * {@value #PASSAGE_END} blocks, floored with trodden earth and walled and roofed with rock up to
+     * {@value #LINTEL_END}; then a timber frame (spruce posts under a log lintel, a skull on each
+     * post), then an open cut through the foot of the knoll.
+     */
+    private void tunnel(Builder b, int ground, int c, Direction dir, long seed) {
+        Direction side = dir.rotateYClockwise();
+        for (int t = SHAFT - 1; t <= PASSAGE_END; t++) {
+            for (int l = -2; l <= 2; l++) {
+                int x = c + dir.getOffsetX() * t + side.getOffsetX() * l;
+                int z = c + dir.getOffsetZ() * t + side.getOffsetZ() * l;
+                Random r = at(seed, x, 1, z);
+                boolean inside = Math.abs(l) <= 1;
+                if (inside) {
+                    if (t > SHAFT) {
+                        b.set(x, ground, z, (r.nextFloat() < 0.7F ? Blocks.COARSE_DIRT : Blocks.COBBLESTONE).getDefaultState());
+                    }
+                    for (int y = 1; y <= PASSAGE_HEIGHT; y++) {
+                        b.set(x, ground + y, z, Blocks.AIR.getDefaultState());
+                    }
+                } else if (t > SHAFT && t <= LINTEL_END) {
+                    for (int y = 0; y <= PASSAGE_HEIGHT; y++) {
+                        b.set(x, ground + y, z, rock(r));
+                    }
+                }
+                if (t > SHAFT && t <= LINTEL_END) {
+                    b.set(x, ground + PASSAGE_HEIGHT + 1, z, rock(r));
+                } else if (inside && t > LINTEL_END + 1) {
+                    for (int y = PASSAGE_HEIGHT + 1; y <= MOUND_TOP + 1; y++) {
+                        b.set(x, ground + y, z, Blocks.AIR.getDefaultState());
+                    }
+                }
+            }
+        }
+        // The timber frame at the mouth
+        int t = LINTEL_END + 1;
+        Direction.Axis across = side.getAxis();
+        for (int l = -2; l <= 2; l++) {
+            int x = c + dir.getOffsetX() * t + side.getOffsetX() * l;
+            int z = c + dir.getOffsetZ() * t + side.getOffsetZ() * l;
+            if (Math.abs(l) == 2) {
+                for (int y = 0; y <= PASSAGE_HEIGHT; y++) {
+                    b.set(x, ground + y, z, Blocks.SPRUCE_LOG.getDefaultState());
+                }
+                b.set(x, ground + PASSAGE_HEIGHT + 1, z, Blocks.SPRUCE_LOG.getDefaultState());
+                b.set(x, ground + PASSAGE_HEIGHT + 2, z, Blocks.SKELETON_SKULL.getDefaultState()
+                        .with(net.minecraft.block.SkullBlock.ROTATION, dir.getHorizontal() * 4 % 16));
+            } else {
+                b.set(x, ground + PASSAGE_HEIGHT + 1, z, Blocks.SPRUCE_LOG.getDefaultState()
+                        .with(net.minecraft.block.PillarBlock.AXIS, across));
+            }
+        }
+        // A lantern hangs where the tunnel meets the stair
+        int x = c + dir.getOffsetX() * SHAFT + side.getOffsetX() * 2;
+        int z = c + dir.getOffsetZ() * SHAFT + side.getOffsetZ() * 2;
+        b.set(x, ground + PASSAGE_HEIGHT, z, b.palette.light(true));
+    }
+
+    /**
+     * A crude palisade of stakes {@value #PALISADE} blocks out, each standing on the ground where it
+     * is, with gaps, and a gateway where the trail comes in to the mouth: two tall gate posts, each
+     * topped with a skull.
+     */
+    private void palisade(Builder b, int c, Direction mouth, long seed) {
+        double trail = Math.atan2(mouth.getOffsetZ(), mouth.getOffsetX());
+        java.util.Set<Long> done = new java.util.HashSet<>();
+        for (int i = 0; i < 96; i++) {
+            double angle = i * Math.PI * 2.0D / 96;
+            int x = c + (int) Math.round(Math.cos(angle) * PALISADE);
+            int z = c + (int) Math.round(Math.sin(angle) * PALISADE);
+            if (!done.add((long) x << 32 | (z & 0xFFFFFFFFL))) {
+                continue;
+            }
+            double off = Math.abs(net.minecraft.util.math.MathHelper.wrapDegrees(Math.toDegrees(angle - trail)));
+            Random r = at(seed, x, 2, z);
+            float f = r.nextFloat();
+            if (off < TRAIL_GAP || f < 0.15F) {
+                continue;
+            }
+            int ground = this.groundAt(b, x, z);
+            if (ground == Integer.MIN_VALUE) {
+                continue;
+            }
+            if (f < 0.3F) {
+                for (int y = 1; y <= 2; y++) {
+                    b.set(x, ground + y, z, Blocks.SPRUCE_FENCE.getDefaultState());
+                }
+                continue;
+            }
+            int height = 2 + r.nextInt(2);
+            BlockState stake = STAKES[r.nextInt(STAKES.length)].getDefaultState();
+            for (int y = 1; y <= height; y++) {
+                b.set(x, ground + y, z, stake);
+            }
+            float topper = r.nextFloat();
+            if (topper < 0.06F) {
+                b.set(x, ground + height + 1, z, Blocks.TORCH.getDefaultState());
+            } else if (topper < 0.35F) {
+                b.set(x, ground + height + 1, z, Blocks.SPRUCE_FENCE.getDefaultState());
+            }
+        }
+        // The gate posts either side of the trail
+        Direction side = mouth.rotateYClockwise();
+        for (int l : new int[]{-2, 2}) {
+            int x = c + mouth.getOffsetX() * PALISADE + side.getOffsetX() * l;
+            int z = c + mouth.getOffsetZ() * PALISADE + side.getOffsetZ() * l;
+            int ground = this.groundAt(b, x, z);
+            if (ground == Integer.MIN_VALUE) {
+                continue;
+            }
+            for (int y = 1; y <= 3; y++) {
+                b.set(x, ground + y, z, Blocks.SPRUCE_LOG.getDefaultState());
+            }
+            Random r = at(seed, x, 3, z);
+            b.set(x, ground + 4, z, (r.nextFloat() < 0.2F ? Blocks.ZOMBIE_HEAD : Blocks.SKELETON_SKULL).getDefaultState()
+                    .with(net.minecraft.block.SkullBlock.ROTATION, r.nextInt(16)));
+        }
+    }
+
+    /**
+     * Goblin totems: one either side of the trail inside the gateway, and two more round the knoll.
+     * A totem is a spruce log and a stripped log with stake arms, under a grinning carved pumpkin (or
+     * a skull), facing out along the trail.
+     */
+    private void totems(Builder b, int c, Direction mouth, long seed) {
+        Direction side = mouth.rotateYClockwise();
+        java.util.List<int[]> spots = new java.util.ArrayList<>();
+        for (int l : new int[]{-3, 3}) {
+            spots.add(new int[]{c + mouth.getOffsetX() * 11 + side.getOffsetX() * l, c + mouth.getOffsetZ() * 11 + side.getOffsetZ() * l});
+        }
+        for (int l : new int[]{-10, 10}) {
+            spots.add(new int[]{c - mouth.getOffsetX() * 4 + side.getOffsetX() * l, c - mouth.getOffsetZ() * 4 + side.getOffsetZ() * l});
+        }
+        for (int[] spot : spots) {
+            int x = spot[0];
+            int z = spot[1];
+            int ground = this.groundAt(b, x, z);
+            if (ground == Integer.MIN_VALUE) {
+                continue;
+            }
+            Random r = at(seed, x, 4, z);
+            b.set(x, ground, z, Blocks.COARSE_DIRT.getDefaultState());
+            b.set(x, ground + 1, z, Blocks.SPRUCE_LOG.getDefaultState());
+            b.set(x, ground + 2, z, Blocks.STRIPPED_SPRUCE_LOG.getDefaultState());
+            for (int l : new int[]{-1, 1}) {
+                if (r.nextFloat() < 0.7F) {
+                    b.set(x + side.getOffsetX() * l, ground + 2, z + side.getOffsetZ() * l, Blocks.SPRUCE_FENCE.getDefaultState());
+                }
+            }
+            BlockState head = r.nextFloat() < 0.7F
+                    ? Blocks.CARVED_PUMPKIN.getDefaultState().with(net.minecraft.block.CarvedPumpkinBlock.FACING, mouth)
+                    : Blocks.SKELETON_SKULL.getDefaultState().with(net.minecraft.block.SkullBlock.ROTATION, r.nextInt(16));
+            b.set(x, ground + 3, z, head);
+        }
     }
 }

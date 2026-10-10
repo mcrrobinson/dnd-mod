@@ -55,6 +55,19 @@ public class EncounterRoomPiece extends DungeonPiece {
                 }
             }
             CryptDressing.cornerCobwebs(b, w, d, top, 0.6F);
+        } else if (WarrenDressing.applies(this)) {
+            int[][] corners = CryptDressing.corners(w, d);
+            for (int i = 0; i < corners.length; i++) {
+                // Not in the chest's corner (a mimic there is an entity, so the air check can't see it).
+                if (i != corner && b.dressing.nextFloat() < 0.75F) {
+                    WarrenDressing.cornerProp(b, corners[i][0], corners[i][1], (i & 1) != 0 ? Direction.WEST : Direction.EAST);
+                }
+            }
+            // A refuse pit beside one of the columns
+            int[][] pits = {{in + 1, in + 1}, {w - 3 - in, in + 1}, {in + 1, d - 3 - in}, {w - 3 - in, d - 3 - in}};
+            int[] pit = pits[b.dressing.nextInt(pits.length)];
+            WarrenDressing.refusePit(b, pit[0], pit[1]);
+            CryptDressing.cornerCobwebs(b, w, d, top, 0.5F);
         }
     }
 }

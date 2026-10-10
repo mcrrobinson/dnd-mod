@@ -33,6 +33,8 @@ public class DungeonStructure extends Structure {
     private static final int CLEARANCE = 8;
     private static final List<RegistryKey<StructureSet>> KEEP_CLEAR_OF = List.of(
             set("hobbit_villages"), set("dwarven_fortresses"), set("beholder_lairs"));
+    /** Dungeons keep this many chunks clear of another theme's dungeon (see {@link #otherDungeons}). */
+    private static final int DUNGEON_CLEARANCE = 10;
 
     private final DungeonTheme theme;
 
@@ -56,23 +58,36 @@ public class DungeonStructure extends Structure {
             return Optional.empty();
         }
         Optional<DungeonPlanner.Layout> layout = DungeonPlanner.plan(context.random(), site.get(), this.theme);
-        if (layout.isEmpty() || nearOtherStructure(context)) {
+        if (layout.isEmpty() || nearOtherStructure(context, KEEP_CLEAR_OF, CLEARANCE)
+                || nearOtherStructure(context, otherDungeons(this.theme), DUNGEON_CLEARANCE)) {
             return Optional.empty();
         }
         return Optional.of(new StructurePosition(site.get().entrance(), collector -> layout.get().addPieces(collector)));
     }
 
-    /** Whether one of {@link #KEEP_CLEAR_OF} starts within {@link #CLEARANCE} chunks of this one. */
-    private static boolean nearOtherStructure(Context context) {
+    /**
+     * The other themes' dungeon sets this theme keeps clear of. Only one side of each pair checks
+     * (the later theme checks the earlier ones), since a check runs the other dungeon's own site
+     * checks, and two dungeons checking each other would never finish.
+     */
+    private static List<RegistryKey<StructureSet>> otherDungeons(DungeonTheme theme) {
+        return switch (theme) {
+            case GOBLIN_WARREN -> List.of(set("crypts"));
+            default -> List.of();
+        };
+    }
+
+    /** Whether one of {@code keepClearOf} starts within {@code clearance} chunks of this one. */
+    private static boolean nearOtherStructure(Context context, List<RegistryKey<StructureSet>> keepClearOf, int clearance) {
         Registry<StructureSet> sets = context.dynamicRegistryManager().get(RegistryKeys.STRUCTURE_SET);
         ChunkPos chunk = context.chunkPos();
-        for (RegistryKey<StructureSet> key : KEEP_CLEAR_OF) {
+        for (RegistryKey<StructureSet> key : keepClearOf) {
             StructureSet set = sets.get(key);
             if (set == null || !(set.placement() instanceof RandomSpreadStructurePlacement placement)) {
                 continue;
             }
-            for (int x = chunk.x - CLEARANCE; x <= chunk.x + CLEARANCE; x++) {
-                for (int z = chunk.z - CLEARANCE; z <= chunk.z + CLEARANCE; z++) {
+            for (int x = chunk.x - clearance; x <= chunk.x + clearance; x++) {
+                for (int z = chunk.z - clearance; z <= chunk.z + clearance; z++) {
                     ChunkPos start = placement.getStartChunk(context.seed(), x, z);
                     if (start.x != x || start.z != z) {
                         continue;

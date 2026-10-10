@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:crypt"
+    "dndclasses:crypt",
+    "dndclasses:goblin_warren"
   ]
 }

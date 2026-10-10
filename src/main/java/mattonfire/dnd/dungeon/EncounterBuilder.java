@@ -244,6 +244,7 @@ public final class EncounterBuilder {
             if (pick.elite() && mob instanceof MobEntity m) {
                 makeVeteran(m);
             }
+            rouse(world, mob, trigger);
             spent += pick.cost();
             mobs.add(mob);
         }
@@ -263,6 +264,24 @@ public final class EncounterBuilder {
         Entity mob = result.entities().get(0);
         world.spawnParticles(ParticleTypes.LARGE_SMOKE, mob.getX(), mob.getBodyY(0.5D), mob.getZ(), 12, 0.3D, 0.5D, 0.3D, 0.02D);
         return mob;
+    }
+
+    /**
+     * Neutral mobs from a pool (the Warren's wolves) come in angry at the nearest player to the
+     * trigger, so they fight like the rest of the encounter.
+     */
+    static void rouse(ServerWorld world, Entity mob, BlockPos trigger) {
+        if (!(mob instanceof net.minecraft.entity.mob.Angerable angerable) || !(mob instanceof MobEntity m)) {
+            return;
+        }
+        net.minecraft.entity.player.PlayerEntity player = world.getClosestPlayer(trigger.getX() + 0.5D, trigger.getY(),
+                trigger.getZ() + 0.5D, 48.0D, net.minecraft.predicate.entity.EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+        if (player == null) {
+            return;
+        }
+        angerable.setAngryAt(player.getUuid());
+        angerable.chooseRandomAngerTime();
+        m.setTarget(player);
     }
 
     /** +50% max health and +25% attack damage (persistent), a "Veteran" name, a brief glow. */

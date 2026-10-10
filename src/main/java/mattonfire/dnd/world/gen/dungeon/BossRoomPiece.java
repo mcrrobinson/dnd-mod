@@ -8,7 +8,7 @@ import net.minecraft.util.math.BlockBox;
 /**
  * The boss's hall, two cells by two: a tall pillared chamber with a raised dais in the middle,
  * where the boss appears when the party walks in. In the Crypt, a reliquary off one wall holds the
- * Lich's phylactery ({@link ReliquaryPiece}).
+ * Lich's phylactery ({@link ReliquaryPiece}). In the Goblin Warren it's the Warlord's war hall.
  */
 public class BossRoomPiece extends DungeonPiece {
     public BossRoomPiece(Info info, BlockBox box, long seed, int roomId, RoomRole role, int height, List<Door> doors) {
@@ -47,6 +47,8 @@ public class BossRoomPiece extends DungeonPiece {
         }
         if (CryptDressing.applies(this)) {
             this.tomb(b, w, d, mx, mz);
+        } else if (WarrenDressing.applies(this)) {
+            this.warHall(b, w, d, mx, mz);
         }
     }
 
@@ -68,5 +70,29 @@ public class BossRoomPiece extends DungeonPiece {
             }
         }
         CryptDressing.cornerCobwebs(b, w, d, this.height, 0.9F);
+    }
+
+    /**
+     * The Goblin Warlord's war hall: cages and hide lean-tos along the middle of each wall (between
+     * the doorways), skull totems at the dais corners, four fire pits under the hanging lanterns,
+     * bones and refuse pits.
+     */
+    private void warHall(Builder b, int w, int d, int mx, int mz) {
+        WarrenDressing.wallProps(b, w, d, 11, 0.8F, true);
+        for (int[] o : new int[][]{{-4, -4}, {4, -4}, {-4, 4}, {4, 4}}) {
+            WarrenDressing.totem(b, mx + o[0], mz + o[1]);
+        }
+        for (int[] o : new int[][]{{-8, -8}, {8, -8}, {-8, 8}, {8, 8}}) {
+            WarrenDressing.firePit(b, mx + o[0], mz + o[1]);
+        }
+        for (int[] c : CryptDressing.corners(w, d)) {
+            CryptDressing.bonePile(b, c[0], c[1]);
+        }
+        for (int[] o : new int[][]{{-12, -4}, {12, 3}, {-3, 12}, {4, -12}}) {
+            if (b.dressing.nextFloat() < 0.6F) {
+                WarrenDressing.refusePit(b, mx + o[0], mz + o[1]);
+            }
+        }
+        CryptDressing.cornerCobwebs(b, w, d, this.height, 0.7F);
     }
 }

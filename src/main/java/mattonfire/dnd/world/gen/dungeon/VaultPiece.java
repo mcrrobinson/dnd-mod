@@ -51,6 +51,12 @@ public class VaultPiece extends DungeonPiece {
                 CryptDressing.candles(b, c[0], 1, c[1]);
             }
             CryptDressing.cornerCobwebs(b, this.width(), this.depth(), this.height, 0.5F);
+        } else if (WarrenDressing.applies(this)) {
+            // The Warlord's plunder room: stores in the corners
+            for (int[] c : CryptDressing.corners(this.width(), this.depth())) {
+                WarrenDressing.stores(b, c[0], c[1]);
+            }
+            CryptDressing.cornerCobwebs(b, this.width(), this.depth(), this.height, 0.4F);
         }
     }
 

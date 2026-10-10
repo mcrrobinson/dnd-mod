@@ -644,6 +644,11 @@ public class GoblinRaid {
      * aren't loaded are sent away when they next load (see {@link GoblinRaids}).
      */
     void withdraw(ServerWorld world) {
+        this.withdraw(world, "raid.dndclasses.goblin.withdrew");
+    }
+
+    /** Sends the raiders away (the raid is called off), telling its players {@code messageKey} with the place's name. */
+    void withdraw(ServerWorld world, String messageKey) {
         for (UUID uuid : this.raiders.keySet()) {
             Entity entity = world.getEntity(uuid);
             if (entity != null && entity.isAlive()) {
@@ -655,7 +660,7 @@ public class GoblinRaid {
         this.raiders.clear();
         for (UUID uuid : this.participants) {
             if (world.getEntity(uuid) instanceof ServerPlayerEntity player) {
-                player.sendMessage(Text.translatable("raid.dndclasses.goblin.withdrew", this.placeName()), false);
+                player.sendMessage(Text.translatable(messageKey, this.placeName()), false);
             }
         }
         DnDClasses.LOGGER.info("[GoblinRaid] raid {} withdrew", this.id);

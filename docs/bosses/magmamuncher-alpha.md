@@ -32,6 +32,7 @@ It's immune to fire and lava, and its bites knock you back hard. It hunts player
 | Gold ingots | 5-10 | killed by a player |
 | Netherite scrap | 1-2 | killed by a player, 60% chance (+10% per Looting level) |
 | Enchanted book: Fire Protection IV or Fire Aspect II | 1 | killed by a player, 25% chance (+5% per Looting level) |
+| [Staff of Fire](../items/staffs.md) | 1 | killed by a player, 25% chance (+5% per Looting level) |
 
 It's worth 100 XP.
 

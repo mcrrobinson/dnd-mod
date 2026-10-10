@@ -1,0 +1,56 @@
+# Rolls the Magmamuncher Alpha loot 40 times as a player kill. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/fire-staff-drops.txt
+# Expect in latest.log: the final /clear test finds about 10 (25%) Staves of Fire.
+wait 40
+closescreen
+/gamemode creative
+/fill 0 149 0 6 149 6 minecraft:stone
+/clear @s
+/kill @e[type=dndclasses:magmamuncher_alpha]
+/summon dndclasses:magmamuncher_alpha 3.5 150 6.5 {NoAI:1b,PersistenceRequired:1b}
+/tp @s 3.5 150 3.5 0 20
+wait 10
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+/loot give @s kill @e[type=dndclasses:magmamuncher_alpha,limit=1]
+wait 5
+/clear @s dndclasses:staff_of_fire 0
+screenshot fire-staff-drops
+/kill @e[type=dndclasses:magmamuncher_alpha]
+quit

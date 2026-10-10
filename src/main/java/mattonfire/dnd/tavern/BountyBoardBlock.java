@@ -151,6 +151,10 @@ public class BountyBoardBlock extends BlockWithEntity {
         }
 
         int slot = slotAt(state.get(FACING), hit.getPos().subtract(Vec3d.ofCenter(pos)));
+        if (board.isRumour(slot) && state.get(NOTICES[slot])) {
+            this.takeRumour(serverPlayer, (ServerWorld) world, pos, state, slot);
+            return ActionResult.CONSUME;
+        }
         Bounty bounty = board.posted(slot);
         if (bounty == null || !state.get(NOTICES[slot])) {
             player.sendMessage(Text.translatable("bounty.dndclasses.taken_already").formatted(Formatting.GRAY), true);
@@ -165,6 +169,27 @@ public class BountyBoardBlock extends BlockWithEntity {
         player.sendMessage(bounty.description().copy().formatted(Formatting.GRAY, Formatting.ITALIC), false);
         world.playSound(null, pos, SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1.0F, 1.0F);
         return ActionResult.CONSUME;
+    }
+
+    /**
+     * Takes the Rumour notice: a quest lead for a quest with a {@code rumour_weight} that the taker could
+     * start now. If there's none for them, the notice stays up for someone else.
+     */
+    private void takeRumour(ServerPlayerEntity player, ServerWorld world, BlockPos pos, BlockState state, int slot) {
+        mattonfire.dnd.quest.QuestDefinition quest = QuestLeadItem.pick(player, world.getRandom());
+        if (quest == null) {
+            player.sendMessage(Text.translatable("bounty.dndclasses.rumour.nothing").formatted(Formatting.GRAY), true);
+            return;
+        }
+        world.setBlockState(pos, state.with(NOTICES[slot], false));
+        ItemStack lead = QuestLeadItem.create(quest.id(), quest.title());
+        if (!player.giveItemStack(lead)) {
+            player.dropItem(lead, false);
+        }
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Quests] {} took a rumour of {}", player.getEntityName(), quest.id());
+        player.sendMessage(Text.translatable("bounty.dndclasses.rumour.take", quest.title()).formatted(Formatting.GOLD), false);
+        player.sendMessage(Text.translatable("bounty.dndclasses.rumour.hint").formatted(Formatting.GRAY, Formatting.ITALIC), false);
+        world.playSound(null, pos, SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1.0F, 1.0F);
     }
 
     /**
@@ -199,7 +224,9 @@ public class BountyBoardBlock extends BlockWithEntity {
         for (int i = 0; i < SLOTS; i++) {
             Bounty bounty = board.posted(i);
             Text where = Text.translatable("bounty.dndclasses.slot." + i);
-            if (bounty == null || !state.get(NOTICES[i])) {
+            if (board.isRumour(i) && state.get(NOTICES[i])) {
+                player.sendMessage(Text.translatable("bounty.dndclasses.board.rumour", where).formatted(Formatting.LIGHT_PURPLE), false);
+            } else if (bounty == null || !state.get(NOTICES[i])) {
                 player.sendMessage(Text.translatable("bounty.dndclasses.board.taken", where).formatted(Formatting.DARK_GRAY), false);
             } else {
                 player.sendMessage(Text.translatable("bounty.dndclasses.board.entry", where, bounty.title(),

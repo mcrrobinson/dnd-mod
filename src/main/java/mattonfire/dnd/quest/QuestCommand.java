@@ -233,6 +233,9 @@ public final class QuestCommand {
             } else if (action instanceof QuestAction.MagicItem item) {
                 part = Text.translatable("quest.dndclasses.reward.magic_item",
                         Text.translatableWithFallback("quest.dndclasses.rarity." + item.rarity(), item.rarity()));
+            } else if (action instanceof QuestAction.Loot loot) {
+                part = Text.translatableWithFallback("quest.dndclasses.reward.loot." + loot.table().toTranslationKey(),
+                        Text.translatable("quest.dndclasses.reward.loot").getString());
             } else if (action instanceof QuestAction.Give give) {
                 part = Text.literal(give.count() + " ").append(net.minecraft.registry.Registries.ITEM.get(give.item()).getName());
             } else if (action instanceof QuestAction.Rep rep) {

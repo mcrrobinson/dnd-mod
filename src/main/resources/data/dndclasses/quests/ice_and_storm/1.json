@@ -1,0 +1,50 @@
+{
+  "title": "quest.dndclasses.ice_and_storm.1.title",
+  "description": "quest.dndclasses.ice_and_storm.1.description",
+  "chain": "dndclasses:ice_and_storm",
+  "giver": "dwarf_king",
+  "requires": {"rep": {"dndclasses:mountain_dwarves": "friendly"}},
+  "rumour_weight": 1,
+  "on_accept": [
+    {"type": "reveal", "structure": "dndclasses:frost_lair", "fallback": "quest.dndclasses.ice_and_storm.1.no_lair"}
+  ],
+  "stages": [
+    {
+      "title": "quest.dndclasses.ice_and_storm.1.stage.1.title",
+      "text": "quest.dndclasses.ice_and_storm.1.stage.1",
+      "objectives": [
+        {"type": "visit", "structure": "dndclasses:frost_lair", "text": "quest.dndclasses.ice_and_storm.1.objective.lair"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.ice_and_storm.1.narrate.expedition"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.ice_and_storm.1.stage.2.title",
+      "text": "quest.dndclasses.ice_and_storm.1.stage.2",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:bounty/frost_drakes", "count": 1, "text": "quest.dndclasses.ice_and_storm.1.objective.drake"},
+        {"type": "collect", "item": "#dndclasses:quest/frost_drake_trophies", "count": 1, "consume": false,
+         "text": "quest.dndclasses.ice_and_storm.1.objective.trophy"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.ice_and_storm.1.narrate.thunder"},
+        {"type": "reveal", "structure": "dndclasses:dragon_lair", "fallback": "quest.dndclasses.ice_and_storm.1.no_peak"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.ice_and_storm.1.stage.3.title",
+      "text": "quest.dndclasses.ice_and_storm.1.stage.3",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:bounty/storm_dragons", "count": 1, "text": "quest.dndclasses.ice_and_storm.1.objective.storm"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 40},
+    {"type": "xp", "amount": 150},
+    {"type": "class_xp", "amount": 400},
+    {"type": "rep", "factions": {"dndclasses:mountain_dwarves": 150}},
+    {"type": "loot", "table": "dndclasses:gameplay/quest_reward_dwarven_rare"}
+  ]
+}

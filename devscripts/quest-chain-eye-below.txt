@@ -1,0 +1,57 @@
+# Chain D, The Eye Below (dwarf_king, needs Honored dwarves and The Warlord's Trail or Ice and Storm
+# finished): Insight DC 14 at the King (pass: flag truth, +25 dwarves), beholder lair map (radius 150)
+# either way, kill the Beholder, reward at the King: 64 emeralds, 250 XP, 600 class XP, +200 dwarves,
+# a very rare magic item.
+# Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-chain-eye-below.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/time set noon
+/effect give @s minecraft:resistance 900 4 true
+wait 10
+closescreen
+/kill @e[tag=qc]
+/fill -6 149 -6 6 149 6 minecraft:glass
+/tp @s 0.5 150 0.5 0 25
+/clear @s
+/quest admin @s reset dndclasses:eye_below/1
+/quest admin @s reset dndclasses:ice_and_storm/1
+/rep @s dndclasses:mountain_dwarves set 450
+# Not offered yet: no earlier chain finished
+/summon dndclasses:mountain_dwarf 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["qc","dndclasses.role.dwarf_king"]}
+wait 10
+use
+wait 10
+screenshot qc-d-1-not-offered
+closescreen
+/quest admin @s start dndclasses:ice_and_storm/1
+/quest admin @s complete dndclasses:ice_and_storm/1
+use
+wait 10
+screenshot qc-d-2-offer
+# Rewards for Ice and Storm were paid on opening; accept The Eye Below
+button 0
+wait 5
+button 0
+wait 10
+screenshot qc-d-3-insight
+# The Insight topic: either outcome reveals the lair
+button 0
+wait 40
+screenshot qc-d-4-insight-result
+closescreen
+/quest info dndclasses:eye_below/1
+/quest admin @s stage dndclasses:eye_below/1 2
+/summon dndclasses:beholder 0.5 153 -5.5 {NoAI:1b,NoGravity:1b,Tags:["qc"]}
+wait 10
+/damage @e[type=dndclasses:beholder,tag=qc,limit=1] 100000 minecraft:player_attack by @s
+wait 40
+/kill @e[type=item]
+/clear @s minecraft:emerald
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:64b}]}]
+/rep
+slots
+screenshot qc-d-5-rewarded
+quit

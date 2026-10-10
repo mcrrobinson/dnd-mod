@@ -1,0 +1,54 @@
+{
+  "role": "innkeeper",
+  "topics": [
+    {
+      "id": "goblin_menace/where",
+      "text": "dialogue.dndclasses.goblin_menace.where",
+      "requires": {
+        "quest": "dndclasses:goblin_menace/2",
+        "stage": 1
+      },
+      "actions": [
+        {
+          "type": "reveal",
+          "structure": "dndclasses:goblin_camp",
+          "fallback": "quest.dndclasses.goblin_menace.2.no_camp"
+        }
+      ],
+      "goto": "goblin_menace_where"
+    },
+    {
+      "id": "goblin_menace/warlord",
+      "text": "dialogue.dndclasses.goblin_menace.warlord",
+      "requires": {
+        "quest": "dndclasses:goblin_menace/2",
+        "stage": 5
+      },
+      "goto": "goblin_menace_warlord"
+    }
+  ],
+  "nodes": {
+    "goblin_menace_where": {
+      "lines": [
+        "dialogue.dndclasses.goblin_menace.where.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "goblin_menace_warlord": {
+      "lines": [
+        "dialogue.dndclasses.goblin_menace.warlord.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    }
+  }
+}

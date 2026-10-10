@@ -24,6 +24,7 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 - **Take a notice:** right-click it. Which one you get (left, middle or right) depends on where you click, and the paper disappears from the board.
 - **Read the board:** sneak-right-click with an empty hand to list today's bounties in chat.
 - A player Hostile with the hobbits can read the board but can't take or hand in notices: "The notices are not for the likes of you." The board belongs to the factions whose settlement it's in (any faction that rewards bounties, for a board in the wild).
+- **Rumours:** each day there's a 20% chance a board's third (right-hand) notice is a **Rumour** instead of a bounty. Taking it gives a *Rumour* item for a quest you could start now, picked by weight among quests with a `rumour_weight` (launch: *The Whispering Library* 2, *Trouble on the Road* 1, *Ice and Storm* 1). If no such quest is open to you, the Rumour stays up for someone else ("The rumour makes no sense to you yet."). Right-click the Rumour to start its quest without finding its giver; its other requirements (earlier quests, standing) still apply, and a refused Rumour is kept. Reading the board lists it as "A Rumour". See [Quests](../systems/quests.md#launch-quest-chains).
 - **Restocking:** each in-game day, a board posts 3 different bounties, drawn by weight. A taken notice stays gone until the next day, for everyone. A board that's just been hung up starts bare and gets its first notices the next morning, so taking a board down and putting it back doesn't restock it.
 
 ![The two bounty boards on the inn's east wall, three notices on each](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/hobbit-tavern-bounty-boards.png)
@@ -58,6 +59,8 @@ What the spoils can contain:
 
 ## Commands
 - Give a specific notice: `/give @s dndclasses:bounty_notice{Bounty:"spiders"}`.
+- Give a Rumour: `/give @s dndclasses:quest_lead{Quest:"dndclasses:whispering_library/1"}`.
+- Force today's Rumour on a board you're looking at: `/data merge block <x y z> {Rumour:1b}` (after the board has posted today's notices).
   - Optionally add `Progress:<n>`.
   - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `frost_drake`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`.
 - Restock boards and the innkeeper: `/time add 24000`.
@@ -72,7 +75,8 @@ What the spoils can contain:
 - Code: package `mattonfire.dnd.tavern`.
   - `Tavern` registers everything. It's called from `DnDClasses`, and the renderer is registered in `DndClassesClient`.
   - `Bounty` is the bounty list (enum).
-  - `BountyBoardBlock` / `BountyBoardBlockEntity` hold the board's daily stock.
+  - `BountyBoardBlock` / `BountyBoardBlockEntity` hold the board's daily stock (NBT `Day`, `Posted`, and `Rumour` for the third slot, `RUMOUR_CHANCE` 0.2).
+  - `QuestLeadItem` is the Rumour (`dndclasses:quest_lead`, NBT `Quest` and `Title`); `QuestLeadItem.pick` chooses the quest.
   - `BountyNoticeItem` stores NBT `Bounty` and `Progress`.
   - `BountyRewards` tracks kills and structure visits and pays rewards.
   - `AleItem` is the ale.
@@ -91,4 +95,4 @@ What the spoils can contain:
 - Class XP goes through `Progression.addXp`. Finished expeditions are kept in the player's persistent data under `BountyExpeditions`.
   - If the class isn't there, it does nothing.
   - `TODO(class-progression)`: replace the lookup with a direct call once that branch merges.
-- Devscript: `devscripts/hobbit-tavern.txt` takes a notice, completes a spider bounty, claims it, and opens the innkeeper's trades.
+- Devscript: `devscripts/hobbit-tavern.txt` takes a notice, completes a spider bounty, claims it, and opens the innkeeper's trades. `devscripts/quest-rumour.txt` forces a Rumour, takes it and follows it.

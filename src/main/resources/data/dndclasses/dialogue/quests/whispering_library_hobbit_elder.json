@@ -1,0 +1,96 @@
+{
+  "role": "hobbit_elder",
+  "topics": [
+    {
+      "id": "whispering_library/bones",
+      "text": "dialogue.dndclasses.whispering_library.bones",
+      "requires": {
+        "quest": "dndclasses:whispering_library/1",
+        "stage": 1
+      },
+      "goto": "whispering_library_bones"
+    },
+    {
+      "id": "whispering_library/read",
+      "text": "dialogue.dndclasses.whispering_library.read",
+      "requires": {
+        "quest": "dndclasses:whispering_library/1",
+        "stage": 2
+      },
+      "check": {
+        "skill": "arcana",
+        "dc": 12,
+        "success": "whispering_library_read_yes",
+        "failure": "whispering_library_read_no",
+        "on_success": [
+          {
+            "type": "reveal",
+            "structure": "minecraft:stronghold",
+            "fallback": "quest.dndclasses.whispering_library.1.no_stronghold"
+          }
+        ],
+        "on_failure": [
+          {
+            "type": "complete_stage",
+            "stage": 2
+          }
+        ]
+      }
+    },
+    {
+      "id": "whispering_library/lich",
+      "text": "dialogue.dndclasses.whispering_library.lich",
+      "requires": {
+        "quest": "dndclasses:whispering_library/1",
+        "stage": 4
+      },
+      "goto": "whispering_library_lich"
+    }
+  ],
+  "nodes": {
+    "whispering_library_bones": {
+      "lines": [
+        "dialogue.dndclasses.whispering_library.bones.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "whispering_library_read_yes": {
+      "lines": [
+        "dialogue.dndclasses.whispering_library.read_yes.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "whispering_library_read_no": {
+      "lines": [
+        "dialogue.dndclasses.whispering_library.read_no.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    },
+    "whispering_library_lich": {
+      "lines": [
+        "dialogue.dndclasses.whispering_library.lich.lines"
+      ],
+      "options": [
+        {
+          "text": "dialogue.dndclasses.quest.back",
+          "goto": "hub"
+        }
+      ]
+    }
+  }
+}

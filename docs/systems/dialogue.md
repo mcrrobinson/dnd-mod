@@ -58,7 +58,7 @@ Dialogue is data: `data/<ns>/dialogue/**.json`, one or more files per role. File
   - `accept`: a quest id to start (the page reports why if it can't).
   - `actions`: quest actions (`give`, `rep`, `reveal`, `set_flag`, ...) run for the player in the context of `requires.quest`, which is required when there are actions.
   - `check`: `skill` (any skill id: `persuasion`, `insight`, `arcana`, `deception`, ...), `dc`, `success` / `failure` nodes, `on_success` / `on_failure` actions.
-- Launch files: `innkeeper.json` (tier greetings, "Any word on the goblins?" and a Persuasion DC 14 "advance" of 3 emeralds while Trouble on the Road is active), `dwarf_king.json` and `hobbit_elder.json` (tier greetings). The quest chains themselves are a later ticket.
+- Launch files: `innkeeper.json` (tier greetings, "Any word on the goblins?" and a Persuasion DC 14 "advance" of 3 emeralds while Trouble on the Road is active), `dwarf_king.json` and `hobbit_elder.json` (tier greetings). The launch quest chains add one file per chain and role under `dialogue/quests/` (map topics, the King's Persuasion and Insight checks, the Thain's Arcana reading), see [Quests](quests.md#launch-quest-chains).
 - A quest is offered by NPCs whose role matches its `giver`.
 
 ## Known limitations

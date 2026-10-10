@@ -1,33 +1,74 @@
 package mattonfire.dnd.classes.SkillChecks;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
+
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.Advantage;
+import mattonfire.dnd.classes.Abilities.CharacterSheet;
+import mattonfire.dnd.classes.Abilities.RollKind;
+import mattonfire.dnd.classes.Abilities.RollQuery;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
+import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
 
 /**
- * d20 skill checks: roll a d20, add the player's class modifier and beat a DC. A natural 20 always
- * succeeds and a natural 1 always fails. The roll is shown to the player on the HUD with a sound
- * ({@code DiceRollHud} on the client, sent with {@link #show}).
+ * d20 rolls: roll a d20 (or two, with advantage or disadvantage), add a modifier and beat a DC. A
+ * natural 20 always succeeds and a natural 1 always fails. Most callers go through {@link SkillCheck},
+ * which takes the modifier and any advantage from the player's
+ * {@link mattonfire.dnd.classes.Abilities.CharacterSheet}; {@link #roll(PlayerEntity)} is the raw builder
+ * for anything else (death saves, DM flat rolls, attacks).
+ *
+ * A roll is shown to the player on the HUD with a sound ({@code DiceRollHud} on the client, sent with
+ * {@link #show}) and every roll is logged as a {@code [D20]} line.
  *
  * <ul>
- * <li>{@link Lockpicking}: Rogues pick the locks of dungeon and lair loot chests</li>
- * <li>{@link Persuasion}: Bards talk villagers into better prices</li>
+ * <li>{@link Lockpicking}: Rogues pick the locks of dungeon and lair loot chests (Thieves' Tools)</li>
+ * <li>{@link Persuasion}: Bards talk villagers into better prices (Persuasion)</li>
  * <li>{@link AttackRolls}: every full-strength melee swing rolls; natural 20 crits, natural 1 fumbles</li>
  * </ul>
  */
 public final class D20 {
     public static final Identifier S2C_ROLL = new Identifier(DnDClasses.MOD_ID, "d20_roll");
 
+    /** Labels of the original checks. */
+    public static final String LOCKPICKING = "skill.dndclasses.lockpicking";
+    public static final String PERSUASION = "skill.dndclasses.persuasion";
+    public static final String ATTACK = "skill.dndclasses.attack";
+
+    /** Roll flag: show the player their total but not the DC or the outcome (secret DM rolls). */
+    public static final int FLAG_SECRET = 1;
+
+    /** Rigged naturals per player for tests ({@code /dndclass forceroll}); used before any random roll. */
+    private static final Map<UUID, Deque<Integer>> FORCED = new HashMap<>();
+
     private D20() {
     }
 
+    /**
+     * The original three-value label enum, kept so older callers still compile.
+     *
+     * @deprecated use {@link SkillCheck} with a {@link mattonfire.dnd.classes.Abilities.Skill}, or
+     *             {@link #roll(PlayerEntity)} with a label
+     */
+    @Deprecated
     public enum Skill {
         LOCKPICKING,
         PERSUASION,
@@ -55,47 +96,310 @@ public final class D20 {
         }
     }
 
-    /** A rolled check. {@code dc} is 0 for rolls without a target number (attack rolls). */
-    public record Roll(Skill skill, int natural, int modifier, int dc, Outcome outcome) {
+    /** Where the client draws a roll. */
+    public enum Display {
+        /** The big panel under the crosshair. */
+        MAIN,
+        /** The compact saving-throw rows beside the crosshair (drawn on the main panel until that lane exists). */
+        SAVE_LANE,
+        /** Logged but never sent (non-player and passive rolls). */
+        SILENT
+    }
+
+    /** A named part of the modifier, shown on the HUD ("+2 assist"). Already included in {@code modifier}. */
+    public record Bonus(Text label, int amount) {
+    }
+
+    /**
+     * A rolled d20.
+     *
+     * @param label    shown as the HUD title, e.g. {@code Text.translatable(skill.translationKey())}
+     * @param ability  the ability behind the roll, or null (attacks, flat rolls)
+     * @param natural  the die that counts
+     * @param natural2 the other die with advantage or disadvantage (dropped), 0 for a single die
+     * @param mode     advantage, disadvantage or neither
+     * @param rerolled how many natural 1s were rerolled (Halfling Lucky), 0 if none
+     * @param modifier everything added to the natural, bonuses included
+     * @param bonuses  named parts of the modifier for display
+     * @param dc       0 for rolls without a target number (attack rolls)
+     * @param flags    {@link #FLAG_SECRET}
+     */
+    public record Roll(Text label, @Nullable Ability ability, RollKind kind, int natural, int natural2,
+            Advantage mode, int rerolled, int modifier, List<Bonus> bonuses, int dc, Outcome outcome,
+            Display display, int flags) {
+
+        /** Old-style roll: single die, label from the old enum. */
+        @Deprecated
+        public Roll(Skill skill, int natural, int modifier, int dc, Outcome outcome) {
+            this(Text.translatable(skill.translationKey()), null,
+                    skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK, natural, 0, Advantage.NORMAL, 0,
+                    modifier, List.of(), dc, outcome, Display.MAIN, 0);
+        }
+
         public int total() {
             return natural + modifier;
         }
 
+        public boolean secret() {
+            return (flags & FLAG_SECRET) != 0;
+        }
+
+        public Roll withDisplay(Display newDisplay) {
+            return new Roll(label, ability, kind, natural, natural2, mode, rerolled, modifier, bonuses, dc, outcome,
+                    newDisplay, flags);
+        }
+
         public void write(PacketByteBuf buf) {
-            buf.writeEnumConstant(skill);
+            buf.writeText(label);
+            buf.writeByte(ability == null ? -1 : ability.ordinal());
+            buf.writeEnumConstant(kind);
             buf.writeVarInt(natural);
+            buf.writeVarInt(natural2);
+            buf.writeEnumConstant(mode);
+            buf.writeVarInt(rerolled);
             buf.writeVarInt(modifier);
+            buf.writeCollection(bonuses, (b, bonus) -> {
+                b.writeText(bonus.label());
+                b.writeVarInt(bonus.amount());
+            });
             buf.writeVarInt(dc);
             buf.writeEnumConstant(outcome);
+            buf.writeEnumConstant(display);
+            buf.writeVarInt(flags);
         }
 
         public static Roll read(PacketByteBuf buf) {
-            return new Roll(buf.readEnumConstant(Skill.class), buf.readVarInt(), buf.readVarInt(), buf.readVarInt(),
-                    buf.readEnumConstant(Outcome.class));
+            Text label = buf.readText();
+            int abilityIndex = buf.readByte();
+            Ability ability = abilityIndex < 0 ? null : Ability.values()[abilityIndex];
+            RollKind kind = buf.readEnumConstant(RollKind.class);
+            int natural = buf.readVarInt();
+            int natural2 = buf.readVarInt();
+            Advantage mode = buf.readEnumConstant(Advantage.class);
+            int rerolled = buf.readVarInt();
+            int modifier = buf.readVarInt();
+            List<Bonus> bonuses = buf.readList(b -> new Bonus(b.readText(), b.readVarInt()));
+            int dc = buf.readVarInt();
+            Outcome outcome = buf.readEnumConstant(Outcome.class);
+            Display display = buf.readEnumConstant(Display.class);
+            int flags = buf.readVarInt();
+            return new Roll(label, ability, kind, natural, natural2, mode, rerolled, modifier, bonuses, dc, outcome,
+                    display, flags);
         }
     }
 
+    /** A raw roll builder. {@link SkillCheck} fills one in from the character sheet. */
+    public static Builder roll(PlayerEntity player) {
+        return new Builder(player);
+    }
+
+    public static final class Builder {
+        private final PlayerEntity player;
+        private Text label = Text.literal("d20");
+        @Nullable
+        private Ability ability;
+        private RollKind kind = RollKind.CHECK;
+        private int modifier;
+        private final List<Bonus> bonuses = new ArrayList<>();
+        private int dc;
+        private int advantages;
+        private int disadvantages;
+        private int critRange = 20;
+        private boolean rerollNaturalOnes;
+        private Display display = Display.MAIN;
+        private int flags;
+
+        private Builder(PlayerEntity player) {
+            this.player = player;
+        }
+
+        public Builder label(Text label) {
+            this.label = label;
+            return this;
+        }
+
+        /** A translation key label. */
+        public Builder label(String translationKey) {
+            return label(Text.translatable(translationKey));
+        }
+
+        public Builder ability(@Nullable Ability ability) {
+            this.ability = ability;
+            return this;
+        }
+
+        public Builder kind(RollKind kind) {
+            this.kind = kind;
+            return this;
+        }
+
+        /** The base modifier (replaces any earlier one; bonuses are kept). */
+        public Builder modifier(int modifier) {
+            this.modifier = modifier;
+            return this;
+        }
+
+        /** Adds a named bonus on top of the modifier ("+2 assist"). */
+        public Builder bonus(Text label, int amount) {
+            bonuses.add(new Bonus(label, amount));
+            return this;
+        }
+
+        public Builder bonus(String translationKey, int amount) {
+            return bonus(Text.translatable(translationKey), amount);
+        }
+
+        public Builder dc(int dc) {
+            this.dc = dc;
+            return this;
+        }
+
+        /** Adds one source of advantage. Advantage and disadvantage cancel out (5e). */
+        public Builder advantage() {
+            advantages++;
+            return this;
+        }
+
+        public Builder disadvantage() {
+            disadvantages++;
+            return this;
+        }
+
+        public Builder advantageIf(boolean condition) {
+            return condition ? advantage() : this;
+        }
+
+        public Builder disadvantageIf(boolean condition) {
+            return condition ? disadvantage() : this;
+        }
+
+        /** Adds a source of advantage or disadvantage (NORMAL adds nothing). */
+        public Builder mode(Advantage mode) {
+            return switch (mode) {
+                case ADVANTAGE -> advantage();
+                case DISADVANTAGE -> disadvantage();
+                case NORMAL -> this;
+            };
+        }
+
+        /** Applies the advantage sources on the player's sheet that match this roll. */
+        public Builder sheetAdvantage(RollQuery query) {
+            return player.getWorld().isClient ? this : mode(AbilityScores.sheet(player).advantage(query));
+        }
+
+        /** The lowest natural that is a CRITICAL (attacks: the sheet's crit range). */
+        public Builder critRange(int lowest) {
+            this.critRange = lowest;
+            return this;
+        }
+
+        public Builder rerollNaturalOnes(boolean reroll) {
+            this.rerollNaturalOnes = reroll;
+            return this;
+        }
+
+        public Builder display(Display display) {
+            this.display = display;
+            return this;
+        }
+
+        public Builder flags(int flags) {
+            this.flags |= flags;
+            return this;
+        }
+
+        public Builder secret() {
+            return flags(FLAG_SECRET);
+        }
+
+        /** Rolls and logs it. Show it with {@link D20#show}. */
+        public Roll roll() {
+            Advantage mode = Advantage.resolve(advantages, disadvantages);
+            int rerolled = 0;
+            int a = d20(player);
+            if (rerollNaturalOnes && a == 1) {
+                a = d20(player);
+                rerolled++;
+            }
+            int natural = a;
+            int natural2 = 0;
+            if (mode != Advantage.NORMAL) {
+                int b = d20(player);
+                if (rerollNaturalOnes && b == 1) {
+                    b = d20(player);
+                    rerolled++;
+                }
+                natural = mode == Advantage.ADVANTAGE ? Math.max(a, b) : Math.min(a, b);
+                natural2 = natural == a ? b : a;
+            }
+            int total = modifier;
+            for (Bonus bonus : bonuses) {
+                total += bonus.amount();
+            }
+            Outcome outcome;
+            if (natural == 1) {
+                outcome = Outcome.FUMBLE;
+            } else if (natural >= critRange) {
+                outcome = Outcome.CRITICAL;
+            } else if (dc > 0) {
+                outcome = natural + total >= dc ? Outcome.SUCCESS : Outcome.FAILURE;
+            } else {
+                outcome = Outcome.SUCCESS;
+            }
+            Roll roll = new Roll(label, ability, kind, natural, natural2, mode, rerolled, total, List.copyOf(bonuses),
+                    dc, outcome, display, flags);
+            // Every swing rolls an attack; only the ones that do something are worth a log line
+            if (kind != RollKind.ATTACK || outcome != Outcome.SUCCESS) {
+                log(player, roll);
+            }
+            return roll;
+        }
+    }
+
+    /** One natural d20: the next rigged value if any ({@code /dndclass forceroll}), else random. */
     public static int d20(PlayerEntity player) {
+        synchronized (FORCED) {
+            Deque<Integer> forced = FORCED.get(player.getUuid());
+            if (forced != null && !forced.isEmpty()) {
+                int n = forced.poll();
+                if (forced.isEmpty()) {
+                    FORCED.remove(player.getUuid());
+                }
+                return n;
+            }
+        }
         return 1 + player.getRandom().nextInt(20);
     }
 
-    /** Rolls d20 + modifier against a DC. */
-    public static Roll check(PlayerEntity player, Skill skill, int modifier, int dc) {
-        int natural = d20(player);
-        Outcome outcome;
-        if (natural == 20) {
-            outcome = Outcome.CRITICAL;
-        } else if (natural == 1) {
-            outcome = Outcome.FUMBLE;
-        } else {
-            outcome = natural + modifier >= dc ? Outcome.SUCCESS : Outcome.FAILURE;
+    /** Rigs the player's next naturals (each 1-20), in order. */
+    public static void force(PlayerEntity player, Collection<Integer> naturals) {
+        synchronized (FORCED) {
+            FORCED.computeIfAbsent(player.getUuid(), k -> new ArrayDeque<>()).addAll(naturals);
         }
-        return new Roll(skill, natural, modifier, dc, outcome);
     }
 
-    /** Shows the roll on the player's HUD, with a line saying what came of it. */
+    /** Drops any rigged rolls; returns how many were left. */
+    public static int clearForced(UUID player) {
+        synchronized (FORCED) {
+            Deque<Integer> forced = FORCED.remove(player);
+            return forced == null ? 0 : forced.size();
+        }
+    }
+
+    /**
+     * Rolls d20 + modifier against a DC with no sheet bonus.
+     *
+     * @deprecated use {@link SkillCheck#check}, which takes the modifier from the character sheet
+     */
+    @Deprecated
+    public static Roll check(PlayerEntity player, Skill skill, int modifier, int dc) {
+        return roll(player).label(skill.translationKey())
+                .kind(skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK).modifier(modifier).dc(dc).roll();
+    }
+
+    /** Shows the roll on the player's HUD, with a line saying what came of it. SILENT rolls aren't sent. */
     public static void show(PlayerEntity player, Roll roll, Text detail) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer)) {
+        if (!(player instanceof ServerPlayerEntity serverPlayer) || roll.display() == Display.SILENT) {
             return;
         }
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
@@ -104,9 +408,44 @@ public final class D20 {
         ServerPlayNetworking.send(serverPlayer, S2C_ROLL, buf);
     }
 
+    /**
+     * {@code [D20] <player> <label> <natural>[ (<other> adv|dis)] <+mod> = <total>[ vs DC <dc>] -> <outcome>},
+     * for logs and DevScript tests.
+     */
+    public static void log(PlayerEntity player, Roll roll) {
+        StringBuilder line = new StringBuilder("[D20] ").append(player.getEntityName()).append(' ')
+                .append(labelForLog(roll.label())).append(' ').append(roll.natural());
+        if (roll.natural2() > 0) {
+            line.append(" (").append(roll.natural2()).append(' ')
+                    .append(roll.mode() == Advantage.ADVANTAGE ? "adv" : "dis").append(')');
+        }
+        if (roll.rerolled() > 0) {
+            line.append(" [rerolled 1]");
+        }
+        line.append(' ').append(String.format("%+d", roll.modifier())).append(" = ").append(roll.total());
+        if (roll.dc() > 0) {
+            line.append(" vs DC ").append(roll.dc());
+        }
+        line.append(" -> ").append(roll.outcome());
+        DnDClasses.LOGGER.info(line.toString());
+    }
+
+    private static String labelForLog(Text label) {
+        String text = label.getString();
+        if (label.getContent() instanceof TranslatableTextContent t && text.equals(t.getKey())) {
+            return t.getKey(); // no language loaded (dedicated server): the key is still greppable
+        }
+        return text;
+    }
+
     public static DndCharacter classOf(PlayerEntity player) {
         DndCharacter c = player instanceof PlayerEntityExt ext ? ext.getDndClass() : null;
         return c == null ? DndCharacter.NONE : c;
+    }
+
+    /** The sheet behind a player's rolls (server: computed; client: the synced copy). */
+    public static CharacterSheet sheet(PlayerEntity player) {
+        return AbilityScores.sheet(player);
     }
 
     public static void register() {

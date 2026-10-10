@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Items.ClassGuidebook;
 import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassSkills;
@@ -162,6 +163,7 @@ public final class ClassLifecycle {
             skills.forget(player);
         }
         AttackRolls.forget(player.getUuid());
+        AbilityScores.forget(player.getUuid());
         Featherfall.forget(player.getUuid());
         Lockpicking.pruneRetries(player.getWorld().getTime());
         Persuasion.pruneOldDays(server.getOverworld().getTimeOfDay() / 24000L);

@@ -16,10 +16,11 @@ import net.minecraft.util.Formatting;
  */
 public final class HitDice {
     /**
-     * The CON modifier added to each die. A stub returning 0 until ability
-     * scores exist; that system replaces it at startup.
+     * The CON modifier added to each die, from the player's character sheet.
      */
-    public static ToIntFunction<ServerPlayerEntity> conModifier = player -> 0;
+    public static ToIntFunction<ServerPlayerEntity> conModifier =
+            player -> mattonfire.dnd.classes.Abilities.AbilityScores.modifier(player,
+                    mattonfire.dnd.classes.Abilities.Ability.CON);
 
     private HitDice() {
     }

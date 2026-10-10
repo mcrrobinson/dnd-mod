@@ -67,7 +67,6 @@ Permission level 2.
 
 ## Known limitations
 - No rest triggers yet besides the command.
-- The CON modifier isn't added to Hit Dice yet; it's +0 until ability scores exist.
 - Level-ups raise your max but don't hand out the new charge; rest to fill it.
 
 ## For developers
@@ -76,7 +75,7 @@ Permission level 2.
   - `Charges`: the max table, `cost(node)` (`SkillNode.chargeCost()` unless `Charges.overrideCost(id, n)` replaced it), `canAfford`, `spend` (temporary charges first), `restore`, `set`, the trickle.
   - `Rests`: `canShortRest` / `canLongRest` return a refusal `Text` or null; `complete(player, kind, source[, companions, startedDay])` applies the benefits without checking limits. A bed rest that skips the night should pass the evening's day as `startedDay`.
   - `RestEvents.AFTER_REST` (items that recharge on a rest, quests) and `RestEvents.ALLOW_REST` (refuse a rest with a reason: dungeons, downed players, curses).
-  - `HitDice`: die sizes and spending. `HitDice.conModifier` is a stub (0) for the ability score system to replace.
+  - `HitDice`: die sizes and spending. `HitDice.conModifier` adds the CON modifier from the [character sheet](ability-scores.md) to each die.
   - `RestSync`: S2C `dndclasses:rest_state` with a `RestSnapshot` (also `RestSnapshot.client`), sent on join, respawn, every change and once a second if something moved. `RestSync.setSession` / `clearSession` show a rest in progress as a bar left of the gems.
   - `DndRules`: the five gamerules.
 - `ClassSkills` hooks: `rechargeGroup()`, `shortRestCharges(player, state, max)` (Wizard overrides it), `onShortRest(player, companions)`.

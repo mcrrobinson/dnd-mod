@@ -31,6 +31,9 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
 | `/dndclass charges <player> [n]` | Prints charges, recharge group, Hit Dice and short rests left; `n` sets the charges (capped at the class's max) |
 | `/dndclass hitdice <player> [n]` | Prints the same; `n` sets the Hit Dice left (capped at the pool) |
+| `/dndclass sheet <player>` | Prints the player's [character sheet](ability-scores.md): scores, saves, skills and passives |
+| `/dndclass score <player> <ability> <1-30>\|clear` | Overrides one ability score (or clears the override), for testing |
+| `/dndclass forceroll <player> <n...>\|clear` | Rigs the player's next d20 naturals, for tests |
 
 Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree; entity ids look like `minecraft:cow`. `unlock`, `equip`, `rank`, `bestiary` and `xp` print the progress line afterwards, so you can check the result straight away. See [Class progression](class-progression.md) for ranks and the bestiary.
 
@@ -52,4 +55,5 @@ See [Goblin raids](goblin-raids.md) for the details.
 ## For developers
 - `Commands/DndClassCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`.
 - `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
-- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/rests-charges.txt`.
+- `sheet`, `score` and `forceroll` use `AbilityScores.sheet`, `AbilityScores.setOverride` and `D20.force`.
+- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/ability-scores.txt`, `devscripts/rests-charges.txt`.

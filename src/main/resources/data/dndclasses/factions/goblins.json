@@ -4,9 +4,15 @@
   "members": "#dndclasses:faction/goblins",
   "settlements": "#dndclasses:faction/goblins",
   "start": -600,
-  "rivals": {"dndclasses:hobbits": -0.5, "dndclasses:mountain_dwarves": -0.5},
+  "rivals": {
+    "dndclasses:hobbits": -0.5,
+    "dndclasses:mountain_dwarves": -0.5,
+    "dndclasses:sylvan_court": -0.5
+  },
   "kill_member": -3,
-  "kill_member_overrides": {"dndclasses:goblin_warlord": -50},
+  "kill_member_overrides": {
+    "dndclasses:goblin_warlord": -50
+  },
   "betrayal": -40,
   "raid_defeated": -40
 }

@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:wood_elf",
+    "dndclasses:elf_warden",
+    "dndclasses:elf_speaker",
+    "dndclasses:elf_fletcher"
+  ]
+}

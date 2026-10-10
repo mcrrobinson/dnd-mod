@@ -1,0 +1,29 @@
+{
+  "type": "dndclasses:elven_enclave",
+  "biomes": "#dndclasses:has_structure/elven_enclave",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {
+    "creature": {
+      "bounding_box": "piece",
+      "spawns": [
+        {
+          "type": "dndclasses:wood_elf",
+          "weight": 2,
+          "minCount": 1,
+          "maxCount": 1
+        },
+        {
+          "type": "dndclasses:elf_warden",
+          "weight": 3,
+          "minCount": 1,
+          "maxCount": 1
+        }
+      ]
+    },
+    "monster": {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

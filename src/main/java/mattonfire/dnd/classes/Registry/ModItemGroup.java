@@ -92,6 +92,10 @@ public class ModItemGroup {
             entries.add(ModItems.WOODEN_BOOTS);
             entries.add(ModItems.HOBBIT_SPAWN_EGG);
             entries.add(ModItems.MOUNTAIN_DWARF_SPAWN_EGG);
+            entries.add(ModItems.WOOD_ELF_SPAWN_EGG);
+            entries.add(ModItems.ELF_WARDEN_SPAWN_EGG);
+            entries.add(ModItems.ELF_SPEAKER_SPAWN_EGG);
+            entries.add(ModItems.ELF_FLETCHER_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARLORD_SPAWN_EGG);
             entries.add(ModItems.MAGMAMUNCHER_ALPHA_SPAWN_EGG);
             entries.add(ModItems.EMBER_WYVERN_SPAWN_EGG);

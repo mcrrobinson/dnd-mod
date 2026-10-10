@@ -22,7 +22,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
-- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages) and Dwarves (Dwarven Fortresses): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses) and Elves (Elven Enclaves): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
@@ -52,6 +52,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
+- [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves (PR #139)
 - [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items
@@ -68,6 +69,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
+- [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home (PR #139)
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board

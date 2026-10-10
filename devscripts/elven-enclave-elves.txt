@@ -1,0 +1,238 @@
+# Elves and Sylvan Law at the enclave of the "Enclave A" test world (seed 1111; the Heart Tree stands
+# at 1224 73 -1368, the Moonwell at 1239 73 -1360). Make the world with a fresh level.dat of that seed,
+# then: timeout 600 ./gradlew runClient -PdevScript=devscripts/elven-enclave-elves.txt "-PdevWorld=Enclave A"
+# Expect in latest.log ("ee:" markers come from /say):
+# - ee:zombie: the zombie on the test platform is gone (a Warden shot it); ee:ignore: no AngryAt, full health.
+# - ee:human-break: the Heart Tree block is air and the watching Warden has an AngryAt.
+# - ee:elf-break-1: no AngryAt (kin trust: a warning); ee:elf-break-2: AngryAt set.
+# - ee:trade-human / ee:trade-elf: "offer" lines; the Elf pays 25% less (16 arrows: 1 vs 1, bow 6 vs 4...).
+# - ee:moon-elf: Moonwater (minecraft:potion with CustomPotionEffects) in the inventory; ee:moon-elf-2 and
+#   ee:moon-human: no second Moonwater.
+# - ee:monsters: "Test failed" for zombies, skeletons, spiders and creepers inside the enclave's box at night.
+# - ee:heart-locked: the chest still has its LootTable (chests/elven_enclave_heart); ee:heart-rogue: a "[D20]"
+#   lockpicking line against DC 15 and, if it opened, a "[Grudges] ... OPEN" line with the watcher's AngryAt.
+# - ee:hostile-*: at -600 (Hostile) the Speaker's trades don't open and the Warden's arrows lower Health.
+# - ee:raid: "Started goblin raid ... on the elven enclave".
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 1224 120 -1368
+wait 300
+/dndrace set @s human
+# --- A Warden on a glass platform high above the forest shoots a zombie ---
+/tp @s 1224 156 -1312 0 40
+wait 100
+/fill 1214 149 -1310 1234 149 -1290 minecraft:glass
+/fill 1214 150 -1310 1234 154 -1290 minecraft:air
+/summon dndclasses:elf_warden 1216 150 -1300 {Tags:["eew"],Rotation:[-90f,0f]}
+/summon minecraft:zombie 1228 150 -1300 {Tags:["eez"],NoAI:1b,PersistenceRequired:1b}
+/tp @s 1224 156 -1312 0 40
+wait 20
+screenshot ee-warden-zombie-1
+wait 30
+screenshot ee-warden-zombie-2
+wait 200
+/say ee:zombie
+/execute if entity @e[tag=eez]
+/kill @e[tag=eez]
+/kill @e[type=minecraft:item,distance=..40]
+/kill @e[type=minecraft:arrow,distance=..40]
+# --- It ignores a player standing next to it ---
+/gamemode survival
+/effect give @s minecraft:instant_health 1 5 true
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:saturation 900 1 true
+/tp @s 1222 150 -1300 90 0
+wait 200
+/say ee:ignore
+/data get entity @e[tag=eew,limit=1] AngryAt
+/data get entity @s Health
+# --- A Human breaks a block of the Heart Tree where a Warden can see (standing on the spiral stair) ---
+/kill @e[type=dndclasses:elf_warden,x=1224,y=73,z=-1368,distance=..40]
+/clear @s
+/give @s minecraft:iron_axe
+hotbar 0
+/summon dndclasses:elf_warden 1227.5 79 -1365.5 {Tags:["eeh"],NoAI:1b,Rotation:[0f,0f]}
+/tp @s 1227.5 78 -1367.5 90 0
+wait 20
+/dndhome
+mine on
+wait 14
+mine off
+wait 10
+screenshot ee-human-break
+/say ee:human-break
+/execute if block 1226 79 -1368 minecraft:air
+/data get entity @e[tag=eeh,limit=1] AngryAt
+/kill @e[tag=eeh]
+# --- An Elf: the first tree-block offence of the day is a warning, the second a grudge ---
+/dndrace set @s elf
+/summon dndclasses:elf_warden 1227.5 79 -1365.5 {Tags:["eeh"],NoAI:1b,Rotation:[0f,0f]}
+/tp @s 1227.5 78 -1367.5 90 0
+wait 20
+mine on
+wait 14
+mine off
+wait 2
+screenshot ee-elf-warning
+wait 8
+/say ee:elf-break-1
+/execute if block 1225 79 -1368 minecraft:air
+/data get entity @e[tag=eeh,limit=1] AngryAt
+mine on
+wait 14
+mine off
+wait 10
+/say ee:elf-break-2
+/execute if block 1224 79 -1368 minecraft:air
+/data get entity @e[tag=eeh,limit=1] AngryAt
+/kill @e[tag=eeh]
+/kill @e[tag=eew]
+/tp @s 1224 156 -1300
+wait 60
+# --- Merchants: Human prices, then Elf (kin) prices ---
+/summon dndclasses:elf_fletcher 1224 150 -1296 {Tags:["eef"],NoAI:1b,Rotation:[180f,0f]}
+/summon dndclasses:elf_speaker 1220 150 -1296 {Tags:["ees"],NoAI:1b,Rotation:[180f,0f]}
+/dndrace set @s human
+/tp @s 1224.5 150 -1298.5 0 15
+wait 20
+use
+wait 20
+screenshot ee-trade-fletcher
+/say ee:trade-human-fletcher
+slots
+closescreen
+/dndrace set @s elf
+wait 10
+use
+wait 20
+/say ee:trade-elf-fletcher
+slots
+closescreen
+/tp @s 1220.5 150 -1298.5 0 15
+wait 20
+use
+wait 60
+screenshot ee-trade-speaker
+/say ee:trade-elf-speaker
+slots
+closescreen
+/dndrace set @s human
+wait 10
+use
+wait 20
+/say ee:trade-human-speaker
+slots
+closescreen
+/kill @e[tag=eef]
+/kill @e[tag=ees]
+# --- The Moonwell at night ---
+/time set 18000
+/clear @s
+/give @s minecraft:glass_bottle 3
+hotbar 0
+/dndrace set @s elf
+/tp @s 1242.5 74 -1359.5 90 50
+wait 40
+/dndhome pieces
+use
+wait 5
+screenshot ee-moonwater
+wait 5
+/say ee:moon-elf
+/clear @s minecraft:potion{CustomPotionEffects:[{Id:10}]} 0
+use
+wait 10
+/say ee:moon-elf-2
+/clear @s minecraft:potion{CustomPotionEffects:[{Id:10}]} 0
+/clear @s minecraft:potion{Potion:"minecraft:water"} 0
+/dndrace set @s human
+/clear @s
+/give @s minecraft:glass_bottle 1
+wait 5
+use
+wait 10
+/say ee:moon-human
+/clear @s minecraft:potion{CustomPotionEffects:[{Id:10}]} 0
+/clear @s minecraft:potion{Potion:"minecraft:water"} 0
+# --- Welcome and hearth for an Elf, faction standing ---
+/dndrace set @s elf
+/rep
+/tp @s 1227.5 96 -1371.5 0 0
+wait 200
+/say ee:hearth
+/dndhome
+/effect clear @s minecraft:resistance
+/data get entity @s ActiveEffects
+/effect give @s minecraft:resistance 900 4 true
+# --- No monsters spawn inside at night ---
+/gamerule doMobSpawning true
+/gamemode survival
+/tp @s 1224 74 -1352
+wait 1200
+/say ee:monsters
+/execute if entity @e[type=minecraft:zombie,x=1193,y=40,z=-1397,dx=64,dy=100,dz=62]
+/execute if entity @e[type=minecraft:skeleton,x=1193,y=40,z=-1397,dx=64,dy=100,dz=62]
+/execute if entity @e[type=minecraft:spider,x=1193,y=40,z=-1397,dx=64,dy=100,dz=62]
+/execute if entity @e[type=minecraft:creeper,x=1193,y=40,z=-1397,dx=64,dy=100,dz=62]
+/execute positioned 1224 73 -1368 run data get entity @e[type=minecraft:spider,limit=1,sort=nearest] Pos
+/execute positioned 1224 73 -1368 if entity @e[type=#dndclasses:faction/sylvan_court,distance=..64]
+/gamerule doMobSpawning false
+# --- The Heart Tree chest: locked (DC 15); a Rogue's pick is an offence where an elf can see ---
+/time set 6000
+/gamemode survival
+/clear @s
+/dndclass get @s
+/summon dndclasses:elf_warden 1223.5 96 -1371.5 {Tags:["eeh"],NoAI:1b}
+/tp @s 1222.5 96 -1367.5 90 35
+wait 20
+use
+wait 10
+screenshot ee-heart-locked
+/say ee:heart-locked
+/data get block 1220 96 -1368 LootTable
+/dndclass set @s rogue
+wait 20
+closescreen
+/tp @s 1222.5 96 -1367.5 90 35
+wait 10
+use
+wait 60
+closescreen
+/say ee:heart-rogue
+/data get entity @e[tag=eeh,limit=1] AngryAt
+/kill @e[tag=eeh]
+# --- Hostile with the Sylvan Court: Wardens shoot on sight, merchants refuse ---
+/rep @s dndclasses:sylvan_court set -600
+/tp @s 1224 156 -1300
+wait 40
+/fill 1214 149 -1310 1234 149 -1290 minecraft:glass
+/summon dndclasses:elf_warden 1216 150 -1300 {Tags:["eew"],Rotation:[-90f,0f]}
+/summon dndclasses:elf_speaker 1224 150 -1296 {Tags:["ees"],NoAI:1b,Rotation:[180f,0f]}
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5 true
+/tp @s 1224.5 150 -1298.5 0 15
+wait 5
+/say ee:hostile-before
+/data get entity @s Health
+use
+wait 5
+screenshot ee-hostile-refuse
+/say ee:hostile-trade
+slots
+wait 100
+/say ee:hostile-after
+/data get entity @s Health
+/effect give @s minecraft:resistance 900 4 true
+/kill @e[tag=eew]
+/kill @e[tag=ees]
+# --- A goblin raid can target the enclave ---
+/goblinraid start
+wait 20
+/say ee:raid
+/goblinraid stop
+quit

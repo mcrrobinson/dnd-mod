@@ -8,7 +8,11 @@ import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.magic.RemoveCurse;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
@@ -19,8 +23,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 
 /**
- * Cleric passives: permanent Haste and Night Vision, and the circle of ignoring
- * mobs while MOB_REPEL is active.
+ * Cleric passives: permanent Haste and Night Vision, the circle of ignoring
+ * mobs while MOB_REPEL is active, and Remove Curse on a player ({@link RemoveCurse}).
  */
 public class ClericHandler {
 
@@ -36,6 +40,19 @@ public class ClericHandler {
 
     public static void register() {
         ServerTickEvents.END_WORLD_TICK.register(ClericHandler::onWorldTick);
+        // Remove Curse: sneak + right-click a player with an empty hand (sneak + use on the air is the
+        // client's C2S_SELF packet, see RemoveCurse)
+        UseEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {
+            // The client sends interact-at first (hit set), then plain interact: handle only the latter
+            if (hit != null || hand != Hand.MAIN_HAND || !player.isSneaking() || !player.getMainHandStack().isEmpty()
+                    || !(entity instanceof PlayerEntity) || !isCleric(player)) {
+                return ActionResult.PASS;
+            }
+            if (player instanceof ServerPlayerEntity cleric && entity instanceof ServerPlayerEntity target) {
+                RemoveCurse.cleric(cleric, target);
+            }
+            return ActionResult.SUCCESS;
+        });
     }
 
     public static boolean isCleric(@Nullable LivingEntity entity) {

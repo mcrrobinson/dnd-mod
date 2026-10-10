@@ -1,0 +1,290 @@
+# Checks identification, curses and Remove Curse (docs/systems/magic-items.md). Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/curses.txt
+# Expect in latest.log ([CHAT] lines), in order:
+#  1. Fighter: an unidentified cursed (Frailty) iron helmet put on: "A curse takes hold", /dndmagic bonds lists it "cursed",
+#     max health 20 -> 16, and the helmet can't be taken off (slots still lists it in slot 5)
+#  2. Cleric self Remove Curse, forced 2: "[D20] ... Remove Curse 2 +5 = 7 vs DC 10 -> FAILURE", the bond stays
+#  3. 60 s later, forced 15: "-> SUCCESS", "you're no longer bound", 0 bonds, max health 20, the helmet off the head
+#  4. Wizard picks up an unidentified cursed +2 sword: "Your arcane training reveals: [+2 Diamond Sword] (Rare, cursed: Bloodthirst)"
+#  5. Fighter reads a Scroll of Identify with an unidentified +1 sword in the offhand: "The scroll reveals"
+#  6. The table's Identify button spends a scroll: "The scroll reveals"; with none: "uses a Scroll of Identify. You have none."
+#  7. Short rest: "While you rest, you study your loot"
+#  8. Innkeeper, sneak + right-click with 4 emeralds and an Uncommon in the offhand: "The innkeeper squints at it", emeralds gone
+#  9. Gluttony: Hunger I for 100 ticks adds about 0.75 exhaustion instead of 0.5; Scroll of Remove Curse frees it
+# 10. Sun-sick: Weakness (Id 18) at noon outdoors
+# 11. Ill Omen: /dndclass sheet shows the disadvantage; a forced 2 on a WIS save is a FUMBLE with "dis"
+# 12. Bloodthirst: holding a cursed sword 3 s binds it; 60 s later 1 damage (Health 20 -> 19)
+# 13. Beacon: a vindicator 20 blocks away only comes for you once you're cursed
+# 14. Loot: 34 rolls of dndclasses:magic/uncommon, some with a curse (grep the Inventory dump for curse:)
+wait 40
+closescreen
+/gamemode survival
+/difficulty easy
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule keepInventory true
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player]
+/fill -10 149 -30 30 149 10 minecraft:stone
+/fill -10 150 -30 30 156 10 minecraft:air
+/dndclass set @s fighter
+wait 10
+closescreen
+/clear @s
+/effect clear @s
+/dndmagic release @s all
+/tp @s 4.5 150 1.5 0 30
+hotbar 0
+# 1. Bind on equip
+/attribute @s minecraft:generic.max_health get
+/dndmagic give @s minecraft:iron_helmet uncommon 1 unidentified
+/dndmagic curse @s frailty
+/dndmagic info @s
+tooltips 0
+wait 5
+screenshot curse-helmet-unidentified
+closescreen
+/item replace entity @s armor.head from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 30
+/say step1-bound
+/dndmagic bonds @s
+/attribute @s minecraft:generic.max_health get
+screenshot curse-bound-chat
+press key.inventory
+wait 10
+slot 5 quick_move
+wait 5
+slots
+closescreen
+/setblock 4 150 4 dndclasses:attunement_table
+look 0 30
+use
+wait 10
+click -84 -104
+wait 5
+screenshot curse-table-cursed
+closescreen
+/setblock 4 150 4 minecraft:air
+# 2. Cleric Remove Curse on themselves, failing
+/dndclass set @s cleric
+wait 10
+closescreen
+/dndclass mana @s 9
+/dndclass forceroll @s 2
+/say step2-fail
+sneak on
+look 0 -90
+use
+wait 4
+screenshot remove-curse-fail
+sneak off
+wait 20
+/dndmagic bonds @s
+# 3. A minute later, succeeding
+wait 1210
+/dndclass mana @s 9
+/dndclass forceroll @s 15
+/say step3-success
+sneak on
+look 0 -90
+use
+wait 4
+screenshot remove-curse-success
+sneak off
+wait 20
+/dndmagic bonds @s
+/attribute @s minecraft:generic.max_health get
+/execute if entity @s[nbt={Inventory:[{Slot:103b}]}]
+/data get entity @s Inventory
+# 4. Wizard identifies on pickup
+/dndclass set @s wizard
+wait 10
+closescreen
+/clear @s
+/dndmagic release @s all
+/item replace entity @s hotbar.0 with minecraft:bread
+/say step4-wizard
+/summon item 4.5 150.2 1.5 {Item:{id:"minecraft:diamond_sword",Count:1b,tag:{dndclasses_magic:{tier:"rare",plus:2,identified:0b,curse:"bloodthirst"}}}}
+wait 30
+/dndmagic bonds @s
+hotbar 1
+tooltips 1
+wait 5
+screenshot curse-identified-tooltip
+closescreen
+hotbar 0
+# 5. Scroll of Identify (offhand)
+/dndclass set @s fighter
+wait 10
+closescreen
+/clear @s
+/say step5-scroll
+/item replace entity @s weapon.offhand with minecraft:iron_sword{dndclasses_magic:{tier:"uncommon",plus:1,identified:0b}}
+/item replace entity @s hotbar.0 with dndclasses:scroll_of_identify 2
+look 0 -90
+use
+wait 10
+/data get entity @s Inventory
+# 6. The table's Identify button
+/clear @s
+/say step6-table
+/item replace entity @s hotbar.0 with minecraft:golden_axe{dndclasses_magic:{tier:"rare",plus:2,identified:0b}}
+/item replace entity @s inventory.0 with dndclasses:scroll_of_identify 1
+/setblock 4 150 4 dndclasses:attunement_table
+look 0 30
+use
+wait 10
+click -84 -104
+wait 5
+screenshot identify-tab-before
+click 95 -21
+wait 10
+screenshot identify-tab-after
+/item replace entity @s hotbar.1 with minecraft:golden_axe{dndclasses_magic:{tier:"rare",plus:2,identified:0b}}
+wait 5
+click 95 -3
+wait 10
+closescreen
+/setblock 4 150 4 minecraft:air
+# 7. Short rest
+/clear @s
+/say step7-rest
+/item replace entity @s hotbar.0 with minecraft:iron_axe{dndclasses_magic:{tier:"uncommon",plus:1,identified:0b}}
+/dndclass rest @s short
+wait 5
+# 8. Innkeeper
+/clear @s
+/say step8-innkeeper
+/summon dndclasses:innkeeper 4.5 150 4.5 {NoAI:1b,Rotation:[180f,0f]}
+/item replace entity @s hotbar.0 with minecraft:emerald 4
+/item replace entity @s weapon.offhand with minecraft:iron_chestplate{dndclasses_magic:{tier:"uncommon",plus:1,identified:0b}}
+hotbar 0
+look 0 20
+sneak on
+use
+wait 5
+sneak off
+wait 5
+closescreen
+/data get entity @s Inventory
+/kill @e[type=dndclasses:innkeeper]
+# 9. Gluttony, then the Scroll of Remove Curse
+/clear @s
+/say step9-gluttony
+/data get entity @s foodExhaustionLevel
+/effect give @s minecraft:hunger 5 0
+wait 100
+/data get entity @s foodExhaustionLevel
+/effect clear @s
+/dndmagic give @s minecraft:iron_chestplate uncommon 1 unidentified
+/dndmagic curse @s gluttony
+/item replace entity @s armor.chest from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 30
+/dndmagic bonds @s
+/data merge entity @s {foodExhaustionLevel:0.0f}
+/data get entity @s foodExhaustionLevel
+/effect give @s minecraft:hunger 5 0
+wait 100
+/data get entity @s foodExhaustionLevel
+/effect clear @s
+/item replace entity @s hotbar.0 with dndclasses:scroll_of_remove_curse
+hotbar 0
+look 0 -90
+use
+wait 10
+/dndmagic bonds @s
+# 10. Sun-sick
+/clear @s
+/dndmagic release @s all
+/say step10-sunsick
+/dndmagic give @s minecraft:iron_boots uncommon 1
+/dndmagic curse @s sun_sick
+/item replace entity @s armor.feet from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 50
+/data get entity @s ActiveEffects
+# 11. Ill Omen
+/clear @s
+/effect clear @s
+/dndmagic release @s all
+/say step11-illomen
+/dndmagic give @s minecraft:iron_leggings uncommon 1
+/dndmagic curse @s ill_omen
+/item replace entity @s armor.legs from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 30
+/dndclass sheet @s
+/dndclass forceroll @s 2 2
+/dm save @s wis 10
+wait 10
+# 12. Bloodthirst, bound by holding the sword for 3 s
+/clear @s
+/dndmagic release @s all
+/say step12-bloodthirst
+/dndmagic give @s minecraft:iron_sword uncommon 1
+/dndmagic curse @s bloodthirst
+wait 80
+/dndmagic bonds @s
+/data get entity @s Health
+wait 1220
+/data get entity @s Health
+# 13. Beacon
+/clear @s
+/dndmagic release @s all
+/effect give @s minecraft:resistance 60 4 true
+/say step13-beacon
+/tp @s 4.5 150 1.5 180 0
+/summon minecraft:vindicator 4.5 150 -18.5 {PersistenceRequired:1b}
+wait 100
+/data get entity @e[type=minecraft:vindicator,limit=1] Pos
+/dndmagic give @s minecraft:iron_helmet uncommon 1
+/dndmagic curse @s beacon
+/item replace entity @s armor.head from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 100
+/data get entity @e[type=minecraft:vindicator,limit=1] Pos
+/kill @e[type=minecraft:vindicator]
+/dndmagic release @s all
+# 14. Loot curse rolls
+/clear @s
+/say step14-loot
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/uncommon
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/data get entity @s Inventory
+/clear @s
+/say done
+wait 20
+quit

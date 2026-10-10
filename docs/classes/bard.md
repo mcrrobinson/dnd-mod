@@ -80,7 +80,7 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 How the features work:
 - **Combat Inspiration** (Valor): when you play an instrument, every player who gets its buff (within 16 blocks, you included) also gets +2 armor for 30 s. Playing again restarts the 30 s.
-- **Bardic Lore** (Lore): +2 to Persuasion on your character sheet, so the villager persuasion roll and any other Persuasion check include it (it shows as "Bardic Lore" in the roll's breakdown). Identifying magic items on pickup comes with the identification card.
+- **Bardic Lore** (Lore): +2 to Persuasion on your character sheet, so the villager persuasion roll and any other Persuasion check include it (it shows as "Bardic Lore" in the roll's breakdown). A Lore Bard also identifies every [magic item](../systems/magic-items.md#identification) that enters their inventory, as a Wizard does.
 
 ## Commands
 - `/dndclass set <player> bard` (see [Admin commands](../systems/admin-commands.md)).

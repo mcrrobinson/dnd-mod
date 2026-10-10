@@ -17,6 +17,7 @@ import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.JsonHelper;
+import net.minecraft.util.math.random.Random;
 
 /**
  * Loot function {@code dndclasses:magic_item}: turns the rolled stack into a magic item.
@@ -26,7 +27,7 @@ import net.minecraft.util.JsonHelper;
  *   "tier": "rare",          // or "rarity"; optional for registered items (keeps their tier)
  *   "plus": 2,               // optional; weapons and armor default to the tier's +N (1/2/3)
  *   "identified": false,     // optional, default false (random loot is unidentified)
- *   "curse_chance": 0.1,     // optional; read now, rolled by the curses ticket
+ *   "curse_chance": 0.1,     // optional; default by tier (Uncommon/Rare 0.1, Very Rare 0.08), 0 for none
  *   "theme": "crypt" }       // optional dungeon theme bias (area 2); not used yet
  * </pre>
  */
@@ -36,7 +37,7 @@ public class MagicItemLootFunction extends ConditionalLootFunction {
     final @Nullable MagicTier tier;
     final @Nullable Integer plus;
     final boolean identified;
-    /** Negative = the tier's default chance. Not rolled yet: the curses ticket adds that. */
+    /** Negative = the tier's default chance ({@link Curse#defaultChance}). */
     final float curseChance;
     final @Nullable String theme;
 
@@ -62,7 +63,31 @@ public class MagicItemLootFunction extends ConditionalLootFunction {
     @Override
     protected ItemStack process(ItemStack stack, LootContext context) {
         apply(stack, tier, plus, identified);
+        rollCurse(stack, curseChance, identified, context.getRandom());
         return stack;
+    }
+
+    /**
+     * Curses the stack: a def's built-in curse always, else a random {@link Curse} with {@code chance} (negative =
+     * the tier's default: Uncommon and Rare 10%, Very Rare 8%, none for Common and Legendary). Identified loot
+     * (bounty rewards, known goods) is only cursed with an explicit chance, and its curse is known.
+     */
+    public static void rollCurse(ItemStack stack, float chance, boolean identified, Random random) {
+        if (stack.isEmpty() || !Curse.canCurse(stack) || !MagicData.curse(stack).isEmpty())
+            return;
+        MagicItemDef def = MagicItems.def(stack.getItem());
+        Curse curse = def != null ? Curse.byId(def.fixedCurse()) : null;
+        if (curse == null) {
+            if (identified && chance < 0)
+                return;
+            MagicItems.Info info = MagicItems.info(stack);
+            float p = chance >= 0 ? chance : info == null ? 0 : Curse.defaultChance(info.tier());
+            if (p <= 0 || random.nextFloat() >= p)
+                return;
+            curse = Curse.random(random);
+        }
+        MagicData.setCurse(stack, curse.id);
+        MagicData.setCurseKnown(stack, identified);
     }
 
     /** Shared with {@code /dndmagic give}: sets the tier, the +N (gear only) and the identified flag. */

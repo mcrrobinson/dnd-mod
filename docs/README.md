@@ -30,6 +30,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll (PR #118)
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
+- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items and `/dndmagic` (PR #117)
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 
 ## Mobs

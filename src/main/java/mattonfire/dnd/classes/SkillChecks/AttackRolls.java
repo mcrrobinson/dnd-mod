@@ -24,7 +24,7 @@ import net.minecraft.util.ActionResult;
  * <li>Natural 1: a fumble; the swing misses completely.</li>
  * </ul>
  * The modifier shown is the sheet's attack bonus (the better of STR and DEX modifier, plus proficiency);
- * attacks don't miss against armour, so it's for display only.
+ * a +N magic weapon adds its bonus. Attacks don't miss against armour, so it's for display only.
  */
 public final class AttackRolls {
     /**
@@ -54,7 +54,8 @@ public final class AttackRolls {
                 return ActionResult.PASS;
             }
             D20.Roll roll = D20.roll(player).label(D20.ATTACK).kind(RollKind.ATTACK)
-                    .modifier(attackBonus(player)).critRange(critRange(player)).roll();
+                    .modifier(attackBonus(player) + mattonfire.dnd.magic.MagicGear.attackBonus(player.getMainHandStack()))
+                    .critRange(critRange(player)).roll();
             if (roll.outcome() == D20.Outcome.FUMBLE) {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.fumble"));
                 player.resetLastAttackedTicks();

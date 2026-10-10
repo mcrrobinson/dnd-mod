@@ -230,6 +230,7 @@ public class DnDClasses implements ModInitializer {
                 ModItems.registerModItems();
                 ModEffects.registerEffects();
                 ModPotions.registerPotions();
+                mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
                 ModEnchantments.registerEnchantments();

@@ -42,7 +42,7 @@ Every full-strength melee swing (attack cooldown at 90% or more) at a living mob
 - **Critical hit:** a natural 20 deals double damage, with crit particles and the crit sound. Fighters crit on 19 or 20 (Improved Critical). The crit only applies to the swing that rolled it. If something else cancels that attack (a Monk swinging a sword, for example), the crit is lost.
 - **Fumble:** a natural 1 misses entirely and resets your cooldown.
 
-Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your attack bonus from the sheet: the better of your STR and DEX modifier, plus your proficiency bonus (for example a level 1 Barbarian is +4, a level 9 one +6). It's for display only and doesn't change whether you hit. The crit range comes from the sheet too (20, or 19-20 for a Fighter).
+Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your attack bonus from the sheet: the better of your STR and DEX modifier, plus your proficiency bonus (for example a level 1 Barbarian is +4, a level 9 one +6). It's for display only and doesn't change whether you hit. The crit range comes from the sheet too (20, or 19-20 for a Fighter). A [+N magic weapon](magic-items.md#1--2--3-gear) adds its bonus to the shown modifier.
 
 ### Advantage, disadvantage and the HUD
 A roll with advantage rolls two dice and keeps the higher; disadvantage keeps the lower. The HUD shows the kept die, then the dropped one in grey with "adv" or "dis". Named bonuses (such as "+2 assist" from a later party feature) are listed beside the title. Nothing in the game grants advantage yet; the sheet and the roll API support it for features to come.

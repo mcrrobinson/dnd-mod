@@ -10,6 +10,10 @@ Bosses and the big dragons share one fight system: a boss bar, fight music, heal
 
 **Phases.** At set health thresholds a boss moves into a new phase, once each, in order. The bar changes colour (yellow to red at half health, for example) and the boss gets new behaviour. The phase is saved with the boss, so logging out halfway through doesn't reset it.
 
+**Downed players.** Bosses ignore [Downed](../systems/death-saves.md) players like any mob, but their area attacks still cost fails. The fight (and its bar) stays on while a Downed player from it is in range, even with nobody left standing for the boss to target. If **every** player in range is Downed, it's a **party wipe**: their death saves roll at disadvantage, so a fight can't stall with everyone crawling. Nobody in range can start a rest while the fight is on.
+
+![A party wipe at a Lich: the death save rolls two dice and keeps the lower](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-mobs/downed-wipe-3.png)
+
 **Rewards.** Bosses give a fixed amount of XP and drop their own loot, and some grant an advancement to the player the game credits with the kill.
 
 | Boss | Health | Bar | Range | Music | Phases | XP | Advancement |
@@ -31,3 +35,4 @@ Tamed dragons never start a boss fight. The Ember Wyvern is a dragon too, but a 
 
 ## For developers
 - See [Boss framework](../dev/boss-framework.md) for adding a boss with `BossFight`.
+- `BossFight.fightNear(player)` / `inAnyFight(player)` find the fight a player is in (every `BossFight` that has ticked on the server is tracked until its boss is removed); `isPartyWiped()` is the party-wipe check, used by `DownedCombat`.

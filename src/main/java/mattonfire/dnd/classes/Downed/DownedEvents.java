@@ -104,6 +104,7 @@ public final class DownedEvents {
                 : null);
 
         ServerTickEvents.END_SERVER_TICK.register(Downed::tick);
+        DownedCombat.register();
         ServerPlayNetworking.registerGlobalReceiver(C2S_GIVE_UP, (server, player, handler, buf, sender) -> {
             boolean holding = buf.readBoolean();
             server.execute(() -> Downed.setGivingUp(player, holding));
@@ -234,10 +235,14 @@ public final class DownedEvents {
             state.meleeCooldown.put(attacker.getUuid(), Downed.MELEE_COOLDOWN);
             fails = 2;
         } else {
-            if (state.hazardCooldown > 0) {
+            // Rate-limited per damage type, so lava doesn't kill in a tick but an explosion still counts.
+            // Fire, burning and lava share one timer (lava sets you on fire too).
+            String type = source.isIn(net.minecraft.registry.tag.DamageTypeTags.IS_FIRE) ? "fire"
+                    : source.getTypeRegistryEntry().getKey().map(key -> key.getValue().toString()).orElse("");
+            if (state.hazardCooldown.containsKey(type)) {
                 return false;
             }
-            state.hazardCooldown = Downed.HAZARD_COOLDOWN;
+            state.hazardCooldown.put(type, Downed.HAZARD_COOLDOWN);
             fails = 1;
         }
         player.world.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ENTITY_PLAYER_HURT,
@@ -246,6 +251,7 @@ public final class DownedEvents {
                 .formatted(Formatting.RED), true);
         DnDClasses.LOGGER.info("[Downed] {} hit while Downed by {}: +{} fails", player.getEntityName(),
                 source.getName(), fails);
+        DownedCombat.beforeFails(player, state, source, fails);
         Downed.addFails(player, state, fails);
         return false;
     }

@@ -24,7 +24,7 @@ Going Downed sets you to 1 HP, removes Regeneration and Absorption and puts out 
 ### Being Downed
 - You crawl (the swimming pose, 0.6 blocks tall) at half the vanilla crawl speed, about 15% of walking speed. You can't jump, sprint, swim up (you sink), or glide.
 - You can't attack, use or break blocks, use items or entities (so no eating or drinking), drop items with Q, or fire your special. Inventory and container screens close. You can look around, chat and change hotbar slot.
-- You don't heal (natural regeneration, potions, Regeneration) and you don't regain mana or trickle charges. You can't rest, and going Downed interrupts a campfire short rest in progress (within half a second).
+- You don't heal on your own (natural regeneration, Second Wind, Hit Dice; see Helping a Downed player for heals that stand you up) and you don't regain mana or trickle charges. You can't rest, and going Downed interrupts a campfire short rest in progress (within half a second).
 - The action bar shows your tally: `DOWNED ●●○ ✕○○ next save in 4 s`, or `STABLE standing up in 22 s`.
 
 ### Death saves
@@ -47,10 +47,22 @@ Halfling Lucky rerolls a natural 1 as it does on other rolls, and advantage sour
 Hits don't take health while you're Downed; each one is a failed death save instead:
 
 - a melee hit (a mob's or player's attack): **2 fails**, at most once per attacker per half second
-- anything else (lava, fire, falling, drowning, arrows, explosions): **1 fail**, at most once every 1.5 seconds, so lava kills a Downed player in about 3 seconds
+- anything else (lava, fire, falling, drowning, arrows, explosions, acid): **1 fail**, at most once every 1.5 seconds per kind of damage (fire, burning and lava count as one), so lava kills a Downed player in about 3 seconds but an explosion on top still counts
 - the void and `/kill`: death
 
-Party members still can't hurt each other. Mobs keep attacking Downed players for now (see Known limitations).
+Party members still can't hurt each other, so they can't finish each other either.
+
+### Mobs, bosses and PvP
+![A zombie drawn to a Fighter switches to the standing guest when the Fighter goes Downed](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-mobs/downed-guest-zombie.png)
+
+- **Mobs ignore Downed players.** A mob can't pick a Downed player as its target, and one already chasing them lets go within half a second. It goes for the next player in range, or idles. A Downed Fighter doesn't draw aggro.
+- **Area damage still lands:** explosions, breath, boss blasts and the like each cost a fail, so fighting over a fallen friend is risky for them too.
+- **Gelatinous Cube:** a cube spits a Downed player out after 3 seconds inside (about 2 fails of acid), so allies can reach them. It won't engulf them again for 2 seconds.
+- **Boss party wipe:** if every player within a boss fight's range is Downed, their death saves roll at **disadvantage** ("Your whole party is down: death saves at disadvantage!"). The boss bar stays up while a Downed player from the fight is in range, even though the boss has nobody left to target. See [Boss fights](../bosses/boss-fights.md).
+- **PvP** (`dndPvpDowned` true, the default): a player outside your party can finish you; each of their melee hits is 2 fails. If their hit is the last fail, the kill ("Steve was slain by Alex"), the kill stat and advancements go to them, unless another player downed you, who keeps the credit. Otherwise the credit goes to whatever downed you.
+
+### Rests
+You can't start a rest while Downed, while a party member within 32 blocks is Downed ("You can't rest while Steve is Downed."), or during a boss fight ("You can't rest during a boss fight."). A rest in progress stops if any of these happens.
 
 ### Helping a Downed player
 Anyone who isn't Downed can help. In PvP, the player who downed you won't help you up.
@@ -104,7 +116,7 @@ Permission level 2.
 ## Known limitations
 - The stabilise progress is an action-bar line for now (the target's own tally line replaces it once a second); a proper progress bar comes with the downed HUD.
 - Heals from new sources (magic items, scripted healers) only revive if they're marked as coming from someone else (see For developers); anything else counts as the Downed player's own and is blocked.
-- Mobs don't ignore Downed players yet, so a mob that keeps attacking finishes you in two hits.
+- Mobs only ignore Downed players as targets: a mob's area attack aimed at someone else still costs fails. Brain-driven vanilla mobs (piglins, hoglins, wardens) drop a Downed target within half a second rather than never picking it.
 - No downed overlay, party HUD status or ally outline yet; the tally is on the action bar. Other players see you crawling.
 - Inventory items can still be thrown out of an open inventory screen for the moment it takes the screen to close.
 - Massive damage deaths use the hit's normal death message.
@@ -114,6 +126,7 @@ Permission level 2.
   - `Downed`: the state API, `is(player)` / `isStable(player)` (both sides, from DataTracker bits on the player), `down(player, source)`, `stabilise(player[, ticks])`, `revive(player, hp)`, `bleedOut(player)` (dies with the stored source; a held totem still works), `tally(player)`. The tally is persistent NBT `dndDowned`, cleared on death and respawn.
   - `DownedEvents`: `ALLOW_DEATH` (the order above), `ALLOW_DAMAGE` (hits become fails), the restriction callbacks (in an early phase, before attack rolls), the `RestEvents.ALLOW_REST` veto, join resume, logout death, the C2S `dndclasses:downed_give_up` hold packet, and `AFTER_DOWNED`.
   - `DeathSaves`: `roll(player, label, dc, Advantage)` builds a `RollKind.DEATH` roll through `D20.roll`; `lastStand(player)`.
+  - `DownedCombat`: mob targeting (`DownedTargetMixin` on `LivingEntity.canTarget`, which `TargetPredicate`, `TrackTargetGoal.shouldContinue` and brain sensors check, plus a sweep every 10 ticks and on `AFTER_DOWNED` that clears `setTarget` and the `ATTACK_TARGET` memory), the boss party-wipe `DeathSaveModifier`, the rest veto (Downed party member within 32 blocks, `BossFight.inAnyFight`), and PvP finisher credit (`beforeFails`, called from `DownedEvents.allowDamage`).
   - `DeathSaveModifier.EVENT`: `bonus(player)` (summed, capped at +5) and `mode(player)` (advantage / disadvantage) for auras, racial traits, items and boss party wipes.
 - Mixins: `PlayerEntityMixin` (the `DND$DOWNED` tracked byte, `updatePose` forced to `SWIMMING`, no `jump` or `checkFallFlying`, records the overflow past 0 HP in `applyDamage`), `LivingEntityMixin` (no `heal`, no sprinting, no `swimUpward`), `LivingEntityInvoker` (`tryUseTotem`), `DownedServerPlayerMixin` (no Q drop).
 - `Stabilise`: hold-use help. The client (`StabiliseClient`) sends C2S `dndclasses:downed_help_hold` with the target's entity id while use is held on a Downed player (refreshed every second, -1 on release); the server checks range 3.5, line of sight, an empty or no-use main hand, the helper not hurt or Downed and not the PvP attacker, and counts 60 ticks. `progress(helper)` gives 0-1 for a HUD.
@@ -121,4 +134,5 @@ Permission level 2.
 - `DeathSaveModifier.rerollFailure(player)`: reroll a failed death save (Fighter Indomitable). Paladin's +2 is `PaladinSkills.auraDeathSaveBonus`, Indomitable is `FighterSkills.indomitableReroll`, both registered in `Revives.register`.
 - Client `DownedClient`: closes handled screens and sends the give-up hold state of the power-up key.
 - DevScript `holdkey <key> on|off` holds a key binding.
-- Devscripts: `devscripts/downed-revive-lan-host.txt` + `downed-revive-lan-guest.txt` (stabilise with a failed and a successful Medicine roll, help up, interruption, golden apple, potion on a Rogue and a Paladin, ale, Cure Wounds, Paladin aura), `devscripts/downed-revive-solo.txt` (splash potion on a Rogue and a Paladin, natural regen and Second Wind blocked, Regeneration revives, Indomitable), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout), `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).
+- `BossFight.fightNear(player)`, `inAnyFight(player)`, `isFightingNear(player)` and `isPartyWiped()`; `GelatinousCubeEntity.SPIT_DOWNED_AFTER` (60 ticks).
+- Devscripts: `devscripts/downed-revive-lan-host.txt` + `downed-revive-lan-guest.txt` (stabilise with a failed and a successful Medicine roll, help up, interruption, golden apple, potion on a Rogue and a Paladin, ale, Cure Wounds, Paladin aura), `devscripts/downed-revive-solo.txt` (splash potion on a Rogue and a Paladin, natural regen and Second Wind blocked, Regeneration revives, Indomitable), `devscripts/downed-mobs-host.txt` + `downed-mobs-guest.txt` (zombie target switch with a Fighter, creeper, cube spit, rest refusals, Lich party wipe, PvP finisher), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout), `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).

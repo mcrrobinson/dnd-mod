@@ -10,6 +10,8 @@ import io.github.cottonmc.cotton.gui.widget.WGridPanel;
 import io.github.cottonmc.cotton.gui.widget.WLabel;
 import io.github.cottonmc.cotton.gui.widget.data.Insets;
 import io.github.cottonmc.cotton.gui.widget.icon.TextureIcon;
+import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Client.PickerFlow;
 import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.classes.Race.DragonAncestry;
@@ -76,7 +78,11 @@ public class RaceSelectionHud extends LightweightGuiDescription {
             root.add(button, (i % COLUMNS) * BUTTON_CELLS, 1 + i / COLUMNS, BUTTON_CELLS, 1);
             i++;
         }
-        root.add(new WLabel(Text.translatable("gui.dndclasses.race_picker.hint").formatted(Formatting.GRAY)), 0,
+        // A player who already has a class keeps it, so only a new player is told the class picker comes next.
+        boolean classed = net.minecraft.client.MinecraftClient.getInstance().player instanceof PlayerEntityExt ext
+                && ext.getDndClass() != null && ext.getDndClass() != DndCharacter.NONE;
+        String hint = classed ? "gui.dndclasses.race_picker.hint_classed" : "gui.dndclasses.race_picker.hint";
+        root.add(new WLabel(Text.translatable(hint).formatted(Formatting.GRAY)), 0,
                 1 + (i + COLUMNS - 1) / COLUMNS, COLUMNS * BUTTON_CELLS, 1);
     }
 

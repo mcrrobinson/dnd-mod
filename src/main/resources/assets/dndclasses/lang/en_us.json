@@ -364,6 +364,7 @@
     "race.dndclasses.ancestry.storm.tooltip": "Blue and bronze dragons: lightning breath, resist lightning",
     "gui.dndclasses.race_picker.title": "Choose your heritage",
     "gui.dndclasses.race_picker.hint": "Hover a race for its bonuses. Your class comes next.",
+    "gui.dndclasses.race_picker.hint_classed": "Hover a race for its bonuses. Your class stays the same.",
     "gui.dndclasses.race_picker.ancestry": "Choose your draconic ancestry",
     "gui.dndclasses.race_picker.abilities": "Ability scores: %s",
     "gui.dndclasses.race_picker.traits": "Traits (coming soon):",

@@ -7,7 +7,7 @@ How to check a change in a real Minecraft client without anyone at the keyboard.
 - `./gradlew runClient` loads straight into `run/saves/New World` (pick another with `-PdevWorld=<folder>`).
 - **Scripted runs:** `timeout 300 ./gradlew runClient -PdevScript=devscripts/<script>.txt` joins the world, runs the script one step per tick and quits. Scripted clients use a hidden window that never takes focus.
 - Pass `-PdevHidden=false` to watch a scripted run, or `-PdevHidden` to hide a plain `runClient`.
-- **Script steps:** `/command`, `wait <ticks>`, `screenshot <name>`, `hud on|off`, `hitboxes on|off`, `serverhitboxes on|off|measure`, `look <yaw> <pitch>`, `use`, `attack`, `hotbar <0-8>`, `press <key>`, `sneak on|off`, `perspective first|back|front`, `slot`, `button`, `rename`, `slots`, `respawn`, `closescreen` and `quit`. They're documented at the top of `Client/DevScript.java`.
+- **Script steps:** `/command`, `wait <ticks>`, `screenshot <name>`, `hud on|off`, `hitboxes on|off`, `serverhitboxes on|off|measure`, `look <yaw> <pitch>`, `use`, `attack`, `hotbar <0-8>`, `press <key>`, `sneak on|off`, `perspective first|back|front`, `slot`, `button`, `rename`, `slots`, `click`, `hover <dx> <dy>`, `escape`, `bookpage <n|last>`, `racepicker on|off`, `racepick <race> [ancestry]`, `respawn`, `closescreen` and `quit`. They're documented at the top of `Client/DevScript.java`.
 - **Results:** read `<run dir>/screenshots/<name>.png`, and grep `<run dir>/logs/latest.log` for `[DevScript]` and `[CHAT]` lines.
 - **Several clients / LAN:** give each one its own run directory (`-PdevRunDir=run-2`). A second player can join with `-PdevServer=localhost:25599` after the host runs `/publish false survival 25599`.
 

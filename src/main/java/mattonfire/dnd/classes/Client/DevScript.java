@@ -8,6 +8,7 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.mixin.MinecraftClientInvoker;
+import mattonfire.dnd.classes.mixin.MouseAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -73,6 +74,10 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
  *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
+ * <li>{@code hover <dx> <dy>} puts the game's cursor at GUI coordinates measured from the screen's centre, so the
+ *     next frames draw that spot's tooltip (the OS cursor isn't moved)</li>
+ * <li>{@code escape} sends the open screen an Escape key press, e.g. to check a picker ignores it</li>
+ * <li>{@code bookpage <n|last>} turns an open book to page n (from 0) or the last page</li>
  * <li>{@code racepicker on|off}: while a script runs the race picker stays shut (the dev-world player has a class
  *     but no race, so it would block every script). {@code on} lets it open, straight away if the player has no
  *     race</li>
@@ -259,6 +264,29 @@ public final class DevScript {
                 }
             }
             case "skill" -> skill(argument.split("\\s+"), lineNumber);
+            case "hover" -> {
+                String[] args = argument.split("\\s+");
+                if (client.currentScreen != null) {
+                    double scale = (double) client.getWindow().getWidth() / client.getWindow().getScaledWidth();
+                    MouseAccessor mouse = (MouseAccessor) client.mouse;
+                    mouse.setX((client.currentScreen.width / 2.0 + Double.parseDouble(args[0])) * scale);
+                    mouse.setY((client.currentScreen.height / 2.0 + Double.parseDouble(args[1])) * scale);
+                }
+            }
+            case "escape" -> {
+                if (client.currentScreen != null) {
+                    client.currentScreen.keyPressed(org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE, 0, 0);
+                }
+                DnDClasses.LOGGER.info("[DevScript] screen after escape: {}", client.currentScreen == null ? "none"
+                        : client.currentScreen.getClass().getSimpleName());
+            }
+            case "bookpage" -> {
+                if (client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.BookScreen book) {
+                    book.setPage(argument.equals("last") ? Integer.MAX_VALUE / 2 : Integer.parseInt(argument));
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: bookpage needs an open book", lineNumber);
+                }
+            }
             case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
             case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);

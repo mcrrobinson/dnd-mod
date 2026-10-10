@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Abilities.Advantage;
+import mattonfire.dnd.classes.Abilities.RollKind;
 import mattonfire.dnd.classes.Config.SaveRollsMode;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.D20;
@@ -69,7 +70,13 @@ public final class DiceRollHud {
                 });
                 return;
             }
-            client.execute(() -> start(client, received, receivedDetail));
+            client.execute(() -> {
+                // While Downed only death saves (and Last Stand) take the main panel; other popups would hide them
+                if (DownedHud.showing() && received.kind() != RollKind.DEATH) {
+                    return;
+                }
+                start(client, received, receivedDetail);
+            });
         });
         ClientTickEvents.END_CLIENT_TICK.register(DiceRollHud::tick);
         // Drop a roll still animating when leaving the world

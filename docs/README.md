@@ -29,7 +29,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
-- [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up
+- [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up; a downed HUD, party status and red ally outlines show who's down
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
 - [Party](systems/party.md): group up with other players

@@ -73,6 +73,10 @@
         "StealthMixin"
     ],
     "client": [
+        "DownedHudMixin",
+        "DownedOutlineMixin",
+        "DownedOutlineColorMixin",
+        "DownedNameTagMixin",
         "AbstractClientPlayerEntityMixin",
         "LivingEntityRendererAccessor",
         "LivingEntityRendererMixin",

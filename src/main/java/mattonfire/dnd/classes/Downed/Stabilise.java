@@ -78,6 +78,27 @@ public final class Stabilise {
         return hold == null ? -1.0F : (float) hold.ticks / HOLD_TICKS;
     }
 
+    /** Who the helper is holding use on (a Downed player's UUID), or null. */
+    @Nullable
+    public static UUID target(ServerPlayerEntity helper) {
+        Hold hold = HOLDS.get(helper.getUuid());
+        return hold == null ? null : hold.target;
+    }
+
+    /** The helper furthest along on this Downed player, or null if nobody is helping them. */
+    @Nullable
+    public static UUID helperOf(ServerPlayerEntity target) {
+        UUID best = null;
+        int bestTicks = -1;
+        for (Map.Entry<UUID, Hold> entry : HOLDS.entrySet()) {
+            if (entry.getValue().target.equals(target.getUuid()) && entry.getValue().ticks > bestTicks) {
+                best = entry.getKey();
+                bestTicks = entry.getValue().ticks;
+            }
+        }
+        return best;
+    }
+
     static void setHolding(ServerPlayerEntity helper, int targetId) {
         Hold hold = HOLDS.get(helper.getUuid());
         Entity entity = targetId < 0 ? null : helper.world.getEntityById(targetId);
@@ -162,21 +183,8 @@ public final class Stabilise {
                 complete(helper, target, stable);
                 continue;
             }
-            if (hold.ticks % 10 == 1) {
-                String verb = stable ? "Helping " + target.getEntityName() + " up" : "Stabilising " + target.getEntityName();
-                Text bar = progressText(verb, hold.ticks);
-                helper.sendMessage(bar, true);
-                target.sendMessage(progressText(helper.getEntityName() + (stable ? " is helping you up" : " is stabilising you"),
-                        hold.ticks), true);
-            }
+            // Both players see the progress bar on their DownedHud (DownedHudSync).
         }
-    }
-
-    private static Text progressText(String verb, int ticks) {
-        int filled = Math.min(10, ticks * 10 / HOLD_TICKS);
-        return Text.literal(verb + "  ").formatted(Formatting.YELLOW)
-                .append(Text.literal("■".repeat(filled)).formatted(Formatting.GREEN))
-                .append(Text.literal("■".repeat(10 - filled)).formatted(Formatting.DARK_GRAY));
     }
 
     private static void complete(ServerPlayerEntity helper, ServerPlayerEntity target, boolean stable) {

@@ -1,0 +1,148 @@
+# Physical obstacles (Barbarian, Fighter, Monk). Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-physical.txt
+# Expect (screenshots + log):
+#  Barbarian: raging, the Heavy Boulder hint shows Athletics vs DC 15 and the roll shows two dice (Rage advantage);
+#   a rigged 12 (+4) beats DC 15 and the boulder opens ("Test passed").
+#  Fighter: a rigged 15 clears the Collapsed Passage; the winch raises the portcullis, a second success wedges it
+#   (winch state=open) and the gate is still up 8 seconds later.
+#  Monk: a Crumbling Ledge still holds 20 ticks after stepping on it and is gone 30 ticks later; the bridge winch
+#   lowers the chasm bridge (chasm state=open).
+#  Wizard (solo fallbacks): mines through the rubble, a TNT clears the whole boulder, and two portcullis bars mine out.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 10 149 30 minecraft:stone
+/fill 0 150 0 10 156 30 minecraft:air
+
+# Barbarian: Heavy Boulder (Hard), with Rage advantage
+/dndobstacle place 3 150 5 4 151 6 dndclasses:heavy_boulder hard
+/dndclass set @s barbarian
+/dndclass xp @s set 260
+wait 5
+/clear @s
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+/tp @s 3.5 150 3.5 0 20
+wait 200
+press key.dnd-classes.power-up
+wait 10
+/dndclass sheet @s
+screenshot physical-barbarian-hint
+/dndclass forceroll @s clear
+/dndclass forceroll @s 12
+use
+wait 18
+screenshot physical-barbarian-roll
+wait 30
+/execute if block 3 150 5 dndclasses:heavy_boulder[state=open]
+/execute if block 4 151 6 dndclasses:heavy_boulder[state=open]
+screenshot physical-barbarian-open
+
+# Fighter: Collapsed Passage (Medium)
+/dndobstacle place 3 150 9 5 151 9 dndclasses:collapsed_passage medium
+/dndclass set @s fighter
+wait 5
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 7.5 0 20
+wait 10
+screenshot physical-fighter-rubble-hint
+/dndclass forceroll @s 15
+use
+wait 40
+/execute if block 4 150 9 dndclasses:collapsed_passage[state=open]
+screenshot physical-fighter-rubble-open
+
+# Fighter: Portcullis + winch, raise then wedge
+/dndobstacle place 3 150 13 5 152 13 dndclasses:portcullis medium
+/dndobstacle place 6 150 12 6 150 12 dndclasses:portcullis_winch medium
+/tp @s 6.5 150 10.5 0 30
+wait 10
+screenshot physical-fighter-winch-hint
+/dndclass forceroll @s 15
+use
+wait 30
+/execute if block 4 151 13 dndclasses:portcullis[state=open]
+screenshot physical-fighter-raised
+/dndclass forceroll @s 15
+use
+wait 30
+/execute if block 6 150 12 dndclasses:portcullis_winch[state=open]
+wait 160
+/execute if block 4 151 13 dndclasses:portcullis[state=open]
+screenshot physical-fighter-wedged
+/dndobstacle reset 6 150 12
+wait 2
+/execute if block 4 151 13 dndclasses:portcullis[state=sealed]
+
+# Monk: Crumbling Ledge (40 ticks for a Monk)
+/dndclass set @s monk
+wait 5
+/clear @s
+/setblock 8 149 16 dndclasses:crumbling_ledge
+/fill 8 140 16 8 148 16 minecraft:air
+/tp @s 8.5 150 16.5 0 20
+wait 20
+/execute if block 8 149 16 dndclasses:crumbling_ledge[state=sealed]
+wait 30
+/execute if block 8 149 16 dndclasses:crumbling_ledge[state=open]
+screenshot physical-monk-ledge
+/effect give @s minecraft:instant_health 1 5
+
+# Monk: Chasm (7 long, 3 wide) and its bridge winch on the far side
+/fill 3 140 20 5 149 26 minecraft:air
+/dndobstacle place 3 149 20 5 149 26 dndclasses:chasm medium
+/setblock 6 150 28 minecraft:air
+/dndobstacle place 6 150 28 6 150 28 dndclasses:bridge_winch medium
+/tp @s 4.5 150 18.5 0 20
+wait 10
+screenshot physical-monk-chasm
+/tp @s 6.5 150 30.5 180 30
+wait 10
+screenshot physical-monk-winch-hint
+use
+wait 10
+/execute if block 4 149 23 dndclasses:chasm[state=open]
+/tp @s 4.5 150 27.5 180 30
+wait 10
+screenshot physical-monk-bridge
+
+# Wizard: solo fallbacks
+/dndobstacle reset 4 150 9
+/dndobstacle reset 3 150 5
+/dndclass set @s wizard
+wait 5
+/clear @s
+/effect clear @s
+/give @s minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+hotbar 0
+/tp @s 4.5 150 7.5 0 20
+wait 10
+screenshot physical-wizard-rubble-hint
+mine on
+wait 60
+mine off
+/execute if block 4 150 9 minecraft:air
+/summon minecraft:tnt 2.5 150 5.5 {Fuse:20}
+/tp @s 4.5 150 0.5 0 20
+wait 40
+/execute if block 4 151 6 minecraft:air
+/execute if block 3 150 5 minecraft:air
+screenshot physical-wizard-tnt
+/tp @s 4.5 150 11.5 0 20
+wait 5
+mine on
+wait 80
+mine off
+/tp @s 4.5 150 11.5 0 50
+wait 5
+mine on
+wait 80
+mine off
+/execute if block 4 150 13 minecraft:air
+screenshot physical-wizard-bars
+/dndclass resetprogress @s
+quit

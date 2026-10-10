@@ -6,6 +6,13 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Obstacles.types.BridgeWinchType;
+import mattonfire.dnd.classes.Obstacles.types.ChasmType;
+import mattonfire.dnd.classes.Obstacles.types.CollapsedPassageType;
+import mattonfire.dnd.classes.Obstacles.types.CrumblingLedgeType;
+import mattonfire.dnd.classes.Obstacles.types.HeavyBoulderType;
+import mattonfire.dnd.classes.Obstacles.types.PortcullisType;
+import mattonfire.dnd.classes.Obstacles.types.PortcullisWinchType;
 import mattonfire.dnd.classes.Registry.ModItemGroup;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
@@ -39,6 +46,30 @@ public final class ObstacleTypes {
     public static final ObstacleBlock LESSER_ARCANE_SEAL_BLOCK = register(LESSER_ARCANE_SEAL, sealSettings());
     public static final ObstacleBlock GREATER_ARCANE_SEAL_BLOCK = register(GREATER_ARCANE_SEAL, sealSettings());
 
+    // Physical obstacles: Barbarians, Fighters and Monks
+    public static final CollapsedPassageType COLLAPSED_PASSAGE = new CollapsedPassageType(id("collapsed_passage"));
+    public static final HeavyBoulderType HEAVY_BOULDER = new HeavyBoulderType(id("heavy_boulder"));
+    public static final PortcullisType PORTCULLIS = new PortcullisType(id("portcullis"));
+    public static final PortcullisWinchType PORTCULLIS_WINCH = new PortcullisWinchType(id("portcullis_winch"),
+            PORTCULLIS);
+    public static final ChasmType CHASM = new ChasmType(id("chasm"));
+    public static final BridgeWinchType BRIDGE_WINCH = new BridgeWinchType(id("bridge_winch"), CHASM);
+    public static final CrumblingLedgeType CRUMBLING_LEDGE = new CrumblingLedgeType(id("crumbling_ledge"));
+
+    public static final ObstacleBlock COLLAPSED_PASSAGE_BLOCK = register(COLLAPSED_PASSAGE,
+            solidSettings(Material.STONE, BlockSoundGroup.GRAVEL));
+    public static final ObstacleBlock HEAVY_BOULDER_BLOCK = register(HEAVY_BOULDER,
+            solidSettings(Material.STONE, BlockSoundGroup.STONE));
+    public static final ObstacleBlock PORTCULLIS_BLOCK = register(PORTCULLIS,
+            solidSettings(Material.METAL, BlockSoundGroup.CHAIN));
+    public static final ObstacleBlock PORTCULLIS_WINCH_BLOCK = register(PORTCULLIS_WINCH,
+            solidSettings(Material.WOOD, BlockSoundGroup.WOOD));
+    public static final ObstacleBlock CHASM_BLOCK = register(CHASM, solidSettings(Material.WOOD, BlockSoundGroup.WOOD));
+    public static final ObstacleBlock BRIDGE_WINCH_BLOCK = register(BRIDGE_WINCH,
+            solidSettings(Material.WOOD, BlockSoundGroup.WOOD));
+    public static final ObstacleBlock CRUMBLING_LEDGE_BLOCK = register(CRUMBLING_LEDGE,
+            solidSettings(Material.STONE, BlockSoundGroup.STONE));
+
     public static final BlockEntityType<ObstacleBlockEntity> BLOCK_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, id("obstacle"),
             FabricBlockEntityTypeBuilder.create(ObstacleBlockEntity::new,
@@ -63,9 +94,21 @@ public final class ObstacleTypes {
                 .blockVision((state, world, pos) -> false);
     }
 
+    /** Rubble, boulders, gates and machinery: no glow. Still non-opaque, as open blocks may be see-through. */
+    private static FabricBlockSettings solidSettings(Material material, BlockSoundGroup sounds) {
+        return FabricBlockSettings.of(material)
+                .sounds(sounds)
+                .nonOpaque()
+                .dropsNothing()
+                .allowsSpawning((state, world, pos, type) -> false)
+                .solidBlock((state, world, pos) -> false)
+                .suffocates((state, world, pos) -> false)
+                .blockVision((state, world, pos) -> false);
+    }
+
     /** Registers a type with its block and block item, under the type's id. */
     private static ObstacleBlock register(ObstacleType type, FabricBlockSettings settings) {
-        settings.strength(type.breakable() ? SEAL_HARDNESS : -1.0f, BLAST_RESISTANCE);
+        settings.strength(type.hardness(), type.blastResistance());
         ObstacleBlock block = Registry.register(Registries.BLOCK, type.id(), new ObstacleBlock(type, settings));
         Registry.register(Registries.ITEM, type.id(), new BlockItem(block, new FabricItemSettings()));
         TYPES.put(type.id(), type);
@@ -93,5 +136,8 @@ public final class ObstacleTypes {
             }
         });
         ObstacleInteractions.register();
+        for (ObstacleType type : TYPES.values()) {
+            type.registerEvents();
+        }
     }
 }

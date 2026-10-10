@@ -130,8 +130,8 @@ public class ObstacleBlockEntity extends BlockEntity {
 
     /** Server ticker: reseals the group once its reseal time is up. */
     static void tick(World world, BlockPos pos, BlockState state, ObstacleBlockEntity be) {
-        if (be.resealTicks <= 0 || state.get(ObstacleBlock.STATE) != ObstacleState.OPEN
-                || (world.getTime() + pos.asLong()) % 20 != 0) {
+        // Checked every tick so short timers (a raised portcullis) are exact
+        if (be.resealTicks <= 0 || state.get(ObstacleBlock.STATE) != ObstacleState.OPEN) {
             return;
         }
         if (world.getTime() >= be.openedAt + be.resealTicks && world instanceof ServerWorld serverWorld) {

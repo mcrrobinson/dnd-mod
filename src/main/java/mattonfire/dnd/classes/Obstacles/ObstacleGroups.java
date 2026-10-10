@@ -86,6 +86,29 @@ public final class ObstacleGroups {
         return changed;
     }
 
+    /**
+     * Opens the group for {@code ticks} (a raised portcullis): it reseals that long from now, even if
+     * it was already open. Returns the group size.
+     */
+    public static int openFor(ServerWorld world, BlockPos origin, int ticks) {
+        open(world, origin);
+        List<BlockPos> group = group(world, origin);
+        long now = world.getTime();
+        for (BlockPos pos : group) {
+            if (world.getBlockEntity(pos) instanceof ObstacleBlockEntity be) {
+                be.setResealTicks(ticks);
+                be.setOpenedAt(now);
+            }
+        }
+        return group.size();
+    }
+
+    /** Whether the group at {@code origin} is open and will reseal on a timer. */
+    public static boolean openOnTimer(World world, BlockPos origin) {
+        return !ObstacleBlock.isSealed(world.getBlockState(origin))
+                && world.getBlockEntity(origin) instanceof ObstacleBlockEntity be && be.resealTicks() > 0;
+    }
+
     /** Sets the tier of every block in the group. Returns the group size. */
     public static int setTier(World world, BlockPos origin, Tier tier) {
         List<BlockPos> group = group(world, origin);

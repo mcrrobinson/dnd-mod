@@ -114,7 +114,7 @@ public final class ObstacleInteractions {
             return ActionResult.SUCCESS;
         }
         if (player.isCreative()) {
-            ObstacleGroups.open(serverWorld, pos);
+            type.solve(serverWorld, pos, serverPlayer);
             return ActionResult.SUCCESS;
         }
         attempt(serverPlayer, serverWorld, pos, type);
@@ -125,6 +125,11 @@ public final class ObstacleInteractions {
         Tier tier = world.getBlockEntity(pos) instanceof ObstacleBlockEntity be ? be.tier() : Tier.MEDIUM;
         Eligibility eligibility = type.eligibility(D20.classOf(player));
         Skill skill = type.skill();
+        if (eligibility.canTry() && skill == null) {
+            // Nothing to roll (a bridge winch): whoever got here just works it
+            solve(world, pos, type, tier, player);
+            return;
+        }
         if (!eligibility.canTry() || skill == null) {
             player.sendMessage(ObstacleText.cannot(type, tier), true);
             world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS, 0.8f, 0.6f);
@@ -222,10 +227,13 @@ public final class ObstacleInteractions {
 
     /** Opens the group for its solver and rewards them. */
     public static void solve(ServerWorld world, BlockPos pos, ObstacleType type, Tier tier, ServerPlayerEntity solver) {
-        int opened = ObstacleGroups.open(world, pos);
-        DnDClasses.LOGGER.info("[Obstacle] {} solved {} at {}: {} blocks opened, +{} class XP",
-                solver.getEntityName(), type.id(), pos.toShortString(), opened, type.xp(tier));
-        Progression.addXp(solver, type.xp(tier));
+        boolean rewarded = type.solve(world, pos, solver);
+        int xp = rewarded ? type.xp(tier) : 0;
+        DnDClasses.LOGGER.info("[Obstacle] {} solved {} at {}: +{} class XP",
+                solver.getEntityName(), type.id(), pos.toShortString(), xp);
+        if (xp > 0) {
+            Progression.addXp(solver, xp);
+        }
         type.onSolved(world, pos, solver);
         ObstacleEvents.SOLVED.invoker().onSolved(solver, type, tier, pos);
     }

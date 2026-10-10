@@ -22,6 +22,8 @@ import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
+import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -60,12 +62,12 @@ public class ObstacleBlock extends BlockWithEntity {
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return state.get(STATE) == ObstacleState.SEALED ? VoxelShapes.fullCube() : VoxelShapes.empty();
+        return type.solid(state.get(STATE)) ? VoxelShapes.fullCube() : VoxelShapes.empty();
     }
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return state.get(STATE) == ObstacleState.SEALED ? VoxelShapes.fullCube() : VoxelShapes.empty();
+        return type.solid(state.get(STATE)) ? VoxelShapes.fullCube() : VoxelShapes.empty();
     }
 
     @Override
@@ -98,6 +100,9 @@ public class ObstacleBlock extends BlockWithEntity {
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand,
             BlockHitResult hit) {
+        if (!type.interactive()) {
+            return ActionResult.PASS;
+        }
         return ObstacleInteractions.onUse(this, state, world, pos, player, hand);
     }
 
@@ -108,6 +113,19 @@ public class ObstacleBlock extends BlockWithEntity {
             type.onBrokenByHand(serverWorld, pos, serverPlayer);
         }
         super.onBreak(world, pos, state, player);
+    }
+
+    @Override
+    public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
+        type.scheduledTick(world, pos, state);
+    }
+
+    @Override
+    public void onDestroyedByExplosion(World world, BlockPos pos, Explosion explosion) {
+        if (world instanceof ServerWorld serverWorld) {
+            type.onExploded(serverWorld, pos);
+        }
+        super.onDestroyedByExplosion(world, pos, explosion);
     }
 
     @Override

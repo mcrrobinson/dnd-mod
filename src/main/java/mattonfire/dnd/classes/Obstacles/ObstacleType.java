@@ -6,6 +6,7 @@ import java.util.List;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
+import net.minecraft.block.BlockState;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -74,6 +75,37 @@ public abstract class ObstacleType {
     /** Whether a survival player can break it by hand as its fallback. Sets the block's hardness. */
     public abstract boolean breakable();
 
+    /** The block's hardness: {@link ObstacleTypes#SEAL_HARDNESS} if {@link #breakable()}, else unbreakable. */
+    public float hardness() {
+        return breakable() ? ObstacleTypes.SEAL_HARDNESS : -1.0f;
+    }
+
+    /** The block's blast resistance: out of reach of explosions unless a type's fallback is blowing it up. */
+    public float blastResistance() {
+        return ObstacleTypes.BLAST_RESISTANCE;
+    }
+
+    /** Whether right-clicking it does anything (false for things you cross, like ledges). */
+    public boolean interactive() {
+        return true;
+    }
+
+    /**
+     * Whether a block in this state has collision and an outline. Sealed obstacles are in the way and
+     * open ones aren't, unless a type says otherwise (a chasm's bridge is solid once open).
+     */
+    public boolean solid(ObstacleState state) {
+        return state == ObstacleState.SEALED;
+    }
+
+    /**
+     * Whether the hint names who can deal with it from its own text ({@code .who}) rather than
+     * listing its solver classes (for obstacles anyone can work, or nobody can roll for).
+     */
+    public boolean ownWhoText() {
+        return false;
+    }
+
     /** The item the obstacle wants in the main hand (null: an empty hand). */
     @Nullable
     public ItemStack requiredItem() {
@@ -90,6 +122,14 @@ public abstract class ObstacleType {
      */
     public boolean blocked(ServerPlayerEntity player) {
         return false;
+    }
+
+    /**
+     * Gets {@code solver} past the obstacle at {@code pos} after a successful check (or a use, for
+     * obstacles with no check). Returns whether it earns class XP. By default the whole group opens.
+     */
+    public boolean solve(ServerWorld world, BlockPos pos, ServerPlayerEntity solver) {
+        return ObstacleGroups.open(world, pos) > 0;
     }
 
     /** The obstacle group at {@code pos} has just opened for {@code solver}. */
@@ -120,6 +160,18 @@ public abstract class ObstacleType {
     }
 
     public void sealEffects(ServerWorld world, BlockPos pos, boolean first) {
+    }
+
+    /** A block tick scheduled with {@code world.scheduleBlockTick} for one of its blocks. */
+    public void scheduledTick(ServerWorld world, BlockPos pos, BlockState state) {
+    }
+
+    /** An explosion has just removed the block at {@code pos} (already air). */
+    public void onExploded(ServerWorld world, BlockPos pos) {
+    }
+
+    /** Registers any server events the type needs. Called once, from {@link ObstacleTypes#register()}. */
+    public void registerEvents() {
     }
 
     @Override

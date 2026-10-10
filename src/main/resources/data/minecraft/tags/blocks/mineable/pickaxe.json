@@ -2,6 +2,8 @@
   "replace": false,
   "values": [
     "dndclasses:fast_brewing_stand",
-    "dndclasses:lesser_arcane_seal"
+    "dndclasses:lesser_arcane_seal",
+    "dndclasses:collapsed_passage",
+    "dndclasses:portcullis"
   ]
 }

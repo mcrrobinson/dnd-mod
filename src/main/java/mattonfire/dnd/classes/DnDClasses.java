@@ -129,8 +129,10 @@ public class DnDClasses implements ModInitializer {
                         // Firing a power gets you up from a short rest.
                         mattonfire.dnd.classes.Rest.RestSession.cancel(player, "you used a power");
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
-                        SkillNode skill = Progression.current(player).activeNode();
-                        int cost = skill == null ? MANA_ICONS : skill.manaCost();
+                        mattonfire.dnd.classes.Progression.ClassProgress progress = Progression.current(player);
+                        SkillNode skill = progress.activeNode();
+                        int cost = skill == null ? MANA_ICONS
+                                        : mattonfire.dnd.classes.Progression.ClassSkills.manaCostFor(progress, skill);
                         // Sneak + power-up picks the Druid's Wild Shape form; free, so before the mana check.
                         if (Druid.cycleForm(player)) {
                                 return;
@@ -157,6 +159,11 @@ public class DnDClasses implements ModInitializer {
                                 ManaManager.setMana(player, mana - cost);
                                 ManaManager.sync(player);
                                 Charges.spend(player, skill);
+                                mattonfire.dnd.classes.Progression.ClassSkills skills = mattonfire.dnd.classes.Progression.ClassTrees
+                                                .skills(progress.dndClass);
+                                if (skills != null) {
+                                        skills.afterActivate(player, progress, skill);
+                                }
                                 ServerPlayNetworking.send(player,
                                                 DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
                                                 new PacketByteBuf(Unpooled.buffer()));
@@ -215,6 +222,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
+                mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures.register();
+                mattonfire.dnd.world.gen.enclave.Moonwell.register();
                 // Before SettlementGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();

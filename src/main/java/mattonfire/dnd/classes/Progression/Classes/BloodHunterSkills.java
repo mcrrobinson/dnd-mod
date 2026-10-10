@@ -9,8 +9,12 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
+import net.minecraft.entity.attribute.EntityAttributeModifier;
+import net.minecraft.entity.attribute.EntityAttributes;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
+import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -50,6 +54,18 @@ public class BloodHunterSkills extends ClassSkills {
             .seconds("Duration", 8, 12, 16, 20)
             .percent("Success", 60, 75, 90, 100)
             .amount("Range", "blocks", 15, 20, 25, 30);
+
+    public static final String PROFANE_SOUL = "bloodhunter.profane_soul";
+    public static final String LYCAN = "bloodhunter.lycan";
+    /** Rite Focus: a Profane Soul's Crimson Rite bleed lasts this much longer... */
+    public static final int RITE_FOCUS_EXTRA_BLEED_TICKS = 2 * 20;
+    /** ...and Curse of Binding costs this much mana. */
+    public static final int RITE_FOCUS_BINDING_MANA = 2;
+    /** Stalker's Prowess: a Lycan's speed at night... */
+    public static final double STALKERS_PROWESS_SPEED = 0.10;
+    private static final UUID STALKERS_PROWESS_ID = UUID.nameUUIDFromBytes("dndclasses:bloodhunter.lycan".getBytes());
+    /** ...and how long their Hybrid Transformation lasts. */
+    public static final int STALKER_TRANSFORM_TICKS = 20 * 20;
 
     private static final int NIGHT_SWORD_KILL_BONUS_XP = 3;
 
@@ -122,9 +138,10 @@ public class BloodHunterSkills extends ClassSkills {
                 effects(player, SoundEvents.BLOCK_CHAIN_PLACE, ParticleTypes.CRIMSON_SPORE, 20);
             }
             case "bloodhunter.hybrid_transformation" -> {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, TRANSFORM_TICKS, 1));
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, TRANSFORM_TICKS, 0));
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, TRANSFORM_TICKS, 1));
+                int ticks = Progression.current(player).hasSubclass(LYCAN) ? STALKER_TRANSFORM_TICKS : TRANSFORM_TICKS;
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, 1));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, ticks, 0));
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, ticks, 1));
                 effects(player, SoundEvents.ENTITY_WOLF_HOWL, ParticleTypes.ANGRY_VILLAGER, 20);
             }
             case "bloodhunter.blood_moon" -> {
@@ -189,7 +206,8 @@ public class BloodHunterSkills extends ClassSkills {
         boolean bloodMoon = bloodMoonActive(player);
 
         if (melee && progress.hasPassive("bloodhunter.crimson_rite")) {
-            target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, BLEED_TICKS, 0), player);
+            int bleed = BLEED_TICKS + (progress.hasSubclass(PROFANE_SOUL) ? RITE_FOCUS_EXTRA_BLEED_TICKS : 0);
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, bleed, 0), player);
         }
         if (melee && night && progress.hasPassive("bloodhunter.hemocraft")) {
             player.heal(HEMOCRAFT_HEAL);
@@ -211,8 +229,31 @@ public class BloodHunterSkills extends ClassSkills {
         return amount;
     }
 
+    /** Rite Focus: Curse of Binding is cheaper for a Profane Soul. */
+    @Override
+    public int manaCost(ClassProgress progress, SkillNode node) {
+        if (node.id().equals("bloodhunter.curse_of_binding") && progress.hasSubclass(PROFANE_SOUL))
+            return RITE_FOCUS_BINDING_MANA;
+        return node.manaCost();
+    }
+
+    /** Stalker's Prowess: +10% speed, on while it's night for a Lycan. */
+    private static void stalkersProwess(PlayerEntity player, boolean wanted) {
+        EntityAttributeInstance instance = player.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED);
+        if (instance == null)
+            return;
+        boolean has = instance.getModifier(STALKERS_PROWESS_ID) != null;
+        if (wanted && !has) {
+            instance.addTemporaryModifier(new EntityAttributeModifier(STALKERS_PROWESS_ID, LYCAN,
+                    STALKERS_PROWESS_SPEED, EntityAttributeModifier.Operation.MULTIPLY_BASE));
+        } else if (!wanted && has) {
+            instance.removeModifier(STALKERS_PROWESS_ID);
+        }
+    }
+
     @Override
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
+        stalkersProwess(player, progress.hasSubclass(LYCAN) && isNight(player));
         if (bloodMoonActive(player)) {
             ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.CRIMSON_SPORE, player.getX(),
                     player.getY() + 1, player.getZ(), 10, 0.5, 0.6, 0.5, 0.02);
@@ -231,6 +272,7 @@ public class BloodHunterSkills extends ClassSkills {
 
     @Override
     public void forget(ServerPlayerEntity player) {
+        stalkersProwess(player, false);
         int now = player.getServer().getTicks();
         BLOOD_MOON.values().removeIf(t -> now >= t);
     }

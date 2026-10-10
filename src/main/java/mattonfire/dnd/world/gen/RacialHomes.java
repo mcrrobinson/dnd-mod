@@ -11,6 +11,7 @@ import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
 import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Reputation;
+import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
 import mattonfire.dnd.world.gen.village.HobbitVillageStructures;
 import net.minecraft.entity.Entity;
@@ -45,6 +46,9 @@ public final class RacialHomes {
     /** Gnomes get kin prices here until they have a home of their own. */
     public static final Home DWARVEN_FORTRESS = register(new Home(id("dwarven_fortress"), DndRace.DWARF,
             Set.of(DndRace.GNOME), id("mountain_dwarves"), DwarvenFortressStructures.HALL, null));
+    /** The hearth is the Speaker's Hall up in the Heart Tree. */
+    public static final Home ELVEN_ENCLAVE = register(new Home(id("elven_enclave"), DndRace.ELF, Set.of(),
+            id("sylvan_court"), ElvenEnclaveStructures.HALL, null));
 
     private RacialHomes() {
     }

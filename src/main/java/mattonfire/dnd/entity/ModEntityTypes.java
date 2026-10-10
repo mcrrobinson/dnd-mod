@@ -115,6 +115,40 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<ElfEntity> WOOD_ELF = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "wood_elf"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ElfEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .build()
+    );
+
+    public static final EntityType<ElfWardenEntity> ELF_WARDEN = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "elf_warden"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ElfWardenEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .build()
+    );
+
+    /** The Speaker of an elven enclave, in the Speaker's Hall. */
+    public static final EntityType<ElfMerchantEntity> ELF_SPEAKER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "elf_speaker"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ElfMerchantEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .build()
+    );
+
+    /** The Fletcher of an elven enclave, at the archery glade. */
+    public static final EntityType<ElfMerchantEntity> ELF_FLETCHER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "elf_fletcher"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ElfMerchantEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .build()
+    );
+
     public static final EntityType<MimicEntity> MIMIC = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "mimic"),
@@ -178,6 +212,10 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(HOBBIT, HobbitEntity.createHobbitAttributes());
         FabricDefaultAttributeRegistry.register(MOUNTAIN_DWARF, MountainDwarfEntity.createMountainDwarfAttributes());
         FabricDefaultAttributeRegistry.register(MIMIC, MimicEntity.createMimicAttributes());
+        FabricDefaultAttributeRegistry.register(WOOD_ELF, ElfEntity.createElfAttributes());
+        FabricDefaultAttributeRegistry.register(ELF_WARDEN, ElfWardenEntity.createElfWardenAttributes());
+        FabricDefaultAttributeRegistry.register(ELF_SPEAKER, ElfMerchantEntity.createSpeakerAttributes());
+        FabricDefaultAttributeRegistry.register(ELF_FLETCHER, ElfMerchantEntity.createFletcherAttributes());
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());

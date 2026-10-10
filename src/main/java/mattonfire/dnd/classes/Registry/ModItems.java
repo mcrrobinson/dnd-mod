@@ -533,6 +533,18 @@ public class ModItems {
         public static final Item MOUNTAIN_DWARF_SPAWN_EGG = registerItem("mountain_dwarf_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, 0x5A5F66, 0x9C4A1E, new FabricItemSettings()));
 
+        public static final Item WOOD_ELF_SPAWN_EGG = registerItem("wood_elf_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.WOOD_ELF, 0x5E8F4A, 0xE9E2C8, new FabricItemSettings()));
+
+        public static final Item ELF_WARDEN_SPAWN_EGG = registerItem("elf_warden_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ELF_WARDEN, 0x2F5D2A, 0xC9B98A, new FabricItemSettings()));
+
+        public static final Item ELF_SPEAKER_SPAWN_EGG = registerItem("elf_speaker_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ELF_SPEAKER, 0xE8ECEF, 0x9FB8C8, new FabricItemSettings()));
+
+        public static final Item ELF_FLETCHER_SPAWN_EGG = registerItem("elf_fletcher_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ELF_FLETCHER, 0x6B4E2E, 0x7FAF5A, new FabricItemSettings()));
+
         public static final Item MIMIC_SPAWN_EGG = registerItem("mimic_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MIMIC, 0xA0692B, 0x3A2A1A, new FabricItemSettings()));
 

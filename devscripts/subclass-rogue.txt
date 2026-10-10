@@ -1,0 +1,89 @@
+# Rogue subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-rogue.txt
+# Expect in latest.log:
+#  1. Thief lockpick: "[D20] <name> Lockpicking 5 +9 = 14 vs DC 10 -> SUCCESS"; Assassin control: "5 +6 = 11" (dev world rogue, level 3)
+#  2. Assassin hit on a NoAI husk (not targeting you) takes twice the Health a Thief's hit does
+#  3. Assassin: after Vanish, "[D20] <name> attack auto-critical (Assassinate)" and the hit takes 4x;
+#     Thief control: no auto-critical after Vanish, a normal hit
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=husk]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s rogue
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s rogue.thief
+/clear @s
+/effect clear @s
+/tp @s 2.5 150 2.5 0 30
+# --- 1. Lockpicking: Thief d20 + 8 ---
+/setblock 2 150 4 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+wait 10
+/dndclass forceroll @s 5
+use
+wait 15
+screenshot subclass-rogue-lockpick-thief
+wait 30
+closescreen
+/setblock 2 150 4 minecraft:air
+/dndclass subclass @s rogue.assassin
+/setblock 2 150 4 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+wait 10
+/dndclass forceroll @s 5
+use
+wait 45
+closescreen
+/setblock 2 150 4 minecraft:air
+/kill @e[type=item]
+# --- 2. Assassinate: double damage to a mob that isn't targeting you ---
+/give @s minecraft:wooden_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 15
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["sc"]}
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 30
+/data get entity @e[tag=sc,limit=1] Health
+# --- 3. Vanish, then the next swing auto-crits ---
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 10
+/dndclass forceroll @s 10
+attack
+wait 5
+screenshot subclass-rogue-assassinate
+wait 25
+/data get entity @e[tag=sc,limit=1] Health
+/effect clear @s
+/kill @e[tag=sc]
+# --- Thief control ---
+/dndclass subclass @s rogue.thief
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["sc"]}
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 30
+/data get entity @e[tag=sc,limit=1] Health
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 10
+/dndclass forceroll @s 10
+attack
+wait 30
+/data get entity @e[tag=sc,limit=1] Health
+/effect clear @s
+/kill @e[tag=sc]
+quit

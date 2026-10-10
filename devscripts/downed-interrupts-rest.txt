@@ -1,0 +1,43 @@
+# Going Downed interrupts a campfire short rest in progress (the Downed ALLOW_REST veto,
+# re-checked every 10 ticks by RestSession).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/downed-interrupts-rest.txt
+# Output: screenshots downed-rest-*.png; [Rest] and [Downed] lines in logs/latest.log
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule dndRests true
+/gamerule dndDeathSaves 1
+/time set 1000
+/fill -4 149 -4 4 149 8 minecraft:stone
+/fill -4 150 -4 4 155 8 minecraft:air
+/setblock 0 150 2 minecraft:campfire[lit=true]
+/kill @e[type=!player]
+/dndclass set @s fighter
+/clear @s
+/effect clear @s
+hotbar 0
+/dndclass rest @s long
+/tp @s 0.5 150 0.5 0 35
+wait 20
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 40
+screenshot downed-rest-resting
+/dndclass down @s
+wait 30
+screenshot downed-rest-interrupted
+/dndclass downed @s
+sneak on
+use
+wait 5
+sneak off
+wait 20
+screenshot downed-rest-refused
+/dndclass revive @s 20
+wait 20
+quit

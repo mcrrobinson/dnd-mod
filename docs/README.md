@@ -12,23 +12,23 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special; subclass features
 - [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether; subclass features
 - [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank; subclass features
-- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
-- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
-- [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
-- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
-- [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
-- [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
-- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
+- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense; subclass features (PR #137)
+- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern; subclass features (PR #137)
+- [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water; subclass features (PR #137)
+- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks; subclass features (PR #137)
+- [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments; subclass features (PR #137)
+- [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs; subclass features (PR #137)
+- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant; subclass features (PR #137)
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
-- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages) and Dwarves (Dwarven Fortresses): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses) and Elves (Elven Enclaves): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests, Hit Dice
-- [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll (PR #138, #140)
+- [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll (PR #140)
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
 - [Party](systems/party.md): group up with other players
@@ -52,6 +52,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Magmamunchers](mobs/magmamunchers.md): fire-proof Nether beasts
 - [Hobbits](mobs/hobbits.md): peaceful villagers that share their food
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
+- [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves (PR #139)
 - [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items
@@ -68,6 +69,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
+- [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home (PR #139)
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board

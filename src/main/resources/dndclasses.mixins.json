@@ -49,6 +49,7 @@
         "ArtificerItemStackMixin",
         "TridentEntityMixin",
         "ProjectileEntityMixin",
+        "ExplosionSculptMixin",
         "VampiricMixin",
         "FeatherfallMixin",
         "ExperienceOrbEntityMixin",

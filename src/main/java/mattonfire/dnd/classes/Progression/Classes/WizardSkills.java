@@ -4,9 +4,20 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import org.jetbrains.annotations.Nullable;
+
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Party.Party;
+import mattonfire.dnd.classes.Party.PartyManager;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.Tameable;
+import net.minecraft.world.explosion.Explosion;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
@@ -79,6 +90,21 @@ public class WizardSkills extends ClassSkills {
     private static final double METEOR_SPREAD = 5;
     private static final double METEOR_HEIGHT = 20;
     private static final float METEOR_POWER = 1.5F;
+
+    public static final String EVOCATION = "wizard.evocation";
+    public static final String ABJURATION = "wizard.abjuration";
+    /** Arcane Ward: absorption per active fired (2 hearts)... */
+    public static final float ARCANE_WARD_PER_CAST = 4.0F;
+    /** ...up to this much from the ward (4 hearts)... */
+    public static final float ARCANE_WARD_MAX = 8.0F;
+    /** ...which fades this long after the last active. */
+    public static final int ARCANE_WARD_TICKS = 60 * 20;
+
+    /** An Abjuration Wizard's ward: how much of their absorption is it, and the server tick it fades. */
+    private record Ward(float amount, int until) {
+    }
+
+    private static final Map<UUID, Ward> WARDS = new HashMap<>();
 
     /** Meteor Swarms still falling. Server thread only. */
     private static final List<Swarm> SWARMS = new ArrayList<>();
@@ -211,6 +237,94 @@ public class WizardSkills extends ClassSkills {
             }
         }
         return true;
+    }
+
+    /** Arcane Ward: every active an Abjuration Wizard fires adds 2 absorption hearts, up to 4, for 60 s. */
+    @Override
+    public void afterActivate(ServerPlayerEntity player, ClassProgress progress, @Nullable SkillNode node) {
+        if (!progress.hasSubclass(ABJURATION))
+            return;
+        int now = player.getServer().getTicks();
+        float current = wardLeft(player, now);
+        float add = Math.min(ARCANE_WARD_PER_CAST, ARCANE_WARD_MAX - current);
+        if (add > 0) {
+            player.setAbsorptionAmount(player.getAbsorptionAmount() + add);
+        }
+        WARDS.put(player.getUuid(), new Ward(current + add, now + ARCANE_WARD_TICKS));
+        effects(player, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, ParticleTypes.ENCHANT, 15);
+        DnDClasses.LOGGER.debug("[Subclass] Arcane Ward: {} +{}, ward {}, absorption {}", player.getEntityName(), add,
+                current + add, player.getAbsorptionAmount());
+    }
+
+    /** How much of the player's absorption is still their ward (hits take it first). */
+    private static float wardLeft(PlayerEntity player, int now) {
+        Ward ward = WARDS.get(player.getUuid());
+        if (ward == null || now >= ward.until())
+            return 0;
+        return Math.min(ward.amount(), player.getAbsorptionAmount());
+    }
+
+    /** Fades the ward: whatever's left of it comes off the absorption. */
+    private static void dropWard(PlayerEntity player) {
+        Ward ward = WARDS.remove(player.getUuid());
+        if (ward == null)
+            return;
+        float left = Math.min(ward.amount(), player.getAbsorptionAmount());
+        player.setAbsorptionAmount(player.getAbsorptionAmount() - left);
+    }
+
+    @Override
+    public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
+        Ward ward = WARDS.get(player.getUuid());
+        if (ward == null)
+            return;
+        int now = player.getServer().getTicks();
+        if (now >= ward.until() || !progress.hasSubclass(ABJURATION)) {
+            dropWard(player);
+        } else if (player.getAbsorptionAmount() < ward.amount()) {
+            WARDS.put(player.getUuid(), new Ward(player.getAbsorptionAmount(), ward.until()));
+        }
+    }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        // Absorption is saved with the player, so a ward mustn't outlive a relog or a class change.
+        dropWard(player);
+    }
+
+    /**
+     * Sculpt Spells: whether this explosion leaves the entity alone (no damage, no knockback). It does for
+     * an Evocation Wizard's own blasts (staff blasts and Arcane Explosion, whose explosion entity is the
+     * Wizard, and Meteor Swarm's meteors) and their party members and pets. Called from
+     * {@code ExplosionSculptMixin} for every entity an explosion reaches. Server only.
+     */
+    public static boolean sculpts(Explosion explosion, Entity target) {
+        Entity source = explosion.getEntity();
+        PlayerEntity wizard = source instanceof PlayerEntity p ? p
+                : source instanceof Meteor meteor && meteor.getOwner() instanceof PlayerEntity p ? p : null;
+        if (wizard == null || target == wizard || wizard.getWorld().isClient)
+            return false;
+        return isEvoker(wizard) && spares(wizard, target);
+    }
+
+    /** Whether the player is a Wizard of the School of Evocation. */
+    public static boolean isEvoker(PlayerEntity player) {
+        return Progression.classOf(player) == DndCharacter.WIZARD && Progression.current(player).hasSubclass(EVOCATION);
+    }
+
+    /** A party member of the Wizard's, or a pet (tamed animal, horse) of theirs or of a party member. */
+    public static boolean spares(PlayerEntity wizard, Entity target) {
+        if (PartyManager.areInSameParty(wizard, target))
+            return true;
+        if (!(target instanceof Tameable pet) || pet.getOwnerUuid() == null)
+            return false;
+        UUID owner = pet.getOwnerUuid();
+        if (owner.equals(wizard.getUuid()))
+            return true;
+        if (wizard.getServer() == null)
+            return false;
+        Party party = PartyManager.get(wizard.getServer()).getParty(wizard.getUuid());
+        return party != null && party.contains(owner);
     }
 
     @Override

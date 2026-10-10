@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.mixin;
 
 import mattonfire.dnd.classes.Misc.Returning;
 import mattonfire.dnd.classes.Progression.Classes.RogueSkills;
+import mattonfire.dnd.classes.Progression.Classes.WarlockSkills;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -24,6 +25,9 @@ import net.minecraft.util.math.Vec3d;
  * collision goes through {@code canHit} (subclasses call super). The first time one
  * would really have hit (its path this tick crosses the player's box), the Rogue sidesteps.
  *
+ * The Great Old One Warlock's Entropic Ward takes the same path: once every 60 seconds the first
+ * projectile that would really hit them can't, for the rest of its flight.
+ *
  * Returning throwables (snowballs, eggs, ender pearls...): every thrown-item
  * projectile calls {@code super.onCollision} before its own effect, so the item
  * is handed back here and the projectile's normal effect still happens.
@@ -36,24 +40,52 @@ public abstract class ProjectileEntityMixin {
     @Unique
     private boolean dnd$dodged;
 
+    /** Entity id of the player this projectile's Entropic Ward was spent on, or -1. */
+    @Unique
+    private int dnd$warded = -1;
+
     @Inject(method = "canHit(Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
     private void dnd$dangerSense(Entity entity, CallbackInfoReturnable<Boolean> cir) {
-        if (!(entity instanceof PlayerEntity player) || !player.hasStatusEffect(ModEffects.DANGER_SENSE)) {
+        if (!(entity instanceof PlayerEntity player)) {
+            return;
+        }
+        ProjectileEntity self = (ProjectileEntity) (Object) this;
+        if (!player.hasStatusEffect(ModEffects.DANGER_SENSE)) {
+            dnd$entropicWard(self, player, cir);
             return;
         }
         cir.setReturnValue(false);
-        ProjectileEntity self = (ProjectileEntity) (Object) this;
         if (dnd$dodged || self.world.isClient) {
             return;
         }
         // canHit is asked of everything near the path, so only react to a real hit.
-        Vec3d from = self.getPos();
-        Vec3d to = from.add(self.getVelocity());
-        if (player.getBoundingBox().expand(0.3).raycast(from, to).isPresent()
-                || player.getBoundingBox().intersects(self.getBoundingBox())) {
+        if (dnd$wouldHit(self, player)) {
             dnd$dodged = true;
             RogueSkills.sidestep(player, self);
         }
+    }
+
+    @Unique
+    private void dnd$entropicWard(ProjectileEntity self, PlayerEntity player, CallbackInfoReturnable<Boolean> cir) {
+        if (dnd$warded == player.getId()) {
+            cir.setReturnValue(false);
+            return;
+        }
+        if (self.world.isClient || dnd$warded != -1 || self.getOwner() == player || !dnd$wouldHit(self, player)
+                || !WarlockSkills.entropicWard(player)) {
+            return;
+        }
+        dnd$warded = player.getId();
+        cir.setReturnValue(false);
+        RogueSkills.sidestep(player, self);
+    }
+
+    @Unique
+    private static boolean dnd$wouldHit(ProjectileEntity self, PlayerEntity player) {
+        Vec3d from = self.getPos();
+        Vec3d to = from.add(self.getVelocity());
+        return player.getBoundingBox().expand(0.3).raycast(from, to).isPresent()
+                || player.getBoundingBox().intersects(self.getBoundingBox());
     }
 
     @Inject(method = "onCollision", at = @At("HEAD"))

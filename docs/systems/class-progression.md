@@ -54,20 +54,20 @@ All 30 subclasses ("Right" is the branch listed first in the code, column 2):
 | Paladin | Oath of Conquest | `paladin.conquest` | Left | **Conquering Presence**: Divine Judgment's shockwave frightens hostile mobs for 3 seconds |
 | Ranger | Hunter | `ranger.hunter` | Right | **Colossus Slayer**: your first arrow hit each second on a target below full health deals +3 damage |
 | Ranger | Horizon Walker | `ranger.horizon_walker` | Left | **Planar Warrior**: in the Nether and the End you deal 20% more damage and have Speed I |
-| Rogue | Assassin | `rogue.assassin` | Right | **Assassinate**: double damage to a mob that isn't targeting you, and your first hit after Vanish ends is a critical |
-| Rogue | Thief | `rogue.thief` | Left | **Fast Hands**: +3 to lockpicking, and you ignore class restrictions when attuning magic items |
-| Necromancer | Bonecaller | `necromancer.bonecaller` | Right | **Undying Servants**: your summons last 25% longer |
-| Necromancer | Plaguebringer | `necromancer.plaguebringer` | Left | **Grim Harvest**: killing a mob that has your Wither heals you 2 hearts |
-| Warlock | The Fiend | `warlock.fiend` | Right | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours is rerolled |
+| Rogue | Assassin | `rogue.assassin` | Right | **Assassinate**: double melee damage to a mob that isn't targeting you, and your first melee swing out of Vanish (while it lasts or up to 5 seconds after) is a critical |
+| Rogue | Thief | `rogue.thief` | Left | **Fast Hands**: +3 to lockpicking (Thieves' Tools), and you ignore class restrictions when attuning magic items |
+| Necromancer | Bonecaller | `necromancer.bonecaller` | Right | **Undying Servants**: your summons (Raise Dead, Skeletal Archers, Army of the Dead) last 25% longer |
+| Necromancer | Plaguebringer | `necromancer.plaguebringer` | Left | **Grim Harvest**: killing a mob that's withering heals you 2 hearts |
+| Warlock | The Fiend | `warlock.fiend` | Right | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours (a check, a save or a fumbled attack) is rolled again |
 | Warlock | The Great Old One | `warlock.great_old_one` | Left | **Entropic Ward**: once every 60 seconds, a projectile that would hit you misses |
-| Wizard | School of Evocation | `wizard.evocation` | Right | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt party members or their pets |
-| Wizard | School of Abjuration | `wizard.abjuration` | Left | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4) for 60 seconds |
+| Wizard | School of Evocation | `wizard.evocation` | Right | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt or knock back party members or their pets |
+| Wizard | School of Abjuration | `wizard.abjuration` | Left | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4), fading 60 seconds after the last |
 | Artificer | Armorer | `artificer.armorer` | Right | **Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance |
-| Artificer | Battle Smith | `artificer.battle_smith` | Left | **Battle Ready**: +2 attack damage with any identified magic weapon |
+| Artificer | Battle Smith | `artificer.battle_smith` | Left | **Battle Ready**: +2 melee damage with any identified magic weapon |
 | Blood Hunter | Order of the Profane Soul | `bloodhunter.profane_soul` | Right | **Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3 |
 | Blood Hunter | Order of the Lycan | `bloodhunter.lycan` | Left | **Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15 |
 | Alchemist | Mutagenist | `alchemist.mutagenist` | Right | **Mutagen**: drinking any potion also gives Strength I for 10 seconds |
-| Alchemist | Transmuter | `alchemist.transmuter` | Left | **Transmuter's Eye**: Healing potions you drink heal 50% more, and you identify potions when you pick them up |
+| Alchemist | Transmuter | `alchemist.transmuter` | Left | **Transmuter's Eye**: Healing potions you drink heal 50% more |
 
 Each class page lists its subclasses' nodes.
 
@@ -155,5 +155,6 @@ None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels ar
 - **Storage and rules:** `ClassProgress.subclass` (NBT key `subclass`, "" = none), `SUBCLASS_LEVEL`, `subclassLock(node)` (checked by `canUnlock`, so the server refuses unlock packets for sealed nodes), `hasSubclass(id)`, `removeSubclassNodes`, `migrateSubclass` (run by `Progression.get` when the key is missing).
 - **Server:** `Progression.chooseSubclass` (packet `C2S_CHOOSE_SUBCLASS`; level, table and no-subclass checks), `clearSubclass` (for the admin command and the Tome later), `title(player)` ("Matt the Battle Master Fighter").
 - **Feature hooks:** check `progress.hasSubclass("wizard.evocation")` in the `ClassSkills` hooks. An `AttributeBonus` whose `skill` is a subclass id is on whenever that subclass is chosen.
+- **More hooks for features:** `ClassSkills.manaCost` (a cheaper active, read on both sides), `ClassSkills.afterActivate` (after an active fires), `D20.registerReroll` (a second try at a failed roll) and `AttackRolls.registerAutoCrit` (a guaranteed critical).
 - **Screen:** `Client/Hud/SkillTreeScreen` (pips, rank tooltip, Tree/Bestiary tabs, subclass banners, padlocks, `ConfirmScreen`). Guidebook pages: `ClassGuidebookScreen`.
 - **Test:** `devscripts/ability-ranks.txt`, `devscripts/subclasses.txt` (the migration step needs a seeded save, see its header), `devscripts/subclasses-verify.txt` (the whole checklist with tooltip screenshots). DevScript's `hover <dx> <dy>` moves the cursor so screens draw tooltips, `widget <label>` presses a screen button such as a confirm dialog's Yes, and `page <n>` turns an open book. DevScript's `skill unlock|equip|rankup|bestiary|subclass <id>` sends the screen's packets, and `click <dx> <dy> [button]` clicks the open screen relative to its centre.

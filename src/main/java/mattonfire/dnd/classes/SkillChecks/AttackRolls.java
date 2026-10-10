@@ -1,8 +1,14 @@
 package mattonfire.dnd.classes.SkillChecks;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.jetbrains.annotations.Nullable;
+
+import mattonfire.dnd.classes.DnDClasses;
 
 import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.RollKind;
@@ -37,6 +43,33 @@ public final class AttackRolls {
     private record Crit(int targetId, int age) {
     }
 
+    /**
+     * A source of guaranteed critical hits, asked before each attack roll that didn't crit by itself
+     * (the Assassin's first hit out of Vanish). Returning a reason uses the crit up.
+     */
+    @FunctionalInterface
+    public interface AutoCrit {
+        /** The reason shown on the HUD ("Assassinate"), or null for no crit. */
+        @Nullable
+        String claim(PlayerEntity player, Entity target);
+    }
+
+    private static final List<AutoCrit> AUTO_CRITS = new CopyOnWriteArrayList<>();
+
+    public static void registerAutoCrit(AutoCrit autoCrit) {
+        AUTO_CRITS.add(autoCrit);
+    }
+
+    @Nullable
+    private static String autoCrit(PlayerEntity player, Entity target) {
+        for (AutoCrit autoCrit : AUTO_CRITS) {
+            String reason = autoCrit.claim(player, target);
+            if (reason != null)
+                return reason;
+        }
+        return null;
+    }
+
     /** Drops a crit roll that never got used; called on disconnect. */
     public static void forget(UUID player) {
         CRITICAL.remove(player);
@@ -56,6 +89,16 @@ public final class AttackRolls {
             D20.Roll roll = D20.roll(player).label(D20.ATTACK).kind(RollKind.ATTACK)
                     .modifier(attackBonus(player) + mattonfire.dnd.magic.MagicGear.attackBonus(player.getMainHandStack()))
                     .critRange(critRange(player)).roll();
+            String autoCrit = roll.outcome() == D20.Outcome.CRITICAL ? null : autoCrit(player, entity);
+            if (autoCrit != null) {
+                // A guaranteed crit can't fumble either
+                DnDClasses.LOGGER.info("[D20] {} attack auto-critical ({}), rolled {}", player.getEntityName(),
+                        autoCrit, roll.natural());
+                D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical")
+                        .append(" (" + autoCrit + ")"));
+                CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
+                return ActionResult.PASS;
+            }
             if (roll.outcome() == D20.Outcome.FUMBLE) {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.fumble"));
                 player.resetLastAttackedTicks();

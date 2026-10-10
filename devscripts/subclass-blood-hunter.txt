@@ -1,0 +1,85 @@
+# Blood Hunter subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-blood-hunter.txt
+# Expect in latest.log:
+#  1. Profane Soul: Crimson Rite's Wither on the husk has Duration ~80 (Lycan control: ~40)
+#  2. Profane Soul: Curse of Binding fires with 2 mana (husk gets dndclasses:freeze); with 1 mana it doesn't
+#  3. Lycan: movement speed 0.11 at midnight, 0.1 at noon (Profane Soul control: 0.1 at midnight)
+#  4. Lycan: Hybrid Transformation's Strength Duration ~400 (20 s)
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 12 149 12 minecraft:stone
+/fill 0 150 0 12 156 12 minecraft:air
+/dndclass set @s bloodhunter
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s bloodhunter.profane_soul
+/dndclass unlock @s bloodhunter.crimson_rite
+/dndclass unlock @s bloodhunter.curse_of_binding
+/dndclass equip @s bloodhunter.curse_of_binding
+/dndclass progress @s
+/clear @s
+/effect clear @s
+/give @s minecraft:iron_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 15
+# --- 1. Rite Focus: bleed ---
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["sc"]}
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 2
+/data get entity @e[tag=sc,limit=1] ActiveEffects
+/effect clear @e[tag=sc]
+# --- 2. Rite Focus: Curse of Binding for 2 mana ---
+/dndclass mana @s 1
+press key.dnd-classes.power-up
+wait 5
+/data get entity @e[tag=sc,limit=1] ActiveEffects
+/dndclass mana @s 2
+press key.dnd-classes.power-up
+wait 5
+screenshot subclass-blood-hunter-binding
+/data get entity @e[tag=sc,limit=1] ActiveEffects
+/effect clear @e[tag=sc]
+# --- 3. Profane Soul control: no night speed ---
+/time set midnight
+wait 30
+/attribute @s minecraft:generic.movement_speed get
+# --- Lycan ---
+/dndclass subclass @s bloodhunter.lycan
+# Crimson Rite stays unlocked and equipped (the shared first node)
+/dndclass unlock @s bloodhunter.sunshield
+/dndclass unlock @s bloodhunter.hybrid_transformation
+/dndclass equip @s bloodhunter.hybrid_transformation
+/dndclass progress @s
+wait 30
+/attribute @s minecraft:generic.movement_speed get
+/time set noon
+wait 30
+/attribute @s minecraft:generic.movement_speed get
+/time set midnight
+wait 2
+/dndclass forceroll @s 10
+attack
+wait 2
+/data get entity @e[tag=sc,limit=1] ActiveEffects
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 5
+/data get entity @s ActiveEffects
+/time set noon
+/effect clear @s
+/kill @e[type=!player,distance=..30]
+quit

@@ -17,9 +17,11 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
 | Armorer | Right | Reinforced Plating (first node, open to both), Repair Field, Thorned Plating | **Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance |
-| Battle Smith | Left | Tinkerer (first node, open to both), Steel Defender, Overclock | **Battle Ready**: +2 attack damage with any identified magic weapon |
+| Battle Smith | Left | Tinkerer (first node, open to both), Steel Defender, Overclock | **Battle Ready**: +2 melee damage with any identified magic weapon |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Power Armor** (Armorer): Arcane Armor lasts 45 s instead of 30 s. While it's on (Mechanical Titan's included) you have +0.5 knockback resistance.
+- **Battle Ready** (Battle Smith): +2 damage on your melee hits with a magic weapon whose magic is awake (a weapon with a [magic tier](../systems/magic-items.md), +N gear included, that's identified). Unidentified weapons and mundane ones get nothing.
 
 ## For developers
 - `Misc/ArtificerDamage`, `Misc/ArtificerCrafting` (+ `mixin/CraftingResultSlotMixin`, `CraftingQuickMoveMixin`), `mixin/EnchantingTableMixin`, `Effects/ArmorBuffEffect`.

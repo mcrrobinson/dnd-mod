@@ -87,7 +87,7 @@ public class PowerUpEffect {
 
         int rank = NecromancerSkills.RAISE_DEAD.rank(player);
         int count = NecromancerSkills.RAISE_DEAD.getInt(player, "Undead");
-        int lifetime = NecromancerSkills.RAISE_DEAD.ticks(player, "Duration");
+        int lifetime = NecromancerSkills.summonLifetime(player, NecromancerSkills.RAISE_DEAD.ticks(player, "Duration"));
         Team allyTeam = NecromancerSkills.allyTeam(world, player);
         List<EntityType<? extends HostileEntity>> roster = NecromancerSkills.raisedUndead(rank);
 
@@ -276,8 +276,7 @@ public class PowerUpEffect {
                 break;
             case ROGUE:
                 // Vanish: invisibility, longer with each rank.
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY,
-                        RogueSkills.VANISH.ticks(player, "Duration"), 0));
+                RogueSkills.vanish(player);
                 break;
             case DRUID:
                 if (!(player instanceof ServerPlayerEntity serverPlayer) || !Druid.transform(serverPlayer))
@@ -294,8 +293,8 @@ public class PowerUpEffect {
 
                 break;
             case ARTIFICER:
-                // Temporary buff to armor (+8 armor, +4 toughness for 30 seconds)
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.ARMOR_BUFF, 600, 0));
+                // Arcane Armor: +8 armor, +4 toughness for 30 seconds (45 for an Armorer)
+                mattonfire.dnd.classes.Progression.Classes.ArtificerSkills.arcaneArmor(player);
                 break;
             case BLOODHUNTER:
                 // Take control of the mob being looked at; range, duration and success chance by rank.

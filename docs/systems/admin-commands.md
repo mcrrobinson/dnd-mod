@@ -29,6 +29,7 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
 | `/dndclass subclass <player> <id\|none>` | Sets the subclass of the player's current class (e.g. `barbarian.berserker`), skipping the level and the Attunement Table; replacing another subclass refunds it first. `none` clears it and refunds the subclass's upper nodes, the capstone and their ranks |
 | `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |
+| `/dndclass mana <player> <pips>` | Sets a player's mana (0-9 pips), for testing actives without waiting for it to regenerate |
 | `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
 | `/dndclass charges <player> [n]` | Prints charges, recharge group, Hit Dice and short rests left; `n` sets the charges (capped at the class's max) |
 | `/dndclass hitdice <player> [n]` | Prints the same; `n` sets the Hit Dice left (capped at the pool) |

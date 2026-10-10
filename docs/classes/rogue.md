@@ -45,10 +45,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| Assassin | Right | Backstab (first node, open to both), Shadowstep, Poisoned Blades | **Assassinate**: double damage to a mob that isn't targeting you, and your first hit after Vanish ends is a critical |
-| Thief | Left | Light Feet (first node, open to both), Smoke Bomb, Danger Sense, Fleet | **Fast Hands**: +3 to lockpicking, and you ignore class restrictions when attuning magic items |
+| Assassin | Right | Backstab (first node, open to both), Shadowstep, Poisoned Blades | **Assassinate**: double melee damage to a mob that isn't targeting you, and your first melee swing out of Vanish (while it lasts or up to 5 seconds after) is a critical |
+| Thief | Left | Light Feet (first node, open to both), Smoke Bomb, Danger Sense, Fleet | **Fast Hands**: +3 to lockpicking (Thieves' Tools), and you ignore class restrictions when attuning magic items |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Assassinate** (Assassin): your melee hits on a mob that isn't targeting you deal double damage (on top of Backstab). After you cast Vanish, your next full-strength melee swing, while you're invisible or up to 5 s after Vanish ends, is a guaranteed critical hit (double damage again); the attack roll on the HUD says "critical hit, double damage (Assassinate)". A guaranteed critical can't fumble.
+- **Fast Hands** (Thief): +3 to Thieves' Tools on your character sheet, so a lockpick that would roll d20 + 6 rolls d20 + 9 (it shows as "Fast Hands" in the roll; the base depends on your DEX and level). Ignoring class restrictions when attuning comes with the attunement card.
 
 ## Commands
 - `/dndclass set <player> rogue` (see [Admin commands](../systems/admin-commands.md)).

@@ -8,6 +8,7 @@ import java.util.List;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.ClassInfo;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
@@ -201,7 +202,7 @@ public class SkillTreeScreen extends Screen {
 
         SkillNode active = progress.activeNode();
         drawTextWithShadow(matrices, textRenderer, Text.literal("Active: ").formatted(Formatting.GRAY)
-                .append(Text.literal(active.name() + " (" + active.manaCost() + " mana" + chargeSuffix(active) + ")")
+                .append(Text.literal(active.name() + " (" + ClassSkills.manaCostFor(progress, active) + " mana" + chargeSuffix(active) + ")")
                         .formatted(Formatting.AQUA)),
                 left + 12, y, 0xFFFFFF);
 
@@ -289,7 +290,7 @@ public class SkillTreeScreen extends Screen {
         List<OrderedText> lines = new ArrayList<>();
         lines.add(Text.literal(node.name()).formatted(Formatting.BOLD, Formatting.WHITE).asOrderedText());
         lines.add((node.isActive()
-                ? Text.literal("Active - " + node.manaCost() + " mana").formatted(Formatting.AQUA)
+                ? Text.literal("Active - " + ClassSkills.manaCostFor(progress, node) + " mana").formatted(Formatting.AQUA)
                 : Text.literal("Passive").formatted(Formatting.GREEN)).asOrderedText());
         Text chargeLine = chargeLine(node);
         if (chargeLine != null) {

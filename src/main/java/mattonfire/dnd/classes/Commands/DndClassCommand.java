@@ -174,7 +174,22 @@ public class DndClassCommand {
                                         .executes(DndClassCommand::forceRoll))))
                 .then(CommandManager.literal("resetprogress")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
-                                .executes(DndClassCommand::resetProgress))));
+                                .executes(DndClassCommand::resetProgress)))
+                // Refills (or drains) a player's mana pips, for testing actives without waiting
+                .then(CommandManager.literal("mana")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.argument("pips",
+                                        IntegerArgumentType.integer(0, mattonfire.dnd.classes.DnDClasses.MANA_ICONS))
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context,
+                                                    "player");
+                                            int pips = IntegerArgumentType.getInteger(context, "pips");
+                                            mattonfire.dnd.classes.ManaManager.setMana(player, pips);
+                                            mattonfire.dnd.classes.ManaManager.sync(player);
+                                            context.getSource().sendFeedback(Text.literal("Set "
+                                                    + player.getEntityName() + "'s mana to " + pips), false);
+                                            return pips;
+                                        })))));
     }
 
     private static LiteralArgumentBuilder<ServerCommandSource> skillCommand(

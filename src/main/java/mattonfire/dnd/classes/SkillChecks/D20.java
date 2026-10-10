@@ -316,8 +316,25 @@ public final class D20 {
             return flags(FLAG_SECRET);
         }
 
-        /** Rolls and logs it. Show it with {@link D20#show}. */
+        /**
+         * Rolls and logs it. Show it with {@link D20#show}. A failed check or save, or a fumble, may be
+         * rolled again once if a {@link Reroll} claims it (Dark One's Own Luck); the second roll stands.
+         */
         public Roll roll() {
+            Roll roll = rollOnce();
+            if (!roll.outcome().succeeded() && (roll.dc() > 0 || roll.outcome() == Outcome.FUMBLE)
+                    && player instanceof ServerPlayerEntity roller) {
+                String reason = reroll(roller, roll.kind(), roll.outcome());
+                if (reason != null) {
+                    DnDClasses.LOGGER.info("[D20] {} {}: rerolling {} ({})", roller.getEntityName(), reason,
+                            roll.natural(), roll.outcome());
+                    roll = rollOnce();
+                }
+            }
+            return roll;
+        }
+
+        private Roll rollOnce() {
             Advantage mode = Advantage.resolve(advantages, disadvantages);
             int rerolled = 0;
             int a = d20(player);
@@ -358,6 +375,33 @@ public final class D20 {
             }
             return roll;
         }
+    }
+
+    /**
+     * Something that can give a failed roll a second try (the Fiend Warlock's Dark One's Own Luck). Asked on
+     * the server for each failed check or save and each fumble; returning a reason uses it up, and the d20
+     * is rolled again with the second result standing.
+     */
+    @FunctionalInterface
+    public interface Reroll {
+        @Nullable
+        String claim(PlayerEntity player, RollKind kind, Outcome outcome);
+    }
+
+    private static final List<Reroll> REROLLS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerReroll(Reroll reroll) {
+        REROLLS.add(reroll);
+    }
+
+    @Nullable
+    private static String reroll(PlayerEntity player, RollKind kind, Outcome outcome) {
+        for (Reroll reroll : REROLLS) {
+            String reason = reroll.claim(player, kind, outcome);
+            if (reason != null)
+                return reason;
+        }
+        return null;
     }
 
     /** One natural d20: the next rigged value if any ({@code /dndclass forceroll}), else random. */

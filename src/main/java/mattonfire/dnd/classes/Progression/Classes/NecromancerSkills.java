@@ -85,6 +85,15 @@ public class NecromancerSkills extends ClassSkills {
         };
     }
 
+    public static final String BONECALLER = "necromancer.bonecaller";
+    public static final String PLAGUEBRINGER = "necromancer.plaguebringer";
+    /** Undying Servants: a Bonecaller's summons last this much longer. */
+    public static final float UNDYING_SERVANTS_MULTIPLIER = 1.25F;
+    /** The Wither every Necromancer hit applies ({@code DnDClasses}); too short to count as withering. */
+    private static final int CLASS_HIT_WITHER_TICKS = 5;
+    /** Grim Harvest: health back for killing a withering mob (2 hearts). */
+    public static final float GRIM_HARVEST_HEAL = 4.0F;
+
     private static final int SUMMON_KILL_XP = 3;
     private static final int WITHER_KILL_XP = 1;
 
@@ -176,6 +185,7 @@ public class NecromancerSkills extends ClassSkills {
                     && entity.getPrimeAdversary() instanceof ServerPlayerEntity player
                     && Progression.classOf(player) == DndCharacter.NECROMANCER) {
                 Progression.addXp(player, WITHER_KILL_XP);
+                grimHarvest(player, entity);
             }
         });
 
@@ -261,6 +271,36 @@ public class NecromancerSkills extends ClassSkills {
         mob.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 60, 0));
     }
 
+    /** How long a summon of this player's lasts: Undying Servants makes a Bonecaller's 25% longer. */
+    public static int summonLifetime(PlayerEntity player, int ticks) {
+        return Progression.classOf(player) == DndCharacter.NECROMANCER
+                && Progression.current(player).hasSubclass(BONECALLER)
+                        ? Math.round(ticks * UNDYING_SERVANTS_MULTIPLIER)
+                        : ticks;
+    }
+
+    /**
+     * Grim Harvest: a Plaguebringer who kills a mob that's withering (Wither Cloud, Death's Embrace, a
+     * Wither potion...) heals 2 hearts. Called for kills by the player and for kills by the wither itself.
+     */
+    private static void grimHarvest(ServerPlayerEntity player, LivingEntity killed) {
+        StatusEffectInstance wither = killed.getStatusEffect(StatusEffects.WITHER);
+        // The class's own wither on every hit (Wither I for 5 ticks, in DnDClasses) doesn't count
+        if (wither == null || (wither.getDuration() <= CLASS_HIT_WITHER_TICKS && wither.getAmplifier() == 0)
+                || !Progression.current(player).hasSubclass(PLAGUEBRINGER) || !player.isAlive())
+            return;
+        player.heal(GRIM_HARVEST_HEAL);
+        ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.SOUL, killed.getX(), killed.getBodyY(0.5),
+                killed.getZ(), 8, 0.3, 0.4, 0.3, 0.02);
+        mattonfire.dnd.classes.DnDClasses.LOGGER.debug("[Subclass] Grim Harvest: {} healed {}, now {}",
+                player.getEntityName(), GRIM_HARVEST_HEAL, player.getHealth());
+    }
+
+    @Override
+    public void onKill(ServerPlayerEntity player, ClassProgress progress, LivingEntity killed, DamageSource source) {
+        grimHarvest(player, killed);
+    }
+
     /** Sets up an undead ally like the root's summons, but timed by {@code spawnSummon}. */
     private static void summon(ServerPlayerEntity player, HostileEntity mob, Item weapon, double angle) {
         if (mob == null)
@@ -273,7 +313,8 @@ public class NecromancerSkills extends ClassSkills {
         mob.setEquipmentDropChance(EquipmentSlot.MAINHAND, 0);
         mob.setPersistent();
         // Don't burn in daylight.
-        mob.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, SUMMON_LIFETIME_TICKS, 0));
+        int lifetime = summonLifetime(player, SUMMON_LIFETIME_TICKS);
+        mob.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, lifetime, 0));
 
         MobEntityAccessor accessor = (MobEntityAccessor) mob;
         accessor.getTargetSelector().add(2, new ActiveTargetGoal<LivingEntity>(mob, LivingEntity.class, 10, true,
@@ -285,7 +326,7 @@ public class NecromancerSkills extends ClassSkills {
         if (Progression.hasPassive(player, "necromancer.grave_pact")) {
             gravePact(mob);
         }
-        spawnSummon(world, mob, SUMMON_LIFETIME_TICKS);
+        spawnSummon(world, mob, lifetime);
         world.spawnParticles(ParticleTypes.SOUL, mob.getX(), mob.getY() + 0.5, mob.getZ(), 10, 0.3, 0.5, 0.3, 0.02);
     }
 

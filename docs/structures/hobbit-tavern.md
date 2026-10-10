@@ -44,6 +44,7 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 ### Bounty notices
 - Notices track progress from anywhere in your inventory.
   - **Hunts** count your kills, including kills with projectiles. Each kill counts towards one notice (the first unfinished one for that creature). Boss minions don't count.
+  - **Dungeon clearances** send you to a [dungeon](dungeons.md) (see below).
   - **Expeditions** complete when you stand inside the structure. Players are checked once a second. Each structure finishes one notice of each expedition per player, ever (the last 128 are remembered), so carrying a stack of the same notice doesn't pay out several times.
 - The tooltip shows the job, progress and reward, and a finished notice glows.
 - **Claiming:** right-click a bounty board or an innkeeper with a finished notice. You get emeralds, a roll of spoils, vanilla XP and class XP. An unfinished notice is refused and kept.
@@ -60,6 +61,17 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 | Brigands on the Road | Defeat 5 illagers | 10 | minor | 30 | 60 | 6 |
 | Under the Mountain | Find a dwarven fortress | 10 | major | 40 | 100 | 6 |
 | The Dragon's Lair | Find a dragon lair | 14 | major | 50 | 120 | 3 |
+| Clear the Barrow | Clear a Crypt | 14 (+25%/tier) | major | 60 | 150 | 4 |
+| Smoke out the Warren | Clear a Goblin Warren | 16 (+25%/tier) | major | 70 | 180 | 4 |
+| Reclaim the Lost Hold | Clear a Dwarven Ruin | 20 (+25%/tier) | major | 90 | 220 | 3 |
+
+### Dungeon clearances
+- A board only posts a clearance if the world has a dungeon structure of that theme (any registered theme works; *Reclaim the Lost Hold* appears once the Dwarven Ruin exists).
+- **Taking** one binds the notice to the nearest uncleared dungeon of its theme within 2000 blocks of the board, including ones nobody has found yet, and gives you a **Dungeon Map**: an explorer-style map centred on the entrance with a red X, named "Map to <dungeon name>". If there's none in range, the notice stays up: "Nobody knows of such a place nearby."
+- The notice's tooltip shows the dungeon's name and Challenge tier, and the reward for that tier.
+- It's **done** when that dungeon is cleared (its boss dies, or `/dungeon clear`) while you're inside it with the notice. Everyone inside with a notice for that dungeon gets credit.
+- **Reward:** the emeralds grow by 25% of the base per tier over I, rounded (Clear the Barrow: 14 / 18 / 21 / 25 at tiers I-IV). Spoils, XP and class XP don't change.
+- A notice from the creative tab or `/give` isn't bound yet: right-click it in the air to bind it to the nearest dungeon to you and get the map.
 
 What the spoils can contain:
 - **Minor spoils** (`gameplay/bounty_minor`): 1-2 rolls of food, ale, iron, gold, arrows or lapis, with a small chance of an enchanted book, an enchanted iron sword or a diamond. Plus a 10% chance of an Uncommon magic item and 5% of a Wand of Magic Missiles, both identified (bounty rewards are known goods, see [Magic loot](../systems/magic-loot.md)).
@@ -75,7 +87,7 @@ What the spoils can contain:
 - Give a Rumour: `/give @s dndclasses:quest_lead{Quest:"dndclasses:whispering_library/1"}`.
 - Force today's Rumour on a board you're looking at: `/data merge block <x y z> {Rumour:1b}` (after the board has posted today's notices).
   - Optionally add `Progress:<n>`.
-  - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `frost_drake`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`.
+  - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `frost_drake`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`, `clear_barrow`, `smoke_warren`, `lost_hold`.
 - Restock boards and the innkeeper: `/time add 24000`.
 - A Room Key for a test room: `/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;x1,y1,z1,x2,y2,z2],Day:<day>L}`, where `<day>` is `/time query day` (the in-game day the key is good for) and the box holds the beds.
 - `/dndclass rest @s allow` forgets today's long rest, to try a room again.
@@ -96,6 +108,7 @@ What the spoils can contain:
   - `QuestLeadItem` is the Rumour (`dndclasses:quest_lead`, NBT `Quest` and `Title`); `QuestLeadItem.pick` chooses the quest.
   - `BountyNoticeItem` stores NBT `Bounty` and `Progress`.
   - `BountyRewards` tracks kills and structure visits and pays rewards.
+  - `DungeonBounties` binds dungeon clearances (notice NBT `StartKey`, `Dimension`, `DungeonName` as text JSON, `DungeonTier`), completes them on `DungeonEvents.CLEARED` and scales the emeralds (`Bounty.emeraldsFor`). `Bounty.isAvailable(world)` keeps a clearance off the board when no structure of its theme is registered.
   - `AleItem` is the ale.
 - Innkeeper: `entity/InnkeeperEntity` (a `HobbitEntity` that implements `Merchant`) and `entity/InnkeeperTrades`.
 - Rooms:
@@ -120,4 +133,4 @@ What the spoils can contain:
 - Class XP goes through `Progression.addXp`. Finished expeditions are kept in the player's persistent data under `BountyExpeditions`.
   - If the class isn't there, it does nothing.
   - `TODO(class-progression)`: replace the lookup with a direct call once that branch merges.
-- Devscript: `devscripts/hobbit-tavern.txt` takes a notice, completes a spider bounty, claims it, and opens the innkeeper's trades. `devscripts/quest-rumour.txt` forces a Rumour, takes it and follows it.
+- Devscript: `devscripts/hobbit-tavern.txt` takes a notice, completes a spider bounty, claims it, and opens the innkeeper's trades. `devscripts/dungeon-bounty.txt` takes *Clear the Barrow* next to the dev world's crypt, checks the map, clears the crypt and claims the reward. `devscripts/quest-rumour.txt` forces a Rumour, takes it and follows it.

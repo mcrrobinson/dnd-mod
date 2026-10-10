@@ -17,7 +17,12 @@ import mattonfire.dnd.world.gen.dungeon.DungeonTheme;
 import mattonfire.dnd.world.gen.dungeon.StairPiece;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
+import com.mojang.datafixers.util.Pair;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.registry.entry.RegistryEntryList;
+import net.minecraft.util.math.ChunkSectionPos;
+import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -144,7 +149,8 @@ public class DungeonRegistry extends PersistentState {
     /**
      * The nearest recorded dungeon within {@code maxDistance} blocks (horizontally) of the entrance,
      * optionally of one theme and/or not yet cleared. Only dungeons someone has been near are
-     * recorded; finding unvisited ones (for maps and bounties) is a later ticket.
+     * recorded; {@link #nearest(ServerWorld, BlockPos, DungeonTheme, boolean, int)} also finds
+     * unvisited ones.
      */
     public Optional<DungeonState> nearest(BlockPos pos, DungeonTheme theme, boolean unclearedOnly, double maxDistance) {
         DungeonState best = null;
@@ -162,6 +168,74 @@ public class DungeonRegistry extends PersistentState {
             }
         }
         return Optional.ofNullable(best);
+    }
+
+    /**
+     * The nearest dungeon within {@code maxDistance} blocks of {@code pos} (by its entrance), of
+     * {@code theme} (null = any), optionally only uncleared ones: recorded ones, and ones the world
+     * hasn't generated yet, found with the structure locator ({@code ServerWorld.locateStructure}
+     * style) and recorded here from their structure start. For bounties, quests and maps. Empty if
+     * none is in range or no structure of that theme is registered.
+     */
+    public static Optional<DungeonState> nearest(ServerWorld world, BlockPos pos, DungeonTheme theme, boolean unclearedOnly,
+                                                 int maxDistance) {
+        DungeonRegistry registry = get(world);
+        DungeonState best = registry.nearest(pos, theme, unclearedOnly, maxDistance).orElse(null);
+        RegistryEntryList<Structure> structures = structuresOf(world, theme);
+        if (structures.size() > 0) {
+            int radius = Math.max(1, ChunkSectionPos.getSectionCoord(maxDistance));
+            DungeonState located = registry.locate(world, structures, pos, radius, false);
+            if (located != null && unclearedOnly && located.isCleared()) {
+                // the nearest one is cleared: look again past the places players have already been
+                located = registry.locate(world, structures, pos, radius, true);
+            }
+            if (located != null && !(unclearedOnly && located.isCleared())
+                    && horizontalDistanceSq(located, pos) <= (double) maxDistance * maxDistance
+                    && (best == null || horizontalDistanceSq(located, pos) < horizontalDistanceSq(best, pos))) {
+                best = located;
+            }
+        }
+        return Optional.ofNullable(best);
+    }
+
+    /**
+     * The registered dungeon structures of {@code theme} (null = every theme). Empty when no
+     * structure uses that theme, so callers can tell whether a theme exists in this world.
+     */
+    public static RegistryEntryList<Structure> structuresOf(ServerWorld world, DungeonTheme theme) {
+        Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
+        List<RegistryEntry<Structure>> entries = new ArrayList<>();
+        registry.streamEntries().forEach(entry -> {
+            if (entry.value() instanceof DungeonStructure dungeon && (theme == null || dungeon.theme() == theme)) {
+                entries.add(entry);
+            }
+        });
+        return RegistryEntryList.of(entries);
+    }
+
+    /** Whether any registered structure builds dungeons of {@code theme}. */
+    public static boolean isRegistered(ServerWorld world, DungeonTheme theme) {
+        return structuresOf(world, theme).size() > 0;
+    }
+
+    /** Locates the nearest start of {@code structures} and records it (generating only its structure start). */
+    private DungeonState locate(ServerWorld world, RegistryEntryList<Structure> structures, BlockPos pos, int radius,
+                                boolean skipReferenced) {
+        Pair<BlockPos, RegistryEntry<Structure>> found = world.getChunkManager().getChunkGenerator()
+                .locateStructure(world, structures, pos, radius, skipReferenced);
+        if (found == null) {
+            return null;
+        }
+        ChunkPos chunk = new ChunkPos(found.getFirst());
+        StructureStart start = world.getChunk(chunk.x, chunk.z, ChunkStatus.STRUCTURE_STARTS)
+                .getStructureStart(found.getSecond().value());
+        return this.getOrCreate(start);
+    }
+
+    private static double horizontalDistanceSq(DungeonState state, BlockPos pos) {
+        double dx = state.entrance().getX() - pos.getX();
+        double dz = state.entrance().getZ() - pos.getZ();
+        return dx * dx + dz * dz;
     }
 
     /**

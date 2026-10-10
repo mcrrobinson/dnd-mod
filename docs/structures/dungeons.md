@@ -93,6 +93,8 @@ Each room has an invisible, unbreakable **Dungeon Ward** under the middle of its
 The server remembers each dungeon (theme, tier, name, room states, whether the boss is dead, when it was cleared and how often, who has been inside) in `data/dndclasses_dungeons.dat` in the world folder, so it survives restarts.
 
 ## Where to find it
+Tavern bounty boards post **dungeon clearances** (*Clear the Barrow*, *Smoke out the Warren*, *Reclaim the Lost Hold*). Taking one gives a **Dungeon Map** to the nearest uncleared dungeon of that theme within 2000 blocks, and the notice is done once you're inside when that dungeon is cleared. See [Hobbit Tavern](hobbit-tavern.md#dungeon-clearances).
+
 Crypts generate under plains, sunflower plains, meadows, forests, flower forests, taiga, dark forests, snowy plains and snowy taiga, about 28 chunks apart (at least 10).
 
 Goblin Warrens generate under forests, flower forests, birch and old growth birch forests, old growth pine and spruce taiga, taiga, plains, sunflower plains, savannas and savanna plateaus, about 32 chunks apart (at least 12). They also keep 10 chunks clear of Crypts.
@@ -127,7 +129,8 @@ For both, the entrance has to be on dry land, and at most 2 of the 25 ground sam
   - `CryptDressing`: the Crypt's props (`sarcophagus`, `wallSarcophagi`, `bonePile`, `candles`, `skull`, `cornerCobwebs`), called by each room for the Crypt only. They place through `Builder.setIfAir` and draw from `Builder.dressing`, a random separate from the piece's own.
   - `WarrenDressing`: the Warren's props (`leanTo`, `wallProps`, `cage`, `bedroll`, `stores`, `totem`, `cornerProp`, `chain`, `refusePit`, `firePit`), the same way; it reuses `CryptDressing`'s bone piles, skulls and cobwebs.
 - `src/main/java/mattonfire/dnd/dungeon/`:
-  - `DungeonRegistry` (PersistentState `dndclasses_dungeons`): `find`, `containing`, `roomAt`, `isInsideUncleared`, `nearest`, `clear`. Entries are created lazily from the structure start or from a ward.
+  - `DungeonRegistry` (PersistentState `dndclasses_dungeons`): `find`, `containing`, `roomAt`, `isInsideUncleared`, `nearest`, `clear`. Entries are created lazily from the structure start or from a ward. The static `nearest(world, pos, theme, unclearedOnly, maxDistance)` also finds dungeons nobody has visited: it runs the structure locator over the dungeon structures of that theme (`structuresOf(world, theme)`, any `DungeonStructure` in the registry), loads only the start chunk's structure start and records it. If the nearest one is cleared, it looks again past already-referenced starts.
+  - `DungeonMaps.create(world, dungeon)`: the Dungeon Map (vanilla filled map, scale 2, `RED_X` decoration at the entrance, NBT `DungeonStartKey`). For bounties and quests.
   - `DungeonState` (keyed by `StructureStart.getPos().toLong()`), `RoomRole`, `RoomState`.
   - `DungeonEvents`: `ENTERED`, `ROOM_CLEARED`, `BOSS_DEFEATED`, `CLEARED`. `ENTERED` and `ROOM_CLEARED` fire from wards; `BOSS_DEFEATED` from the boss's death (`DungeonCombat`); `CLEARED` from `DungeonRegistry.clear` (the boss's death or `/dungeon clear`).
 - `classes/Blocks/DungeonWardBlock` + `DungeonWardBlockEntity` (NBT: `StartKey`, `RoomId`, `Role`, `Box`, `SpawnPoints`, and `Dungeon`, the whole plan, so a ward can record its dungeon without a structure start).

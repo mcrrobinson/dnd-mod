@@ -50,6 +50,7 @@ public final class BountyRewards {
             }
         });
         ServerTickEvents.END_SERVER_TICK.register(BountyRewards::tick);
+        DungeonBounties.register();
     }
 
     /** One kill counts towards one notice: the first unfinished one for that kind of creature. */
@@ -146,10 +147,11 @@ public final class BountyRewards {
             player.sendMessage(Text.translatable("bounty.dndclasses.not_done", bounty.title()).formatted(Formatting.RED), true);
             return false;
         }
+        int emeralds = DungeonBounties.emeralds(bounty, notice);
         notice.decrement(1);
         ServerWorld world = player.getWorld();
 
-        give(player, new ItemStack(Items.EMERALD, bounty.emeralds));
+        give(player, new ItemStack(Items.EMERALD, emeralds));
         LootTable table = world.getServer().getLootManager().getTable(bounty.tier.lootTable);
         List<ItemStack> spoils = table.generateLoot(new LootContext.Builder(world)
                 .parameter(LootContextParameters.ORIGIN, where)

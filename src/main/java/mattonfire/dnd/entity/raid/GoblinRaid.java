@@ -600,10 +600,12 @@ public class GoblinRaid {
         Identifier lootId = new Identifier(DnDClasses.MOD_ID, "gameplay/goblin_raid_" + this.kind.id);
         LootTable loot = world.getServer().getLootManager().getTable(lootId);
         Advancement advancement = world.getServer().getAdvancementLoader().get(ADVANCEMENT);
+        List<ServerPlayerEntity> defenders = new java.util.ArrayList<>();
         for (UUID uuid : this.participants) {
             if (!(world.getEntity(uuid) instanceof ServerPlayerEntity player) || !player.isAlive()) {
                 continue;
             }
+            defenders.add(player);
             player.sendMessage(Text.translatable("raid.dndclasses.goblin.reward", this.placeName()).formatted(Formatting.GOLD), false);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, 20 * 60 * 40, 0, false, false, true));
             for (ItemStack stack : loot.generateLoot(new LootContext.Builder(world)
@@ -628,6 +630,7 @@ public class GoblinRaid {
                 }
             }
         }
+        mattonfire.dnd.quest.QuestEvents.onRaidWon(world.getServer(), defenders, this.kind.id);
         world.playSound(null, this.rally, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.NEUTRAL, 1.0F, 1.0F);
     }
 

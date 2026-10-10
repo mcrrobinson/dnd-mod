@@ -224,6 +224,9 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.faction.FactionEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.faction.RepCommand.register(dispatcher));
+                mattonfire.dnd.quest.QuestEvents.register();
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.quest.QuestCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndHomeCommand.register(dispatcher));
                 mattonfire.dnd.entity.boss.StructureBosses.register();

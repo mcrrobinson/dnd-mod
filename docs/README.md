@@ -4,14 +4,14 @@ The detailed reference for the mod, one page per feature, grouped by area. The [
 Each page follows the same template: summary, How it works, Where to find it, Commands, Configuration, Known limitations, For developers.
 
 ## Classes
-- [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted
-- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you
-- [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target
-- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals
-- [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions
-- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special
-- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether
-- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
+- [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted; subclass features (PR #136)
+- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you; subclass features (PR #136)
+- [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target; subclass features (PR #136)
+- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals; subclass features (PR #136)
+- [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions; subclass features (PR #136)
+- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special; subclass features (PR #136)
+- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether; subclass features (PR #136)
+- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank; subclass features (PR #136)
 - [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
 - [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
 - [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water

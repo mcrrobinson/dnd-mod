@@ -1,0 +1,104 @@
+# Ranger subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-ranger.txt
+# Expect in latest.log (husk Health after each 4-damage arrow hit, 0 armor):
+#  1. Hunter: 40 -> 36 (full health, no bonus) -> 29 (+3) -> 25 (within 1 s, no bonus) -> 18 (+3 again)
+#  2. Horizon Walker, Overworld: 40 -> 36 -> 32 -> 28; no Speed (Id 1)
+#  3. Horizon Walker, Nether: /damage 10 by the player leaves 28 (12); Speed I present
+#  4. Hunter, Nether: 10 damage leaves 30; no Speed
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=husk]
+/kill @e[type=pig]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s ranger
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s ranger.hunter
+/clear @s
+/tp @s 2.5 150 0.5 0 5
+/summon minecraft:arrow 6.5 151 0.5 {NoGravity:1b,Motion:[0d,0d,0d]}
+# --- 1. Hunter ---
+wait 20
+/summon minecraft:husk 2.5 150 5.5 {NoAI:1b,Health:40f,Attributes:[{Name:"minecraft:generic.max_health",Base:40d},{Name:"minecraft:generic.armor",Base:0d}],Rotation:[180f,0f]}
+wait 5
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+wait 10
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+wait 10
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+wait 23
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+/kill @e[type=husk]
+# --- 2. Horizon Walker, Overworld ---
+/dndclass subclass @s ranger.horizon_walker
+wait 25
+/data get entity @s ActiveEffects
+/summon minecraft:husk 2.5 150 5.5 {NoAI:1b,Health:40f,Attributes:[{Name:"minecraft:generic.max_health",Base:40d},{Name:"minecraft:generic.armor",Base:0d}],Rotation:[180f,0f]}
+wait 5
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+wait 10
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+wait 10
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+wait 23
+/damage @e[type=husk,limit=1] 4 minecraft:arrow by @e[type=arrow,limit=1] from @s
+wait 2
+/data get entity @e[type=husk,limit=1] Health
+/kill @e[type=husk]
+# --- 3. Horizon Walker, Nether ---
+/execute in minecraft:the_nether run forceload add 0 0
+wait 60
+/execute in minecraft:the_nether run fill 0 149 0 8 149 8 minecraft:netherrack
+/execute in minecraft:the_nether run fill 0 150 0 8 154 8 minecraft:air
+/execute in minecraft:the_nether run tp @s 2.5 150 0.5 0 5
+wait 60
+/data get entity @s ActiveEffects
+screenshot subclass-ranger-nether
+/summon minecraft:husk 2.5 150 5.5 {NoAI:1b,Health:40f,Attributes:[{Name:"minecraft:generic.max_health",Base:40d},{Name:"minecraft:generic.armor",Base:0d}],Rotation:[180f,0f]}
+wait 5
+/damage @e[type=husk,limit=1,distance=..10] 10 minecraft:generic by @s
+wait 2
+/data get entity @e[type=husk,limit=1,distance=..10] Health
+/kill @e[type=husk,distance=..10]
+# --- 4. Hunter, Nether ---
+/dndclass subclass @s ranger.hunter
+/effect clear @s
+wait 25
+/data get entity @s ActiveEffects
+/summon minecraft:husk 2.5 150 5.5 {NoAI:1b,Health:40f,Attributes:[{Name:"minecraft:generic.max_health",Base:40d},{Name:"minecraft:generic.armor",Base:0d}],Rotation:[180f,0f]}
+wait 5
+/damage @e[type=husk,limit=1,distance=..10] 10 minecraft:generic by @s
+wait 2
+/data get entity @e[type=husk,limit=1,distance=..10] Health
+/kill @e[type=husk,distance=..10]
+/execute in minecraft:overworld run tp @s 2.5 150 0.5 0 5
+/execute in minecraft:the_nether run forceload remove 0 0
+wait 20
+/kill @e[type=arrow]
+quit

@@ -18,7 +18,7 @@ Each class's two skill-tree branches are its two D&D subclasses: Path of the Ber
 | After choosing | Your branch opens fully. The other branch's first node can still be unlocked (a "dabble" node), but its upper nodes are sealed with a padlock and say "Path of the Berserker only" |
 | Capstone | Unchanged: it needs a top branch node, so only your subclass reaches it |
 | Shared nodes | The Paladin's Circle of Healing, between the branches, is open to either oath ("Any oath") once you've chosen one |
-| Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it. **The features aren't active yet**; they come with the subclass feature cards |
+| Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it; each class page has the numbers. A feature that isn't in the game yet says so on its banner |
 | Points | A subclass branch costs 3, the capstone 2, the other first node 1 and a special's ranks II-IV 3: 9 of the 10 points at level 10 |
 | Per class | Kept per class like the rest of the tree, so switching class and back keeps the choice |
 | Changing it | Only an operator for now (`/dndclass subclass <player> none`), later a Tome of Clear Thought. Clearing refunds the subclass's upper nodes, the capstone and their ranks |
@@ -41,9 +41,9 @@ All 30 subclasses ("Right" is the branch listed first in the code, column 2):
 | Barbarian | Path of the Berserker | `barbarian.berserker` | Right | **Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage) |
 | Barbarian | Path of the Totem Warrior | `barbarian.totem_warrior` | Left | **Bear Totem Spirit**: while Rage is active you take 15% less damage |
 | Bard | College of Valor | `bard.valor` | Right | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
-| Bard | College of Lore | `bard.lore` | Left | **Bardic Lore**: +2 to Persuasion checks, and you identify magic items when you pick them up |
-| Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more |
-| Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest, make one held weapon or worn armor piece +1 until the next long rest, from an Attunement Table's Items tab ([details](magic-items.md#blessing-of-the-forge)) |
+| Bard | College of Lore | `bard.lore` | Left | **Bardic Lore**: +2 to Persuasion checks |
+| Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Life Domain healing is 25% stronger |
+| Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest (once per in-game day with the `dndRests` gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab ([details](magic-items.md#blessing-of-the-forge)) |
 | Druid | Circle of the Moon | `druid.moon` | Right | **Primal Strike**: your attacks deal +2 damage in animal form |
 | Druid | Circle of the Land | `druid.land` | Left | **Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss |
 | Fighter | Champion | `fighter.champion` | Right | **Superior Critical**: melee attack rolls crit on 18-20 |

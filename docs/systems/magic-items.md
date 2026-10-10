@@ -90,9 +90,9 @@ Tooltips show `Attuned` in aqua on your own bonded items, and `Attuned to <playe
 The full set of named items (Ring of Protection, Frostbrand, ...) comes in a later update; the Cloak is the first.
 
 ### Blessing of the Forge
-A [Forge Domain Cleric](../classes/cleric.md)'s subclass feature. Once per long rest, at an Attunement Table's Items tab, **Bless +1** makes the weapon in your hand (main or offhand) or a piece of armor you wear +1 (a mundane item becomes a green "+1 Iron Sword"; a +2 item becomes +3; +3 can't be blessed). The tooltip says `Blessing of the Forge: +1 until a long rest`.
-- A long rest ends the blessing on every item the resting player carries (whoever blessed it) and gives the Cleric the blessing back.
-- An item that isn't with anyone who rests keeps the blessing until it is.
+A [Forge Domain Cleric](../classes/cleric.md)'s subclass feature. Once per long rest, at an Attunement Table's Items tab, **Bless +1** makes the weapon in your hand (main or offhand) or a piece of armor you wear +1 (a mundane item becomes a green "+1 Iron Sword"; a +2 item becomes +3; +3 and unidentified items can't be blessed). Chat says `Blessing of the Forge: [Iron Sword] is now +1 until your next long rest.` and the tooltip `Blessing of the Forge: +1 until a long rest`.
+- The blessing belongs to the Cleric's rest. The item remembers who blessed it, and once a second any blessed item an online player carries loses the +1 ("The Blessing of the Forge on Iron Sword fades.") if its Cleric is online and has had a long rest since, or isn't a Forge Cleric any more. While the Cleric is offline the item keeps it.
+- With the `dndRests` gamerule off there are no long rests: the blessing is once per in-game day and lasts until the next day (an admin `/dndclass rest <player> long` still ends it).
 
 ## Where to find it
 - The tier loot tables `dndclasses:magic/uncommon`, `magic/rare`, `magic/very_rare` and `magic/legendary` each give one unidentified +N item of that tier (iron/diamond swords, axes and armor, bows, crossbows and tridents; Legendary uses netherite). Nothing references them yet: chests, bosses and dungeons start pulling from them in later updates.
@@ -127,7 +127,7 @@ Operator only (permission level 2).
   - `MagicData`: reads and writes the stack sub-compound `dndclasses_magic` with `tier`, `identified`, `curse`, `curseKnown`, `uuid` (the bond id), `attunedTo` / `attunedName`, `plus`, `forgeBlessing` and `charges`. `isDormant` (unidentified) and `activePlus` (+N plus a Forge blessing, at most +3) need no player.
   - `Attunement`: the player's bonds, in persistent data under `dndAttunement` (`[{uuid, item, name, cursed}]`; `ClassLifecycle` copies all persistent data on death and End exit). `isActive(player, stack)` = identified, bonded if it needs attunement, class allowed (Thief: `rogue.thief`), no `AntiMagicEffect`. `slots(player)`, `refusal`, `attune`, `release`, the 3 s channel (server tick, `Progression.atAttunementTable`), the short-rest attune on `RestEvents.AFTER_REST`, and the packets `attune_item {slot}`, `unattune_item {uuid}`, `forge_bless {slot}` and `attunement_sync` (`AttunementSnapshot`, sent from `Progression.sync`).
   - `MagicEffect` / `MagicEffects`: per-item effect hooks with the `ClassSkills` shape (`attributeBonuses`, `modifyDealtDamage`, `modifyTakenDamage`, `secondTick`, `onKill`), dispatched to the player's active, in-place items from `ProgressionEvents`, right after the class hooks. Register with `MagicEffects.register(item, effect)`; the Cloak of Protection in `Magic.registerEffects` is the example.
-  - `ForgeBlessing`: the Forge Domain Cleric's blessing (`cleric.forge`), reset on a long rest.
+  - `ForgeBlessing`: the Forge Domain Cleric's blessing (`cleric.forge`): `forgeBlessing`, `forgeBy` (the Cleric) and `forgeKey` (`rest:<long rests so far>`, plus `/day:<day>` with rests off) on the item, the used key `dndForgeBlessingUsed` and the long-rest count `dndForgeLongRests` in the Cleric's persistent data, and a once-a-second check that ends stale blessings.
   - `MagicGear`: +N attribute modifiers through Fabric's `ModifyItemAttributeModifiersCallback`, the arrow damage multiplier and the attack-roll bonus.
   - `MagicNames`: the coloured / "+N" / "Unidentified" name and the tooltip line.
   - `MagicItemLootFunction`: the loot function `dndclasses:magic_item`.

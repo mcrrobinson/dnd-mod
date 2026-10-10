@@ -67,6 +67,7 @@ import net.minecraft.util.Identifier;
  * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
+ * <li>{@code forward on|off} holds or releases the walk forward key (e.g. to check movement is locked)</li>
  * <li>{@code holduse on|off} holds or releases the use (right) button, e.g. to keep drawing a bow</li>
  * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
  *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
@@ -277,6 +278,7 @@ public final class DevScript {
             case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
+            case "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));
             case "mine" -> {
                 this.mining = argument.equals("on");

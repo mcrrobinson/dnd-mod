@@ -46,6 +46,9 @@ Other animals, such as turtles, axolotls or ocelots, aren't learned.
 
 Farm animals are just for fun: they follow you, but they can't fight, so they never take a target (rabbits are the exception and will nip at hostile mobs for 3 damage).
 
+### Song of Rest on short rests
+A [short rest](../systems/rests.md#short-rests-at-campfires) with a Bard in it (party members resting at campfires within 8 blocks, the Bard included) heals everyone an extra 1d6 HP when their rest finishes, or 2d6 if the Bard has unlocked the Song of Rest active.
+
 ### Tips
 Press G next to foxes, llamas or a farm to fill your bestiary, then rank Animal Friends up as you level for the big animals. Use the special next to a wolf pack before a fight, then lead the mob in. Companions stay yours after the special ends, so the cap is the real limit. The [Bard instruments](../items/bard-instruments.md) are built for this class.
 

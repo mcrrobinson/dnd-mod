@@ -51,8 +51,30 @@ A rest's benefits:
 
 Charges, Hit Dice and the rest counters are kept through death, relogging and leaving the End, so dying doesn't refill them. Changing class (`/dndclass set`) keeps your charges but caps them at the new class's max, and refills your Hit Dice. Picking your first class starts you full.
 
+### Short rests at campfires
+**Sneak and right-click a lit campfire** (or soul campfire) with an empty main hand to sit down for a **30-second** short rest. Any lit campfire works: village greens, the inn hearth, dwarven forges, goblin camps or one you placed yourself.
+
+- While you rest you can't walk or jump (look around freely). The action bar counts up, "Short rest 12 / 30 s", and a bar fills left of the charge gems.
+- When it finishes you get the short rest benefits above: full mana, charges by recharge group (a Barbarian gets 1 back, a Bard all of them, a Wizard's first one after a long rest 2), and Hit Dice healing, which shows in chat: "Short rest: spent 1 Hit Die (d12): 9 = 9 HP".
+- **Song of Rest:** a short rest with a Bard in it (party members at campfires within 8 blocks, the Bard included) heals an extra **1d6** HP, or **2d6** if a Bard there has unlocked the Song of Rest active. Only the best Bard counts. Chat: "Song of Rest (Name): 1d6: 4 = 4 HP".
+- **Resting together:** party members who sit at campfires within 8 blocks of each other rest together. Each rest finishes on its own timer.
+
+The rest is **interrupted**, and you keep nothing (it doesn't use up a short rest), if:
+- you move more than 1.5 blocks from where you sat (knockback, a teleport)
+- you take damage, attack, start digging, use an item, a block or an entity, or press the power-up key
+- any monster comes within **6 blocks**, or a monster within **12 blocks** is targeting you or a party member (checked every half second)
+- the campfire goes out or is broken
+- a boss bar is showing to you
+- another system vetoes it (see Dungeons below; the downed state will too)
+
+Sneak + right-click the campfire again to get up. A rest is refused, with the reason on the action bar, when there are monsters near, a boss bar is up, you've already had **2 short rests** since your last long rest ("You've had 2 short rests: you need a long rest first."), or it's been under **3 minutes** since your last one ended ("You can short rest again in 2:41"). The 3 minutes are counted on the world clock, so they carry over a server restart.
+
+### Dungeons
+Inside a dungeon whose boss is still alive (`DungeonRegistry.isInsideUncleared`), long rests are refused and short rests are only allowed in the Entrance, the Antechamber and rooms you've cleared: "This place is too dangerous to rest."
+
 ## Where to find it
-For now the only way to rest is `/dndclass rest`. Campfire short rests, bed and tavern long rests and party camps are coming.
+- Short rests: any lit campfire (above).
+- `/dndclass rest` for admins. Bed and tavern long rests and party camps are coming.
 
 ## Commands
 Permission level 2.
@@ -66,7 +88,8 @@ Permission level 2.
 - `dndDeathSaves`, `dndLastStand` and `dndPvpDowned` are registered for the downed state and do nothing yet.
 
 ## Known limitations
-- No rest triggers yet besides the command.
+- No sitting pose yet: you stand still while resting.
+- Long rests only come from `/dndclass rest` so far.
 - Level-ups raise your max but don't hand out the new charge; rest to fill it.
 
 ## For developers
@@ -78,7 +101,11 @@ Permission level 2.
   - `HitDice`: die sizes and spending. `HitDice.conModifier` adds the CON modifier from the [character sheet](ability-scores.md) to each die.
   - `RestSync`: S2C `dndclasses:rest_state` with a `RestSnapshot` (also `RestSnapshot.client`), sent on join, respawn, every change and once a second if something moved. `RestSync.setSession` / `clearSession` show a rest in progress as a bar left of the gems.
   - `DndRules`: the five gamerules.
+  - `RestSession`: short rests in progress (in memory, `UUID -> session`), ticked from `END_SERVER_TICK`. `start(player, campfirePos)`, `cancel(player, reason)` (other systems, e.g. the downed state, can call it), `isResting`, `companions(player)`. Every 10 ticks it re-asks `RestEvents.ALLOW_REST`, so a veto added mid-rest interrupts it.
+  - `CampfireRest`: the `UseBlockCallback` (sneak, empty main hand, `CampfireBlock.LIT`), the interrupt callbacks (`UseItemCallback`, `UseEntityCallback`, `AttackEntityCallback`, `AttackBlockCallback`, `ServerLivingEntityEvents.ALLOW_DAMAGE`) and the dungeon `ALLOW_REST` listener. `DnDClasses.sendPowerupPacket` calls `RestSession.cancel` too.
+- `BardSkills.songOfRest(player, companions)`: the Song of Rest bonus, called when a campfire rest finishes.
+- Client: `RestMovementLockMixin` zeroes walking and jumping input while `RestSnapshot.client.sessionKind() != 0`.
 - `ClassSkills` hooks: `rechargeGroup()`, `shortRestCharges(player, state, max)` (Wizard overrides it), `onShortRest(player, companions)`.
 - `DnDClasses.sendPowerupPacket` checks `Charges.canAfford` after the mana check and calls `Charges.spend` on success. `ClassLifecycle.change` calls `Charges.onClassChange`.
 - HUD: `Client/Hud/PowerupOverlay.renderCharges`, textures `textures/power/charge_full|empty|temp.png`.
-- Devscript: `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).
+- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).

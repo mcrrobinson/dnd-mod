@@ -1,0 +1,29 @@
+# Crafts a Monk's Staff from 3 diagonal sticks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/monk-staff-recipe.txt
+# Expect in latest.log: slot 0 (the result) holds dndclasses:monk_staff after the sticks go in.
+wait 40
+closescreen
+/gamemode survival
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/clear @s
+/give @s minecraft:stick 3
+/setblock 3 150 5 minecraft:crafting_table
+/tp @s 3.5 150 3.5 0 35
+wait 10
+use
+wait 10
+# Crafting screen slots: 0 result, 1-9 grid, 10-36 inventory, 37-45 hotbar
+slot 37
+slot 3 pickup 1
+slot 5 pickup 1
+slot 7 pickup 1
+wait 5
+slots
+screenshot monk-staff-recipe
+slot 0 quick_move
+wait 5
+closescreen
+hotbar 0
+wait 5
+screenshot monk-staff-held
+quit

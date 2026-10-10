@@ -9,7 +9,7 @@ A quick martial artist with the fastest attacks in the mod and a triple jump. Yo
 
 **Triple jump.** Press jump in mid-air while falling for up to two extra jumps. They reset when you land or climb. Each extra jump resets your fall distance, so fall damage counts from the top of the last jump. You can't air-jump while wearing a usable elytra, gliding, riding, in water or levitating. This is always on and doesn't use mana.
 
-**Staff or fists only.** Attacking with anything other than the [Monk Staff](../items/staffs.md#monk-staff) or an empty hand is cancelled, with "Monks can only fight with a staff or bare fists!".
+**Staff or fists only.** Attacking with anything other than the [Monk Staff](../items/staffs.md#monk-staff) or an empty hand is cancelled, with "Monks can only fight with a staff or bare fists!". Craft the staff from 3 sticks in a diagonal line.
 
 **Armor penalty.** Your damage is multiplied by `0.75 / (1 + armor / 10)`:
 

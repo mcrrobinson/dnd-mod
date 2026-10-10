@@ -11,6 +11,8 @@
         "SmiteDragonsMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
+        "ShieldBlockMixin",
+        "SubclassEffectImmunityMixin",
         "HungerManagerMixin",
         "ModEntityDataSaverMixin",
         "EnchantingTableMixin",

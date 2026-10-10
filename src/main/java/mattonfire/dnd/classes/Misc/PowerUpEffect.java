@@ -231,9 +231,7 @@ public class PowerUpEffect {
                 break;
             case BARBARIAN:
                 // Rage: Strength I for 8 s at rank I, up to Strength III for 12 s at rank IV.
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH,
-                        BarbarianSkills.RAGE.ticks(player, "Duration"),
-                        BarbarianSkills.RAGE.amplifier(player, "Strength")));
+                BarbarianSkills.rage(player);
                 break;
             case MONK:
                 // Flurry Rush: a chain of blink strikes; hits, targets and damage come from its rank.

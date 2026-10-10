@@ -26,6 +26,7 @@ public class ModItemGroup {
             entries.add(ModItems.LUTE);
             entries.add(ModItems.DRUM);
             entries.add(ModItems.FLUTE);
+            entries.add(ModItems.CLOAK_OF_PROTECTION);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);
             entries.add(ModItems.MUSIC_DISC_AWAKE_CART);
             entries.add(ModItems.MUSIC_DISC_TOOTH_AND_CLAW);

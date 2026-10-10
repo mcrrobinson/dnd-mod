@@ -320,6 +320,7 @@
     "book.dndclasses.class_guidebook.subclass_feature": "Feature: %s",
     "book.dndclasses.class_guidebook.your_subclass": "Your subclass",
     "item.dndclasses.lute": "Lute",
+    "item.dndclasses.cloak_of_protection": "Cloak of Protection",
     "item.dndclasses.drum": "War Drum",
     "item.dndclasses.flute": "Flute",
     "item.dndclasses.instrument.tooltip": "Bard song: %s (%ss) for players within %s blocks",
@@ -570,5 +571,8 @@
     "magic.dndclasses.type.potion": "Potion",
     "magic.dndclasses.type.scroll": "Scroll",
     "magic.dndclasses.type.drink": "Drink",
-    "magic.dndclasses.type.wondrous_item": "Wondrous Item"
+    "magic.dndclasses.type.wondrous_item": "Wondrous Item",
+    "magic.dndclasses.tooltip.attuned": "Attuned",
+    "magic.dndclasses.tooltip.attuned_to": "Attuned to %s",
+    "magic.dndclasses.tooltip.forge_blessing": "Blessing of the Forge: +1 until a long rest"
 }

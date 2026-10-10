@@ -246,6 +246,11 @@ public abstract class DungeonPiece extends StructurePiece {
         final StructureWorldAccess world;
         final BlockBox chunkBox;
         final Random random;
+        /**
+         * Draws for theme dressing (CryptDressing), kept apart from {@link #random} so dressing a room
+         * doesn't change its layout, chests or puzzle.
+         */
+        final Random dressing;
         final DungeonTheme.Palette palette;
         private BlockPos ward;
         private final List<BlockPos> spawnPoints = new ArrayList<>();
@@ -259,6 +264,7 @@ public abstract class DungeonPiece extends StructurePiece {
             this.world = world;
             this.chunkBox = chunkBox;
             this.random = random;
+            this.dressing = Random.create(DungeonPiece.this.seed ^ 0x5EB0C0FFEEL);
             this.palette = DungeonPiece.this.info.theme().palette();
         }
 
@@ -283,6 +289,19 @@ public abstract class DungeonPiece extends StructurePiece {
                     || block instanceof FenceBlock || block == Blocks.CHAIN) {
                 this.world.getChunk(pos).markBlockForPostProcessing(pos);
             }
+        }
+
+        /**
+         * Sets the block only where there's air now (in this chunk), so dressing never covers a chest,
+         * a trap, a ward or a doorway. Returns true if it placed it.
+         */
+        boolean setIfAir(int x, int y, int z, BlockState state) {
+            BlockState now = this.get(x, y, z);
+            if (now == null || !now.isAir()) {
+                return false;
+            }
+            this.set(x, y, z, state);
+            return true;
         }
 
         void set(int x, int y, int z, Block block) {

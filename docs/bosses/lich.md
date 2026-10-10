@@ -41,11 +41,12 @@ The Lich, its phylactery and its minions never hurt each other. Its minions crum
 **Music**: the Lich theme (120 bpm, D minor) loops for everyone who can see the boss bar.
 
 **Rewards**:
-- **Lich** (`entities/lich`): always 4-10 bones and 3-8 bottles o' enchanting. When killed by a player, also 150 XP, 3-6 diamonds, 2 treasure-enchanted books (level 30), 50% totem of undying, 35% wither skeleton skull and 25% 1-2 netherite scrap (+ Looting), plus the **Lichbane** advancement (challenge, +150 XP).
+- **Lich** (`entities/lich`): always 4-10 bones and 3-8 bottles o' enchanting. When killed by a player, also 150 XP, 3-6 diamonds, 2 treasure-enchanted books (level 30), 50% totem of undying, 35% wither skeleton skull and 25% 1-2 netherite scrap (+ Looting), plus the **Lichbane** advancement (challenge, +150 XP). Also, when killed by a player, 25% a [Mace of Disruption](../items/magic-items.md#mace-of-disruption) and 20% a [Phylactery Locket](../items/magic-items.md#phylactery-locket) (unidentified; added to `entities/lich` by `BossItemDrops`). The Lich only drops this table on its final death, from the smashed phylactery.
 - **Phylactery** (`entities/phylactery`): 2-5 amethyst shards, plus a 25% chance of an echo shard when a player smashes it.
 
 ## Where to find it / How to get it
 - **Strongholds**: every stronghold library. A library generated on Peaceful gets an invisible marker instead, which raises the Lich the first time it's loaded on a higher difficulty. The Lich stands in the open row at the back, facing the entrance; its phylactery goes in the open middle row. Find one with `/locate structure minecraft:stronghold`. A stronghold can have up to two libraries, so it can have two Liches.
+- **Crypt dungeons**: the boss of every [Crypt](../structures/dungeons.md#the-crypt), called up when the party walks into the boss room, with its health scaled to the party. Its phylactery sits on the altar of the reliquary off the boss room, and it keeps to the boss room instead (it blinks back when more than about 33 blocks from the dais, which still reaches the reliquary). See [Dungeon encounters](../systems/dungeon-encounters.md#boss).
 - **Lich Spawn Egg**: in the mod's creative tab.
 
 ## Commands

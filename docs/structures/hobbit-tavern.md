@@ -1,5 +1,5 @@
 # Hobbit Tavern
-Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells food and ale and buys produce. On the inn's east wall hang two **bounty boards**, where hobbits pin up jobs: hunts and expeditions that pay emeralds, loot, XP and class XP.
+Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells food and ale, buys produce and rents out rooms in the sleeping loft. On the inn's east wall hang two **bounty boards**, where hobbits pin up jobs: hunts and expeditions that pay emeralds, loot, XP and class XP.
 
 ![The innkeeper in front of the Green Dragon's bar, with the bounty boards on the wall to the right](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/hobbit-tavern-innkeeper.png)
 
@@ -10,11 +10,22 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
   - **Sells (for emeralds):**
     - 1 emerald each: 2 ale, 4 bread, 3 cooked chicken, 2 pumpkin pie, 8 cookies or 2 honey bottles
     - 2 emeralds: 1 rabbit stew
-    - 3 emeralds: 1 cake
+    - 3 emeralds: 1 cake, or a **Room Key** (see [Rooms for the night](#rooms-for-the-night))
   - **Buys (for 1 emerald):** 20 wheat, 24 potatoes, 22 carrots, 10 brown mushrooms or 6 pumpkins.
   - **Halflings** pay 25% less (kin prices, see [Racial homes](../races/racial-homes.md)): rabbit stew 1, cake 2, and the innkeeper takes 15 wheat, 18 potatoes, 16 carrots, 7 mushrooms or 4 pumpkins. One-emerald trades stay at 1.
 - Right-clicking it with a finished bounty notice pays the bounty out.
 - **Reputation** ([Factions](../systems/factions.md)): each customer sees prices for their own standing with the hobbits: +50% at Unfriendly (rounded up, at least +1), -10% at Friendly, -25% at Honored, -40% at Exalted, never below 1. A cake costs 5 emeralds at Unfriendly and 2 at Exalted; the innkeeper wants 30 wheat at Unfriendly and 12 at Exalted. A player Hostile with the hobbits gets "<name> won't serve you.": no trades and no bounty payouts.
+
+### Rooms for the night
+- **The loft:** a ladder up the east wall, just inside the door, leads to a sleeping loft under the thatch with **4 green beds**, two nightstands and a lantern.
+- **Room Key:** 3 emeralds from the innkeeper (reputation and kin prices apply as to the other trades). It's named "Green Dragon Room Key", doesn't stack, and is **good until the next dawn**; after that its tooltip says "Expired" and it does nothing.
+  - **One a day:** after you've bought one, the trade shows as sold out to you until the next day, and the innkeeper says "Your room's already paid for."
+- **Sleeping:** with a valid key anywhere in your inventory, any bed inside the inn lets you sleep **at any time of day**, even with monsters nearby.
+  - After **10 seconds** asleep you get a **long rest** (full health, mana and charges, Hit Dice back; see [Rests](../systems/rests.md#long-rests-in-beds)). The key is used up.
+  - **By day the time isn't skipped**, and you get up when the rest is done. At night the bed also counts towards skipping the night as usual.
+  - You wake **Well Rested** for 10 minutes: **one temporary charge** above your max (a gold gem, spent before your others, gone when the effect ends or you die) and **Absorption I**.
+- The one-long-rest-a-day rule still applies: if you've already had one today, the key won't let you sleep by day ("You've already had a long rest today.") and you keep it.
+- A key does nothing special in a bed outside its inn, and an expired key does nothing.
 
 ### Mug of Ale
 A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 s of Nausea. Stacks to 16.
@@ -56,6 +67,7 @@ What the spoils can contain:
 ## Where to find it / How to get it
 - Run `/locate structure dndclasses:hobbit_village`. Every village generates its inn, unless the terrain has no room for it.
 - In the creative tab: Bounty Board, Mug of Ale, Innkeeper Spawn Egg, and one notice per bounty.
+- Room Keys come only from an innkeeper (a key that wasn't bought opens nothing).
 
 ## Commands
 - Give a specific notice: `/give @s dndclasses:bounty_notice{Bounty:"spiders"}`.
@@ -64,12 +76,16 @@ What the spoils can contain:
   - Optionally add `Progress:<n>`.
   - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `frost_drake`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`.
 - Restock boards and the innkeeper: `/time add 24000`.
+- A Room Key for a test room: `/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;x1,y1,z1,x2,y2,z2],Day:<day>L}`, where `<day>` is `/time query day` (the in-game day the key is good for) and the box holds the beds.
+- `/dndclass rest @s allow` forgets today's long rest, to try a room again.
 
 ## Known limitations
 - Board stock is per board, not per player: the first player to take a notice gets it.
 - No custom GUI. You pick a notice by clicking on the board, and you read the board in chat.
 - Placeholder art: the innkeeper uses the ordinary hobbit skins.
 - Class XP is paid only once class progression is in the mod (see below).
+- Inns generated before rooms were added have no loft. Their innkeepers sell keys, which open any bed you place inside the inn.
+- Beds aren't reserved: any key holder can use any of the inn's beds.
 
 ## For developers
 - Code: package `mattonfire.dnd.tavern`.
@@ -81,6 +97,14 @@ What the spoils can contain:
   - `BountyRewards` tracks kills and structure visits and pays rewards.
   - `AleItem` is the ale.
 - Innkeeper: `entity/InnkeeperEntity` (a `HobbitEntity` that implements `Merchant`) and `entity/InnkeeperTrades`.
+- Rooms:
+  - `tavern/RoomKeyItem`: NBT `Inn` (name), `InnBox` (int[6], the inn's bounding box) and `Day` (`timeOfDay / 24000` when bought). The innkeeper stamps the key in `onSellingItem`, when it appears in the trade output slot.
+  - `InnkeeperEntity.setInn(BlockBox, name)` sets the inn its keys open; `InnPiece` passes its bounding box and "Green Dragon". An innkeeper without one (spawn egg, other settlements) uses a box around its home: 8 blocks each way across, 3 down, 8 up. Settlements with their own inns should call `setInn`.
+  - One key a day per player: persistent data `dndRoomKeyDay`. The offer is shown disabled to that customer and restored when they leave.
+  - `tavern/TavernRooms`: `BedRest.RULE` (`TAVERN`, 200 ticks) for a bed inside a held key's inn, and `EntitySleepEvents` `ALLOW_SLEEP_TIME`, `ALLOW_NEARBY_MONSTERS` and `ALLOW_RESETTING_TIME` (false by day, so the day isn't skipped). `RestEvents.AFTER_REST` with `TAVERN` uses up the key and applies Well Rested.
+  - `classes/Effects/WellRestedEffect` (`dndclasses:well_rested`): `RestState.tempCharges` is set to 1 by `TavernRooms` and cleared by the effect's `onRemoved` (and on respawn).
+  - Textures: `tools/tavern_room_textures.py`.
+  - Devscript: `devscripts/tavern-room.txt`.
 - Placement: `world/gen/village/InnPiece`. `HobbitVillagePlanner` now always plans the inn.
 - Bounty targets are data, as entity type tags:
   - `#dndclasses:goblins`

@@ -3,7 +3,7 @@ Items have a D&D rarity, shown by the colour of their name: Common, Uncommon, Ra
 
 ![Tooltips of the Staff of Ice (Rare, Wizard only), a +2 Diamond Sword and an Unidentified Sword](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/magic-foundation/magic-tooltips-weapons.png)
 
-This page covers rarity tiers, item magic data, +N gear, attunement, identification and curses. The named magic items come in a later update.
+This page covers rarity tiers, item magic data, +N gear, attunement, identification and curses. The named magic items are on [their own page](../items/magic-items.md).
 
 ## How it works
 ### Rarity tiers
@@ -93,6 +93,7 @@ Chat says `A curse takes hold: [+1 Iron Helmet] binds itself to you (Frailty). O
 | Beacon | Hostile mobs that can see you come for you from twice their follow range (up to 48 blocks), and chase you twice as far |
 | Sun-sick | Weakness I in daylight while outdoors (the sky above your head) |
 | Gluttony | Hunger drains 50% faster |
+| The Ring's Call | Only on [The Burglar's Ring](../items/magic-items.md#the-burglars-ring), never rolled at random: -2 max health for each in-game day you're bound (up to -10), and at night hostiles within 48 blocks are drawn to you |
 
 ### Remove Curse
 Remove Curse breaks a cursed bond. The item stays cursed and identified, but you're no longer bound to it: it's moved off your head or out of your hand into your inventory (or dropped if that's full), its Curse of Binding is gone and you can throw it away. Wear or hold it again and it binds again.
@@ -164,7 +165,7 @@ Operator only (permission level 2).
 |-|-|
 | `/dndmagic give <player> <item> [tier] [plus] [unidentified]` | Gives an identified magic item. `tier` is `common`, `uncommon`, `rare`, `very_rare` or `legendary` (overrides a registered item's tier); `plus` is 0-3 and only applies to weapons and armor (default 0). Add `unidentified` to give it unidentified. Example: `/dndmagic give @s minecraft:diamond_sword rare 2` |
 | `/dndmagic identify <player>` | Identifies the item in the player's main hand |
-| `/dndmagic curse <player> <curse> [known]` | Curses the main-hand item (`bloodthirst`, `frailty`, `ill_omen`, `beacon`, `sun_sick`, `gluttony`). The curse is hidden unless `known` is added. It binds whoever equips or holds it |
+| `/dndmagic curse <player> <curse> [known]` | Curses the main-hand item (`bloodthirst`, `frailty`, `ill_omen`, `beacon`, `sun_sick`, `gluttony`, `rings_call`). The curse is hidden unless `known` is added. It binds whoever equips or holds it |
 | `/dndmagic uncurse <player>` | Lifts the main-hand item's curse for good. If the player is bound to it, the bond stops being cursed (or ends, for an item that doesn't need attunement) |
 | `/dndmagic info <player>` | Prints the main-hand item's tier, identified flag, +N, whether it's active for the player, and raw magic data |
 | `/dndmagic attune <player>` | Attunes the player to their main-hand item, with no table or channel (the slot, class and ownership checks still apply) |

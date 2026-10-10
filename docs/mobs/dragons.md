@@ -47,12 +47,12 @@ The **Frost Drake** is the Lightning Chaser's icy cousin: the same model in pale
 
 | Dragon | Always | Killed by a player |
 |-|-|-|
-| Wyvern | 1-3 leather, 0-2 phantom membranes | 2-5 gold nuggets |
-| Ember Wyvern | 1-3 magma cream, 0-2 blaze powder | 2-6 gold nuggets; 5% chance of a netherite scrap (+2% per Looting level); 2% chance of a [Staff of Fire](../items/staffs.md) (+1% per Looting level) |
-| Lightning Chaser | 2-5 phantom membranes, 1-3 copper blocks | 2-5 diamonds; 15% chance of a [Staff of Lightning](../items/staffs.md) (+5% per Looting level) |
-| Frost Drake | 2-5 packed ice, 1-3 blue ice | 2-5 diamonds; 15% chance of a [Staff of Ice](../items/staffs.md) (+5% per Looting level) |
+| Wyvern | 1-3 leather, 0-2 phantom membranes | 2-5 gold nuggets; 8% chance of a [Wyvern-Scale Cloak](../items/magic-items.md#wyvern-scale-cloak) |
+| Ember Wyvern | 1-3 magma cream, 0-2 blaze powder | 2-6 gold nuggets; 5% chance of a netherite scrap (+2% per Looting level); 2% chance of a [Staff of Fire](../items/staffs.md) (+1% per Looting level); 8% chance of a [Wyvern-Scale Cloak](../items/magic-items.md#wyvern-scale-cloak) |
+| Lightning Chaser | 2-5 phantom membranes, 1-3 copper blocks | 2-5 diamonds; 15% chance of a [Staff of Lightning](../items/staffs.md) (+5% per Looting level); 12% chance of [Storm-Chaser Boots](../items/magic-items.md#storm-chaser-boots) (+3% per Looting level) |
+| Frost Drake | 2-5 packed ice, 1-3 blue ice | 2-5 diamonds; 15% chance of a [Staff of Ice](../items/staffs.md) (+5% per Looting level); 10% chance of [Frostbrand](../items/magic-items.md#frostbrand) (+5% per Looting level) |
 
-Looting adds up to 1 more of each item per level, and up to 2 more phantom membranes from a Lightning Chaser or packed ice from a Frost Drake. Copper blocks, blue ice and gold nuggets don't go up with Looting.
+Looting adds up to 1 more of each item per level, and up to 2 more phantom membranes from a Lightning Chaser or packed ice from a Frost Drake. Copper blocks, blue ice and gold nuggets don't go up with Looting. The named magic items drop unidentified. A Frostbrand wielder is immune to the Frost Drake's breath, and Storm-Chaser Boots make you immune to the Lightning Chaser's storm (no save is rolled).
 
 ### River Pikehorn
 A small river drake with 20 health, 0.25 speed and a 2-damage bite. Its flame reaches 7 blocks and does 2 damage (DEX save DC 10 for half), and it waits 3 seconds between breaths. It breathes fire when its target is 3 to 5 blocks away and bites when it's closer.

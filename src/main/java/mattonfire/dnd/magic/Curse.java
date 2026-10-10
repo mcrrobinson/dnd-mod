@@ -61,7 +61,12 @@ public enum Curse {
     /** Weakness I in daylight while outdoors. */
     SUN_SICK("sun_sick"),
     /** Hunger drains 50% faster. */
-    GLUTTONY("gluttony");
+    GLUTTONY("gluttony"),
+    /**
+     * The Burglar's Ring's own curse, never rolled at random: -2 max health for each in-game day attuned (up to
+     * -10), and at night hostiles within 48 blocks are drawn to you.
+     */
+    RINGS_CALL("rings_call");
 
     public final String id;
 
@@ -79,6 +84,14 @@ public enum Curse {
     public static final int ILL_OMEN_FUMBLE = 2;
 
     static final UUID FRAILTY_UUID = UUID.fromString("5d1b8f0e-2c7a-4a9e-9f43-1c0b7e2a6f01");
+    static final UUID RINGS_CALL_UUID = UUID.fromString("5d1b8f0e-2c7a-4a9e-9f43-1c0b7e2a6f02");
+    /** The Ring's Call: max health lost per in-game day attuned, and the most it takes. */
+    public static final double RINGS_CALL_HEALTH_PER_DAY = 2.0;
+    public static final double RINGS_CALL_MAX_HEALTH_LOSS = 10.0;
+    /** The Ring's Call: how far away hostiles are drawn to you at night. */
+    public static final double RINGS_CALL_RANGE = 48.0;
+    /** Persistent data key: the world time of day when the Ring's Call took hold. */
+    static final String RINGS_CALL_SINCE = "dndRingsCallSince";
 
     /** Curse chance for random loot, by tier (design section 3.1). */
     public static float defaultChance(MagicTier tier) {
@@ -99,8 +112,11 @@ public enum Curse {
         return null;
     }
 
+    /** The curses random loot can roll (not the built-in ones like {@link #RINGS_CALL}). */
+    private static final Curse[] RANDOM_POOL = { BLOODTHIRST, FRAILTY, ILL_OMEN, BEACON, SUN_SICK, GLUTTONY };
+
     public static Curse random(Random random) {
-        return values()[random.nextInt(values().length)];
+        return RANDOM_POOL[random.nextInt(RANDOM_POOL.length)];
     }
 
     public MutableText displayName() {
@@ -168,6 +184,7 @@ public enum Curse {
         Set<Curse> now = readCurses(player);
         ACTIVE.put(player.getUuid(), now);
         updateFrailty(player, now.contains(FRAILTY));
+        updateRingsCall(player, now.contains(RINGS_CALL));
         if (before.contains(ILL_OMEN) != now.contains(ILL_OMEN))
             AbilityScores.invalidate(player);
     }
@@ -212,6 +229,7 @@ public enum Curse {
         Set<Curse> curses = readCurses(player);
         ACTIVE.put(player.getUuid(), curses);
         updateFrailty(player, curses.contains(FRAILTY));
+        updateRingsCall(player, curses.contains(RINGS_CALL));
         if (curses.isEmpty() || !player.isAlive() || player.isCreative() || player.isSpectator()) {
             THIRST.remove(player.getUuid());
             return;
@@ -235,6 +253,57 @@ public enum Curse {
         }
         if (curses.contains(BEACON))
             beacon(player);
+        if (curses.contains(RINGS_CALL) && player.getWorld().isNight())
+            ringsCall(player);
+    }
+
+    /** Whole in-game days the Ring's Call has held this player (0 if it doesn't). */
+    public static long ringsCallDays(PlayerEntity player) {
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        if (!data.contains(RINGS_CALL_SINCE))
+            return 0;
+        return Math.max(0, (player.getWorld().getTimeOfDay() - data.getLong(RINGS_CALL_SINCE)) / 24000L);
+    }
+
+    /** The Ring's Call: -2 max health per day attuned (max -10); the clock starts when it takes hold. */
+    private static void updateRingsCall(PlayerEntity player, boolean wanted) {
+        NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
+        EntityAttributeInstance health = player.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+        if (!wanted) {
+            data.remove(RINGS_CALL_SINCE);
+            if (health != null && health.getModifier(RINGS_CALL_UUID) != null)
+                health.removeModifier(RINGS_CALL_UUID);
+            return;
+        }
+        if (!data.contains(RINGS_CALL_SINCE))
+            data.putLong(RINGS_CALL_SINCE, player.getWorld().getTimeOfDay());
+        if (health == null)
+            return;
+        double loss = Math.min(RINGS_CALL_MAX_HEALTH_LOSS, ringsCallDays(player) * RINGS_CALL_HEALTH_PER_DAY);
+        EntityAttributeModifier current = health.getModifier(RINGS_CALL_UUID);
+        if (current != null && current.getValue() == -loss)
+            return;
+        if (current != null)
+            health.removeModifier(RINGS_CALL_UUID);
+        if (loss > 0) {
+            health.addTemporaryModifier(new EntityAttributeModifier(RINGS_CALL_UUID, "Curse: The Ring's Call", -loss,
+                    EntityAttributeModifier.Operation.ADDITION));
+            if (player.getHealth() > player.getMaxHealth())
+                player.setHealth(player.getMaxHealth());
+        }
+    }
+
+    /** The Ring's Call at night: hostiles within 48 blocks come for you, by sight or by path. */
+    private static void ringsCall(ServerPlayerEntity player) {
+        for (HostileEntity mob : player.getWorld().getEntitiesByClass(HostileEntity.class,
+                player.getBoundingBox().expand(RINGS_CALL_RANGE), mob -> mob.isAlive() && mob.getTarget() == null)) {
+            if (mob.squaredDistanceTo(player) > RINGS_CALL_RANGE * RINGS_CALL_RANGE || !mob.canTarget(player))
+                continue;
+            if (mob.canSee(player))
+                mob.setTarget(player);
+            else if (mob.getNavigation().isIdle())
+                mob.getNavigation().startMovingTo(player, 1.0);
+        }
     }
 
     /** Beacon: hostiles that can see you from up to twice their follow range come for you. */

@@ -94,6 +94,9 @@ public final class DragonSaves {
         if (victim.isInvulnerableTo(source)) {
             return true;
         }
+        if (mattonfire.dnd.magic.items.BossItems.immune(victim, source)) {
+            return true; // Storm-Chaser Boots (lightning), Frostbrand (frost breath)
+        }
         return source.isIn(DamageTypeTags.IS_FIRE)
                 && (victim.isFireImmune() || victim.hasStatusEffect(StatusEffects.FIRE_RESISTANCE));
     }

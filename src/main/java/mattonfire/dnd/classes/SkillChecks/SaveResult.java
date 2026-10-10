@@ -1,5 +1,9 @@
 package mattonfire.dnd.classes.SkillChecks;
 
+import org.jetbrains.annotations.Nullable;
+
+import net.minecraft.text.Text;
+
 /**
  * What came of a {@link SavingThrow}. Use it to scale what the attack does:
  *
@@ -18,17 +22,22 @@ public final class SaveResult {
     private final boolean fresh;
     private final float successDamage;
     private final float failureDamage;
+    /** The feature that changed the damage multipliers (Evasion), shown on the save lane. */
+    @Nullable
+    private final Text note;
 
     SaveResult(D20.Roll roll, boolean halvesDamage, boolean fresh) {
-        this(roll, halvesDamage, fresh, 0.5f, 1.0f);
+        this(roll, halvesDamage, fresh, 0.5f, 1.0f, null);
     }
 
-    private SaveResult(D20.Roll roll, boolean halvesDamage, boolean fresh, float successDamage, float failureDamage) {
+    private SaveResult(D20.Roll roll, boolean halvesDamage, boolean fresh, float successDamage, float failureDamage,
+            @Nullable Text note) {
         this.roll = roll;
         this.halvesDamage = halvesDamage;
         this.fresh = fresh;
         this.successDamage = successDamage;
         this.failureDamage = failureDamage;
+        this.note = note;
     }
 
     /** The d20 behind it. */
@@ -79,10 +88,24 @@ public final class SaveResult {
      * (Evasion: 0 on a success, 0.5 on a failure).
      */
     public SaveResult withDamageMultipliers(float onSuccess, float onFailure) {
-        return new SaveResult(roll, halvesDamage, fresh, onSuccess, onFailure);
+        return new SaveResult(roll, halvesDamage, fresh, onSuccess, onFailure, note);
+    }
+
+    /**
+     * As {@link #withDamageMultipliers(float, float)}, naming the feature responsible: the save lane then says
+     * "no damage (Evasion)" instead of the attack's own success text.
+     */
+    public SaveResult withDamageMultipliers(float onSuccess, float onFailure, Text note) {
+        return new SaveResult(roll, halvesDamage, fresh, onSuccess, onFailure, note);
+    }
+
+    /** The feature that changed this save's damage, or null. */
+    @Nullable
+    public Text note() {
+        return note;
     }
 
     SaveResult cached() {
-        return new SaveResult(roll, halvesDamage, false, successDamage, failureDamage);
+        return new SaveResult(roll, halvesDamage, false, successDamage, failureDamage, note);
     }
 }

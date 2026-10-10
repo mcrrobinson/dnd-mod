@@ -1,5 +1,5 @@
 # Dungeons
-Underground adventure sites for a party: an entrance on the surface, a spiral stair down, and 11-13 rooms on a planned route to a boss and its treasure vault. Each dungeon has a name ("The Barrow of Ashmoor") and a Challenge tier (I-IV) that rises with distance from spawn.
+Underground adventure sites for a party: an entrance on the surface, a spiral stair down, and 12-14 rooms on a planned route to a boss and its treasure vault. Each dungeon has a name ("The Barrow of Ashmoor") and a Challenge tier (I-IV) that rises with distance from spawn.
 
 This page covers the framework and the first theme, the **Crypt**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); loot and the Hoard Coffer are on [Dungeon loot](../systems/dungeon-loot.md); traps are on [Dungeon traps](../systems/dungeon-traps.md); the puzzle and class gates are on [Dungeon puzzles and gates](../systems/dungeon-puzzles-and-gates.md).
 
@@ -20,14 +20,37 @@ This page covers the framework and the first theme, the **Crypt**. Room fights, 
 | 9 | Boss room, 2x2 cells, with a central dais | 31x31 | 12 |
 | 10 | Treasure vault (the Hoard Coffer) | 13x13 | 5 |
 
-- **Side rooms**: every dungeon has a **secret room** (9x9, one chest) behind a bricked-up doorway of cracked stone bricks in an antechamber, encounter, puzzle or mid-boss room. Anyone can break through. Half of dungeons also get a **side vault** (11x11, one chest, behind a Wizard-only Greater Arcane Seal). So a dungeon has 11-13 rooms.
+- **Side rooms**: every dungeon has a **secret room** (9x9, one chest) behind a bricked-up doorway of cracked stone bricks in an antechamber, encounter, puzzle or mid-boss room. Anyone can break through. Half of dungeons also get a **side vault** (11x11, one chest, behind a Wizard-only Greater Arcane Seal). A Crypt always has a **reliquary** (13x13, inner height 6) through a door in the boss room's wall, where the Lich keeps its phylactery (see [The Crypt](#the-crypt)). So a Crypt has 12-14 rooms.
 - **Corridors**: 3 wide and 4 high, joining neighbouring rooms' 3x3 doorways across the gaps between cells.
 - **Shell**: every room and corridor fills its whole box. Walls, floor and ceiling are 2 blocks thick, with an outer skin of deepslate tiles, so caves, aquifers and lava can't flood in. Floors are propped up with cobbled deepslate (up to 16 blocks) over caves.
-- **Depth**: the floor is 20 blocks below the lowest of 25 ground samples over the grid (or below sea level, if that's lower), so even the boss room's roof stays at least 6 blocks under the surface. Only the entrance shows: a ring of mossy standing stones (some fallen, some with skulls) round the shaft top.
+- **Depth**: the floor is 20 blocks below the lowest of 25 ground samples over the grid (or below sea level, if that's lower), so even the boss room's roof stays at least 6 blocks under the surface. Only the entrance shows (for the Crypt, a barrow: see below).
 - **Crypt palette**: stone bricks (some mossy or cracked), polished andesite floors, polished deepslate trim, chiselled stone accents, soul lanterns.
 - **Chests**: one in each encounter room, the secret room and the side vault, with locked tier loot (`dndclasses:chests/dungeon/<theme>_<room>_t<tier>`); 8% of them are Mimics. See [Dungeon loot](../systems/dungeon-loot.md).
 - **No natural monster spawns** inside (`spawn_overrides.monster` is empty): every monster will come from an encounter.
 - **Music**: inside a dungeon you hear the dungeon track, Silent Footsteps (all dungeons are in `#dndclasses:music_dungeons`).
+
+### The Crypt
+The first theme: a barrow over a buried tomb, home of the Ossuary Cube and the Lich.
+- **Entrance**: a **barrow**, a grassy burial mound (radius about 9, 4-5 blocks high) heaped over the top of the stair and roofed over it. A passage 3 wide and 3 high runs into one side of the mound: stone-floored and stone-walled, under a stone lintel for its inner 4 blocks, with two tall chiselled door stones and a slab capstone at its mouth and an open cut beyond. A soul lantern hangs where it meets the stair. Nine weathered standing stones ring the mound 12 blocks out, each on the ground where it stands; a quarter have toppled, and about a third carry a skull. The mound only fills air, plants and water, so it never fills the shaft or carves into a hill.
+- **Names**: "The `<place>` of `<name>`" with 6 places (Barrow, Crypt, Tomb, Ossuary, Sepulchre, Catacombs) and 16 names (Ashmoor, Vell, the Grey King, Hollowmere, Saint Corvin, the Drowned Lord, Blackfen, the Last Watch, Morrow Fen, the Weeping Saint, Old Harrowgate, the Ashen Queen, Wyrmstone, the Pale Brothers, Duskwold, the Hollow Crown), picked from the dungeon's position.
+- **Dressing** (placed only into air, so it never covers a doorway, chest, trap or ward, and drawn from its own random, so it never changes a room's layout):
+
+| Room | Props |
+|-|-|
+| Antechamber | sarcophagi along the walls (half the 8 spots), with candles; cobwebs |
+| Encounter rooms | bone piles in the corners (not the chest's), candles by the columns, cobwebs |
+| Trap corridor | cobwebs along the top of the hall |
+| Gate room, vault, side vault | lit candles in the corners, cobwebs |
+| Puzzle room | candles under the corner murals, cobwebs |
+| Mid-boss room (the Ossuary) | bone piles in every corner and along the walls, skulls strewn off the door lines, cobwebs |
+| Boss room (the Lich's tomb) | sarcophagi along the middle of each wall (3 in 4 of the 8 spots), candles on the dais corners, bone piles, skulls, cobwebs |
+| Secret room | a bone pile in one corner |
+| Reliquary | a chiselled deepslate altar with polished deepslate steps, four columns, four soul lanterns, candles on the diagonals, bone piles in the corners, skulls |
+
+A sarcophagus is two polished deepslate blocks under a deepslate tile slab lid, with candles at its corner end half the time. A bone pile is a bone block on its side, sometimes stacked, often with a skull.
+
+- **The reliquary**: the room off the boss room where the **phylactery** appears, on the altar in the middle (one block up), when the Lich is called up. It's about 25 blocks from the boss's dais, through a short corridor, so it's inside the Lich's leash; its doorway stays open while the boss room is sealed. See [Dungeon encounters](../systems/dungeon-encounters.md#boss).
+- **Vault**: at III and IV the Hoard Coffer's full roll has a 15% chance of a Staff of Ice on top (see [Dungeon loot](../systems/dungeon-loot.md)).
 
 ### Challenge tier
 `tier = 1 + floor(distance / 1500)` from (0, 0), clamped to I-IV. A quarter of dungeons roll one tier higher or lower. Crypts stop at III unless they're at least 4500 blocks out. The tier is fixed when the dungeon generates.
@@ -60,15 +83,17 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 ## Known limitations
 - A dungeon made with `/place structure` plays no dungeon music (vanilla `/place` doesn't record a structure start), but its wards and `/dungeon` commands work.
 - Only the Crypt theme exists. The Goblin Warren and Dwarven Ruin are placeholders in `DungeonTheme`.
-- Trees growing over the entrance can leave a canopy over the shaft (trunks are cleared out of it up to 7 blocks above the ground).
+- Trees can grow on the barrow mound, and on a steep slope the mound and its passage follow the ground at the top of the stair, so one side can sit in the hillside or stand proud of it.
+- The Crypt's room screenshots for the docs are still to be taken in-game.
 
 ## For developers
 - `src/main/java/mattonfire/dnd/world/gen/dungeon/`:
   - `DungeonStructures` registers the `dndclasses:dungeon` structure type and the pieces.
   - `DungeonStructure` (codec field `theme`; keep-clear check) and `DungeonTheme` (palette, tier limits, name word counts).
-  - `DungeonPlanner`: site check (`Terrain`), tier, the grid walk, boss/vault/branch placement and the pieces (`Layout`).
+  - `DungeonPlanner`: site check (`Terrain`), tier, the grid walk, boss/vault/reliquary/branch placement and the pieces (`Layout`). `DungeonTheme.hasReliquary()` (the Crypt) makes the reliquary required: an attempt with no free cell beside the boss room is retried.
   - `DungeonPiece`: the base, with its `Builder` (`shell`, `foundation`, `doorway`, `chest`/`mimic`, `ward`, `spawnPoint`, `column`, `light`). Local coordinates from the box's north-west corner, y = 0 at floor level, no rotation.
-  - Pieces: `StairPiece`, `EntrancePiece`, `DungeonCorridorPiece`, `AntechamberPiece`, `EncounterRoomPiece`, `TrapCorridorPiece`, `GateRoomPiece`, `PuzzleRoomPiece`, `ChampionRoomPiece`, `BossRoomPiece`, `VaultPiece` (also the side vault), `SecretRoomPiece`.
+  - Pieces: `StairPiece`, `EntrancePiece` (the Crypt's barrow; a plain stone ring for other themes), `DungeonCorridorPiece`, `AntechamberPiece`, `EncounterRoomPiece`, `TrapCorridorPiece`, `GateRoomPiece`, `PuzzleRoomPiece`, `ChampionRoomPiece`, `BossRoomPiece`, `VaultPiece` (also the side vault), `SecretRoomPiece`, `ReliquaryPiece` (`phylacterySpot(box, floorY)`).
+  - `CryptDressing`: the Crypt's props (`sarcophagus`, `wallSarcophagi`, `bonePile`, `candles`, `skull`, `cornerCobwebs`), called by each room for the Crypt only. They place through `Builder.setIfAir` and draw from `Builder.dressing`, a random separate from the piece's own.
 - `src/main/java/mattonfire/dnd/dungeon/`:
   - `DungeonRegistry` (PersistentState `dndclasses_dungeons`): `find`, `containing`, `roomAt`, `isInsideUncleared`, `nearest`, `clear`. Entries are created lazily from the structure start or from a ward.
   - `DungeonState` (keyed by `StructureStart.getPos().toLong()`), `RoomRole`, `RoomState`.
@@ -77,4 +102,4 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 - Doorway seals are `dndclasses:arcane_seal` (`classes/Blocks/ArcaneSealBlock`), placed by the wards during fights; gate obstacles come from the obstacle framework (`classes/Obstacles/`, placed with `Builder.obstacle`).
 - `classes/Commands/DungeonCommand`.
 - Data: `worldgen/structure/crypt.json`, `worldgen/structure_set/crypts.json`, `tags/worldgen/biome/has_structure/crypt.json`, `tags/worldgen/structure/dungeons.json`.
-- Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots).
+- Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots), `dungeon-crypt.txt` (a fresh `/place`d Crypt: the barrow from outside, then the cut-away layout with its reliquary).

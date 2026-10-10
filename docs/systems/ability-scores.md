@@ -15,7 +15,7 @@ Every character has a character sheet: Strength, Dexterity, Constitution, Intell
 |-|-|-|-|
 | Proficiency bonus | +2 | +3 | +4 |
 
-A save or skill you're proficient in adds the bonus. Expertise (◆) adds it twice. Half proficiency (½, for the Bard's Jack of All Trades later) adds half, rounded down.
+A save or skill you're proficient in adds the bonus. Expertise (◆) adds it twice. Half proficiency (½, the Bard's [Jack of All Trades](class-save-features.md) from level 2) adds half, rounded down.
 
 ### Check and save bonuses
 - **Skill check:** d20 + the skill's ability modifier + proficiency (× 0, ½, 1 or 2) + flat bonuses.

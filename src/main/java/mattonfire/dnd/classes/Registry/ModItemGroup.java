@@ -36,6 +36,16 @@ public class ModItemGroup {
             entries.add(ModItems.AMULET_OF_HEALTH);
             entries.add(ModItems.DOSS_LUTE);
             entries.add(ModItems.TOME_OF_CLEAR_THOUGHT);
+            entries.add(ModItems.WARLORDS_WARHORN);
+            entries.add(ModItems.HEART_OF_THE_FURNACE);
+            entries.add(ModItems.STORM_CHASER_BOOTS);
+            entries.add(ModItems.WYVERN_SCALE_CLOAK);
+            entries.add(ModItems.BELT_OF_OWLBEAR_MIGHT);
+            entries.add(ModItems.MACE_OF_DISRUPTION);
+            entries.add(ModItems.FROSTBRAND);
+            entries.add(ModItems.PHYLACTERY_LOCKET);
+            entries.add(ModItems.BURGLARS_RING);
+            entries.add(ModItems.EYE_OF_THE_TYRANT);
             entries.add(ModItems.SCROLL_OF_IDENTIFY);
             entries.add(ModItems.SCROLL_OF_REMOVE_CURSE);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);

@@ -61,6 +61,16 @@ public class TrapCorridorPiece extends DungeonPiece {
             }
         }
         this.traps(b);
+        if (CryptDressing.applies(this)) {
+            // Cobwebs along the top of the hall, out of the way of the darts
+            for (int i = 1; i < length - 1; i++) {
+                for (int side : new int[]{2, 4}) {
+                    if (b.dressing.nextFloat() < 0.15F) {
+                        b.setIfAir(alongX ? i : side, this.height, alongX ? side : i, net.minecraft.block.Blocks.COBWEB.getDefaultState());
+                    }
+                }
+            }
+        }
     }
 
     /** Local coordinates by row (along the hall from the entrance) and column (across it). */

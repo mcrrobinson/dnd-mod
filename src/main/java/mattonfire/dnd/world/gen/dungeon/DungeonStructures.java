@@ -28,6 +28,7 @@ public final class DungeonStructures {
     public static final StructurePieceType BOSS_ROOM = piece("dungeon_boss_room", BossRoomPiece::new);
     public static final StructurePieceType VAULT = piece("dungeon_vault", VaultPiece::new);
     public static final StructurePieceType SECRET_ROOM = piece("dungeon_secret_room", SecretRoomPiece::new);
+    public static final StructurePieceType RELIQUARY = piece("dungeon_reliquary", ReliquaryPiece::new);
 
     private DungeonStructures() {
     }

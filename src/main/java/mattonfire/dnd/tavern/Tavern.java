@@ -24,7 +24,7 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
 /**
- * The hobbit tavern: the innkeeper, the bounty board and its notices, and the ale. Called from
+ * The hobbit tavern: the innkeeper, the bounty board and its notices, the ale and the rented rooms. Called from
  * the mod initializer.
  */
 public final class Tavern {
@@ -43,6 +43,7 @@ public final class Tavern {
     public static final Item BOUNTY_BOARD_ITEM = item("bounty_board", new BlockItem(BOUNTY_BOARD, new FabricItemSettings()));
     public static final Item BOUNTY_NOTICE = item("bounty_notice", new BountyNoticeItem(new FabricItemSettings().maxCount(1)));
     public static final Item ALE = item("ale", new AleItem(new FabricItemSettings()));
+    public static final Item ROOM_KEY = item("room_key", new RoomKeyItem(new FabricItemSettings().maxCount(1)));
     public static final Item INNKEEPER_SPAWN_EGG = item("innkeeper_spawn_egg",
             new SpawnEggItem(INNKEEPER, 0x7A4A1E, 0xE8C26A, new FabricItemSettings()));
 
@@ -60,6 +61,7 @@ public final class Tavern {
     public static void register() {
         FabricDefaultAttributeRegistry.register(INNKEEPER, HobbitEntity.createHobbitAttributes());
         BountyRewards.register();
+        TavernRooms.register();
         ItemGroupEvents.modifyEntriesEvent(ModItemGroup.DND_CLASSES_ITEMGROUP).register(entries -> {
             entries.add(BOUNTY_BOARD_ITEM);
             entries.add(ALE);

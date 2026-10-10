@@ -1,0 +1,10 @@
+{
+  "role": "orc_quartermaster",
+  "greeting": {
+    "default": "dialogue.dndclasses.orc_quartermaster.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.orc_quartermaster.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.orc_quartermaster.greeting.friendly",
+    "honored": "dialogue.dndclasses.orc_quartermaster.greeting.honored",
+    "exalted": "dialogue.dndclasses.orc_quartermaster.greeting.exalted"
+  }
+}

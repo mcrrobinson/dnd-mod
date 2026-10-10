@@ -1,0 +1,46 @@
+# Orc Stronghold placement survey and close-up shots. Strongholds need badlands, so use a world that has some
+# (a fresh world with a known badlands seed is best).
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/orc-stronghold-survey.txt [-PdevWorld=<world>]
+# Checks, in <run dir>/logs/latest.log:
+# - the [CHAT] line of /locate (nearest stronghold)
+# - "[StrongholdSurvey] stronghold at X Y Z: biome minecraft:..badlands, N pieces (6 kinds): PASS" for every
+#   stronghold found from a 3x3 grid of points 3000 blocks apart, and the summary "... 0 fail"
+# - "[Home] Orc Stronghold at chunk ..." from /dndhome stronghold; screenshots os-top, os-gate, os-pit,
+#   os-longhouse, os-seat, os-smithy
+# - the "Test passed" counts of warriors (6-9 when freshly generated), archers (2) and the War Chief (1)
+wait 40
+closescreen
+/gamemode spectator
+/locate structure dndclasses:orc_stronghold
+wait 200
+/dndhome strongholdsurvey 3 3000
+wait 900
+/dndhome stronghold gate
+wait 200
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+screenshot os-gate
+/tp @s ~ ~50 ~ ~ 90
+wait 200
+screenshot os-top
+/dndhome stronghold pit
+wait 100
+screenshot os-pit
+/dndhome stronghold seat
+wait 100
+screenshot os-seat
+/tp @s ^ ^ ^-8
+wait 60
+screenshot os-longhouse
+/dndhome stronghold smithy
+wait 100
+screenshot os-smithy
+hud on
+/execute if entity @e[type=dndclasses:orc_warrior,distance=..48]
+/execute if entity @e[type=dndclasses:orc_archer,distance=..48]
+/execute if entity @e[type=dndclasses:orc_war_chief,distance=..48]
+/execute if entity @e[type=dndclasses:orc_quartermaster,distance=..48]
+wait 40
+quit

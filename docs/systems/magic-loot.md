@@ -26,8 +26,11 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Dragon lair](../structures/dragon-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Storm-Chaser Boots 6% |
 | [Frost lair](../structures/frost-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Frostbrand 8% |
 | [Beholder](../bosses/beholder.md) lair chest | 1 roll: Rare (40) / Very Rare (45) / Legendary (15) | Immovable Rod 4%, Eye of the Tyrant 2% |
+| [Orc stronghold](../structures/orc-strongholds.md) yurt chests (`chests/orc_stronghold_yurt`) | 5%: Uncommon | |
+| Orc stronghold armoury (`chests/orc_stronghold_armory`) | 15%: Uncommon (75) / Rare (25) | |
+| Orc stronghold hoard (`chests/orc_stronghold_hoard`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | |
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
-| [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md) (player kill) | 50%: Rare | their trophies (boss drops) |
+| [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md), [Orc War Chief](../bosses/orc-war-chief.md) (player kill) | 50%: Rare | their trophies (boss drops) |
 | [Lich](../bosses/lich.md) (final kill), [Beholder](../bosses/beholder.md) (player kill) | 1 roll: Very Rare (80) / Legendary (20) | Tome of Clear Thought 10% each, plus their trophies |
 | [Mimic](../mobs/mimic.md) (player kill, on top of its chest's loot) | 25%: Uncommon | Bag of Holding 10% |
 | [River Pikehorn](../mobs/dragons.md) (player kill) | | Decanter of Endless Water 5% |

@@ -191,6 +191,11 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_FLETCHER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elfMerchant);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_TEMPLAR, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonborn);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_ELDER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonbornElder);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_WARRIOR, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orc);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_ARCHER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orc);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_QUARTERMASTER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orcQuartermaster);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_CHAMPION, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orcChampion);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_WAR_CHIEF, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orcWarChief);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIMIC, mattonfire.dnd.client.renderer.MimicRenderer::new);
         mattonfire.dnd.client.MimicTexture.register();
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);

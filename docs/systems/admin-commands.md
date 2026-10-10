@@ -56,6 +56,10 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
 | `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |
 | `/dndhome temple [ember\|frost\|storm]` | Teleports you into the nearest [Dragon Temple](../structures/dragon-temples.md)'s sanctum, in front of that breath altar |
+| `/dndhome stronghold [pit\|seat\|hoard\|smithy\|gate]` | Teleports you to that spot of the nearest [Orc Stronghold](../structures/orc-strongholds.md); `pit` stands you in the pit looking at the war drum |
+| `/dndhome strongholdsurvey [grid] [spacing]` | Checks the nearest stronghold from each point of a grid round you is in the badlands with all its pieces (`[StrongholdSurvey]` lines) |
+| `/dndhome bloodsworn <players> <true\|false>` | Sets or clears Blood-Sworn at the stronghold you stand in |
+| `/dndhome trialreset <players>` | Lets the players take the Trial of Strength again today at the stronghold you stand in |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
 Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).

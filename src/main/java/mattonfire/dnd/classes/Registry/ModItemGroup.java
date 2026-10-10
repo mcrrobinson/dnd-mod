@@ -134,6 +134,8 @@ public class ModItemGroup {
             entries.add(ModItems.ELVEN_LONGBOW);
             entries.add(ModItems.DWARVEN_WARAXE);
             entries.add(ModItems.ORCISH_GREATAXE);
+            entries.add(ModItems.GROG);
+            entries.add(ModItems.GOBLIN_WAR_TOKEN);
             entries.add(ModItems.HALFLING_SLING);
             entries.add(ModItems.HOBBIT_SPAWN_EGG);
             entries.add(ModItems.MOUNTAIN_DWARF_SPAWN_EGG);
@@ -143,6 +145,11 @@ public class ModItemGroup {
             entries.add(ModItems.ELF_FLETCHER_SPAWN_EGG);
             entries.add(ModItems.DRAGONBORN_TEMPLAR_SPAWN_EGG);
             entries.add(ModItems.DRAGONBORN_ELDER_SPAWN_EGG);
+            entries.add(ModItems.ORC_WARRIOR_SPAWN_EGG);
+            entries.add(ModItems.ORC_ARCHER_SPAWN_EGG);
+            entries.add(ModItems.ORC_QUARTERMASTER_SPAWN_EGG);
+            entries.add(ModItems.ORC_CHAMPION_SPAWN_EGG);
+            entries.add(ModItems.ORC_WAR_CHIEF_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARLORD_SPAWN_EGG);
             entries.add(ModItems.MAGMAMUNCHER_ALPHA_SPAWN_EGG);
             entries.add(ModItems.EMBER_WYVERN_SPAWN_EGG);

@@ -103,6 +103,8 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     @ModifyArg(method = "applyDamage", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/entity/player/PlayerEntity;setHealth(F)V"))
     private float dnd$recordOverflow(float newHealth) {
+        // The Trial of Strength is non-lethal: a duellist never drops below its floor (3 HP).
+        newHealth = mattonfire.dnd.entity.OrcTrial.clampPlayerHealth((PlayerEntity) (Object) this, newHealth);
         this.dnd$overflow = Math.max(0.0F, -newHealth);
         return newHealth;
     }

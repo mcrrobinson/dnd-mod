@@ -1,5 +1,5 @@
 # Racial homes
-Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md), Elves in [Elven Enclaves](../structures/elven-enclaves.md) and Dragonborn in [Dragon Temples](../structures/dragon-temples.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
+Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md), Elves in [Elven Enclaves](../structures/elven-enclaves.md), Dragonborn in [Dragon Temples](../structures/dragon-temples.md) and Half-Orcs in [Orc Strongholds](../structures/orc-strongholds.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
 
 ![A Halfling arriving at the Green Dragon inn: "Welcome home, Halfling", the welcome basket in the hotbar and Regeneration from the hearth](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-homes/rh-halfling-welcome.png)
 
@@ -61,6 +61,17 @@ Once a second the mod checks where each player is. A player is in a settlement w
 | Kin trust | None: the temple law holds for Dragonborn too |
 | Standing | The Dragonsworn: 150 (Friendly) |
 
+### Half-Orc: Orc Strongholds
+| Bonus | Value |
+|-|-|
+| Hearth | The Great Longhouse |
+| Rally | Strength I for 30 s each time you're welcomed |
+| Kin prices | The Quartermaster's trades. For example, the Orcish Greataxe costs 10 emeralds instead of 14, a saddle 4 instead of 6, and he buys 24 rotten flesh instead of 32. |
+| Kin stock | The Quartermaster sells the [Orcish Warplate](../items/armor.md#racial-armor) set: helmet 10, chestplate 16, leggings 14, boots 8 emeralds (7, 12, 10 and 6 at kin price). He trades with nobody else but players Blood-Sworn at his hold. |
+| Trial of Strength | Win a non-lethal duel in the Fighting Pit to become Blood-Sworn at the hold (see [Orc Strongholds](../structures/orc-strongholds.md#trial-of-strength)) |
+| Kin trust | None: opening the hoard or striking an orc angers the hold |
+| Standing | The Bloodtusk Horde: 0 (Neutral), so the orcs tolerate you; everyone else starts Hostile |
+
 ### Human: vanilla villages
 The first time a Human opens a villager's trades, that villager gains 10 `minor_positive` gossip about them, which makes its trades a little cheaper. Each villager does this once per player. Villages have no hearth, welcome or kin trust.
 
@@ -69,6 +80,7 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - [Dwarven Fortresses](../structures/dwarven-fortresses.md): `/locate structure dndclasses:dwarven_fortress`
 - [Elven Enclaves](../structures/elven-enclaves.md): `/locate structure dndclasses:elven_enclave`
 - [Dragon Temples](../structures/dragon-temples.md): `/locate structure dndclasses:dragon_temple`
+- [Orc Strongholds](../structures/orc-strongholds.md): `/locate structure dndclasses:orc_stronghold`
 
 ## Commands
 - `/dndhome [player]` (operators): which racial home the player is in, the piece under their feet, and whether it's their own home and hearth.
@@ -83,7 +95,7 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - The welcome's 5-minute timer is kept in memory, so you're welcomed again after the server restarts.
 - The kin discount applies to every innkeeper, since they're all hobbits, even one summoned outside a village.
 - Dwarven kin trust only covers opening chests in the four side rooms. Breaking those chests still counts as an offence.
-- The other races' settlements are later tickets. Their racial gear already exists (Orcish Warplate and Greataxe, Infernal Regalia) and their kin stock lists are ready in `KinStockOffers.orcStronghold` / `brimstoneSanctum` / `cogsdeep`, but nobody sells them yet.
+- The Tiefling and Gnome settlements are later tickets. Infernal Regalia already exists and the kin stock lists are ready in `KinStockOffers.brimstoneSanctum` / `cogsdeep`, but nobody sells them yet.
 
 ## For developers
 - `world/gen/RacialHomes`: the registry. A `Home` has the structure id, home race, extra price-kin races, faction id, hearth piece type and an optional first-visit gift. `homeAt(world, pos)` returns a `Visit` (home plus `StructureStart`, with `pieceAt` and `inHearth`), `ownHomeAt(player)` only for the home race, `isHearth(player)` (a Safe Haven hook for rests), and `homeOfMember(npc)` maps an NPC to its home through `Reputation.factionOf`. A new settlement registers one `Home`.

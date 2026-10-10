@@ -11,6 +11,10 @@ import mattonfire.dnd.entity.DragonbornTemplarEntity;
 import mattonfire.dnd.entity.ElfEntity;
 import mattonfire.dnd.entity.ElfMerchantEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.entity.OrcChampionEntity;
+import mattonfire.dnd.entity.OrcEntity;
+import mattonfire.dnd.entity.OrcQuartermasterEntity;
+import mattonfire.dnd.entity.OrcWarChiefEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -31,13 +35,16 @@ import net.minecraft.util.Identifier;
 /**
  * The racial NPC model kit: the player model (slim Alex arms or classic Steve ones) with the race's head
  * features, a per-entity scale, armour, and arm poses for held items and drawn bows. The settlement NPCs of
- * each race use it with their own skins: the elves and the Dragon Temple's Dragonborn. Head features (elf ears, and later orc
+ * each race use it with their own skins: the elves, the Dragon Temple's Dragonborn and the Orc Strongholds' orcs. Head features (elf ears, and later orc
  * tusks, tiefling horns, a dragonborn snout) come from {@link RaceFeatures#renderHead}, the same code that
  * draws them on players, so NPCs and players of a race match.
  */
 public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRenderer<T, RacialHumanoidRenderer.HumanoidModel<T>> {
     /** What one race's NPCs look like: arms, the race whose head features they wear, and scale. */
-    public record Look(boolean slim, DndRace race, float scale) {
+    public record Look(boolean slim, DndRace race, float scale, float width) {
+        public Look(boolean slim, DndRace race, float scale) {
+            this(slim, race, scale, scale);
+        }
     }
 
     public static final Look ELF = new Look(true, DndRace.ELF, 1.0F);
@@ -49,7 +56,7 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
 
     public RacialHumanoidRenderer(EntityRendererFactory.Context context, Look look, Function<T, Identifier> texture) {
         super(context, new HumanoidModel<>(context.getPart(look.slim() ? EntityModelLayers.PLAYER_SLIM : EntityModelLayers.PLAYER),
-                look.slim()), 0.5F * look.scale());
+                look.slim()), 0.5F * look.width());
         this.texture = texture;
         this.look = look;
         this.addFeature(new ArmorFeatureRenderer<>(this,
@@ -105,6 +112,40 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
         return new RacialHumanoidRenderer<>(context, DRAGONBORN, npc -> ELDER_SKIN);
     }
 
+    // ---- The orcs ----
+
+    /** Orcs: classic arms, tusks, 1.1x tall and 1.15x wide. */
+    public static final Look ORC = new Look(false, DndRace.HALFORC, 1.1F, 1.15F);
+    public static final Look ORC_CHAMPION = new Look(false, DndRace.HALFORC, 1.15F, 1.2F);
+    public static final Look ORC_WAR_CHIEF = new Look(false, DndRace.HALFORC, 1.25F, 1.3F);
+    private static final Identifier[] ORC_SKINS = new Identifier[OrcEntity.VARIANTS];
+    private static final Identifier QUARTERMASTER_SKIN = new Identifier(DnDClasses.MOD_ID, "textures/entity/orc/quartermaster.png");
+    private static final Identifier CHAMPION_SKIN = new Identifier(DnDClasses.MOD_ID, "textures/entity/orc/champion.png");
+    private static final Identifier WAR_CHIEF_SKIN = new Identifier(DnDClasses.MOD_ID, "textures/entity/orc/war_chief.png");
+
+    static {
+        for (int i = 0; i < ORC_SKINS.length; i++) {
+            ORC_SKINS[i] = new Identifier(DnDClasses.MOD_ID, "textures/entity/orc/orc_" + i + ".png");
+        }
+    }
+
+    /** Warriors and archers: one of the six skins (green to grey-green, in hide and fur). */
+    public static <E extends OrcEntity> RacialHumanoidRenderer<E> orc(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, ORC, orc -> ORC_SKINS[Math.floorMod(orc.getVariant(), ORC_SKINS.length)]);
+    }
+
+    public static RacialHumanoidRenderer<OrcQuartermasterEntity> orcQuartermaster(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, ORC, orc -> QUARTERMASTER_SKIN);
+    }
+
+    public static RacialHumanoidRenderer<OrcChampionEntity> orcChampion(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, ORC_CHAMPION, orc -> CHAMPION_SKIN);
+    }
+
+    public static RacialHumanoidRenderer<OrcWarChiefEntity> orcWarChief(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, ORC_WAR_CHIEF, orc -> WAR_CHIEF_SKIN);
+    }
+
     @Override
     public Identifier getTexture(T entity) {
         return this.texture.apply(entity);
@@ -112,8 +153,8 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
 
     @Override
     protected void scale(T entity, MatrixStack matrices, float amount) {
-        if (this.look.scale() != 1.0F) {
-            matrices.scale(this.look.scale(), this.look.scale(), this.look.scale());
+        if (this.look.scale() != 1.0F || this.look.width() != 1.0F) {
+            matrices.scale(this.look.width(), this.look.scale(), this.look.width());
         }
     }
 
@@ -126,8 +167,13 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
         @Override
         public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress, float headYaw, float headPitch) {
             ItemStack held = entity.getMainHandStack();
-            this.rightArmPose = held.isEmpty() ? ArmPose.EMPTY
-                    : entity.isUsingItem() && held.getItem() instanceof BowItem ? ArmPose.BOW_AND_ARROW : ArmPose.ITEM;
+            if (held.getItem() instanceof net.minecraft.item.CrossbowItem) {
+                this.rightArmPose = entity.isUsingItem() ? ArmPose.CROSSBOW_CHARGE
+                        : net.minecraft.item.CrossbowItem.isCharged(held) ? ArmPose.CROSSBOW_HOLD : ArmPose.ITEM;
+            } else {
+                this.rightArmPose = held.isEmpty() ? ArmPose.EMPTY
+                        : entity.isUsingItem() && held.getItem() instanceof BowItem ? ArmPose.BOW_AND_ARROW : ArmPose.ITEM;
+            }
             this.leftArmPose = ArmPose.EMPTY;
             super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
         }

@@ -1,0 +1,20 @@
+{
+  "name": "faction.dndclasses.bloodtusk_horde",
+  "color": "#8E2B1F",
+  "members": "#dndclasses:faction/bloodtusk_horde",
+  "settlements": "#dndclasses:faction/bloodtusk_horde",
+  "start": -600,
+  "start_by_race": {"dndclasses:halforc": 0},
+  "rivals": {
+    "dndclasses:hobbits": -0.25,
+    "dndclasses:mountain_dwarves": -0.25,
+    "dndclasses:sylvan_court": -0.25
+  },
+  "decay_per_day": 5,
+  "hit_member": -10,
+  "kill_member": -60,
+  "kill_member_overrides": {"dndclasses:orc_war_chief": -300},
+  "trade": 1,
+  "trade_cap": 15,
+  "theft_witnessed": -40
+}

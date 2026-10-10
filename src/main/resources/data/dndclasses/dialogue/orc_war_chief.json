@@ -1,0 +1,10 @@
+{
+  "role": "orc_war_chief",
+  "greeting": {
+    "default": "dialogue.dndclasses.orc_war_chief.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.orc_war_chief.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.orc_war_chief.greeting.friendly",
+    "honored": "dialogue.dndclasses.orc_war_chief.greeting.honored",
+    "exalted": "dialogue.dndclasses.orc_war_chief.greeting.exalted"
+  }
+}

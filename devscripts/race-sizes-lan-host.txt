@@ -1,0 +1,50 @@
+# How other players see racial sizes, host side. Needs the arena from race-sizes.txt (run that first).
+# Run: timeout 600 ./gradlew runClient -PdevUser=RaceHost -PdevScript=devscripts/race-sizes-lan-host.txt
+# then, once "Started serving on" is in the log, the guest:
+#   timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=RaceGuest -PdevServer=localhost:25642 -PdevScript=devscripts/race-sizes-lan-guest.txt
+# Expect: the host's [DevScript] size lines show RaceGuest as dwarf 0.600x1.530, then dragonborn 0.600x1.890;
+# the guest's show RaceHost as halfling 0.390x1.170, tiefling 0.600x1.800, then halfling CROUCHING 0.390x0.975.
+# Screenshots (hitboxes on): lan-host-sees-dwarf, lan-host-sees-dragonborn here; lan-guest-sees-* on the guest.
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/gamemode survival
+/tp @s 205.5 150 203.5 180 0
+/dndrace set @s halfling
+/publish false survival 25642
+waitchat rsready
+wait 20
+/dndclass set RaceGuest wizard
+/dndrace set RaceGuest dwarf
+/effect give RaceGuest minecraft:resistance 99999 4 true
+/tp RaceGuest 205.5 150 199.5 0 0
+/tp @s 205.5 150 203.5 180 0
+hitboxes on
+hud off
+wait 40
+sizes
+screenshot lan-host-sees-dwarf
+/say rsphase1
+waitchat rsack1
+/dndrace set @s tiefling
+wait 20
+/say rsphase2
+waitchat rsack2
+/dndrace set RaceGuest dragonborn frost
+/dndrace set @s halfling
+sneak on
+wait 40
+sizes
+screenshot lan-host-sees-dragonborn
+/say rsphase3
+waitchat rsack3
+sneak off
+/say rsdone
+wait 60
+hitboxes off
+hud on
+quit

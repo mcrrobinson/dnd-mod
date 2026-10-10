@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.SkillChecks.D20;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -37,11 +37,14 @@ public abstract class ObstacleType {
         return "obstacle." + id.getNamespace() + "." + id.getPath();
     }
 
-    /** The check this obstacle rolls, or null for obstacles you get past without one. */
+    /**
+     * The check this obstacle rolls, or null for obstacles you get past without one. The modifier is the
+     * solver's character-sheet bonus for it.
+     */
     @Nullable
-    public abstract D20.Skill skill();
+    public abstract Skill skill();
 
-    /** Who may attempt it, and at what modifier. */
+    /** Who may attempt it. The modifier always comes from the sheet; this only gates and orders solvers. */
     public abstract Eligibility eligibility(DndCharacter dndClass);
 
     /** Classes that may attempt it, primaries first. */

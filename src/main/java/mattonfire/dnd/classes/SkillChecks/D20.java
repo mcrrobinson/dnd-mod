@@ -22,6 +22,8 @@ import mattonfire.dnd.classes.Abilities.CharacterSheet;
 import mattonfire.dnd.classes.Abilities.RollKind;
 import mattonfire.dnd.classes.Abilities.RollQuery;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -43,8 +45,8 @@ import net.minecraft.util.Identifier;
  * <li>{@link Lockpicking}: Rogues pick the locks of dungeon and lair loot chests (Thieves' Tools)</li>
  * <li>{@link Persuasion}: Bards talk villagers into better prices (Persuasion)</li>
  * <li>{@link AttackRolls}: every full-strength melee swing rolls; natural 20 crits, natural 1 fumbles</li>
- * <li>{@code Obstacles.ObstacleInteractions}: class-gated obstacles (Arcane Seals), with modifiers from
- * {@link SkillModifiers}</li>
+ * <li>{@code Obstacles.ObstacleInteractions}: class-gated obstacles (Arcane Seals), through
+ * {@link SkillCheck}</li>
  * </ul>
  */
 public final class D20 {
@@ -62,25 +64,6 @@ public final class D20 {
     private static final Map<UUID, Deque<Integer>> FORCED = new HashMap<>();
 
     private D20() {
-    }
-
-    /**
-     * The original three-value label enum, kept so older callers still compile.
-     *
-     * @deprecated use {@link SkillCheck} with a {@link mattonfire.dnd.classes.Abilities.Skill}, or
-     *             {@link #roll(PlayerEntity)} with a label
-     */
-    @Deprecated
-    public enum Skill {
-        LOCKPICKING,
-        PERSUASION,
-        ATTACK,
-        /** Class-gated obstacles: dispelling Arcane Seals ({@code classes/Obstacles}). */
-        ARCANA;
-
-        public String translationKey() {
-            return "skill.dndclasses." + name().toLowerCase();
-        }
     }
 
     public enum Outcome {
@@ -104,7 +87,7 @@ public final class D20 {
     public enum Display {
         /** The big panel under the crosshair. */
         MAIN,
-        /** The compact saving-throw rows beside the crosshair (drawn on the main panel until that lane exists). */
+        /** The compact saving-throw rows beside the crosshair ({@code SaveLaneHud}). */
         SAVE_LANE,
         /** Logged but never sent (non-player and passive rolls). */
         SILENT
@@ -131,14 +114,6 @@ public final class D20 {
     public record Roll(Text label, @Nullable Ability ability, RollKind kind, int natural, int natural2,
             Advantage mode, int rerolled, int modifier, List<Bonus> bonuses, int dc, Outcome outcome,
             Display display, int flags) {
-
-        /** Old-style roll: single die, label from the old enum. */
-        @Deprecated
-        public Roll(Skill skill, int natural, int modifier, int dc, Outcome outcome) {
-            this(Text.translatable(skill.translationKey()), null,
-                    skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK, natural, 0, Advantage.NORMAL, 0,
-                    modifier, List.of(), dc, outcome, Display.MAIN, 0);
-        }
 
         public int total() {
             return natural + modifier;
@@ -192,13 +167,17 @@ public final class D20 {
         }
     }
 
-    /** A raw roll builder. {@link SkillCheck} fills one in from the character sheet. */
-    public static Builder roll(PlayerEntity player) {
-        return new Builder(player);
+    /**
+     * A raw roll builder. {@link SkillCheck} fills one in from the character sheet. Non-players can roll too
+     * (silent mob saves, see {@link SavingThrow}); they have no sheet, so {@link Builder#sheetAdvantage} does
+     * nothing for them.
+     */
+    public static Builder roll(LivingEntity roller) {
+        return new Builder(roller);
     }
 
     public static final class Builder {
-        private final PlayerEntity player;
+        private final LivingEntity player;
         private Text label = Text.literal("d20");
         @Nullable
         private Ability ability;
@@ -212,8 +191,10 @@ public final class D20 {
         private boolean rerollNaturalOnes;
         private Display display = Display.MAIN;
         private int flags;
+        /** A fixed natural instead of rolling (0: roll). */
+        private int taken;
 
-        private Builder(PlayerEntity player) {
+        private Builder(LivingEntity player) {
             this.player = player;
         }
 
@@ -288,7 +269,8 @@ public final class D20 {
 
         /** Applies the advantage sources on the player's sheet that match this roll. */
         public Builder sheetAdvantage(RollQuery query) {
-            return player.getWorld().isClient ? this : mode(AbilityScores.sheet(player).advantage(query));
+            return player.getWorld().isClient || !(player instanceof PlayerEntity p) ? this
+                    : mode(AbilityScores.sheet(p).advantage(query));
         }
 
         /** The lowest natural that is a CRITICAL (attacks: the sheet's crit range). */
@@ -312,12 +294,25 @@ public final class D20 {
             return this;
         }
 
+        /**
+         * "Take" a natural instead of rolling, e.g. 20 for an obstacle you take your time over. No die
+         * is rolled (rigged rolls are left alone), advantage and rerolls don't apply, and the taken
+         * natural is never a CRITICAL or a FUMBLE: it succeeds or fails on the total alone.
+         */
+        public Builder take(int natural) {
+            this.taken = natural;
+            return this;
+        }
+
         public Builder secret() {
             return flags(FLAG_SECRET);
         }
 
         /** Rolls and logs it. Show it with {@link D20#show}. */
         public Roll roll() {
+            if (taken > 0) {
+                return taken();
+            }
             Advantage mode = Advantage.resolve(advantages, disadvantages);
             int rerolled = 0;
             int a = d20(player);
@@ -336,10 +331,7 @@ public final class D20 {
                 natural = mode == Advantage.ADVANTAGE ? Math.max(a, b) : Math.min(a, b);
                 natural2 = natural == a ? b : a;
             }
-            int total = modifier;
-            for (Bonus bonus : bonuses) {
-                total += bonus.amount();
-            }
+            int total = total();
             Outcome outcome;
             if (natural == 1) {
                 outcome = Outcome.FUMBLE;
@@ -350,10 +342,28 @@ public final class D20 {
             } else {
                 outcome = Outcome.SUCCESS;
             }
-            Roll roll = new Roll(label, ability, kind, natural, natural2, mode, rerolled, total, List.copyOf(bonuses),
-                    dc, outcome, display, flags);
+            return finish(new Roll(label, ability, kind, natural, natural2, mode, rerolled, total,
+                    List.copyOf(bonuses), dc, outcome, display, flags));
+        }
+
+        private int total() {
+            int total = modifier;
+            for (Bonus bonus : bonuses) {
+                total += bonus.amount();
+            }
+            return total;
+        }
+
+        private Roll taken() {
+            int total = total();
+            Outcome outcome = dc <= 0 || taken + total >= dc ? Outcome.SUCCESS : Outcome.FAILURE;
+            return finish(new Roll(label, ability, kind, taken, 0, Advantage.NORMAL, 0, total, List.copyOf(bonuses),
+                    dc, outcome, display, flags));
+        }
+
+        private Roll finish(Roll roll) {
             // Every swing rolls an attack; only the ones that do something are worth a log line
-            if (kind != RollKind.ATTACK || outcome != Outcome.SUCCESS) {
+            if (roll.kind() != RollKind.ATTACK || roll.outcome() != Outcome.SUCCESS) {
                 log(player, roll);
             }
             return roll;
@@ -361,7 +371,7 @@ public final class D20 {
     }
 
     /** One natural d20: the next rigged value if any ({@code /dndclass forceroll}), else random. */
-    public static int d20(PlayerEntity player) {
+    public static int d20(LivingEntity player) {
         synchronized (FORCED) {
             Deque<Integer> forced = FORCED.get(player.getUuid());
             if (forced != null && !forced.isEmpty()) {
@@ -376,7 +386,7 @@ public final class D20 {
     }
 
     /** Rigs the player's next naturals (each 1-20), in order. */
-    public static void force(PlayerEntity player, Collection<Integer> naturals) {
+    public static void force(Entity player, Collection<Integer> naturals) {
         synchronized (FORCED) {
             FORCED.computeIfAbsent(player.getUuid(), k -> new ArrayDeque<>()).addAll(naturals);
         }
@@ -391,33 +401,39 @@ public final class D20 {
     }
 
     /**
-     * Rolls d20 + modifier against a DC with no sheet bonus.
-     *
-     * @deprecated use {@link SkillCheck#check}, which takes the modifier from the character sheet
+     * Shows the roll on the player's HUD, with a line saying what came of it. SILENT rolls aren't sent.
+     * SAVE_LANE rolls go through {@link SavingThrow#send}, which throttles them and merges repeats.
      */
-    @Deprecated
-    public static Roll check(PlayerEntity player, Skill skill, int modifier, int dc) {
-        return roll(player).label(skill.translationKey())
-                .kind(skill == Skill.ATTACK ? RollKind.ATTACK : RollKind.CHECK).modifier(modifier).dc(dc).roll();
-    }
-
-    /** Shows the roll on the player's HUD, with a line saying what came of it. SILENT rolls aren't sent. */
     public static void show(PlayerEntity player, Roll roll, Text detail) {
         if (!(player instanceof ServerPlayerEntity serverPlayer) || roll.display() == Display.SILENT) {
             return;
         }
+        if (roll.display() == Display.SAVE_LANE) {
+            SavingThrow.send(serverPlayer, roll, detail);
+            return;
+        }
+        send(serverPlayer, roll, detail, 1);
+    }
+
+    /**
+     * Sends one roll packet as is. {@code count} is how many identical rolls it stands for (the save lane's
+     * "x3"); it's written after the detail, and older readers that stop at the detail just ignore it.
+     */
+    static void send(ServerPlayerEntity player, Roll roll, Text detail, int count) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         roll.write(buf);
         buf.writeText(detail);
-        ServerPlayNetworking.send(serverPlayer, S2C_ROLL, buf);
+        buf.writeVarInt(count);
+        ServerPlayNetworking.send(player, S2C_ROLL, buf);
     }
 
     /**
      * {@code [D20] <player> <label> <natural>[ (<other> adv|dis)] <+mod> = <total>[ vs DC <dc>] -> <outcome>},
      * for logs and DevScript tests.
      */
-    public static void log(PlayerEntity player, Roll roll) {
-        StringBuilder line = new StringBuilder("[D20] ").append(player.getEntityName()).append(' ')
+    public static void log(Entity player, Roll roll) {
+        String name = player instanceof PlayerEntity ? player.getEntityName() : player.getName().getString();
+        StringBuilder line = new StringBuilder("[D20] ").append(name).append(' ')
                 .append(labelForLog(roll.label())).append(' ').append(roll.natural());
         if (roll.natural2() > 0) {
             line.append(" (").append(roll.natural2()).append(' ')
@@ -454,6 +470,7 @@ public final class D20 {
 
     public static void register() {
         Lockpicking.register();
+        SavingThrow.register();
         Persuasion.register();
         AttackRolls.register();
     }

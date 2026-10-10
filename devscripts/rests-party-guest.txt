@@ -1,0 +1,17 @@
+# Guest for rests-party-host.txt: accepts the host's party invite, then sits at its campfire when told.
+wait 40
+closescreen
+waitchat invited you
+wait 20
+/party accept
+waitchat GUEST_REST_NOW
+wait 10
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 640
+screenshot party-rest-guest
+wait 100
+quit

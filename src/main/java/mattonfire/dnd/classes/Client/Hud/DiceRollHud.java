@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Abilities.Advantage;
+import mattonfire.dnd.classes.Config.SaveRollsMode;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -30,7 +31,8 @@ import net.minecraft.util.math.RotationAxis;
  * (with a rattle), then lands on the natural roll and shows the sum, the DC and what came of it,
  * with a sound for the outcome. With advantage or disadvantage the dropped die is shown greyed after
  * the kept one. Secret rolls ({@link D20#FLAG_SECRET}) show the total but not the DC or outcome.
- * Save-lane rolls are drawn on this panel for now.
+ * Saving throws go to the compact {@link SaveLaneHud} instead, so they never replace a check here (with
+ * {@code saveRolls: full} they use this panel, but only when it isn't showing a check).
  */
 public final class DiceRollHud {
     private static final Identifier D20_TEXTURE = new Identifier(DnDClasses.MOD_ID, "textures/gui/d20.png");
@@ -52,7 +54,19 @@ public final class DiceRollHud {
         ClientPlayNetworking.registerGlobalReceiver(D20.S2C_ROLL, (client, handler, buf, sender) -> {
             D20.Roll received = D20.Roll.read(buf);
             Text receivedDetail = buf.readText();
+            int count = buf.isReadable() ? buf.readVarInt() : 1;
             if (received.display() == D20.Display.SILENT) {
+                return;
+            }
+            if (received.display() == D20.Display.SAVE_LANE) {
+                client.execute(() -> {
+                    if (SaveRollsMode.current() == SaveRollsMode.FULL
+                            && (roll == null || roll.display() == D20.Display.SAVE_LANE)) {
+                        start(client, received, receivedDetail);
+                    } else {
+                        SaveLaneHud.accept(client, received, receivedDetail, count);
+                    }
+                });
                 return;
             }
             client.execute(() -> start(client, received, receivedDetail));

@@ -1,0 +1,22 @@
+# Two-client check that a bonded item only works for its owner. Host (run after attunement.txt, which leaves
+# Attuner with a bonded Cloak of Protection in hotbar slot 0):
+#   timeout 400 ./gradlew runClient -PdevUser=Attuner -PdevScript=devscripts/attunement-lan-host.txt
+# then the guest: timeout 300 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25637 -PdevScript=devscripts/attunement-lan-guest.txt
+# Expect in the host's latest.log: Attuner armor 1.0; Guest armor 0.0 holding a copy of the cloak;
+# "That item is attuned to Attuner." for Guest; Guest's info active=false.
+wait 40
+closescreen
+/publish false survival 25637
+waitchat Guest joined
+wait 60
+/item replace entity Guest hotbar.0 from entity Attuner hotbar.0
+wait 40
+/say lan-check
+/attribute Attuner minecraft:generic.armor get
+/attribute Guest minecraft:generic.armor get
+/dndmagic attune Guest
+/dndmagic info Guest
+/say lan-host-done
+waitchat guest-done
+wait 20
+quit

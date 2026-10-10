@@ -46,6 +46,9 @@ Other animals, such as turtles, axolotls or ocelots, aren't learned.
 
 Farm animals are just for fun: they follow you, but they can't fight, so they never take a target (rabbits are the exception and will nip at hostile mobs for 3 damage).
 
+### Song of Rest on short rests
+A [short rest](../systems/rests.md#short-rests-at-campfires) with a Bard in it (party members resting at campfires within 8 blocks, the Bard included) heals everyone an extra 1d6 HP when their rest finishes, or 2d6 if the Bard has unlocked the Song of Rest active.
+
 ### Tips
 Press G next to foxes, llamas or a farm to fill your bestiary, then rank Animal Friends up as you level for the big animals. Use the special next to a wolf pack before a fight, then lead the mob in. Companions stay yours after the special ends, so the cap is the real limit. The [Bard instruments](../items/bard-instruments.md) are built for this class.
 
@@ -73,9 +76,11 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
 | College of Valor | Right | Inspiring Presence (first node, open to both), Thunderwave, Battle Hymn | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
-| College of Lore | Left | Silver Tongue (first node, open to both), Song of Rest, Jack of All Trades | **Bardic Lore**: +2 to Persuasion checks, and you identify magic items when you pick them up |
+| College of Lore | Left | Silver Tongue (first node, open to both), Song of Rest, Jack of All Trades | **Bardic Lore**: +2 to Persuasion checks |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Combat Inspiration** (Valor): when you play an instrument, every player who gets its buff (within 16 blocks, you included) also gets +2 armor for 30 s. Playing again restarts the 30 s.
+- **Bardic Lore** (Lore): +2 to Persuasion on your character sheet, so the villager persuasion roll and any other Persuasion check include it (it shows as "Bardic Lore" in the roll's breakdown). Identifying magic items on pickup comes with the identification card.
 
 ## Commands
 - `/dndclass set <player> bard` (see [Admin commands](../systems/admin-commands.md)).

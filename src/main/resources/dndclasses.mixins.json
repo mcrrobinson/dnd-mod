@@ -8,6 +8,7 @@
         "CrossbowItemMixin",
         "ItemStackNameMixin",
         "PlayerEntityMixin",
+        "PlayerDimensionsMixin",
         "SmiteDragonsMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",

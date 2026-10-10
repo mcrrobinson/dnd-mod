@@ -21,7 +21,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
 
 ## Races
-- [Races](races/races.md): the race picker (before the class), 8 races with stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule (body sizes: PR #n)
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does

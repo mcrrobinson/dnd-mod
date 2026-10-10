@@ -67,6 +67,10 @@ import net.minecraft.util.Identifier;
  * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
+ * <li>{@code walk on|off} holds or releases the forward key, e.g. to crawl into a gap</li>
+ * <li>{@code fov <30-110>} sets the field of view, e.g. 30 to zoom in on a third-person close-up</li>
+ * <li>{@code sizes} logs every player's pose, hitbox (width x height), eye height, position and body race as
+ * this client sees them, and in singleplayer as the integrated server sees them</li>
  * <li>{@code holduse on|off} holds or releases the use (right) button, e.g. to keep drawing a bow</li>
  * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
  *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
@@ -277,6 +281,9 @@ public final class DevScript {
             case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
+            case "walk" -> client.options.forwardKey.setPressed(argument.equals("on"));
+            case "sizes" -> logSizes(client);
+            case "fov" -> client.options.getFov().setValue(Integer.parseInt(argument));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));
             case "mine" -> {
                 this.mining = argument.equals("on");
@@ -396,6 +403,25 @@ public final class DevScript {
             return;
         }
         PickerFlow.sendPick(race, ancestry);
+    }
+
+    private static void logSizes(MinecraftClient client) {
+        for (net.minecraft.entity.player.PlayerEntity p : client.world.getPlayers()) {
+            logSize("client", p);
+        }
+        if (client.getServer() != null) {
+            for (net.minecraft.entity.player.PlayerEntity p : client.getServer().getPlayerManager().getPlayerList()) {
+                logSize("server", p);
+            }
+        }
+    }
+
+    private static void logSize(String side, net.minecraft.entity.player.PlayerEntity p) {
+        DnDClasses.LOGGER.info("[DevScript] size {} {} race={} pose={} hitbox={}x{} eye={} pos={} {} {}", side,
+                p.getEntityName(), ((mattonfire.dnd.classes.PlayerEntityExt) p).getBodyRace().id(), p.getPose(),
+                String.format("%.3f", p.getWidth()), String.format("%.3f", p.getHeight()),
+                String.format("%.3f", p.getStandingEyeHeight()), String.format("%.2f", p.getX()),
+                String.format("%.2f", p.getY()), String.format("%.2f", p.getZ()));
     }
 
     private static void press(MinecraftClient client, String translationKey, int lineNumber) {

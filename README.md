@@ -65,6 +65,8 @@ Players pick one of 8 races (Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefl
 ### Mana and Specials
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. Big specials also cost charges, which come back when you rest. See [Mana and class specials](docs/systems/mana.md), [Rests and charges](docs/systems/rests.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
 
+At 0 HP with a party member nearby you go **Downed** and roll death saves instead of dying; alone, you get one Last Stand roll. See [Downed and death saves](docs/systems/death-saves.md).
+
 ### Class Progression
 Classes level up to 10 with class XP. Each level gives a skill point to spend on the class skill tree or on ranking up abilities at an Attunement Table. At level 3 you choose a subclass, one of the tree's two branches. Bards and Druids keep a bestiary of the creatures they have killed. See [Class progression](docs/systems/class-progression.md).
 

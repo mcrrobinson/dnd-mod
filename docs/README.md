@@ -23,6 +23,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Dragonborn Breath Weapon](races/breath-weapon.md): R breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
+- [d20 and combat racial traits](races/combat-traits.md): Halfling Lucky rerolls natural 1s (clover on the HUD), Half-Orc Savage Attacks (x2.5 crits) and Relentless Endurance (1 HP instead of dying, 10 min), Tiefling Hellish Rebuke (melee attackers burn, 20 s)
 - [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves) and Dragonborn (Dragon Temples): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth
 
 ## Systems
@@ -31,7 +32,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
-- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
+- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list|cooldowns`
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8

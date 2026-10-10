@@ -28,7 +28,7 @@ Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, G
 
 - **Stat modifiers** are live now. They're attribute modifiers on top of your class's base values, so a race and a class never overwrite each other, and switching class keeps them. Speed is a percentage of your class's base speed: a Barbarian Dwarf walks at 0.08 × 0.92 = 0.0736.
 - **Ability bonuses** are added to your [ability scores](../systems/ability-scores.md); `/dndclass sheet` lists them under the race's name.
-- **Traits** are planned. They're listed so you can choose, but they do nothing yet.
+- **Traits** are arriving ticket by ticket. Working so far: the [Dragonborn Breath Weapon](breath-weapon.md) and the [d20 and combat traits](combat-traits.md) (Halfling Lucky, Half-Orc Savage Attacks and Relentless Endurance, Tiefling Hellish Rebuke). The rest are listed so you can choose, but do nothing yet.
 
 ### Body size
 Your race sets your size: your hitbox, your eye height (the camera) and your model, which everyone else sees too. Sizes come from `scale`, `hitboxWidth` and `modelWidth` in `race_info.json`.
@@ -79,7 +79,7 @@ The race picker opens on its own. Your race is on the last page of the Class Gui
 `/gamerule dndRaces false` turns races off: nobody is prompted, and no race modifiers, sizes or head features apply (saved races are kept and come back if you turn it on again). Turning it back on prompts every online player without a race. Default: `true`.
 
 ## Known limitations
-- Only the stat modifiers, body sizes, head features, ability bonuses and the [Dragonborn Breath Weapon](breath-weapon.md) work. The other traits come in later tickets.
+- Only the stat modifiers, body sizes, head features, ability bonuses, the [Dragonborn Breath Weapon](breath-weapon.md) and the [d20 and combat traits](combat-traits.md) work. The other traits come in later tickets.
 - Shadows aren't scaled, so a Halfling's shadow is a little big.
 - Head features are hidden under any helmet, so horns don't poke through.
 - You can't change race yourself. Ask an operator.

@@ -93,7 +93,9 @@ wait 10
 /tp @s -7133 134 6528.5 0 10
 wait 20
 use
-wait 10
+wait 5
+screenshot rh-king-audience
+wait 5
 /say rh:king-1
 /data get entity @s Inventory
 use

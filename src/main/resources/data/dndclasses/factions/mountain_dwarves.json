@@ -1,0 +1,19 @@
+{
+  "name": "faction.dndclasses.mountain_dwarves",
+  "color": "#C08A4A",
+  "members": "#dndclasses:faction/mountain_dwarves",
+  "settlements": "#dndclasses:faction/mountain_dwarves",
+  "start": 0,
+  "rivals": {"dndclasses:goblins": -0.5},
+  "decay_per_day": 5,
+  "hit_member": -15,
+  "kill_member": -120,
+  "kill_member_overrides": {"@dndclasses.role.dwarf_king": -500},
+  "enemy_kills": {"dndclasses:goblins": 1},
+  "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
+  "kill_cap": 30,
+  "raid_won": 60,
+  "trade": 1,
+  "trade_cap": 15,
+  "theft_witnessed": -40
+}

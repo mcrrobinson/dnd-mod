@@ -37,6 +37,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items and `/dndmagic` (PR #117)
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
+- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep` (PR #123)
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session (PR #121)
 
 ## Mobs

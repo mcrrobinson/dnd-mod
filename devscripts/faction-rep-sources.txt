@@ -1,0 +1,124 @@
+# Faction reputation sources not covered by faction-rep.txt: innkeeper trades (+1, capped at 15/day),
+# dwarf barter, being seen at the hoard, bounty claims (with rival loss), the Dwarf King override,
+# goblin betrayal, grudge decay, the action bar line and the client sync. Check [CHAT] /rep lines
+# and "[Reputation] client sync" in the log.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/faction-rep-sources.txt
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/time add 24000
+/effect give @s minecraft:slow_falling 30 0 true
+/tp @s 200 150 1352 0 20
+wait 100
+/fill 196 149 1348 204 149 1356 minecraft:glass
+/fill 196 150 1348 204 152 1356 minecraft:air
+/tp @s 200 150 1352 0 20
+/effect clear @s minecraft:slow_falling
+/kill @e[type=!player,distance=..12]
+/clear @s
+/rep @s dndclasses:hobbits set 0
+/rep @s dndclasses:mountain_dwarves set 0
+/rep @s dndclasses:goblins set -600
+# Innkeeper: 20 emeralds into the input, shift-click the output: 12 ale trades (its max uses) -> +12
+/summon dndclasses:innkeeper 200 150 1354.5 {NoAI:1b,Rotation:[180f,0f],Tags:["frs"]}
+/item replace entity @s hotbar.1 with minecraft:emerald 20
+wait 20
+use
+wait 20
+slots
+slot 31
+wait 2
+slot 0
+wait 5
+slot 2 quick_move
+wait 10
+slots
+closescreen
+wait 10
+/rep
+# A fresh innkeeper the same day: 12 more trades but only +3 (the 15/day cap)
+/kill @e[tag=frs]
+/summon dndclasses:innkeeper 200 150 1354.5 {NoAI:1b,Rotation:[180f,0f],Tags:["frs"]}
+/item replace entity @s hotbar.1 with minecraft:emerald 20
+wait 20
+use
+wait 20
+slot 31
+wait 2
+slot 0
+wait 5
+slot 2 quick_move
+wait 10
+closescreen
+wait 10
+/rep
+# Bounties at the innkeeper (outside any village): minor +8 (goblins -4), major +20 (goblins -10)
+/item replace entity @s weapon.mainhand with dndclasses:bounty_notice{Bounty:"goblin_trouble",Progress:10}
+use
+wait 10
+/item replace entity @s weapon.mainhand with dndclasses:bounty_notice{Bounty:"wyvern_hunt",Progress:1}
+use
+wait 10
+/rep
+/kill @e[tag=frs]
+wait 5
+# Dwarf barter: +1 dwarves
+/summon dndclasses:mountain_dwarf 200 150 1354.5 {NoAI:1b,Rotation:[180f,0f],Tags:["frs"]}
+/item replace entity @s weapon.mainhand with minecraft:gold_ingot 1
+wait 20
+use
+wait 20
+/rep
+# Opening a chest in sight of the dwarf: -40 dwarves (only once per 10 s)
+/setblock 202 150 1352 minecraft:chest
+/tp @s 200 150 1352 -90 30
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 10
+use
+wait 5
+closescreen
+use
+wait 5
+closescreen
+wait 10
+/rep
+/setblock 202 150 1352 minecraft:air
+/kill @e[tag=frs]
+/tp @s 200 150 1352 0 20
+# The Dwarf King: -500 (not -120)
+/rep @s dndclasses:mountain_dwarves set 0
+/summon dndclasses:mountain_dwarf 200 150 1356 {NoAI:1b,NoGravity:1b,Tags:["frk","dndclasses.role.dwarf_king"]}
+wait 10
+/damage @e[tag=frk,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/rep
+# Goblin betrayal: at Neutral goblins, a kill costs -40 instead of -3
+/rep @s dndclasses:goblins set 0
+/summon dndclasses:goblin_warrior 200 150 1356 {NoAI:1b,NoGravity:1b,Tags:["frg"]}
+wait 10
+/damage @e[tag=frg,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/rep
+# Grudge decay: a new day moves -100 hobbits to -95 and -10 dwarves to -5; goblins stay
+/rep @s dndclasses:hobbits set -100
+/rep @s dndclasses:mountain_dwarves set -10
+/rep @s dndclasses:goblins set -200
+/time add 24000
+wait 120
+/rep
+# Action bar and tier-change line, with the chat cleared first
+/gamerule sendCommandFeedback false
+wait 220
+/rep @s dndclasses:hobbits set 395
+/summon dndclasses:goblin_warrior 200 150 1356 {NoAI:1b,NoGravity:1b,Tags:["frg"]}
+wait 10
+/damage @e[tag=frg,limit=1] 1000 minecraft:player_attack by @s
+/rep @s dndclasses:hobbits add 5
+wait 3
+screenshot faction-rep-actionbar
+/gamerule sendCommandFeedback true
+/rep
+wait 20
+quit

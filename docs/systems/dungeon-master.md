@@ -116,7 +116,7 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
 - `unfreeze all` and `encounter clear` only reach loaded entities. Mobs in unloaded chunks stay frozen (or stay put) until you go back.
 - Chests from an encounter stay after `clear`.
 - A veiled DM is still listed in the tab list, and mobs still bump into them on the server.
-- Quest and faction-reputation hooks (DMs earn no quest progress or reputation) arrive with those systems.
+- DMs gain and lose no [faction reputation](factions.md). The quest hook (no quest progress for DMs) arrives with quests.
 
 ## For developers
 - Package `mattonfire.dnd.dm`:

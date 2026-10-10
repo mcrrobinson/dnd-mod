@@ -1,0 +1,9 @@
+# Finds the nearest elven enclave. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/elven-enclave-locate.txt
+# (add -PdevWorld=<world> for another world). Enclaves generate in birch and flower forests.
+# Check: the "[CHAT]" line in <run dir>/logs/latest.log with the coordinates.
+wait 40
+closescreen
+/gamemode spectator
+/locate structure dndclasses:elven_enclave
+wait 200
+quit

@@ -6,6 +6,8 @@ import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.world.gen.StructureProximity;
+import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructure;
+import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
@@ -42,7 +44,8 @@ public class GoblinCampStructure extends Structure {
         ChunkPos chunk = context.chunkPos();
         int x = chunk.getCenterX();
         int z = chunk.getCenterZ();
-        if (StructureProximity.near(context, HOBBIT_VILLAGES, VILLAGE_CLEARANCE)) {
+        if (StructureProximity.near(context, HOBBIT_VILLAGES, VILLAGE_CLEARANCE)
+                || StructureProximity.near(context, ElvenEnclaveStructures.SET, ElvenEnclaveStructure.CAMP_CLEARANCE)) {
             return Optional.empty();
         }
         Columns columns = new Columns(context);

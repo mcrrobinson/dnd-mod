@@ -1,7 +1,10 @@
 package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.entity.BeholderEntity;
+import mattonfire.dnd.entity.ElfEntity;
 import mattonfire.dnd.entity.HobbitEntity;
+import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
+import mattonfire.dnd.world.gen.enclave.EnclavePiece;
 import mattonfire.dnd.entity.FrostDrakeEntity;
 import mattonfire.dnd.entity.LairDragonEntity;
 import mattonfire.dnd.entity.LightningChaserEntity;
@@ -117,6 +120,13 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.MOUNTAIN_DWARF, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canDwarfSpawn);
 
+        // Elves only spawn inside elven enclaves (the structure's spawn_overrides), in the trees, the
+        // glade, the gardens and by the Moonwell, at most MAX_ELVES_NEARBY of them.
+        SpawnRestriction.register(ModEntityTypes.WOOD_ELF, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canElfSpawn);
+        SpawnRestriction.register(ModEntityTypes.ELF_WARDEN, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canElfSpawn);
+
         // Beholders only live in their underground lairs (the structure's spawn_overrides), which
         // get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.BEHOLDER, SpawnRestriction.Location.ON_GROUND,
@@ -171,6 +181,33 @@ public class ModSpawns {
         }
         return reason != SpawnReason.NATURAL
                 || world.getEntitiesByClass(MountainDwarfEntity.class, new Box(pos).expand(64.0D), e -> true).size() < MAX_DWARVES_NEARBY;
+    }
+
+    public static final int MAX_ELVES_NEARBY = 12;
+
+    private static <T extends ElfEntity> boolean canElfSpawn(EntityType<T> type, ServerWorldAccess world, SpawnReason reason,
+                                                            BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        // Natural spawns and the chunk's first animals both come from the structure's spawn override.
+        return reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION
+                || inEnclavePiece(world, pos)
+                && world.getEntitiesByClass(ElfEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_ELVES_NEARBY;
+    }
+
+    /** Whether {@code pos} is inside one of an elven enclave's real pieces (not the deep grounds piece). */
+    private static boolean inEnclavePiece(ServerWorldAccess world, BlockPos pos) {
+        StructureStart start = world.toServerWorld().getStructureAccessor().getStructureContaining(pos, ElvenEnclaveStructures.KEY);
+        if (!start.hasChildren()) {
+            return false;
+        }
+        for (StructurePiece piece : start.getChildren()) {
+            if (piece instanceof EnclavePiece && piece.getBoundingBox().contains(pos)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean canHobbitSpawn(EntityType<HobbitEntity> type, ServerWorldAccess world, SpawnReason reason,

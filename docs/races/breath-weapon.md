@@ -31,7 +31,7 @@ Pick Dragonborn and an ancestry in the race picker, or have an operator run `/dn
 - Ember's block fires follow `doFireTick` and `mobGriefing`.
 
 ## Known limitations
-- The Dragon Temple's Blessing of the Ancestors (half cooldown, +2 damage) and the Rite of Rebirth come with the Dragon Temple.
+- The [Dragon Temple](../structures/dragon-temples.md#shrines-dragonborn-only)'s altars: the Blessing of the Ancestors (half cooldown, +2 damage for 20 minutes, once a day at your own ancestry's altar) and the Rite of Rebirth (10 diamonds at another altar to change ancestry).
 - Ember doesn't burn cobwebs or vines yet (an obstacle hook for later).
 - Draconic Resistance (half damage of your element) is part of the racial traits ticket, not this one.
 

@@ -85,13 +85,33 @@ Everyone who was fully asleep when the night was skipped gets the rest. Players 
 ### Tavern rooms
 Rent a room from an innkeeper (**3 emeralds** for a Room Key) and sleep in any bed at that inn for a long rest **at any time of day**: 10 seconds asleep, the time isn't skipped, and the key is used up. You also wake **Well Rested** for 10 minutes: one temporary (gold) charge on top of your max, spent first, and Absorption I. The once-a-day limit still applies. See [Hobbit Tavern](../structures/hobbit-tavern.md#rooms-for-the-night).
 
+### Party camps
+Make camp anywhere at night for a long rest with your party, at the risk of an ambush.
+
+- **Bedroll:** craft one from 3 wool (any colour) over 3 leather. It isn't used up and stacks to 1.
+- **Make camp:** right-click a **lit campfire** (or soul campfire) with the Bedroll at night, from 12542 to 23460 on the overworld clock (the vanilla sleep window). Party members who do the same at a campfire within **8 blocks** in the next **10 seconds** join your camp; after that they're too late. A player outside your party makes their own camp, even at the same fire.
+- **60 seconds** of camping gives every camper a long rest (the benefits above). Time isn't skipped. You can't walk while camping (look around freely); the action bar counts "Camping 12 / 60 s" and a blue bar fills left of the charge gems.
+- **Refused** at day ("You can only make camp at night."), if you've already had a long rest today, while you're Downed or a party member within 32 blocks is, inside an uncleared dungeon, with monsters near you or a boss bar showing (the short rest rules).
+
+**The watch.** When the 10-second join window closes, the camper with the best Perception bonus on their [character sheet](ability-scores.md) keeps watch: d20 + Perception against **DC 12**, on every camper's d20 HUD as "Watch (Name)". A solo camp rolls at **disadvantage**. The roll is tagged `watch` (and `underground` when the fire can't see the sky), so sheet advantages can pick it out.
+
+- **Success:** a quiet night. "A quiet night. Nothing stirs."
+- **Failure:** "Something is moving out in the dark..." An **ambush** comes at a random moment 15-45 s into the camp: **2-4** hostiles appear 16-24 blocks from the fire, on solid ground within 8 blocks up or down of it (so a cave camp is ambushed in the cave), and go for the nearest camper.
+- **Natural 1:** "The watch nods off..." The ambush is **4-6** mobs, led by an elite "Ambush Leader" with Strength I.
+
+The ambushers suit the place: a weighted pick from the biome's own monster spawns, limited to zombies, husks, zombie villagers, skeletons, strays, spiders, cave spiders, wither skeletons, hoglins, blazes and piglin brutes. Where the biome has none of those you get zombies, skeletons and spiders (wither skeletons and hoglins in the Nether). Within **400 blocks** of a goblin camp the ambushers are goblin warriors.
+
+**During an ambush** the camp is paused, with its progress kept. You can move and fight, up to 48 blocks from the fire, and damage doesn't end your camp. Once no ambusher is left alive within 48 blocks ("The ambushers are gone..."), every camper must **sneak + right-click the campfire** (empty hand or Bedroll) to sit back down; when all have, the camp carries on from where it stopped. If no ambusher can find room to spawn, the night stays quiet.
+
+**Breaking camp.** You leave the camp with no rest if you go more than 8 blocks from the fire (48 during an ambush), take damage outside an ambush, sneak + right-click the fire again, go Downed, or another system vetoes the rest. Dawn arriving or the campfire going out ends the whole camp with no rest. The others carry on if one camper leaves. A camp counts as a long rest for the day it started, so it uses up that day's long rest for every camper.
+
 ### Dungeons
 Inside a dungeon whose boss is still alive (`DungeonRegistry.isInsideUncleared`), long rests are refused and short rests are only allowed in the Entrance, the Antechamber and rooms you've cleared: "This place is too dangerous to rest."
 
 ## Where to find it
 - Short rests: any lit campfire (above).
-- Long rests: any bed, at night, or a rented tavern room at any time.
-- `/dndclass rest` for admins. Party camps are coming.
+- Long rests: any bed, at night, a rented tavern room at any time, or a party camp at any lit campfire at night (Bedroll: 3 wool over 3 leather).
+- `/dndclass rest` for admins.
 
 ## Commands
 Permission level 2.
@@ -99,6 +119,7 @@ Permission level 2.
 - `/dndclass rest <player> allow`: forgets the player's last long rest, so they can take another today.
 - `/dndclass charges <player> [n]`: prints charges, recharge group, Hit Dice and short rests left; with `n`, sets the charges (capped at the max).
 - `/dndclass hitdice <player> [n]`: prints the same; with `n`, sets the Hit Dice left (capped at the pool).
+- `/dndclass forceroll <player> <n...>` rigs the next d20s, which the camp watch uses: `forceroll @s 5 5` fails a solo watch, `forceroll @s 1 1` gives the natural-1 ambush. The JVM flag `-Ddndclasses.debug.forceAmbush=true` makes every watch fail.
 
 ## Configuration
 - `/gamerule dndRests false`: turns charges off. Actives only cost mana, as before charges existed, and the gems are hidden. Rests still heal and refill mana.
@@ -110,6 +131,8 @@ Permission level 2.
 - No sitting pose yet: you stand still while resting.
 - With `doDaylightCycle false` a skipped night still wakes everyone (vanilla) and the sleepers who were fully asleep get their rest, even though the clock doesn't move.
 - Level-ups raise your max but don't hand out the new charge; rest to fill it.
+- Camps live in memory: a server restart mid-camp drops it (no rest, nothing lost). Ambushers that are still alive stay as ordinary mobs.
+- The ambush mob list is fixed in code, not a tag.
 
 ## For developers
 - Package `classes/Rest/`:
@@ -125,9 +148,11 @@ Permission level 2.
   - `DndRules`: the five gamerules.
   - `RestSession`: short rests in progress (in memory, `UUID -> session`), ticked from `END_SERVER_TICK`. `start(player, campfirePos)`, `cancel(player, reason)` (other systems, e.g. the downed state, can call it), `isResting`, `companions(player)`. Every 10 ticks it re-asks `RestEvents.ALLOW_REST`, so a veto added mid-rest interrupts it.
   - `CampfireRest`: the `UseBlockCallback` (sneak, empty main hand, `CampfireBlock.LIT`), the interrupt callbacks (`UseItemCallback`, `UseEntityCallback`, `AttackEntityCallback`, `AttackBlockCallback`, `ServerLivingEntityEvents.ALLOW_DAMAGE`) and the dungeon `ALLOW_REST` listener. `DnDClasses.sendPowerupPacket` calls `RestSession.cancel` too.
+  - `PartyCamp`: party camps in memory (camp id -> camp, camper -> camp), ticked from `END_SERVER_TICK`. `use(player, campfirePos)` (from `BedrollItem.useOnBlock`, and from `CampfireRest` when a camper sneak-clicks a fire) starts, joins, re-sits or leaves; `inCamp`, `ambushed`, `leave(player, reason)`, `isNight(server)`. Constants `CAMP_TICKS` 1200, `JOIN_TICKS` 200, `RADIUS` 8. Its own `ALLOW_DAMAGE` listener ends a camper's camp outside an ambush; every 10 ticks it re-asks `RestEvents.ALLOW_REST` (not during an ambush, and again on resuming). Completion calls `Rests.canLongRest(player, startedDay)` and `Rests.complete(..., RestSource.CAMP, campers, startedDay)`. Registers the `BEDROLL` item.
+  - `CampWatch`: `roll(camp, campers)` (best watcher by `CharacterSheet.check(PERCEPTION)`, `SkillCheck.builder(..., 12, "watch"[, "underground"])`, disadvantage when solo) and `spawnAmbush(world, centre, targets, big)`, public so other systems can reuse it for wandering monsters. Ambushers get the command tag `dndclasses.camp_ambusher`. Goblin camps are found with `ChunkGenerator.locateStructure` (radius 1 placement cell).
 - `BardSkills.songOfRest(player, companions)`: the Song of Rest bonus, called when a campfire rest finishes.
 - Client: `RestMovementLockMixin` zeroes walking and jumping input while `RestSnapshot.client.sessionKind() != 0`.
 - `ClassSkills` hooks: `rechargeGroup()`, `shortRestCharges(player, state, max)` (Wizard overrides it), `onShortRest(player, companions)`.
 - `DnDClasses.sendPowerupPacket` checks `Charges.canAfford` after the mana check and calls `Charges.spend` on success. `ClassLifecycle.change` calls `Charges.onClassChange`.
 - HUD: `Client/Hud/PowerupOverlay.renderCharges`, textures `textures/power/charge_full|empty|temp.png`.
-- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-party-host.txt` + `rests-party-guest.txt` (two clients: resting together, Song of Rest from a party Bard), `devscripts/rests-long-bed.txt` (bed rest through the night, "already rested", the next night, woken by damage, Downed), `devscripts/rests-long-bed-lan-host.txt` + `rests-long-bed-lan-guest.txt` (two clients on port 25614: the 20 s rest without a night skip, the guest's rest on the skip, a Downed party member refuses it), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).
+- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-party-host.txt` + `rests-party-guest.txt` (two clients: resting together, Song of Rest from a party Bard), `devscripts/rests-long-bed.txt` (bed rest through the night, "already rested", the next night, woken by damage, Downed), `devscripts/rests-long-bed-lan-host.txt` + `rests-long-bed-lan-guest.txt` (two clients on port 25614: the 20 s rest without a night skip, the guest's rest on the skip, a Downed party member refuses it), `devscripts/camp-ambush.txt` (day refusal, a rigged failed solo watch, the ambush, re-sitting, the long rest), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).

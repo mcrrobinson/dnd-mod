@@ -40,6 +40,7 @@ public final class Rests {
         DndRules.register();
         CampfireRest.register();
         BedRest.register();
+        PartyCamp.register();
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (server.getTicks() % 20 != 0) {
                 return;

@@ -1,0 +1,56 @@
+# Party camps: a day-time attempt is refused; a solo night camp with the watch rigged to fail
+# (forceroll 5 5: disadvantage takes both dice) is ambushed 15-45 s in by 2-4 mobs 16-24 blocks
+# away; killing them and sitting back down resumes the camp, which ends in a long rest.
+# A rigged natural 1 (forceroll 1 1) brings 4-6 with an "Ambush Leader".
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/camp-ambush.txt
+# Output: [Camp] and [CHAT] lines in logs/latest.log; screenshots camp-day-refused, camp-progress,
+# camp-ambush, camp-resumed, camp-done
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule dndRests true
+/fill -30 149 -30 30 149 30 minecraft:stone
+/fill -30 150 -30 30 156 30 minecraft:air
+/setblock 0 150 2 minecraft:campfire[lit=true]
+/dndclass set @s ranger
+/clear @s
+/effect clear @s
+/effect give @s minecraft:resistance 600 255 true
+/give @s dndclasses:bedroll
+hotbar 0
+/tp @s 0.5 150 0.5 0 35
+# Day: refused
+/time set 1000
+wait 10
+use
+wait 5
+screenshot camp-day-refused
+# Night: rig a failed watch and make camp
+/time set 14000
+/dndclass rest @s allow
+/dndclass forceroll @s 5 5
+wait 10
+use
+wait 100
+screenshot camp-progress
+wait 140
+# The ambush comes 15-45 s in; wait past 45 s
+wait 700
+screenshot camp-ambush
+/execute if entity @e[tag=dndclasses.camp_ambusher]
+/kill @e[tag=dndclasses.camp_ambusher]
+wait 40
+/tp @s 0.5 150 0.5 0 35
+sneak on
+use
+wait 5
+sneak off
+wait 20
+screenshot camp-resumed
+# The rest of the 60 s
+wait 900
+screenshot camp-done
+/dndclass charges @s
+quit

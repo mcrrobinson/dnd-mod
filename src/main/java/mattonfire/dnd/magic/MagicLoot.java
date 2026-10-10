@@ -136,7 +136,8 @@ public final class MagicLoot {
         gameplay("bounty_major", 0.03F, true, named(ModItems.DOSS_LUTE));
 
         // Goblin raid rewards (the defenders' share of what the goblins carried)
-        for (String raid : new String[] { "hobbit_village", "dwarven_fortress", "elven_enclave", "wilds" })
+        for (String raid : new String[] { "hobbit_village", "dwarven_fortress", "elven_enclave", "dragon_temple",
+                "wilds" })
             gameplay("goblin_raid_" + raid, 0.20F, false, tier(u, 1));
         gameplay("goblin_raid_hobbit_village", 0.02F, false, named(ModItems.BURGLARS_RING));
 

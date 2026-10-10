@@ -1,0 +1,64 @@
+# Dragon Temple shrines, trades and Templar breath.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dragon-temple-shrine.txt
+# Checks, in <run dir>/logs/latest.log:
+# - "[DragonTemple] <player> received the Blessing of the Ancestors (ember)" after using the Ember altar
+# - "[DragonTemple] Blessing on <player>'s breath: damage x -> x+2, cooldown 1200 -> 600 ticks" after breathing
+# - "[DragonTemple] <player> underwent the Rite of Rebirth: ember -> frost", then /dndrace get says Dragonborn (Frost)
+#   and the diamond check says "Test failed" (all 10 were used)
+# - with 9 diamonds the Storm altar refuses (screenshot dts-rebirth-cost) and /dndrace get still says Frost
+# - a non-Dragonborn gets "The altar stays cold to you" (screenshot dts-not-kin)
+# - "[DragonTemple] Templar ... breathed ... at Zombie" from the sky arena, screenshot dts-breath
+wait 40
+closescreen
+/gamemode survival
+/effect give @s resistance 600 4 true
+/dndrace set @s dragonborn ember
+/dndhome temple ember
+wait 200
+screenshot dts-ember-altar
+use
+wait 20
+screenshot dts-blessed
+press key.dnd-classes.racial
+wait 20
+use
+wait 20
+screenshot dts-blessed-again
+/dndhome temple frost
+wait 60
+/clear @s
+/give @s minecraft:diamond 10
+hotbar 0
+use
+wait 20
+screenshot dts-reborn
+/dndrace get @s
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:diamond"}]}]
+/dndhome temple storm
+wait 60
+/give @s minecraft:diamond 9
+hotbar 0
+use
+wait 10
+screenshot dts-rebirth-cost
+/dndrace get @s
+/clear @s
+/dndrace set @s human
+/dndhome temple ember
+wait 60
+use
+wait 10
+screenshot dts-not-kin
+/dndrace set @s dragonborn ember
+# Templar breath at a zombie, on a platform in the sky.
+/time set 18000
+/fill 0 149 0 14 149 14 minecraft:stone
+/tp @s 7 160 -6 0 40
+/gamemode spectator
+/summon dndclasses:dragonborn_templar 4 150 7
+/summon minecraft:zombie 9 150 7
+wait 200
+screenshot dts-breath
+wait 200
+/execute positioned 7 150 7 if entity @e[type=minecraft:zombie,distance=..12]
+quit

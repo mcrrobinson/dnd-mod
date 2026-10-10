@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Progression;
 
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Abilities.Ability;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -29,6 +31,10 @@ public class ClassProgress {
     public static final int PASSIVE_SLOTS = 2;
     /** Class level at which a subclass can be chosen. */
     public static final int SUBCLASS_LEVEL = 3;
+    /** Class levels that grant ability score improvement points. */
+    public static final int[] ASI_LEVELS = { 4, 8 };
+    /** Ability points each {@link #ASI_LEVELS} level grants. */
+    public static final int ASI_POINTS_PER_LEVEL = 2;
 
     /** The local player's progress, kept up to date by the server. Unused on the server. */
     public static ClassProgress client = new ClassProgress(DndCharacter.NONE);
@@ -46,6 +52,8 @@ public class ClassProgress {
     public final Set<String> bestiary = new LinkedHashSet<>();
     /** The chosen {@link Subclass} id, or "" before one is chosen. */
     public String subclass = "";
+    /** Ability score improvements bought with ability points, by ability (+1 each). */
+    public final Map<Ability, Integer> increases = new EnumMap<>(Ability.class);
 
     /** What a subclass rule says about unlocking a node. */
     public enum SubclassLock {
@@ -100,6 +108,35 @@ public class ClassProgress {
      */
     public int points() {
         return Math.max(0, level() - pointsSpent());
+    }
+
+    /** Ability points earned so far: {@link #ASI_POINTS_PER_LEVEL} for each of {@link #ASI_LEVELS} reached. */
+    public int asiPointsEarned() {
+        int earned = 0;
+        for (int asiLevel : ASI_LEVELS) {
+            if (level() >= asiLevel) {
+                earned += ASI_POINTS_PER_LEVEL;
+            }
+        }
+        return earned;
+    }
+
+    public int asiPointsSpent() {
+        int spent = 0;
+        for (int n : increases.values()) {
+            spent += n;
+        }
+        return spent;
+    }
+
+    /** Unspent ability points. Never below 0 (an admin can lower the level after they're spent). */
+    public int asiPoints() {
+        return Math.max(0, asiPointsEarned() - asiPointsSpent());
+    }
+
+    /** How much ability score improvements have added to an ability. */
+    public int increase(Ability ability) {
+        return increases.getOrDefault(ability, 0);
     }
 
     public boolean isUnlocked(String id) {
@@ -281,6 +318,11 @@ public class ClassProgress {
         nbt.put("learned", toList(learned));
         nbt.put("bestiary", toList(bestiary));
         nbt.putString("subclass", subclass);
+        if (!increases.isEmpty()) {
+            NbtCompound asi = new NbtCompound();
+            increases.forEach((ability, n) -> asi.putInt(ability.shortKey(), n));
+            nbt.put("asi", asi);
+        }
         return nbt;
     }
 
@@ -297,6 +339,14 @@ public class ClassProgress {
         nbt.getList("learned", NbtElement.STRING_TYPE).forEach(e -> progress.learned.add(e.asString()));
         nbt.getList("bestiary", NbtElement.STRING_TYPE).forEach(e -> progress.bestiary.add(e.asString()));
         progress.subclass = nbt.getString("subclass");
+        NbtCompound asi = nbt.getCompound("asi");
+        for (String key : asi.getKeys()) {
+            Ability ability = Ability.byId(key);
+            int n = asi.getInt(key);
+            if (ability != null && n > 0) {
+                progress.increases.put(ability, n);
+            }
+        }
         return progress;
     }
 

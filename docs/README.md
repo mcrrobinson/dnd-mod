@@ -99,8 +99,8 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Featherfall](enchantments/featherfall.md): boots enchantment that cuts fall damage and slows big drops
 
 ## Items
-- [Armor](items/armor.md): 14 class sets with full-set and matching-class bonuses; 5 racial sets (Elven Chain, Dwarven Plate, Orcish Warplate, Draconic Scale, Infernal Regalia) with race bonuses, sold as kin stock (PR #166)
-- [Racial weapons](items/racial-weapons.md): Elven Longbow (+20% arrow speed, built-in Power I), Dwarven Waraxe (+50% to goblins), Orcish Greataxe and Halfling Sling; kin-only trades (PR #166)
+- [Armor](items/armor.md): 14 class sets with full-set and matching-class bonuses; 5 racial sets (Elven Chain, Dwarven Plate, Orcish Warplate, Draconic Scale, Infernal Regalia) with race bonuses, sold as kin stock
+- [Racial weapons](items/racial-weapons.md): Elven Longbow (+20% arrow speed, built-in Power I), Dwarven Waraxe (+50% to goblins), Orcish Greataxe and Halfling Sling; kin-only trades
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute

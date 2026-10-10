@@ -320,6 +320,7 @@
     "book.dndclasses.class_guidebook.subclass_feature": "Feature: %s",
     "book.dndclasses.class_guidebook.your_subclass": "Your subclass",
     "item.dndclasses.lute": "Lute",
+    "item.dndclasses.cloak_of_protection": "Cloak of Protection",
     "item.dndclasses.drum": "War Drum",
     "item.dndclasses.flute": "Flute",
     "item.dndclasses.instrument.tooltip": "Bard song: %s (%ss) for players within %s blocks",
@@ -419,6 +420,14 @@
     "skill.dndclasses.flat": "d20",
     "skill.dndclasses.advantage": " adv",
     "skill.dndclasses.disadvantage": " dis",
+    "save.dndclasses.lane.save": "%s save",
+    "save.dndclasses.lane.vs": " vs %s",
+    "save.dndclasses.lane.critical": "Nat 20",
+    "save.dndclasses.lane.fumble": "Nat 1",
+    "save.dndclasses.effect.half_damage": "half damage",
+    "save.dndclasses.effect.full_damage": "full damage",
+    "save.dndclasses.info": "%s: %s save DC %s, %s",
+    "dm.dndclasses.roll.called": "called by %s",
     "subtitles.dndclasses.dice.roll": "Dice rattle",
     "subtitles.dndclasses.dice.success": "Check succeeds",
     "subtitles.dndclasses.dice.failure": "Check fails",
@@ -580,5 +589,8 @@
     "magic.dndclasses.type.potion": "Potion",
     "magic.dndclasses.type.scroll": "Scroll",
     "magic.dndclasses.type.drink": "Drink",
-    "magic.dndclasses.type.wondrous_item": "Wondrous Item"
+    "magic.dndclasses.type.wondrous_item": "Wondrous Item",
+    "magic.dndclasses.tooltip.attuned": "Attuned",
+    "magic.dndclasses.tooltip.attuned_to": "Attuned to %s",
+    "magic.dndclasses.tooltip.forge_blessing": "Blessing of the Forge: +1 until a long rest"
 }

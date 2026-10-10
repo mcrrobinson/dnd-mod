@@ -1,0 +1,171 @@
+# Saving throws and the save lane. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/saving-throws.txt
+# A level 1 Rogue (DEX 15, proficient in DEX saves: +4; CON 12, not proficient: +1; Stealth expertise: +6).
+# Expect in the log:
+# - "[D20] Dev Dexterity Save 13 +4 = 17 vs DC 14 -> SUCCESS" and one "[D20] save lane -> Dev" line (saves-row)
+# - forceroll 20: "-> CRITICAL" (saves-crit)
+# - execute store success: "Dev has 1 [st]" after a natural 20, "Dev has 0 [st]" after a natural 1
+# - ten saves from ten markers in one tick: exactly 2 "save lane ->" lines (x1, then x9) and one row "x10" (saves-merge)
+# - ten saves on ten ticks: at most 2 packets, one row "x10" (saves-merge-ticks)
+# - lockpick (rigged 10) then two saves: the lockpick stays on the big panel, saves in rows (saves-with-lockpick)
+# - "17 (5 adv)" and "5 (17 dis)" rolls
+# - a zombie's save: "[D20] Zombie Dexterity Save 12 +1 ..." and no save lane line for it
+# - silent: a [D20] line but no save lane line
+# - saverolls off: no row (saves-off); full: the big panel (saves-full)
+# - /dm check stealth: "Stealth 10 +6 = 16 vs DC 15 -> SUCCESS" on the big panel (saves-check)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/kill @e[type=minecraft:marker]
+/kill @e[type=minecraft:zombie]
+/clear @s
+/dndclass set @s rogue
+/dndclass score @s DEX clear
+/dndclass xp @s set 0
+/dndclass forceroll @s clear
+/effect give @s minecraft:resistance 600 4 true
+/tp @s 3.5 150 3.5 0 0
+wait 10
+/dndclass sheet @s
+wait 5
+clearchat
+# 1. One save: a compact row right of the crosshair
+/dndclass forceroll @s 13
+/dm save @s dex 14
+wait 12
+clearchat
+screenshot saves-row
+wait 60
+# 2. Natural 20
+/dndclass forceroll @s 20
+/dm save @s dex 14
+wait 12
+clearchat
+screenshot saves-crit
+wait 60
+# 3. execute store success
+/scoreboard objectives add st dummy
+/dndclass forceroll @s 20
+/execute store success score @s st run dm save @s dex 14
+/scoreboard players get @s st
+wait 12
+/dndclass forceroll @s 1
+/execute store success score @s st run dm save @s dex 14
+/scoreboard players get @s st
+/dndclass forceroll @s 1
+/execute store result score @s st run dm save @s dex 14
+/scoreboard players get @s st
+/dndclass forceroll @s 15
+/execute store result score @s st run dm save @s dex 14
+/scoreboard players get @s st
+wait 80
+clearchat
+# 4. Ten saves in one tick (ten markers each call one)
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/summon minecraft:marker 1 150 1 {Tags:["st"]}
+/dndclass forceroll @s 15 15 15 15 15 15 15 15 15 15
+/say merge-burst-start
+/execute as @e[type=minecraft:marker,tag=st] run dm save @p dex 14
+wait 16
+clearchat
+screenshot saves-merge
+wait 80
+/kill @e[type=minecraft:marker]
+# 5. Ten saves on ten ticks
+/dndclass forceroll @s 15 15 15 15 15 15 15 15 15 15
+/say merge-ticks-start
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+/dm save @s dex 14
+wait 14
+clearchat
+screenshot saves-merge-ticks
+/say merge-ticks-end
+wait 80
+# 6. A lockpick on the big panel while saves arrive
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/tp @s 3.5 150 3.5 0 35
+wait 10
+clearchat
+/dndclass forceroll @s 10 15 4
+use
+wait 3
+/dm save @s dex 14
+/dm save @s con 12
+wait 16
+screenshot saves-with-lockpick
+wait 30
+closescreen
+/setblock 3 150 5 minecraft:air
+/tp @s 3.5 150 3.5 0 0
+wait 60
+# 7. Advantage and disadvantage
+/dndclass forceroll @s 5 17
+/dm save @s dex 14 adv
+wait 12
+/dndclass forceroll @s 5 17
+/dm save @s dex 14 dis
+wait 14
+clearchat
+screenshot saves-adv-dis
+wait 60
+# 8. A mob saves silently with +1
+/summon minecraft:zombie 3.5 150 6.5 {NoAI:1b,PersistenceRequired:1b,Tags:["st"]}
+/say mob-save
+/dm save @e[type=minecraft:zombie,tag=st] dex 10
+/kill @e[type=minecraft:zombie,tag=st]
+# 9. Silent
+/say silent-save
+/dndclass forceroll @s 12
+/dm save @s dex 14 silent
+wait 20
+# 10. Modes
+saverolls off
+/say mode-off
+/dndclass forceroll @s 12
+/dm save @s dex 14
+wait 12
+clearchat
+screenshot saves-off
+wait 30
+saverolls full
+/say mode-full
+/dndclass forceroll @s 12
+/dm save @s dex 14
+wait 18
+clearchat
+screenshot saves-full
+wait 80
+saverolls config
+# 11. A DM-called skill check uses the big panel
+/dndclass forceroll @s 10
+/dm check @s stealth 15
+wait 18
+clearchat
+screenshot saves-check
+wait 40
+/dndclass forceroll @s clear
+/scoreboard objectives remove st
+/effect clear @s
+wait 10
+quit

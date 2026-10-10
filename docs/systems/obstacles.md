@@ -21,7 +21,7 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 ### The roll
 Right-click a sealed obstacle with an empty main hand. If your class can't attempt it, the action bar says who can ("Lesser Arcane Seal (Hard). A Wizard or Warlock could dispel it.").
 
-The roll is d20 + modifier against the obstacle's DC:
+The roll is an Arcana check against the obstacle's DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
 
 | Tier | DC | Class XP for the solver |
 |-|-|-|
@@ -30,7 +30,7 @@ The roll is d20 + modifier against the obstacle's DC:
 | Hard | 15 | 15 |
 | Very Hard | 18 | 25 |
 
-Until ability scores exist, the modifier is a placeholder from the class table: a **primary** class gets +3 plus proficiency, a **secondary** class +1 plus proficiency. Proficiency is +2 at class levels 0-3, +3 at 4-7 and +4 at 8-10. A level 0 Wizard rolls +5 and a level 0 Warlock +3.
+Your class decides whether you may try (Wizards and Warlocks for a Lesser seal, only Wizards for a Greater one); the sheet decides how good you are. Both classes are proficient in Arcana. With the class scores alone, a Wizard (INT 15) rolls +4 and a Warlock (INT 12) +3 at class levels 0-4, one more at 5-8 (proficiency +3) and two more at 9-10 (+4). Race bonuses and admin overrides on the sheet count too. The crosshair hint shows the same bonus.
 
 - **Success:** the roll shows, and 1.3 seconds (26 ticks) later the whole seal opens: every touching block of the same seal, up to 48. Open seal blocks have no collision and leave a faint broken frame. The solver gets the class XP above.
 - **Failure:** the seal's sting (above) and a 1.5 second wait before you can try again.
@@ -39,7 +39,7 @@ Until ability scores exist, the modifier is a placeholder from the class table: 
 A natural 20 always succeeds and a natural 1 always fails.
 
 ### Take your time
-Sneak and right-click instead to work at it slowly. You need no hostile mob within 16 blocks, and you must stand still for 8 seconds; moving or taking damage breaks your concentration. It then resolves as 20 + your modifier, with no crit, no fumble and no sting. It isn't allowed on Very Hard obstacles. Rolling stays the fast option in a fight.
+Sneak and right-click instead to work at it slowly. You need no hostile mob within 16 blocks, and you must stand still for 8 seconds; moving or taking damage breaks your concentration. It then resolves as 20 + your Arcana bonus, with no crit, no fumble and no sting. It isn't allowed on Very Hard obstacles. Rolling stays the fast option in a fight.
 
 ### Protected volume
 Obstacles can't be dug or built round. In survival, nobody can place a block in, or break a non-obstacle block in, the 1-block shell round a sealed obstacle. The action bar says why.
@@ -71,7 +71,6 @@ None.
 - The protected volume only stops block items. Buckets can still pour fluids next to a seal.
 - Breaking a non-obstacle block in the protected volume is refused by the server, so the client briefly shows the block breaking before it comes back.
 - The "Ask <name>" line only knows players whose class the client has been told about.
-- The modifier is a placeholder until ability scores land (see For developers).
 
 ## For developers
 - Package `classes/Obstacles/`:
@@ -82,7 +81,9 @@ None.
   - `ObstacleIndex` (`PersistentState`, per dimension): every obstacle block by chunk, filled as block entities load and emptied when the block is removed.
   - `ObstacleEvents.SOLVED` (quests) and `ObstacleEvents.ALARM` (dungeons).
   - `ObstaclePlacer`: the worldgen API. `place`, `doorway` and `box` only write blocks inside the `chunkBox` you pass, like chest loot in `LairPiece`.
-- `SkillChecks/SkillModifiers` computes the placeholder modifier from `Eligibility` (`PRIMARY`, `SECONDARY`, `UNTRAINED`, `NONE`) and runs registered `SkillModifierProvider`s, the seam for ability scores, races, subclasses and items. `D20.Skill.ARCANA` labels the roll.
+- `ObstacleType.skill()` returns an `Abilities.Skill` (`ARCANA` for the seals). `ObstacleInteractions` rolls `SkillCheck.builder(player, type.skill(), tier.dc, "obstacle")`, and take your time rolls the same builder with `.take(20)` (a fixed natural that is never a crit or a fumble).
+- `ObstacleType.eligibility(DndCharacter)` returns `SkillChecks/Eligibility` (`PRIMARY`, `SECONDARY`, `UNTRAINED`, `NONE`). It only decides who may try and the order classes are named in hints; it doesn't change the modifier.
+- Anything that should change obstacle rolls (races, subclasses, magic items) adds an `AbilityContributor` with `AbilityScores.register(id, contributor)`; a contributor can grant advantage on rolls tagged `obstacle`.
 - `Client/Hud/ObstacleHintHud` draws the crosshair hint.
 - Textures are made by `tools/obstacle_textures.py`.
 - Every roll, sting, solve and broken focus logs an `[Obstacle]` line. `devscripts/obstacle-verify.txt` rolls 40 times on an Easy seal (successes, failures, crits, fumbles) and breaks a focus by moving and by damage.

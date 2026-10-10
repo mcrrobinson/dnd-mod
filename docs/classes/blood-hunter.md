@@ -25,7 +25,7 @@ Range, duration and success chance grow with the special's rank, which you raise
 
 - **Strong mobs resist more.** Every point of max health above 20 (a player's) takes 0.25 percentage points off the success chance, at most 30. A zombie (20) has no penalty; an iron golem or ravager (100) has -20, so 80% at rank IV; a Warden has the full -30.
 - **Failure.** The mob resists: you get a red "<mob> resists your Blood Control!" message, smoke rises from the mob, and you pay the blood price. The mana is spent and you take a heart of magic damage.
-- **Bosses can't be controlled:** the Ender Dragon, the Wither and the mod's bosses (Wyvern, Lightning Chaser, Lich, Goblin Warlord, Magmamuncher Alpha, Beholder). Aiming at one says "<boss> is too powerful to control." and keeps your mana. Taking one over would remove it from its fight (boss bar, phases, raid) and bring it back as a copy.
+- **Bosses can't be controlled:** the Ender Dragon, the Wither and the mod's bosses (Wyvern, Lightning Chaser, Frost Drake, Lich, Goblin Warlord, Magmamuncher Alpha, Beholder). Aiming at one says "<boss> is too powerful to control." and keeps your mana. Taking one over would remove it from its fight (boss bar, phases, raid) and bring it back as a copy.
 
 ### Tips
 Do your fighting at night and your mining and building in the day. A good sword with Sharpness matters more for you than for anyone else, because the night bonus doubles it. Blood Control drops you right where the mob was, so it doubles as a teleport (up to 30 blocks at rank IV). Early on, pick weak targets: a failure costs a heart as well as the mana.

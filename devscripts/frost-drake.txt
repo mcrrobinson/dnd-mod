@@ -1,0 +1,110 @@
+# Frost Drake checks: hit shapes, frost breath, hailstorm, immunities, drops, and where the nearest
+# frost lair is.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/frost-drake.txt
+# Output: run/screenshots/frost_drake-*.png. In run/logs/latest.log ([CHAT] lines):
+# - Health after /damage: 200 after freeze damage (immune), 185 after 10 on_fire damage (+50%);
+# - the loot chest's Items after each /loot (packed and blue ice; diamonds; sometimes a staff_of_ice);
+# - the nearest frost lair from /locate (tp there with frost-lair.txt).
+/time set day
+/weather clear
+/kill @e[type=dndclasses:frost_drake]
+/kill @e[type=item]
+respawn
+wait 40
+closescreen
+# A stone floor at y=149 for the fights; spectator for the still shots, so nothing falls
+/gamemode spectator
+/fill -20 149 -20 20 149 26 stone
+/fill -20 150 -20 20 164 26 air
+hud off
+
+# Frozen in its flying pose, with hit shapes, from the side and from above
+hitboxes on
+/tp @s 14 159 0 90 10
+/summon dndclasses:frost_drake 0 157 0 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}
+wait 40
+screenshot frost_drake-side
+/tp @s 0 172 0 0 90
+wait 30
+screenshot frost_drake-top
+hitboxes off
+/tp @s 9 159 6 125 15
+wait 20
+screenshot frost_drake-close
+
+# Immunities: freezing does nothing, fire hurts it 50% more (on_fire ignores armour)
+/damage @e[type=dndclasses:frost_drake,limit=1] 10 minecraft:freeze
+/data get entity @e[type=dndclasses:frost_drake,limit=1] Health
+/damage @e[type=dndclasses:frost_drake,limit=1] 10 minecraft:on_fire
+/data get entity @e[type=dndclasses:frost_drake,limit=1] Health
+
+# Drops, as if a player killed it
+/setblock 3 150 3 chest
+/loot insert 3 150 3 kill @e[type=dndclasses:frost_drake,limit=1]
+/data get block 3 150 3 Items
+/setblock 3 150 3 air
+/setblock 3 150 3 chest
+/loot insert 3 150 3 kill @e[type=dndclasses:frost_drake,limit=1]
+/data get block 3 150 3 Items
+/setblock 3 150 3 air
+/setblock 3 150 3 chest
+/loot insert 3 150 3 kill @e[type=dndclasses:frost_drake,limit=1]
+/data get block 3 150 3 Items
+/setblock 3 150 3 air
+/kill @e[type=dndclasses:frost_drake]
+
+# Frost breath at a survival player 10 blocks away, seen head-on, over a strip of water
+/fill -3 149 -1 3 149 4 water
+/tp @s 0 150 6 180 -12
+/gamemode creative
+wait 5
+/gamemode survival
+/effect give @s resistance 600 3 true
+/effect give @s regeneration 600 4 true
+/tp @s 0 150 6 180 -12
+/summon dndclasses:frost_drake 0 150 -4 {Rotation:[0f,0f],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 20
+screenshot frost_drake-breath-0
+wait 8
+screenshot frost_drake-breath-1
+wait 8
+screenshot frost_drake-breath-2
+wait 8
+screenshot frost_drake-breath-3
+wait 6
+/data get entity @s ActiveEffects
+wait 15
+screenshot frost_drake-breath-4
+perspective back
+/tp @s 0 150 6 180 20
+wait 2
+screenshot frost_drake-breath-ground
+perspective first
+/kill @e[type=dndclasses:frost_drake]
+/fill -20 150 -20 20 164 26 air
+wait 20
+
+# Hailstorm: out of the breath's reach, so it calls hail every time
+/tp @s 0 150 20 180 -5
+/summon dndclasses:frost_drake 0 150 -4 {Rotation:[0f,0f],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+perspective back
+wait 14
+screenshot frost_drake-hail-0
+wait 3
+screenshot frost_drake-hail-1
+wait 3
+screenshot frost_drake-hail-2
+wait 6
+screenshot frost_drake-hail-3
+wait 60
+screenshot frost_drake-hail-4
+perspective first
+/kill @e[type=dndclasses:frost_drake]
+/gamemode creative
+
+# The nearest frost lair
+/locate structure dndclasses:frost_lair
+hud on
+# Locating a new structure can take the server a while
+wait 400
+quit

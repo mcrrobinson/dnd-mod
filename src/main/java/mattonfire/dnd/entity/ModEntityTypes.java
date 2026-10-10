@@ -27,6 +27,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // The Lightning Chaser's model with an icy texture; lives only in frost lairs on Frozen Peaks
+    public static final EntityType<FrostDrakeEntity> FROST_DRAKE = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "frost_drake"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, FrostDrakeEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.5f, 1.5f))
+                    .build()
+    );
+
     public static final EntityType<EmberWyvernEntity> EMBER_WYVERN = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "ember_wyvern"),
@@ -157,7 +166,8 @@ public class ModEntityTypes {
 
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
-        FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LightningChaserEntity.createLightningChaserAttributes());
+        FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LairDragonEntity.createLairDragonAttributes());
+        FabricDefaultAttributeRegistry.register(FROST_DRAKE, LairDragonEntity.createLairDragonAttributes());
         FabricDefaultAttributeRegistry.register(EMBER_WYVERN, EmberWyvernEntity.createEmberWyvernAttributes());
         FabricDefaultAttributeRegistry.register(BONE_WYVERN, BoneWyvernEntity.createBoneWyvernAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());

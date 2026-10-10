@@ -38,6 +38,7 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 | The Goblin Warlord | Slay a Goblin Warlord | 16 | major | 60 | 150 | 4 |
 | Wyvern Hunt | Slay a wyvern | 12 | major | 50 | 120 | 6 |
 | The Storm Dragon | Slay a Lightning Chaser | 24 | major | 100 | 250 | 2 |
+| The Frost Drake | Slay a Frost Drake | 24 | major | 100 | 250 | 2 |
 | Spiders in the Woods | Slay 8 spiders | 5 | minor | 20 | 30 | 10 |
 | The Restless Dead | Slay 15 undead | 6 | minor | 25 | 40 | 10 |
 | Brigands on the Road | Defeat 5 illagers | 10 | minor | 30 | 60 | 6 |
@@ -55,7 +56,7 @@ What the spoils can contain:
 ## Commands
 - Give a specific notice: `/give @s dndclasses:bounty_notice{Bounty:"spiders"}`.
   - Optionally add `Progress:<n>`.
-  - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`.
+  - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `frost_drake`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`.
 - Restock boards and the innkeeper: `/time add 24000`.
 
 ## Known limitations
@@ -79,6 +80,7 @@ What the spoils can contain:
   - `#dndclasses:wyverns`
   - `#dndclasses:bounty/goblin_warlords`
   - `#dndclasses:bounty/storm_dragons`
+  - `#dndclasses:bounty/frost_drakes`
   - `#dndclasses:bounty/spiders`
   - `#dndclasses:bounty/undead`
   - `#dndclasses:bounty/brigands`

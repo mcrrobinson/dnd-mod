@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.HobbitEntity;
+import mattonfire.dnd.entity.FrostDrakeEntity;
+import mattonfire.dnd.entity.LairDragonEntity;
 import mattonfire.dnd.entity.LightningChaserEntity;
 import mattonfire.dnd.entity.MagmamuncherAlphaEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -83,7 +85,12 @@ public class ModSpawns {
         // Lightning Chasers only live in their lairs on the mountain peaks (the structure's
         // spawn_overrides), which get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.LIGHTNING_CHASER, SpawnRestriction.Location.ON_GROUND,
-                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canLightningChaserSpawn);
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) ->
+                        canLairDragonSpawn(type, world, reason, pos, random, LightningChaserEntity.LAIR_STRUCTURE));
+        // Frost Drakes likewise, only in their frost lairs on Frozen Peaks.
+        SpawnRestriction.register(ModEntityTypes.FROST_DRAKE, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, (type, world, reason, pos, random) ->
+                        canLairDragonSpawn(type, world, reason, pos, random, FrostDrakeEntity.LAIR_STRUCTURE));
         SpawnRestriction.register(ModEntityTypes.EMBER_WYVERN, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.EmberWyvernEntity::canSpawn);
         SpawnRestriction.register(ModEntityTypes.RIVER_PIKEHORN, SpawnRestriction.Location.ON_GROUND,
@@ -127,8 +134,8 @@ public class ModSpawns {
                 && world.getEntitiesByClass(BeholderEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty());
     }
 
-    private static boolean canLightningChaserSpawn(EntityType<LightningChaserEntity> type, ServerWorldAccess world,
-                                                   SpawnReason reason, BlockPos pos, Random random) {
+    private static boolean canLairDragonSpawn(EntityType<? extends LairDragonEntity> type, ServerWorldAccess world,
+                                              SpawnReason reason, BlockPos pos, Random random, RegistryKey<Structure> lairStructure) {
         if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
             return false;
         }
@@ -136,14 +143,14 @@ public class ModSpawns {
             return true;
         }
         // Natural spawns only come from a lair's spawn override: not in peaceful, not while the lair is
-        // still waiting after its last chaser was killed, and never near another one.
+        // still waiting after its last dragon was killed, and never near another of its kind.
         if (world.getDifficulty() == Difficulty.PEACEFUL) {
             return false;
         }
         ServerWorld serverWorld = world.toServerWorld();
-        BlockPos lair = LightningChaserEntity.findLair(serverWorld, pos);
+        BlockPos lair = LairDragonEntity.findLair(serverWorld, pos, lairStructure);
         return lair != null && LairRespawns.get(serverWorld).canRespawn(lair, serverWorld.getTime())
-                && world.getEntitiesByClass(LightningChaserEntity.class, new Box(pos).expand(64.0D), e -> true).isEmpty();
+                && world.getEntitiesByClass(LairDragonEntity.class, new Box(pos).expand(64.0D), e -> e.getType() == type).isEmpty();
     }
 
     private static boolean canMagmamuncherAlphaSpawn(EntityType<MagmamuncherAlphaEntity> type, ServerWorldAccess world,

@@ -10,6 +10,8 @@ import net.minecraft.util.Identifier;
 public class ModParticles {
     public static final DefaultParticleType TRANSLUCENT_FLAME = FabricParticleTypes.simple();
     public static final DefaultParticleType DRAGON_FLAME = FabricParticleTypes.simple();
+    /** The Frost Drake's breath: flies like DRAGON_FLAME (same drag and age) */
+    public static final DefaultParticleType DRAGON_FROST = FabricParticleTypes.simple();
     // Dragon flame puffs keep this much of their velocity each tick and last about this many ticks;
     // FireBreath works out launch speeds from them
     public static final float DRAGON_FLAME_DRAG = 0.9F;
@@ -20,5 +22,7 @@ public class ModParticles {
                 TRANSLUCENT_FLAME);
         Registry.register(Registries.PARTICLE_TYPE, new Identifier(DnDClasses.MOD_ID, "dragon_flame"),
                 DRAGON_FLAME);
+        Registry.register(Registries.PARTICLE_TYPE, new Identifier(DnDClasses.MOD_ID, "dragon_frost"),
+                DRAGON_FROST);
     }
 }

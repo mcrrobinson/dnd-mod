@@ -7,7 +7,7 @@ Smite Dragons is an Artificer enchantment for swords and axes. It's Smite for dr
 ## How it works
 
 - Levels I to V, each adding **+2.5 melee damage** against dragons, the same as Smite against undead. At level V that's +12.5: a diamond sword hits a Wyvern for 19.5 instead of 7.
-- "Dragons" means the `#dndclasses:dragons` entity tag: Wyvern, Ember Wyvern, Lightning Chaser and River Pikehorn. Dragon Slayer uses `#dndclasses:dragon_slayer_targets`, the same list without the small Pikehorn.
+- "Dragons" means the `#dndclasses:dragons` entity tag: Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and River Pikehorn. Dragon Slayer uses `#dndclasses:dragon_slayer_targets`, the same list without the small Pikehorn.
 - The bonus scales with the attack cooldown and shows the blue enchanted-hit particles, as vanilla damage enchantments do.
 - Hits on a dragon's wing, neck or tail count, not just its body.
 - Other mobs take no extra damage.

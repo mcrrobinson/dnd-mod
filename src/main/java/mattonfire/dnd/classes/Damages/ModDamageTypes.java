@@ -31,6 +31,12 @@ public class ModDamageTypes {
     public static final RegistryKey<DamageType> GELATINOUS_CUBE_DAMAGE_SOURCE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
             new Identifier(DnDClasses.MOD_ID, "gelatinous_cube"));
 
+    /** The Frost Drake's breath (tagged minecraft:is_freezing) and the hail of its hailstorm. */
+    public static final RegistryKey<DamageType> FROST_BREATH = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "frost_breath"));
+    public static final RegistryKey<DamageType> HAILSTONE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "hailstone"));
+
     public static DamageSource of(World world, RegistryKey<DamageType> key, Entity attacker) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key), attacker);
     }

@@ -2,8 +2,9 @@
 # Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/character-tab.txt
 # Expect in latest.log ([CHAT] lines; refusals go to the action bar, so check those in the screenshots):
 #  1. step1 (level 3, Half-Orc Fighter): /dndclass sheet shows STR 17, DEX 12, no "Ability Score Improvement" lines
-#  2. step2 (level 4 at a table, two + clicks on STR, a third does nothing): STR 19
-#  3. step3 (level 8): STR 20, then a 4th STR is refused ("already 20", screenshot character-tab-cap) and the
+#  2. "Fighter level 4! ..." then "You have 2 ability points: spend them at an Attunement Table (Character tab)."
+#     step2 (at a table, two + clicks on STR, a third does nothing): STR 19
+#  3. the same ability points line at level 8; step3: STR 20, then a 4th STR is refused ("already 20", screenshot character-tab-cap) and the
 #     point goes to DEX: DEX 13; level 10 adds no points (sheet header still 0 to spend in the tab)
 #  4. step4 away from the table: refused (screenshot character-tab-away), sheet unchanged
 #  5. step5 after death: still STR 20, DEX 13
@@ -27,7 +28,7 @@ closescreen
 wait 5
 closescreen
 /dndclass resetprogress @s
-/dndclass setxp @s 250
+/dndclass xp @s set 250
 /tp @s 4.5 150 1.5 0 30
 /say step1-level3
 /dndclass sheet @s
@@ -39,7 +40,7 @@ wait 5
 screenshot character-tab-o
 closescreen
 # 2. Level 4 at a table
-/dndclass setxp @s 450
+/dndclass xp @s add 200
 /setblock 4 150 4 dndclasses:attunement_table
 wait 5
 use
@@ -64,7 +65,7 @@ closescreen
 /say step2-level4
 /dndclass sheet @s
 # 3. Level 8: two more points; STR 19 -> 20, then a refused 4th, then DEX
-/dndclass setxp @s 1750
+/dndclass xp @s add 1300
 use
 wait 10
 skill asi str
@@ -74,7 +75,7 @@ wait 3
 screenshot character-tab-cap
 skill asi dex
 wait 5
-/dndclass setxp @s 2700
+/dndclass xp @s set 2700
 wait 5
 click 97 -104
 wait 5

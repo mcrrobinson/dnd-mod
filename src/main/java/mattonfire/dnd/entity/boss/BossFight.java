@@ -1,8 +1,12 @@
 package mattonfire.dnd.entity.boss;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.WeakHashMap;
 import java.util.function.BooleanSupplier;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.PlayerAdvancementTracker;
@@ -40,6 +44,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BossFight {
     private static final String PHASE_NBT = "BossPhase";
+    /** Every boss fight that has ticked on the server and hasn't been removed. */
+    private static final Set<BossFight> LIVE = Collections.newSetFromMap(new WeakHashMap<>());
 
     private record Phase(float healthFraction, BossBar.Color color, Runnable onEnter) {
     }
@@ -123,9 +129,57 @@ public class BossFight {
         return this.lootTable != null ? this.lootTable : typeLootTable;
     }
 
+    /**
+     * The boss is fighting a player, or a player in the fight is Downed nearby (mobs ignore Downed players,
+     * so the boss may have nobody to target, but the fight isn't over while they're crawling about).
+     */
     public boolean isFightingPlayer() {
         return this.boss.isAlive() && this.canFight.getAsBoolean()
-                && (isPlayer(this.boss.getTarget()) || isPlayer(this.boss.getAttacker()));
+                && (isPlayer(this.boss.getTarget()) || isPlayer(this.boss.getAttacker()) || this.downedInFight());
+    }
+
+    private boolean downedInFight() {
+        for (ServerPlayerEntity player : this.bar.getPlayers()) {
+            if (Downed.is(player) && this.inRange(player)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** Within range of this fight while it's on. */
+    public boolean isFightingNear(ServerPlayerEntity player) {
+        return !this.boss.isRemoved() && this.inRange(player) && this.isFightingPlayer();
+    }
+
+    /** Party wipe: the fight is on and every player in range (Dungeon Masters aside) is Downed. */
+    public boolean isPartyWiped() {
+        if (!this.isFightingPlayer()) {
+            return false;
+        }
+        List<ServerPlayerEntity> players = ((ServerWorld) this.boss.world).getPlayers(
+                player -> this.inRange(player) && !mattonfire.dnd.dm.DungeonMaster.isDm(player));
+        return !players.isEmpty() && players.stream().allMatch(Downed::is);
+    }
+
+    /** The boss fight the player is in (in range of, while it's on), or null. */
+    @Nullable
+    public static BossFight fightNear(ServerPlayerEntity player) {
+        for (BossFight fight : List.copyOf(LIVE)) {
+            if (fight.isFightingNear(player)) {
+                return fight;
+            }
+        }
+        return null;
+    }
+
+    /** True if the player is in range of a boss fight that's on (rests, death saves). */
+    public static boolean inAnyFight(ServerPlayerEntity player) {
+        return fightNear(player) != null;
+    }
+
+    public MobEntity getBoss() {
+        return this.boss;
     }
 
     /** A real player in the fight: Dungeon Masters don't start or keep up boss fights. */
@@ -138,6 +192,7 @@ public class BossFight {
         if (this.boss.world.isClient) {
             return;
         }
+        LIVE.add(this);
         this.updatePhase();
         this.updateBar();
     }
@@ -207,6 +262,7 @@ public class BossFight {
 
     /** Call from the boss's remove(reason). */
     public void onRemoved() {
+        LIVE.remove(this);
         for (ServerPlayerEntity player : List.copyOf(this.bar.getPlayers())) {
             this.removePlayer(player);
         }

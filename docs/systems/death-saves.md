@@ -47,10 +47,22 @@ Halfling Lucky rerolls a natural 1 as it does on other rolls, and advantage sour
 Hits don't take health while you're Downed; each one is a failed death save instead:
 
 - a melee hit (a mob's or player's attack): **2 fails**, at most once per attacker per half second
-- anything else (lava, fire, falling, drowning, arrows, explosions): **1 fail**, at most once every 1.5 seconds, so lava kills a Downed player in about 3 seconds
+- anything else (lava, fire, falling, drowning, arrows, explosions, acid): **1 fail**, at most once every 1.5 seconds per kind of damage (fire, burning and lava count as one), so lava kills a Downed player in about 3 seconds but an explosion on top still counts
 - the void and `/kill`: death
 
-Party members still can't hurt each other. Mobs keep attacking Downed players for now (see Known limitations).
+Party members still can't hurt each other, so they can't finish each other either.
+
+### Mobs, bosses and PvP
+![A zombie drawn to a Fighter switches to the standing guest when the Fighter goes Downed](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-mobs/downed-guest-zombie.png)
+
+- **Mobs ignore Downed players.** A mob can't pick a Downed player as its target, and one already chasing them lets go within half a second. It goes for the next player in range, or idles. A Downed Fighter doesn't draw aggro.
+- **Area damage still lands:** explosions, breath, boss blasts and the like each cost a fail, so fighting over a fallen friend is risky for them too.
+- **Gelatinous Cube:** a cube spits a Downed player out after 3 seconds inside (about 2 fails of acid), so allies can reach them. It won't engulf them again for 2 seconds.
+- **Boss party wipe:** if every player within a boss fight's range is Downed, their death saves roll at **disadvantage** ("Your whole party is down: death saves at disadvantage!"). The boss bar stays up while a Downed player from the fight is in range, even though the boss has nobody left to target. See [Boss fights](../bosses/boss-fights.md).
+- **PvP** (`dndPvpDowned` true, the default): a player outside your party can finish you; each of their melee hits is 2 fails. If their hit is the last fail, the kill ("Steve was slain by Alex"), the kill stat and advancements go to them, unless another player downed you, who keeps the credit. Otherwise the credit goes to whatever downed you.
+
+### Rests
+You can't start a rest while Downed, while a party member within 32 blocks is Downed ("You can't rest while Steve is Downed."), or during a boss fight ("You can't rest during a boss fight."). A rest in progress stops if any of these happens.
 
 ### Dying
 Three fails, giving up, or logging out while unstable kills you with whatever downed you: the death message ("Steve was slain by Zombie"), kill credit and advancements all go to the original attacker. A Totem of Undying in hand at that moment still saves you.
@@ -87,7 +99,7 @@ Permission level 2.
 
 ## Known limitations
 - Allies can't help you up yet: stabilising by holding right-click, healing to revive, and feeding potions or golden apples are coming. Until then you get up by rolling, by waiting out the stable timer, or with `/dndclass revive`. All healing is blocked while Downed.
-- Mobs don't ignore Downed players yet, so a mob that keeps attacking finishes you in two hits.
+- Mobs only ignore Downed players as targets: a mob's area attack aimed at someone else still costs fails. Brain-driven vanilla mobs (piglins, hoglins, wardens) drop a Downed target within half a second rather than never picking it.
 - No downed overlay, party HUD status or ally outline yet; the tally is on the action bar. Other players see you crawling.
 - Inventory items can still be thrown out of an open inventory screen for the moment it takes the screen to close.
 - Massive damage deaths use the hit's normal death message.
@@ -97,8 +109,10 @@ Permission level 2.
   - `Downed`: the state API, `is(player)` / `isStable(player)` (both sides, from DataTracker bits on the player), `down(player, source)`, `stabilise(player[, ticks])`, `revive(player, hp)`, `bleedOut(player)` (dies with the stored source; a held totem still works), `tally(player)`. The tally is persistent NBT `dndDowned`, cleared on death and respawn.
   - `DownedEvents`: `ALLOW_DEATH` (the order above), `ALLOW_DAMAGE` (hits become fails), the restriction callbacks (in an early phase, before attack rolls), the `RestEvents.ALLOW_REST` veto, join resume, logout death, the C2S `dndclasses:downed_give_up` hold packet, and `AFTER_DOWNED`.
   - `DeathSaves`: `roll(player, label, dc, Advantage)` builds a `RollKind.DEATH` roll through `D20.roll`; `lastStand(player)`.
+  - `DownedCombat`: mob targeting (`DownedTargetMixin` on `LivingEntity.canTarget`, which `TargetPredicate`, `TrackTargetGoal.shouldContinue` and brain sensors check, plus a sweep every 10 ticks and on `AFTER_DOWNED` that clears `setTarget` and the `ATTACK_TARGET` memory), the boss party-wipe `DeathSaveModifier`, the rest veto (Downed party member within 32 blocks, `BossFight.inAnyFight`), and PvP finisher credit (`beforeFails`, called from `DownedEvents.allowDamage`).
   - `DeathSaveModifier.EVENT`: `bonus(player)` (summed, capped at +5) and `mode(player)` (advantage / disadvantage) for auras, racial traits, items and boss party wipes.
 - Mixins: `PlayerEntityMixin` (the `DND$DOWNED` tracked byte, `updatePose` forced to `SWIMMING`, no `jump` or `checkFallFlying`, records the overflow past 0 HP in `applyDamage`), `LivingEntityMixin` (no `heal`, no sprinting, no `swimUpward`), `LivingEntityInvoker` (`tryUseTotem`), `DownedServerPlayerMixin` (no Q drop).
 - Client `DownedClient`: closes handled screens and sends the give-up hold state of the power-up key.
 - DevScript `holdkey <key> on|off` holds a key binding.
-- Devscripts: `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout).
+- `BossFight.fightNear(player)`, `inAnyFight(player)`, `isFightingNear(player)` and `isPartyWiped()`; `GelatinousCubeEntity.SPIT_DOWNED_AFTER` (60 ticks).
+- Devscripts: `devscripts/downed-mobs-host.txt` + `downed-mobs-guest.txt` (zombie target switch with a Fighter, creeper, cube spit, rest refusals, Lich party wipe, PvP finisher), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout).

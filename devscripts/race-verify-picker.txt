@@ -56,13 +56,13 @@ wait 5
 hotbar 0
 use
 wait 10
-bookpage last
+page last
 wait 5
 screenshot rv-book-last
-bookpage 3
+page 3
 wait 5
 screenshot rv-book-3
-bookpage 4
+page 4
 wait 5
 screenshot rv-book-4
 closescreen

@@ -73,7 +73,8 @@ public final class ProgressionEvents {
                 EntityAttributeInstance instance = player.getAttributeInstance(bonus.attribute());
                 if (instance == null)
                     continue;
-                boolean wanted = progress.hasPassive(bonus.skill());
+                // A bonus keyed on a subclass id is that subclass's feature, always on.
+                boolean wanted = progress.hasPassive(bonus.skill()) || progress.hasSubclass(bonus.skill());
                 boolean has = instance.getModifier(bonus.uuid()) != null;
                 if (wanted && !has) {
                     // Temporary so it isn't saved; it's re-added here after a relog.

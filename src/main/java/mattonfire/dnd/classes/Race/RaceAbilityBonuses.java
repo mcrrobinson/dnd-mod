@@ -4,22 +4,16 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
 
 /**
- * The hook between races and ability scores (area 4, {@code classes/Abilities/}). Races only hold their
- * ability bonuses as data in {@code race_info.json}; ability scores own the contributor API and read them
- * from here. To hook it up, area 4 adds (in its own register code):
- *
- * <pre>
- * AbilityScores.register(RaceAbilityBonuses.CONTRIBUTOR_ID, (p, c) -&gt; RaceAbilityBonuses.forPlayer(p)
- *         .forEach((a, n) -&gt; c.add(Ability.valueOf(a), n, RaceAbilityBonuses.source(p))));
- * RaceAbilityBonuses.onChange = AbilityScores::invalidate;
- * </pre>
- *
- * Until then this class changes nothing in game.
+ * The hook between races and ability scores ({@code classes/Abilities/}). Races hold their ability bonuses
+ * as data in {@code race_info.json}; {@link #register()} adds them to the character sheet as the
+ * {@code dndclasses:race} contributor and rebuilds the sheet whenever the race changes.
  */
 public final class RaceAbilityBonuses {
     /** The contributor id area 4's design reserves for races. */
@@ -27,12 +21,19 @@ public final class RaceAbilityBonuses {
 
     /**
      * Called on the server whenever a player's race (or the dndRaces gamerule) changes, so a cached
-     * character sheet can be rebuilt. A no-op until ability scores replace it.
+     * character sheet can be rebuilt. {@link #register()} sets it to {@link AbilityScores#invalidate}.
      */
     public static Consumer<ServerPlayerEntity> onChange = player -> {
     };
 
     private RaceAbilityBonuses() {
+    }
+
+    /** Registers the race's bonuses with the character sheet. Called from {@link RaceLifecycle#register()}. */
+    public static void register() {
+        AbilityScores.register(CONTRIBUTOR_ID, (p, c) -> forPlayer(p)
+                .forEach((a, n) -> c.add(Ability.valueOf(a), n, source(p))));
+        onChange = AbilityScores::invalidate;
     }
 
     /**

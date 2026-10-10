@@ -24,7 +24,7 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Rogues get 4 extra XP for each hostile mob killed while sneaking or invisible.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Vanish | Root | Active | 0 | 9 | Invisibility for 6 / 9 / 12 / 15 s (ranks I-IV) |
 | Backstab | Assassin | Passive | 1 | | 50% more melee damage while sneaking or invisible |
@@ -39,6 +39,16 @@ Rogues get 4 extra XP for each hostile mob killed while sneaking or invisible.
 Vanish followed by sneak attacks with Backstab is the core Assassin play. Shadowstep goes through gaps but not through walls: it stops at the first block in the way.
 
 Danger Sense needs Smoke Bomb. Unlike the Monk's Deflect Missiles (a passive 50% chance), it's a short active window where every projectile misses, so fire it when the skeletons line up. Melee hits still land.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Assassin | Right | Backstab (first node, open to both), Shadowstep, Poisoned Blades | **Assassinate**: double damage to a mob that isn't targeting you, and your first hit after Vanish ends is a critical |
+| Thief | Left | Light Feet (first node, open to both), Smoke Bomb, Danger Sense, Fleet | **Fast Hands**: +3 to lockpicking, and you ignore class restrictions when attuning magic items |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> rogue` (see [Admin commands](../systems/admin-commands.md)).

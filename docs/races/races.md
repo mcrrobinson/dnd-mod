@@ -1,5 +1,5 @@
 # Races
-Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling or Dragonborn. A race is a small layer on top of your class. For now it changes a few body stats; its ability score bonuses and traits arrive in later updates.
+Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling or Dragonborn. A race is a small layer on top of your class. For now it changes a few body stats and adds its ability score bonuses; its traits arrive in later updates.
 
 ![The race picker](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/races/race-picker.png)
 
@@ -27,7 +27,7 @@ Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, G
 <!-- race-table:end -->
 
 - **Stat modifiers** are live now. They're attribute modifiers on top of your class's base values, so a race and a class never overwrite each other, and switching class keeps them. Speed is a percentage of your class's base speed: a Barbarian Dwarf walks at 0.08 × 0.92 = 0.0736.
-- **Ability bonuses** are data only until ability scores exist, then they're added to your scores.
+- **Ability bonuses** are added to your [ability scores](../systems/ability-scores.md); `/dndclass sheet` lists them under the race's name.
 - **Traits** and **size** are planned. They're listed so you can choose, but they do nothing yet.
 
 ### Saving
@@ -43,7 +43,7 @@ The race picker opens on its own. Your race is on the last page of the Class Gui
 `/gamerule dndRaces false` turns races off: nobody is prompted, and no race modifiers apply (saved races are kept and come back if you turn it on again). Turning it back on prompts every online player without a race. Default: `true`.
 
 ## Known limitations
-- Only the stat modifiers work. Traits, body sizes, the Dragonborn Breath Weapon and ability bonuses come in later tickets.
+- Only the stat modifiers and ability bonuses work. Traits, body sizes and the Dragonborn Breath Weapon come in later tickets.
 - You can't change race yourself. Ask an operator.
 
 ## For developers
@@ -53,7 +53,7 @@ The race picker opens on its own. Your race is on the last page of the Class Gui
   - `RaceLifecycle` is the one server path. `change` (picker and `/dndrace set`) swaps the modifiers, prints the intro and sends `dndclasses:approve_race_pick`. The pick packet `dndclasses:race_pick` (race varint, ancestry varint) is ignored unless the race is NONE and `dndRaces` is on, and Dragonborn must come with an ancestry. `ClassLifecycle` calls its `onJoin` (before the class query, so the race picker opens first), `copy` (COPY_FROM) and `afterRespawn` (before the class's health is set, so a Dwarf's extra heart counts) hooks.
   - Use `RaceLifecycle.activeRaceOf(player)` for traits: it's NONE while `dndRaces` is off. `raceOf` is the saved race.
   - `RaceStats.apply` removes then adds persistent modifiers with fixed UUIDs (`5a1d7c2e-3b0f-4e11-9a6e-7d2c1f0e5b01` speed `MULTIPLY_BASE`, `...02` max health, `...03` knockback resistance, `...04` `reach-entity-attributes:attack_range`, all `ADDITION` apart from speed), then caps health.
-  - `RaceAbilityBonuses` is the hook for ability scores: `forPlayer(player)` returns the active race's bonuses, `CONTRIBUTOR_ID` is `dndclasses:race`, and `onChange` (a no-op for now) runs on every race change so a cached sheet can be invalidated. The Javadoc has the two lines that hook it up.
+  - `RaceAbilityBonuses` is the hook for ability scores: `forPlayer(player)` returns the active race's bonuses, `CONTRIBUTOR_ID` is `dndclasses:race`, and `register()` (called from `RaceLifecycle.register()`) adds the bonuses to the sheet and sets `onChange`, which runs on every race change, to `AbilityScores.invalidate`.
 - Storage: `mixin/PlayerEntityMixin` saves `DndRace` and `DndAncestry` ints in the player NBT, next to `DndClass`. The live value is a DataTracker byte (race in the low 4 bits, ancestry in the high 4) so every client knows every player's race, which racial sizes will need. `PlayerEntityExt.getDndRace/getDragonAncestry/setDndRace`; the setter also calls `calculateDimensions()`.
 - Client: `Client/PickerFlow` handles the race and class queries and decides which picker to show (race first). `Client/Hud/RaceSelectionHud` is the LibGui picker.
 - DevScript: while a script runs the race picker stays shut, because the dev-world player has a class but no race and every script would stall. `racepicker on` lets it open; `racepick <race> [ancestry]` sends a pick packet like clicking a button. Devscript: `devscripts/race-pick.txt`.

@@ -59,6 +59,16 @@ public class BowItemMixin {
         original.call(arrow, shooter, pitch, yaw, roll, speed, divergence);
     }
 
+    // +N bows: +10% arrow damage per +1
+    @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
+    private boolean dnd$magicArrowDamage(World world, Entity entity, Operation<Boolean> original,
+            @Local(argsOnly = true) ItemStack bow) {
+        if (entity instanceof PersistentProjectileEntity arrow) {
+            mattonfire.dnd.magic.MagicGear.applyArrowBonus(bow, arrow);
+        }
+        return original.call(world, entity);
+    }
+
     // Bypassing infinity check whilst using Arrow Storm
     @ModifyVariable(method = "onStoppedUsing", at = @At(value = "STORE", ordinal = 0))
     private boolean dnd$arrowStormInfinity(boolean originalBl, ItemStack stack, World world, LivingEntity user,

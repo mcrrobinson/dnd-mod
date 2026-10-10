@@ -5,6 +5,8 @@ Three elemental staffs that blast whatever you point them at, for [Wizards](../c
 
 ## How it works
 ### Elemental staffs
+The elemental staffs are **Rare** [magic items](../systems/magic-items.md) (blue names, "Rare weapon (Wizard only)"). They don't need attunement. The Monk's Staff is Common.
+
 The Staff of Fire, Staff of Ice and Staff of Lightning only work for Wizards. Anyone else who tries to cast or hit with one gets "Only Wizards can wield elemental staffs!" on the action bar.
 
 Right click to fire a beam at the block you're looking at, up to 40 blocks away. If the beam doesn't reach a block, nothing happens. Each cast sets off a power 3 explosion where it lands and puts the staff on a 1 second cooldown.

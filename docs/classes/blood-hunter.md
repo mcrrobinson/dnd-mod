@@ -35,18 +35,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Blood Hunters get 3 extra XP for each hostile mob killed with a sword at night.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Blood Control | Root | Active | 0 | 9 | The special above (4 ranks) |
-| Crimson Rite | Blood Curse | Passive | 1 | | Sword hits give Wither I for 2 s |
-| Curse of Binding | Blood Curse | Active | 1 | 3 | The mob in your crosshair (up to 20 blocks) is frozen in place and glows for 4 s |
-| Hemocraft | Blood Curse | Passive | 1 | | Heal half a heart per sword hit at night |
-| Sunshield | Lycan | Passive | 1 | | Swords deal 75% damage in the day instead of 50% |
-| Hybrid Transformation | Lycan | Active | 1 | 6 | Strength II, Speed I and Jump Boost II for 15 s |
-| Predator | Lycan | Passive | 1 | | At night you get Night Vision, and hostile mobs within 16 blocks glow |
+| Crimson Rite | Order of the Profane Soul | Passive | 1 | | Sword hits give Wither I for 2 s |
+| Curse of Binding | Order of the Profane Soul | Active | 1 | 3 | The mob in your crosshair (up to 20 blocks) is frozen in place and glows for 4 s |
+| Hemocraft | Order of the Profane Soul | Passive | 1 | | Heal half a heart per sword hit at night |
+| Sunshield | Order of the Lycan | Passive | 1 | | Swords deal 75% damage in the day instead of 50% |
+| Hybrid Transformation | Order of the Lycan | Active | 1 | 6 | Strength II, Speed I and Jump Boost II for 15 s |
+| Predator | Order of the Lycan | Passive | 1 | | At night you get Night Vision, and hostile mobs within 16 blocks glow |
 | Blood Moon | Capstone | Active | 2 | 9 | For 20 s, swords deal night damage (double) in the day too, and you heal 20% of the damage you deal |
 
 Sunshield takes most of the sting out of daytime fights. Blood Moon is the strongest capstone in daylight, since it turns your 50% into 200%.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Order of the Profane Soul | Right | Crimson Rite (first node, open to both), Curse of Binding, Hemocraft | **Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3 |
+| Order of the Lycan | Left | Sunshield (first node, open to both), Hybrid Transformation, Predator | **Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15 |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> bloodhunter` (see [Admin commands](../systems/admin-commands.md)).

@@ -1,6 +1,8 @@
 # Class progression
 Each class levels up to 10 with class XP. Every level is a skill point, spent on unlocking skill tree nodes or on ranking up abilities at an Attunement Table. The Bard and Druid also keep a bestiary of creatures they've learned: the Druid by killing them, the Bard by charming them with music.
 
+![An Attunement Table between two bookshelves](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/attunement-table.png)
+
 ## How it works
 ### Levels and points
 Class XP, levels and the tree's shape are covered in [Class selection](class-selection.md#class-levels-and-the-skill-tree). In short: level 10 is reached at 2700 XP, each level gives one skill point, and a full tree costs 8 points.
@@ -16,6 +18,9 @@ Abilities with more than four ranks set their own levels. Ranks compete with unl
 
 - **Where:** ranks are only bought at an Attunement Table. Right-click the table, then **right-click** an unlocked node with ranks left. Left-click still equips it. From the **O** screen the tooltip just says "Rank up at an Attunement Table".
 - **On the node:** a row of pips along the bottom of the icon shows the rank, lit up to the current one.
+
+![The Necromancer's skill tree at an Attunement Table, with rank pips under Raise Dead](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/attunement-skill-tree.png)
+
 - **In the tooltip:** "Rank II/IV", "Now: ..." with the current values, "Next: ... (level 6, 1 point)", and a line saying what's needed: "Right-click to rank up", "Next rank needs level N", "Next rank needs 1 point" or "Max rank".
 - Ranks are kept per class, and survive death, the End and relogging. `/dndclass resetprogress` clears them and refunds their points.
 
@@ -45,6 +50,9 @@ Abilities with ranks (values for ranks I / II / III / IV unless noted):
 - At an Attunement Table, open the **Bestiary** tab (top right of the skill tree) and click a learned creature to **unlock** it. Unlocking is free.
 - Each creature has a tier. Unlocking it needs the class's special (Wild Shape or Animal Friends) at that rank or higher. Every creature is tier I for now; the class's special card sets the tiers.
 - Green entries are unlocked, gold ones can be unlocked now, and grey ones need a higher rank. Scroll with the mouse wheel when the list is long.
+
+![A Druid's Bestiary tab: Cow and Wolf unlocked (green), Pig and Fox ready to unlock (gold), Owlbear locked (grey)](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/attunement-bestiary.png)
+
 - A Druid's old kill list is turned into learned creatures the first time their progress loads.
 
 ## Where to find it

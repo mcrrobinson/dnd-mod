@@ -712,6 +712,14 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         }
     }
 
+    /**
+     * True once the Lich has died but its soul fled to the phylactery (it will reform): not a real
+     * kill, so quests don't count it.
+     */
+    public boolean soulFled() {
+        return this.soulFled;
+    }
+
     @Override
     protected boolean shouldDropLoot() {
         return !this.soulFled && super.shouldDropLoot();

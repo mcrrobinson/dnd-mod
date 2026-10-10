@@ -1,0 +1,22 @@
+{
+  "title": "quest.dndclasses.goblin_menace.1.title",
+  "description": "quest.dndclasses.goblin_menace.1.description",
+  "chain": "dndclasses:goblin_menace",
+  "giver": "innkeeper",
+  "stages": [
+    {
+      "text": "quest.dndclasses.goblin_menace.1.stage.1",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:goblins", "count": 6, "text": "quest.dndclasses.goblin_menace.1.objective.kill"}
+      ],
+      "on_complete": [
+        {"type": "rep", "factions": {"dndclasses:hobbits": 20}}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 5},
+    {"type": "xp", "amount": 30},
+    {"type": "class_xp", "amount": 50}
+  ]
+}

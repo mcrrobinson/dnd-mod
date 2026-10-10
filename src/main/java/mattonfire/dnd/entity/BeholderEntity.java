@@ -162,6 +162,12 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     /** Where it lurks and drifts back to: its lair's cavern, or wherever it first appeared. */
     @Nullable
     private BlockPos home;
+    /**
+     * How far (horizontally) from its home it may go, fighting or drifting; 0 for no limit. A dungeon
+     * Beholder is kept in its dome this way ({@code DungeonWardBlockEntity}): it hangs back at the
+     * edge rather than chasing players out through the doorways.
+     */
+    private double homeRadius;
 
     private static final class Charge {
         final int stalk;
@@ -245,6 +251,33 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
 
     public void setHome(@Nullable BlockPos home) {
         this.home = home;
+    }
+
+    /** Sets its home and keeps it within {@code radius} blocks of it (horizontally; 0 = no limit). */
+    public void setHome(BlockPos home, double radius) {
+        this.home = home;
+        this.homeRadius = Math.max(0.0D, radius);
+    }
+
+    public double getHomeRadius() {
+        return this.homeRadius;
+    }
+
+    /**
+     * {@code spot} pulled back within {@link #getHomeRadius()} of its home (horizontally), and to
+     * between 2 blocks under and 6 over it; {@code spot} unchanged when it has no limit.
+     */
+    public Vec3d keepNearHome(Vec3d spot) {
+        if (this.home == null || this.homeRadius <= 0.0D) {
+            return spot;
+        }
+        Vec3d centre = Vec3d.ofBottomCenter(this.home);
+        Vec3d flat = new Vec3d(spot.x - centre.x, 0.0D, spot.z - centre.z);
+        if (flat.lengthSquared() > this.homeRadius * this.homeRadius) {
+            flat = flat.normalize().multiply(this.homeRadius);
+        }
+        double y = MathHelper.clamp(spot.y, centre.y - 2.0D, centre.y + 6.0D);
+        return new Vec3d(centre.x + flat.x, y, centre.z + flat.z);
     }
 
     // The lair's first Beholder gets its home from BeholderCavernPiece; later ones (spawn_overrides)
@@ -664,6 +697,9 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
         if (this.home != null) {
             nbt.put("Home", NbtHelper.fromBlockPos(this.home));
         }
+        if (this.homeRadius > 0.0D) {
+            nbt.putDouble("HomeRadius", this.homeRadius);
+        }
     }
 
     @Override
@@ -671,6 +707,7 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
         super.readCustomDataFromNbt(nbt);
         this.bossFight.readNbt(nbt);
         this.home = nbt.contains("Home") ? NbtHelper.toBlockPos(nbt.getCompound("Home")) : null;
+        this.homeRadius = nbt.getDouble("HomeRadius");
         this.setNoGravity(true);
     }
 

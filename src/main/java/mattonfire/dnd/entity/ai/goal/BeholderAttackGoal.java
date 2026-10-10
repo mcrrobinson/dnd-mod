@@ -54,7 +54,8 @@ public class BeholderAttackGoal extends Goal {
         }
         if (--this.repositionTicks <= 0) {
             this.repositionTicks = 10;
-            Vec3d spot = this.hoverSpot(target);
+            // A dungeon Beholder stays in its dome: it hangs back at the edge instead of following
+            Vec3d spot = this.beholder.keepNearHome(this.hoverSpot(target));
             this.beholder.getMoveControl().moveTo(spot.x, spot.y, spot.z, 1.0);
         }
         if (this.beholder.isGazing() && this.biteCooldown == 0

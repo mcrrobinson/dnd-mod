@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "dndclasses:crypt",
-    "dndclasses:goblin_warren"
+    "dndclasses:goblin_warren",
+    "dndclasses:dwarven_ruin"
   ]
 }

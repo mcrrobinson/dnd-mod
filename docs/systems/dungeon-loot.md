@@ -8,6 +8,7 @@ Dungeon rewards scale with the dungeon's Challenge tier. Locked chests along the
 | Encounter rooms (one chest in a corner) | `dndclasses:chests/dungeon/<theme>_encounter_t<tier>` | 3-5 rolls of supplies: bread, arrows, torches, iron, gold nuggets, emeralds, Healing potions, theme items; from II a tier enchanted book, from III diamonds |
 | Secret room | `<theme>_secret_t<tier>` | 4-6 rolls of treasure (below) plus theme items, and a 15/20/25/30% chance (by tier) of a magic item of the tier's lowest vault rarity |
 | Side vault | `<theme>_side_vault_t<tier>` | 4-6 rolls of the next tier's treasure, and a 50% chance of a magic item at the next tier's vault rarity |
+| The Dwarven Ruin's gallery (the five real chests in the Mimic Matriarch's room) | `ruin_gallery_t<tier>` | 2-4 rolls of Ruin items, gold, emeralds, iron, a diamond, a tier enchanted book or Healing; and a 6/8/10/12% chance (by tier) of a dwarven heirloom (a Dwarven Waraxe or a piece of Dwarven Plate) |
 
 `<theme>` is `crypt`, `warren` or `ruin`. Theme items: Crypt has bones, rotten flesh, candles, soul torches and name tags. Warren has leather, string, mutton, rabbit hide and saddles. Ruin has raw iron and gold, coal, lanterns and iron nuggets.
 
@@ -20,7 +21,7 @@ All dungeon chests start **locked** (see [D20 checks](d20-skill-checks.md)). The
 | Lock DC | 12 | 13 | 15 | 17 |
 | Side vault | 14 | 15 | 17 | 19 |
 
-8% of dungeon chests are Mimics (15% in the Dwarven Ruin), and they hold that chest's loot.
+8% of dungeon chests are Mimics (15% in the Dwarven Ruin), and they hold that chest's loot. The gallery's chests are always real (its three mimics come with the fight: see [Dungeon encounters](dungeon-encounters.md#champion-mid-boss)), and they carry the gallery's loot.
 
 ### Veterans
 A Veteran (an elite encounter mob) that a player kills drops one extra roll from `dndclasses:gameplay/dungeon_elite_t<tier>`: gold nuggets or ingots, emeralds, arrows, iron, Healing, and from II a diamond. From III there's a 2% (III) or 4% (IV) chance of an Uncommon magic item. Nothing extra drops for mobs killed without a player, or with `doMobLoot` off.
@@ -28,7 +29,7 @@ A Veteran (an elite encounter mob) that a player kills drops one extra roll from
 ### The Hoard Coffer
 A dark-oak, gold-banded coffer on the plinth in the treasure vault. It can't be broken, and it isn't a container, so hoppers can't drain it.
 - **Before the boss dies** it stays shut: "The Hoard Coffer is sealed until the dungeon's master falls".
-- **First use after a clear**: the player gets `chests/dungeon/vault_t<tier>` straight into their inventory (what doesn't fit drops at their feet). That's 4-6 treasure rolls and **one guaranteed magic item** from the [magic item](magic-items.md) tables (+N gear or a named item, see [Magic loot](magic-loot.md)). Like other random loot, it's unidentified. On top comes the theme's own extra, `chests/dungeon/<theme>_vault_t<tier>`: in a Crypt at III or IV, a **15% chance of a Staff of Ice** (nothing at I-II); in a Goblin Warren at every tier, the **Warlord's war chest**, one roll of the goblin camp chief's chest (`dndclasses:chests/goblin_camp`); nothing for themes without one.
+- **First use after a clear**: the player gets `chests/dungeon/vault_t<tier>` straight into their inventory (what doesn't fit drops at their feet). That's 4-6 treasure rolls and **one guaranteed magic item** from the [magic item](magic-items.md) tables (+N gear or a named item, see [Magic loot](magic-loot.md)). Like other random loot, it's unidentified. On top comes the theme's own extra, `chests/dungeon/<theme>_vault_t<tier>`: in a Crypt at III or IV, a **15% chance of a Staff of Ice** (nothing at I-II); in a Goblin Warren at every tier, the **Warlord's war chest**, one roll of the goblin camp chief's chest (`dndclasses:chests/goblin_camp`); in a Dwarven Ruin at every tier, a **15% chance of a Staff of Lightning** and a **25% chance of a dwarven heirloom** (a Dwarven Waraxe or a piece of Dwarven Plate, see [Racial weapons](../items/racial-weapons.md)); nothing for themes without one.
 
 | Tier | Vault magic item |
 |-|-|

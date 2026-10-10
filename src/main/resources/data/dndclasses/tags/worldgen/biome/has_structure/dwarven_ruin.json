@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "#dndclasses:has_structure/dwarven_fortress",
+    "minecraft:stony_shore"
+  ]
+}

@@ -68,6 +68,21 @@ public class EncounterRoomPiece extends DungeonPiece {
             int[] pit = pits[b.dressing.nextInt(pits.length)];
             WarrenDressing.refusePit(b, pit[0], pit[1]);
             CryptDressing.cornerCobwebs(b, w, d, top, 0.5F);
+        } else if (RuinDressing.applies(this)) {
+            int[][] corners = CryptDressing.corners(w, d);
+            for (int i = 0; i < corners.length; i++) {
+                // Not in the chest's corner (a mimic there is an entity, so the air check can't see it).
+                if (i != corner && b.dressing.nextFloat() < 0.7F) {
+                    RuinDressing.rubble(b, corners[i][0], corners[i][1]);
+                }
+            }
+            // Half the time one of the columns has come down
+            if (b.dressing.nextBoolean()) {
+                int[][] columns = {{in, in}, {w - 1 - in, in}, {in, d - 1 - in}, {w - 1 - in, d - 1 - in}};
+                int[] c = columns[b.dressing.nextInt(columns.length)];
+                RuinDressing.brokenColumn(b, c[0], c[1], top);
+            }
+            CryptDressing.cornerCobwebs(b, w, d, top, 0.7F);
         }
     }
 }

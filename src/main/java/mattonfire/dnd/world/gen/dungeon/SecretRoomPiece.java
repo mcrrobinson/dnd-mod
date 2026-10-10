@@ -37,6 +37,12 @@ public class SecretRoomPiece extends DungeonPiece {
             // A goblin's private stash, and its bed
             int[] c = CryptDressing.corners(this.width(), this.depth())[b.dressing.nextInt(4)];
             WarrenDressing.bedroll(b, c[0], c[1], Direction.EAST);
+        } else if (RuinDressing.applies(this)) {
+            // A dwarf's last hiding place: their bones and their anvil
+            int[][] corners = CryptDressing.corners(this.width(), this.depth());
+            int i = b.dressing.nextInt(4);
+            CryptDressing.bonePile(b, corners[i][0], corners[i][1]);
+            RuinDressing.anvil(b, corners[(i + 2) % 4][0], corners[(i + 2) % 4][1], Direction.fromHorizontal(b.dressing.nextInt(4)));
         }
     }
 }

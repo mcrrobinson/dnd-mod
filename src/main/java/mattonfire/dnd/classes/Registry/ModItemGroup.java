@@ -27,6 +27,15 @@ public class ModItemGroup {
             entries.add(ModItems.DRUM);
             entries.add(ModItems.FLUTE);
             entries.add(ModItems.CLOAK_OF_PROTECTION);
+            entries.add(ModItems.WAND_OF_MAGIC_MISSILES);
+            entries.add(ModItems.BAG_OF_HOLDING);
+            entries.add(ModItems.DECANTER_OF_ENDLESS_WATER);
+            entries.add(ModItems.IMMOVABLE_ROD);
+            entries.add(ModItems.PERIAPT_OF_WOUND_CLOSURE);
+            entries.add(ModItems.RING_OF_PROTECTION);
+            entries.add(ModItems.AMULET_OF_HEALTH);
+            entries.add(ModItems.DOSS_LUTE);
+            entries.add(ModItems.TOME_OF_CLEAR_THOUGHT);
             entries.add(ModItems.SCROLL_OF_IDENTIFY);
             entries.add(ModItems.SCROLL_OF_REMOVE_CURSE);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);

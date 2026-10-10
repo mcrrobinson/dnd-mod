@@ -1,0 +1,6 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+        "layer0": "dndclasses:item/immovable_rod"
+    }
+}

@@ -21,7 +21,7 @@ Each class's two skill-tree branches are its two D&D subclasses: Path of the Ber
 | Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it; each class page has the numbers. A feature that isn't in the game yet says so on its banner |
 | Points | A subclass branch costs 3, the capstone 2, the other first node 1 and a special's ranks II-IV 3: 9 of the 10 points at level 10 |
 | Per class | Kept per class like the rest of the tree, so switching class and back keeps the choice |
-| Changing it | Only an operator for now (`/dndclass subclass <player> none`), later a Tome of Clear Thought. Clearing refunds the subclass's upper nodes, the capstone and their ranks |
+| Changing it | A [Tome of Clear Thought](../items/magic-items.md#tome-of-clear-thought) (Very Rare) read near an Attunement Table, or an operator (`/dndclass subclass <player> none`). Clearing refunds the subclass's upper nodes, the capstone and their ranks |
 
 Choosing announces it in chat: "Matt the Battle Master Fighter has chosen a subclass: Battle Master." The class guidebook has a page per subclass.
 
@@ -136,7 +136,7 @@ None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels ar
 ## Known limitations
 - Bestiary tiers aren't set yet, and unlocked creatures don't change what Wild Shape or Animal Friends do until their class cards land.
 - Only the Fighter's special has ranks so far; the other classes' cards add theirs.
-- Subclass features are described but don't do anything yet. The Tome of Clear Thought (respec) doesn't exist yet either.
+- Subclass features are described but don't do anything yet.
 - `/dndclass unlock` ignores the subclass lock, like it ignores points.
 
 ## For developers

@@ -79,7 +79,7 @@ The race picker opens on its own. Your race is on the last page of the Class Gui
 `/gamerule dndRaces false` turns races off: nobody is prompted, and no race modifiers, sizes or head features apply (saved races are kept and come back if you turn it on again). Turning it back on prompts every online player without a race. Default: `true`.
 
 ## Known limitations
-- Only the stat modifiers, body sizes, head features and ability bonuses work. Traits and the Dragonborn Breath Weapon come in later tickets.
+- Only the stat modifiers, body sizes, head features, ability bonuses and the [Dragonborn Breath Weapon](breath-weapon.md) work. The other traits come in later tickets.
 - Shadows aren't scaled, so a Halfling's shadow is a little big.
 - Head features are hidden under any helmet, so horns don't poke through.
 - You can't change race yourself. Ask an operator.

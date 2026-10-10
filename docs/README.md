@@ -22,6 +22,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Dragonborn Breath Weapon](races/breath-weapon.md): R breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses) and Elves (Elven Enclaves): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
 
 ## Systems

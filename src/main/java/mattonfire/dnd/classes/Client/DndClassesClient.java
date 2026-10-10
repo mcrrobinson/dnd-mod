@@ -198,6 +198,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
         PickerFlow.register();
+        BreathWeaponClient.register();
         // Magic items: "Rare weapon (Wizard only)" under the name
         net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
             net.minecraft.text.Text line = mattonfire.dnd.magic.MagicNames.tooltipLine(stack);

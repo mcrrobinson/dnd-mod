@@ -46,6 +46,7 @@ public final class RaceLifecycle {
 
     public static void register() {
         RaceAbilityBonuses.register();
+        BreathWeapon.register();
         ServerPlayNetworking.registerGlobalReceiver(C2S_RACE_PICK, (server, player, handler, buf, sender) -> {
             int race = buf.readVarInt();
             int ancestry = buf.readVarInt();
@@ -86,6 +87,7 @@ public final class RaceLifecycle {
                     .formatted(Formatting.GOLD), false);
         }
         send(player, S2C_RACE_QUERY);
+        BreathWeapon.sync(player);
     }
 
     /** A new player entity (death, End exit) gets the race of the old one. */
@@ -100,6 +102,7 @@ public final class RaceLifecycle {
         RaceStats.apply(newPlayer);
         RaceAbilityBonuses.onChange.accept(newPlayer);
         send(newPlayer, S2C_RACE_QUERY);
+        BreathWeapon.sync(newPlayer);
     }
 
     // --- picking ---
@@ -149,6 +152,7 @@ public final class RaceLifecycle {
         }
         DnDClasses.LOGGER.info("{} is now race {} {}", player.getEntityName(), race.id(), ancestry.id());
         send(player, S2C_APPROVE_RACE_PICK);
+        BreathWeapon.sync(player);
     }
 
     private static void onRuleChanged(MinecraftServer server) {
@@ -156,6 +160,7 @@ public final class RaceLifecycle {
             RaceStats.apply(player);
             RaceAbilityBonuses.onChange.accept(player);
             send(player, S2C_RACE_QUERY);
+            BreathWeapon.sync(player);
         }
     }
 

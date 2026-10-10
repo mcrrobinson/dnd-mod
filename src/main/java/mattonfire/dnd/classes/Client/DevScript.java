@@ -65,6 +65,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
  * <li>{@code holduse on|off} holds or releases the use (right) button, e.g. to keep drawing a bow</li>
+ * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
+ *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
  * <li>{@code press <key>} presses a key binding once, by translation key (e.g. {@code key.dnd-classes.power-up})</li>
  * <li>{@code perspective first|back|front} sets the camera (F5)</li>
  * <li>{@code slot <index> [action] [button]} clicks a slot of the open screen; action is a
@@ -102,6 +104,7 @@ public final class DevScript {
     private final List<String> lines;
     private int next = 0;
     private int waitTicks = START_DELAY_TICKS;
+    private boolean mining;
 
     private DevScript(List<String> lines) {
         this.lines = lines;
@@ -185,6 +188,11 @@ public final class DevScript {
         }
         // An unfocused window would otherwise open the pause menu and freeze the integrated server
         client.options.pauseOnLostFocus = false;
+        if (this.mining && client.crosshairTarget instanceof net.minecraft.util.hit.BlockHitResult hit
+                && hit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+            client.interactionManager.updateBlockBreakingProgress(hit.getBlockPos(), hit.getSide());
+            client.player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
+        }
         if (this.waitTicks > 0) {
             this.waitTicks--;
             return;
@@ -241,6 +249,12 @@ public final class DevScript {
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));
+            case "mine" -> {
+                this.mining = argument.equals("on");
+                if (!this.mining) {
+                    client.interactionManager.cancelBlockBreaking();
+                }
+            }
             case "hotbar" -> client.player.getInventory().selectedSlot = Integer.parseInt(argument);
             case "press" -> press(client, argument, lineNumber);
             case "perspective" -> client.options.setPerspective(switch (argument) {

@@ -1,0 +1,77 @@
+# Dwarf barter by standing. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/rep-tiers-barter.txt
+# The dwarf keeps its AI (its barter cooldown ticks in mobTick) but is held still with Slowness.
+# Expect: at Unfriendly some of the 10 gold ingots come back (refusals; "/clear ... 0" counts the gold left);
+# at Exalted all 10 are taken and the slots log shows more than 10 loot stacks (second rolls), from the
+# honored table.
+wait 40
+closescreen
+/gamemode survival
+/dndclass set @s fighter
+/effect give @s minecraft:resistance 900 4 true
+/kill @e[type=!minecraft:player,distance=..60]
+/fill -12 149 -12 24 149 24 minecraft:stone
+/fill -12 150 -12 24 154 24 minecraft:air
+/clear @s
+/tp @s 0.5 150 0.5 0 35
+/summon dndclasses:mountain_dwarf 0.5 150 2.5 {Tags:["rb"]}
+/effect give @e[tag=rb] minecraft:slowness 900 255 true
+/rep @s dndclasses:mountain_dwarves set -200
+/give @s minecraft:gold_ingot 10
+hotbar 0
+wait 10
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+screenshot rep-barter-unfriendly
+/clear @s minecraft:gold_ingot 0
+/clear @s
+/rep @s dndclasses:mountain_dwarves set 800
+/tp @e[tag=rb] 0.5 150 2.5 180 0
+/give @s minecraft:gold_ingot 10
+wait 10
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+use
+wait 45
+wait 20
+/clear @s minecraft:gold_ingot 0
+slots
+screenshot rep-barter-exalted
+/clear @s
+/kill @e[tag=rb]
+/rep @s dndclasses:mountain_dwarves set 0
+wait 20
+quit

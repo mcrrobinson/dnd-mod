@@ -24,7 +24,7 @@ Going Downed sets you to 1 HP, removes Regeneration and Absorption and puts out 
 ### Being Downed
 - You crawl (the swimming pose, 0.6 blocks tall) at half the vanilla crawl speed, about 15% of walking speed. You can't jump, sprint, swim up (you sink), or glide.
 - You can't attack, use or break blocks, use items or entities (so no eating or drinking), drop items with Q, or fire your special. Inventory and container screens close. You can look around, chat and change hotbar slot.
-- You don't heal (natural regeneration, potions, Regeneration) and you don't regain mana or trickle charges. You can't rest.
+- You don't heal (natural regeneration, potions, Regeneration) and you don't regain mana or trickle charges. You can't rest, and going Downed interrupts a campfire short rest in progress (within half a second).
 - The action bar shows your tally: `DOWNED ●●○ ✕○○ next save in 4 s`, or `STABLE standing up in 22 s`.
 
 ### Death saves
@@ -101,4 +101,4 @@ Permission level 2.
 - Mixins: `PlayerEntityMixin` (the `DND$DOWNED` tracked byte, `updatePose` forced to `SWIMMING`, no `jump` or `checkFallFlying`, records the overflow past 0 HP in `applyDamage`), `LivingEntityMixin` (no `heal`, no sprinting, no `swimUpward`), `LivingEntityInvoker` (`tryUseTotem`), `DownedServerPlayerMixin` (no Q drop).
 - Client `DownedClient`: closes handled screens and sends the give-up hold state of the power-up key.
 - DevScript `holdkey <key> on|off` holds a key binding.
-- Devscripts: `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout).
+- Devscripts: `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout)., `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).

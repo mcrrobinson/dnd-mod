@@ -162,6 +162,7 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Items.ClassGuidebookItem.clientOpener = mattonfire.dnd.classes.Client.Hud.ClassGuidebookScreen::open;
         mattonfire.dnd.classes.Client.Render.LayeredArmorRenderer.registerAll();
         mattonfire.dnd.faction.client.ClientReputation.register();
+        mattonfire.dnd.quest.client.ClientQuests.register();
         // The model has see-through quads like the vanilla brewing stand, which draw black on the default solid layer
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
                 mattonfire.dnd.classes.Registry.ModBlocks.FAST_BREWING_STAND_BLOCK, net.minecraft.client.render.RenderLayer.getCutout());
@@ -214,7 +215,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getTranslucent(),
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.LESSER_ARCANE_SEAL_BLOCK,
-                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK);
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK,
+                mattonfire.dnd.classes.Registry.ModBlocks.ARCANE_SEAL);
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
@@ -270,6 +272,8 @@ public class DndClassesClient implements ClientModInitializer {
             fireBreathEndTick = 0;
             fireBreathWorld = null;
             MySphereRenderState.shouldRenderSphere = false;
+            // No rest carries over to the next world (it would lock movement).
+            mattonfire.dnd.classes.Rest.RestSnapshot.client = mattonfire.dnd.classes.Rest.RestSnapshot.NONE;
         }));
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);

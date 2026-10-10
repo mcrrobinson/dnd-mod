@@ -51,10 +51,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| The Fiend | Right | Hellfire (first node, open to both), Eldritch Blast, Infernal Fireballs | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours is rerolled |
+| The Fiend | Right | Hellfire (first node, open to both), Eldritch Blast, Infernal Fireballs | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours (a check, a save or a fumbled attack) is rolled again |
 | The Great Old One | Left | Rain Ward (first node, open to both), Hex, Eldritch Hunger | **Entropic Ward**: once every 60 seconds, a projectile that would hit you misses |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Dark One's Own Luck** (Fiend): the first failed d20 roll of yours (a check or save that misses its DC, or a natural 1 on an attack roll) in any 2 minutes is rolled again at once, and the second roll stands. Chat says "Dark One's Own Luck: you roll again", and the log shows `[D20] <name> Dark One's Own Luck: rerolling ...`.
+- **Entropic Ward** (Great Old One): the first arrow, trident, fireball or other projectile that would hit you in any 60 s flies through you instead, like the Rogue's Danger Sense (you sidestep, and the action bar says so). It doesn't matter who fired it.
 
 ## Commands
 - `/dndclass set <player> warlock` (see [Admin commands](../systems/admin-commands.md)).

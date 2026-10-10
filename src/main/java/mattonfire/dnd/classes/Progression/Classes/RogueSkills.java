@@ -3,9 +3,18 @@ package mattonfire.dnd.classes.Progression.Classes;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.SkillChecks.AttackRolls;
+import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
@@ -45,6 +54,18 @@ public class RogueSkills extends ClassSkills {
 
     /** Sideways push when Danger Sense dodges a projectile, in blocks per tick. */
     private static final double SIDESTEP_SPEED = 0.45;
+
+    public static final String ASSASSIN = "rogue.assassin";
+    public static final String THIEF = "rogue.thief";
+    /** Assassinate: damage to a mob that isn't targeting you is multiplied by this. */
+    public static final float ASSASSINATE_MULTIPLIER = 2.0F;
+    /** Assassinate: how long after Vanish ends its guaranteed critical is still waiting. */
+    public static final int ASSASSINATE_WINDOW_TICKS = 5 * 20;
+    /** Fast Hands: added to Thieves' Tools (lockpicking) checks. */
+    public static final int FAST_HANDS_BONUS = 3;
+
+    /** Assassins with a Vanish critical waiting, and the server tick it lapses on. */
+    private static final Map<UUID, Integer> ASSASSINATE_UNTIL = new HashMap<>();
 
     private static final int STEALTH_KILL_BONUS_XP = 4;
     private static final int SHADOWSTEP_RANGE = 12;
@@ -90,6 +111,47 @@ public class RogueSkills extends ClassSkills {
     public List<AttributeBonus> attributeBonuses() {
         return List.of(new AttributeBonus("rogue.fleet", EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.15,
                 EntityAttributeModifier.Operation.MULTIPLY_BASE));
+    }
+
+    @Override
+    public void register() {
+        // Fast Hands, on the sheet so the lockpick roll (and its HUD and log) shows it. Ignoring class
+        // restrictions when attuning comes with the attunement card.
+        AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/rogue_thief"), (player, c) -> {
+            if (Progression.classOf(player) == DndCharacter.ROGUE && Progression.current(player).hasSubclass(THIEF)) {
+                c.skillBonus(Skill.THIEVES_TOOLS, FAST_HANDS_BONUS, "Fast Hands");
+            }
+        });
+        // Assassinate: the first melee swing out of Vanish is a critical.
+        AttackRolls.registerAutoCrit((player, target) -> {
+            Integer until = ASSASSINATE_UNTIL.get(player.getUuid());
+            if (until == null || player.getServer() == null)
+                return null;
+            ASSASSINATE_UNTIL.remove(player.getUuid());
+            if (player.getServer().getTicks() > until || Progression.classOf(player) != DndCharacter.ROGUE
+                    || !Progression.current(player).hasSubclass(ASSASSIN))
+                return null;
+            return "Assassinate";
+        });
+    }
+
+    /**
+     * The root special, Vanish; called from the ROGUE case in {@code PowerUpEffect}. An Assassin's next
+     * melee swing, while invisible or up to 5 s after, is a critical (Assassinate).
+     */
+    public static void vanish(PlayerEntity player) {
+        int ticks = VANISH.ticks(player, "Duration");
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, ticks, 0));
+        if (player.getServer() != null && Progression.classOf(player) == DndCharacter.ROGUE
+                && Progression.current(player).hasSubclass(ASSASSIN)) {
+            ASSASSINATE_UNTIL.put(player.getUuid(), player.getServer().getTicks() + ticks + ASSASSINATE_WINDOW_TICKS);
+        }
+    }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        int now = player.getServer().getTicks();
+        ASSASSINATE_UNTIL.values().removeIf(t -> now > t);
     }
 
     @Override
@@ -189,6 +251,10 @@ public class RogueSkills extends ClassSkills {
         boolean melee = source.getSource() == player;
         if (melee && progress.hasPassive("rogue.backstab") && (player.isSneaking() || player.isInvisible())) {
             amount *= 1.5F;
+        }
+        // Assassinate: a mob that isn't after you never sees it coming.
+        if (melee && progress.hasSubclass(ASSASSIN) && target instanceof MobEntity mob && mob.getTarget() != player) {
+            amount *= ASSASSINATE_MULTIPLIER;
         }
         if (melee && progress.hasPassive("rogue.poisoned_blades")) {
             target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 60, 0), player);

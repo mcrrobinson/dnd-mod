@@ -29,6 +29,7 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
 | `/dndclass subclass <player> <id\|none>` | Sets the subclass of the player's current class (e.g. `barbarian.berserker`), skipping the level and the Attunement Table; replacing another subclass refunds it first. `none` clears it and refunds the subclass's upper nodes, the capstone and their ranks |
 | `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |
+| `/dndclass mana <player> <pips>` | Sets a player's mana (0-9 pips), for testing actives without waiting for it to regenerate |
 | `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
 | `/dndclass charges <player> [n]` | Prints charges, recharge group, Hit Dice and short rests left; `n` sets the charges (capped at the class's max) |
 | `/dndclass hitdice <player> [n]` | Prints the same; `n` sets the Hit Dice left (capped at the pool) |
@@ -49,6 +50,9 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndrace get <player>` | Prints the player's race (and Dragonborn ancestry), or `none` |
 | `/dndrace set <player> <race> [ancestry]` | Changes the race: removes the old race's modifiers, applies the new ones and prints the race summary. `none` clears the race and reopens the race picker |
 | `/dndrace list` | Lists online players with their race and class |
+
+| `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
+| `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |
 
 Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).
 
@@ -74,7 +78,7 @@ See [Goblin raids](goblin-raids.md) for the details.
 - `/give @s dndclasses:attunement_table` to skip the recipe while testing skills
 
 ## For developers
-- `Commands/DndClassCommand`, `Commands/DndRaceCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`. `/dndrace set` calls `RaceLifecycle.change`.
+- `Commands/DndClassCommand`, `Commands/DndRaceCommand`, `Commands/DndHomeCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`. `/dndrace set` calls `RaceLifecycle.change`.
 - `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
 - `sheet`, `score` and `forceroll` use `AbilityScores.sheet`, `AbilityScores.setOverride` and `D20.force`.
 - Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/ability-scores.txt`, `devscripts/rests-charges.txt`, `devscripts/downed-solo-laststand.txt`, `devscripts/race-pick.txt`.

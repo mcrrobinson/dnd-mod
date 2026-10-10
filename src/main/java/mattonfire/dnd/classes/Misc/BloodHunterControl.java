@@ -76,6 +76,14 @@ public final class BloodHunterControl {
         return isIdentityLoaded() && BloodHunterIdentityCompat.hasHostility(player);
     }
 
+    /**
+     * Whether the player has taken a shape through Identity (Druid Wild Shape, Blood Hunter control).
+     * Always false without Identity. Identity then supplies the hitbox and model, so racial sizes skip it.
+     */
+    public static boolean hasIdentityForm(PlayerEntity player) {
+        return isIdentityLoaded() && BloodHunterIdentityCompat.hasForm(player);
+    }
+
     public static void register() {
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             int now = server.getTicks();

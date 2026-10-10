@@ -19,8 +19,8 @@ Hobbits, Mountain Dwarves and goblins remember what you do. Each player has a st
 
 | Faction | Members | Settlements | Start | Rivals |
 |-|-|-|-|-|
-| Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral) | goblins -0.5 |
-| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral) | goblins -0.5 |
+| Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral); Halflings 150 (Friendly) | goblins -0.5 |
+| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral); Dwarves 150, Gnomes 100 (Friendly) | goblins -0.5 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5 |
 
 - **Sources**:
@@ -45,7 +45,46 @@ Hobbits, Mountain Dwarves and goblins remember what you do. Each player has a st
 - **Grudge decay**: each new in-game day, a negative standing with the hobbits or dwarves recovers 5 points, never past 0. Goblin standing doesn't decay.
 - **Feedback**: every change shows on the action bar ("+1 Hobbits of the Shire, +1 Mountain Dwarves, -3 The Goblin Horde"). Crossing into a new tier prints "Your standing with ... is now Friendly." in chat, in the tier's colour, with a sound.
 - Reputation is saved with the player and kept on death.
-- This ticket only tracks reputation. Tiers don't change prices, hostility or raids yet.
+
+### What the tiers do
+Each NPC checks the standing of the player it's dealing with (or looking at) with its own faction, so rep is personal: a party can send its diplomat in. An NPC with no faction, and a player in [DM mode](dungeon-master.md), count as Neutral.
+
+**Hobbits** ([hobbits](../mobs/hobbits.md), [innkeeper and bounty boards](../structures/hobbit-tavern.md))
+
+| Tier | Effect |
+|-|-|
+| Hostile | Hobbits flee you (8 blocks) and give no gifts. The innkeeper won't trade or pay bounties; bounty boards won't give or take notices ("The notices are not for the likes of you."). |
+| Unfriendly | Innkeeper prices +50% (rounded up, at least +1); a hobbit gives a gift every 15 minutes instead of 5. |
+| Neutral | As before. |
+| Friendly | Prices -10% (rounded). |
+| Honored | Prices -25%; gifts every 2.5 minutes. |
+| Exalted | Prices -40%; gifts every 2.5 minutes. |
+
+"Price" is the first thing a trade asks for: emeralds for food and ale, or the produce the innkeeper buys (20 wheat becomes 30 at Unfriendly and 12 at Exalted). A trade never drops below 1.
+
+**Mountain Dwarves** ([mountain dwarves](../mobs/mountain-dwarves.md))
+
+| Tier | Effect |
+|-|-|
+| Hostile | Every dwarf attacks you on sight. |
+| Unfriendly | Half the time a dwarf refuses to barter (the gold stays with you); a dwarf notices you at the hoard from 24 blocks instead of 16. |
+| Neutral | As before. |
+| Friendly | Barter: 15% chance of a second roll. |
+| Honored | Barter: 30% second roll, from the better `gameplay/dwarf_barter_honored` table. |
+| Exalted | Barter: 50% second roll, from the honored table. |
+
+**Goblins** ([goblins](../mobs/goblins.md), [raids](goblin-raids.md))
+
+| Tier | Effect |
+|-|-|
+| Hostile, -800 or lower ("Marked") | Natural raids near you are twice as likely (1 in 10 per check instead of 1 in 20); raiders go for you over other defenders (you count as half as far away). |
+| Hostile | Goblins attack on sight, as before. |
+| Unfriendly | Goblins (camp, Nether, raiders, the Warlord) leave you alone unless you come within 6 blocks ("parley range") or hit one. |
+| Neutral and up | Goblins ignore you unless you hit one. |
+
+"Hit one" means you hit that goblin, or any goblin in the last 10 seconds; a goblin you've provoked at Neutral stands down 10 seconds after you stop fighting. A goblin that's already fighting you when your standing improves (a quest, `/rep`) stands down within a second.
+
+**Checks.** A Charisma check against a faction member (Persuasion now, quest dialogue later) has its DC shifted by your standing: Hostile +5, Unfriendly +3, Neutral 0, Friendly -2, Honored -4, Exalted -6. Plain villagers belong to no faction, so their DC stays 12 unless a data pack adds a faction for them.
 
 ## Where to find it
 Anywhere: kill goblins, defend the hobbit village, trade at the Green Dragon. `/rep` shows your standing.
@@ -105,15 +144,17 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
 The entity tags `dndclasses:faction/<id>` and structure tags `dndclasses:faction/<id>` list the members and settlements of the launch factions. A file with an unknown field, a wrong type or an unknown entity type is logged (`[Factions] Skipping faction ...`) and skipped; the other factions still load.
 
 ## Known limitations
-- Tiers have no effects yet (prices, hostility, raids, quests come in a later ticket).
+- Not yet: Friendly's earlier raid horn, Honored's extra innkeeper trade and free long rest, Exalted's double raid loot, the Honored barrel exception at the hoard, Exalted dwarves joining your fights and identifying items, and goblin aggro for opening a camp chief's chest. Quest and dialogue unlocks come with the quest tickets.
+- Hobbit gift cooldowns are per hobbit: each gift starts that player's wait, and the next player gets a gift once their own wait has passed since it (or the last one's wait is over).
 - No Journal screen yet; the client keeps the synced values for it.
 - Bounty boards outside every faction's settlements credit every faction with a `bounties` reward.
 
 ## For developers
 - Code: `mattonfire.dnd.faction`. `Faction` (record + JSON parser), `Factions` (server data reload listener), `ReputationTier`, `Reputation` (API and storage), `FactionEvents` (kill/hit hooks, decay tick, and the calls below), `RepCommand`, `client/ClientReputation`.
 - API: `Reputation.get(player, faction)`, `tier(...)`, `factionOf(entity)`, `add(player, faction, delta, Source)`, and `change(player, source).add(...).add(..., Cap, limit).apply()` for one event touching several factions (one action-bar line).
-- Hooks in existing code: `FactionEvents.raidWon` (`GoblinRaid.win`), `bountyClaimed` (`BountyRewards.claim`), `traded` (`InnkeeperEntity.trade`, `MountainDwarfEntity` barter), `theftWitnessed` (`MountainDwarfEntity.witness`). The crowned dwarf gets the command tag `dndclasses.role.dwarf_king`.
+- Hooks in existing code: `FactionEvents.raidWon` (`GoblinRaid.win`), `bountyClaimed` (`BountyRewards.claim`), `traded` (`InnkeeperEntity.trade`, `MountainDwarfEntity` barter), `theftWitnessed` (`SettlementGrudges.witness`). The crowned dwarf gets the command tag `dndclasses.role.dwarf_king`.
 - Hooks: `Reputation.raceOf` gives the player's active race as `dndclasses:<race>` (`RaceLifecycle.activeRaceOf`, null with no race or `dndRaces` off) for `start_by_race`, and `Reputation.ignored` is `DungeonMaster::isDm`, so [Dungeon Masters](dungeon-master.md) don't gain or lose reputation.
 - Storage: player persistent data, `DndReputation` (faction id to value; missing = start) and `DndRepCaps` (`Day`, `DecayDay` and today's capped gains). Copied on respawn by `ClassLifecycle`.
 - Sync: S2C `dndclasses:reputation_sync` (count, then id, name key, colour, value per faction) on join, respawn, data pack reload and every change. The client logs `[Reputation] client sync: [...]`.
-- Tests: `devscripts/faction-rep.txt` (kills, cap, Warlord, raid, death), `faction-rep-relog.txt`, `faction-rep-sources.txt` (trades, bounties, barter, hoard, King, betrayal, decay).
+- Tier effects: `TierEffects` holds every number and rule (`tierWith(player, npc|type|faction)`, `reputationPriceDelta`, `giftCooldown`, `refusesBarter`, `secondBarterRollChance`, `honoredBarter`, `witnessRange`, `goblinMayTarget`, `provoked`, `isMarked`, `raidChance`, `dcShift`). The NPCs only ask it: `InnkeeperEntity.applyReputationPrices` (special price per customer, added in `prepareOffersFor` after the prices are cleared and before `KinPrices.apply`, so the two stack; cleared when the customer leaves), `BountyBoardBlock.shuns`, `HobbitEntity` (flee goal, gift cooldown), `MountainDwarfEntity` (`shouldAngerAt`, barter), `SettlementGrudges` (the dwarves' witness range), `GoblinWarriorEntity` (target goal predicate, `setTarget` filter, stand-down check; the Warlord inherits it and rallies its kin through `rallyAgainst`), `GoblinRaid.nearestDefender`, `GoblinRaids.maybeStartRaids`, `Persuasion.dc(player, target[, base])` (the hook for dialogue checks).
+- Tests: `devscripts/rep-tiers.txt` (prices, refusals, flee, gifts, dwarf aggro, witness range, goblin targeting, Persuasion DC; the Persuasion part needs a test data pack faction `dndtest:villagers` with `"members": "minecraft:villager"` in the world), `rep-tiers-raid.txt` (raiders at Neutral and Hostile), `rep-tiers-barter.txt` (refusals and second rolls), `devscripts/faction-rep.txt` (kills, cap, Warlord, raid, death), `faction-rep-relog.txt`, `faction-rep-sources.txt` (trades, bounties, barter, hoard, King, betrayal, decay).

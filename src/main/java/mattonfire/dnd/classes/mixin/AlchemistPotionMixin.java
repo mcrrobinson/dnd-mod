@@ -9,14 +9,16 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 import mattonfire.dnd.classes.Progression.Classes.AlchemistSkills;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.PotionItem;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.world.World;
 
-// Alchemist: XP for drinking potions, and Potent Brews.
+// Alchemist: XP for drinking potions, Potent Brews and the subclass features Mutagen and Transmuter's Eye.
 @Mixin(PotionItem.class)
 public class AlchemistPotionMixin {
     @Inject(method = "finishUsing", at = @At("HEAD"))
@@ -24,6 +26,7 @@ public class AlchemistPotionMixin {
             CallbackInfoReturnable<ItemStack> cir) {
         if (!world.isClient && user instanceof ServerPlayerEntity player) {
             AlchemistSkills.onPotionUsed(player, stack);
+            AlchemistSkills.onPotionDrunk(player, stack);
         }
     }
 
@@ -31,5 +34,14 @@ public class AlchemistPotionMixin {
             target = "Lnet/minecraft/entity/LivingEntity;addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;)Z"))
     private boolean dnd$potentBrews(LivingEntity user, StatusEffectInstance effect, Operation<Boolean> original) {
         return original.call(user, AlchemistSkills.potentBrew(user, effect));
+    }
+
+    // Transmuter's Eye: drunk healing potions heal more.
+    @WrapOperation(method = "finishUsing", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/entity/effect/StatusEffect;applyInstantEffect(Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/Entity;Lnet/minecraft/entity/LivingEntity;ID)V"))
+    private void dnd$transmutersEye(StatusEffect effect, Entity source, Entity attacker, LivingEntity target,
+            int amplifier, double proximity, Operation<Void> original) {
+        original.call(effect, source, attacker, target, amplifier,
+                AlchemistSkills.transmuterHealing(target, effect, proximity));
     }
 }

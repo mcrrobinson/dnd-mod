@@ -181,6 +181,7 @@ public class PartyCommand {
         }
         boolean wasLeader = current.isLeader(player.getUuid());
         Party party = manager.leave(player.getUuid());
+        mattonfire.dnd.quest.QuestEvents.onPartyLeft(server, player.getUuid());
         context.getSource().sendFeedback(Text.literal("You left the party.").formatted(Formatting.YELLOW), false);
         notifyRemoved(server, party, player.getEntityName() + " left the party.");
         if (wasLeader && party.size() > 0) {
@@ -209,6 +210,7 @@ public class PartyCommand {
                 .findFirst().orElseThrow(NOT_A_MEMBER::create);
         String targetName = manager.getName(target);
         manager.leave(target);
+        mattonfire.dnd.quest.QuestEvents.onPartyLeft(server, target);
         ServerPlayerEntity kicked = server.getPlayerManager().getPlayer(target);
         if (kicked != null) {
             kicked.sendMessage(Text.literal("You were removed from the party.").formatted(Formatting.YELLOW));

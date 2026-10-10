@@ -1,0 +1,77 @@
+# Warlock subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-warlock.txt
+# Expect in latest.log:
+#  1. Fiend: a forced natural 1 attack roll logs "[D20] <name> Dark One's Own Luck: rerolling 1 (FUMBLE)" and
+#     chat "Dark One's Own Luck: you roll again"; a second forced 1 right after is a plain FUMBLE (cooldown)
+#  2. Great Old One control: a forced 1 is a FUMBLE with no reroll
+#  3. Great Old One: the first arrow at you doesn't hurt (Health 20.0f), the second does
+#  4. Fiend control: the first arrow hurts
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s warlock
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s warlock.fiend
+/clear @s
+/effect clear @s
+/give @s minecraft:wooden_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 15
+# --- 1. Dark One's Own Luck ---
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["sc"]}
+wait 30
+/dndclass forceroll @s 1 15
+attack
+wait 5
+screenshot subclass-warlock-luck
+wait 25
+/dndclass forceroll @s 1
+attack
+wait 30
+# --- 2. Great Old One control ---
+/dndclass subclass @s warlock.great_old_one
+/dndclass forceroll @s 1
+attack
+wait 30
+/dndclass forceroll clear @s
+/kill @e[type=!player,distance=..30]
+# --- 3. Entropic Ward ---
+/clear @s
+/tp @s 4.5 150 1.5 0 10
+wait 10
+/data get entity @s Health
+/summon minecraft:arrow 4.5 151.3 7.5 {Motion:[0.0,0.0,-1.6]}
+wait 3
+screenshot subclass-warlock-ward
+wait 15
+/data get entity @s Health
+/tp @s 4.5 150 1.5 0 10
+/summon minecraft:arrow 4.5 151.3 7.5 {Motion:[0.0,0.0,-1.6]}
+wait 20
+/data get entity @s Health
+/kill @e[type=minecraft:arrow]
+# --- 4. Fiend control ---
+/dndclass subclass @s warlock.fiend
+/effect give @s minecraft:instant_health 1 3
+wait 5
+/tp @s 4.5 150 1.5 0 10
+/data get entity @s Health
+/summon minecraft:arrow 4.5 151.3 7.5 {Motion:[0.0,0.0,-1.6]}
+wait 20
+/data get entity @s Health
+/kill @e[type=minecraft:arrow]
+quit

@@ -25,4 +25,13 @@ public interface PlayerEntityExt {
 
 	/** How far below 0 HP the last hit would have taken the player (massive damage), 0 if it didn't. */
 	float getLastDamageOverflow();
+
+	/**
+	 * The race whose body size applies: the race while {@code dndRaces} is on, NONE while it's off.
+	 * Synced to every client through the DataTracker (clients can't read the gamerule).
+	 */
+	DndRace getBodyRace();
+
+	/** Server side: set by {@code RaceStats.apply}; recalculates the hitbox when it changes. */
+	void setBodyRace(DndRace race);
 }

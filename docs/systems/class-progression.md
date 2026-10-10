@@ -18,7 +18,7 @@ Each class's two skill-tree branches are its two D&D subclasses: Path of the Ber
 | After choosing | Your branch opens fully. The other branch's first node can still be unlocked (a "dabble" node), but its upper nodes are sealed with a padlock and say "Path of the Berserker only" |
 | Capstone | Unchanged: it needs a top branch node, so only your subclass reaches it |
 | Shared nodes | The Paladin's Circle of Healing, between the branches, is open to either oath ("Any oath") once you've chosen one |
-| Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it. **The features aren't active yet**; they come with the subclass feature cards |
+| Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it; each class page has the numbers. A feature that isn't in the game yet says so on its banner |
 | Points | A subclass branch costs 3, the capstone 2, the other first node 1 and a special's ranks II-IV 3: 9 of the 10 points at level 10 |
 | Per class | Kept per class like the rest of the tree, so switching class and back keeps the choice |
 | Changing it | Only an operator for now (`/dndclass subclass <player> none`), later a Tome of Clear Thought. Clearing refunds the subclass's upper nodes, the capstone and their ranks |
@@ -41,9 +41,9 @@ All 30 subclasses ("Right" is the branch listed first in the code, column 2):
 | Barbarian | Path of the Berserker | `barbarian.berserker` | Right | **Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage) |
 | Barbarian | Path of the Totem Warrior | `barbarian.totem_warrior` | Left | **Bear Totem Spirit**: while Rage is active you take 15% less damage |
 | Bard | College of Valor | `bard.valor` | Right | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
-| Bard | College of Lore | `bard.lore` | Left | **Bardic Lore**: +2 to Persuasion checks, and you identify magic items when you pick them up |
-| Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more |
-| Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest, make one held weapon or worn armor piece +1 until the next long rest, from an Attunement Table's Items tab ([details](magic-items.md#blessing-of-the-forge)) |
+| Bard | College of Lore | `bard.lore` | Left | **Bardic Lore**: +2 to Persuasion checks |
+| Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Life Domain healing is 25% stronger |
+| Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest (once per in-game day with the `dndRests` gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab ([details](magic-items.md#blessing-of-the-forge)) |
 | Druid | Circle of the Moon | `druid.moon` | Right | **Primal Strike**: your attacks deal +2 damage in animal form |
 | Druid | Circle of the Land | `druid.land` | Left | **Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss |
 | Fighter | Champion | `fighter.champion` | Right | **Superior Critical**: melee attack rolls crit on 18-20 |
@@ -54,20 +54,20 @@ All 30 subclasses ("Right" is the branch listed first in the code, column 2):
 | Paladin | Oath of Conquest | `paladin.conquest` | Left | **Conquering Presence**: Divine Judgment's shockwave frightens hostile mobs for 3 seconds |
 | Ranger | Hunter | `ranger.hunter` | Right | **Colossus Slayer**: your first arrow hit each second on a target below full health deals +3 damage |
 | Ranger | Horizon Walker | `ranger.horizon_walker` | Left | **Planar Warrior**: in the Nether and the End you deal 20% more damage and have Speed I |
-| Rogue | Assassin | `rogue.assassin` | Right | **Assassinate**: double damage to a mob that isn't targeting you, and your first hit after Vanish ends is a critical |
-| Rogue | Thief | `rogue.thief` | Left | **Fast Hands**: +3 to lockpicking, and you ignore class restrictions when attuning magic items |
-| Necromancer | Bonecaller | `necromancer.bonecaller` | Right | **Undying Servants**: your summons last 25% longer |
-| Necromancer | Plaguebringer | `necromancer.plaguebringer` | Left | **Grim Harvest**: killing a mob that has your Wither heals you 2 hearts |
-| Warlock | The Fiend | `warlock.fiend` | Right | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours is rerolled |
+| Rogue | Assassin | `rogue.assassin` | Right | **Assassinate**: double melee damage to a mob that isn't targeting you, and your first melee swing out of Vanish (while it lasts or up to 5 seconds after) is a critical |
+| Rogue | Thief | `rogue.thief` | Left | **Fast Hands**: +3 to lockpicking (Thieves' Tools), and you ignore class restrictions when attuning magic items |
+| Necromancer | Bonecaller | `necromancer.bonecaller` | Right | **Undying Servants**: your summons (Raise Dead, Skeletal Archers, Army of the Dead) last 25% longer |
+| Necromancer | Plaguebringer | `necromancer.plaguebringer` | Left | **Grim Harvest**: killing a mob that's withering heals you 2 hearts |
+| Warlock | The Fiend | `warlock.fiend` | Right | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours (a check, a save or a fumbled attack) is rolled again |
 | Warlock | The Great Old One | `warlock.great_old_one` | Left | **Entropic Ward**: once every 60 seconds, a projectile that would hit you misses |
-| Wizard | School of Evocation | `wizard.evocation` | Right | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt party members or their pets |
-| Wizard | School of Abjuration | `wizard.abjuration` | Left | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4) for 60 seconds |
+| Wizard | School of Evocation | `wizard.evocation` | Right | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt or knock back party members or their pets |
+| Wizard | School of Abjuration | `wizard.abjuration` | Left | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4), fading 60 seconds after the last |
 | Artificer | Armorer | `artificer.armorer` | Right | **Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance |
-| Artificer | Battle Smith | `artificer.battle_smith` | Left | **Battle Ready**: +2 attack damage with any identified magic weapon |
+| Artificer | Battle Smith | `artificer.battle_smith` | Left | **Battle Ready**: +2 melee damage with any identified magic weapon |
 | Blood Hunter | Order of the Profane Soul | `bloodhunter.profane_soul` | Right | **Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3 |
 | Blood Hunter | Order of the Lycan | `bloodhunter.lycan` | Left | **Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15 |
 | Alchemist | Mutagenist | `alchemist.mutagenist` | Right | **Mutagen**: drinking any potion also gives Strength I for 10 seconds |
-| Alchemist | Transmuter | `alchemist.transmuter` | Left | **Transmuter's Eye**: Healing potions you drink heal 50% more, and you identify potions when you pick them up |
+| Alchemist | Transmuter | `alchemist.transmuter` | Left | **Transmuter's Eye**: Healing potions you drink heal 50% more |
 
 Each class page lists its subclasses' nodes.
 
@@ -155,5 +155,6 @@ None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels ar
 - **Storage and rules:** `ClassProgress.subclass` (NBT key `subclass`, "" = none), `SUBCLASS_LEVEL`, `subclassLock(node)` (checked by `canUnlock`, so the server refuses unlock packets for sealed nodes), `hasSubclass(id)`, `removeSubclassNodes`, `migrateSubclass` (run by `Progression.get` when the key is missing).
 - **Server:** `Progression.chooseSubclass` (packet `C2S_CHOOSE_SUBCLASS`; level, table and no-subclass checks), `clearSubclass` (for the admin command and the Tome later), `title(player)` ("Matt the Battle Master Fighter").
 - **Feature hooks:** check `progress.hasSubclass("wizard.evocation")` in the `ClassSkills` hooks. An `AttributeBonus` whose `skill` is a subclass id is on whenever that subclass is chosen.
+- **More hooks for features:** `ClassSkills.manaCost` (a cheaper active, read on both sides), `ClassSkills.afterActivate` (after an active fires), `D20.registerReroll` (a second try at a failed roll) and `AttackRolls.registerAutoCrit` (a guaranteed critical).
 - **Screen:** `Client/Hud/SkillTreeScreen` (pips, rank tooltip, Tree/Bestiary tabs, subclass banners, padlocks, `ConfirmScreen`). Guidebook pages: `ClassGuidebookScreen`.
 - **Test:** `devscripts/ability-ranks.txt`, `devscripts/subclasses.txt` (the migration step needs a seeded save, see its header), `devscripts/subclasses-verify.txt` (the whole checklist with tooltip screenshots). DevScript's `hover <dx> <dy>` moves the cursor so screens draw tooltips, `widget <label>` presses a screen button such as a confirm dialog's Yes, and `page <n>` turns an open book. DevScript's `skill unlock|equip|rankup|bestiary|subclass <id>` sends the screen's packets, and `click <dx> <dy> [button]` clicks the open screen relative to its centre.

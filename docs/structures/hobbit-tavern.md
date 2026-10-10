@@ -12,7 +12,9 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
     - 2 emeralds: 1 rabbit stew
     - 3 emeralds: 1 cake
   - **Buys (for 1 emerald):** 20 wheat, 24 potatoes, 22 carrots, 10 brown mushrooms or 6 pumpkins.
+  - **Halflings** pay 25% less (kin prices, see [Racial homes](../races/racial-homes.md)): rabbit stew 1, cake 2, and the innkeeper takes 15 wheat, 18 potatoes, 16 carrots, 7 mushrooms or 4 pumpkins. One-emerald trades stay at 1.
 - Right-clicking it with a finished bounty notice pays the bounty out.
+- **Reputation** ([Factions](../systems/factions.md)): each customer sees prices for their own standing with the hobbits: +50% at Unfriendly (rounded up, at least +1), -10% at Friendly, -25% at Honored, -40% at Exalted, never below 1. A cake costs 5 emeralds at Unfriendly and 2 at Exalted; the innkeeper wants 30 wheat at Unfriendly and 12 at Exalted. A player Hostile with the hobbits gets "<name> won't serve you.": no trades and no bounty payouts.
 
 ### Mug of Ale
 A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 s of Nausea. Stacks to 16.
@@ -21,6 +23,7 @@ A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 
 - Each board has three notices.
 - **Take a notice:** right-click it. Which one you get (left, middle or right) depends on where you click, and the paper disappears from the board.
 - **Read the board:** sneak-right-click with an empty hand to list today's bounties in chat.
+- A player Hostile with the hobbits can read the board but can't take or hand in notices: "The notices are not for the likes of you." The board belongs to the factions whose settlement it's in (any faction that rewards bounties, for a board in the wild).
 - **Restocking:** each in-game day, a board posts 3 different bounties, drawn by weight. A taken notice stays gone until the next day, for everyone. A board that's just been hung up starts bare and gets its first notices the next morning, so taking a board down and putting it back doesn't restock it.
 
 ![The two bounty boards on the inn's east wall, three notices on each](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/hobbit-tavern-bounty-boards.png)

@@ -29,6 +29,10 @@ final class BloodHunterIdentityCompat {
         PlayerIdentity.updateIdentity(player, null, null);
     }
 
+    static boolean hasForm(PlayerEntity player) {
+        return PlayerIdentity.getIdentity(player) != null;
+    }
+
     static boolean hasHostility(PlayerEntity player) {
         return PlayerHostility.hasHostility(player);
     }

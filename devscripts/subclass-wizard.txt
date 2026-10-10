@@ -1,0 +1,99 @@
+# Wizard subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-wizard.txt
+# Expect in latest.log:
+#  1. Evocation: Arcane Explosion leaves your own wolf at Health 8.0f and where it was; the pig (control) is hurt.
+#     AbsorptionAmount stays 0.0f
+#  2. Evocation: an Ice staff blast next to the wolf doesn't hurt or freeze it (no dndclasses:freeze); the pig is
+#  3. Abjuration control: the wolf is hurt and thrown by Arcane Explosion
+#  4. Abjuration: AbsorptionAmount 4.0f after one active, 8.0f after two and still 8.0f after three;
+#     0.0f once 60 s have passed since the last
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 12 149 12 minecraft:stone
+/fill 0 150 0 12 156 12 minecraft:air
+/dndclass set @s wizard
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s wizard.evocation
+/clear @s
+/effect clear @s
+/tp @s 6.5 150 2.5 0 15
+# --- 1. Sculpt Spells: Arcane Explosion ---
+/summon minecraft:wolf 6.5 150 5.5 {Tags:["pet"],Sitting:1b,Rotation:[180f,0f]}
+/data modify entity @e[tag=pet,limit=1] Owner set from entity @s UUID
+/summon minecraft:pig 8.5 150 3.5 {Tags:["foe"]}
+wait 20
+/data get entity @e[tag=pet,limit=1] Owner
+/data get entity @e[tag=pet,limit=1] Pos
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 3
+screenshot subclass-wizard-evocation
+wait 20
+/data get entity @e[tag=pet,limit=1] Health
+/data get entity @e[tag=pet,limit=1] Pos
+/data get entity @e[tag=foe,limit=1] Health
+/data get entity @s AbsorptionAmount
+/kill @e[type=!player,distance=..30]
+# --- 2. Sculpt Spells: Ice staff ---
+/tp @s 6.5 150 0.5 0 20
+/summon minecraft:wolf 6.5 150 6.5 {Tags:["pet"],Sitting:1b,Rotation:[180f,0f]}
+/data modify entity @e[tag=pet,limit=1] Owner set from entity @s UUID
+/summon minecraft:pig 7.5 150 5.5 {Tags:["foe"],NoAI:1b}
+/give @s dndclasses:staff_of_ice
+hotbar 0
+wait 20
+use
+wait 20
+/data get entity @e[tag=pet,limit=1] Health
+/data get entity @e[tag=pet,limit=1] ActiveEffects
+/data get entity @e[tag=foe,limit=1] Health
+/data get entity @e[tag=foe,limit=1] ActiveEffects
+/kill @e[type=!player,distance=..30]
+/clear @s
+wait 120
+# --- 3. Abjuration control ---
+/dndclass subclass @s wizard.abjuration
+/effect clear @s
+/tp @s 6.5 150 2.5 0 15
+/summon minecraft:wolf 6.5 150 5.5 {Tags:["pet"],Sitting:1b,Rotation:[180f,0f]}
+/data modify entity @e[tag=pet,limit=1] Owner set from entity @s UUID
+wait 20
+/data get entity @e[tag=pet,limit=1] Pos
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 20
+/data get entity @e[tag=pet,limit=1] Health
+/data get entity @e[tag=pet,limit=1] Pos
+/kill @e[type=!player,distance=..30]
+# --- 4. Arcane Ward ---
+/data get entity @s AbsorptionAmount
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 20
+/data get entity @s AbsorptionAmount
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 20
+/data get entity @s AbsorptionAmount
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 20
+/data get entity @s AbsorptionAmount
+screenshot subclass-wizard-ward
+wait 1250
+/data get entity @s AbsorptionAmount
+/kill @e[type=!player,distance=..30]
+quit

@@ -87,7 +87,8 @@ public record Encounter(Identifier id, String name, String difficulty, int sprea
         return new Encounter(id, name, difficulty, spread, loot, List.copyOf(spawns), List.copyOf(chests));
     }
 
-    private static Spawn parseSpawn(JsonObject json) {
+    /** One {@code spawns} entry; dungeon encounter pools ({@code DungeonEncounterPools}) use the same format. */
+    public static Spawn parseSpawn(JsonObject json) {
         Identifier entityId = new Identifier(JsonHelper.getString(json, "entity"));
         Optional<EntityType<?>> type = Registries.ENTITY_TYPE.getOrEmpty(entityId);
         if (type.isEmpty()) {

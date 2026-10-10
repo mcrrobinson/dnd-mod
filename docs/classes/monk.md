@@ -69,7 +69,9 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Way of the Open Hand | Right | Flurry of Blows (first node, open to both), Stunning Strike, Deflect Missiles | **Open Hand Technique**: each Flurry Rush hit gives the target Slowness II for 2 seconds and knocks it back a little |
 | Way of the Drunken Master | Left | Slow Fall (first node, open to both), Step of the Wind, Unarmored Movement | **Tipsy Sway**: with no chestplate on, 15% of melee hits miss you, and drinking Ale gives 2 mana pips |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Open Hand Technique** (Open Hand): every hit of Flurry Rush gives its target Slowness II for 2 s and knocks it back (strength 0.4) away from you.
+- **Tipsy Sway** (Drunken Master): with no chestplate on, each melee hit has a 15% chance to miss you completely (no damage or knockback; the action bar says so). Arrows, other projectiles and the void aren't affected. Drinking [Ale](../structures/hobbit-tavern.md) gives 2 mana pips.
 
 ## Commands
 - `/dndclass set <player> monk` (see [Admin commands](../systems/admin-commands.md)).

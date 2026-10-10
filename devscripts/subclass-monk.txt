@@ -1,0 +1,258 @@
+# Monk subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-monk.txt
+# Expect:
+#  1. Open Hand: after a Flurry Rush the husk has Slowness (Id 2) Amplifier 1, and it was pushed (Pos changes)
+#  2. Open Hand: no "[Subclass] Tipsy Sway" lines in debug.log for 30 hits; Ale doesn't log
+#  3. Drunken Master: no Slowness after the rush; ~15% of 40 hits logged as dodged with no chestplate,
+#     none of 20 with one; Ale logs "drank Ale, mana now N" (+2)
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=husk]
+/kill @e[type=pig]
+/fill -8 149 -8 16 149 16 minecraft:stone
+/fill -8 150 -8 16 154 16 minecraft:air
+/dndclass set @s monk
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s monk.open_hand
+/clear @s
+/attribute @s minecraft:generic.knockback_resistance base set 1
+/tp @s 2.5 150 2.5 0 10
+/summon minecraft:husk 2.5 150 6.5 {Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d},{Name:"minecraft:generic.movement_speed",Base:0d},{Name:"minecraft:generic.follow_range",Base:0d}],Rotation:[180f,0f]}
+wait 60
+/data get entity @e[type=husk,limit=1] Pos
+press key.dnd-classes.power-up
+wait 8
+/data get entity @e[type=husk,limit=1] ActiveEffects
+/data get entity @e[type=husk,limit=1] Pos
+wait 20
+/give @s dndclasses:ale
+hotbar 0
+use
+holduse on
+wait 90
+holduse off
+/data get entity @s Pos
+/data get entity @s Air
+/data get entity @s Health
+/clear @s
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/kill @e[type=husk]
+# --- 3. Drunken Master ---
+/dndclass subclass @s monk.drunken_master
+/summon minecraft:husk 2.5 150 6.5 {Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d},{Name:"minecraft:generic.movement_speed",Base:0d},{Name:"minecraft:generic.follow_range",Base:0d}],Rotation:[180f,0f]}
+/tp @s 2.5 150 2.5 0 10
+wait 200
+press key.dnd-classes.power-up
+wait 8
+/data get entity @e[type=husk,limit=1] ActiveEffects
+wait 20
+/give @s dndclasses:ale
+hotbar 0
+use
+holduse on
+wait 90
+holduse off
+/data get entity @s Pos
+/data get entity @s Air
+/data get entity @s Health
+/clear @s
+/effect give @s minecraft:instant_health 1 10
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/data get entity @s Pos
+/data get entity @s Air
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 10
+/item replace entity @s armor.chest with minecraft:iron_chestplate
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/damage @s 0.1 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 12
+/kill @e[type=husk]
+/attribute @s minecraft:generic.knockback_resistance base set 0
+quit

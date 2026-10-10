@@ -88,7 +88,8 @@ public final class PowerupOverlay {
         // Underline the pips the equipped active costs, gold once it can be used.
         SkillNode active = ClassProgress.client.activeNode();
         if (active != null) {
-            int cost = Math.min(active.manaCost(), DnDClasses.MANA_ICONS);
+            int cost = Math.min(mattonfire.dnd.classes.Progression.ClassSkills.manaCostFor(ClassProgress.client, active),
+                    DnDClasses.MANA_ICONS);
             boolean affordable = mana >= cost && (!charges || rest.charges() + rest.temp() >= Charges.cost(active));
             int color = affordable ? 0xFFE0B040 : 0xFF505050;
             // In the 1px gap below the pips, above the food (or air/mount) row

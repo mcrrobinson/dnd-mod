@@ -45,9 +45,10 @@ Rewards come on top of whatever the bosses drop, and every participant gets them
 
 **B. The Whispering Library** (`dndclasses:whispering_library/1`; the Thain (`hobbit_elder`) or a Rumour; needs Friendly with the hobbits)
 1. *Restless Dead*: slay 20 undead (`#dndclasses:bounty/undead`); each has a 25% chance to drop a **Cursed Bone** for you. Bring 3 Cursed Bones to the Thain (taken).
-2. *Reading the Bones*: Arcana DC 12 with the Thain. Pass: a map to the nearest stronghold. Either way: 2 eyes of ender ("follow the eyes").
-3. *The Soul Jar*: find a stronghold and smash the Lich's phylactery.
+2. *Reading the Bones*: Arcana DC 12 with the Thain. Pass: a map to the nearest Lich's lair (a stronghold or a [Crypt](../structures/dungeons.md#the-crypt), whichever is closer). Either way: 2 eyes of ender ("follow the eyes").
+3. *The Soul Jar*: enter a stronghold or a Crypt (`#dndclasses:quest/lich_lairs`) and smash the Lich's phylactery. Either route works: the stronghold library's Lich or the Crypt Lich in its reliquary.
 4. *Lichbane*: destroy the Lich (only its final death counts). Return to the Thain.
+   - Smashing the phylactery while the Lich is reforming is its final death, so it counts for both stage 3 and stage 4 at once. The order doesn't matter: smash the jar then kill the Lich, or kill the Lich (it flees to the jar) then smash the jar.
    - Reward: 40 emeralds, 150 XP, 400 class XP, +150 Hobbits, a rare magic item.
 
 **C. Ice and Storm** (`dndclasses:ice_and_storm/1`; the Dwarf King; needs Friendly with the dwarves). On accept: a map to the nearest frost lair.

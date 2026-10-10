@@ -1,0 +1,127 @@
+# Dungeon fights, solo, in the dev world's natural crypt (The Crypt of Saint Corvin, floor y=42; room
+# coordinates from devscripts/dungeon-encounter-recon.txt). Covers: a scaled encounter (budget in the log),
+# seals closing and opening, the Ossuary Cube champion, the Lich boss (300 HP solo), the 30 s boss-room
+# abandon, the boss kill clearing the dungeon (title + delver), bounty credit, and Peaceful.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dungeon-encounter.txt
+# Check: [Dungeon] and [CHAT] lines in logs/latest.log ("Test passed"), screenshots/dungeon-enc-*.png.
+wait 40
+closescreen
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/difficulty normal
+/gamemode spectator
+/tp @s 263 150 967
+wait 200
+/dungeon reset
+/advancement revoke @s only dndclasses:delver
+/effect give @s minecraft:night_vision 9999 0 true
+/effect give @s minecraft:resistance 9999 4 true
+/effect give @s minecraft:saturation 9999 0 true
+/clear @s
+/give @s dndclasses:bounty_notice{Bounty:"barrow_wights"}
+
+# 1. Small encounter room #2: walking in spawns it and seals the doorways
+/tp @s 247 43 967 90 0
+/gamemode survival
+wait 40
+/tp @s 262 43 967 90 10
+wait 100
+hud off
+screenshot dungeon-enc-sealed
+hud on
+/dungeon info
+/execute if block 258 44 967 dndclasses:arcane_seal
+/execute if block 263 44 962 dndclasses:arcane_seal
+# bounty credit: an encounter mob counts...
+/damage @e[tag=dndclasses.dungeon,limit=1,sort=nearest] 500 minecraft:player_attack by @s
+wait 5
+/data get entity @s Inventory[{id:"dndclasses:bounty_notice"}].tag.Progress
+# ...a boss minion doesn't
+/summon minecraft:zombie 262 43 969 {Tags:["dndclasses.boss_minion"],NoAI:1b}
+wait 2
+/damage @e[type=zombie,tag=dndclasses.boss_minion,limit=1] 500 minecraft:player_attack by @s
+wait 5
+/data get entity @s Inventory[{id:"dndclasses:bounty_notice"}].tag.Progress
+# all but the last mob: still sealed
+/kill @e[tag=dndclasses.dungeon,sort=nearest,limit=2]
+wait 30
+/execute if block 258 44 967 dndclasses:arcane_seal
+/dungeon info
+/kill @e[tag=dndclasses.dungeon]
+wait 30
+/execute if block 258 44 967 minecraft:air
+/execute if block 263 44 962 minecraft:air
+/execute unless block 258 44 966 dndclasses:arcane_seal
+clearchat
+screenshot dungeon-enc-cleared
+/dungeon info
+
+# 1b. Large encounter room #4, left alone for 60 s: its mobs vanish and it goes back to UNTOUCHED
+/tp @s 263 43 931 0 0
+wait 30
+/dungeon info
+/tp @s 247 43 967
+wait 1240
+/execute if entity @e[tag=dndclasses.dungeon]
+/dungeon info
+
+# 2. Mid-boss room #7: the Ossuary Cube (150 HP solo) and its minions
+/tp @s 295 43 948 0 20
+wait 40
+/execute as @e[tag=dndclasses.dungeon_champion] run attribute @s minecraft:generic.max_health get
+/data get entity @e[tag=dndclasses.dungeon_champion,limit=1] Health
+/data get entity @e[tag=dndclasses.dungeon_champion,limit=1] CustomName
+wait 10
+clearchat
+screenshot dungeon-enc-champion
+/kill @e[tag=dndclasses.dungeon]
+wait 30
+/dungeon info
+
+# 3. Boss room #8: the Lich, 300 HP for one player; leave for 30 s and it despawns
+/tp @s 287 43 987 180 0
+wait 20
+/tp @s 287 43 983 180 0
+wait 30
+/execute as @e[type=dndclasses:lich] run attribute @s minecraft:generic.max_health get
+/execute if block 279 44 989 dndclasses:arcane_seal
+/execute if block 295 44 961 dndclasses:arcane_seal
+clearchat
+screenshot dungeon-enc-boss
+/dungeon info
+/tp @s 247 43 967
+wait 640
+/execute if entity @e[type=dndclasses:lich]
+/execute if entity @e[type=dndclasses:phylactery]
+/execute if block 279 44 989 minecraft:air
+/dungeon info
+
+# 4. Back in: a fresh Lich; smash the phylactery, then the Lich: the dungeon is cleared
+/tp @s 287 43 983 180 0
+wait 40
+/execute as @e[type=dndclasses:lich] run attribute @s minecraft:generic.max_health get
+/kill @e[type=dndclasses:phylactery]
+wait 10
+/kill @e[type=dndclasses:lich]
+wait 15
+clearchat
+screenshot dungeon-enc-dungeon-cleared
+wait 30
+/dungeon info
+/execute if entity @s[advancements={dndclasses:delver=true}]
+/execute if block 279 44 989 minecraft:air
+/execute if block 295 44 961 minecraft:air
+
+# 5. Peaceful: walking in spawns nothing and the room stays UNTOUCHED
+/dungeon reset
+/difficulty peaceful
+/tp @s 247 43 967
+wait 20
+/tp @s 262 43 967
+wait 40
+/execute if entity @e[tag=dndclasses.dungeon]
+/dungeon info
+/difficulty normal
+quit

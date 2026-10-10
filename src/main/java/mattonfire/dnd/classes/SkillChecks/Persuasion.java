@@ -6,8 +6,11 @@ import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.faction.TierEffects;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityStatuses;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.passive.VillagerEntity;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
@@ -40,6 +43,18 @@ public final class Persuasion {
     private Persuasion() {
     }
 
+    /**
+     * The DC to persuade {@code target}: {@link #DC} shifted by the player's standing with its faction
+     * (Hostile +5, Unfriendly +3, Friendly -2, Honored -4, Exalted -6). Dialogue checks use the same shift.
+     */
+    public static int dc(PlayerEntity player, Entity target) {
+        return dc(player, target, DC);
+    }
+
+    public static int dc(PlayerEntity player, Entity target, int base) {
+        return Math.max(1, base + TierEffects.dcShift(player, target));
+    }
+
     static void register() {
         UseEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
             // The client sends interact-at first (hitResult set), then plain interact: handle only the latter
@@ -65,7 +80,8 @@ public final class Persuasion {
             }
             LAST_TRIED.put(key, day);
 
-            D20.Roll roll = SkillCheck.builder(player, Skill.PERSUASION, DC, "villager")
+            // Standing with the target's faction shifts the DC (no faction: no shift).
+            D20.Roll roll = SkillCheck.builder(player, Skill.PERSUASION, dc(player, villager), "villager")
                     .label(D20.PERSUASION).roll();
             switch (roll.outcome()) {
                 case CRITICAL, SUCCESS -> {

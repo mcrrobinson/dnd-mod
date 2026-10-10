@@ -68,6 +68,11 @@ import net.minecraft.util.Identifier;
  * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
+ * <li>{@code walk on|off} (or {@code forward on|off}) holds or releases the walk forward key, e.g. to crawl
+ *     into a gap or to check movement is locked</li>
+ * <li>{@code fov <30-110>} sets the field of view, e.g. 30 to zoom in on a third-person close-up</li>
+ * <li>{@code sizes} logs every player's pose, hitbox (width x height), eye height, position and body race as
+ * this client sees them, and in singleplayer as the integrated server sees them</li>
  * <li>{@code holduse on|off} holds or releases the use (right) button, e.g. to keep drawing a bow</li>
  * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
  *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
@@ -76,7 +81,9 @@ import net.minecraft.util.Identifier;
  * <li>{@code slot <index> [action] [button]} clicks a slot of the open screen; action is a
  * {@link SlotActionType} name (default {@code pickup}; {@code quick_move} = shift-click, {@code swap} with
  * button 0-8 = number key, {@code throw} = Q)</li>
- * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory)</li>
+ * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory); on a merchant screen it
+ *     also logs each trade with the price this player is shown, after every modifier ({@code trade <i>: <price>
+ *     [+ <second>] -> <result> (base <count>, special <n>)})</li>
  * <li>{@code button <id>} clicks a screen button such as an enchanting option (0-2)</li>
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
@@ -280,6 +287,9 @@ public final class DevScript {
             case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
+            case "walk", "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
+            case "sizes" -> logSizes(client);
+            case "fov" -> client.options.getFov().setValue(Integer.parseInt(argument));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));
             case "mine" -> {
                 this.mining = argument.equals("on");
@@ -402,6 +412,25 @@ public final class DevScript {
         PickerFlow.sendPick(race, ancestry);
     }
 
+    private static void logSizes(MinecraftClient client) {
+        for (net.minecraft.entity.player.PlayerEntity p : client.world.getPlayers()) {
+            logSize("client", p);
+        }
+        if (client.getServer() != null) {
+            for (net.minecraft.entity.player.PlayerEntity p : client.getServer().getPlayerManager().getPlayerList()) {
+                logSize("server", p);
+            }
+        }
+    }
+
+    private static void logSize(String side, net.minecraft.entity.player.PlayerEntity p) {
+        DnDClasses.LOGGER.info("[DevScript] size {} {} race={} pose={} hitbox={}x{} eye={} pos={} {} {}", side,
+                p.getEntityName(), ((mattonfire.dnd.classes.PlayerEntityExt) p).getBodyRace().id(), p.getPose(),
+                String.format("%.3f", p.getWidth()), String.format("%.3f", p.getHeight()),
+                String.format("%.3f", p.getStandingEyeHeight()), String.format("%.2f", p.getX()),
+                String.format("%.2f", p.getY()), String.format("%.2f", p.getZ()));
+    }
+
     private static void press(MinecraftClient client, String translationKey, int lineNumber) {
         for (KeyBinding binding : client.options.allKeys) {
             if (binding.getTranslationKey().equals(translationKey)) {
@@ -427,6 +456,17 @@ public final class DevScript {
             ItemStack stack = handler.slots.get(i).getStack();
             if (!stack.isEmpty()) {
                 DnDClasses.LOGGER.info("[DevScript] slot {}: {}", i, describe(stack));
+            }
+        }
+        // A merchant screen also lists its trades, with the prices this player is shown.
+        if (handler instanceof net.minecraft.screen.MerchantScreenHandler merchant) {
+            net.minecraft.village.TradeOfferList offers = merchant.getRecipes();
+            for (int i = 0; i < offers.size(); i++) {
+                net.minecraft.village.TradeOffer offer = offers.get(i);
+                DnDClasses.LOGGER.info("[DevScript] trade {}: {}{} -> {} (base {}, special {})", i,
+                        describe(offer.getAdjustedFirstBuyItem()),
+                        offer.getSecondBuyItem().isEmpty() ? "" : " + " + describe(offer.getSecondBuyItem()),
+                        describe(offer.getSellItem()), offer.getOriginalFirstBuyItem().getCount(), offer.getSpecialPrice());
             }
         }
     }

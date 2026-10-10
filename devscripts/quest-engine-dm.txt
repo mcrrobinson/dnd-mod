@@ -1,0 +1,27 @@
+# Quests ignore Dungeon Masters: in DM mode you can't take a quest and your kills don't count.
+# Run: timeout 300 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-engine-dm.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/fill -3 149 -3 3 149 3 minecraft:glass
+/tp @s 0.5 150 0.5 0 0
+/quest admin @s reset dndclasses:goblin_menace/1
+/dm on
+/quest admin @s start dndclasses:goblin_menace/1
+/dm off
+/quest admin @s start dndclasses:goblin_menace/1
+/dm on
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qd"]}
+wait 5
+/damage @e[tag=qd,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/quest list
+/dm off
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qd"]}
+wait 5
+/damage @e[tag=qd,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/quest list
+/quest admin @s reset dndclasses:goblin_menace/1
+quit

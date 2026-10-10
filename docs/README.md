@@ -82,7 +82,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board and rentable rooms (Room Keys, Well Rested)
-- [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow, with a planned route to the Lich and its reliquary, a vault, crypt dressing and a Challenge tier
+- [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow and Goblin Warrens behind a cave mouth (PR #164), with a planned route to the Lich or the Goblin Warlord, a vault, theme dressing and a Challenge tier
 
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance

@@ -58,6 +58,7 @@
     "client": [
         "AbstractClientPlayerEntityMixin",
         "LivingEntityRendererAccessor",
+        "MouseAccessor",
         "LivingEntityRendererMixin",
         "PlayerEntityRendererMixin",
         "BackgroundRendererMixin",

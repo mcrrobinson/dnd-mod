@@ -4,7 +4,7 @@ Every player picks one of 15 classes. Your class sets your base stats and gives 
 ![The class picker](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/class-picker.png)
 
 ## How it works
-The class picker opens a couple of seconds after you join a world without a class. It's a grid of 15 buttons, three across and five down, and Escape doesn't close it: you have to pick. You get one pick. After that the server ignores any further picks from you, and only an operator can change your class with [`/dndclass set`](admin-commands.md).
+The class picker opens a couple of seconds after you join a world without a class. It's a grid of 15 buttons, three across and five down, and Escape doesn't close it: you have to pick. Each button shows the class's [party role](party-roles.md) icon, and hovering it shows both roles, the first pro, the special and the obstacles only that class can handle. You get one pick. After that the server ignores any further picks from you, and only an operator can change your class with [`/dndclass set`](admin-commands.md).
 
 When you pick, the mod resets you to vanilla stats, clears all your status effects, then applies the class. Chat prints the class's pros, cons and special, and you get a [Class Guidebook](class-guidebook.md) if you don't already carry one.
 

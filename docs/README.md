@@ -27,7 +27,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`
 - [Party](systems/party.md): group up with other players
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle` (PR #122)
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 

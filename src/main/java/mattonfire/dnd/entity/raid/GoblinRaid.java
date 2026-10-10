@@ -610,6 +610,8 @@ public class GoblinRaid {
                 }
             }
             ExperienceOrbEntity.spawn(world, player.getPos(), 40 + 20 * this.totalWaves);
+            mattonfire.dnd.faction.FactionEvents.raidWon(player, world, new Identifier(DnDClasses.MOD_ID, this.kind.id),
+                    mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
             if (this.kind == Settlement.Kind.FORTRESS) {
                 DwarfGrudges.forgive(player, this.rally, RADIUS);
             }

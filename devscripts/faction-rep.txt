@@ -1,0 +1,132 @@
+# Faction reputation: goblin and hobbit kills, the daily kill cap, a Warlord kill, a won raid on the
+# dev world's hobbit village (200, 1352), then death. Check the /rep lines ([CHAT]) in the log.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/faction-rep.txt
+# Then faction-rep-relog.txt checks the values survive a relog.
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:slow_falling 900 0 true
+# A new day resets the daily caps from earlier runs.
+/time add 24000
+wait 5
+/rep @s dndclasses:hobbits set 0
+/rep @s dndclasses:mountain_dwarves set 0
+/rep @s dndclasses:goblins set -600
+/fill 199 149 1351 201 149 1353 minecraft:glass
+/tp @s 200 150 1352 0 0
+wait 100
+/kill @e[tag=fr]
+/kill @e[tag=frh]
+/kill @e[tag=frw]
+/rep
+# 5 goblin kills: hobbits +5, dwarves +5, goblins -15
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+wait 10
+/execute if entity @e[tag=fr]
+/damage @e[tag=fr,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=fr,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=fr,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=fr,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=fr,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 10
+screenshot faction-rep-kills
+/rep
+# Hit a hobbit (-10), then kill it (-150): hobbits -155
+/summon dndclasses:hobbit 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["frh"]}
+wait 10
+/execute if entity @e[tag=frh]
+/damage @e[tag=frh,limit=1] 1 minecraft:player_attack by @s
+/damage @e[tag=frh,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+screenshot faction-rep-hobbit
+/rep
+# 30 more goblin kills: the daily +30 kill cap stops hobbits and dwarves at +25 more
+/rep @s dndclasses:hobbits set 0
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+/summon dndclasses:goblin_warrior 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["fr"]}
+wait 10
+/execute if entity @e[tag=fr]
+/execute as @e[tag=fr] run damage @s 1000 minecraft:player_attack by @p
+wait 10
+/rep
+# Warlord: hobbits +25, dwarves +25, goblins -50 (no cap)
+/summon dndclasses:goblin_warlord 200 150 1355 {NoAI:1b,NoGravity:1b,Tags:["frw"]}
+wait 10
+/execute if entity @e[tag=frw]
+/damage @e[tag=frw,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/rep
+# Raid on the village, cleared with /kill: hobbits +60 (to Friendly), goblins -40
+/effect clear @s minecraft:slow_falling
+/fill 199 149 1351 201 149 1353 minecraft:air
+/tp @s 200 110 1352 0 60
+wait 100
+/kill @e[type=#dndclasses:dragons]
+/goblinraid stop
+wait 20
+/goblinraid start
+wait 240
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/goblinraid list
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/goblinraid list
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/goblinraid list
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+wait 400
+/goblinraid list
+wait 20
+screenshot faction-rep-raid
+/goblinraid list
+/rep
+wait 10
+screenshot faction-rep-list
+# Death keeps reputation
+/kill @s
+wait 20
+respawn
+wait 20
+/rep
+wait 10
+quit

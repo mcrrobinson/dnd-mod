@@ -158,6 +158,7 @@ public final class BountyRewards {
         spoils.forEach(stack -> give(player, stack));
         player.addExperience(bounty.xp);
         Progression.addXp(player, bounty.classXp);
+        mattonfire.dnd.faction.FactionEvents.bountyClaimed(player, bounty.tier, net.minecraft.util.math.BlockPos.ofFloored(where));
 
         player.sendMessage(Text.translatable("bounty.dndclasses.claimed", bounty.title()).formatted(Formatting.GOLD), false);
         world.playSound(null, where.x, where.y, where.z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.8F, 1.2F);

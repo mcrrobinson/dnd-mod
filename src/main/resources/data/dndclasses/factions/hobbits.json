@@ -1,0 +1,19 @@
+{
+  "name": "faction.dndclasses.hobbits",
+  "color": "#7FBF4F",
+  "members": "#dndclasses:faction/hobbits",
+  "settlements": "#dndclasses:faction/hobbits",
+  "start": 0,
+  "rivals": {"dndclasses:goblins": -0.5},
+  "decay_per_day": 5,
+  "hit_member": -10,
+  "kill_member": -150,
+  "kill_member_overrides": {"dndclasses:innkeeper": -300},
+  "enemy_kills": {"dndclasses:goblins": 1},
+  "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
+  "kill_cap": 30,
+  "raid_won": 60,
+  "bounties": {"minor": 8, "major": 20},
+  "trade": 1,
+  "trade_cap": 15
+}

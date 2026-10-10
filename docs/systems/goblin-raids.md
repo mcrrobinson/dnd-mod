@@ -13,6 +13,7 @@ Goblin war parties raid hobbit villages and dwarven fortresses in waves, ending 
   - a reward loot table: emeralds and food at a village; gold, iron, gems or an enchanted axe at a fortress. Both can include the Steel on Steel disc.
   - 40 + 20 × waves XP
   - the Hold the Line advancement
+  - reputation: +60 with the settlement's faction and -40 with the goblins (see [Factions](factions.md))
 
   At a fortress, the dwarves also drop any grudge against the defenders.
 - **Defeat**: if no one is within 96 blocks for 2 minutes, the war party withdraws and its goblins vanish.

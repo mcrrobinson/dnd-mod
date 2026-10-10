@@ -127,6 +127,11 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.ELF_WARDEN, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canElfSpawn);
 
+        // Templars only spawn inside dragon temples (the structure's spawn_overrides), on the terrace,
+        // at most MAX_TEMPLARS_NEARBY of them.
+        SpawnRestriction.register(ModEntityTypes.DRAGONBORN_TEMPLAR, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canTemplarSpawn);
+
         // Beholders only live in their underground lairs (the structure's spawn_overrides), which
         // get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.BEHOLDER, SpawnRestriction.Location.ON_GROUND,
@@ -184,6 +189,33 @@ public class ModSpawns {
     }
 
     public static final int MAX_ELVES_NEARBY = 12;
+    public static final int MAX_TEMPLARS_NEARBY = 7;
+
+    private static boolean canTemplarSpawn(EntityType<mattonfire.dnd.entity.DragonbornTemplarEntity> type, ServerWorldAccess world,
+                                           SpawnReason reason, BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        // Natural spawns and the chunk's first animals both come from the structure's spawn override.
+        return reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION
+                || inTemplePiece(world, pos) && world.getEntitiesByClass(mattonfire.dnd.entity.DragonbornTemplarEntity.class,
+                new Box(pos).expand(48.0D), e -> true).size() < MAX_TEMPLARS_NEARBY;
+    }
+
+    /** Whether {@code pos} is inside one of a dragon temple's pieces. */
+    private static boolean inTemplePiece(ServerWorldAccess world, BlockPos pos) {
+        StructureStart start = world.toServerWorld().getStructureAccessor().getStructureContaining(pos,
+                mattonfire.dnd.world.gen.temple.DragonTempleStructures.KEY);
+        if (!start.hasChildren()) {
+            return false;
+        }
+        for (StructurePiece piece : start.getChildren()) {
+            if (piece.getBoundingBox().contains(pos)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static <T extends ElfEntity> boolean canElfSpawn(EntityType<T> type, ServerWorldAccess world, SpawnReason reason,
                                                             BlockPos pos, Random random) {

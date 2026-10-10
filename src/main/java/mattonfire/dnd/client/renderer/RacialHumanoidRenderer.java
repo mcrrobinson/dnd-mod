@@ -5,6 +5,9 @@ import mattonfire.dnd.classes.Client.Render.RaceFeatures;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.classes.Race.DragonAncestry;
+import mattonfire.dnd.entity.DragonbornElderEntity;
+import mattonfire.dnd.entity.DragonbornEntity;
+import mattonfire.dnd.entity.DragonbornTemplarEntity;
 import mattonfire.dnd.entity.ElfEntity;
 import mattonfire.dnd.entity.ElfMerchantEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -28,7 +31,7 @@ import net.minecraft.util.Identifier;
 /**
  * The racial NPC model kit: the player model (slim Alex arms or classic Steve ones) with the race's head
  * features, a per-entity scale, armour, and arm poses for held items and drawn bows. The settlement NPCs of
- * each race use it with their own skins; for now that's the elves. Head features (elf ears, and later orc
+ * each race use it with their own skins: the elves and the Dragon Temple's Dragonborn. Head features (elf ears, and later orc
  * tusks, tiefling horns, a dragonborn snout) come from {@link RaceFeatures#renderHead}, the same code that
  * draws them on players, so NPCs and players of a race match.
  */
@@ -38,6 +41,8 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
     }
 
     public static final Look ELF = new Look(true, DndRace.ELF, 1.0F);
+    /** Dragonborn: classic arms, snout and frill, 1.05x. */
+    public static final Look DRAGONBORN = new Look(false, DndRace.DRAGONBORN, 1.05F);
 
     private final Function<T, Identifier> texture;
     private final Look look;
@@ -76,6 +81,28 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
     public static RacialHumanoidRenderer<ElfMerchantEntity> elfMerchant(EntityRendererFactory.Context context) {
         return new RacialHumanoidRenderer<>(context, ELF,
                 elf -> elf.getType() == ModEntityTypes.ELF_SPEAKER ? SPEAKER_SKIN : FLETCHER_SKIN);
+    }
+
+    // ---- The Dragonborn ----
+
+    private static final Identifier[] DRAGONBORN_SKINS = new Identifier[DragonbornEntity.VARIANTS];
+    private static final Identifier ELDER_SKIN = new Identifier(DnDClasses.MOD_ID, "textures/entity/dragonborn/elder.png");
+
+    static {
+        for (int i = 0; i < DRAGONBORN_SKINS.length; i++) {
+            DRAGONBORN_SKINS[i] = new Identifier(DnDClasses.MOD_ID, "textures/entity/dragonborn/dragonborn_" + i + ".png");
+        }
+    }
+
+    /** Templars: scales in red, white, blue, bronze or gold (their variant), under a chainmail shirt. */
+    public static RacialHumanoidRenderer<DragonbornTemplarEntity> dragonborn(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, DRAGONBORN,
+                npc -> DRAGONBORN_SKINS[Math.floorMod(npc.getVariant(), DRAGONBORN_SKINS.length)]);
+    }
+
+    /** The Elder: gold-trimmed robes over scales. */
+    public static RacialHumanoidRenderer<DragonbornElderEntity> dragonbornElder(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, DRAGONBORN, npc -> ELDER_SKIN);
     }
 
     @Override
@@ -121,8 +148,9 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
             if (entity.isInvisible() || !entity.getEquippedStack(EquipmentSlot.HEAD).isEmpty()) {
                 return;
             }
+            DragonAncestry ancestry = entity instanceof DragonbornEntity dragonborn ? dragonborn.getAncestry() : DragonAncestry.EMBER;
             RaceFeatures.renderHead(matrices, vertexConsumers, light, this.getContextModel().head, this.race,
-                    DragonAncestry.EMBER, this.getTexture(entity));
+                    ancestry, this.getTexture(entity));
         }
     }
 }

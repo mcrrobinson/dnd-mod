@@ -13,6 +13,7 @@ import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Reputation;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
+import mattonfire.dnd.world.gen.temple.DragonTempleStructures;
 import mattonfire.dnd.world.gen.village.HobbitVillageStructures;
 import net.minecraft.entity.Entity;
 import net.minecraft.registry.Registry;
@@ -49,6 +50,9 @@ public final class RacialHomes {
     /** The hearth is the Speaker's Hall up in the Heart Tree. */
     public static final Home ELVEN_ENCLAVE = register(new Home(id("elven_enclave"), DndRace.ELF, Set.of(),
             id("sylvan_court"), ElvenEnclaveStructures.HALL, null));
+    /** The hearth is the sanctum with the three breath altars. */
+    public static final Home DRAGON_TEMPLE = register(new Home(id("dragon_temple"), DndRace.DRAGONBORN, Set.of(),
+            id("dragonsworn"), DragonTempleStructures.SANCTUM, null));
 
     private RacialHomes() {
     }

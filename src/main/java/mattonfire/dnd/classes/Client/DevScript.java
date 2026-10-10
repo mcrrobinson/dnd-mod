@@ -68,7 +68,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
- * <li>{@code walk on|off} holds or releases the forward key, e.g. to crawl into a gap</li>
+ * <li>{@code walk on|off} (or {@code forward on|off}) holds or releases the walk forward key, e.g. to crawl
+ *     into a gap or to check movement is locked</li>
  * <li>{@code fov <30-110>} sets the field of view, e.g. 30 to zoom in on a third-person close-up</li>
  * <li>{@code sizes} logs every player's pose, hitbox (width x height), eye height, position and body race as
  * this client sees them, and in singleplayer as the integrated server sees them</li>
@@ -284,7 +285,7 @@ public final class DevScript {
             case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
             case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
-            case "walk" -> client.options.forwardKey.setPressed(argument.equals("on"));
+            case "walk", "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
             case "sizes" -> logSizes(client);
             case "fov" -> client.options.getFov().setValue(Integer.parseInt(argument));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));

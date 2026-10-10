@@ -267,6 +267,8 @@ public class DndClassesClient implements ClientModInitializer {
             fireBreathEndTick = 0;
             fireBreathWorld = null;
             MySphereRenderState.shouldRenderSphere = false;
+            // No rest carries over to the next world (it would lock movement).
+            mattonfire.dnd.classes.Rest.RestSnapshot.client = mattonfire.dnd.classes.Rest.RestSnapshot.NONE;
         }));
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);

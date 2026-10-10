@@ -113,6 +113,44 @@ public class BardSkills extends ClassSkills {
         return DndCharacter.BARD;
     }
 
+    /**
+     * Song of Rest: a short rest with a Bard in it (the resting player included) heals an
+     * extra 1d6, or 2d6 if a Bard there has unlocked the {@code bard.song_of_rest} active.
+     * Only the best Bard counts. Called by the campfire rest once the player's rest finishes.
+     *
+     * @param companions everyone resting together, the player included
+     */
+    public static void songOfRest(ServerPlayerEntity player, List<ServerPlayerEntity> companions) {
+        ServerPlayerEntity bard = null;
+        int dice = 0;
+        for (ServerPlayerEntity companion : companions) {
+            if (Progression.classOf(companion) != DndCharacter.BARD) {
+                continue;
+            }
+            int n = Progression.get(companion, DndCharacter.BARD).isUnlocked("bard.song_of_rest") ? 2 : 1;
+            if (n > dice) {
+                dice = n;
+                bard = companion;
+            }
+        }
+        if (bard == null) {
+            return;
+        }
+        int healed = 0;
+        StringBuilder rolls = new StringBuilder();
+        for (int i = 0; i < dice; i++) {
+            int roll = 1 + player.getRandom().nextInt(6);
+            healed += roll;
+            rolls.append(i == 0 ? "" : " + ").append(roll);
+        }
+        player.heal(healed);
+        String who = bard == player ? "" : " (" + bard.getName().getString() + ")";
+        player.sendMessage(Text.literal("Song of Rest" + who + ": " + dice + "d6: " + rolls + " = " + healed + " HP")
+                .formatted(Formatting.LIGHT_PURPLE), false);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_NOTE_BLOCK_HARP.value(),
+                net.minecraft.sound.SoundCategory.PLAYERS, 0.8F, 1.2F);
+    }
+
     @Override
     public List<String> subclassIds() {
         return List.of("bard.valor", "bard.lore");

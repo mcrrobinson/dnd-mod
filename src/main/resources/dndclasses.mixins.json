@@ -79,7 +79,8 @@
         "SoundSystemMusicDuckMixin",
         "WarlockFireballMixin",
         "RangerBowZoomMixin",
-        "ClientPlayerSwordDropMixin"
+        "ClientPlayerSwordDropMixin",
+        "RestMovementLockMixin"
     ],
     "injectors": {
         "defaultRequire": 1

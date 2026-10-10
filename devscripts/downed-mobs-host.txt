@@ -1,0 +1,161 @@
+# Mobs, bosses and PvP around Downed players (host side). Opens the world on port 25641 and waits for
+# downed-mobs-guest.txt (-PdevUser=Guest). Then:
+#  A. a zombie drawn to the host (a Fighter) switches to the guest when the host goes Downed;
+#  B. a creeper exploding next to the Downed host adds a fail;
+#  C. a Gelatinous Cube spits the Downed host out after 3 s;
+#  D. the guest can't short rest at a campfire while the host is Downed;
+#  E. in a Lich fight the guest can't rest, and with both players Downed death saves roll at disadvantage
+#     (with only the host Downed they're normal);
+#  F. outside the party, the guest finishes the Downed host and gets the kill.
+# Run: timeout 400 ./gradlew runClient -PdevUser=Hosty -PdevScript=devscripts/downed-mobs-host.txt
+# then, once the log says "Started serving on":
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25641 -PdevScript=devscripts/downed-mobs-guest.txt
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule mobGriefing false
+/gamerule doImmediateRespawn true
+/gamerule keepInventory true
+/gamerule dndDeathSaves 1
+/gamerule dndPvpDowned true
+/time set midnight
+/weather clear
+/kill @e[type=!player]
+/party leave
+/fill -5 149 -5 30 149 30 minecraft:stone
+/fill -5 150 -5 30 156 30 minecraft:air
+/setworldspawn 10 150 10
+/spawnpoint @s 10 150 10
+/tp @s 10.5 150 10.5 0 10
+/dndclass set @s fighter
+/attribute @s minecraft:generic.max_health base set 20
+/publish false survival 25641
+waitchat guest-ready
+wait 20
+/dndclass set Guest rogue
+/attribute Guest minecraft:generic.max_health base set 20
+/spawnpoint @a 10 150 10
+/clear @a
+/party create
+/party invite Guest
+waitchat Guest joined the party
+/effect give @a minecraft:resistance 9999 4 true
+/effect give @a minecraft:instant_health 1 3
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 18.5 180 10
+# A: the zombie spawns next to the guest, but the Fighter's aggro draw pulls it to the host
+/summon minecraft:zombie 10.5 150 16.5 {PersistenceRequired:1b,CustomName:'"Zed"',IsBaby:0b}
+wait 60
+/execute as @e[name=Zed] on target run me zed-target-1
+/dndclass forceroll @s 15 15 15 15
+/dndclass down @s
+wait 40
+/execute as @e[name=Zed] on target run me zed-target-2
+/execute unless entity @e[name=Zed,limit=1] run say no zed
+wait 40
+/execute as @e[name=Zed] on target run me zed-target-3
+# B: a creeper explodes next to the Downed host
+/kill @e[name=Zed]
+/dndclass revive @s 20
+wait 30
+/dndclass down @s
+/dndclass downed @s
+/summon minecraft:creeper 11.5 150 11.5 {Fuse:1s,ignited:1b}
+wait 20
+/dndclass downed @s
+# C: a Gelatinous Cube engulfs the Downed host and spits them out
+/dndclass revive @s 20
+wait 30
+/tp @s 10.5 150 10.5 0 10
+/dndclass down @s
+/summon dndclasses:gelatinous_cube 10.5 150 10.5 {NoAI:1b,PersistenceRequired:1b}
+wait 10
+/dndclass downed @s
+/data get entity @s Pos
+perspective back
+wait 50
+screenshot downed-cube-spat
+perspective first
+/data get entity @s Pos
+/dndclass downed @s
+/execute at @s if entity @e[type=dndclasses:gelatinous_cube,distance=..1.2]
+/kill @e[type=dndclasses:gelatinous_cube]
+# D: the guest can't rest at a campfire while the host is Downed
+/dndclass revive @s 20
+wait 30
+/tp @s 10.5 150 10.5 0 10
+/clear Guest
+/setblock 10 150 22 minecraft:campfire[lit=true]
+/tp Guest 10.5 150 20.5 0 35
+/dndclass down @s
+wait 10
+/me rest-try
+waitchat rest-done
+/setblock 10 150 22 minecraft:air
+# E: Lich fight, both Downed: death saves at disadvantage
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+/tp Guest 12.5 150 12.5 0 10
+/tp @s 10.5 150 10.5 0 10
+/summon dndclasses:lich 10.5 150 16.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}
+wait 20
+/damage @e[type=dndclasses:lich,limit=1] 1 minecraft:player_attack by @s
+wait 20
+# Only the host Downed, the guest standing: a normal save
+/dndclass down @s
+/dndclass forceroll @s 15
+wait 125
+# The guest can't rest during the boss fight (the host back up, so it's the boss bar that stops it)
+/dndclass revive @s 20
+/damage @e[type=dndclasses:lich,limit=1] 1 minecraft:player_attack by @s
+/setblock 10 150 30 minecraft:campfire[lit=true]
+/tp Guest 10.5 150 28.5 0 35
+wait 5
+/me boss-rest-try
+waitchat boss-rest-done
+/setblock 10 150 30 minecraft:air
+/tp Guest 12.5 150 12.5 0 10
+wait 30
+/damage @e[type=dndclasses:lich,limit=1] 1 minecraft:player_attack by @s
+wait 5
+/dndclass down @s
+/dndclass down Guest
+/dndclass forceroll @s 15 3 15 3
+/dndclass forceroll Guest 15 3 15 3
+/me lich-wipe
+wait 110
+screenshot downed-wipe-1
+wait 8
+screenshot downed-wipe-2
+wait 8
+screenshot downed-wipe-3
+wait 30
+/dndclass downed @s
+/dndclass downed Guest
+# F: PvP: outside the party, the guest finishes the Downed host
+/kill @e[type=dndclasses:phylactery]
+/kill @e[type=dndclasses:lich]
+/kill @e[type=!player]
+/dndclass revive @s 20
+/dndclass revive Guest 20
+/dndclass forceroll @s clear
+/party leave
+/effect clear @a
+/scoreboard objectives add pk playerKillCount
+/tp @s 10.5 150 10.5 0 10
+wait 30
+/dndclass down @s
+/dndclass forceroll Guest 20 20 20 20
+/tp Guest 10.5 150 12.0 180 40
+wait 10
+/me pvp-ready
+wait 80
+/scoreboard players get Guest pk
+respawn
+wait 20
+/me host-done
+wait 40
+quit

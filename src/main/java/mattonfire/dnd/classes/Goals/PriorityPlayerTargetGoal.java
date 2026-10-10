@@ -69,6 +69,8 @@ public class PriorityPlayerTargetGoal extends ActiveTargetGoal<PlayerEntity> {
     }
 
     private static boolean isFighter(PlayerEntity player) {
-        return player instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.FIGHTER;
+        // A Downed Fighter draws nobody (canTarget refuses them anyway; this keeps the search cheap).
+        return player instanceof PlayerEntityExt ext && ext.getDndClass() == DndCharacter.FIGHTER
+                && !mattonfire.dnd.classes.Downed.Downed.is(player);
     }
 }

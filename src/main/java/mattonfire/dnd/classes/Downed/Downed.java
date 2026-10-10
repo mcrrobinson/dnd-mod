@@ -63,7 +63,7 @@ public final class Downed {
     public static final int GIVE_UP_TICKS = 60;
     /** Damage immunity after standing up, so the same blow doesn't down you again. */
     public static final int GRACE_TICKS = 20;
-    /** Environmental damage (lava, fire, fall, drowning...) costs at most one fail per this many ticks. */
+    /** Each type of non-melee damage (lava, fire, explosions...) costs at most one fail per this many ticks. */
     public static final int HAZARD_COOLDOWN = 30;
     /** One attacker's melee hits cost fails at most this often. */
     public static final int MELEE_COOLDOWN = 10;
@@ -91,7 +91,8 @@ public final class Downed {
         @Nullable
         UUID attacker;
         String damageType = "minecraft:generic";
-        int hazardCooldown;
+        /** Damage type -> ticks until it can cost another fail. */
+        final Map<String, Integer> hazardCooldown = new HashMap<>();
         final Map<UUID, Integer> meleeCooldown = new HashMap<>();
         boolean givingUp;
         int giveUpHeld;
@@ -391,9 +392,8 @@ public final class Downed {
                 continue;
             }
             state.age++;
-            if (state.hazardCooldown > 0) {
-                state.hazardCooldown--;
-            }
+            state.hazardCooldown.replaceAll((k, v) -> v - 1);
+            state.hazardCooldown.values().removeIf(v -> v <= 0);
             state.meleeCooldown.replaceAll((k, v) -> v - 1);
             state.meleeCooldown.values().removeIf(v -> v <= 0);
             if (player.currentScreenHandler != player.playerScreenHandler) {

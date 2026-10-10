@@ -1,0 +1,46 @@
+# Mobs, bosses and PvP around Downed players (guest side), with downed-mobs-host.txt. Tries to rest while the host
+# is Downed, screenshots the Lich party wipe, and finishes the host in PvP. Run (after the host says "Started serving on"):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25641 -PdevScript=devscripts/downed-mobs-guest.txt
+wait 40
+closescreen
+respawn
+wait 60
+/party leave
+/me guest-ready
+waitchat invited you to their party
+/party accept
+waitchat zed-target-2
+wait 5
+screenshot downed-guest-zombie
+waitchat rest-try
+wait 5
+sneak on
+use
+wait 5
+sneak off
+wait 2
+screenshot downed-rest-refused
+wait 20
+/me rest-done
+waitchat boss-rest-try
+wait 5
+sneak on
+use
+wait 5
+sneak off
+wait 2
+screenshot downed-boss-rest-refused
+wait 20
+/me boss-rest-done
+waitchat lich-wipe
+wait 118
+screenshot downed-wipe-guest
+waitchat pvp-ready
+wait 5
+attack
+wait 15
+attack
+wait 15
+attack
+waitchat host-done
+quit

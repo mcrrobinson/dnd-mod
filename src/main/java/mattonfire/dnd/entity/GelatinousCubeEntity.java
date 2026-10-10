@@ -77,6 +77,10 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
     private static final int SLOWNESS_AMPLIFIER = 2;
     /** Horizontal pull towards the cube's middle, per tick. */
     private static final double PULL = 0.04D;
+    /** A Downed player is spat out after this many ticks inside, so allies can still revive them. */
+    public static final int SPIT_DOWNED_AFTER = 60;
+    /** Ticks a spat-out player can't be engulfed again. */
+    private static final int SPIT_IMMUNITY = 40;
 
     @SuppressWarnings("unchecked")
     private static final TrackedData<ItemStack>[] ABSORBED = new TrackedData[MAX_ABSORBED];
@@ -94,6 +98,8 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     /** Entity id of everything currently engulfed -> ticks it has been inside. */
     private final Int2IntMap engulfed = new Int2IntOpenHashMap();
+    /** Entity id of each Downed player it spat out -> the age until which it won't engulf them again. */
+    private final Int2IntMap spatOut = new Int2IntOpenHashMap();
 
     public GelatinousCubeEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -173,11 +179,18 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
     private void engulfTouching() {
         List<LivingEntity> touching = this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox(),
                 e -> e != this && e.isAlive() && !(e instanceof GelatinousCubeEntity) && !(e instanceof ArmorStandEntity)
-                        && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(e));
+                        && EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.test(e)
+                        && this.spatOut.getOrDefault(e.getId(), 0) <= this.age);
+        this.spatOut.values().removeIf(until -> until <= this.age);
 
         Int2IntMap stillInside = new Int2IntOpenHashMap();
         for (LivingEntity victim : touching) {
             int ticksInside = this.engulfed.getOrDefault(victim.getId(), 0);
+            if (ticksInside >= SPIT_DOWNED_AFTER && victim instanceof PlayerEntity player
+                    && mattonfire.dnd.classes.Downed.Downed.is(player)) {
+                this.spitOut(player);
+                continue;
+            }
             if (ticksInside == 0) {
                 this.triggerAnim("engulf_controller", "engulf");
                 this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, 0.5F);
@@ -190,6 +203,23 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
         }
         this.engulfed.clear();
         this.engulfed.putAll(stillInside);
+    }
+
+    /** Throws a Downed player out of the jelly, away from the middle, so allies can reach them. */
+    private void spitOut(PlayerEntity player) {
+        Vec3d away = new Vec3d(player.getX() - this.getX(), 0.0D, player.getZ() - this.getZ());
+        if (away.lengthSquared() < 0.01D) {
+            float yaw = this.random.nextFloat() * 6.2831855F;
+            away = new Vec3d(Math.cos(yaw), 0.0D, Math.sin(yaw));
+        }
+        // Enough to clear the cube from its middle (its half width plus a bit).
+        Vec3d push = away.normalize().multiply(0.25D + this.getWidth() * 0.35D);
+        player.setVelocity(push.x, 0.45D, push.z);
+        player.velocityModified = true;
+        this.spatOut.put(player.getId(), this.age + SPIT_IMMUNITY);
+        this.playSound(SoundEvents.ENTITY_SLIME_JUMP, 1.0F, 0.5F);
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Downed] {} spat out Downed {}", this.getName().getString(),
+                player.getEntityName());
     }
 
     /** Slows and gently drags the victim towards the middle, so walking out is a struggle. */

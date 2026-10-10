@@ -33,18 +33,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Warlocks get 2 extra XP for any kill by fire, and 1 extra for any kill in the Nether.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Fire Breath | Root | Active | 0 | 9 | The special above: 8 / 12 / 16 / 20 s, 3 / 4 / 5 / 7 blocks (ranks I-IV) |
-| Hellfire | Fiend | Passive | 1 | | Burning targets take 25% more damage from you |
-| Eldritch Blast | Fiend | Active | 1 | 3 | An instant beam that deals 8 magic damage to the first mob in your crosshair within 20 blocks |
-| Infernal Fireballs | Fiend | Passive | 1 | | Fireball cooldown halved, to two a second |
+| Hellfire | The Fiend | Passive | 1 | | Burning targets take 25% more damage from you |
+| Eldritch Blast | The Fiend | Active | 1 | 3 | An instant beam that deals 8 magic damage to the first mob in your crosshair within 20 blocks |
+| Infernal Fireballs | The Fiend | Passive | 1 | | Fireball cooldown halved, to two a second |
 | Rain Ward | Great Old One | Passive | 1 | | Water and rain hurt half as much |
 | Hex | Great Old One | Active | 1 | 4 | The mob in your crosshair (up to 20 blocks) gets Weakness II, Slowness II and Glowing, and takes 30% more damage from you, for 15 s |
-| Dark One's Blessing | Great Old One | Passive | 1 | | Each kill gives 2 absorption hearts, up to 4 |
+| Eldritch Hunger | Great Old One | Passive | 1 | | Each kill gives 2 absorption hearts, up to 4 |
 | Hellgate | Capstone | Active | 2 | 9 | A 6-block ring of fire around where you stand for 10 s. Mobs inside burn for 3 s and take 2 fire damage a second. You get Strength I for the same time |
 
 Hellfire works with your fireballs: the first fireball sets the target alight, and every hit after that is boosted. Eldritch Blast and Hex need a target in your crosshair, not behind blocks. With no target, nothing happens and you keep your mana.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| The Fiend | Right | Hellfire (first node, open to both), Eldritch Blast, Infernal Fireballs | **Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours is rerolled |
+| The Great Old One | Left | Rain Ward (first node, open to both), Hex, Eldritch Hunger | **Entropic Ward**: once every 60 seconds, a projectile that would hit you misses |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> warlock` (see [Admin commands](../systems/admin-commands.md)).

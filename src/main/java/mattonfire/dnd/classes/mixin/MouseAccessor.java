@@ -5,7 +5,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import net.minecraft.client.Mouse;
 
-/** Lets DevScript move the cursor (for screen tooltips) without real mouse input. */
+/** Lets DevScript's {@code hover} step move the cursor, in window pixels, so screens draw their tooltips. */
 @Mixin(Mouse.class)
 public interface MouseAccessor {
     @Accessor("x")

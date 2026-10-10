@@ -60,6 +60,11 @@ public class DruidSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("druid.moon", "druid.land");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("druid.wild_shape", "Wild Shape", "Turn into an animal you've killed and unlocked. Sneak + power-up picks the form.",

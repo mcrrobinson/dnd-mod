@@ -7,8 +7,10 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
-import mattonfire.dnd.classes.mixin.MinecraftClientInvoker;
 import mattonfire.dnd.classes.mixin.MouseAccessor;
+import net.minecraft.client.gui.screen.ingame.BookScreen;
+import net.minecraft.client.gui.widget.PressableWidget;
+import mattonfire.dnd.classes.mixin.MinecraftClientInvoker;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -73,10 +75,14 @@ import net.minecraft.util.Identifier;
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
- * <li>{@code mouse <dx> <dy>} moves the cursor to GUI coordinates measured from the screen centre, so the
- *     open screen draws the tooltip under it</li>
- * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
- *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
+ * <li>{@code widget <label>} presses the open screen's button with that label (e.g. {@code Yes} in a confirm
+ *     dialog)</li>
+ * <li>{@code page <n>} turns an open book to page n (from 0)</li>
+ * <li>{@code hover <dx> <dy>} moves the cursor to GUI coordinates measured from the screen's centre, so the open
+ *     screen draws the tooltip there (take a screenshot after it)</li>
+ * <li>{@code skill unlock|equip|rankup|bestiary|subclass <id>} sends what clicking the skill tree screen would
+ *     (left-click, left-click at a table, right-click at a table, a bestiary entry, confirming a subclass), so
+ *     the server's checks apply</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -257,12 +263,35 @@ public final class DevScript {
                     DnDClasses.LOGGER.warn("[DevScript] {}: click needs an open screen", lineNumber);
                 }
             }
-            case "mouse" -> {
+            case "widget" -> {
+                boolean found = false;
+                if (client.currentScreen != null) {
+                    for (var child : client.currentScreen.children()) {
+                        if (child instanceof PressableWidget widget && widget.getMessage().getString().equals(argument)) {
+                            widget.onPress();
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no button '{}' on the open screen", lineNumber, argument);
+                }
+            }
+            case "page" -> {
+                if (client.currentScreen instanceof BookScreen book) {
+                    book.setPage(Integer.parseInt(argument));
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: page needs an open book", lineNumber);
+                }
+            }
+            case "hover" -> {
                 String[] args = argument.split("\\s+");
                 double scale = client.getWindow().getScaleFactor();
-                MouseAccessor mouse = (MouseAccessor) client.mouse;
-                mouse.setX((client.getWindow().getScaledWidth() / 2.0 + Double.parseDouble(args[0])) * scale);
-                mouse.setY((client.getWindow().getScaledHeight() / 2.0 + Double.parseDouble(args[1])) * scale);
+                double x = (client.getWindow().getScaledWidth() / 2.0 + Double.parseDouble(args[0])) * scale;
+                double y = (client.getWindow().getScaledHeight() / 2.0 + Double.parseDouble(args[1])) * scale;
+                ((MouseAccessor) client.mouse).setX(x);
+                ((MouseAccessor) client.mouse).setY(y);
             }
             case "skill" -> skill(argument.split("\\s+"), lineNumber);
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
@@ -275,10 +304,11 @@ public final class DevScript {
             case "equip" -> Progression.C2S_EQUIP;
             case "rankup" -> Progression.C2S_RANK_UP;
             case "bestiary" -> Progression.C2S_BESTIARY_UNLOCK;
+            case "subclass" -> Progression.C2S_CHOOSE_SUBCLASS;
             default -> null;
         };
         if (packet == null || args.length < 2) {
-            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary <id>", lineNumber);
+            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass <id>", lineNumber);
             return;
         }
         PacketByteBuf buf = PacketByteBufs.create();

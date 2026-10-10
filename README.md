@@ -62,7 +62,7 @@ Every class has its own strengths, weaknesses and a special ability. Players pic
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. Big specials also cost charges, which come back when you rest. See [Mana and class specials](docs/systems/mana.md), [Rests and charges](docs/systems/rests.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
 
 ### Class Progression
-Classes level up to 10 with class XP. Each level gives a skill point to spend on the class skill tree or on ranking up abilities at an Attunement Table, and Bards and Druids keep a bestiary of the creatures they have killed. See [Class progression](docs/systems/class-progression.md).
+Classes level up to 10 with class XP. Each level gives a skill point to spend on the class skill tree or on ranking up abilities at an Attunement Table. At level 3 you choose a subclass, one of the tree's two branches. Bards and Druids keep a bestiary of the creatures they have killed. See [Class progression](docs/systems/class-progression.md).
 
 ### Parties
 `/party` lets players group up: shared XP, no friendly fire, a party health HUD and a party-aware Cleric special. See [Party](docs/systems/party.md).

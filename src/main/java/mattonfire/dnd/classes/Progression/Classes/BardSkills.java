@@ -97,11 +97,16 @@ public class BardSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("bard.valor", "bard.lore");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("bard.animal_friends", "Animal Friends",
                         "Unlocked animals nearby become your companions: they follow you and fight for you.", "minecraft:lead", 9, 0, 1, 3),
-                // Valor
+                // College of Valor
                 passive("bard.inspiring_presence", "Inspiring Presence",
                         "Other players within 8 blocks get Speed I.", "minecraft:sugar", 1, 2, 3,
                         "bard.animal_friends"),
@@ -110,7 +115,7 @@ public class BardSkills extends ClassSkills {
                         2, 2, "bard.inspiring_presence"),
                 passive("bard.battle_hymn", "Battle Hymn", "Other players within 8 blocks get Strength I.",
                         "minecraft:blaze_powder", 1, 2, 1, "bard.thunderwave"),
-                // Lore
+                // College of Lore
                 passive("bard.silver_tongue", "Silver Tongue", "Permanent Hero of the Village.",
                         "minecraft:emerald", 1, 0, 3, "bard.animal_friends"),
                 active("bard.song_of_rest", "Song of Rest",

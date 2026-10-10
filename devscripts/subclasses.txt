@@ -1,0 +1,68 @@
+# Checks subclasses. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/subclasses.txt
+# The migration step needs a saved Barbarian that owns nodes in both branches and no "subclass" key
+# (bloodlust, war_cry, rage_fuelled, thick_skin, ground_slam; active ground_slam); without one it is skipped.
+# Expect in latest.log ([CHAT] lines):
+#  1. "tree now follows the subclass Path of the Berserker. 1 point refunded." and progress shows
+#     subclass barbarian.berserker without ground_slam (migration)
+#  2. "subclass was cleared. 2 points refunded." then subclass - (/dndclass subclass none)
+#  3. level 2: war_cry not unlocked (needs a subclass), bloodlust and thick_skin are
+#  4. level 3 away from a table: "Subclasses are chosen at an Attunement Table." (action bar, see screenshot), subclass -
+#  5. at the table: "the Totem Warrior Barbarian has chosen a subclass: Path of the Totem Warrior."
+#  6. war_cry still locked (Berserker only), ground_slam unlocked
+# Screenshots: subclass-choose (gold banners), subclass-confirm (confirm dialog), subclass-chosen (banner + padlocks)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s barbarian
+wait 10
+closescreen
+/dndclass progress @s
+/dndclass subclass @s none
+/dndclass progress @s
+/dndclass resetprogress @s
+/dndclass xp @s set 120
+wait 5
+skill unlock barbarian.bloodlust
+wait 5
+skill unlock barbarian.war_cry
+wait 5
+/dndclass progress @s
+/dndclass xp @s set 250
+skill unlock barbarian.thick_skin
+wait 5
+/tp @s 4.5 150 1.5 0 30
+wait 5
+skill subclass barbarian.totem_warrior
+wait 3
+screenshot subclass-no-table
+/dndclass progress @s
+/setblock 4 150 4 dndclasses:attunement_table
+wait 5
+use
+wait 10
+screenshot subclass-choose
+click -80 -49
+wait 10
+screenshot subclass-confirm
+closescreen
+wait 5
+skill subclass barbarian.totem_warrior
+wait 10
+use
+wait 10
+skill unlock barbarian.war_cry
+wait 5
+skill unlock barbarian.ground_slam
+wait 10
+screenshot subclass-chosen
+/dndclass progress @s
+closescreen
+/dndclass subclass @s none
+/dndclass progress @s
+/dndclass resetprogress @s
+quit

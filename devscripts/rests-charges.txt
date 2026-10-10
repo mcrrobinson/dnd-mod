@@ -52,7 +52,7 @@ wait 10
 # The tree's footer and the hovered Titan's tooltip show the charge cost
 press key.dnd-classes.skill-tree
 wait 10
-mouse 0 -50
+hover 0 -50
 wait 5
 screenshot charges-tree
 closescreen

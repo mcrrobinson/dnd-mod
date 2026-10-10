@@ -81,6 +81,11 @@ public class RangerSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("ranger.hunter", "ranger.horizon_walker");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("ranger.arrow_storm", "Arrow Storm",
@@ -94,8 +99,8 @@ public class RangerSkills extends ClassSkills {
                 passive("ranger.hunters_mark", "Hunter's Mark",
                         "Your arrows make targets glow for 10 seconds, and glowing targets take 20% more damage from you.",
                         "minecraft:spectral_arrow", 1, 2, 1, "ranger.volley"),
-                // Survivalist
-                passive("ranger.fireproof", "Fireproof", "Lava no longer burns you extra hard.",
+                // Horizon Walker
+                passive("ranger.fireproof", "Planar Hardiness", "Lava no longer burns you extra hard.",
                         "minecraft:magma_cream", 1, 0, 3, "ranger.arrow_storm"),
                 active("ranger.snare", "Snare", "Mobs within 6 blocks get Slowness V for 5 seconds.",
                         "minecraft:cobweb", 3, 1, 0, 2, "ranger.fireproof"),

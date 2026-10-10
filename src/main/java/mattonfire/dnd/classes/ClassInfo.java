@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -24,16 +25,33 @@ import mattonfire.dnd.classes.Abilities.ClassAbilities;
  * guidebook, the class-pick chat message and the README never drift apart.
  */
 public record ClassInfo(DndCharacter id, String name, List<String> pros, List<String> cons, List<String> special,
-        boolean specialOnKey, @Nullable ClassAbilities abilities) {
+        boolean specialOnKey, String subclassTerm, List<SubclassInfo> subclasses,
+        @Nullable ClassAbilities abilities) {
 
     public static final String RESOURCE = "/data/" + DnDClasses.MOD_ID + "/class_info.json";
 
     private static Map<DndCharacter, ClassInfo> byClass;
+    private static Map<String, SubclassInfo> bySubclass;
     private static final List<String> ABILITY_ERRORS = new ArrayList<>();
 
+    /**
+     * A subclass's text. The rules (which nodes it locks) are in {@link mattonfire.dnd.classes.Progression.Subclass}.
+     *
+     * @param title        "Berserker Barbarian", as in "Matt the Berserker Barbarian"
+     * @param featureReady false while the feature is only described, so the tree can say it isn't active yet
+     */
+    public record SubclassInfo(String id, String name, String title, String flavour, String featureName,
+            String featureDescription, boolean featureReady) {
+    }
+
     private record Entry(String id, String name, List<String> pros, List<String> cons, List<String> special,
-            Boolean specialOnKey, Map<String, Integer> abilities, List<String> saves, List<String> skills,
-            List<String> expertise) {
+            Boolean specialOnKey, String subclassTerm, List<SubclassEntry> subclasses,
+            Map<String, Integer> abilities, List<String> saves, List<String> skills, List<String> expertise) {
+    }
+
+    /** {@code feature} is "**Name**: what it does", like {@code special}. */
+    private record SubclassEntry(String id, String name, String title, String flavour, String feature,
+            Boolean featureReady) {
     }
 
     private record Root(List<Entry> classes) {
@@ -49,8 +67,18 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
     public static synchronized Map<DndCharacter, ClassInfo> all() {
         if (byClass == null) {
             byClass = load();
+            Map<String, SubclassInfo> subclasses = new HashMap<>();
+            byClass.values().forEach(info -> info.subclasses().forEach(sub -> subclasses.put(sub.id(), sub)));
+            bySubclass = subclasses;
         }
         return byClass;
+    }
+
+    /** A subclass's text by id ("barbarian.berserker"), or null if class_info.json doesn't have it. */
+    @Nullable
+    public static SubclassInfo subclass(String id) {
+        all();
+        return bySubclass.get(id);
     }
 
     private static Map<DndCharacter, ClassInfo> load() {
@@ -66,8 +94,20 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
                     DndCharacter character = DndCharacter.valueOf(e.id());
                     ClassAbilities abilities = ClassAbilities.parse(e.id(), e.abilities(), e.saves(), e.skills(),
                             e.expertise(), ABILITY_ERRORS);
+                    List<SubclassInfo> subclasses = new ArrayList<>();
+                    for (SubclassEntry sub : orEmpty(e.subclasses())) {
+                        String feature = forGame(sub.feature() == null ? "" : sub.feature());
+                        int colon = feature.indexOf(": ");
+                        subclasses.add(new SubclassInfo(sub.id(), sub.name(), sub.title(),
+                                sub.flavour() == null ? "" : sub.flavour(),
+                                colon < 0 ? feature : feature.substring(0, colon),
+                                colon < 0 ? "" : capitalize(feature.substring(colon + 2)),
+                                sub.featureReady() != null && sub.featureReady()));
+                    }
                     map.put(character, new ClassInfo(character, e.name(), orEmpty(e.pros()), orEmpty(e.cons()),
-                            orEmpty(e.special()), e.specialOnKey() == null || e.specialOnKey(), abilities));
+                            orEmpty(e.special()), e.specialOnKey() == null || e.specialOnKey(),
+                            e.subclassTerm() == null ? "subclass" : e.subclassTerm(), List.copyOf(subclasses),
+                            abilities));
                 }
             }
         } catch (Exception e) {
@@ -82,7 +122,11 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
         return List.copyOf(ABILITY_ERRORS);
     }
 
-    private static List<String> orEmpty(@Nullable List<String> list) {
+    private static String capitalize(String text) {
+        return text.isEmpty() ? text : Character.toUpperCase(text.charAt(0)) + text.substring(1);
+    }
+
+    private static <T> List<T> orEmpty(@Nullable List<T> list) {
         return list == null ? Collections.emptyList() : list;
     }
 

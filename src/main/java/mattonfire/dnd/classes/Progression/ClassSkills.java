@@ -4,6 +4,9 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.SkillNode.Kind;
+import mattonfire.dnd.classes.Rest.Charges;
+import mattonfire.dnd.classes.Rest.RechargeGroup;
+import mattonfire.dnd.classes.Rest.RestState;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -93,6 +96,27 @@ public abstract class ClassSkills {
      */
     public int bestiaryRank(EntityType<?> type) {
         return 1;
+    }
+
+    /** How this class gets charges back from rests; the 5e-style default from {@link Charges#defaultGroup}. */
+    public RechargeGroup rechargeGroup() {
+        return Charges.defaultGroup(dndClass());
+    }
+
+    /**
+     * Charges a short rest gives back (capped at {@code max} by the caller): all of
+     * them for a short-rest class, 1 otherwise. May change {@code state}, which is
+     * saved afterwards.
+     */
+    public int shortRestCharges(ServerPlayerEntity player, RestState state, int max) {
+        return rechargeGroup() == RechargeGroup.SHORT ? max : 1;
+    }
+
+    /**
+     * Called after a short rest's benefits, with everyone resting together (the
+     * player included). For bonuses like the Bard's Song of Rest.
+     */
+    public void onShortRest(ServerPlayerEntity player, List<ServerPlayerEntity> companions) {
     }
 
     /** Passives that are just an attribute bonus; added and removed automatically. */

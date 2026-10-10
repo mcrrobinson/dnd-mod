@@ -8,6 +8,7 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.mixin.MinecraftClientInvoker;
+import mattonfire.dnd.classes.mixin.MouseAccessor;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -49,6 +50,7 @@ import net.minecraft.util.Identifier;
  * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
  *     {@code serverhitboxes measure} logs how far they are from the client's</li>
  * <li>{@code hud on|off} toggles the HUD (F1)</li>
+ * <li>{@code clearchat} clears the chat (F3+D), so it doesn't cover the HUD in a screenshot</li>
  * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join); a container screen is
  *     closed on the server too, like pressing Esc</li>
  * <li>{@code respawn} respawns the player if it's dead (a world saved mid-death loads dead)</li>
@@ -71,6 +73,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
+ * <li>{@code mouse <dx> <dy>} moves the cursor to GUI coordinates measured from the screen centre, so the
+ *     open screen draws the tooltip under it</li>
  * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
  *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
  * </ul>
@@ -197,6 +201,7 @@ public final class DevScript {
                 }
             }
             case "hud" -> client.options.hudHidden = argument.equals("off");
+            case "clearchat" -> client.inGameHud.getChatHud().clear(false);
             case "closescreen" -> {
                 // setScreen(null) alone leaves a container open on the server (brewing stand, chest, ...)
                 if (client.currentScreen instanceof HandledScreen<?>) {
@@ -251,6 +256,13 @@ public final class DevScript {
                 } else {
                     DnDClasses.LOGGER.warn("[DevScript] {}: click needs an open screen", lineNumber);
                 }
+            }
+            case "mouse" -> {
+                String[] args = argument.split("\\s+");
+                double scale = client.getWindow().getScaleFactor();
+                MouseAccessor mouse = (MouseAccessor) client.mouse;
+                mouse.setX((client.getWindow().getScaledWidth() / 2.0 + Double.parseDouble(args[0])) * scale);
+                mouse.setY((client.getWindow().getScaledHeight() / 2.0 + Double.parseDouble(args[1])) * scale);
             }
             case "skill" -> skill(argument.split("\\s+"), lineNumber);
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);

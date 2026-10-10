@@ -7,6 +7,7 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.SkillChecks.AttackRolls;
 import mattonfire.dnd.classes.SkillChecks.Lockpicking;
 import mattonfire.dnd.classes.SkillChecks.Persuasion;
@@ -128,6 +129,7 @@ public final class ClassLifecycle {
         }
         player.clearStatusEffects();
         Druid.onClassReset(player);
+        DndCharacter oldClass = classOf(player);
         if (player instanceof PlayerEntityExt ext) {
             ext.setDndClass(dndClass);
         }
@@ -152,6 +154,7 @@ public final class ClassLifecycle {
             ClassGuidebook.giveIfMissing(player);
         }
         Progression.sync(player);
+        Charges.onClassChange(player, oldClass);
     }
 
     /** Drops per-player server state when a player leaves. */

@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes.Client.Hud;
 
+import mattonfire.dnd.classes.Rest.Charges;
+import mattonfire.dnd.classes.Rest.RestSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -180,7 +182,7 @@ public class SkillTreeScreen extends Screen {
 
         SkillNode active = progress.activeNode();
         drawTextWithShadow(matrices, textRenderer, Text.literal("Active: ").formatted(Formatting.GRAY)
-                .append(Text.literal(active.name() + " (" + active.manaCost() + " mana)")
+                .append(Text.literal(active.name() + " (" + active.manaCost() + " mana" + chargeSuffix(active) + ")")
                         .formatted(Formatting.AQUA)),
                 left + 12, y, 0xFFFFFF);
 
@@ -265,6 +267,10 @@ public class SkillTreeScreen extends Screen {
         lines.add((node.isActive()
                 ? Text.literal("Active - " + node.manaCost() + " mana").formatted(Formatting.AQUA)
                 : Text.literal("Passive").formatted(Formatting.GREEN)).asOrderedText());
+        Text chargeLine = chargeLine(node);
+        if (chargeLine != null) {
+            lines.add(chargeLine.asOrderedText());
+        }
         lines.addAll(textRenderer.wrapLines(Text.literal(node.description()).formatted(Formatting.GRAY), 180));
         addRankLines(lines, progress, node);
 
@@ -291,6 +297,23 @@ public class SkillTreeScreen extends Screen {
             lines.add(rankStatus.asOrderedText());
         }
         return lines;
+    }
+
+    /** "Costs N charge(s), recharges on a short/long rest", or null if it costs none or rests are off. */
+    private static Text chargeLine(SkillNode node) {
+        RestSnapshot rest = RestSnapshot.client;
+        int cost = Charges.cost(node);
+        if (!node.isActive() || cost <= 0 || !rest.enabled() || rest.max() <= 0) {
+            return null;
+        }
+        return Text.literal("Costs " + cost + " charge" + (cost == 1 ? "" : "s") + ", recharges on a "
+                + rest.rechargeGroup().label()).formatted(Formatting.LIGHT_PURPLE);
+    }
+
+    private static String chargeSuffix(SkillNode node) {
+        int cost = Charges.cost(node);
+        RestSnapshot rest = RestSnapshot.client;
+        return cost > 0 && rest.enabled() && rest.max() > 0 ? ", " + cost + " charge" + (cost == 1 ? "" : "s") : "";
     }
 
     private void addRankLines(List<OrderedText> lines, ClassProgress progress, SkillNode node) {

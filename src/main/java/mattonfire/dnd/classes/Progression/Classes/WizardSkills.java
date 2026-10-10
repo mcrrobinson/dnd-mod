@@ -19,6 +19,7 @@ import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.classes.Rest.RestState;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.EntityType;
@@ -85,6 +86,16 @@ public class WizardSkills extends ClassSkills {
     @Override
     public DndCharacter dndClass() {
         return DndCharacter.WIZARD;
+    }
+
+    /** Arcane Recovery: the first short rest after a long rest gives 2 charges instead of 1. */
+    @Override
+    public int shortRestCharges(ServerPlayerEntity player, RestState state, int max) {
+        if (!state.wizardRecoveryUsed) {
+            state.wizardRecoveryUsed = true;
+            return 2;
+        }
+        return 1;
     }
 
     @Override

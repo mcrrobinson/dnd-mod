@@ -28,6 +28,13 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
+import mattonfire.dnd.classes.Rest.Charges;
+import mattonfire.dnd.classes.Rest.HitDice;
+import mattonfire.dnd.classes.Rest.RestKind;
+import mattonfire.dnd.classes.Rest.RestSnapshot;
+import mattonfire.dnd.classes.Rest.RestSource;
+import mattonfire.dnd.classes.Rest.RestSync;
+import mattonfire.dnd.classes.Rest.Rests;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -51,6 +58,9 @@ import net.minecraft.util.Identifier;
  * /dndclass rank <player> <skill> <n>        (ignores points, level and the attunement table)
  * /dndclass bestiary <player> learn|unlock <entity>
  *
+ * /dndclass rest <player> short|long         (applies the rest's benefits, ignoring its limits)
+ * /dndclass charges <player> [n]
+ * /dndclass hitdice <player> [n]
  * /dndclass sheet <player>                    (ability scores, saves, skills, passives)
  * /dndclass score <player> <ability> <value>|clear   (admin override of one score)
  * /dndclass forceroll <player> <n...>|clear   (rigs the player's next d20 naturals, for tests)
@@ -97,6 +107,33 @@ public class DndClassCommand {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(bestiaryCommand("learn", false))
                                 .then(bestiaryCommand("unlock", true))))
+                .then(CommandManager.literal("rest")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.literal("short")
+                                        .executes(context -> rest(context, RestKind.SHORT)))
+                                .then(CommandManager.literal("long")
+                                        .executes(context -> rest(context, RestKind.LONG)))))
+                .then(CommandManager.literal("charges")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(DndClassCommand::restInfo)
+                                .then(CommandManager.argument("n", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context,
+                                                    "player");
+                                            Charges.set(player, IntegerArgumentType.getInteger(context, "n"));
+                                            return restInfo(context);
+                                        }))))
+                .then(CommandManager.literal("hitdice")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(DndClassCommand::restInfo)
+                                .then(CommandManager.argument("n", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context,
+                                                    "player");
+                                            HitDice.setRemaining(player, IntegerArgumentType.getInteger(context,
+                                                    "n"));
+                                            return restInfo(context);
+                                        }))))
                 .then(CommandManager.literal("sheet")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::sheet)))
@@ -189,6 +226,26 @@ public class DndClassCommand {
                             }
                             return progress(context);
                         }));
+    }
+
+    private static int rest(CommandContext<ServerCommandSource> context, RestKind kind)
+            throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        Rests.complete(player, kind, RestSource.ADMIN);
+        context.getSource().sendFeedback(Text.literal("Gave " + player.getEntityName() + " a " + kind.label()), true);
+        return restInfo(context);
+    }
+
+    /** Prints charges, Hit Dice and short rests left; returns the charges. */
+    private static int restInfo(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        RestSnapshot rest = RestSync.snapshot(player);
+        context.getSource().sendFeedback(Text.literal(player.getEntityName() + ": " + rest.charges() + "/"
+                + rest.max() + " charges" + (rest.temp() > 0 ? " (+" + rest.temp() + " temporary)" : "")
+                + ", recharge on a " + rest.rechargeGroup().label() + ", " + rest.hitDiceLeft() + "/"
+                + rest.hitDiceMax() + " Hit Dice (d" + rest.dieSize() + "), " + rest.shortRestsLeft()
+                + " short rests left" + (rest.enabled() ? "" : " (dndRests is off)")), false);
+        return rest.charges();
     }
 
     private static int progress(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

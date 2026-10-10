@@ -49,6 +49,12 @@ public final class CampfireRest {
                 return restStart ? ActionResult.SUCCESS : ActionResult.PASS;
             }
             ServerPlayerEntity server = (ServerPlayerEntity) player;
+            if (PartyCamp.inCamp(server) && isLitCampfire(world.getBlockState(pos)) && player.isSneaking()
+                    && (player.getMainHandStack().isEmpty() || player.getMainHandStack().isOf(PartyCamp.BEDROLL))) {
+                // Campers sit back down after an ambush, or get up and leave the camp.
+                PartyCamp.use(server, pos);
+                return ActionResult.SUCCESS;
+            }
             if (RestSession.isResting(server)) {
                 // Clicking the campfire again (or anything else) stops resting.
                 RestSession.cancel(server, restStart ? "you got up" : "you used a block");

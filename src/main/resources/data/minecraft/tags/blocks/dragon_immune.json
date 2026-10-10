@@ -8,6 +8,11 @@
     "dndclasses:portcullis_winch",
     "dndclasses:chasm",
     "dndclasses:bridge_winch",
-    "dndclasses:crumbling_ledge"
+    "dndclasses:crumbling_ledge",
+    "dndclasses:holy_ward",
+    "dndclasses:desecrated_altar",
+    "dndclasses:dread_ward",
+    "dndclasses:ossuary_gate",
+    "dndclasses:blood_seal"
   ]
 }

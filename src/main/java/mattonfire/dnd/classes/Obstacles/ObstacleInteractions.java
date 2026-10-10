@@ -235,7 +235,10 @@ public final class ObstacleInteractions {
             Progression.addXp(solver, xp);
         }
         type.onSolved(world, pos, solver);
-        ObstacleEvents.SOLVED.invoker().onSolved(solver, type, tier, pos);
+        // Only a rewarded solve counts: not a re-crank, a part payment or anything else that earns nothing
+        if (rewarded) {
+            ObstacleEvents.SOLVED.invoker().onSolved(solver, type, tier, pos);
+        }
     }
 
     /** Returns true when the channel is over (finished or broken). */

@@ -43,6 +43,7 @@
         "PotionItemMixin",
         "AlchemistPotionMixin",
         "PotionEntityMixin",
+        "MobSpawnerLogicMixin",
         "AreaEffectCloudEntityMixin",
         "ArrowEntityMixin",
         "PotionImmunityMixin",

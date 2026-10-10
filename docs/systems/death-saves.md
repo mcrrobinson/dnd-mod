@@ -101,4 +101,4 @@ Permission level 2.
 - Mixins: `PlayerEntityMixin` (the `DND$DOWNED` tracked byte, `updatePose` forced to `SWIMMING`, no `jump` or `checkFallFlying`, records the overflow past 0 HP in `applyDamage`), `LivingEntityMixin` (no `heal`, no sprinting, no `swimUpward`), `LivingEntityInvoker` (`tryUseTotem`), `DownedServerPlayerMixin` (no Q drop).
 - Client `DownedClient`: closes handled screens and sends the give-up hold state of the power-up key.
 - DevScript `holdkey <key> on|off` holds a key binding.
-- Devscripts: `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout)., `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).
+- Devscripts: `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout), `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).

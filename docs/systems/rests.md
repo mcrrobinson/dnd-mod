@@ -57,7 +57,7 @@ Charges, Hit Dice and the rest counters are kept through death, relogging and le
 - While you rest you can't walk or jump (look around freely). The action bar counts up, "Short rest 12 / 30 s", and a bar fills left of the charge gems.
 - When it finishes you get the short rest benefits above: full mana, charges by recharge group (a Barbarian gets 1 back, a Bard all of them, a Wizard's first one after a long rest 2), and Hit Dice healing, which shows in chat: "Short rest: spent 1 Hit Die (d12): 9 = 9 HP".
 - **Song of Rest:** a short rest with a Bard in it (party members at campfires within 8 blocks, the Bard included) heals an extra **1d6** HP, or **2d6** if a Bard there has unlocked the Song of Rest active. Only the best Bard counts. Chat: "Song of Rest (Name): 1d6: 4 = 4 HP".
-- **Resting together:** party members who sit at campfires within 8 blocks of each other rest together. Each rest finishes on its own timer.
+- **Resting together:** party members who sit at campfires within 8 blocks of each other rest together. Each rest finishes on its own timer, and someone who finished in the last 30 seconds still counts, so a Bard who sat down first still gives Song of Rest to the others.
 
 The rest is **interrupted**, and you keep nothing (it doesn't use up a short rest), if:
 - you move more than 1.5 blocks from where you sat (knockback, a teleport)
@@ -108,4 +108,4 @@ Permission level 2.
 - `ClassSkills` hooks: `rechargeGroup()`, `shortRestCharges(player, state, max)` (Wizard overrides it), `onShortRest(player, companions)`.
 - `DnDClasses.sendPowerupPacket` checks `Charges.canAfford` after the mana check and calls `Charges.spend` on success. `ClassLifecycle.change` calls `Charges.onClassChange`.
 - HUD: `Client/Hud/PowerupOverlay.renderCharges`, textures `textures/power/charge_full|empty|temp.png`.
-- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).
+- Devscripts: `devscripts/rests-short.txt` (Barbarian and Bard rests, cooldown, the 2-rest limit, movement lock), `devscripts/rests-short-interrupts.txt` (monster, damage, moving, campfire out, power-up, attack, Wizard Arcane Recovery), `devscripts/rests-dungeon.txt` (dungeon refusals), `devscripts/rests-party-host.txt` + `rests-party-guest.txt` (two clients: resting together, Song of Rest from a party Bard), `devscripts/rests-charges.txt` (Rage 3 times, "No charges left", long rest, Titan costs 2, War Cry costs 0, `dndRests false`, air bubbles, death).

@@ -49,12 +49,20 @@ public final class RestSession {
     private static final int HUD_EVERY = 5;
 
     private static final Map<UUID, RestSession> SESSIONS = new HashMap<>();
+    /**
+     * Rests that finished in the last {@value #SHORT_REST_TICKS} ticks, so a party member who
+     * sat down a little later still counts them as resting with them (a Bard who finished first
+     * still gives the rest of the party Song of Rest).
+     */
+    private static final Map<UUID, RestSession> RECENT = new HashMap<>();
 
     private final UUID player;
     private final RegistryKey<World> world;
     private final BlockPos campfire;
     private final Vec3d seat;
     private int ticks;
+    /** Server tick the rest finished, for {@link #RECENT}. */
+    private int finishedAt;
 
     private RestSession(ServerPlayerEntity player, BlockPos campfire) {
         this.player = player.getUuid();
@@ -107,9 +115,11 @@ public final class RestSession {
     /** Drops the rest without a message (disconnect, death, class reset). */
     public static void forget(UUID player) {
         SESSIONS.remove(player);
+        RECENT.remove(player);
     }
 
     static void tick(MinecraftServer server) {
+        RECENT.values().removeIf(session -> server.getTicks() - session.finishedAt > SHORT_REST_TICKS);
         if (SESSIONS.isEmpty()) {
             return;
         }
@@ -147,7 +157,9 @@ public final class RestSession {
             companions.put(player, companions(player));
         }
         for (ServerPlayerEntity player : finished) {
-            SESSIONS.remove(player.getUuid());
+            RestSession session = SESSIONS.remove(player.getUuid());
+            session.finishedAt = server.getTicks();
+            RECENT.put(player.getUuid(), session);
             RestSync.clearSession(player);
             List<ServerPlayerEntity> resting = companions.get(player);
             DnDClasses.LOGGER.info("[Rest] {} finished a short rest with {}", player.getEntityName(),
@@ -159,8 +171,9 @@ public final class RestSession {
     }
 
     /**
-     * Everyone resting with the player, the player first: party members in a rest whose
-     * campfire is within {@value #PARTY_RADIUS} blocks of the player's.
+     * Everyone resting with the player, the player first: party members resting (or who
+     * finished a rest in the last {@value #SHORT_REST_TICKS} ticks) at a campfire within
+     * {@value #PARTY_RADIUS} blocks of the player's.
      */
     public static List<ServerPlayerEntity> companions(ServerPlayerEntity player) {
         List<ServerPlayerEntity> result = new ArrayList<>();
@@ -171,7 +184,7 @@ public final class RestSession {
         }
         double radiusSq = PARTY_RADIUS * PARTY_RADIUS;
         for (ServerPlayerEntity member : PartyManager.nearbyMembers(player, 64)) {
-            RestSession other = SESSIONS.get(member.getUuid());
+            RestSession other = SESSIONS.getOrDefault(member.getUuid(), RECENT.get(member.getUuid()));
             if (other != null && other.world == own.world
                     && other.campfire.getSquaredDistance(own.campfire) <= radiusSq) {
                 result.add(member);

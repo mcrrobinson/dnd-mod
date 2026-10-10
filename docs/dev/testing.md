@@ -1,6 +1,8 @@
 # Testing in the dev client
 How to check a change in a real Minecraft client without anyone at the keyboard. The full reference is the "Testing in the dev client" section of [CLAUDE.md](../../CLAUDE.md#testing-in-the-dev-client). This page is a summary.
 
+![An enchanting table loaded and read by a scripted, hidden-window DevScript run (slot and button steps)](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/testing-devscript-enchant.png)
+
 ## How it works
 - `./gradlew runClient` loads straight into `run/saves/New World` (pick another with `-PdevWorld=<folder>`).
 - **Scripted runs:** `timeout 300 ./gradlew runClient -PdevScript=devscripts/<script>.txt` joins the world, runs the script one step per tick and quits. Scripted clients use a hidden window that never takes focus.

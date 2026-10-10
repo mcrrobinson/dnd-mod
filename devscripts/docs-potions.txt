@@ -1,0 +1,62 @@
+# Docs screenshots for docs/items/potions-and-brewing.md: an Alchemist's Fast Brewing Stand mid-brew (screen and block),
+# and mobs held by the Potion of Freezing (blue tint) next to an unfrozen one.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/docs-potions.txt
+wait 40
+closescreen
+/dndclass set @s alchemist
+wait 10
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback false
+/time set 1000
+/weather clear
+/kill @e[type=!player]
+/clear @s
+/fill -10 229 -10 20 229 30 minecraft:grass_block
+/fill -10 230 -10 20 250 30 minecraft:air
+hud off
+# --- Fast Brewing Stand: the block on a table with bottles, then its screen mid-brew
+/setblock 3 230 5 minecraft:spruce_planks
+/setblock 3 231 5 dndclasses:fast_brewing_stand
+/item replace block 3 231 5 container.0 with minecraft:potion{Potion:"minecraft:water"}
+/item replace block 3 231 5 container.1 with minecraft:potion{Potion:"minecraft:water"}
+/item replace block 3 231 5 container.2 with minecraft:potion{Potion:"minecraft:water"}
+/item replace block 3 231 5 container.4 with minecraft:blaze_powder 8
+/data get block 3 231 5
+/tp @s 3.5 231.2 3.0 0 25
+wait 20
+screenshot docs-brewing-block
+/tp @s 3.5 230.5 3.6 0 12
+wait 5
+use
+wait 10
+/item replace block 3 231 5 container.3 with minecraft:nether_wart 4
+wait 12
+screenshot docs-brewing-screen-1
+wait 6
+screenshot docs-brewing-screen-2
+wait 40
+/item replace block 3 231 5 container.3 with minecraft:ice 4
+wait 12
+screenshot docs-brewing-screen-3
+wait 60
+screenshot docs-brewing-screen-done
+slots
+closescreen
+/fill 3 230 5 3 231 5 minecraft:air
+# --- Potion of Freezing: frozen mobs are tinted blue
+/summon minecraft:pillager 1.5 230 7.5 {NoAI:1b,Rotation:[160f,0f],PersistenceRequired:1b,Tags:["docs_frozen"]}
+/summon minecraft:husk 3.5 230 7.5 {NoAI:1b,Rotation:[180f,0f],PersistenceRequired:1b,Tags:["docs_frozen"]}
+/summon minecraft:villager 5.5 230 7.5 {NoAI:1b,Rotation:[200f,0f],PersistenceRequired:1b}
+/effect give @e[tag=docs_frozen] dndclasses:freeze 180 0
+/tp @s 3.5 231.0 2.5 0 8
+wait 30
+screenshot docs-freeze-1
+/give @s minecraft:potion{Potion:"dndclasses:freeze"}
+hotbar 0
+wait 5
+screenshot docs-freeze-2
+quit

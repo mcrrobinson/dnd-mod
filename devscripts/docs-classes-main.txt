@@ -1,0 +1,233 @@
+# Docs screenshots for class specials whose look is the same on main: Barbarian, Fighter, Artificer, Cleric, Ranger, Blood Hunter.
+# Run: timeout 900 ./gradlew runClient -PdevRunDir=run-classes -PdevScript=devscripts/docs-classes-main.txt
+# Output: <run dir>/screenshots/cls-*.png. Grass stage at y=200; each class waits ~19 s after the switch so the mana bar is full.
+wait 40
+closescreen
+hud off
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule sendCommandFeedback false
+/weather clear
+/time set 6000
+/gamemode survival
+/difficulty normal
+/tp @s 1000.5 200 1000.5 0 0
+/effect give @s minecraft:slow_falling 30 0 true
+wait 60
+/fillbiome 980 192 980 1020 207 1020 minecraft:plains
+/fill 980 199 980 1020 199 1020 minecraft:grass_block
+/kill @e[type=!minecraft:player,distance=..60]
+/tp @s 1000.5 200 1000.5 0 0
+wait 20
+# ---- Barbarian: Rage, punching a sturdy zombie
+/dndclass set @s barbarian
+wait 20
+closescreen
+/clear @s
+/effect clear @s
+/summon minecraft:zombie 1000.5 200 1003 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+wait 380
+/kill @e[type=minecraft:item]
+/tp @s 1000.5 200 1000.5 0 5
+press key.dnd-classes.power-up
+wait 30
+perspective back
+look 35 5
+wait 10
+attack
+wait 3
+screenshot cls-barbarian-a
+wait 20
+look -35 5
+attack
+wait 3
+screenshot cls-barbarian-b
+perspective front
+look 160 5
+wait 5
+screenshot cls-barbarian-c
+look 215 5
+wait 5
+screenshot cls-barbarian-d
+/kill @e[tag=doc]
+/effect clear @s
+# ---- Fighter: Super Regeneration after a big hit
+perspective first
+/dndclass set @s fighter
+wait 20
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:iron_sword
+/item replace entity @s armor.chest with minecraft:iron_chestplate
+/item replace entity @s weapon.offhand with minecraft:shield
+/tp @s 1000.5 200 1000.5 0 0
+/damage @s 16 minecraft:generic
+wait 380
+press key.dnd-classes.power-up
+perspective front
+look 200 5
+wait 4
+hud on
+screenshot cls-fighter-hud-a
+wait 20
+screenshot cls-fighter-hud-b
+hud off
+screenshot cls-fighter-c
+look 150 5
+wait 10
+screenshot cls-fighter-d
+/effect clear @s
+# ---- Artificer: Arcane Armor (HUD shows the armor bar)
+perspective first
+/dndclass set @s artificer
+wait 20
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:diamond_pickaxe
+/tp @s 1000.5 200 1000.5 0 0
+wait 380
+hud on
+screenshot cls-artificer-before
+press key.dnd-classes.power-up
+wait 20
+screenshot cls-artificer-after
+perspective front
+look 200 5
+wait 5
+screenshot cls-artificer-front
+hud off
+/gamerule sendCommandFeedback true
+/attribute @s minecraft:generic.armor get
+/attribute @s minecraft:generic.armor_toughness get
+/gamerule sendCommandFeedback false
+/effect clear @s
+# ---- Cleric: Sanctuary ring with idle mobs
+perspective first
+/dndclass set @s cleric
+wait 20
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:diamond_pickaxe
+/tp @s 1000.5 200 1000.5 0 0
+wait 380
+/kill @e[type=minecraft:item]
+/tp @s 1000.5 200 1000.5 0 0
+/summon minecraft:zombie 997.5 200 1006.5 {PersistenceRequired:1b,Tags:["doc"],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/summon minecraft:zombie 1003.5 200 1007.5 {PersistenceRequired:1b,Tags:["doc"],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/summon minecraft:skeleton 1000.5 200 1009.5 {PersistenceRequired:1b,Tags:["doc"],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/summon minecraft:zombie 994.5 200 1004.5 {PersistenceRequired:1b,Tags:["doc"],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/summon minecraft:spider 1006.5 200 1004.5 {PersistenceRequired:1b,Tags:["doc"]}
+wait 2
+press key.dnd-classes.power-up
+wait 40
+perspective back
+look 0 30
+wait 10
+screenshot cls-cleric-a
+look 20 40
+wait 10
+screenshot cls-cleric-b
+perspective front
+look 200 15
+wait 10
+screenshot cls-cleric-c
+/kill @e[tag=doc]
+/effect clear @s
+# ---- Ranger: Arrow Storm with no arrows in the inventory (DevScript can only tap use, so the shots are short draws)
+perspective first
+/dndclass set @s ranger
+wait 20
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:bow
+/summon minecraft:zombie 999.5 200 1004.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/summon minecraft:zombie 1001.5 200 1005 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/tp @s 1000.5 200 1000.5 0 -3
+wait 380
+press key.dnd-classes.power-up
+wait 10
+perspective back
+look 8 -12
+use
+wait 4
+use
+wait 4
+use
+wait 4
+look -8 -12
+use
+wait 4
+use
+wait 4
+use
+wait 1
+screenshot cls-ranger-a
+look 30 -12
+use
+wait 4
+use
+wait 2
+screenshot cls-ranger-b
+look -30 -12
+use
+wait 4
+use
+wait 2
+screenshot cls-ranger-c
+hud on
+wait 2
+screenshot cls-ranger-hud
+hud off
+/gamerule sendCommandFeedback true
+/execute if entity @e[type=minecraft:arrow]
+/gamerule sendCommandFeedback false
+/kill @e[tag=doc]
+/kill @e[type=minecraft:arrow]
+/effect clear @s
+# ---- Blood Hunter: burning sword hit, then Blood Control on a ravager
+perspective first
+/dndclass set @s bloodhunter
+wait 20
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:iron_sword
+/summon minecraft:zombie 1000.5 200 1003 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/tp @s 1000.5 200 1000.5 0 5
+/time set 18000
+wait 30
+perspective back
+attack
+wait 10
+look 35 5
+wait 2
+screenshot cls-bh-burn-a
+look -35 5
+wait 3
+screenshot cls-bh-burn-b
+/time set 6000
+/kill @e[tag=doc]
+/summon minecraft:ravager 1000.5 200 1006.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["doc"]}
+/summon minecraft:zombie 996.5 200 1004 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f],Tags:["doc2"],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+wait 330
+perspective first
+/tp @s 1000.5 200 1000.5 0 0
+wait 5
+press key.dnd-classes.power-up
+wait 30
+perspective front
+look 160 0
+wait 10
+screenshot cls-bh-control-a
+look 220 0
+wait 5
+screenshot cls-bh-control-b
+perspective back
+look -60 10
+wait 5
+screenshot cls-bh-control-c
+wait 400
+/kill @e[tag=doc2]
+perspective first
+quit

@@ -1,6 +1,8 @@
 # Grid Miner
 Mine out a whole area by breaking one block.
 
+![A stone wall with a hole broken out of it by a single swing of a Grid Miner II pickaxe, the mined blocks dropping as items](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/grid-miner-hole.png)
+
 ## How it works
 - Breaking a block with a Grid Miner **pickaxe or shovel** also breaks the connected blocks the tool is right for, nearest first. Connected means the six faces plus the edge diagonals.
   - Level I: up to 16 extra blocks, at most 2 steps from the first block.

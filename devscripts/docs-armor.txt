@@ -1,0 +1,48 @@
+# Docs screenshots for docs/items/armor.md: all fourteen armor sets on armor stands, in two rows of seven (left to right: Thief, Assassin, Wizard, Cleric, Blood Hunter, Golden Horns, Holy Armor; Knight, Warrior, Prismarine, Wooden, Robe, Steampunk, Wither).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/docs-armor.txt
+wait 40
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule sendCommandFeedback false
+/time set 1000
+/weather clear
+/kill @e[type=!player]
+/clear @s
+/fill -10 229 -10 20 229 30 minecraft:grass_block
+/fill -10 230 -10 20 250 30 minecraft:air
+hud off
+# --- Row 1
+/summon minecraft:armor_stand 7.25 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:rogue_boots",Count:1b},{id:"dndclasses:rogue_leggings",Count:1b},{id:"dndclasses:rogue_chestplate",Count:1b},{id:"dndclasses:rogue_helmet",Count:1b}]}
+/summon minecraft:armor_stand 6.00 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:assassin_boots",Count:1b},{id:"dndclasses:assassin_leggings",Count:1b},{id:"dndclasses:assassin_chestplate",Count:1b},{id:"dndclasses:assassin_helmet",Count:1b}]}
+/summon minecraft:armor_stand 4.75 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:wizard_boots",Count:1b},{id:"dndclasses:wizard_leggings",Count:1b},{id:"dndclasses:wizard_chestplate",Count:1b},{id:"dndclasses:wizard_helmet",Count:1b}]}
+/summon minecraft:armor_stand 3.50 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:cleric_boots",Count:1b},{id:"dndclasses:cleric_leggings",Count:1b},{id:"dndclasses:cleric_chestplate",Count:1b},{id:"dndclasses:cleric_helmet",Count:1b}]}
+/summon minecraft:armor_stand 2.25 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:blood_hunter_boots",Count:1b},{id:"dndclasses:blood_hunter_leggings",Count:1b},{id:"dndclasses:blood_hunter_chestplate",Count:1b},{id:"dndclasses:blood_hunter_helmet",Count:1b}]}
+/summon minecraft:armor_stand 1.00 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:golden_horns_boots",Count:1b},{id:"dndclasses:golden_horns_leggings",Count:1b},{id:"dndclasses:golden_horns_chestplate",Count:1b},{id:"dndclasses:golden_horns_helmet",Count:1b}]}
+/summon minecraft:armor_stand -0.25 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:holy_armor_boots",Count:1b},{id:"dndclasses:holy_armor_leggings",Count:1b},{id:"dndclasses:holy_armor_chestplate",Count:1b},{id:"dndclasses:holy_armor_helmet",Count:1b}]}
+/tp @s 3.5 230.2 2.9 0 4
+wait 40
+screenshot docs-armor-row1-a
+/tp @s 3.5 230.2 2.3 0 4
+wait 10
+screenshot docs-armor-row1-b
+/kill @e[tag=docs_armor]
+wait 5
+# --- Row 2
+/summon minecraft:armor_stand 7.25 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:knight_boots",Count:1b},{id:"dndclasses:knight_leggings",Count:1b},{id:"dndclasses:knight_chestplate",Count:1b},{id:"dndclasses:knight_helmet",Count:1b}]}
+/summon minecraft:armor_stand 6.00 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:warrior_boots",Count:1b},{id:"dndclasses:warrior_leggings",Count:1b},{id:"dndclasses:warrior_chestplate",Count:1b},{id:"dndclasses:warrior_helmet",Count:1b}]}
+/summon minecraft:armor_stand 4.75 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:prismarine_boots",Count:1b},{id:"dndclasses:prismarine_leggings",Count:1b},{id:"dndclasses:prismarine_chestplate",Count:1b},{id:"dndclasses:prismarine_helmet",Count:1b}]}
+/summon minecraft:armor_stand 3.50 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:wooden_boots",Count:1b},{id:"dndclasses:wooden_leggings",Count:1b},{id:"dndclasses:wooden_chestplate",Count:1b},{id:"dndclasses:wooden_helmet",Count:1b}]}
+/summon minecraft:armor_stand 2.25 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:robe_boots",Count:1b},{id:"dndclasses:robe_leggings",Count:1b},{id:"dndclasses:robe_chestplate",Count:1b},{id:"dndclasses:robe_helmet",Count:1b}]}
+/summon minecraft:armor_stand 1.00 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:steampunk_boots",Count:1b},{id:"dndclasses:steampunk_leggings",Count:1b},{id:"dndclasses:steampunk_chestplate",Count:1b},{id:"dndclasses:steampunk_helmet",Count:1b}]}
+/summon minecraft:armor_stand -0.25 230 6.5 {Tags:["docs_armor"],NoBasePlate:1b,ShowArms:1b,Invulnerable:1b,Rotation:[180f,0f],Pose:{RightArm:[-10f,0f,10f],LeftArm:[-10f,0f,-10f]},ArmorItems:[{id:"dndclasses:wither_boots",Count:1b},{id:"dndclasses:wither_leggings",Count:1b},{id:"dndclasses:wither_chestplate",Count:1b},{id:"dndclasses:wither_helmet",Count:1b}]}
+/tp @s 3.5 230.2 2.9 0 4
+wait 40
+screenshot docs-armor-row2-a
+/tp @s 3.5 230.2 2.3 0 4
+wait 10
+screenshot docs-armor-row2-b
+/kill @e[tag=docs_armor]
+wait 5
+quit

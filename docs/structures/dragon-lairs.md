@@ -1,6 +1,8 @@
 # Dragon Lairs
 The home of a [Lightning Chaser](../mobs/dragons.md), on the very summit of a mountain.
 
+![A dragon lair on a snowy summit: standing stones with lightning rods round the nest, and its Lightning Chaser flying below](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/dragon-lair.png)
+
 ## How it works
 - The lair sits on the highest point of a jagged, frozen or stony peak, with the mountain falling away on every side.
 - It's a ring of standing stones crowned with lightning rods, round a nest of logs and bones heaped with gold and a hoard chest.

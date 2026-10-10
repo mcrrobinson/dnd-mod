@@ -1,0 +1,79 @@
+# Docs screenshot: Bard Animal Friends at rank IV, companions (iron golem, polar bear, wolves) going for zombies. Needs main with the bestiary (PR #104).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/docs-bard.txt
+# Output: <run dir>/screenshots/doc-bard-*.png
+wait 40
+closescreen
+hud off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/time set 6000
+/weather clear
+/tp @s 1000.5 200 1000.5 0 0
+/effect give @s minecraft:slow_falling 30 0 true
+wait 60
+/fillbiome 980 192 980 1020 207 1020 minecraft:plains
+/fill 980 199 980 1020 199 1020 minecraft:grass_block
+/kill @e[type=!minecraft:player,distance=..60]
+/tp @s 1000.5 200 1000.5 0 0
+/dndclass set @s bard
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s bard.animal_friends 4
+/clear @s
+/effect clear @s
+/dndclass bestiary @s learn minecraft:wolf
+/dndclass bestiary @s learn minecraft:polar_bear
+/dndclass bestiary @s learn minecraft:iron_golem
+/setblock 1000 200 1003 dndclasses:attunement_table
+/tp @s 1000.5 200 1000.5 0 30
+wait 10
+use
+wait 10
+skill bestiary minecraft:wolf
+wait 5
+skill bestiary minecraft:polar_bear
+wait 5
+skill bestiary minecraft:iron_golem
+wait 5
+closescreen
+/setblock 1000 200 1003 minecraft:air
+/dndclass progress @s
+wait 380
+/summon minecraft:iron_golem 998.5 200 1003.5 {Rotation:[180f,0f]}
+/summon minecraft:polar_bear 1003 200 1003 {Rotation:[180f,0f]}
+/summon minecraft:wolf 997 200 1001
+/summon minecraft:wolf 1004 200 1001
+/summon minecraft:wolf 1001 200 1004
+/tp @s 1000.5 200 1000.5 0 10
+/summon minecraft:zombie 999.5 200 1006.5 {Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/summon minecraft:zombie 1002.5 200 1007.5 {Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+wait 5
+press key.dnd-classes.power-up
+wait 3
+/item replace entity @s weapon.mainhand with dndclasses:lute
+perspective back
+look 10 10
+wait 5
+screenshot doc-bard-a
+wait 5
+screenshot doc-bard-b
+wait 5
+screenshot doc-bard-c
+wait 5
+screenshot doc-bard-d
+wait 10
+screenshot doc-bard-e
+wait 10
+screenshot doc-bard-f
+perspective front
+look 200 5
+wait 2
+screenshot doc-bard-g
+perspective first
+/kill @e[type=!minecraft:player,distance=..40]
+/dndclass resetprogress @s
+quit

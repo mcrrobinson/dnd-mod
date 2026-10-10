@@ -1,0 +1,64 @@
+# Docs screenshots for docs/mobs/bone-wyvern.md. Run: timeout 300 ./gradlew runClient -PdevRunDir=run-classes -PdevScript=devscripts/docs-bone-wyvern.txt
+# Casts Raise Dead at rank V, freezes the Bone Wyvern and the raised undead, then shoots them in third person.
+# Screenshots: bone-wyvern-front, -front2, -side, -back (third person), bone-wyvern-close
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doWeatherCycle false
+/weather clear
+/time set noon
+/fill -8 149 -8 12 149 12 minecraft:polished_deepslate
+/fill -8 150 -8 12 160 12 minecraft:air
+/kill @e[type=!minecraft:player]
+/dndclass set @s necromancer
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s necromancer.raise_dead 5
+/effect give @s minecraft:saturation 1000 1 true
+/tp @s 2.5 150 2.5 0 20
+wait 300
+press key.dnd-classes.power-up
+wait 30
+/execute as @e[tag=dndclasses.raised_dead] run data merge entity @s {NoAI:1b}
+/execute as @e[type=dndclasses:bone_wyvern] run data merge entity @s {NoAI:1b,NoGravity:1b}
+/tp @e[type=dndclasses:bone_wyvern] 5.0 150.3 2.5 180 0
+/tp @e[tag=dndclasses.raised_dead,tag=!docs.placed,limit=1] -1.5 150 6.5 180 0
+/tag @e[tag=dndclasses.raised_dead,x=-1.5,y=150,z=6.5,distance=..0.5] add docs.placed
+/tp @e[tag=dndclasses.raised_dead,tag=!docs.placed,limit=1] 0.5 150 7 180 0
+/tag @e[tag=dndclasses.raised_dead,x=0.5,y=150,z=7,distance=..0.5] add docs.placed
+/tp @e[tag=dndclasses.raised_dead,tag=!docs.placed,limit=1] 2.5 150 7.5 180 0
+/tag @e[tag=dndclasses.raised_dead,x=2.5,y=150,z=7.5,distance=..0.5] add docs.placed
+/tp @e[tag=dndclasses.raised_dead,tag=!docs.placed,limit=1] 4.5 150 7 180 0
+/tag @e[tag=dndclasses.raised_dead,x=4.5,y=150,z=7,distance=..0.5] add docs.placed
+/tp @e[tag=dndclasses.raised_dead,tag=!docs.placed,limit=1] 6.5 150 6.5 180 0
+/tag @e[tag=dndclasses.raised_dead,x=6.5,y=150,z=6.5,distance=..0.5] add docs.placed
+/tp @s 2.5 150 2.5 180 0
+hud off
+wait 10
+perspective front
+look 160 15
+wait 10
+screenshot bone-wyvern-front
+look 145 20
+wait 10
+screenshot bone-wyvern-front2
+look 120 10
+wait 10
+screenshot bone-wyvern-side
+perspective back
+look 250 15
+wait 10
+screenshot bone-wyvern-back
+perspective first
+/tp @s 8.0 151.3 0.5 55 20
+wait 10
+screenshot bone-wyvern-close
+/tp @s 7.5 151.0 4.5 115 15
+wait 10
+screenshot bone-wyvern-close2
+/execute if entity @e[type=dndclasses:bone_wyvern]
+quit

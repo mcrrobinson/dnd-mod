@@ -1,0 +1,47 @@
+# Docs screenshot: an enchanting table filled and used purely by DevScript input steps (slot, button), in a hidden window.
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-testing.txt
+# Output: screenshots/docs-testing-*.png. Based on headless-input-check.txt.
+wait 40
+closescreen
+/gamerule sendCommandFeedback false
+/gamemode survival
+/gamerule doDaylightCycle false
+/time set 6000
+/weather clear
+/fill 0 149 0 6 149 6 minecraft:stone_bricks
+/fill 0 150 0 6 153 6 minecraft:air
+/clear @s
+/xp add @s 30 levels
+/give @s minecraft:diamond_sword
+/give @s minecraft:lapis_lazuli 3
+/setblock 3 150 5 minecraft:enchanting_table
+/setblock 1 150 6 minecraft:bookshelf
+/setblock 5 150 6 minecraft:bookshelf
+/tp @s 3.5 150 3.5 0 35
+wait 220
+use
+wait 10
+slot 29
+slot 0
+slot 30
+slot 1
+wait 10
+screenshot docs-testing-enchant
+button 0
+wait 10
+slots
+closescreen
+/setblock 3 150 5 minecraft:air
+/summon minecraft:zombie 3.5 150 5.5 {NoAI:1b,Rotation:[180f,0f]}
+look 0 10
+wait 10
+hotbar 0
+attack
+perspective back
+wait 3
+screenshot docs-testing-attack
+perspective first
+/kill @e[type=minecraft:zombie]
+/gamemode creative
+/gamerule sendCommandFeedback true
+quit

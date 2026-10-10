@@ -1,8 +1,12 @@
 # Bone Wyvern
 A small skeletal Wyvern that the Necromancer's Raise Dead calls up at rank V. It flies at your side, bites with a withering bite and breathes fire at the monsters around you.
 
+![A Necromancer with their Bone Wyvern (left) and raised undead from a rank V Raise Dead](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/bone-wyvern-necromancer.png)
+
 ## How it works
 It's the [Wyvern](dragons.md) model drawn at 35% size with a bone texture, so it has the same flight, animations and fire breath. Its hit shapes (wings, neck, head, tail and legs) shrink with the model.
+
+![The Bone Wyvern from the side](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/bone-wyvern-side.png)
 
 | | Bone Wyvern | Wyvern |
 |-|-|-|

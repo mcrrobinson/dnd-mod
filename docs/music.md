@@ -1,6 +1,8 @@
 # Music
 Custom tracks that play during game events, five music discs, and a short sting when you use your class special.
 
+![A jukebox playing the Steel on Steel disc, with the Awake Cart, Tooth and Claw, Silent Footsteps and Music Box discs in item frames behind it](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/music-jukebox.png)
+
 ## How it works
 ### Event music
 The mod picks the background music from what you're doing, in this order. The first event that applies wins.

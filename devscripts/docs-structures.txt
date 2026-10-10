@@ -1,0 +1,47 @@
+# Docs screenshots: a real goblin camp and dragon lair in the dev world.
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-structures.txt
+# Dev world spots: camp -408 1096 (goblin-camp-tour.txt), lair centre 13092 190 11524 (dragon-lair-survey.txt).
+# Output: screenshots/docs-camp-*.png, docs-lair-*.png. The fortress shots are in docs-fortress.txt.
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+wait 40
+closescreen
+hud off
+
+# Goblin camp
+/tp @s -408 100 1096
+wait 300
+/execute positioned -408 72 1096 as @e[type=dndclasses:goblin_warrior,distance=..30] run data merge entity @s {NoAI:1b}
+/tp @s -388 88 1076 42 35
+wait 60
+screenshot docs-camp-ne
+/tp @s -393 82 1082 45 30
+wait 40
+screenshot docs-camp-ne-close
+/tp @s -408 78 1077 0 18
+wait 40
+screenshot docs-camp-gate
+/tp @s -408 76 1080 0 15
+wait 40
+screenshot docs-camp-gate-2
+/tp @s -398 77 1091 61 30
+wait 40
+screenshot docs-camp-fire
+
+# Dragon lair
+/tp @s 13118 205 11524 90 30
+wait 600
+/execute as @e[type=dndclasses:lightning_chaser,distance=..300] run data get entity @s Pos
+screenshot docs-lair-east
+/tp @s 13092 197 11532 180 35
+wait 40
+screenshot docs-lair-nest
+/tp @s 13100 196 11531 135 30
+wait 40
+screenshot docs-lair-nest-2
+
+/execute in minecraft:overworld run tp @s 0 151 0
+wait 20
+quit

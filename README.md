@@ -1,12 +1,14 @@
 # Dungeons and Dragons Mod
+A Fabric mod for Minecraft 1.19.4 that brings Dungeons & Dragons to the game: fifteen playable classes with their own strengths, weaknesses and special abilities, plus dragons, bosses, new structures, enchantments, armor and music.
 
-**Documentation:** the full reference, one page per feature, is in [docs/](docs/README.md).
+The full reference, one page per feature, is in [docs/](docs/README.md).
 
-## Table of Contents
+## Contents
 - [Building](#building)
 - [Features](#features)
-  - [Player Classes Overview](#player-classes-overview)
+  - [Player Classes](#player-classes)
   - [Mana and Specials](#mana-and-specials)
+  - [Class Progression](#class-progression)
   - [Parties](#parties)
   - [d20 Skill Checks](#d20-skill-checks)
   - [Armor and Items](#armor-and-items)
@@ -19,56 +21,51 @@
 - [Documentation](#documentation)
 
 ## Building
-Navigate to the root directory of the project and type the following...
-
-1. `gradlew genSources`
-2. `gradlew vscode`
-3. `gradlew runClient`
-
-That will build the latest edition of Minecraft I have got working with the mod.
-
-### Linux (Debian/Ubuntu)
-Install JDK 21 to build (the built mod runs on Java 17+, like Minecraft 1.19.4), then use the `./gradlew` wrapper:
+Building needs JDK 21; the built mod runs on Java 17 or newer, like Minecraft 1.19.4. From the project root, use the Gradle wrapper:
 
 ```sh
-sudo apt install openjdk-21-jdk
-./gradlew genSources
-./gradlew runClient
+./gradlew genSources   # decompile Minecraft for your IDE (optional)
+./gradlew build        # build the mod jar into build/libs/
+./gradlew runClient    # start a development client with the mod
 ```
+
+On Windows use `gradlew.bat`. For VS Code, `./gradlew vscode` generates the launch configuration. On Debian or Ubuntu, install the JDK with `sudo apt install openjdk-21-jdk`.
+
+See [Testing in the dev client](docs/dev/testing.md) for scripted test runs.
 
 ## Features
 
-### Player Classes Overview
-
-Each class in the game comes with its own unique strengths, weaknesses, and special abilities.
-
-Every player gets a **Class Guidebook** on first join and on class change, explaining their class and its special-ability key. See [docs/systems/class-guidebook.md](docs/systems/class-guidebook.md).
+### Player Classes
+Every class has its own strengths, weaknesses and a special ability. Players pick a class when they first join and get a **Class Guidebook** explaining it (see [Class selection](docs/systems/class-selection.md) and [Class guidebook](docs/systems/class-guidebook.md)). Click a class for its full page.
 
 <!-- class-table:start - generated from src/main/resources/data/dndclasses/class_info.json, the same data the guidebook uses. Edit that file and run ./gradlew generateClassReadme -->
-| **Class**| **Pros**|**Cons**|**Special Ability**|
+| Class | Strengths | Weaknesses | Special ability |
 |-|-|-|-|
-| **Barbarian** | Strength highly buffed, Health rivals dragons | Limited vision (fog closes in at ~24 blocks), Moves very slowly | Rage: Strength I for 8s, up to Strength III for 12s with ranks, inspired by *One Punch Man* |
-| **Bard** | Invisible to mobs | Less health | Nearby animals you have charmed with an instrument become companions that follow and fight for you |
-| **Cleric** | High mining speed, Night vision | Shorter viewing distance (fog closes in at ~48 blocks), Slightly reduced attack damage | Circle of ignoring mobs for 6 to 15 seconds as it ranks up; from rank II party members within 8 to 16 blocks share it and get Regeneration |
-| **Druid** | Gains an extra heart per tamed animal (up to 5), Regenerates in light (level 10+) | Cannot swim, Gets hungry in the dark (light 4 or less) | Wild Shape: transforms into an animal it has killed and unlocked at an Attunement Table, for 15-30s by rank (sneak + key picks the form) |
-| **Fighter** | High health, High strength, Attracts mobs: hostile mobs prefer a Fighter over other players (done) | Cannot use bows or crossbows (done), No potions: can't use potion items and potion buffs don't apply, harmful potions still do (done) | Super regeneration: Regeneration V for 4s, up to 10s with ranks (done) |
-| **Monk** | Increased mobility: can triple jump (done), Unrivaled attack speed (done) | Reduced damage output (75% unarmored, less the more armor you wear), Can only attack with a staff or bare fists | Flurry Rush: blink between the mob you're looking at and hostiles near it for a rapid chain of hits, then blink back; 3 hits on 1 target, up to 10 hits across 5 targets with ranks (done) |
-| **Paladin** | High health, protective auras for nearby players, Unaffected by potions, good or bad (ability effects still apply) (done) | Cannot craft anything (crafting, stonecutter, smithing table, loom) or brew potions (done), Very weak in the Nether: half damage and armor, 20% slower (done) | Divine Judgment: a beam of holy light strikes the mob you look at within 30 blocks and sets it alight, with a shockwave around it; undead take 50% more. Damage, shockwave and extra beams grow with its rank (done) |
-| **Ranger** | Can zoom in with bow, faster firing (done) | Cannot pick up swords (done), Weak to fire (done) | Hold right click to spam fire (no ammo consumed); fire rate, arrow speed and duration grow with its rank, no zoom while it runs (done) |
-| **Rogue** | No poison damage (done), No need to eat: food never drains and no starvation, but no natural regen from food either (done) | Low health (done) | Temporary invisibility, 6 s at rank I up to 15 s at rank IV (done) |
-| **Necromancer** | Wither debuff on melee enemies (done), Undead do not attack (done) | Slightly less health (done), Significantly less damage (done) | Raise Dead: 2 undead allies for 10s, up to 5 stronger undead and a Bone Wyvern for 20s with ranks (done) |
-| **Warlock** | Can throw fireballs with an empty hand (done), Immune to fire and lava (done) | Reduced damage output (done), Hurt by water and rain, 1 damage every 4s but never below 1 heart (done) | Breathes fire on the special key, 8 s and 3 blocks at rank I up to 20 s and 7 blocks at rank IV (done) |
-| **Wizard** | Can wield elemental staffs (done) | Greatly reduced health (done), Can't wear armor heavier than iron (done) | Arcane explosion: 12-block blast and Resistance V for 2s, up to 72 blocks and 5s with ranks (done) |
-| **Artificer** | Increased movement speed (done), 25% chance for crafted tools, weapons and armor to come out enchanted (done) | Deals 25% less damage (done), Unaffected by potions except abilities: can't drink potions, immune to splash/lingering/tipped-arrow effects (done) | Temporarily buffs all armor: +8 armor, +4 toughness for 30 seconds (done) |
-| **Blood Hunter** | Fire aspect applied to all swords (done), Double damage at night (done) | Half damage during the day (done), Can't drop swords: they still drop on death (done) | Blood Control: take control of the mob you look at, 8s within 15 blocks at 60% success, up to 20s, 30 blocks and 100% with ranks; strong mobs resist more, a failure costs the mana and a heart, bosses can't be controlled (needs the Identity mod) (done) |
-| **Alchemist** | Can craft special potions exclusive to the class (done), Brewing stands don't explode: a vanilla brewing stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, e.g. hopper-fed, are safe) (done) | Cannot enchant (enchanting table or enchanted books on an anvil) (done) | Transmute: throw your held potion (or an unstable brew) as a lingering cloud with stronger effects, buffs for allies and harmful effects for mobs; bigger and longer with ranks (done) |
+| **[Barbarian](docs/classes/barbarian.md)** | Greatly increased strength<br>Health to rival a dragon | Limited vision: fog closes in at about 24 blocks<br>Moves very slowly | **Rage**: Strength I for 8 seconds, rising to Strength III for 12 seconds with ranks |
+| **[Bard](docs/classes/bard.md)** | Ignored by hostile mobs | Less health | **Animal Friends**: nearby animals you have charmed with an instrument become companions that follow and fight for you |
+| **[Cleric](docs/classes/cleric.md)** | Faster mining<br>Night vision | Shorter view distance: fog closes in at about 48 blocks<br>Slightly less attack damage | **Sanctuary**: a circle mobs won't target, lasting 6 to 15 seconds by rank. From rank II, party members within 8 to 16 blocks share it and regenerate |
+| **[Druid](docs/classes/druid.md)** | An extra heart for each tamed animal, up to 5<br>Regenerates in light (level 10 or brighter) | Cannot swim<br>Gets hungry in the dark (light level 4 or lower) | **Wild Shape**: become an animal you have killed and unlocked at an Attunement Table for 15 to 30 seconds by rank. Sneak and press the key to choose the form |
+| **[Fighter](docs/classes/fighter.md)** | High health<br>High strength<br>Draws aggro: hostile mobs target a Fighter before other players | Cannot use bows or crossbows<br>No beneficial potions: potions can't be drunk and buffs don't apply, but harmful effects still do | **Super Regeneration**: Regeneration V for 4 seconds, up to 10 seconds with ranks |
+| **[Monk](docs/classes/monk.md)** | Triple jump<br>Unrivaled attack speed | Reduced damage: 75% unarmored, and less the more armor you wear<br>Can only attack with a staff or bare fists | **Flurry Rush**: blink between the mob you're looking at and hostiles near it for a rapid chain of hits, then blink back. 3 hits on 1 target, up to 10 hits across 5 targets with ranks |
+| **[Paladin](docs/classes/paladin.md)** | High health<br>Protective auras for nearby players<br>Unaffected by potions, good or bad (ability effects still apply) | Cannot craft (crafting table, stonecutter, smithing table, loom) or brew potions<br>Very weak in the Nether: half damage and armor, 20% slower | **Divine Judgment**: a beam of holy light strikes the mob you look at within 30 blocks, sets it alight and sends out a shockwave. Undead take 50% more damage. Damage, shockwave and extra beams grow with rank |
+| **[Ranger](docs/classes/ranger.md)** | Can zoom in with a bow<br>Draws bows faster | Cannot pick up swords<br>Weak to fire | **Arrow Storm**: hold right click to fire arrows without using ammo. Fire rate, arrow speed and duration grow with rank; no zooming while it runs |
+| **[Rogue](docs/classes/rogue.md)** | Immune to poison<br>Never needs to eat: food never drains and you never starve, but food doesn't regenerate health either | Low health | **Vanish**: invisibility for 6 seconds at rank I, up to 15 seconds at rank IV |
+| **[Necromancer](docs/classes/necromancer.md)** | Melee hits inflict Wither<br>Undead mobs won't attack you | Slightly less health<br>Much less damage | **Raise Dead**: 2 undead allies for 10 seconds, up to 5 stronger undead and a Bone Wyvern for 20 seconds with ranks |
+| **[Warlock](docs/classes/warlock.md)** | Throws fireballs from an empty hand<br>Immune to fire and lava | Reduced damage<br>Hurt by water and rain: 1 damage every 4 seconds, never below 1 heart | **Fire Breath**: hold the key to breathe fire, 8 seconds and 3 blocks at rank I up to 20 seconds and 7 blocks at rank IV |
+| **[Wizard](docs/classes/wizard.md)** | Can wield elemental staffs | Greatly reduced health<br>Can't wear armor heavier than iron | **Arcane Explosion**: a 12-block blast with Resistance V for 2 seconds, up to 72 blocks and 5 seconds with ranks |
+| **[Artificer](docs/classes/artificer.md)** | Faster movement<br>25% chance for crafted tools, weapons and armor to come out enchanted | Deals 25% less damage<br>Unaffected by potions: can't drink them and is immune to splash, lingering and tipped-arrow effects (ability effects still apply) | **Reinforced Armor**: +8 armor and +4 toughness for 30 seconds |
+| **[Blood Hunter](docs/classes/blood-hunter.md)** | Swords always have Fire Aspect<br>Double damage at night | Half damage during the day<br>Can't drop swords (they still drop on death) | **Blood Control**: take control of the mob you look at, 8 seconds within 15 blocks at 60% success, up to 20 seconds, 30 blocks and 100% with ranks. Strong mobs resist more, a failure costs the mana and a heart, and bosses can't be controlled. Requires the Identity mod |
+| **[Alchemist](docs/classes/alchemist.md)** | Can brew potions only the Alchemist knows<br>Brewing stands are safe: a stand explodes when its brew finishes if the last player to use it wasn't an Alchemist (stands nobody has used, such as hopper-fed ones, are safe) | Cannot enchant (enchanting table or enchanted books on an anvil) | **Transmute**: throw your held potion (or an unstable brew) as a lingering cloud with stronger effects, buffing allies and harming mobs. Bigger and longer-lasting with ranks |
 <!-- class-table:end -->
 
 ### Mana and Specials
 Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and press **Z** to use it. See [Mana and class specials](docs/systems/mana.md) and [Class selection](docs/systems/class-selection.md); each class has its own page under [docs/classes/](docs/README.md#classes).
 
+### Class Progression
+Classes level up to 10 with class XP. Each level gives a skill point to spend on the class skill tree or on ranking up abilities at an Attunement Table, and Bards and Druids keep a bestiary of the creatures they have killed. See [Class progression](docs/systems/class-progression.md).
+
 ### Parties
-`/party` lets players group up: shared XP, no friendly fire, a party health HUD and a party-aware Cleric power. See [Party](docs/systems/party.md).
+`/party` lets players group up: shared XP, no friendly fire, a party health HUD and a party-aware Cleric special. See [Party](docs/systems/party.md).
 
 ### d20 Skill Checks
 Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Rogues pick the locks of dungeon and lair loot chests, Bards persuade villagers for better prices, and melee attacks crit on a natural 20 and fumble on a natural 1. See [D20 skill checks](docs/systems/d20-skill-checks.md).

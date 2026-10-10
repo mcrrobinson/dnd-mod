@@ -1,6 +1,8 @@
 # Parties
 Group up with up to 7 other players (8 in total). Party members split XP, can't hurt each other, see each other's health on screen, and get extra help from a Cleric in the group.
 
+![The party HUD in the top-left corner showing the other member's name, health and health bar](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/party-hud.png)
+
 ## How it works
 ### Making a party
 Type `/party invite <player>` to invite someone. If you aren't in a party yet, this creates one with you as leader. The other player gets a chat message with a clickable **[Accept]** button, or they can type `/party accept`. Invites expire after 60 seconds.

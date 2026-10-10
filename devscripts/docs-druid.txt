@@ -1,0 +1,67 @@
+# Docs screenshot: Druid Wild Shape at rank IV as an Owlbear. Needs main with the Druid bestiary and the Identity mod.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/docs-druid.txt
+# Output: <run dir>/screenshots/doc-druid-*.png
+wait 40
+closescreen
+hud off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/time set 6000
+/weather clear
+/tp @s 1000.5 200 1000.5 0 0
+/effect give @s minecraft:slow_falling 30 0 true
+wait 60
+/fillbiome 980 192 980 1020 207 1020 minecraft:forest
+/fill 980 199 980 1020 199 1020 minecraft:grass_block
+/kill @e[type=!minecraft:player,distance=..60]
+/place feature minecraft:oak 994 200 1008
+/place feature minecraft:birch 1006 200 1009
+/place feature minecraft:oak 1009 200 1003
+/tp @s 1000.5 200 1000.5 0 0
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s druid.wild_shape 4
+/clear @s
+/effect clear @s
+/dndclass bestiary @s learn dndclasses:owlbear
+/dndclass bestiary @s learn minecraft:wolf
+/setblock 1000 200 1003 dndclasses:attunement_table
+/tp @s 1000.5 200 1000.5 0 30
+wait 10
+use
+wait 10
+skill bestiary dndclasses:owlbear
+wait 5
+skill bestiary minecraft:wolf
+wait 5
+closescreen
+/setblock 1000 200 1003 minecraft:air
+/dndclass progress @s
+sneak on
+press key.dnd-classes.power-up
+wait 5
+sneak off
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+wait 400
+/tp @s 1000.5 200 1000.5 0 0
+press key.dnd-classes.power-up
+wait 20
+perspective front
+look 200 5
+wait 10
+screenshot doc-druid-a
+look 150 0
+wait 5
+screenshot doc-druid-b
+perspective back
+look 20 10
+wait 5
+screenshot doc-druid-c
+perspective first
+/dndclass resetprogress @s
+quit

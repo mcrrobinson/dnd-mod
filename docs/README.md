@@ -1,5 +1,5 @@
 # DnD Mod documentation
-The detailed reference for the mod, one page per feature, grouped by area. The [main README](../README.md) has the short overview. Entries marked "(PR #n)" are in open pull requests and their pages arrive when those merge.
+The detailed reference for the mod, one page per feature, grouped by area. The [main README](../README.md) has the short overview.
 
 Each page follows the same template: summary, How it works, Where to find it, Commands, Configuration, Known limitations, For developers.
 

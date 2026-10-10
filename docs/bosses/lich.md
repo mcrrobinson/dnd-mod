@@ -1,6 +1,8 @@
 # Lich
 A late-game undead caster boss that haunts stronghold libraries. It keeps its distance, casts wither and frost spells and raises the dead. Its soul is kept in a **phylactery**: while that stands, killing the Lich only sends it back to reform, so smash the phylactery first. Necromancers are its sworn rivals.
 
+![A Lich with its phylactery beside it](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/lich-phylactery.png)
+
 ## How it works
 **Stats**: 300 health, 10 armour, 4 toughness, 80% knockback resistance. It is undead (Smite works, healing potions hurt it), immune to wither, poison and freezing, and never despawns. It stays 6-14 blocks from its target, backing off when you get closer and closing in when you're further away or out of sight.
 

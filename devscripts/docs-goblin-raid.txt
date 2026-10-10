@@ -1,0 +1,45 @@
+# Docs screenshots for docs/systems/goblin-raids.md: a goblin raid on the dev world's hobbit village (200, 1352),
+# watched in creative mode (raiders ignore creative players). The camera follows a raider from behind.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/docs-goblin-raid.txt
+wait 40
+closescreen
+/gamerule sendCommandFeedback false
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/time set 1000
+/weather clear
+/difficulty normal
+/gamemode creative
+/clear @s
+/effect give @s minecraft:invisibility 9999 0 true
+/tp @s 200 110 1352 0 60
+wait 300
+/kill @e[type=#dndclasses:dragons]
+/goblinraid start
+hud on
+wait 100
+screenshot docs-raid-horn
+wait 300
+/execute as @e[type=dndclasses:goblin_warrior,limit=1] at @s rotated as @s run tp @a ^ ^3 ^-7 facing ^ ^1 ^10
+wait 5
+screenshot docs-raid-1
+wait 300
+/execute as @e[type=dndclasses:goblin_warrior,limit=1] at @s rotated as @s run tp @a ^ ^3 ^-7 facing ^ ^1 ^10
+wait 5
+screenshot docs-raid-2
+wait 300
+/execute as @e[type=dndclasses:goblin_warrior,limit=1] at @s rotated as @s run tp @a ^ ^4 ^-8 facing ^ ^1 ^10
+wait 5
+screenshot docs-raid-3
+wait 300
+/execute as @e[type=dndclasses:goblin_warrior,limit=1] at @s rotated as @s run tp @a ^2 ^3 ^-6 facing ^ ^1 ^8
+wait 5
+screenshot docs-raid-4
+wait 300
+/execute as @e[type=dndclasses:goblin_warrior,limit=1] at @s rotated as @s run tp @a ^ ^5 ^-9 facing ^ ^ ^8
+wait 5
+screenshot docs-raid-5
+/goblinraid list
+/goblinraid stop
+wait 20
+quit

@@ -1,0 +1,65 @@
+# Docs screenshots: the Goblin Warlord with its goblins and its boss bar enraged, and the Lich with its phylactery.
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-world -PdevScript=devscripts/docs-bosses.txt
+# Everything happens on a stage at y=150 round x=0 z=0. Output: screenshots/docs-boss-*.png.
+wait 40
+closescreen
+/gamerule sendCommandFeedback false
+/gamerule doDaylightCycle false
+/time set 6000
+/weather clear
+/gamemode creative
+/kill @e[type=!minecraft:player,distance=..60]
+/fill -12 149 -12 22 149 22 minecraft:polished_blackstone_bricks
+/fill -12 150 -12 22 160 22 minecraft:air
+/kill @e[type=minecraft:item]
+wait 10
+hud off
+
+# Goblin Warlord with two Goblin Warriors
+/summon dndclasses:goblin_warlord 0 150 0 {NoAI:1b,Rotation:[0f,0f]}
+/summon dndclasses:goblin_warrior -1.8 150 1.2 {NoAI:1b,Rotation:[15f,0f]}
+/summon dndclasses:goblin_warrior 1.8 150 1.0 {NoAI:1b,Rotation:[-15f,0f]}
+/tp @s 0.5 151.5 4.4 180 4
+wait 40
+/execute if entity @e[type=dndclasses:goblin_warrior]
+screenshot docs-boss-warlord-a
+/tp @s 2.8 151.8 4.2 150 10
+wait 20
+screenshot docs-boss-warlord-b
+
+# Enraged: red bar (HUD on)
+/kill @e[type=dndclasses:goblin_warrior]
+/gamemode survival
+/effect give @s minecraft:resistance 120 4 true
+/tp @s 0.5 150 5.5 180 5
+wait 10
+wait 200
+/damage @e[type=dndclasses:goblin_warlord,limit=1] 140 minecraft:player_attack by @s
+hud on
+wait 10
+screenshot docs-boss-warlord-enraged
+/gamemode creative
+/kill @e[type=!minecraft:player,distance=..60]
+hud off
+wait 30
+
+# Lich and phylactery
+/summon dndclasses:lich 10.5 150 10.5 {Rotation:[0f,0f]}
+wait 5
+/execute as @e[type=dndclasses:lich,limit=1] run data merge entity @s {NoAI:1b}
+/tp @e[type=dndclasses:lich,limit=1] 10.5 150 10.5 0 0
+wait 20
+/execute if entity @e[type=dndclasses:phylactery]
+/tp @e[type=dndclasses:phylactery,limit=1] 12.6 150 10.0
+/tp @s 11.6 151.6 13.9 180 10
+wait 40
+screenshot docs-boss-lich-a
+/tp @s 9.6 151.7 13.6 210 12
+wait 30
+screenshot docs-boss-lich-b
+/tp @s 13.8 151.7 13.4 145 12
+wait 30
+screenshot docs-boss-lich-c
+/kill @e[type=!minecraft:player,distance=..60]
+/gamerule sendCommandFeedback true
+quit

@@ -1,6 +1,8 @@
 # Bard
 A fast, fragile charmer. Monsters ignore you, and the animals you've learned fight for you.
 
+![Animal Friends: wolves, a polar bear and an iron golem become companions (hearts) and an iron golem flings a zombie](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/bard-animal-friends.png)
+
 ## How it works
 | Stat | Bard | Vanilla |
 |-|-|-|

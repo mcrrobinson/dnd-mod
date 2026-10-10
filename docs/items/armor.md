@@ -1,6 +1,9 @@
 # Armor
 Fourteen class-themed armor sets. A full set gives a bonus to anyone, boosted when your class matches the set.
 
+![Armor stands wearing, from left: Thief, Assassin, Wizard, Cleric, Blood Hunter, Golden Horns and Holy Armor](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/armor-sets-1.png)
+![Armor stands wearing, from left: Knight, Warrior, Prismarine, Wooden, Robe, Steampunk and Wither](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/armor-sets-2.png)
+
 ## How it works
 - Every piece has the same stats: helmet 3, chestplate 8, leggings 6, boots 3 armor; 3 toughness and 10% knockback resistance each, plus small speed and attack speed bonuses (helmets also +1 luck).
 - **Durability, enchanting and repair:** every set has netherite durability and enchantability 15. The GeckoLib sets repair with netherite ingots; the others with a themed item: Prismarine (prismarine shard), Holy Armor (gold ingot), Robe (wool), Steampunk (copper ingot), Warrior (iron ingot), Wither (netherite scrap), Wooden (logs).

@@ -73,7 +73,7 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
         return list == null ? Collections.emptyList() : list;
     }
 
-    /** Drops the README-only bits: the "(done)" status marker and markdown emphasis. */
+    /** Drops markdown emphasis, and any leftover "(done)" status marker, for in-game text. */
     public static String forGame(String text) {
         return text.replace(" (done)", "").replace("(done)", "").replace("*", "").trim();
     }

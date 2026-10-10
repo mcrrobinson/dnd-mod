@@ -1,0 +1,63 @@
+# Docs screenshot: Monk Flurry Rush at rank IV, mid-chain. Needs main with Flurry Rush (PR #109).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/docs-monk.txt
+# Output: <run dir>/screenshots/doc-monk-*.png
+wait 40
+closescreen
+hud off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/time set 6000
+/weather clear
+/tp @s 1000.5 200 1000.5 0 0
+/effect give @s minecraft:slow_falling 30 0 true
+wait 60
+/fillbiome 980 192 980 1020 207 1020 minecraft:plains
+/fill 980 199 980 1020 199 1020 minecraft:grass_block
+/kill @e[type=!minecraft:player,distance=..60]
+/tp @s 1000.5 200 1000.5 0 0
+/dndclass set @s monk
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s monk.flurry_rush 4
+/clear @s
+/effect give @s minecraft:resistance 600 4 true
+/summon minecraft:zombie 1000.5 200 1004.5 {NoAI:1b,PersistenceRequired:1b,Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 1002.5 200 1006.5 {NoAI:1b,PersistenceRequired:1b,Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 998.5 200 1006.5 {NoAI:1b,PersistenceRequired:1b,Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 1000.5 200 1008.5 {NoAI:1b,PersistenceRequired:1b,Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+/summon minecraft:zombie 1004.5 200 1008.5 {NoAI:1b,PersistenceRequired:1b,Tags:["doc"],Attributes:[{Name:"generic.max_health",Base:100}],Health:100f,Rotation:[180f,0f]}
+wait 5
+/item replace entity @e[tag=doc] armor.head with minecraft:leather_helmet
+/effect give @e[tag=doc] minecraft:fire_resistance 1000 0 true
+wait 380
+perspective back
+/tp @s 1000.5 200 1000.5 0 10
+wait 10
+press key.dnd-classes.power-up
+wait 4
+screenshot doc-monk-a
+wait 4
+screenshot doc-monk-b
+wait 5
+screenshot doc-monk-c
+wait 5
+screenshot doc-monk-d
+wait 6
+screenshot doc-monk-e
+wait 400
+/tp @s 1000.5 200 1000.5 0 10
+wait 10
+press key.dnd-classes.power-up
+wait 3
+screenshot doc-monk-f
+wait 3
+screenshot doc-monk-g
+wait 3
+screenshot doc-monk-h
+perspective first
+/dndclass resetprogress @s
+quit

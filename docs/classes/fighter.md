@@ -1,6 +1,8 @@
 # Fighter
 A front-line tank. You hit hard, take hits well and pull monsters off your friends, but you can't use bows or potions.
 
+![A Fighter right after Super Regeneration, hearts refilling from a big hit](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/fighter-super-regeneration.png)
+
 ## How it works
 | Stat | Fighter | Vanilla |
 |-|-|-|

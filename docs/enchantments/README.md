@@ -1,6 +1,8 @@
 # Enchantments
 The mod's own enchantments. At an enchanting table they only come up for an [Artificer](../classes/artificer.md); everyone else's rolls skip them. The table's hint on each button comes from the same filtered roll, so it always names something you can actually get. Once enchanted, an item works for anyone.
 
+![Each of the mod's enchantments on an item it can go on: Lunge II, Tree Feller, Returning, Smite Dragons V, Invulnerability II, Grid Miner II, Vampiric III and Featherfall III](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/enchantments-overview.png)
+
 | Enchantment | Max level | Goes on | Effect |
 |-|-|-|-|
 | [Lunge](lunge.md) | II | Swords | Right click to dash forward; 5 s cooldown |

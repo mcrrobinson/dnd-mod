@@ -1,0 +1,66 @@
+# Docs screenshots for docs/systems/class-progression.md. Run: timeout 300 ./gradlew runClient -PdevRunDir=run-classes -PdevScript=devscripts/docs-class-progression.txt
+# Screenshots: progression-table (the Attunement Table block), progression-tree (Necromancer tree with rank pips),
+# progression-bestiary (Druid bestiary tab with learned and unlocked creatures)
+wait 40
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doWeatherCycle false
+/weather clear
+/time set noon
+/fill -4 149 -4 12 149 12 minecraft:polished_deepslate
+/fill -4 150 -4 12 156 12 minecraft:air
+/kill @e[type=!minecraft:player]
+/dndclass set @s necromancer
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+skill unlock necromancer.bone_armor
+skill unlock necromancer.life_drain
+skill unlock necromancer.grave_pact
+/dndclass rank @s necromancer.raise_dead 4
+/setblock 4 150 4 dndclasses:attunement_table
+/setblock 3 150 4 minecraft:bookshelf
+/setblock 5 150 4 minecraft:bookshelf
+/tp @s 4.5 151.2 1.8 0 30
+hud off
+wait 40
+screenshot progression-table
+/tp @s 6.5 151.5 1.5 35 30
+wait 10
+screenshot progression-table-2
+hud on
+/tp @s 4.5 150 2.5 0 40
+wait 10
+use
+wait 20
+screenshot progression-tree
+closescreen
+/dndclass progress @s
+# Druid bestiary
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s druid.wild_shape 2
+/dndclass bestiary @s learn minecraft:cow
+/dndclass bestiary @s learn minecraft:pig
+/dndclass bestiary @s learn minecraft:wolf
+/dndclass bestiary @s learn minecraft:fox
+/dndclass bestiary @s learn dndclasses:owlbear
+/dndclass bestiary @s unlock minecraft:cow
+/dndclass bestiary @s unlock minecraft:wolf
+/tp @s 4.5 150 2.5 0 40
+wait 10
+use
+wait 10
+click 102 -104
+wait 10
+screenshot progression-bestiary
+closescreen
+/dndclass progress @s
+/dndclass resetprogress @s
+quit

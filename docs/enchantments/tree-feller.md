@@ -1,6 +1,9 @@
 # Tree Feller
 Fell a whole tree by breaking one log.
 
+![A birch tree before it is felled](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/tree-feller-before.png)
+![The same tree after one swing of a Tree Feller axe: the whole trunk has dropped as logs and only the leaves are left](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/tree-feller-after.png)
+
 ## How it works
 - Breaking a log with a Tree Feller **axe** also breaks every connected log (up, down and the four sides), up to 10 steps from the first one and at most 64 logs.
 - Each log is broken as if you mined it: Fortune applies, each log costs durability (it stops when the axe breaks), creative mode drops nothing, and protection/claim mods can refuse logs.

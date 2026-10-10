@@ -2,6 +2,8 @@
 
 An Artificer enchantment for thrown items. A Returning trident, snowball, egg or ender pearl goes straight back into the thrower's inventory once it lands, so you can keep throwing the same one.
 
+![A Returning trident flying at a husk](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/returning-trident.png)
+
 ## How it works
 - Max level: I. Rarity: uncommon.
 - **Trident:** when it hits a mob or a block, or falls below the bottom of the world, it goes straight back into the thrower's inventory. It doesn't fly back like Loyalty. You hear the trident-return sound. If your inventory is full, it drops at your feet.

@@ -1,6 +1,8 @@
 # Admin commands
 Commands for operators (permission level 2) to manage classes, class progress and goblin raids.
 
+![Chat after /dndclass set, get, xp add and progress, and /goblinraid list](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/admin-commands-chat.png)
+
 ## Commands
 ### Classes
 | Command | What it does |

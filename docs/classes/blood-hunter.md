@@ -1,8 +1,12 @@
 # Blood Hunter
 A sword fighter that is strongest at night and can take over any mob it looks at.
 
+![Blood Control: the Blood Hunter has taken the shape of a ravager](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/blood-hunter-blood-control.png)
+
 ## How it works
 **Burning blades.** Every sword hit sets the target on fire for 8 seconds, like Fire Aspect II.
+
+![A Blood Hunter's sword hit setting a zombie on fire at night](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/blood-hunter-burning-blade.png)
 
 **Night and day.** With a sword in your main hand you deal double damage at night (day time 13000 to 23000) and half damage during the day.
 

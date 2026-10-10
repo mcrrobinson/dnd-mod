@@ -1,6 +1,8 @@
 # Paladin
 A holy tank that protects the players around it and calls down judgment on its foes. You ignore every potion, can't craft or brew, and the Nether drains your strength.
 
+![Divine Judgment at rank IV: three beams strike, each with its shockwave](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/paladin-divine-judgment.png)
+
 ## How it works
 | Stat | Paladin | Vanilla |
 |-|-|-|

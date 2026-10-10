@@ -73,7 +73,8 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
   - `DungeonRegistry` (PersistentState `dndclasses_dungeons`): `find`, `containing`, `roomAt`, `isInsideUncleared`, `nearest`, `clear`. Entries are created lazily from the structure start or from a ward.
   - `DungeonState` (keyed by `StructureStart.getPos().toLong()`), `RoomRole`, `RoomState`.
   - `DungeonEvents`: `ENTERED`, `ROOM_CLEARED`, `BOSS_DEFEATED`, `CLEARED`. `ENTERED` and `ROOM_CLEARED` fire from wards; `CLEARED` fires from `DungeonRegistry.clear` (`/dungeon clear`); `BOSS_DEFEATED` isn't fired yet.
-- `classes/Blocks/DungeonWardBlock` + `DungeonWardBlockEntity` (NBT: `StartKey`, `RoomId`, `Role`, `Box`, `SpawnPoints`, and `Dungeon`, the whole plan, so a ward can record its dungeon without a structure start). `ArcaneSealBlock` (`dndclasses:arcane_seal`, translucent and unbreakable) is registered but not used yet.
+- `classes/Blocks/DungeonWardBlock` + `DungeonWardBlockEntity` (NBT: `StartKey`, `RoomId`, `Role`, `Box`, `SpawnPoints`, and `Dungeon`, the whole plan, so a ward can record its dungeon without a structure start).
+- Doorway seals and gate obstacles will come from the obstacle framework (PR #122: `classes/Obstacles/`, the Arcane Seal blocks and `ObstaclePlacer`); this ticket adds no seal block.
 - `classes/Commands/DungeonCommand`.
 - Data: `worldgen/structure/crypt.json`, `worldgen/structure_set/crypts.json`, `tags/worldgen/biome/has_structure/crypt.json`, `tags/worldgen/structure/dungeons.json`.
 - Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots).

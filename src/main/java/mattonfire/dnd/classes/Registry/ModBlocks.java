@@ -1,7 +1,6 @@
 package mattonfire.dnd.classes.Registry;
 
 import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.classes.Blocks.ArcaneSealBlock;
 import mattonfire.dnd.classes.Blocks.AttunementTableBlock;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlock;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
@@ -33,20 +32,10 @@ public class ModBlocks {
         public static final BlockEntityType<DungeonWardBlockEntity> DUNGEON_WARD_ENTITY = FabricBlockEntityTypeBuilder
                         .create(DungeonWardBlockEntity::new, DUNGEON_WARD).build(null);
 
-        /** Translucent, unbreakable doorway seal for dungeon fights; doesn't block light. */
-        public static final ArcaneSealBlock ARCANE_SEAL = new ArcaneSealBlock(
-                        FabricBlockSettings.of(Material.GLASS).strength(-1.0F, 3600000.0F).dropsNothing().nonOpaque()
-                                        .luminance(state -> 5).sounds(BlockSoundGroup.AMETHYST_BLOCK)
-                                        .allowsSpawning((state, world, pos, type) -> false)
-                                        .solidBlock((state, world, pos) -> false)
-                                        .suffocates((state, world, pos) -> false)
-                                        .blockVision((state, world, pos) -> false));
-
         public static void registerBlocks() {
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "dungeon_ward"), DUNGEON_WARD);
                 Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, "dungeon_ward"),
                                 DUNGEON_WARD_ENTITY);
-                Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "arcane_seal"), ARCANE_SEAL);
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "attunement_table"),
                                 ATTUNEMENT_TABLE);
                 Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, "attunement_table"),

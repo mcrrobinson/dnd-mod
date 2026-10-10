@@ -165,9 +165,6 @@ public class DndClassesClient implements ClientModInitializer {
         // The model has see-through quads like the vanilla brewing stand, which draw black on the default solid layer
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
                 mattonfire.dnd.classes.Registry.ModBlocks.FAST_BREWING_STAND_BLOCK, net.minecraft.client.render.RenderLayer.getCutout());
-        // Dungeon doorway seals are see-through
-        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
-                mattonfire.dnd.classes.Registry.ModBlocks.ARCANE_SEAL, net.minecraft.client.render.RenderLayer.getTranslucent());
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.FROST_DRAKE, mattonfire.dnd.client.renderer.FrostDrakeRenderer::new);

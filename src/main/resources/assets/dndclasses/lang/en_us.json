@@ -348,7 +348,6 @@
     "subtitles.dndclasses.dice.critical": "Natural 20",
     "subtitles.dndclasses.dice.fumble": "Natural 1",
     "block.dndclasses.dungeon_ward": "Dungeon Ward",
-    "block.dndclasses.arcane_seal": "Arcane Seal",
     "dungeon.dndclasses.name": "The %s of %s",
     "dungeon.dndclasses.challenge": "Challenge %s",
     "dungeon.dndclasses.crypt": "Crypt",

@@ -16,6 +16,8 @@ A fragile scout. You never need to eat, poison can't touch you, and you can turn
 
 ![Picking a lock as a Rogue](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/d20-lockpick.png)
 
+**Evasion (level 7).** On a DEX save that halves damage (dragon breath, traps), a success takes no damage and a failure takes half. See [class save features](../systems/class-save-features.md).
+
 ### Tips
 With no natural regeneration, every hit counts. Carry Potions of Healing or Regeneration and golden apples. You don't need to pack food at all, which frees up inventory space on long trips. Use Vanish to get past a group rather than to fight it, unless you've taken Backstab.
 

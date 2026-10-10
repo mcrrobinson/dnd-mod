@@ -16,6 +16,8 @@ Your bare fist does 6 damage, and a weapon adds its own damage on top. The catch
 
 **Special (power-up key, full mana): Rage.** Strength that grows with its rank: Strength I for 8 seconds at rank I, Strength II for 10 at II, Strength II for 12 at III and Strength III for 12 at IV. Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)); ranks II, III and IV need class level 3, 6 and 9 and a skill point each.
 
+**Danger Sense (level 2) and Rage on saves.** Advantage on DEX saves unless you're blinded or in Darkness, and while Rage is on, advantage on STR saves and Athletics checks. See [class save features](../systems/class-save-features.md).
+
 ### Tips
 You're slow, so let mobs come to you instead of chasing them. Skeletons can shoot you from inside the fog, so close the gap behind cover. A horse makes up for the walking speed when you travel. Save Rage for a boss or a crowd: each Strength level adds 3 damage to every hit, so a fully ranked Rage adds 9. Fuelled by Rage's 30% bonus applies on top of it while you're below half health. Titan is still the bigger buff: Strength III for 20 seconds with Resistance and Regeneration.
 

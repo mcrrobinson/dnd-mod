@@ -145,6 +145,10 @@ public class BarbarianSkills extends ClassSkills {
         int amplifier = RAGE.amplifier(player, "Strength");
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, amplifier));
         RAGES.put(player.getUuid(), new RageState(player.getWorld().getTime() + ticks, amplifier, 0));
+        // Rage gives advantage on STR saves and Athletics (ClassSaveFeatures): now, not at the next sheet refresh
+        if (!player.getWorld().isClient) {
+            mattonfire.dnd.classes.Abilities.AbilityScores.invalidate(player);
+        }
     }
 
     /** Whether the player's Rage is on: started and not run out or drunk away with milk. */

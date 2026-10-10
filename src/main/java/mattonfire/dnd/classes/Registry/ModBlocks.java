@@ -52,7 +52,17 @@ public class ModBlocks {
         public static final BlockEntityType<HoardCofferBlockEntity> HOARD_COFFER_ENTITY = FabricBlockEntityTypeBuilder
                         .create(HoardCofferBlockEntity::new, HOARD_COFFER).build(null);
 
+        /** The Immovable Rod while it's fixed in place (magic/items/ImmovableRodItem). Unbreakable, no item. */
+        public static final mattonfire.dnd.magic.items.ImmovableRodBlock IMMOVABLE_ROD = new mattonfire.dnd.magic.items.ImmovableRodBlock(
+                        FabricBlockSettings.of(Material.METAL).strength(-1.0F, 3600000.0F).dropsNothing().nonOpaque()
+                                        .sounds(BlockSoundGroup.METAL)
+                                        .allowsSpawning((state, world, pos, type) -> false)
+                                        .solidBlock((state, world, pos) -> false)
+                                        .suffocates((state, world, pos) -> false)
+                                        .blockVision((state, world, pos) -> false));
+
         public static void registerBlocks() {
+                Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "immovable_rod"), IMMOVABLE_ROD);
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "arcane_seal"), ARCANE_SEAL);
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "dungeon_ward"), DUNGEON_WARD);
                 Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, "dungeon_ward"),

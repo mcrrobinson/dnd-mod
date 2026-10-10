@@ -42,7 +42,7 @@ public class InstrumentItem extends Item {
     public static final int OTHER_COOLDOWN_TICKS = InstrumentSongs.SONG_TICKS;
 
     private final SoundEvent song;
-    private final StatusEffect buff;
+    protected final StatusEffect buff;
 
     public InstrumentItem(SoundEvent song, StatusEffect buff, Settings settings) {
         super(settings);
@@ -76,13 +76,21 @@ public class InstrumentItem extends Item {
      * side only; the caller checks the class.
      */
     public void playAsBard(PlayerEntity user) {
+        playAsBard(user, 0, BUFF_RADIUS);
+    }
+
+    /**
+     * {@link #playAsBard(PlayerEntity)} with a stronger buff ({@code amplifier} 1 = level II) or a wider
+     * reach, for the Doss Lute.
+     */
+    protected void playAsBard(PlayerEntity user, int amplifier, double radius) {
         ServerWorld serverWorld = (ServerWorld) user.getWorld();
         playSong(user, true);
         List<PlayerEntity> listeners = serverWorld.getEntitiesByClass(PlayerEntity.class,
-                user.getBoundingBox().expand(BUFF_RADIUS),
-                p -> p.isAlive() && !p.isSpectator() && p.squaredDistanceTo(user) <= BUFF_RADIUS * BUFF_RADIUS);
+                user.getBoundingBox().expand(radius),
+                p -> p.isAlive() && !p.isSpectator() && p.squaredDistanceTo(user) <= radius * radius);
         for (PlayerEntity listener : listeners) {
-            listener.addStatusEffect(new StatusEffectInstance(buff, BUFF_TICKS, 0), user);
+            listener.addStatusEffect(new StatusEffectInstance(buff, BUFF_TICKS, amplifier), user);
             Vec3d p = listener.getPos();
             serverWorld.spawnParticles(ParticleTypes.HAPPY_VILLAGER, p.x, p.y + 1.0, p.z, 6, 0.4, 0.5, 0.4, 0.0);
         }
@@ -96,7 +104,7 @@ public class InstrumentItem extends Item {
     }
 
     /** The song itself: the sound, music ducking and note particles. */
-    private void playSong(PlayerEntity user, boolean bard) {
+    protected void playSong(PlayerEntity user, boolean bard) {
         ServerWorld serverWorld = (ServerWorld) user.getWorld();
         serverWorld.playSound(null, user.getX(), user.getY(), user.getZ(), song, SoundCategory.RECORDS, 2.0F, 1.0F);
         InstrumentSongs.sendDuck(serverWorld, user.getPos());
@@ -104,9 +112,9 @@ public class InstrumentItem extends Item {
                 bard ? 8 : 3, 0.6, 0.3, 0.6, 1.0);
     }
 
-    private static void setCooldown(PlayerEntity user, int ticks) {
+    protected static void setCooldown(PlayerEntity user, int ticks) {
         for (Item instrument : new Item[] { ModItems.LUTE,
-                ModItems.DRUM, ModItems.FLUTE }) {
+                ModItems.DRUM, ModItems.FLUTE, ModItems.DOSS_LUTE }) {
             user.getItemCooldownManager().set(instrument, ticks);
         }
     }

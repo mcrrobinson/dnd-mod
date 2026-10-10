@@ -22,6 +22,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Dragonborn Breath Weapon](races/breath-weapon.md): R breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses) and Elves (Elven Enclaves): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
 
 ## Systems
@@ -35,7 +36,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
 - [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
-- [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API (PR #150)
+- [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
 - [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
@@ -43,6 +44,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 - [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`
+- [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons
@@ -95,6 +97,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
+- [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought
 
 ## Music
 - [Music](music.md): event music, class stings and music discs

@@ -597,6 +597,27 @@ public class ModItems {
                         new mattonfire.dnd.magic.items.ScrollItem(mattonfire.dnd.magic.items.ScrollItem.Spell.REMOVE_CURSE,
                                         new FabricItemSettings().maxCount(16)));
 
+        // Wondrous and utility magic items (design 5, section 3.7); tiers in magic/items/WondrousItems
+        public static final Item WAND_OF_MAGIC_MISSILES = registerItem("wand_of_magic_missiles",
+                        new mattonfire.dnd.magic.items.WandOfMagicMissilesItem(new FabricItemSettings().maxCount(1)));
+        public static final Item BAG_OF_HOLDING = registerItem("bag_of_holding",
+                        new mattonfire.dnd.magic.items.BagOfHoldingItem(new FabricItemSettings().maxCount(1)));
+        public static final Item DECANTER_OF_ENDLESS_WATER = registerItem("decanter_of_endless_water",
+                        new mattonfire.dnd.magic.items.DecanterOfEndlessWaterItem(new FabricItemSettings().maxCount(1)));
+        public static final Item IMMOVABLE_ROD = registerItem("immovable_rod",
+                        new mattonfire.dnd.magic.items.ImmovableRodItem(new FabricItemSettings().maxCount(1)));
+        public static final Item PERIAPT_OF_WOUND_CLOSURE = registerItem("periapt_of_wound_closure",
+                        new Item(new FabricItemSettings().maxCount(1)));
+        public static final Item RING_OF_PROTECTION = registerItem("ring_of_protection",
+                        new Item(new FabricItemSettings().maxCount(1)));
+        public static final Item AMULET_OF_HEALTH = registerItem("amulet_of_health",
+                        new Item(new FabricItemSettings().maxCount(1)));
+        public static final Item DOSS_LUTE = registerItem("doss_lute",
+                        new mattonfire.dnd.magic.items.DossLuteItem(ModSounds.SONG_LUTE, StatusEffects.REGENERATION,
+                                        new FabricItemSettings().maxCount(1)));
+        public static final Item TOME_OF_CLEAR_THOUGHT = registerItem("tome_of_clear_thought",
+                        new mattonfire.dnd.magic.items.TomeOfClearThoughtItem(new FabricItemSettings().maxCount(16)));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

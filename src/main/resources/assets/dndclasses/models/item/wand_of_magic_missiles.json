@@ -1,0 +1,6 @@
+{
+    "parent": "item/handheld",
+    "textures": {
+        "layer0": "dndclasses:item/wand_of_magic_missiles"
+    }
+}

@@ -42,7 +42,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 - [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`
-- [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
+- [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts (PR #148)
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons

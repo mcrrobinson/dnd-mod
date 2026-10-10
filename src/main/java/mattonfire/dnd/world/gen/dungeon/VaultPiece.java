@@ -57,6 +57,12 @@ public class VaultPiece extends DungeonPiece {
                 WarrenDressing.stores(b, c[0], c[1]);
             }
             CryptDressing.cornerCobwebs(b, this.width(), this.depth(), this.height, 0.4F);
+        } else if (RuinDressing.applies(this)) {
+            // The last of the hold's wealth: gilded stone in the corners
+            for (int[] c : CryptDressing.corners(this.width(), this.depth())) {
+                RuinDressing.hoardScraps(b, c[0], c[1]);
+            }
+            CryptDressing.cornerCobwebs(b, this.width(), this.depth(), this.height, 0.6F);
         }
     }
 

@@ -512,6 +512,19 @@ public abstract class DungeonPiece extends StructurePiece {
             }
         }
 
+        /**
+         * A real chest, never a mimic and never needle-trapped (the Ruin's gallery, where the mimics
+         * are placed on purpose when the room's fight starts).
+         */
+        void plainChest(int x, int y, int z, Direction facing, Identifier lootTable) {
+            long lootSeed = this.random.nextLong();
+            this.set(x, y, z, facing(Blocks.CHEST, facing));
+            BlockPos pos = this.pos(x, y, z);
+            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
+                container.setLootTable(lootTable, lootSeed);
+            }
+        }
+
         /** The vault's Hoard Coffer, tied to this dungeon (see HoardCofferBlockEntity). */
         void hoardCoffer(int x, int y, int z, Direction facing) {
             this.set(x, y, z, HoardCofferBlock.facing(facing));

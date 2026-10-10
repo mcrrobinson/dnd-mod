@@ -175,6 +175,13 @@ public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable
         return hurt;
     }
 
+    /** Wakes it (if it's still pretending), turning on {@code culprit} if given. Its kin wake each other this way. */
+    public void rouse(@Nullable LivingEntity culprit) {
+        if (this.isDormant() && this.isAlive()) {
+            this.wake(culprit);
+        }
+    }
+
     private void wake(@Nullable LivingEntity culprit) {
         this.setDormant(false);
         this.idleTicks = 0;

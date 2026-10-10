@@ -73,6 +73,7 @@ public class DungeonStructure extends Structure {
     private static List<RegistryKey<StructureSet>> otherDungeons(DungeonTheme theme) {
         return switch (theme) {
             case GOBLIN_WARREN -> List.of(set("crypts"));
+            case DWARVEN_RUIN -> List.of(set("crypts"), set("goblin_warrens"));
             default -> List.of();
         };
     }

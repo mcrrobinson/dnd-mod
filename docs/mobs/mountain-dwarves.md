@@ -35,7 +35,7 @@ It turns on a player for three reasons:
 - **You touch the hoard.** Open or break a chest (trapped ones too) or a barrel, or break a block of gold, where a dwarf within 16 blocks can see you, and every dwarf that saw it turns on you with a growl. Sneaking with an item in your hand places the item instead of opening the chest, so it doesn't count. Creative and spectator players are never noticed. Players Unfriendly or worse with the dwarves are noticed from 24 blocks.
 - **You're Hostile with the dwarves** ([Factions](../systems/factions.md)): every dwarf attacks you on sight.
 
-Help drive off a [goblin raid](../systems/goblin-raids.md) on the fortress and every dwarf within 96 blocks forgives you.
+Help drive off a [goblin raid](../systems/goblin-raids.md) on the fortress and every dwarf within 96 blocks forgives you. Clear a [Dwarven Ruin](../structures/dungeons.md#the-dwarven-ruin), the dwarves' lost hold, and you gain at least 60 standing with them (enough to lift a negative standing back to Neutral), and every dwarf of the nearest fortress within 512 blocks forgives you.
 
 ### Bartering
 Right-click a dwarf with a gold ingot and it takes the ingot and hands you something from the mountain's depths. It shakes its head instead if it's fighting, angry with you, or traded in the last 2 seconds.
@@ -81,7 +81,7 @@ Each fortress has a king on the throne. He's named "King" plus a dwarven name, h
 ### Tips
 - Want the treasury? Loot it when no dwarf can see you, or be ready to fight the whole hall.
 - Bring gold ingots. Bartering is the safe way to get lapis, redstone and the odd diamond out of a fortress.
-- If you've angered a fortress, defending it from a goblin raid clears the grudge.
+- If you've angered a fortress, defending it from a goblin raid, or clearing a nearby Dwarven Ruin, clears the grudge.
 
 ## Where to find it
 Mountain Dwarves only spawn inside dwarven fortresses, including the dark halls, and stop once there are 24 within 64 blocks. The king is placed when the fortress generates. There's also a spawn egg in the mod's creative tab.
@@ -91,7 +91,7 @@ Mountain Dwarves only spawn inside dwarven fortresses, including the dark halls,
 
 ## For developers
 - `entity/MountainDwarfEntity`: stats, equipment (`equip`), names, the king (`crown`), bartering and anger. It's `Angerable`; `setTarget` refuses players it has no grudge against, since the mod adds player-targeting goals to every mob.
-- `entity/SettlementGrudges`: the chest, barrel and gold block hooks (the `MOUNTAIN_DWARVES` rules, which call `MountainDwarfEntity.provoke`, with Dwarf kin trust from [Racial homes](../races/racial-homes.md)) and `forgive`, which `entity/raid/GoblinRaid` calls when a fortress raid is won.
+- `entity/SettlementGrudges`: the chest, barrel and gold block hooks (the `MOUNTAIN_DWARVES` rules, which call `MountainDwarfEntity.provoke`, with Dwarf kin trust from [Racial homes](../races/racial-homes.md)) and `forgive`, which `entity/raid/GoblinRaid` calls when a fortress raid is won and `entity/DwarfGrudges` when a Dwarven Ruin is cleared.
 - Spawn cap: `ModSpawns.canDwarfSpawn`. Loot: `loot_tables/entities/mountain_dwarf.json`, `loot_tables/gameplay/dwarf_barter.json` and `dwarf_barter_honored.json`.
 - Reputation: `shouldAngerAt` is also true for players Hostile with the dwarves; barter refusal, second roll and table, and the witness range come from `faction/TierEffects`.
 - Devscripts: `mountain-dwarf-behaviour.txt`, `mountain-dwarf-grudge.txt`, `mountain-dwarf-lineup.txt`.

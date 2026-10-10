@@ -72,6 +72,14 @@ The Goblin Warren's pool:
 
 Neutral monsters (the Warren's wolves) come in angry at the player nearest the one who walked in.
 
+The Dwarven Ruin's pool (the Ruin is always tier II or higher). **Dwarven Revenants** are skeletons in the hold's old gear with an axe (chainmail and an iron helmet at II, more iron at III, full iron and a diamond axe at IV); **Dwarven Bowmen** are skeletons with a bow and an iron helmet. Their gear never drops (the bowman's bow drops as usual). Mimics in the pool come in awake.
+
+| Tier | Pool (weight, threat) |
+|-|-|
+| II | Revenant 8 (1.5), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 2, Mimic 1 |
+| III | Revenant 8 (2), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 3, Mimic 2 |
+| IV | Revenant 8 (2.5), Bowman 5 (1.5), cave spider 5, Gelatinous Cube 4, Mimic 3 |
+
 Encounter monsters drop their normal loot and count for bounties and class XP like any other monster. Monsters a boss summons (the Lich's raised dead) still give nothing.
 
 ### Champion (mid-boss)
@@ -86,6 +94,12 @@ The Goblin Warren's champion is **Grimclaw**, the goblins' war beast, an Owlbear
 - **Chained**: it appears in the middle of its pen, between the hanging chains, held in its chains (no AI) with its chains rattling. After 3 seconds, or as soon as anything hurts it, it breaks free: the chains clatter, it roars and turns on the nearest player.
 - **Fury**: below half health it charges every 4 seconds instead of 6.
 
+The Dwarven Ruin's champion is the **Mimic Matriarch**, a Mimic (base 40 HP, so 120 HP solo, with the same champion buffs) that hides in its **gallery**: the mid-boss room has eight chest spots round its walls, and five hold real chests (`ruin_gallery` loot). When the fight starts, the Matriarch and two ordinary Mimics take the three empty spots, disguised as chests, alongside the room's usual minions.
+- Its boss bar stays hidden while it's still pretending.
+- It **wakes** when a player comes within 2.5 blocks of it, when it's opened or hit, or as soon as nothing else in the room is still fighting (the minions are dead and only sleeping mimics are left).
+- When it wakes, it **wakes the other mimics** of its room, and they all turn on the party. The room stays sealed until all three are dead.
+- The mimics carry the gallery's loot (plus every mimic's own magic roll), so killing them pays like opening a chest.
+
 ### Boss
 The boss room spawns its boss on the central dais when the first player is 5 blocks past its walls. The Crypt's boss is the **Lich** (300 HP), and its phylactery appears on the altar of the **reliquary**, the side room through a door in the boss room's wall (about 25 blocks from the dais).
 - **The reliquary is part of the fight**: its doorway isn't sealed, players in it count as in the boss room (for the 30 s lock-in and for the kill's participants), and the phylactery and a Lich that reforms there are followed there.
@@ -97,11 +111,13 @@ The boss room spawns its boss on the central dais when the first player is 5 blo
 
 The Goblin Warren's boss is the **Goblin Warlord** (250 HP, so 250 solo, 337 for two, 512 for four), called up on the dais of its war hall. It guards the middle of the hall (`setGuardPos`, a 12-block leash) and heads back there after a fight, and still bellows for Goblin Warrior reinforcements; those vanish with it if the fight is called off. The same health scaling, tier bonuses and lock-in apply. Its death clears the dungeon, and (see [Goblin Raids](goblin-raids.md)) calls off goblin raids within 256 blocks for 3 days.
 
+The Dwarven Ruin's boss is the **Beholder** (250 HP, so 250 solo, 337 for two, 512 for four), called up floating in the middle of its **dome**, 5 blocks over the dais. Its home is the middle of the dome, and it stays within 10 blocks of it (horizontally) and between 2 under and 6 over it, both fighting and drifting: it hangs back at the edge rather than following players out of the doorways, so it can't be pulled out of its dome (and if it's ever outside the room it's brought back). The same health scaling, tier bonuses and lock-in apply. Its death clears the dungeon, and the Mountain Dwarves forgive the party (see [Dungeons](../structures/dungeons.md#the-dwarven-ruin)).
+
 ### Clearing the dungeon
 When the boss dies the dungeon is **cleared**: every room is marked cleared and its seals open, everyone inside sees a "Dungeon cleared" title with the dungeon's name and hears a fanfare, and gets the advancement **Delver** ("Defeat a dungeon's boss and clear the dungeon"). `/dungeon clear` does the same.
 
 ## Where to find it
-In every dungeon (the Crypt and the Goblin Warren so far); see [Dungeons](../structures/dungeons.md).
+In every dungeon (the Crypt, the Goblin Warren and the Dwarven Ruin); see [Dungeons](../structures/dungeons.md).
 
 ## Commands
 - `/dungeon trigger <room>`: starts that room's fight now, scaled for your party (you don't need to be in the room; its ward has to be loaded). Op level 2.
@@ -117,17 +133,18 @@ Pools are data: `data/<namespace>/dungeon_encounters/<theme>.json` (`/reload` pi
   "boss": "lich",
   "champion": {"entity": "dndclasses:gelatinous_cube", "name": "dungeon.dndclasses.champion.ossuary_cube",
                "absorbed_loot": "minecraft:chests/simple_dungeon", "absorbed_stacks": 3,
-               "chained": false},
+               "chained": false, "base_health": 50, "gallery": false},
   "tiers": {
     "1": [{"entity": "minecraft:zombie", "weight": 10}, {"entity": "minecraft:skeleton", "weight": 8}],
     "3": [{"entity": "minecraft:wither_skeleton", "weight": 4, "threat": 3}]
   }
 }
 ```
-A tier with no list uses the nearest lower tier. `boss` is `lich` or `goblin_warlord`. A `chained` champion starts held in its chains (Grimclaw).
+A tier with no list uses the nearest lower tier. `boss` is `lich`, `goblin_warlord` or `beholder`. A `chained` champion starts held in its chains (Grimclaw). `base_health` (optional) replaces the mob's own max health before the champion multiplier. A `gallery` champion (a mimic: the Mimic Matriarch) hides with two more mimics in the empty gallery spots of the mid-boss room instead of appearing in the middle.
 
 ## Known limitations
-- The Crypt and the Goblin Warren have pools, champions and bosses. The Dwarven Ruin comes with its own ticket.
+- The Mimic Matriarch looks like any other mimic (no bigger model).
+- A gallery spot a player has filled with a block before the fight starts (the room seals as soon as anyone is inside, so only from outside) gets no mimic.
 - A chained champion that's still chained when the server restarts breaks free as soon as its room's ward ticks again.
 - The Ossuary Cube's stacks still come from the vanilla dungeon chest table, not the tier's elite table.
 - Saving throws against the Lich's spells, and its Dread Presence, come in a later ticket.
@@ -137,7 +154,9 @@ A tier with no list uses the nearest lower tier. `boss` is `lich` or `goblin_war
 ## For developers
 - `dungeon/EncounterBuilder`: budget (`budget`, `roomBase`, `partyMult`, `levelMult`, `difficultyMult`), `plan` (weighted fill and Veterans), `partyFor`, `spawn` (through the DM toolkit's `EncounterSpawner`, one mob per spawn point), `makeVeteran`, `rouse` (an `Angerable` pool mob, such as a wolf, is made angry at the nearest player). Tags: `dndclasses.dungeon` and `dndclasses.dungeon=<startKey>/<roomId>` on every mob, `dndclasses.dungeon_elite` on Veterans.
 - `dungeon/DungeonEncounterPools`: the reload listener for `dungeon_encounters/*.json`, reusing `Encounter.parseSpawn`.
-- `dungeon/DungeonChampion`: champion modifiers and its `ServerBossBar`, ticked by the ward (tag `dndclasses.dungeon_champion`); `tickChained` (a `chained` champion: NoAI and tag `dndclasses.dungeon_champion_chained` until `CHAIN_TICKS` (60) pass or it's hurt); an Owlbear champion gets `OwlbearEntity.FURY_TAG` (`chargeCooldown()` 80 ticks below half health, 120 otherwise); `splitIfHurt` (the Ossuary Cube's split, once: tag `dndclasses.dungeon_champion_split`; `SPLIT_AT`, `SPLIT_COUNT`, `SPLIT_COUNT_SOLO`).
+- `dungeon/DungeonChampion`: champion modifiers and its `ServerBossBar`, ticked by the ward (tag `dndclasses.dungeon_champion`); `tickChained` (a `chained` champion: NoAI and tag `dndclasses.dungeon_champion_chained` until `CHAIN_TICKS` (60) pass or it's hurt); an Owlbear champion gets `OwlbearEntity.FURY_TAG` (`chargeCooldown()` 80 ticks below half health, 120 otherwise); `splitIfHurt` (the Ossuary Cube's split, once: tag `dndclasses.dungeon_champion_split`; `SPLIT_AT`, `SPLIT_COUNT`, `SPLIT_COUNT_SOLO`); `tickMatriarch` (tag `dndclasses.dungeon_champion_matriarch`: wakes at `MATRIARCH_WAKE_RANGE` or when only sleeping mimics are left, then `MimicEntity.rouse`s the room's other mimics; the bar stays hidden while it sleeps).
+- `DungeonWardBlockEntity.spawnGallery`: places the gallery champion and its mimics (`MimicEntity.disguised`, room tags) in the air spots of `ChampionRoomPiece.gallerySpots(box, floorY)`; `GALLERY_MIMICS` (3).
+- Beholder: `StructureBosses.BossType.BEHOLDER` (spawned with `SpawnReason.STRUCTURE`); the ward calls `BeholderEntity.setHome(BossRoomPiece.domeCentre(box, floorY), BEHOLDER_HOME_RADIUS)` (10). `BeholderEntity.keepNearHome` clamps the attack goal's hover spot and the drift goal's spots (NBT `HomeRadius`; 0, the default, is no limit, as in the Beholder lair).
 - Boss area: the boss room's ward treats the dungeon's `RELIQUARY` rooms (from the plan) as part of its room for players, mob tracking and minion clean-up, and doesn't seal a doorway that leads into one (`area`, `leadsToAnnex`). `DungeonWardBlockEntity.reliquarySpot(dungeon)` and `lairLeash(lair, phylactery)`; `DungeonCombat.playersInBossArea`.
 - `LichEntity.setLair(centre, leash)` / `getLair()` (NBT `Lair`, `LairLeash`): home and leash round a lair instead of the phylactery. The phylactery hands the lair on to a Lich that reforms from it (NBT `LichLair`, `LichLairLeash`).
 - `dungeon/DungeonCombat`: the `AFTER_DEATH` listener (tells the room's ward a mob died; a boss's true death fires `DungeonEvents.BOSS_DEFEATED` and clears the dungeon) and the `CLEARED` listener (title, sound, `dndclasses:delver`). Boss tag: `dndclasses.dungeon_boss`.

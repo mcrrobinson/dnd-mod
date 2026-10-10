@@ -79,6 +79,14 @@ public class GateRoomPiece extends DungeonPiece {
                 }
             }
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.4F);
+        } else if (RuinDressing.applies(this)) {
+            // Fallen stone heaped in the corners
+            for (int[] c : CryptDressing.corners(w, d)) {
+                if (b.dressing.nextFloat() < 0.6F) {
+                    RuinDressing.rubble(b, c[0], c[1]);
+                }
+            }
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.5F);
         }
     }
 

@@ -240,6 +240,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.SettlementGrudges.register();
                 mattonfire.dnd.world.gen.HomeBonuses.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
+                mattonfire.dnd.entity.DwarfGrudges.register();
                 mattonfire.dnd.faction.FactionEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.faction.RepCommand.register(dispatcher));

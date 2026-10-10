@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.entity.GelatinousCubeEntity;
+import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.OwlbearEntity;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.Entity;
@@ -86,6 +87,10 @@ public final class DungeonChampion {
 
     /** Makes {@code mob} the room's champion for a party of {@code partySize}. */
     public static void make(ServerWorld world, MobEntity mob, DungeonEncounterPools.Champion champion, int partySize) {
+        EntityAttributeInstance maxHealth = mob.getAttributeInstance(EntityAttributes.GENERIC_MAX_HEALTH);
+        if (champion.baseHealth() > 0.0D && maxHealth != null) {
+            maxHealth.setBaseValue(champion.baseHealth());
+        }
         add(mob, EntityAttributes.GENERIC_MAX_HEALTH, HEALTH_ID, healthMult(partySize) - 1.0, EntityAttributeModifier.Operation.MULTIPLY_BASE);
         add(mob, EntityAttributes.GENERIC_ATTACK_DAMAGE, DAMAGE_ID, DAMAGE_BONUS, EntityAttributeModifier.Operation.MULTIPLY_BASE);
         add(mob, EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, KNOCKBACK_ID, KNOCKBACK_RESISTANCE, EntityAttributeModifier.Operation.ADDITION);
@@ -162,9 +167,70 @@ public final class DungeonChampion {
         return true;
     }
 
+    /** Tag for the Ruin's Mimic Matriarch, hiding among the gallery's chests ({@link #tickMatriarch}). */
+    public static final String MATRIARCH_TAG = "dndclasses.dungeon_champion_matriarch";
+    /** A player this close to the sleeping Matriarch wakes it. */
+    public static final double MATRIARCH_WAKE_RANGE = 2.5D;
+    /** Mimics of the Matriarch's room this close to it wake with it. */
+    private static final double MATRIARCH_KIN_RANGE = 24.0D;
+
+    /**
+     * The Mimic Matriarch: while it sleeps (a chest among chests) it wakes when a player comes within
+     * {@link #MATRIARCH_WAKE_RANGE} blocks, or when nothing else of its room is still fighting (the
+     * room's other monsters are dead and only sleeping mimics are left). Once it's awake it wakes every
+     * mimic of its room. Returns true while it's still asleep (its bar stays hidden).
+     */
+    public static boolean tickMatriarch(ServerWorld world, LivingEntity champion) {
+        if (!champion.getCommandTags().contains(MATRIARCH_TAG) || !(champion instanceof MimicEntity matriarch)) {
+            return false;
+        }
+        String roomTag = null;
+        for (String tag : champion.getCommandTags()) {
+            if (tag.startsWith(EncounterBuilder.ROOM_TAG_PREFIX)) {
+                roomTag = tag;
+            }
+        }
+        final String room = roomTag;
+        net.minecraft.util.math.Box near = champion.getBoundingBox().expand(MATRIARCH_KIN_RANGE);
+        List<MobEntity> roomMobs = room == null ? List.of() : world.getEntitiesByClass(MobEntity.class, near,
+                mob -> mob.isAlive() && mob != champion && mob.getCommandTags().contains(room));
+        if (matriarch.isDormant()) {
+            net.minecraft.entity.player.PlayerEntity close = world.getClosestPlayer(champion.getX(), champion.getY(), champion.getZ(),
+                    MATRIARCH_WAKE_RANGE, net.minecraft.predicate.entity.EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+            boolean alone = roomMobs.stream().allMatch(mob -> mob instanceof MimicEntity m && m.isDormant());
+            if (close == null && !alone) {
+                return true;
+            }
+            net.minecraft.entity.player.PlayerEntity target = close != null ? close : world.getClosestPlayer(champion.getX(),
+                    champion.getY(), champion.getZ(), BAR_RANGE, net.minecraft.predicate.entity.EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR);
+            matriarch.rouse(target);
+            mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Dungeon] the Mimic Matriarch woke ({})", close != null ? "a player came close" : "its room was otherwise clear");
+        }
+        int woken = 0;
+        for (MobEntity mob : roomMobs) {
+            if (mob instanceof MimicEntity mimic && mimic.isDormant()) {
+                mimic.rouse(matriarch.getTarget());
+                woken++;
+            }
+        }
+        if (woken > 0) {
+            world.playSound(null, champion.getBlockPos(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.HOSTILE, 2.0F, 0.5F);
+            mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Dungeon] the Mimic Matriarch woke {} mimic(s)", woken);
+        }
+        return false;
+    }
+
     /** Updates the champion's bar: its health, and the players within {@link #BAR_RANGE} blocks. */
     public static void tick(ServerWorld world, LivingEntity champion) {
         tickChained(world, champion);
+        if (tickMatriarch(world, champion)) {
+            // Still pretending to be a chest: no bar to give it away
+            ServerBossBar hidden = BARS.get(champion.getUuid());
+            if (hidden != null) {
+                hidden.clearPlayers();
+            }
+            return;
+        }
         ServerBossBar bar = BARS.computeIfAbsent(champion.getUuid(), id -> {
             ServerBossBar b = new ServerBossBar(champion.getDisplayName(), BossBar.Color.WHITE, BossBar.Style.NOTCHED_10);
             b.setDarkenSky(false);

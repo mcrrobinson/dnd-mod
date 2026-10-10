@@ -27,10 +27,12 @@ public class BeholderDriftGoal extends Goal {
             return false;
         }
         BlockPos home = this.beholder.getHome() != null ? this.beholder.getHome() : this.beholder.getBlockPos();
+        // Within its home radius, if it has one (a dungeon dome), with room to spare
+        int range = this.beholder.getHomeRadius() > 0.0D ? Math.max(2, Math.min(RANGE, (int) this.beholder.getHomeRadius() - 2)) : RANGE;
         for (int attempt = 0; attempt < 8; attempt++) {
-            Vec3d spot = Vec3d.ofBottomCenter(home).add(
-                    this.beholder.getRandom().nextBetween(-RANGE, RANGE), this.beholder.getRandom().nextBetween(-2, 4),
-                    this.beholder.getRandom().nextBetween(-RANGE, RANGE));
+            Vec3d spot = this.beholder.keepNearHome(Vec3d.ofBottomCenter(home).add(
+                    this.beholder.getRandom().nextBetween(-range, range), this.beholder.getRandom().nextBetween(-2, 4),
+                    this.beholder.getRandom().nextBetween(-range, range)));
             Box box = this.beholder.getType().getDimensions().getBoxAt(spot);
             if (this.beholder.world.isSpaceEmpty(this.beholder, box)) {
                 this.destination = spot;

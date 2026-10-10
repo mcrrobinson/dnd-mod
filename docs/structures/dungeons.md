@@ -1,7 +1,7 @@
 # Dungeons
 Underground adventure sites for a party: an entrance on the surface, a spiral stair down, and 12-14 rooms on a planned route to a boss and its treasure vault. Each dungeon has a name ("The Barrow of Ashmoor") and a Challenge tier (I-IV) that rises with distance from spawn.
 
-This page covers the framework and the themes so far, the **Crypt** and the **Goblin Warren**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); loot and the Hoard Coffer are on [Dungeon loot](../systems/dungeon-loot.md); traps are on [Dungeon traps](../systems/dungeon-traps.md); the puzzle and class gates are on [Dungeon puzzles and gates](../systems/dungeon-puzzles-and-gates.md).
+This page covers the framework and the three themes: the **Crypt**, the **Goblin Warren** and the **Dwarven Ruin**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); loot and the Hoard Coffer are on [Dungeon loot](../systems/dungeon-loot.md); traps are on [Dungeon traps](../systems/dungeon-traps.md); the puzzle and class gates are on [Dungeon puzzles and gates](../systems/dungeon-puzzles-and-gates.md).
 
 ## How it works
 - **Layout**: a 7x7 grid of 16x16 cells (112x112 blocks, one chunk per cell) centred on the structure's start chunk. The entrance is the middle cell; a random walk from it lays out the main path, in this order:
@@ -17,13 +17,13 @@ This page covers the framework and the themes so far, the **Crypt** and the **Go
 | 6 | Puzzle room (four rune pillars, murals and a riddle; the far doorway is sealed until it's solved) | 15x15 | 7 |
 | 7 | Encounter (small), in half of dungeons | 13x13 | 6 |
 | 8 | Mid-boss room | 15x15 | 8 |
-| 9 | Boss room, 2x2 cells, with a central dais | 31x31 | 12 |
+| 9 | Boss room, 2x2 cells, with a central dais (the Ruin: a dome) | 31x31 | 12 |
 | 10 | Treasure vault (the Hoard Coffer) | 13x13 | 5 |
 
-- **Side rooms**: every dungeon has a **secret room** (9x9, one chest) behind a bricked-up doorway (cracked stone bricks in a Crypt, packed coarse dirt in a Warren) in an antechamber, encounter, puzzle or mid-boss room. Anyone can break through. Half of dungeons also get a **side vault** (11x11, one chest, behind a Wizard-only Greater Arcane Seal). A Crypt always has a **reliquary** (13x13, inner height 6) through a door in the boss room's wall, where the Lich keeps its phylactery (see [The Crypt](#the-crypt)). So a Crypt has 12-14 rooms, and a Warren (no reliquary) 11-13.
+- **Side rooms**: every dungeon has a **secret room** (9x9, one chest) behind a bricked-up doorway (cracked stone bricks in a Crypt, packed coarse dirt in a Warren, cracked deepslate bricks in a Ruin) in an antechamber, encounter, puzzle or mid-boss room. Anyone can break through. Half of dungeons also get a **side vault** (11x11, one chest, behind a Wizard-only Greater Arcane Seal). A Crypt always has a **reliquary** (13x13, inner height 6) through a door in the boss room's wall, where the Lich keeps its phylactery (see [The Crypt](#the-crypt)). So a Crypt has 12-14 rooms, and a Warren or a Ruin (no reliquary) 11-13.
 - **Corridors**: 3 wide and 4 high, joining neighbouring rooms' 3x3 doorways across the gaps between cells.
 - **Shell**: every room and corridor fills its whole box. Walls, floor and ceiling are 2 blocks thick, with an outer skin of deepslate tiles, so caves, aquifers and lava can't flood in. Floors are propped up with cobbled deepslate (up to 16 blocks) over caves.
-- **Depth**: the floor is 20 blocks below the lowest of 25 ground samples over the grid (or below sea level, if that's lower), so even the boss room's roof stays at least 6 blocks under the surface. Only the entrance shows (for the Crypt, a barrow; for the Goblin Warren, a cave mouth: see below).
+- **Depth**: the floor is 20 blocks below the lowest of 25 ground samples over the grid (or below sea level, if that's lower), so even the boss room's roof stays at least 6 blocks under the surface. The Dwarven Ruin goes deeper: its floor is at a random level between y -30 and 0 (fixed by its position), or lower if the ground calls for it. Only the entrance shows (for the Crypt, a barrow; for the Goblin Warren, a cave mouth; for the Dwarven Ruin, a collapsed gatehouse: see below).
 - **Crypt palette**: stone bricks (some mossy or cracked), polished andesite floors, polished deepslate trim, chiselled stone accents, soul lanterns.
 - **Chests**: one in each encounter room, the secret room and the side vault, with locked tier loot (`dndclasses:chests/dungeon/<theme>_<room>_t<tier>`); 8% of them are Mimics. See [Dungeon loot](../systems/dungeon-loot.md).
 - **No natural monster spawns** inside (`spawn_overrides.monster` is empty): every monster will come from an encounter.
@@ -77,8 +77,33 @@ A hide lean-to is two blocks along a wall and two deep: a hay bale and a rug und
 - **Vault**: the Hoard Coffer's full roll adds the Warlord's war chest on top: one roll of the goblin camp chief's chest (see [Dungeon loot](../systems/dungeon-loot.md)).
 - **Raids**: clearing a Warren calls off any goblin raid within 256 blocks and keeps natural raids away from settlements there for 3 in-game days (see [Goblin Raids](../systems/goblin-raids.md)).
 
+### The Dwarven Ruin
+The third theme: the hold that dug too deep, far under the mountains. Home of the Mimic Matriarch and the Beholder.
+- **Palette**: the dwarven fortress's stone gone to ruin. Deepslate brick walls, a quarter of them cracked, patched with deepslate tiles, cobbled deepslate and a little mossy cobblestone; polished deepslate floors with tiles, cracked tiles, cobbled deepslate and tuff; polished blackstone brick trim; chiselled deepslate accents; polished basalt pillars; plain lanterns; deepslate brick stairs down the shaft. The waterproof skin is the same deepslate tiles.
+- **Depth**: the floor is between y -30 and 0, so the stair down from a mountainside can be well over 100 steps.
+- **Entrance**: a **collapsed dwarven gatehouse**. A 13x13 hall of polished blackstone and deepslate bricks (a glint of gilded blackstone here and there) stands round the top of the stair, paved and footed down to the ground, cleared of rock 8 blocks up. Its walls are 5 high with gaps knocked in them (about a third of the wall columns are lower); four corner towers stand 7-8 high, and one or two of them have fallen to stumps; a ledge of slabs is all that's left of the roof. The **great doorway** (3 wide, 4 high) stands between two polished basalt pillars with chiselled capitals, under a chiselled lintel broken off on one side (the fallen piece lies in front). A paved approach runs out from it, flanked by two headless statues of dwarf lords. Rubble heaps and fallen pillar drums lie all round, off the approach.
+- **Names**: "The `<place>` of `<name>`" with 4 places (Lost Hold, Fallen Halls, Deep Gate, Sunken Forge) and 8 names (Khazbarum, King Durn, Ironvein, the Silent Anvil, Grundholm, the Deep Kings, Barazinbar, Stonehelm).
+- **Dressing** (as for the other themes: only into air, its own random; a broken pillar only takes out the pillar's own blocks):
+
+| Room | Props |
+|-|-|
+| Antechamber (the gate guards' hall) | cracked anvils, barrels and rubble along the walls (3 in 5 of the 8 spots), cobwebs |
+| Encounter rooms | rubble heaps in the corners (not the chest's), half the time one of the four columns broken (its shaft gone, a stump on the floor, the capital hanging from the ceiling, a drum lying beside it), cobwebs |
+| Trap corridor | cobwebs along the top of the hall |
+| Gate room | rubble in the corners, cobwebs |
+| Puzzle room | lanterns on the floor under the corner murals, cobwebs |
+| Mid-boss room (the Mimic Matriarch's gallery) | eight chest spots round the walls, two on each wall clear of the doorway: five real chests of gallery loot, three left empty for the mimics; a red carpet in the middle; cobwebs |
+| Boss room (the Beholder's dome) | see below |
+| Vault, side vault | gilded blackstone in the corners, cobwebs |
+| Secret room | a dwarf's bones in one corner and their anvil in the opposite one |
+
+- **The dome**: the boss room is cut out of solid rock as a dome of radius 14, the room's full 12 blocks high in the middle and curving down to 4 at its rim; the corners of the 31x31 room are solid. Each doorway leads in through a short passage 3 wide and 4 high. Inside: the dais in the middle, four lanterns hanging from the curve, a ring of eight polished basalt pillars 11 blocks out (about 2 in 5 broken), four headless dwarf statues round the dais (a quarter fallen) and rubble round the edge.
+- **Monsters**: Dwarven Revenants and Bowmen (skeletons in the hold's old gear), cave spiders, Gelatinous Cubes and Mimics. The mid-boss is the **Mimic Matriarch**, hiding in its gallery with two more mimics, and the boss is the **Beholder**, which stays in its dome (see [Dungeon encounters](../systems/dungeon-encounters.md)). The Ruin is always tier II or higher, and 15% of its other chests are Mimics.
+- **Vault**: the Hoard Coffer's full roll adds a 15% chance of a **Staff of Lightning** and a 25% chance of a dwarven heirloom (see [Dungeon loot](../systems/dungeon-loot.md)).
+- **The Mountain Dwarves**: clearing a Ruin reclaims the dwarves' lost hold. Every participant gains at least 60 standing with the Mountain Dwarves, enough to lift a negative standing back to Neutral, and every dwarf of the nearest [dwarven fortress](dwarven-fortresses.md) within 512 blocks drops its grudge against them (see [Mountain Dwarves](../mobs/mountain-dwarves.md)).
+
 ### Challenge tier
-`tier = 1 + floor(distance / 1500)` from (0, 0), clamped to I-IV. A quarter of dungeons roll one tier higher or lower. Crypts stop at III unless they're at least 4500 blocks out. The tier is fixed when the dungeon generates.
+`tier = 1 + floor(distance / 1500)` from (0, 0), clamped to I-IV. A quarter of dungeons roll one tier higher or lower. Crypts stop at III unless they're at least 4500 blocks out. Dwarven Ruins start at II. The tier is fixed when the dungeon generates.
 
 | Tier | Distance from spawn |
 |-|-|
@@ -99,11 +124,13 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 
 Goblin Warrens generate under forests, flower forests, birch and old growth birch forests, old growth pine and spruce taiga, taiga, plains, sunflower plains, savannas and savanna plateaus, about 32 chunks apart (at least 12). They also keep 10 chunks clear of Crypts.
 
-For both, the entrance has to be on dry land, and at most 2 of the 25 ground samples may be under water. They keep 8 chunks clear of hobbit villages, dwarven fortresses and Beholder lairs.
+Dwarven Ruins generate under the dwarven fortress's mountain biomes (meadows, groves, snowy slopes, jagged, frozen and stony peaks, windswept hills, windswept gravelly hills and windswept forests) and stony shores, about 36 chunks apart (at least 14). They keep 10 chunks clear of Crypts and Goblin Warrens.
+
+For all of them, the entrance has to be on dry land, and at most 2 of the 25 ground samples may be under water. They keep 8 chunks clear of hobbit villages, dwarven fortresses and Beholder lairs.
 
 ## Commands
-- `/locate structure #dndclasses:dungeons` (or `dndclasses:crypt`, `dndclasses:goblin_warren`)
-- `/place structure dndclasses:crypt` (or `dndclasses:goblin_warren`) builds one at your chunk, if the ground there passes the checks above ("Failed to place structure" otherwise).
+- `/locate structure #dndclasses:dungeons` (or `dndclasses:crypt`, `dndclasses:goblin_warren`, `dndclasses:dwarven_ruin`)
+- `/place structure dndclasses:crypt` (or `dndclasses:goblin_warren`, `dndclasses:dwarven_ruin`) builds one at your chunk, if the ground there passes the checks above ("Failed to place structure" otherwise).
 - `/dungeon info`: the dungeon you're in or standing over: name, theme, tier, entrance, floor level, bounds, whether it's cleared, and every room with its state. Op level 2, like the rest.
 - `/dungeon clear`: marks it cleared (boss defeated, every room cleared).
 - `/dungeon reset`: repopulates it now: every room back to untouched and the boss available again (Hoard Coffer claims stay).
@@ -113,20 +140,25 @@ For both, the entrance has to be on dry land, and at most 2 of the 25 ground sam
 
 ## Known limitations
 - A dungeon made with `/place structure` plays no dungeon music (vanilla `/place` doesn't record a structure start), but its wards and `/dungeon` commands work.
-- The Dwarven Ruin is still a placeholder in `DungeonTheme` (Crypt palette, no structure JSON).
+- The Ruin's music is the generic dungeon track until the dungeon music ticket.
+- A Dwarf's stonecunning doesn't find the Ruin's secret doors yet (a hook for the races area); anyone can break the cracked bricks.
+- Dwarves of the fortress that aren't loaded when a Ruin is cleared keep any grudge they held (a dwarf's anger runs out on its own within a minute).
+- On a very steep slope the gatehouse hall is level with the top of the stair, so a downhill side stands on a footing up to 8 blocks deep and an uphill side is cut into the hill.
 - The Warren's music is the generic dungeon track until the dungeon music ticket.
 - The Warren's barrels are empty props (only the encounter chest holds loot).
 - Trees can grow on the barrow mound, and on a steep slope the mound and its passage follow the ground at the top of the stair, so one side can sit in the hillside or stand proud of it.
-- The Crypt's and the Warren's room screenshots for the docs are still to be taken in-game.
+- The Crypt's, the Warren's and the Ruin's room screenshots for the docs are still to be taken in-game.
 
 ## For developers
 - `src/main/java/mattonfire/dnd/world/gen/dungeon/`:
   - `DungeonStructures` registers the `dndclasses:dungeon` structure type and the pieces.
-  - `DungeonStructure` (codec field `theme`; keep-clear check, plus `otherDungeons(theme)`: the other themes' sets a theme keeps 10 chunks from, checked one way only so two dungeons never check each other) and `DungeonTheme` (palette, tier limits, name word counts). `DungeonTheme.Palette` is the Crypt's; `WarrenPalette` overrides it (`stairs()` gives the shaft's steps).
+  - `DungeonStructure` (codec field `theme`; keep-clear check, plus `otherDungeons(theme)`: the other themes' sets a theme keeps 10 chunks from, checked one way only so two dungeons never check each other) and `DungeonTheme` (palette, tier limits, name word counts). `DungeonTheme.Palette` is the Crypt's; `WarrenPalette` and `RuinPalette` override it (`stairs()` gives the shaft's steps). `deep()` (the Ruin) puts the floor at `DEEP_MIN_Y..DEEP_MAX_Y` (-30..0, from a random seeded by the world seed and start chunk, in `DungeonPlanner.Terrain.findSite`).
   - `DungeonPlanner`: site check (`Terrain`), tier, the grid walk, boss/vault/reliquary/branch placement and the pieces (`Layout`). `DungeonTheme.hasReliquary()` (the Crypt) makes the reliquary required: an attempt with no free cell beside the boss room is retried.
   - `DungeonPiece`: the base, with its `Builder` (`shell`, `foundation`, `doorway`, `chest`/`mimic`, `ward`, `spawnPoint`, `column`, `light`). Local coordinates from the box's north-west corner, y = 0 at floor level, no rotation.
-  - Pieces: `StairPiece`, `EntrancePiece` (the Crypt's barrow, the Warren's cave mouth; a plain stone ring for other themes), `DungeonCorridorPiece`, `AntechamberPiece`, `EncounterRoomPiece`, `TrapCorridorPiece`, `GateRoomPiece`, `PuzzleRoomPiece`, `ChampionRoomPiece`, `BossRoomPiece`, `VaultPiece` (also the side vault), `SecretRoomPiece`, `ReliquaryPiece` (`phylacterySpot(box, floorY)`).
+  - Pieces: `StairPiece`, `EntrancePiece` (the Crypt's barrow, the Warren's cave mouth, the Ruin's gatehouse; a plain stone ring for other themes), `DungeonCorridorPiece`, `AntechamberPiece`, `EncounterRoomPiece`, `TrapCorridorPiece`, `GateRoomPiece`, `PuzzleRoomPiece`, `ChampionRoomPiece`, `BossRoomPiece`, `VaultPiece` (also the side vault), `SecretRoomPiece`, `ReliquaryPiece` (`phylacterySpot(box, floorY)`).
   - `CryptDressing`: the Crypt's props (`sarcophagus`, `wallSarcophagi`, `bonePile`, `candles`, `skull`, `cornerCobwebs`), called by each room for the Crypt only. They place through `Builder.setIfAir` and draw from `Builder.dressing`, a random separate from the piece's own.
+  - `RuinDressing`: the Ruin's props (`rubble`, `anvil`, `wallProp`, `wallProps`, `brokenColumn`, `statue`, `hoardScraps`), the same way.
+  - `ChampionRoomPiece.gallerySpots(box, floorY)` (the Ruin's 8 gallery spots, `GALLERY_MIMICS` left empty) and `Builder.plainChest` (a chest that's never a mimic); `BossRoomPiece` builds the Ruin's dome (`DOME_RADIUS`, `domeCeiling`, `domeCentre`).
   - `WarrenDressing`: the Warren's props (`leanTo`, `wallProps`, `cage`, `bedroll`, `stores`, `totem`, `cornerProp`, `chain`, `refusePit`, `firePit`), the same way; it reuses `CryptDressing`'s bone piles, skulls and cobwebs.
 - `src/main/java/mattonfire/dnd/dungeon/`:
   - `DungeonRegistry` (PersistentState `dndclasses_dungeons`): `find`, `containing`, `roomAt`, `isInsideUncleared`, `nearest`, `clear`. Entries are created lazily from the structure start or from a ward. The static `nearest(world, pos, theme, unclearedOnly, maxDistance)` also finds dungeons nobody has visited: it runs the structure locator over the dungeon structures of that theme (`structuresOf(world, theme)`, any `DungeonStructure` in the registry), loads only the start chunk's structure start and records it. If the nearest one is cleared, it looks again past already-referenced starts.
@@ -136,5 +168,6 @@ For both, the entrance has to be on dry land, and at most 2 of the 25 ground sam
 - `classes/Blocks/DungeonWardBlock` + `DungeonWardBlockEntity` (NBT: `StartKey`, `RoomId`, `Role`, `Box`, `SpawnPoints`, and `Dungeon`, the whole plan, so a ward can record its dungeon without a structure start).
 - Doorway seals are `dndclasses:arcane_seal` (`classes/Blocks/ArcaneSealBlock`), placed by the wards during fights; gate obstacles come from the obstacle framework (`classes/Obstacles/`, placed with `Builder.obstacle`).
 - `classes/Commands/DungeonCommand`.
-- Data: `worldgen/structure/{crypt,goblin_warren}.json`, `worldgen/structure_set/{crypts,goblin_warrens}.json`, `tags/worldgen/biome/has_structure/{crypt,goblin_warren}.json`, `tags/worldgen/structure/dungeons.json`.
-- Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots), `dungeon-crypt.txt` (a fresh `/place`d Crypt: the barrow from outside, then the cut-away layout with its reliquary), `dungeon-warren.txt` (the same for a Goblin Warren: the cave mouth, then the cut-away layout).
+- Data: `worldgen/structure/{crypt,goblin_warren,dwarven_ruin}.json`, `worldgen/structure_set/{crypts,goblin_warrens,dwarven_ruins}.json`, `tags/worldgen/biome/has_structure/{crypt,goblin_warren,dwarven_ruin}.json`, `tags/worldgen/structure/dungeons.json`.
+- `entity/DwarfGrudges`: the `DungeonEvents.CLEARED` listener for the Ruin (`REPUTATION` 60, `FORTRESS_RANGE` 512, `FORTRESS_RADIUS` 128; `nearestFortress` uses `#dndclasses:faction/mountain_dwarves`), through `SettlementGrudges.forgive(player, area)`.
+- Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots), `dungeon-crypt.txt` (a fresh `/place`d Crypt: the barrow from outside, then the cut-away layout with its reliquary), `dungeon-warren.txt` (the same for a Goblin Warren: the cave mouth, then the cut-away layout), `dungeon-ruin.txt` (the same for a Dwarven Ruin: the gatehouse, then the cut-away layout with its dome).

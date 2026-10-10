@@ -21,7 +21,11 @@ import net.minecraft.world.Heightmap;
  * <li>The Goblin Warren: a <b>cave mouth</b>, a rocky knoll heaped over the top of the stair, with a
  * timber-shored tunnel into one side, a crude palisade of stakes round it (the goblin camp's, from
  * {@code GoblinCampPiece}) with skull-topped gate posts where the trail comes in, and goblin totems.</li>
- * <li>Other themes (until their own tickets dress them): a ring of standing stones round the shaft top.</li>
+ * <li>The Dwarven Ruin: a <b>collapsed dwarven gatehouse</b> in the fortress's stone (polished
+ * blackstone and deepslate bricks, a glint of gilded blackstone), a 13x13 hall round the top of the
+ * stair with broken walls, four corner towers (some fallen), a great doorway between polished basalt
+ * pillars under a broken lintel, a paved approach and rubble and fallen pillars all round.</li>
+ * <li>Other themes: a ring of standing stones round the shaft top.</li>
  * </ul>
  */
 public class EntrancePiece extends DungeonPiece {
@@ -57,7 +61,8 @@ public class EntrancePiece extends DungeonPiece {
     }
 
     private static BlockBox box(Info info, int cx, int cz, int top) {
-        if (info.theme() == DungeonTheme.CRYPT || info.theme() == DungeonTheme.GOBLIN_WARREN) {
+        if (info.theme() == DungeonTheme.CRYPT || info.theme() == DungeonTheme.GOBLIN_WARREN
+                || info.theme() == DungeonTheme.DWARVEN_RUIN) {
             return new BlockBox(cx - BARROW_RADIUS, top - 8, cz - BARROW_RADIUS, cx + BARROW_RADIUS, top + 8, cz + BARROW_RADIUS);
         }
         return new BlockBox(cx - RADIUS, top - 2, cz - RADIUS, cx + RADIUS, top + 5, cz + RADIUS);
@@ -75,6 +80,8 @@ public class EntrancePiece extends DungeonPiece {
             this.barrow(b);
         } else if (this.theme() == DungeonTheme.GOBLIN_WARREN && this.width() == 2 * BARROW_RADIUS + 1) {
             this.caveMouth(b);
+        } else if (this.theme() == DungeonTheme.DWARVEN_RUIN && this.width() == 2 * BARROW_RADIUS + 1) {
+            this.gatehouse(b);
         } else {
             this.ring(b);
         }
@@ -496,6 +503,200 @@ public class EntrancePiece extends DungeonPiece {
                     ? Blocks.CARVED_PUMPKIN.getDefaultState().with(net.minecraft.block.CarvedPumpkinBlock.FACING, mouth)
                     : Blocks.SKELETON_SKULL.getDefaultState().with(net.minecraft.block.SkullBlock.ROTATION, r.nextInt(16));
             b.set(x, ground + 3, z, head);
+        }
+    }
+
+    // ---------------------------------------------------------------- the Dwarven Ruin's gatehouse
+
+    /** The gatehouse's walls stand this far (Chebyshev) from the middle of the shaft. */
+    private static final int HALL = 6;
+    private static final int HALL_WALL = 5;
+    private static final int TOWER = 7;
+    /** The hall is cleared of rock and earth this high (the top of the piece). */
+    private static final int HALL_CLEAR = 8;
+    /** Walls are footed this far down where the ground falls away. */
+    private static final int HALL_FOOTING = 8;
+
+    /** The gatehouse's stone: the palette's surface stone, with now and then a glint of gilded blackstone. */
+    private static BlockState gateStone(Builder b, Random r) {
+        return r.nextFloat() < 0.03F ? Blocks.GILDED_BLACKSTONE.getDefaultState() : b.palette.surface(r);
+    }
+
+    private void gatehouse(Builder b) {
+        int ground = this.top - this.info.floorY();
+        int c = BARROW_RADIUS;
+        // As for the barrow: layout first, then textures from randoms of their own positions.
+        Direction mouth = Direction.fromHorizontal(b.random.nextInt(4));
+        long seed = b.random.nextLong();
+        boolean[] fallen = new boolean[4];
+        int fallenCount = 1 + b.random.nextInt(2);
+        for (int i = 0; i < fallenCount; i++) {
+            fallen[b.random.nextInt(4)] = true;
+        }
+        this.hall(b, ground, c, mouth, seed, fallen);
+        this.gateway(b, ground, c, mouth, seed);
+        this.ruinedSurrounds(b, c, mouth, seed);
+    }
+
+    /** Index 0-3 of the corner tower at (dx, dz), or -1 if it isn't in one. */
+    private static int towerAt(int dx, int dz) {
+        if (Math.abs(dx) < HALL - 1 || Math.abs(dz) < HALL - 1) {
+            return -1;
+        }
+        return (dx > 0 ? 1 : 0) + (dz > 0 ? 2 : 0);
+    }
+
+    /**
+     * The hall: a paved floor round the shaft footed down to solid ground, cleared up to
+     * {@value #HALL_CLEAR}; walls {@value #HALL_WALL} high with gaps knocked in them, four corner towers
+     * {@value #TOWER} high (the {@code fallen} ones down to stumps), and a ledge of slabs left of the roof.
+     */
+    private void hall(Builder b, int ground, int c, Direction mouth, long seed, boolean[] fallen) {
+        for (int x = c - HALL; x <= c + HALL; x++) {
+            for (int z = c - HALL; z <= c + HALL; z++) {
+                int dx = x - c;
+                int dz = z - c;
+                int ring = Math.max(Math.abs(dx), Math.abs(dz));
+                if (ring <= SHAFT) {
+                    continue;
+                }
+                Random r = at(seed, x, 0, z);
+                // Footing down to solid ground
+                for (int y = ground - 1; y >= ground - HALL_FOOTING; y--) {
+                    BlockState now = b.get(x, y, z);
+                    if (now == null || !(now.isAir() || now.isReplaceable() || !now.getFluidState().isEmpty())) {
+                        break;
+                    }
+                    b.set(x, y, z, b.palette.foundation());
+                }
+                b.set(x, ground, z, ring == HALL ? gateStone(b, r) : b.palette.floor(r));
+                int tower = towerAt(dx, dz);
+                int height;
+                if (tower >= 0) {
+                    height = fallen[tower] ? 1 + r.nextInt(2) : TOWER + r.nextInt(2);
+                } else if (ring == HALL) {
+                    height = r.nextFloat() < 0.35F ? r.nextInt(HALL_WALL) : HALL_WALL;
+                } else {
+                    height = 0;
+                }
+                for (int y = 1; y <= HALL_CLEAR; y++) {
+                    BlockState state;
+                    if (y <= height) {
+                        state = gateStone(b, r);
+                    } else if (tower >= 0 && !fallen[tower] && y == height + 1 && Math.abs(dx) == HALL && Math.abs(dz) == HALL) {
+                        state = b.palette.surfaceWall();
+                    } else if (tower < 0 && ring == HALL - 1 && y == HALL_WALL && r.nextFloat() < 0.3F) {
+                        // What's left of the roof: a ledge along the inside of the walls
+                        state = Blocks.POLISHED_BLACKSTONE_BRICK_SLAB.getDefaultState()
+                                .with(net.minecraft.block.SlabBlock.TYPE, net.minecraft.block.enums.SlabType.TOP);
+                    } else {
+                        state = Blocks.AIR.getDefaultState();
+                    }
+                    b.set(x, ground + y, z, state);
+                }
+            }
+        }
+    }
+
+    /**
+     * The great doorway in the wall facing {@code dir}: 3 wide and 4 high, between two polished
+     * basalt pillars with chiselled capitals, under a chiselled lintel broken off on one side (the
+     * missing piece lies in front); then a paved approach out to the edge of the piece, cleared above.
+     */
+    private void gateway(Builder b, int ground, int c, Direction dir, long seed) {
+        Direction side = dir.rotateYClockwise();
+        int brokenSide = at(seed, c, 5, c).nextBoolean() ? 1 : -1;
+        for (int l = -2; l <= 2; l++) {
+            int x = c + dir.getOffsetX() * HALL + side.getOffsetX() * l;
+            int z = c + dir.getOffsetZ() * HALL + side.getOffsetZ() * l;
+            if (Math.abs(l) == 2) {
+                for (int y = 1; y <= HALL_WALL + 1; y++) {
+                    b.set(x, ground + y, z, Blocks.POLISHED_BASALT.getDefaultState());
+                }
+                b.set(x, ground + HALL_WALL + 2, z, b.palette.accent());
+                continue;
+            }
+            for (int y = 1; y <= 4; y++) {
+                b.set(x, ground + y, z, Blocks.AIR.getDefaultState());
+            }
+            b.set(x, ground + 5, z, l == brokenSide ? Blocks.AIR.getDefaultState() : b.palette.accent());
+            b.set(x, ground, z, b.palette.trim());
+        }
+        // The approach
+        for (int t = HALL + 1; t <= BARROW_RADIUS; t++) {
+            for (int l = -1; l <= 1; l++) {
+                int x = c + dir.getOffsetX() * t + side.getOffsetX() * l;
+                int z = c + dir.getOffsetZ() * t + side.getOffsetZ() * l;
+                Random r = at(seed, x, 6, z);
+                for (int y = ground - 1; y >= ground - HALL_FOOTING; y--) {
+                    BlockState now = b.get(x, y, z);
+                    if (now == null || !(now.isAir() || now.isReplaceable() || !now.getFluidState().isEmpty())) {
+                        break;
+                    }
+                    b.set(x, y, z, b.palette.foundation());
+                }
+                b.set(x, ground, z, r.nextFloat() < 0.7F ? b.palette.floor(r) : Blocks.COBBLED_DEEPSLATE.getDefaultState());
+                for (int y = 1; y <= 4; y++) {
+                    b.set(x, ground + y, z, Blocks.AIR.getDefaultState());
+                }
+            }
+        }
+        // The fallen piece of the lintel, in front of the doorway
+        int x = c + dir.getOffsetX() * (HALL + 2) + side.getOffsetX() * (brokenSide * 2);
+        int z = c + dir.getOffsetZ() * (HALL + 2) + side.getOffsetZ() * (brokenSide * 2);
+        b.set(x, ground + 1, z, b.palette.accent());
+    }
+
+    /**
+     * Round the gatehouse: fallen pillar drums lying in the grass, heaps of rubble, and two headless
+     * statues of dwarf lords either side of the approach, each standing on the ground where it is.
+     */
+    private void ruinedSurrounds(Builder b, int c, Direction mouth, long seed) {
+        Random layout = at(seed, 0, 7, 0);
+        Direction side = mouth.rotateYClockwise();
+        for (int i = 0; i < 14; i++) {
+            double angle = layout.nextDouble() * Math.PI * 2.0D;
+            double dist = HALL + 2 + layout.nextDouble() * (BARROW_RADIUS - HALL - 3);
+            int x = c + (int) Math.round(Math.cos(angle) * dist);
+            int z = c + (int) Math.round(Math.sin(angle) * dist);
+            boolean drum = layout.nextFloat() < 0.3F;
+            Direction lying = Direction.fromHorizontal(layout.nextInt(4));
+            int lateral = (x - c) * side.getOffsetX() + (z - c) * side.getOffsetZ();
+            int ahead = (x - c) * mouth.getOffsetX() + (z - c) * mouth.getOffsetZ();
+            if (Math.abs(lateral) <= 3 && ahead > 0) {
+                continue; // keep the approach clear
+            }
+            int ground = this.groundAt(b, x, z);
+            if (ground == Integer.MIN_VALUE) {
+                continue;
+            }
+            Random r = at(seed, x, 8, z);
+            BlockState here = b.get(x, ground + 1, z);
+            if (here == null || !(here.isAir() || here.isReplaceable())) {
+                continue;
+            }
+            if (drum) {
+                BlockState basalt = Blocks.POLISHED_BASALT.getDefaultState().with(net.minecraft.block.PillarBlock.AXIS, lying.getAxis());
+                b.set(x, ground + 1, z, basalt);
+                b.set(x + lying.getOffsetX(), ground + 1, z + lying.getOffsetZ(), basalt);
+            } else {
+                b.set(x, ground + 1, z, r.nextFloat() < 0.6F ? Blocks.COBBLED_DEEPSLATE.getDefaultState() : gateStone(b, r));
+                if (r.nextFloat() < 0.4F) {
+                    b.set(x, ground + 2, z, Blocks.COBBLED_DEEPSLATE_SLAB.getDefaultState());
+                }
+            }
+        }
+        for (int l : new int[]{-3, 3}) {
+            int x = c + mouth.getOffsetX() * (HALL + 4) + side.getOffsetX() * l;
+            int z = c + mouth.getOffsetZ() * (HALL + 4) + side.getOffsetZ() * l;
+            int ground = this.groundAt(b, x, z);
+            if (ground == Integer.MIN_VALUE) {
+                continue;
+            }
+            b.set(x, ground, z, b.palette.trim());
+            b.set(x, ground + 1, z, Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState());
+            b.set(x, ground + 2, z, Blocks.POLISHED_DEEPSLATE.getDefaultState());
+            b.set(x, ground + 3, z, Blocks.CHISELED_DEEPSLATE.getDefaultState());
         }
     }
 }

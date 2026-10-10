@@ -315,6 +315,7 @@ public final class EncounterBuilder {
     public static void arrivalSound(ServerWorld world, DungeonTheme theme, BlockPos pos) {
         SoundEvent sound = switch (theme) {
             case GOBLIN_WARREN -> SoundEvents.EVENT_RAID_HORN.value();
+            case DWARVEN_RUIN -> SoundEvents.BLOCK_ANVIL_LAND;
             default -> SoundEvents.ENTITY_SKELETON_AMBIENT;
         };
         world.playSound(null, pos, sound, SoundCategory.HOSTILE, 2.0F, 0.6F);

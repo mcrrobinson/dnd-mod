@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.LichEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -114,7 +115,9 @@ public final class StructureBosses {
     /** Bosses a structure (a dungeon's boss room) can call up on demand. */
     public enum BossType {
         LICH,
-        GOBLIN_WARLORD;
+        GOBLIN_WARLORD,
+        /** The Dwarven Ruin's boss; the dungeon gives it its dome as home ({@link mattonfire.dnd.entity.BeholderEntity#setHome(BlockPos, double)}). */
+        BEHOLDER;
 
         public static BossType byName(String name) {
             try {
@@ -150,6 +153,7 @@ public final class StructureBosses {
         return switch (type) {
             case LICH -> spawnLich(world, pos, yaw, phylacterySpot != null ? phylacterySpot : pos, setup);
             case GOBLIN_WARLORD -> spawnWarlord(world, pos, yaw, setup);
+            case BEHOLDER -> spawnBeholder(world, pos, yaw, setup);
         };
     }
 
@@ -201,6 +205,28 @@ public final class StructureBosses {
         }
         world.spawnEntityAndPassengers(warlord);
         return warlord;
+    }
+
+    /**
+     * A Beholder for a dungeon, floating where it appears. Spawned as a structure mob, so it doesn't
+     * look for a Beholder lair round it; {@code extras} gives it its home.
+     */
+    @Nullable
+    private static BeholderEntity spawnBeholder(ServerWorld world, BlockPos pos, float yaw, @Nullable Consumer<MobEntity> extras) {
+        BeholderEntity beholder = ModEntityTypes.BEHOLDER.create(world);
+        if (beholder == null) {
+            return null;
+        }
+        beholder.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
+        beholder.setHeadYaw(yaw);
+        beholder.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+        beholder.setHome(pos);
+        beholder.setPersistent();
+        if (extras != null) {
+            extras.accept(beholder);
+        }
+        world.spawnEntityAndPassengers(beholder);
+        return beholder;
     }
 
     private static void placeMarker(ServerWorldAccess world, BlockPos pos, float yaw, String kind, String extra) {

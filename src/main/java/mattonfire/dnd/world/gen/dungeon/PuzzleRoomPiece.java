@@ -106,6 +106,12 @@ public class PuzzleRoomPiece extends DungeonPiece {
                 b.setIfAir(c[0], 1, c[1], b.palette.light(false));
             }
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.4F);
+        } else if (RuinDressing.applies(this)) {
+            // Lanterns on the floor under the murals, where the delvers who came before left them
+            for (int[] c : CryptDressing.corners(w, d)) {
+                b.setIfAir(c[0], 1, c[1], b.palette.light(false));
+            }
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.6F);
         }
     }
 

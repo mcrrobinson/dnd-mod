@@ -59,7 +59,9 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Circle of the Moon | Right | Hardy Form (first node, open to both), Thorn Burst, Beast Bond | **Primal Strike**: your attacks deal +2 damage in animal form |
 | Circle of the Land | Left | Tidecaller (first node, open to both), Regrowth, Photosynthesis | **Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Primal Strike** (Moon): in animal form your own attacks deal +2 damage (added before armor).
+- **Natural Recovery** (Land): every 30 s you spend standing on grass blocks, moss or leaves gives you 1 mana pip, on top of normal mana regeneration. Time off natural ground pauses the count rather than resetting it.
 
 ## Commands
 - `/dndclass set <player> druid` (see [Admin commands](../systems/admin-commands.md)).

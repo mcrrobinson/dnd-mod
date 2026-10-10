@@ -1,0 +1,45 @@
+{
+  "title": "Objective sampler",
+  "description": "Every objective and action type, for the engine's devscript.",
+  "giver": "hobbit_elder",
+  "on_accept": [{"type": "give", "item": "minecraft:compass"}],
+  "stages": [
+    {
+      "title": "The camp",
+      "text": "Find the goblin camp and slay two zombies inside it.",
+      "objectives": [
+        {"type": "visit", "structure": "dndclasses:goblin_camp"},
+        {"type": "kill", "entity": "minecraft:zombie", "count": 2, "within_structure": "dndclasses:goblin_camp",
+         "quest_drop": {"item": "minecraft:bone", "chance": 1.0}}
+      ],
+      "on_complete": [
+        {"type": "set_flag", "flag": "camp_seen"},
+        {"type": "narrate", "text": "The camp falls quiet."},
+        {"type": "give", "item": "minecraft:paper", "count": 2}
+      ]
+    },
+    {
+      "title": "Errands",
+      "text": "Bring the bones to the innkeeper, see the King and gather sticks for the elder.",
+      "objectives": [
+        {"type": "deliver", "item": "minecraft:bone", "count": 2, "role": "innkeeper"},
+        {"type": "talk", "role": "dwarf_king"},
+        {"type": "collect", "item": "#minecraft:planks", "count": 3, "consume": true},
+        {"type": "check", "skill": "persuasion", "dc": 12}
+      ],
+      "on_complete": [{"type": "start_quest", "quest": "dndtest:followup"}]
+    },
+    {
+      "title": "Hold the line",
+      "text": "Defend a hobbit village from a goblin raid.",
+      "objectives": [{"type": "defend", "settlement": "hobbit_village"}]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 2},
+    {"type": "rep", "factions": {"dndclasses:mountain_dwarves": 10}},
+    {"type": "magic_item", "rarity": "uncommon"},
+    {"type": "reveal", "structure": "dndclasses:goblin_camp", "radius": 30},
+    {"type": "loot", "table": "minecraft:chests/simple_dungeon"}
+  ]
+}

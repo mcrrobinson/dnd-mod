@@ -5,6 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
+import mattonfire.dnd.dungeon.DungeonCombat;
 import mattonfire.dnd.dungeon.DungeonRegistry;
 import mattonfire.dnd.dungeon.DungeonState;
 import net.minecraft.block.Block;
@@ -22,6 +24,7 @@ import net.minecraft.world.Heightmap;
  * /dungeon clear         mark it cleared (boss defeated, every room open); fires the CLEARED event
  * /dungeon reset         back to fresh: every room untouched, the boss available again
  * /dungeon tier <1-4>    change its challenge tier
+ * /dungeon trigger <room> start that room's fight now, for your party (you needn't be in the room)
  * /dungeon cutaway       (testing) remove everything from 3 blocks above its floor up to the sky,
  *                        so its layout can be screenshotted from above. Destructive.
  *
@@ -39,6 +42,8 @@ public class DungeonCommand {
                 .then(CommandManager.literal("reset").executes(DungeonCommand::reset))
                 .then(CommandManager.literal("tier")
                         .then(CommandManager.argument("tier", IntegerArgumentType.integer(1, 4)).executes(DungeonCommand::tier)))
+                .then(CommandManager.literal("trigger")
+                        .then(CommandManager.argument("room", IntegerArgumentType.integer(0)).executes(DungeonCommand::trigger)))
                 .then(CommandManager.literal("cutaway").executes(DungeonCommand::cutaway)));
     }
 
@@ -61,7 +66,12 @@ public class DungeonCommand {
         ServerWorld world = source.getWorld();
         for (DungeonState.Room room : d.rooms()) {
             BlockPos c = room.box().getCenter();
-            source.sendFeedback(Text.literal("  #" + room.id() + " " + room.role().label() + ": " + room.state()
+            String fight = "";
+            if (room.state() == mattonfire.dnd.dungeon.RoomState.ACTIVE) {
+                DungeonWardBlockEntity ward = DungeonCombat.ward(world, d, room);
+                fight = ward == null ? " (ward not loaded)" : " (" + ward.trackedMobs() + " mob(s) left, " + ward.getSeals().size() + " seal block(s))";
+            }
+            source.sendFeedback(Text.literal("  #" + room.id() + " " + room.role().label() + ": " + room.state() + fight
                     + " at " + c.getX() + " " + d.floorY() + " " + c.getZ()), false);
         }
         // Soundness check over the loaded rooms: no water or lava inside, and every room but the
@@ -109,6 +119,30 @@ public class DungeonCommand {
         d.setTier(IntegerArgumentType.getInteger(context, "tier"));
         context.getSource().sendFeedback(Text.empty().append(d.name()).append(" is now ").append(d.tierText()), true);
         return d.tier();
+    }
+
+    private static int trigger(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        DungeonState d = find(context);
+        int id = IntegerArgumentType.getInteger(context, "room");
+        DungeonState.Room room = d.room(id);
+        if (room == null) {
+            throw new SimpleCommandExceptionType(Text.literal("No room #" + id)).create();
+        }
+        if (!room.role().combat()) {
+            throw new SimpleCommandExceptionType(Text.literal("Room #" + id + " (" + room.role().label() + ") has no fight")).create();
+        }
+        DungeonWardBlockEntity ward = DungeonCombat.ward(source.getWorld(), d, room);
+        if (ward == null) {
+            throw new SimpleCommandExceptionType(Text.literal("Room #" + id + "'s ward isn't loaded: go closer")).create();
+        }
+        if (source.getWorld().getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) {
+            throw new SimpleCommandExceptionType(Text.literal("Nothing spawns on Peaceful")).create();
+        }
+        int count = ward.start(source.getWorld(), d, room, source.getPlayerOrThrow());
+        source.sendFeedback(Text.literal("Room #" + id + " " + room.role().label() + ": spawned " + count + " mob(s), seals "
+                + ward.getSeals().size() + " block(s)"), true);
+        return count;
     }
 
     private static int cutaway(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

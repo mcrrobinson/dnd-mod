@@ -46,6 +46,10 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     @Unique
     private static final TrackedData<Byte> DND$RACE = DataTracker.registerData(PlayerEntity.class,
             TrackedDataHandlerRegistry.BYTE);
+    /** The race whose body size applies ({@link PlayerEntityExt#getBodyRace}). Not saved: RaceStats sets it. */
+    @Unique
+    private static final TrackedData<Byte> DND$BODY_RACE = DataTracker.registerData(PlayerEntity.class,
+            TrackedDataHandlerRegistry.BYTE);
 
     /** Downed state bits ({@code Downed}): every client needs them to draw the crawl pose. */
     @Unique
@@ -76,6 +80,7 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
     @Inject(method = "initDataTracker", at = @At("TAIL"))
     private void dnd$initRaceTracker(CallbackInfo info) {
         this.dataTracker.startTracking(DND$RACE, (byte) 0);
+        this.dataTracker.startTracking(DND$BODY_RACE, (byte) 0);
         this.dataTracker.startTracking(DND$DOWNED, (byte) 0);
     }
 
@@ -149,6 +154,24 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         DragonAncestry a = ancestry == null || !r.hasAncestry() ? DragonAncestry.NONE : ancestry;
         this.dataTracker.set(DND$RACE, (byte) (r.getValue() | (a.getValue() << 4)));
         this.calculateDimensions();
+    }
+
+    @Override
+    public DndRace getBodyRace() {
+        try {
+            return DndRace.fromValue(this.dataTracker.get(DND$BODY_RACE));
+        } catch (IllegalArgumentException e) {
+            return DndRace.NONE;
+        }
+    }
+
+    @Override
+    public void setBodyRace(DndRace race) {
+        byte value = (byte) (race == null ? DndRace.NONE : race).getValue();
+        if (this.dataTracker.get(DND$BODY_RACE) != value) {
+            this.dataTracker.set(DND$BODY_RACE, value);
+            this.calculateDimensions();
+        }
     }
 
     // Save the class with the player so rejoining keeps it instead of reopening the picker.

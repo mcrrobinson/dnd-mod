@@ -7,12 +7,13 @@ Small, peaceful halflings that live in [hobbit villages](../structures/hobbit-vi
 - 14 HP, 0.32 speed. Six looks, and each hobbit gets a random Shire name (e.g. "Bilbo Baggins").
 - Wanders up to 24 blocks around its home by day and keeps within 3 blocks of it at night. Keeps away from monsters.
 - Always snacking (bread, apples, cookies, pie, stew...).
-- **Gifts:** right-click one with an empty hand and it shares some of its food, once every 5 minutes.
+- **Gifts:** right-click one with an empty hand and it shares some of its food, once every 5 minutes. Your standing with the hobbits ([Factions](../systems/factions.md)) changes the wait: 15 minutes at Unfriendly, 2.5 minutes at Honored and Exalted, and no gifts at all at Hostile. Halflings wait 2/5 as long ([Racial homes](../races/racial-homes.md)).
+- **Hostile players:** hobbits flee from a player Hostile with the hobbits who comes within 8 blocks.
 - Drops 0-2 bread, 0-1 apple and 0-3 cookies (+Looting).
 
 ## Where to find it / How to get it
 - Only inside hobbit villages, which slowly top up their population (at most 16 hobbits within 48 blocks). Natural spawns must be inside one of the village's buildings or plots, not in the lanes' and grounds' boxes deep underground, so hobbits don't turn up in caves under the village. There's also a spawn egg.
 
 ## For developers
-- `entity/HobbitEntity`, `client/renderer/HobbitRenderer`. Loot: `loot_tables/entities/hobbit.json`.
+- `entity/HobbitEntity` (tier rules from `faction/TierEffects`), `client/renderer/HobbitRenderer`. Loot: `loot_tables/entities/hobbit.json`.
 - Devscripts: `hobbit-locate.txt`, `hobbit-village-tour.txt`.

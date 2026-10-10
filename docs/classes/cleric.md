@@ -50,10 +50,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more |
-| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once per long rest, make one held weapon or worn armor piece +1 until the next long rest, from an Attunement Table's Items tab ([details](../systems/magic-items.md#blessing-of-the-forge)) |
+| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Life Domain healing is 25% stronger |
+| Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once per long rest (once per in-game day with the `dndRests` gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab ([details](../systems/magic-items.md#blessing-of-the-forge)) |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Disciple of Life** (Life): Cure Wounds heals 5 hearts instead of 4. Preserve Life's Regeneration II lasts 6.25 s instead of 5 s, and Sanctuary's party Regeneration lasts 25% longer (6.25 / 10 / 12.5 s at ranks II-IV). Divine Intervention already heals fully, so it also gives Absorption I (2 hearts) for 10 s.
+- **Blessing of the Forge** (Forge): at an Attunement Table, open the Items tab and press **Bless +1** next to a weapon in your hand (main or offhand) or an armor piece you wear. It becomes one better (+1, up to +3; see [Blessing of the Forge](../systems/magic-items.md#blessing-of-the-forge)) until your next long rest. Once per long rest; with the `dndRests` gamerule off, once per in-game day, lasting until the next day. The +1 comes off the item wherever it is once its Cleric has rested (checked once a second while the Cleric is online), or if the Cleric stops being a Forge Cleric. Unidentified items and +3 items can't be blessed.
 
 ## Commands
 - `/dndclass set <player> cleric` (see [Admin commands](../systems/admin-commands.md)).

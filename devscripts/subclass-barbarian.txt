@@ -1,0 +1,95 @@
+# Barbarian subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-barbarian.txt
+# Expect in latest.log ([CHAT] lines):
+#  1. Berserker: Strength (Id 5) duration after Rage ~160; after each of 4 melee kills it grows by 40 (minus the
+#     ticks in between), stopping after the 3rd kill (+120 max)
+#  2. Totem Warrior control: a kill doesn't lengthen Rage
+#  3. Totem Warrior raging: /damage 10 takes 8.5 health; not raging: 10. Berserker raging: 10
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/time set noon
+/kill @e[type=husk]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s barbarian
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s barbarian.berserker
+/clear @s
+/give @s minecraft:netherite_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 20
+wait 400
+# --- 1. Frenzy ---
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
+wait 15
+/dndclass forceroll @s 10
+attack
+wait 3
+/data get entity @s ActiveEffects
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
+wait 15
+/dndclass forceroll @s 10
+attack
+wait 3
+/data get entity @s ActiveEffects
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
+wait 15
+/dndclass forceroll @s 10
+attack
+wait 3
+/data get entity @s ActiveEffects
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
+wait 15
+/dndclass forceroll @s 10
+attack
+wait 3
+/data get entity @s ActiveEffects
+# Berserker raging takes full damage (control for 3)
+/effect give @s minecraft:instant_health 1 10
+wait 3
+/data get entity @s Health
+/damage @s 10 minecraft:generic
+wait 2
+/data get entity @s Health
+/kill @e[type=husk]
+# --- 2/3. Totem Warrior ---
+/effect clear @s
+/dndclass subclass @s barbarian.totem_warrior
+wait 400
+/effect give @s minecraft:instant_health 1 10
+wait 3
+/data get entity @s Health
+/damage @s 10 minecraft:generic
+wait 2
+/data get entity @s Health
+wait 20
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/effect give @s minecraft:instant_health 1 10
+wait 3
+/data get entity @s Health
+/damage @s 10 minecraft:generic
+wait 2
+/data get entity @s Health
+screenshot subclass-barbarian-totem
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
+wait 15
+/dndclass forceroll @s 10
+attack
+wait 3
+/data get entity @s ActiveEffects
+quit

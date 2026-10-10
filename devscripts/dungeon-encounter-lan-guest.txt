@@ -1,0 +1,8 @@
+# Two-player scaling, guest side: joins dungeon-encounter-lan-host.txt and stays while the host walks it through.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25647 -PdevScript=devscripts/dungeon-encounter-lan-guest.txt
+wait 40
+closescreen
+wait 60
+closescreen
+wait 2400
+quit

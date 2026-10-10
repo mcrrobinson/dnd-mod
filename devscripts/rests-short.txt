@@ -1,0 +1,93 @@
+# Short rests at campfires: a Barbarian (long-rest group) gets 1 charge back, mana and Hit Dice;
+# the cooldown message; a Bard (short-rest group) gets all charges plus Song of Rest; the third
+# rest is refused. Movement is locked while resting. Takes about 5 minutes (one 3-minute cooldown).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/rests-short.txt
+# Output: [CHAT] lines in logs/latest.log; screenshots short-rest-progress, short-rest-done,
+# short-rest-cooldown, bard-rest-done, short-rest-limit, short-rest-after-long
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule dndRests true
+/time set 1000
+/clear @s
+hotbar 0
+/fill -4 149 -4 4 149 6 minecraft:stone
+/fill -4 150 -4 4 155 6 minecraft:air
+/setblock 0 150 2 minecraft:campfire[lit=true]
+/dndclass set @s barbarian
+/dndclass resetprogress @s
+/clear @s
+/effect clear @s
+/dndclass rest @s long
+/tp @s 0.5 150 0.5 0 35
+wait 20
+# Rage spends the mana and a charge; then empty the charges and take some damage
+press key.dnd-classes.power-up
+wait 10
+/effect clear @s
+/dndclass charges @s 0
+/damage @s 8 minecraft:generic
+wait 5
+/dndclass charges @s
+/data get entity @s Health
+clearchat
+# Sit down (sneak + empty hand on the lit campfire), then try to walk away
+sneak on
+use
+wait 5
+sneak off
+forward on
+wait 60
+forward off
+/data get entity @s Pos
+clearchat
+wait 20
+screenshot short-rest-progress
+wait 540
+/dndclass charges @s
+/data get entity @s Health
+screenshot short-rest-done
+# Straight away again: the cooldown
+clearchat
+sneak on
+use
+wait 20
+screenshot short-rest-cooldown
+sneak off
+wait 3600
+# A Bard gets every charge back, and Song of Rest heals an extra 1d6
+/dndclass set @s bard
+/clear @s
+/dndclass charges @s 0
+/damage @s 10 minecraft:generic
+wait 5
+/dndclass charges @s
+/data get entity @s Health
+/tp @s 0.5 150 0.5 0 35
+wait 5
+sneak on
+use
+wait 5
+sneak off
+wait 610
+/dndclass charges @s
+/data get entity @s Health
+screenshot bard-rest-done
+# The third short rest is refused until a long rest
+clearchat
+sneak on
+use
+wait 20
+screenshot short-rest-limit
+sneak off
+/dndclass rest @s long
+wait 5
+clearchat
+sneak on
+use
+wait 20
+screenshot short-rest-after-long
+sneak off
+quit

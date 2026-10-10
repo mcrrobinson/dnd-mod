@@ -1,0 +1,169 @@
+# Racial homes at the dev world's dwarven fortress (forge -7081 131 6542 to -7069 139 6554, treasury
+# -7138 133 6522 to -7128 139 6534; find them with /dndhome pieces).
+# Run on a fresh copy of run/: timeout 500 ./gradlew runClient -PdevRunDir=run-rh -PdevScript=devscripts/racial-homes-fortress.txt
+# Expect in latest.log ([CHAT] lines; "rh:" markers come from /say):
+# - rh:human-forge: the watcher's AngryAt is the player's UUID (no kin trust for a Human).
+# - rh:dwarf-forge: no AngryAt (a Dwarf may open forge chests).
+# - rh:dwarf-treasury-1: no AngryAt (first offence of the day is a warning growl); rh:dwarf-treasury-2: AngryAt set.
+# - rh:king: a Dwarf gets 3 gold ingots or an enchanted iron tool once; the second audience gives nothing; a Human gets nothing.
+# - rh:barter: "[KinPrices] Kin barter" lines for the Dwarf and the Gnome, none for the Human.
+# - rh:gossip: a Human's first villager interaction adds minor_positive 10 gossip, the second doesn't add more;
+#   a Dwarf adds none.
+# - rh:rep-dwarf / rh:rep-gnome: Mountain Dwarves start at 150 for a Dwarf, 100 for a Gnome.
+# Every other dwarf within 64 blocks is killed first, so only the test dwarves witness anything.
+wait 40
+closescreen
+/time set 6000
+/gamerule doDaylightCycle false
+/gamemode survival
+/clear @s
+/effect give @s minecraft:resistance 600 4 true
+/dndrace set @s dwarf
+/say rh:rep-dwarf
+/rep
+/dndrace set @s gnome
+/say rh:rep-gnome
+/rep
+/dndrace set @s human
+/tp @s -7075 132 6547.5 0 25
+wait 400
+/kill @e[type=dndclasses:mountain_dwarf,distance=..64]
+/fill -7078 131 6545 -7072 131 6551 minecraft:polished_deepslate
+/fill -7078 132 6545 -7072 135 6551 minecraft:air
+/kill @e[type=dndclasses:mountain_dwarf,x=-7081,y=131,z=6542,dx=12,dy=8,dz=12]
+/kill @e[type=minecraft:item,distance=..20]
+/setblock -7075 132 6550 minecraft:chest[facing=north]
+/summon dndclasses:mountain_dwarf -7073 132 6549 {NoAI:1b,CustomName:'"Watcher"',Tags:["rhdwarf"]}
+/dndhome
+/data get entity @s UUID
+hotbar 8
+wait 20
+use
+wait 20
+closescreen
+wait 10
+/say rh:human-forge
+/data get entity @e[tag=rhdwarf,limit=1] AngryAt
+/kill @e[tag=rhdwarf]
+# Dwarf in the forge
+/dndrace set @s dwarf
+/summon dndclasses:mountain_dwarf -7073 132 6549 {NoAI:1b,CustomName:'"Watcher"',Tags:["rhdwarf"]}
+/tp @s -7075 132 6547.5 0 25
+wait 20
+use
+wait 20
+closescreen
+wait 10
+/say rh:dwarf-forge
+/data get entity @e[tag=rhdwarf,limit=1] AngryAt
+/rep
+/kill @e[tag=rhdwarf]
+/setblock -7075 132 6550 minecraft:air
+# Dwarf in the treasury: one warning a day
+/tp @s -7133 134 6528.5 0 25
+wait 60
+/fill -7136 133 6524 -7130 133 6532 minecraft:polished_deepslate
+/fill -7136 134 6524 -7130 137 6532 minecraft:air
+/kill @e[type=dndclasses:mountain_dwarf,distance=..64,tag=!rhdwarf]
+/kill @e[type=minecraft:item,distance=..20]
+/setblock -7133 134 6531 minecraft:chest[facing=north]
+/summon dndclasses:mountain_dwarf -7131 134 6530 {NoAI:1b,CustomName:'"Watcher"',Tags:["rhdwarf"]}
+/tp @s -7133 134 6528.5 0 25
+/dndhome
+wait 20
+use
+wait 3
+screenshot rh-dwarf-warning
+wait 17
+closescreen
+wait 10
+/say rh:dwarf-treasury-1
+/data get entity @e[tag=rhdwarf,limit=1] AngryAt
+use
+wait 20
+closescreen
+wait 10
+/say rh:dwarf-treasury-2
+/data get entity @e[tag=rhdwarf,limit=1] AngryAt
+/kill @e[tag=rhdwarf]
+/setblock -7133 134 6531 minecraft:air
+# The Dwarf King's audience
+/summon dndclasses:mountain_dwarf -7133 134 6530.5 {NoAI:1b,CustomName:'"King Test"',Tags:["rhking","dndclasses.role.dwarf_king"],Rotation:[180f,0f]}
+/clear @s
+/tp @s -7133 134 6528.5 0 10
+wait 20
+use
+wait 5
+screenshot rh-king-audience
+wait 5
+/say rh:king-1
+/data get entity @s Inventory
+use
+wait 10
+/say rh:king-2
+/data get entity @s Inventory
+/clear @s
+/dndrace set @s human
+wait 5
+use
+wait 10
+/say rh:king-human
+/data get entity @s Inventory
+/kill @e[tag=rhking]
+# Kin barter: Dwarf, Gnome, Human (a fresh dwarf each time: NoAI dwarves never cool down)
+/dndrace set @s dwarf
+/summon dndclasses:mountain_dwarf -7133 134 6530.5 {NoAI:1b,Tags:["rhbarter"],Rotation:[180f,0f]}
+/give @s minecraft:gold_ingot 3
+hotbar 0
+wait 40
+/say rh:barter-dwarf
+use
+wait 20
+/kill @e[tag=rhbarter]
+/dndrace set @s gnome
+/summon dndclasses:mountain_dwarf -7133 134 6530.5 {NoAI:1b,Tags:["rhbarter"],Rotation:[180f,0f]}
+wait 40
+/say rh:barter-gnome
+use
+wait 20
+/kill @e[tag=rhbarter]
+/dndrace set @s human
+/summon dndclasses:mountain_dwarf -7133 134 6530.5 {NoAI:1b,Tags:["rhbarter"],Rotation:[180f,0f]}
+wait 40
+/say rh:barter-human
+use
+wait 20
+/kill @e[tag=rhbarter]
+/kill @e[type=minecraft:item,distance=..20]
+# Humans and vanilla villagers
+/clear @s
+/summon minecraft:villager -7133 134 6530.5 {NoAI:1b,Tags:["rhvillager"],VillagerData:{profession:"minecraft:farmer",level:1,type:"minecraft:plains"},Rotation:[180f,0f]}
+hotbar 8
+wait 40
+use
+wait 20
+closescreen
+/say rh:gossip-human-1
+/data get entity @e[tag=rhvillager,limit=1] Gossips
+use
+wait 10
+closescreen
+/say rh:gossip-human-2
+/data get entity @e[tag=rhvillager,limit=1] Gossips
+use
+wait 20
+closescreen
+/say rh:gossip-human-3
+/data get entity @e[tag=rhvillager,limit=1] Gossips
+/kill @e[tag=rhvillager]
+/dndrace set @s dwarf
+/summon minecraft:villager -7133 134 6530.5 {NoAI:1b,Tags:["rhvillager"],VillagerData:{profession:"minecraft:farmer",level:1,type:"minecraft:plains"},Rotation:[180f,0f]}
+wait 40
+use
+wait 20
+closescreen
+/say rh:gossip-dwarf
+/data get entity @e[tag=rhvillager,limit=1] Gossips
+/kill @e[tag=rhvillager]
+/gamemode creative
+quit

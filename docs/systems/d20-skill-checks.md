@@ -25,7 +25,7 @@ Anyone else who tries to open a locked chest gets "Locked. A Rogue could pick it
 Creative and spectator players ignore locks.
 
 ### Persuasion (Bard)
-Sneak and right click a villager with an empty main hand. The villager must have a job (not a nitwit or unemployed) and must not be a baby, asleep or already trading. The roll is a Persuasion check: d20 + CHA modifier + expertise (+6 at level 1, +8 at level 5, +10 at level 9 for a Bard's CHA 15) against DC 12. You get one try per villager, per player, per in-game day.
+Sneak and right click a villager with an empty main hand. The villager must have a job (not a nitwit or unemployed) and must not be a baby, asleep or already trading. The roll is a Persuasion check: d20 + CHA modifier + expertise (+6 at level 1, +8 at level 5, +10 at level 9 for a Bard's CHA 15) against DC 12, shifted by your standing with the target's [faction](factions.md) (Unfriendly +3 ... Exalted -6; plain villagers have none). You get one try per villager, per player, per in-game day.
 
 | Result | Effect |
 |-|-|
@@ -66,7 +66,7 @@ Locked chests are the loot chests in structures: dungeons, mineshafts, temples, 
 - `classes/SkillChecks/D20.java` holds the raw builder (`D20.roll(player)`), `Outcome`, the `Display` lane (MAIN, SAVE_LANE, SILENT), the rigged-roll queue (`/dndclass forceroll`), the `[D20]` log line and the `dndclasses:d20_roll` S2C packet (`D20.show`).
   - `D20.Roll` carries a label `Text`, the ability (or none), a `RollKind`, the kept natural, the dropped `natural2` (0 for one die), the `Advantage` mode, how many natural 1s were rerolled, the total modifier, named `bonuses`, the DC (0 for none), the outcome, the display lane and flags (`FLAG_SECRET` hides the DC and outcome). SAVE_LANE rolls go to the compact save lane (see [Saving throws](saving-throws.md)); SILENT rolls are logged but never sent.
   - `D20.Builder.take(n)` uses a fixed natural instead of rolling (obstacles' take your time): no die, no advantage, never a crit or a fumble.
-- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and roll through `SkillCheck` like the rest. `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
+- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and roll through `SkillCheck` like the rest. `D20.register()` is called before `SettlementGrudges` so that a failed pick never reaches the dwarves.
 - Mixins: `mixin/LootableContainerBlockEntityAccessor` reads the chest's loot table, and `mixin/PlayerAttackRollMixin` applies crit damage and plays the crit effects.
 - `Client/Hud/DiceRollHud.java` draws the HUD panel with `textures/gui/d20.png` (made by `tools/d20_texture.py`).
 - Sounds are `dndclasses:dice.roll`, `.success`, `.failure`, `.critical` and `.fumble`, made by `tools/music-gen/music_gen.py dice_*`.

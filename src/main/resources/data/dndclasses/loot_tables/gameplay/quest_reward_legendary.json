@@ -1,0 +1,54 @@
+{
+  "type": "minecraft:gift",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_sword",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:netherite_chestplate",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:bow",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:trident",
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "tier": "legendary",
+              "identified": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

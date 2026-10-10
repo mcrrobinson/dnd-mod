@@ -1,5 +1,5 @@
 # Admin commands
-Commands for operators (permission level 2) to manage classes, class progress and goblin raids.
+Commands for operators (permission level 2) to manage classes, class progress, races and goblin raids.
 
 ![Chat after /dndclass set, get, xp add and progress, and /goblinraid list](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/admin-commands-chat.png)
 
@@ -31,6 +31,15 @@ These all act on the player's current class. See [Class selection](class-selecti
 
 Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree; entity ids look like `minecraft:cow`. `unlock`, `equip`, `rank`, `bestiary` and `xp` print the progress line afterwards, so you can check the result straight away. See [Class progression](class-progression.md) for ranks and the bestiary.
 
+### Races
+| Command | What it does |
+|-|-|
+| `/dndrace get <player>` | Prints the player's race (and Dragonborn ancestry), or `none` |
+| `/dndrace set <player> <race> [ancestry]` | Changes the race: removes the old race's modifiers, applies the new ones and prints the race summary. `none` clears the race and reopens the race picker |
+| `/dndrace list` | Lists online players with their race and class |
+
+Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).
+
 ### Goblin raids
 | Command | What it does |
 |-|-|
@@ -47,6 +56,6 @@ See [Goblin raids](goblin-raids.md) for the details.
 - `/give @s dndclasses:attunement_table` to skip the recipe while testing skills
 
 ## For developers
-- `Commands/DndClassCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`.
+- `Commands/DndClassCommand`, `Commands/DndRaceCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`. `/dndrace set` calls `RaceLifecycle.change`.
 - `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
-- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`.
+- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/race-pick.txt`.

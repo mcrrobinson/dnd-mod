@@ -406,6 +406,9 @@ public class DnDClasses implements ModInitializer {
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndRaceCommand
+                                                .register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Party.PartyCommand
                                                 .register(dispatcher));
                 mattonfire.dnd.classes.Party.PartyEvents.register();
@@ -423,6 +426,7 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Progression.register();
                 ClassLifecycle.register();
+                mattonfire.dnd.classes.Race.RaceLifecycle.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

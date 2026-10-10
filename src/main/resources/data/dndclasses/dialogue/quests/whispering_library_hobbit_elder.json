@@ -25,7 +25,7 @@
         "on_success": [
           {
             "type": "reveal",
-            "structure": "minecraft:stronghold",
+            "structure": "#dndclasses:quest/lich_lairs",
             "fallback": "quest.dndclasses.whispering_library.1.no_stronghold"
           }
         ],

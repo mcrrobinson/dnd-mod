@@ -1,6 +1,7 @@
 {
     "replace": false,
     "values": [
-        "dndclasses:dragonborn_fire"
+        "dndclasses:dragonborn_fire",
+        "dndclasses:hellish_rebuke"
     ]
 }

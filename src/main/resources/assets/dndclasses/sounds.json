@@ -291,5 +291,29 @@
                 "name": "dndclasses:dice_fumble"
             }
         ]
+    },
+    "player.downed": {
+        "subtitle": "subtitles.dndclasses.player.downed",
+        "sounds": [
+            {
+                "name": "dndclasses:downed_thud"
+            }
+        ]
+    },
+    "downed.heartbeat": {
+        "subtitle": "subtitles.dndclasses.downed.heartbeat",
+        "sounds": [
+            {
+                "name": "dndclasses:downed_heartbeat"
+            }
+        ]
+    },
+    "player.revived": {
+        "subtitle": "subtitles.dndclasses.player.revived",
+        "sounds": [
+            {
+                "name": "dndclasses:revived"
+            }
+        ]
     }
 }

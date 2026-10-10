@@ -244,6 +244,8 @@ public class DnDClasses implements ModInitializer {
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndHomeCommand.register(dispatcher));
                 mattonfire.dnd.entity.boss.StructureBosses.register();
+                // Dungeon loot: the dungeon_tier loot condition, Veteran drops and the repopulation timer
+                mattonfire.dnd.dungeon.DungeonLoot.register();
 
                 // Runs clientside right now.
                 // DisallowSwordServer.onInitializeServer();

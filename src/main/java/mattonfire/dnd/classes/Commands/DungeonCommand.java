@@ -22,7 +22,7 @@ import net.minecraft.world.Heightmap;
 /**
  * /dungeon info          the dungeon you're in or standing over: name, theme, tier, rooms and their states
  * /dungeon clear         mark it cleared (boss defeated, every room open); fires the CLEARED event
- * /dungeon reset         back to fresh: every room untouched, the boss available again
+ * /dungeon reset         repopulate it now: every room untouched, the boss available again (coffer claims stay)
  * /dungeon tier <1-4>    change its challenge tier
  * /dungeon trigger <room> start that room's fight now, for your party (you needn't be in the room)
  * /dungeon cutaway       (testing) remove everything from 3 blocks above its floor up to the sky,
@@ -62,6 +62,10 @@ public class DungeonCommand {
                 + ", bounds " + b.getMinX() + " " + b.getMinY() + " " + b.getMinZ() + " to " + b.getMaxX() + " " + b.getMaxY() + " " + b.getMaxZ()), false);
         source.sendFeedback(Text.literal((d.isCleared() ? "Cleared" : "Not cleared") + ", cleared " + d.clears() + " time(s)"
                 + (d.clearedAt() >= 0 ? ", last at tick " + d.clearedAt() : "")), false);
+        long repopulates = DungeonRegistry.repopulatesIn(source.getWorld(), d);
+        source.sendFeedback(Text.literal("Hoard Coffer: " + d.cofferClaims() + " player(s) have had a roll"
+                + (repopulates >= 0 ? "; repopulates in " + repopulates + " ticks, once empty for "
+                + DungeonRegistry.REPOPULATE_EMPTY_TICKS : "")), false);
         source.sendFeedback(Text.literal(d.rooms().size() + " rooms:"), false);
         ServerWorld world = source.getWorld();
         for (DungeonState.Room room : d.rooms()) {
@@ -109,7 +113,7 @@ public class DungeonCommand {
 
     private static int reset(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         DungeonState d = find(context);
-        d.reset();
+        DungeonRegistry.repopulate(context.getSource().getWorld(), d);
         context.getSource().sendFeedback(Text.literal("Reset ").append(d.name()), true);
         return 1;
     }

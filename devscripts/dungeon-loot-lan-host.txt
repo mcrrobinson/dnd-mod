@@ -1,0 +1,101 @@
+# Dungeon loot, host side (run devscripts/dungeon-loot-recon.txt once first: it builds the crypt at
+# -600, 600 this uses). Opens the world on port 25612 and waits for dungeon-loot-lan-guest.txt to join.
+# Covers: the coffer and tier chests from generation; the coffer shut before the clear; one roll each for two
+# players and nothing on a second use; after /dungeon reset + clear a salvage roll each; the real
+# repopulation timer (/time add 7 days, everyone out for 30 s).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dungeon-loot-lan-host.txt
+#      (once "Started serving on" is in its log)
+#      timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25612 -PdevScript=devscripts/dungeon-loot-lan-guest.txt
+# Check: [DungeonLoot], [Dungeon] and [CHAT] lines in logs/latest.log; screenshots/dungeon-loot-*.png.
+wait 40
+closescreen
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/difficulty peaceful
+/gamemode spectator
+/tp @s -600 150 600
+wait 300
+/dungeon reset
+/clear @s
+/effect give @s minecraft:night_vision 9999 0 true
+
+# Generation: the Hoard Coffer in the vault, tier chests in the secret room and an encounter room
+/execute if block -617 45 567 dndclasses:hoard_coffer
+/data get block -617 45 567
+/data get block -553 44 567 LootTable
+/data get block -573 44 595 LootTable
+/data get block -565 44 595 LootTable
+/data get block -573 44 605 LootTable
+/data get block -565 44 605 LootTable
+
+# Shut until the dungeon is cleared
+/tp @s -617.5 44 569.5 -153.4 10
+/gamemode survival
+wait 40
+use
+wait 4
+screenshot dungeon-loot-locked
+/dungeon info
+
+/publish false survival 25612
+waitchat joined the game
+wait 200
+/gamemode survival @a
+/effect give @a minecraft:night_vision 9999 0 true
+/clear @a
+/dungeon clear
+wait 60
+
+# One roll each
+/tp @a -615.5 44 569.5 153.4 10
+/tp @s -617.5 44 569.5 -153.4 10
+wait 40
+use
+wait 4
+screenshot dungeon-loot-full
+/say guest-open-1
+wait 60
+/execute if entity @s[nbt={Inventory:[{tag:{dndclasses_magic:{}}}]}]
+/execute if entity @a[nbt={Inventory:[{tag:{dndclasses_magic:{}}}]}]
+/data get entity @s Inventory
+# A second use gives nothing
+use
+wait 4
+screenshot dungeon-loot-claimed
+/say guest-open-2
+wait 60
+/dungeon info
+
+# Repopulated (reset) and cleared again: a salvage roll each, then nothing
+/dungeon reset
+wait 20
+use
+wait 4
+screenshot dungeon-loot-relocked
+/dungeon clear
+wait 40
+use
+wait 4
+screenshot dungeon-loot-salvage
+/say guest-open-3
+wait 60
+use
+wait 4
+/say guest-open-4
+wait 60
+/dungeon info
+
+# The real timer: 7 days on, everyone out of the dungeon for 30 s
+/tp @a -700 120 600
+wait 40
+/time add 168000
+/dungeon info
+wait 800
+/dungeon info
+/say guest-quit
+wait 40
+/difficulty normal
+/time set midnight
+quit

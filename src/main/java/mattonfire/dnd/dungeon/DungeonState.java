@@ -2,8 +2,10 @@ package mattonfire.dnd.dungeon;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import mattonfire.dnd.world.gen.dungeon.DungeonTheme;
@@ -39,6 +41,10 @@ public class DungeonState {
     private int clears;
     private long lastOccupied;
     private final Set<UUID> visitors = new HashSet<>();
+    /** Day clock ({@code getTimeOfDay}) at the last clear, or -1: repopulation counts on either clock. */
+    private long clearedAtDay = -1L;
+    /** Hoard Coffer claims: player to the clear ({@link #clears}) they last took a roll for. */
+    private final Map<UUID, Integer> coffer = new HashMap<>();
     DungeonRegistry owner;
 
     public DungeonState(long startKey, DungeonTheme theme, int tier, BlockBox bounds, BlockPos entrance, int floorY, List<Room> rooms) {
@@ -148,6 +154,55 @@ public class DungeonState {
         return this.lastOccupied;
     }
 
+    /** Day clock ({@code getTimeOfDay}) at the last clear, or -1. */
+    public long clearedAtDay() {
+        return this.clearedAtDay;
+    }
+
+    void setClearedAtDay(long time) {
+        this.clearedAtDay = time;
+        this.changed();
+    }
+
+    /** What the Hoard Coffer gives a player who opens it now. */
+    public enum CofferClaim {
+        /** The dungeon isn't cleared: the coffer stays shut. */
+        LOCKED,
+        /** First time for this player in this dungeon: the full vault roll. */
+        FULL,
+        /** Already had a roll here, but the dungeon has been cleared again since: the salvage roll. */
+        SALVAGE,
+        /** Already had this clear's roll. */
+        NONE
+    }
+
+    /** What {@link #claimCoffer} would give the player, without recording anything. */
+    public CofferClaim cofferClaimFor(UUID player) {
+        if (!this.bossDefeated) {
+            return CofferClaim.LOCKED;
+        }
+        Integer claimed = this.coffer.get(player);
+        if (claimed == null) {
+            return CofferClaim.FULL;
+        }
+        return claimed < this.clears ? CofferClaim.SALVAGE : CofferClaim.NONE;
+    }
+
+    /** Records the player's coffer roll for this clear and says which roll it is. */
+    public CofferClaim claimCoffer(UUID player) {
+        CofferClaim claim = this.cofferClaimFor(player);
+        if (claim == CofferClaim.FULL || claim == CofferClaim.SALVAGE) {
+            this.coffer.put(player, this.clears);
+            this.changed();
+        }
+        return claim;
+    }
+
+    /** Players who have taken a coffer roll here. */
+    public int cofferClaims() {
+        return this.coffer.size();
+    }
+
     public void setRoomState(Room room, RoomState state) {
         if (room.state != state) {
             room.state = state;
@@ -166,13 +221,14 @@ public class DungeonState {
         this.changed();
     }
 
-    /** Back to fresh: every room untouched and the boss available again. Clears and visitors are kept. */
+    /** Back to fresh: every room untouched and the boss available again. Clears, visitors and coffer claims are kept. */
     public void reset() {
         for (Room room : this.rooms) {
             room.state = RoomState.UNTOUCHED;
         }
         this.bossDefeated = false;
         this.clearedAt = -1L;
+        this.clearedAtDay = -1L;
         this.changed();
     }
 
@@ -228,6 +284,15 @@ public class DungeonState {
             visitors.add(NbtHelper.fromUuid(uuid));
         }
         nbt.put("Visitors", visitors);
+        nbt.putLong("ClearedAtDay", this.clearedAtDay);
+        NbtList coffer = new NbtList();
+        for (Map.Entry<UUID, Integer> claim : this.coffer.entrySet()) {
+            NbtCompound c = new NbtCompound();
+            c.putUuid("Player", claim.getKey());
+            c.putInt("Clear", claim.getValue());
+            coffer.add(c);
+        }
+        nbt.put("Coffer", coffer);
         return nbt;
     }
 
@@ -250,6 +315,12 @@ public class DungeonState {
         NbtList visitors = nbt.getList("Visitors", net.minecraft.nbt.NbtElement.INT_ARRAY_TYPE);
         for (int i = 0; i < visitors.size(); i++) {
             state.visitors.add(NbtHelper.toUuid(visitors.get(i)));
+        }
+        state.clearedAtDay = nbt.contains("ClearedAtDay") ? nbt.getLong("ClearedAtDay") : -1L;
+        NbtList coffer = nbt.getList("Coffer", NbtCompound.COMPOUND_TYPE);
+        for (int i = 0; i < coffer.size(); i++) {
+            NbtCompound c = coffer.getCompound(i);
+            state.coffer.put(c.getUuid("Player"), c.getInt("Clear"));
         }
         return state;
     }

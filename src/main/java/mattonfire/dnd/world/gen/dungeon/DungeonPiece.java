@@ -3,6 +3,9 @@ package mattonfire.dnd.world.gen.dungeon;
 import java.util.ArrayList;
 import java.util.List;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
+import mattonfire.dnd.classes.Blocks.HoardCofferBlock;
+import mattonfire.dnd.classes.Blocks.HoardCofferBlockEntity;
+import mattonfire.dnd.dungeon.DungeonLoot;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.dungeon.RoomRole;
 import mattonfire.dnd.entity.MimicEntity;
@@ -50,7 +53,7 @@ public abstract class DungeonPiece extends StructurePiece {
     /** Doorways between rooms and corridors: 3 wide, 3 high. */
     public static final int DOOR_WIDTH = 3;
     public static final int DOOR_HEIGHT = 3;
-    /** Placeholder loot until the dungeon loot tables exist (dungeons ticket 5). */
+    /** Vanilla dungeon loot, for chests that don't have a dungeon table yet; rooms use {@link #loot(String)}. */
     protected static final Identifier PLACEHOLDER_LOOT = new Identifier("minecraft", "chests/simple_dungeon");
 
     /** What every piece of one dungeon shares. */
@@ -174,6 +177,14 @@ public abstract class DungeonPiece extends StructurePiece {
 
     public DungeonTheme theme() {
         return this.info.theme();
+    }
+
+    /**
+     * This dungeon's chest table for a kind of room ({@code encounter}, {@code secret},
+     * {@code side_vault}) at its tier: {@code dndclasses:chests/dungeon/<theme>_<room>_t<tier>}.
+     */
+    protected Identifier loot(String room) {
+        return DungeonLoot.chestTable(this.info.theme(), room, this.info.tier());
     }
 
     protected int width() {
@@ -430,6 +441,15 @@ public abstract class DungeonPiece extends StructurePiece {
             BlockPos pos = this.pos(x, y, z);
             if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
                 container.setLootTable(lootTable, lootSeed);
+            }
+        }
+
+        /** The vault's Hoard Coffer, tied to this dungeon (see HoardCofferBlockEntity). */
+        void hoardCoffer(int x, int y, int z, Direction facing) {
+            this.set(x, y, z, HoardCofferBlock.facing(facing));
+            BlockPos pos = this.pos(x, y, z);
+            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof HoardCofferBlockEntity coffer) {
+                coffer.setup(DungeonPiece.this.info.startKey(), DungeonPiece.this.summary);
             }
         }
 

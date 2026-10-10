@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/crumbling_ledge"
+    },
+    "state=open": {
+      "model": "dndclasses:block/obstacle_empty"
+    }
+  }
+}

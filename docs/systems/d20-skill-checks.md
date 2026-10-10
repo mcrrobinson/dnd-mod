@@ -47,6 +47,9 @@ Every full-strength melee swing (attack cooldown at 90% or more) at a living mob
 
 Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your attack bonus from the sheet: the better of your STR and DEX modifier, plus your proficiency bonus (for example a level 1 Barbarian is +4, a level 9 one +6). It's for display only and doesn't change whether you hit. The crit range comes from the sheet too (20, or 19-20 for a Fighter). A [+N magic weapon](magic-items.md#1--2--3-gear) adds its bonus to the shown modifier.
 
+### Camp watch (everyone)
+When a party makes camp at night, the camper with the best Perception bonus rolls d20 + Perception against DC 12 (disadvantage when camping alone). A failure brings an ambush; a natural 1 a bigger one. See [Rests: party camps](rests.md#party-camps).
+
 ### Advantage, disadvantage and the HUD
 A roll with advantage rolls two dice and keeps the higher; disadvantage keeps the lower. The HUD shows the kept die, then the dropped one in grey with "adv" or "dis". Named bonuses (such as "+2 assist" from a later party feature) are listed beside the title. Nothing in the game grants advantage yet; the sheet and the roll API support it for features to come.
 

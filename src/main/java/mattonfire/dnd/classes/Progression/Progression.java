@@ -5,7 +5,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Abilities.AbilityIncreases;
 import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.Contribution;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
@@ -94,6 +97,14 @@ public final class Progression {
             String id = buf.readString();
             server.execute(() -> chooseSubclass(player, id, false));
         });
+
+        ServerPlayNetworking.registerGlobalReceiver(AbilityIncreases.C2S_ABILITY_INCREASE,
+                (server, player, handler, buf, sender) -> {
+                    Ability ability = Ability.byId(buf.readString(16));
+                    if (ability != null) {
+                        server.execute(() -> increaseAbility(player, ability, false));
+                    }
+                });
 
         ProgressionEvents.register();
     }
@@ -186,8 +197,64 @@ public final class Progression {
                 player.sendMessage(Text.literal("You can now choose a subclass at an Attunement Table.")
                         .formatted(Formatting.LIGHT_PURPLE), false);
             }
+            if (reachedAsiLevel(oldLevel, newLevel) && progress.asiPoints() > 0) {
+                int asi = progress.asiPoints();
+                player.sendMessage(Text.literal("You have " + asi + " ability point" + (asi == 1 ? "" : "s")
+                        + ": spend them at an Attunement Table (Character tab).").formatted(Formatting.AQUA), false);
+            }
         }
         sync(player);
+    }
+
+    private static boolean reachedAsiLevel(int oldLevel, int newLevel) {
+        for (int asiLevel : ClassProgress.ASI_LEVELS) {
+            if (oldLevel < asiLevel && newLevel >= asiLevel) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Spends an ability point of the player's current class for +1 to a score. Needs an unspent point, an
+     * Attunement Table and a natural score (base, race and earlier improvements) below
+     * {@link Contribution#NATURAL_CAP}.
+     *
+     * @param force skip the table and point checks (admin command); the cap still applies
+     * @return whether the score went up
+     */
+    public static boolean increaseAbility(ServerPlayerEntity player, Ability ability, boolean force) {
+        ClassProgress progress = current(player);
+        if (progress.dndClass == DndCharacter.NONE)
+            return false;
+        Text label = Text.translatable(ability.translationKey());
+        if (!force) {
+            if (!atAttunementTable(player)) {
+                player.sendMessage(Text.literal("Ability points can only be spent at an Attunement Table.")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+            if (progress.asiPoints() <= 0) {
+                player.sendMessage(Text.literal("You have no ability points. You get "
+                        + ClassProgress.ASI_POINTS_PER_LEVEL + " at class levels 4 and 8.")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+        }
+        if (!AbilityIncreases.belowCap(AbilityScores.sheet(player), ability)) {
+            player.sendMessage(Text.empty().append(label).append(" is already " + Contribution.NATURAL_CAP
+                    + ", the most improvements can reach.").formatted(Formatting.RED), true);
+            return false;
+        }
+        progress.increases.merge(ability, 1, Integer::sum);
+        save(player, progress);
+        sync(player);
+
+        player.sendMessage(Text.empty().append(label).append(" is now " + AbilityScores.score(player, ability) + ".")
+                .formatted(Formatting.GOLD), true);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP,
+                SoundCategory.PLAYERS, 0.8F, 1.4F);
+        return true;
     }
 
     public static void setXp(ServerPlayerEntity player, DndCharacter dndClass, int xp) {

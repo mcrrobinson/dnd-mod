@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.dungeon.DungeonEvents;
+import mattonfire.dnd.dungeon.DungeonState;
+import mattonfire.dnd.world.gen.dungeon.DungeonTheme;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.faction.TierEffects;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -21,6 +24,8 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
@@ -46,6 +51,22 @@ public class GoblinRaids extends PersistentState {
     private static final long SETTLEMENT_COOLDOWN = 24000L * 3;
     /** How close (blocks outside its bounds) a player must be for their settlement to be raided. */
     private static final int NEAR_SETTLEMENT = 32;
+    /** Clearing a Goblin Warren calls off raids and quiets settlements within this many blocks of it... */
+    public static final int WARREN_RADIUS = 256;
+    /** ...for this long: the same three days as a raid's own cooldown. */
+    public static final long WARREN_QUIET = SETTLEMENT_COOLDOWN;
+
+    /**
+     * A place goblins won't raid near until {@code until} (game time): {@code radius} blocks round
+     * {@code center} (horizontally), e.g. round a cleared Goblin Warren.
+     */
+    public record QuietZone(BlockPos center, int radius, long until) {
+        public boolean covers(BlockPos pos) {
+            double dx = pos.getX() - this.center.getX();
+            double dz = pos.getZ() - this.center.getZ();
+            return dx * dx + dz * dz <= (double) this.radius * this.radius;
+        }
+    }
 
     /** Raiders of ended raids that loaded this tick (server thread only). */
     private static final List<Entity> LEFTOVERS = new ArrayList<>();
@@ -53,6 +74,7 @@ public class GoblinRaids extends PersistentState {
     private final List<GoblinRaid> raids = new ArrayList<>();
     /** Settlement key -> game time its last raid started. */
     private final Map<Long, Long> lastRaid = new HashMap<>();
+    private final List<QuietZone> quiet = new ArrayList<>();
     private int nextId = 1;
 
     public static void register() {
@@ -60,6 +82,25 @@ public class GoblinRaids extends PersistentState {
         ServerTickEvents.END_SERVER_TICK.register(server -> sendAwayLeftovers());
         ServerWorldEvents.UNLOAD.register((server, world) -> get(world).raids.forEach(GoblinRaid::clearBar));
         ServerEntityEvents.ENTITY_LOAD.register(GoblinRaids::onEntityLoad);
+        DungeonEvents.CLEARED.register(GoblinRaids::onDungeonCleared);
+    }
+
+    /**
+     * A cleared Goblin Warren (its Warlord dead, or {@code /dungeon clear}) breaks the goblins' nerve
+     * round it: every raid within {@link #WARREN_RADIUS} blocks is called off, and no settlement there
+     * is raided for {@link #WARREN_QUIET} ticks.
+     */
+    private static void onDungeonCleared(ServerWorld world, DungeonState dungeon, List<ServerPlayerEntity> participants) {
+        if (dungeon.theme() != DungeonTheme.GOBLIN_WARREN) {
+            return;
+        }
+        BlockPos center = dungeon.bounds().getCenter();
+        int called = get(world).quiet(world, center, WARREN_RADIUS, WARREN_QUIET);
+        DnDClasses.LOGGER.info("[GoblinRaid] goblin warren {} cleared at {}: called off {} raid(s) within {} blocks; no raids there until day {}",
+                dungeon.startKey(), center.toShortString(), called, WARREN_RADIUS, (world.getTime() + WARREN_QUIET) / 24000L);
+        for (ServerPlayerEntity player : participants) {
+            player.sendMessage(Text.translatable("raid.dndclasses.goblin.warren_cleared").formatted(Formatting.GOLD), false);
+        }
     }
 
     /**
@@ -111,6 +152,9 @@ public class GoblinRaids extends PersistentState {
             if (this.lastRaid.values().removeIf(time -> now - time >= SETTLEMENT_COOLDOWN)) {
                 this.markDirty();
             }
+            if (this.quiet.removeIf(zone -> now >= zone.until())) {
+                this.markDirty();
+            }
             this.maybeStartRaids(world);
         }
         if (this.raids.isEmpty()) {
@@ -146,8 +190,50 @@ public class GoblinRaids extends PersistentState {
         if (this.raids.stream().anyMatch(raid -> raid.getSettlementKey() == settlement.key())) {
             return false;
         }
+        if (this.isQuiet(world, settlement.rally())) {
+            return false;
+        }
         Long last = this.lastRaid.get(settlement.key());
         return last == null || world.getTime() - last >= SETTLEMENT_COOLDOWN;
+    }
+
+    // ---- Cooldowns ----
+
+    /** Puts {@code settlementKey} on the raid cooldown from now, as if a raid on it had just started. */
+    public void startCooldown(ServerWorld world, long settlementKey) {
+        this.lastRaid.put(settlementKey, world.getTime());
+        this.markDirty();
+    }
+
+    /** Whether a settlement at {@code pos} is in a quiet zone now (natural raids skip it). */
+    public boolean isQuiet(ServerWorld world, BlockPos pos) {
+        long now = world.getTime();
+        return this.quiet.stream().anyMatch(zone -> now < zone.until() && zone.covers(pos));
+    }
+
+    public List<QuietZone> getQuietZones() {
+        return List.copyOf(this.quiet);
+    }
+
+    /**
+     * Calls off every raid whose rally point is within {@code radius} blocks of {@code center}
+     * (putting its settlement back on cooldown), and keeps natural raids away from there for
+     * {@code ticks}. Returns how many raids were called off.
+     */
+    public int quiet(ServerWorld world, BlockPos center, int radius, long ticks) {
+        QuietZone zone = new QuietZone(center.toImmutable(), radius, world.getTime() + ticks);
+        int called = 0;
+        for (GoblinRaid raid : List.copyOf(this.raids)) {
+            if (!raid.isOver() && zone.covers(raid.getRally())) {
+                raid.withdraw(world, "raid.dndclasses.goblin.routed");
+                this.raids.remove(raid);
+                this.startCooldown(world, raid.getSettlementKey());
+                called++;
+            }
+        }
+        this.quiet.add(zone);
+        this.markDirty();
+        return called;
     }
 
     /** Sends a war party against {@code settlement}, or returns null if one is already attacking it. */
@@ -188,6 +274,10 @@ public class GoblinRaids extends PersistentState {
             NbtCompound entry = (NbtCompound) element;
             raids.lastRaid.put(entry.getLong("Settlement"), entry.getLong("Time"));
         }
+        for (NbtElement element : nbt.getList("Quiet", NbtElement.COMPOUND_TYPE)) {
+            NbtCompound entry = (NbtCompound) element;
+            raids.quiet.add(new QuietZone(BlockPos.fromLong(entry.getLong("Center")), entry.getInt("Radius"), entry.getLong("Until")));
+        }
         return raids;
     }
 
@@ -207,6 +297,15 @@ public class GoblinRaids extends PersistentState {
             lastRaids.add(entry);
         });
         nbt.put("LastRaids", lastRaids);
+        NbtList quiet = new NbtList();
+        for (QuietZone zone : this.quiet) {
+            NbtCompound entry = new NbtCompound();
+            entry.putLong("Center", zone.center().asLong());
+            entry.putInt("Radius", zone.radius());
+            entry.putLong("Until", zone.until());
+            quiet.add(entry);
+        }
+        nbt.put("Quiet", quiet);
         return nbt;
     }
 }

@@ -231,6 +231,10 @@ public class DndClassesClient implements ClientModInitializer {
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.LESSER_ARCANE_SEAL_BLOCK,
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK,
                 mattonfire.dnd.classes.Registry.ModBlocks.ARCANE_SEAL);
+        // Portcullis bars have see-through gaps
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.PORTCULLIS_BLOCK);
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();

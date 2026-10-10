@@ -21,6 +21,7 @@ import mattonfire.dnd.classes.Obstacles.ObstacleText;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Obstacles.types.WinchType;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.BlockPosArgumentType;
@@ -39,6 +40,7 @@ import net.minecraft.util.math.BlockPos;
  * /dndobstacle open|reset &lt;pos&gt;                            open or reseal its whole group
  * /dndobstacle settier &lt;pos&gt; &lt;tier&gt;                       retier its whole group
  * /dndobstacle reseal &lt;pos&gt; &lt;ticks&gt;                       reseal the group this long after it opens (0 = never)
+ * /dndobstacle link &lt;winch&gt; &lt;target&gt;                      connect a winch to its portcullis or chasm bridge
  * /dndobstacle list [radius]                              obstacle groups near you (default 64 blocks)
  *
  * Op level 2. The DM toolkit's seam for obstacles.
@@ -50,6 +52,10 @@ public final class ObstacleCommand {
             id -> Text.literal("Unknown obstacle type: " + id));
     private static final DynamicCommandExceptionType UNKNOWN_TIER = new DynamicCommandExceptionType(
             name -> Text.literal("Unknown tier: " + name + " (easy, medium, hard, very_hard)"));
+    private static final SimpleCommandExceptionType NOT_WINCH = new SimpleCommandExceptionType(
+            Text.literal("That isn't a winch"));
+    private static final DynamicCommandExceptionType WRONG_TARGET = new DynamicCommandExceptionType(
+            name -> Text.literal("This winch works a ").append((Text) name).append(", and that isn't one"));
     private static final SimpleCommandExceptionType TOO_BIG = new SimpleCommandExceptionType(
             Text.literal("An obstacle group can have at most " + ObstacleGroups.MAX_BLOCKS + " blocks"));
 
@@ -86,6 +92,10 @@ public final class ObstacleCommand {
                         .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
                                 .then(CommandManager.argument("ticks", IntegerArgumentType.integer(0))
                                         .executes(ObstacleCommand::reseal))))
+                .then(CommandManager.literal("link")
+                        .then(CommandManager.argument("winch", BlockPosArgumentType.blockPos())
+                                .then(CommandManager.argument("target", BlockPosArgumentType.blockPos())
+                                        .executes(ObstacleCommand::link))))
                 .then(CommandManager.literal("list")
                         .executes(context -> list(context, 64))
                         .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 512))
@@ -181,6 +191,22 @@ public final class ObstacleCommand {
         context.getSource().sendFeedback(Text.literal(ticks == 0 ? "The obstacle no longer reseals"
                 : "The obstacle reseals " + ticks + " ticks after opening"), true);
         return size;
+    }
+
+    private static int link(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerWorld world = context.getSource().getWorld();
+        BlockPos winch = BlockPosArgumentType.getLoadedBlockPos(context, "winch");
+        BlockPos target = BlockPosArgumentType.getLoadedBlockPos(context, "target");
+        obstacleAt(context, winch);
+        if (!(((ObstacleBlock) world.getBlockState(winch).getBlock()).type() instanceof WinchType type)) {
+            throw NOT_WINCH.create();
+        }
+        if (!type.link(world, winch, target)) {
+            throw WRONG_TARGET.create(Text.translatable(type.targetType().translationKey()));
+        }
+        context.getSource().sendFeedback(Text.literal("Linked the ").append(Text.translatable(type.translationKey()))
+                .append(" to " + target.toShortString()), true);
+        return 1;
     }
 
     private static int list(CommandContext<ServerCommandSource> context, int radius) {

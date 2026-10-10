@@ -74,7 +74,10 @@ public final class ObstacleHintHud {
         Skill skill = type.skill();
         if (player.isCreative()) {
             lines.add(new Line(Text.translatable("obstacle.dndclasses.hint.creative"), 0xA0A0A0));
-        } else if (eligibility.canTry() && skill != null) {
+        } else if (eligibility.canTry() && skill == null) {
+            // Nothing to roll: whoever reaches it can work it
+            lines.add(new Line(ObstacleText.you(type), 0x9CE89C));
+        } else if (eligibility.canTry()) {
             // The synced character sheet: the same bonus the server rolls with
             int modifier = AbilityScores.sheet(player).check(skill);
             lines.add(new Line(ObstacleText.you(type), 0x9CE89C));

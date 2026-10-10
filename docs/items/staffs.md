@@ -52,6 +52,7 @@ The elemental staffs can't be crafted.
 - **Staff of Lightning:** a 15% drop (+5% per level of Looting) from a [Lightning Chaser](../mobs/dragons.md) killed by a player. Each chest in a [dragon lair](../structures/dragon-lairs.md) hoard also has a 25% chance to hold one.
 - **Staff of Ice:** a 15% drop (+5% per level of Looting) from a [Frost Drake](../mobs/dragons.md) killed by a player. Each chest in a [frost lair](../structures/frost-lairs.md) hoard on Frozen Peaks also has a 25% chance to hold one.
 - **Staff of Fire:** a 25% drop (+5% per level of Looting) from a [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md) killed by a player, or a rare 2% drop (+1% per level of Looting) from an [Ember Wyvern](../mobs/dragons.md) killed by a player.
+- **Ice, Fire and Lightning:** also in the Rare [magic loot](../systems/magic-loot.md) table (weight 2 each in 80), which lairs, the dwarven treasury, bosses, bounties and vanilla strongholds, mansions, bastions and ancient cities roll on. They come out unidentified, like other random magic loot.
 - **All four:** the D&D Classes creative tab.
 
 ## Known limitations
@@ -63,5 +64,5 @@ The elemental staffs can't be crafted.
 - `Items/ScheduledBlockRestore`: a per-world `PersistentState` (`data/dndclasses_staff_restores.dat`) that puts blocks back.
 - `Items/MonkStaff`, `Effects/FreezeEffect`. The melee Wizard check is an `AttackEntityCallback` in `Progression/Classes/WizardSkills`.
 - Recipe: `recipes/monk_staff.json`.
-- Unused loot tables `chests/staff_of_fire.json`, `staff_of_ice.json`, `staff_of_lightning.json` and `monk_staff.json` each give one staff; nothing references them yet.
+- The unused one-staff tables `chests/staff_of_{fire,ice,lightning}.json` were removed: the elemental staffs are entries in `magic/rare.json` (`tools/magic_tier_tables.py`). `chests/monk_staff.json` still gives one Monk's Staff; nothing references it.
 - Devscripts: `devscripts/staff-fire-dupe.txt`, `staff-restore-persist-a.txt` then `-b.txt`.

@@ -23,7 +23,7 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 
 **Going back to sleep.** After 10 seconds with no target, it closes its lid, shuffles back to the middle of its block, squares up and is a chest again.
 
-**Loot.** It drops the loot table of the chest it replaced, plus 10 XP. One from a spawn egg or `/summon` drops simple dungeon chest loot (`dndclasses:entities/mimic`).
+**Loot.** It drops the loot table of the chest it replaced, plus 10 XP. One from a spawn egg or `/summon` drops simple dungeon chest loot (`dndclasses:entities/mimic`). Killed by a player, every mimic also rolls its own magic (`entities/mimic_magic`): 25% an Uncommon magic item and 10% a Bag of Holding, both unidentified (see [Magic loot](../systems/magic-loot.md)).
 
 **Noticing one.** A dormant mimic gives itself away to a player with passive Perception 13 or more within 6 blocks: "That chest just... breathed." and faint puffs over its lid that only they see. A Search (V) within 8 blocks that totals 13 outlines it in red for 5 s. See [Stealth and Perception](../systems/stealth-and-perception.md).
 

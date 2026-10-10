@@ -28,21 +28,22 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
-- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds and tavern rooms, Hit Dice
+- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
-- [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
+- [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8
 - [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
 - [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
 - [Creature study](systems/creature-study.md): V on a creature rolls Religion, Nature, Arcana or Insight (DC 10/13/15) for a card of its health, armour, save-calling attacks and immunities; a natural 20 adds its weakness; Insight reads villagers and dwarves
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, and physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
+- [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
 - [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
@@ -71,8 +72,8 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes
 - [Goblin Warlord](bosses/goblin-warlord.md): Nether Fortress boss that summons goblin waves
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
-- [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery
-- [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials
+- [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
+- [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
 
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits
@@ -84,7 +85,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board and rentable rooms (Room Keys, Well Rested)
-- [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow, with a planned route to the Lich and its reliquary, a vault, crypt dressing and a Challenge tier
+- [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow and Goblin Warrens behind a cave mouth, with a planned route to the Lich or the Goblin Warlord, a vault, theme dressing and a Challenge tier
 
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance

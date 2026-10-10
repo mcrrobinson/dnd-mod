@@ -33,6 +33,10 @@ public class SecretRoomPiece extends DungeonPiece {
             // Whoever hid this didn't get out
             int[] c = CryptDressing.corners(this.width(), this.depth())[b.dressing.nextInt(4)];
             CryptDressing.bonePile(b, c[0], c[1]);
+        } else if (WarrenDressing.applies(this)) {
+            // A goblin's private stash, and its bed
+            int[] c = CryptDressing.corners(this.width(), this.depth())[b.dressing.nextInt(4)];
+            WarrenDressing.bedroll(b, c[0], c[1], Direction.EAST);
         }
     }
 }

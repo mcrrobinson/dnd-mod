@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/winch"
+    },
+    "state=open": {
+      "model": "dndclasses:block/winch"
+    }
+  }
+}

@@ -78,6 +78,66 @@
           "type": "minecraft:item",
           "name": "minecraft:trident",
           "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:ring_of_protection",
+          "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:staff_of_ice",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:staff_of_fire",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:staff_of_lightning",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:amulet_of_health",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:doss_lute",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:warlords_warhorn",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:heart_of_the_furnace",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:storm_chaser_boots",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:wyvern_scale_cloak",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:belt_of_owlbear_might",
+          "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:mace_of_disruption",
+          "weight": 1
         }
       ],
       "functions": [

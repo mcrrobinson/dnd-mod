@@ -7,7 +7,8 @@ import net.minecraft.util.math.BlockBox;
 
 /**
  * The mid-boss's hall: the biggest single room, ringed with columns. In the Crypt it's the Ossuary
- * Cube's lair, with bones heaped round the walls.
+ * Cube's lair, with bones heaped round the walls; in the Goblin Warren, the pen where Grimclaw, the
+ * goblins' owlbear, is chained.
  */
 public class ChampionRoomPiece extends DungeonPiece {
     public ChampionRoomPiece(Info info, BlockBox box, long seed, int roomId, RoomRole role, int height, List<Door> doors) {
@@ -39,6 +40,8 @@ public class ChampionRoomPiece extends DungeonPiece {
         }
         if (CryptDressing.applies(this)) {
             this.ossuary(b, w, d);
+        } else if (WarrenDressing.applies(this)) {
+            this.pen(b, w, d);
         }
     }
 
@@ -63,5 +66,32 @@ public class ChampionRoomPiece extends DungeonPiece {
             }
         }
         CryptDressing.cornerCobwebs(b, w, d, this.height, 0.8F);
+    }
+
+    /**
+     * Grimclaw's pen: four chains hang from the ceiling round the middle, where the beast is
+     * chained; gnawed bones in the corners, straw and slops along the walls, a refuse pit.
+     */
+    private void pen(Builder b, int w, int d) {
+        int mx = w / 2;
+        int mz = d / 2;
+        for (int[] o : new int[][]{{-2, -2}, {2, -2}, {-2, 2}, {2, 2}}) {
+            WarrenDressing.chain(b, mx + o[0], mz + o[1], this.height);
+        }
+        for (int[] c : CryptDressing.corners(w, d)) {
+            CryptDressing.bonePile(b, c[0], c[1]);
+        }
+        for (int[] p : new int[][]{{2, 5}, {2, d - 6}, {w - 3, 5}, {w - 3, d - 6}, {5, 2}, {w - 6, 2}, {5, d - 3}, {w - 6, d - 3}}) {
+            float r = b.dressing.nextFloat();
+            if (r < 0.35F) {
+                b.setIfAir(p[0], 1, p[1], net.minecraft.block.Blocks.HAY_BLOCK.getDefaultState());
+            } else if (r < 0.55F) {
+                WarrenDressing.stores(b, p[0], p[1]);
+            } else if (r < 0.75F) {
+                CryptDressing.bonePile(b, p[0], p[1]);
+            }
+        }
+        WarrenDressing.refusePit(b, 2 + b.dressing.nextInt(2), mz + 2 + b.dressing.nextInt(2));
+        CryptDressing.cornerCobwebs(b, w, d, this.height, 0.6F);
     }
 }

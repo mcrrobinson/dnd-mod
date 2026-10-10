@@ -61,6 +61,17 @@ The budget is filled with weighted picks from the theme's pool for the tier; eac
 | III | zombie 6, husk 4, skeleton 7, stray 5, wither skeleton 4, Gelatinous Cube 3 |
 | IV | zombie 4, husk 4, skeleton 6, stray 6, wither skeleton 6, Gelatinous Cube 4 |
 
+The Goblin Warren's pool:
+
+| Tier | Pool (weight) |
+|-|-|
+| I | Goblin Warrior 6, spider 8, cave spider 4, wolf 6 |
+| II | Goblin Warrior 10, spider 6, cave spider 5 |
+| III | Goblin Warrior 12, spider 5, cave spider 6 |
+| IV | Goblin Warrior 14, spider 4, cave spider 6 |
+
+Neutral monsters (the Warren's wolves) come in angry at the player nearest the one who walked in.
+
 Encounter monsters drop their normal loot and count for bounties and class XP like any other monster. Monsters a boss summons (the Lich's raised dead) still give nothing.
 
 ### Champion (mid-boss)
@@ -71,6 +82,10 @@ The mid-boss room spawns its champion in the middle of the room, plus a 5-base b
 - It starts with 3 stacks rolled from `minecraft:chests/simple_dungeon` inside it, which it drops when it dies.
 - **Split**: the first time it's at or below half health, it bursts and sheds ordinary Gelatinous Cubes beside it: **2** for a party of two or more, **1** for a lone player. The new cubes belong to the room (it stays sealed until they're dead too). It splits only once.
 
+The Goblin Warren's champion is **Grimclaw**, the goblins' war beast, an Owlbear (base 50 HP, so 150 HP solo, with the same champion buffs and bar):
+- **Chained**: it appears in the middle of its pen, between the hanging chains, held in its chains (no AI) with its chains rattling. After 3 seconds, or as soon as anything hurts it, it breaks free: the chains clatter, it roars and turns on the nearest player.
+- **Fury**: below half health it charges every 4 seconds instead of 6.
+
 ### Boss
 The boss room spawns its boss on the central dais when the first player is 5 blocks past its walls. The Crypt's boss is the **Lich** (300 HP), and its phylactery appears on the altar of the **reliquary**, the side room through a door in the boss room's wall (about 25 blocks from the dais).
 - **The reliquary is part of the fight**: its doorway isn't sealed, players in it count as in the boss room (for the 30 s lock-in and for the kill's participants), and the phylactery and a Lich that reforms there are followed there.
@@ -80,11 +95,13 @@ The boss room spawns its boss on the central dais when the first player is 5 blo
 - **Lock-in**: the boss room seals when the boss appears. If no living player is in the boss room for 30 seconds, the boss (and its phylactery and minions) vanish quietly with no loot, the seals open and the room waits again: walking back in calls up a fresh boss at full health.
 - **Victory**: the Lich's true death (smash the phylactery, then kill the Lich, or smash the phylactery while it reforms) defeats the boss. A Lich whose soul flees to its phylactery isn't dead yet.
 
+The Goblin Warren's boss is the **Goblin Warlord** (250 HP, so 250 solo, 337 for two, 512 for four), called up on the dais of its war hall. It guards the middle of the hall (`setGuardPos`, a 12-block leash) and heads back there after a fight, and still bellows for Goblin Warrior reinforcements; those vanish with it if the fight is called off. The same health scaling, tier bonuses and lock-in apply. Its death clears the dungeon, and (see [Goblin Raids](goblin-raids.md)) calls off goblin raids within 256 blocks for 3 days.
+
 ### Clearing the dungeon
 When the boss dies the dungeon is **cleared**: every room is marked cleared and its seals open, everyone inside sees a "Dungeon cleared" title with the dungeon's name and hears a fanfare, and gets the advancement **Delver** ("Defeat a dungeon's boss and clear the dungeon"). `/dungeon clear` does the same.
 
 ## Where to find it
-In every dungeon (only the Crypt so far); see [Dungeons](../structures/dungeons.md).
+In every dungeon (the Crypt and the Goblin Warren so far); see [Dungeons](../structures/dungeons.md).
 
 ## Commands
 - `/dungeon trigger <room>`: starts that room's fight now, scaled for your party (you don't need to be in the room; its ward has to be loaded). Op level 2.
@@ -99,26 +116,28 @@ Pools are data: `data/<namespace>/dungeon_encounters/<theme>.json` (`/reload` pi
 {
   "boss": "lich",
   "champion": {"entity": "dndclasses:gelatinous_cube", "name": "dungeon.dndclasses.champion.ossuary_cube",
-               "absorbed_loot": "minecraft:chests/simple_dungeon", "absorbed_stacks": 3},
+               "absorbed_loot": "minecraft:chests/simple_dungeon", "absorbed_stacks": 3,
+               "chained": false},
   "tiers": {
     "1": [{"entity": "minecraft:zombie", "weight": 10}, {"entity": "minecraft:skeleton", "weight": 8}],
     "3": [{"entity": "minecraft:wither_skeleton", "weight": 4, "threat": 3}]
   }
 }
 ```
-A tier with no list uses the nearest lower tier. `boss` is `lich` or `goblin_warlord`.
+A tier with no list uses the nearest lower tier. `boss` is `lich` or `goblin_warlord`. A `chained` champion starts held in its chains (Grimclaw).
 
 ## Known limitations
-- Only the Crypt has a pool, a champion and a boss. The Goblin Warren and Dwarven Ruin come with their own tickets.
+- The Crypt and the Goblin Warren have pools, champions and bosses. The Dwarven Ruin comes with its own ticket.
+- A chained champion that's still chained when the server restarts breaks free as soon as its room's ward ticks again.
 - The Ossuary Cube's stacks still come from the vanilla dungeon chest table, not the tier's elite table.
 - Saving throws against the Lich's spells, and its Dread Presence, come in a later ticket.
 - Seals block the way out of a fight too, so a party can only leave a sealed room by winning, dying or teleporting.
 - Arrival sounds, the champion bar and the clear fanfare are vanilla sounds until the dungeon music ticket.
 
 ## For developers
-- `dungeon/EncounterBuilder`: budget (`budget`, `roomBase`, `partyMult`, `levelMult`, `difficultyMult`), `plan` (weighted fill and Veterans), `partyFor`, `spawn` (through the DM toolkit's `EncounterSpawner`, one mob per spawn point), `makeVeteran`. Tags: `dndclasses.dungeon` and `dndclasses.dungeon=<startKey>/<roomId>` on every mob, `dndclasses.dungeon_elite` on Veterans.
+- `dungeon/EncounterBuilder`: budget (`budget`, `roomBase`, `partyMult`, `levelMult`, `difficultyMult`), `plan` (weighted fill and Veterans), `partyFor`, `spawn` (through the DM toolkit's `EncounterSpawner`, one mob per spawn point), `makeVeteran`, `rouse` (an `Angerable` pool mob, such as a wolf, is made angry at the nearest player). Tags: `dndclasses.dungeon` and `dndclasses.dungeon=<startKey>/<roomId>` on every mob, `dndclasses.dungeon_elite` on Veterans.
 - `dungeon/DungeonEncounterPools`: the reload listener for `dungeon_encounters/*.json`, reusing `Encounter.parseSpawn`.
-- `dungeon/DungeonChampion`: champion modifiers and its `ServerBossBar`, ticked by the ward (tag `dndclasses.dungeon_champion`); `splitIfHurt` (the Ossuary Cube's split, once: tag `dndclasses.dungeon_champion_split`; `SPLIT_AT`, `SPLIT_COUNT`, `SPLIT_COUNT_SOLO`).
+- `dungeon/DungeonChampion`: champion modifiers and its `ServerBossBar`, ticked by the ward (tag `dndclasses.dungeon_champion`); `tickChained` (a `chained` champion: NoAI and tag `dndclasses.dungeon_champion_chained` until `CHAIN_TICKS` (60) pass or it's hurt); an Owlbear champion gets `OwlbearEntity.FURY_TAG` (`chargeCooldown()` 80 ticks below half health, 120 otherwise); `splitIfHurt` (the Ossuary Cube's split, once: tag `dndclasses.dungeon_champion_split`; `SPLIT_AT`, `SPLIT_COUNT`, `SPLIT_COUNT_SOLO`).
 - Boss area: the boss room's ward treats the dungeon's `RELIQUARY` rooms (from the plan) as part of its room for players, mob tracking and minion clean-up, and doesn't seal a doorway that leads into one (`area`, `leadsToAnnex`). `DungeonWardBlockEntity.reliquarySpot(dungeon)` and `lairLeash(lair, phylactery)`; `DungeonCombat.playersInBossArea`.
 - `LichEntity.setLair(centre, leash)` / `getLair()` (NBT `Lair`, `LairLeash`): home and leash round a lair instead of the phylactery. The phylactery hands the lair on to a Lich that reforms from it (NBT `LichLair`, `LichLairLeash`).
 - `dungeon/DungeonCombat`: the `AFTER_DEATH` listener (tells the room's ward a mob died; a boss's true death fires `DungeonEvents.BOSS_DEFEATED` and clears the dungeon) and the `CLEARED` listener (title, sound, `dndclasses:delver`). Boss tag: `dndclasses.dungeon_boss`.

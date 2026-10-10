@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "dndclasses:block/winch_end",
+    "side": "dndclasses:block/winch_side"
+  }
+}

@@ -128,7 +128,24 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Phylactery Locket | [Lich](../bosses/lich.md) (final death) | 20% |
 | Eye of the Tyrant | [Beholder](../bosses/beholder.md) | 12% (+3%) |
 
-- The Burglar's Ring has no drop yet: it comes from goblin camp chests and goblin raid rewards with the loot tables update, which also adds the lair, library and fortress chances and the wondrous items' placement (goblin camps, dwarven fortresses, Mimics, bounties, vanilla structures).
+- Every item also turns up in its rarity's loot table (Cloak of Protection and Ring of Protection only come from there), which mod structures, bosses, Mimics, bounties, raids, dungeons and vanilla structures roll on. See [Magic loot](../systems/magic-loot.md) for the rates.
+- The named sources (per chest or per kill; chest and bounty items need no player kill, monsters do):
+
+| Item | Where | Chance |
+|-|-|-|
+| Wand of Magic Missiles | [goblin camp](../structures/goblin-camps.md) chest; vanilla dungeon and mineshaft chests; minor bounty spoils (identified) | 3%; 2%; 5% |
+| Bag of Holding | [Mimic](../mobs/mimic.md) (player kill); [dwarven](../structures/dwarven-fortresses.md) treasury | 10%; 3% |
+| Decanter of Endless Water | [River Pikehorn](../mobs/dragons.md) (player kill); [hobbit village](../structures/hobbit-villages.md) harvest chests | 5%; 2% |
+| Immovable Rod | dwarven forge; [beholder](../bosses/beholder.md) lair chest | 3%; 4% |
+| Periapt of Wound Closure | dwarven barracks; major bounty spoils (identified) | 3%; 3% |
+| Amulet of Health | dwarven treasury; vanilla stronghold library | 3%; 4% |
+| Doss Lute | dwarven mead hall; major bounty spoils (identified) | 3%; 3% |
+| Storm-Chaser Boots | [dragon lair](../structures/dragon-lairs.md) hoard | 6% |
+| Frostbrand | [frost lair](../structures/frost-lairs.md) hoard | 8% |
+| Mace of Disruption | vanilla stronghold library | 3% |
+| The Burglar's Ring | goblin camp chest ("stolen from a hobbit"); hobbit village [goblin raid](../systems/goblin-raids.md) reward | 1%; 2% |
+| Tome of Clear Thought | [Lich](../bosses/lich.md) (final death), Beholder (player kill); vanilla stronghold library | 10% each; 2% |
+| Eye of the Tyrant | beholder lair chest | 2% |
 
 Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`.
 

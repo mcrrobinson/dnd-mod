@@ -70,6 +70,13 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
     private static final RawAnimation HUG = RawAnimation.begin().thenLoop("hug");
     private static final String[] SWIPES = {"swipe", "swipe_left"};
     public static final String ROAR = "roar";
+    /**
+     * Tag for a furious owlbear (a dungeon champion, the Goblin Warren's Grimclaw): below half health
+     * it charges every {@link #FURY_CHARGE_COOLDOWN} ticks instead of {@link #CHARGE_COOLDOWN}.
+     */
+    public static final String FURY_TAG = "dndclasses.owlbear_fury";
+    public static final int CHARGE_COOLDOWN = 120;
+    public static final int FURY_CHARGE_COOLDOWN = 80;
 
     // Bear hug
     private static final float HUG_CHANCE = 0.35F;
@@ -136,6 +143,12 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
     }
 
     // ---- State ----
+
+    /** Ticks between charges: shorter for a furious owlbear below half health ({@link #FURY_TAG}). */
+    public int chargeCooldown() {
+        return this.getCommandTags().contains(FURY_TAG) && this.getHealth() < this.getMaxHealth() * 0.5F
+                ? FURY_CHARGE_COOLDOWN : CHARGE_COOLDOWN;
+    }
 
     public boolean isCharging() {
         return this.dataTracker.get(CHARGING);

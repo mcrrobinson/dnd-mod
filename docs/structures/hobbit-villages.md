@@ -28,7 +28,7 @@ The barrels and chests are full of food, and none of them are [locked](../system
 |-|-|-|
 | `chests/hobbit_pantry` | smials, the inn, the green, market stalls | bread, pies, stews, cake, golden carrots |
 | `chests/hobbit_larder` | smials | cooked meat and fish, cake, golden apples, emeralds, a clock |
-| `chests/hobbit_harvest` | gardens, orchards, ponds, market stalls, the green | crops, seeds, eggs, honeycomb, bone meal |
+| `chests/hobbit_harvest` | gardens, orchards, ponds, market stalls, the green | crops, seeds, eggs, honeycomb, bone meal; 2% a Decanter of Endless Water ([Magic loot](../systems/magic-loot.md)) |
 | `chests/hobbit_ale` | the inn, the green | potions, honey bottles, pies, rabbit stew |
 
 The plates and hams in item frames can be taken too.

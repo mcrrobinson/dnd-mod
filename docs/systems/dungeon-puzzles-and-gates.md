@@ -1,5 +1,5 @@
 # Dungeon puzzles and gates
-Every dungeon's route passes a **class-check gate** and a **rune-pillar puzzle**. The gate bars the way with something one or two classes deal with best: an arcane seal for Wizards and Warlocks, a locked door for Rogues, a cave-in anyone can dig through. Any party can get past it, though some take the hard way. In the puzzle room, four rune pillars must be turned to the glyphs painted on the walls behind them before the far doorway opens. A wrong answer sets the floor vents roaring. Half of dungeons also have a **side vault** behind a strict gate that only a Wizard can open.
+Every dungeon's route passes a **class-check gate** and a **rune-pillar puzzle**. The gate bars the way with something one or two classes deal with best: an arcane seal for Wizards and Warlocks, a locked door for Rogues, a cave-in anyone can dig through. Any party can get past it, though some take the hard way. In the puzzle room, four rune pillars must be turned to the glyphs painted on the walls behind them before the far doorway opens. A wrong answer sets the floor vents roaring. Half of dungeons also have a **side vault** behind a strict gate that only a Wizard (or a Barbarian) can open.
 
 The dungeons themselves are on [Dungeons](../structures/dungeons.md), the fights on [Dungeon encounters](dungeon-encounters.md), and the obstacle blocks on [Obstacles](obstacles.md).
 
@@ -11,13 +11,14 @@ A wall runs across the 11x11 gate room with a 3-wide gateway in the middle. The 
 |-|-|-|
 | Arcane seal | a violet Lesser Arcane Seal filling the 3x3 gateway | a Wizard (or a Warlock) dispels it with an Arcana check (see [Obstacles](obstacles.md)). Anyone can mine it instead (obsidian-hard), taking 6 magic damage and Weakness per block |
 | Rubble | gravel along the bottom, cobblestone and mossy cobblestone above | anyone with a pickaxe or shovel |
+| Collapsed passage | a Collapsed Passage obstacle filling the 3x3 gateway | a Barbarian or Fighter (or a Paladin) heaves it clear with an Athletics check (see [Obstacles](obstacles.md)). Anyone can mine it instead (hardness 30), risking a 3-damage cave-in per block |
 | Locked door | an iron door in the middle of the gateway, walled in either side | its "key" is a lever in a locked chest against the side wall on the near side. A Rogue picks the lock (the tier's lock DC, 12/13/15/17); anyone else smashes the chest open, which can ruin some of what's inside. The chest holds 3 separate levers so one survives. Put a lever on either wall block next to the door (or on the door's own wall) and flip it |
 
 - The **planner check** (`DungeonPlanner.gateFor`): a gate on the main path must let at least two classes through or have a bypass anyone can use (`GateKind.mainPathSafe()`). The Greater Arcane Seal (Wizards only, unbreakable) fails that, so it's only used for side vaults.
 - Arcane seals on the main path use obstacle tier Medium (DC 13) at Challenge I-II, Hard (DC 15) at III and Very Hard (DC 18) at IV. They're marked critical (they have a solo fallback).
 
 ### The side vault's gate
-The side vault's doorway (inner wall layer, 3x3) is filled with a **Greater Arcane Seal**: Wizards only, no mining. Its obstacle tier is one step above the main path's (Medium at I, Hard at II, Very Hard at III-IV). The chest inside has side-vault loot at the tier's lock DC +2 (see [Dungeon loot](dungeon-loot.md)).
+The side vault's doorway (inner wall layer, 3x3) is filled with a **Greater Arcane Seal** (Wizards only, no mining) or a **Heavy Boulder** (Barbarians only; it can't be mined, but one TNT clears it and raises an alarm). Its obstacle tier is one step above the main path's (Medium at I, Hard at II, Very Hard at III-IV). The chest inside has side-vault loot at the tier's lock DC +2 (see [Dungeon loot](dungeon-loot.md)).
 
 ### The rune-pillar puzzle (room 6)
 - **Pillars**: one in each corner of the 15x15 room, 3 blocks in from the middle on both axes: a trim base, a **Rune Pillar** block (`dndclasses:rune_block`) and an accent cap. West pillars face east and east pillars face west.
@@ -58,8 +59,8 @@ Rooms 5 (gate) and 6 (puzzle) on every dungeon's main path, and the side vault i
 None.
 
 ## Known limitations
-- Only Area 1's Arcane Seals exist as obstacle blocks. The rubble and locked door are plain vanilla blocks with no class check (a Barbarian digs rubble like anyone; a lever placed anywhere next to the door's wall works). A Rogue lock, holy seal or rubble obstacle can replace them once Area 1 adds them (`GateKind`).
-- The side vault's only strict gate is the Greater Arcane Seal, so it's Wizard-only.
+- The plain rubble and locked door are vanilla blocks with no class check (a lever placed anywhere next to the door's wall works). The Collapsed Passage is the class-checked rubble; a Rogue lock or holy seal can replace the others once Area 1 adds them (`GateKind`).
+- The side vault's strict gates are the Greater Arcane Seal and the Heavy Boulder, so it's Wizard- or Barbarian-only (or TNT).
 - Anyone can still dig round a gate through the dungeon's walls.
 - Puzzle variants (brazier order, weight plates) aren't done yet.
 - The Investigation/Arcana check is the merged ability-check API; there's no separate hint if nobody in the party can read the riddle.
@@ -70,6 +71,6 @@ None.
   - `dungeon/PuzzleState`: `Solution` (4 glyphs, -1 = free), `Defaced`, `Pillars`, `Seal`, `Vents`, `Lectern`, `Solved`, `ResetsSeen`, `WrongAnswers`, `Studied`.
   - `dungeon/GateState`: `Kind`, `Blocks`, `Door`, `KeyChest`, `GroupSeed`, `Tier`, `ResetsSeen`.
 - Runtime: `dungeon/PuzzleRooms` (rune use, study, the 10-tick check, solve / wrong / reset, the riddle book) and `dungeon/DungeonGates` (rebuild on reset, key table, obstacle tier, `/dungeon info` text). The ward calls both every 10 ticks, with or without players inside. Resets are spotted through `DungeonState.resets()`, like traps.
-- `dungeon/GateKind`: `ARCANE_SEAL`, `GREATER_SEAL`, `RUBBLE`, `LOCKED_DOOR`, with their classes, bypass and `mainPathSafe()`; `GateKind.pick(role, random)`.
+- `dungeon/GateKind`: `ARCANE_SEAL`, `GREATER_SEAL`, `RUBBLE`, `LOCKED_DOOR`, `COLLAPSED_PASSAGE`, `HEAVY_BOULDER`, with their classes, bypass and `mainPathSafe()`; `GateKind.pick(role, random)`.
 - Worldgen: `GateRoomPiece`, `PuzzleRoomPiece`, and `VaultPiece` for the side vault. `DungeonPiece.Builder` gained `obstacle(...)` (through `Obstacles.ObstaclePlacer`), `doorwayColumns(door, depthIn)`, and `puzzle` / `gate` fields that `placeWard` hands to the ward.
 - Loot: `chests/dungeon/gate_key_t1..4` (3 levers + junk; locked at the tier's DC through `DungeonLoot.lockDc`).

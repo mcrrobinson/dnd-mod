@@ -1,0 +1,13 @@
+{
+  "type": "dndclasses:dungeon",
+  "theme": "goblin_warren",
+  "biomes": "#dndclasses:has_structure/goblin_warren",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "piece",
+      "spawns": []
+    }
+  }
+}

@@ -98,7 +98,8 @@ import net.minecraft.util.Identifier;
  *     screen draws the tooltip there (take a screenshot after it)</li>
  * <li>{@code skill unlock|equip|rankup|bestiary|subclass <id>} sends what clicking the skill tree screen would
  *     (left-click, left-click at a table, right-click at a table, a bestiary entry, confirming a subclass), so
- *     the server's checks apply</li>
+ *     the server's checks apply; {@code skill asi <ability>} sends a Character tab "+" click (e.g. {@code skill asi
+ *     dex})</li>
  * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
  *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
  * <li>{@code escape} sends the open screen an Escape key press, e.g. to check a picker ignores it</li>
@@ -400,10 +401,12 @@ public final class DevScript {
             case "rankup" -> Progression.C2S_RANK_UP;
             case "bestiary" -> Progression.C2S_BESTIARY_UNLOCK;
             case "subclass" -> Progression.C2S_CHOOSE_SUBCLASS;
+            case "asi" -> mattonfire.dnd.classes.Abilities.AbilityIncreases.C2S_ABILITY_INCREASE;
             default -> null;
         };
         if (packet == null || args.length < 2) {
-            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass <id>", lineNumber);
+            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass|asi <id>",
+                    lineNumber);
             return;
         }
         PacketByteBuf buf = PacketByteBufs.create();

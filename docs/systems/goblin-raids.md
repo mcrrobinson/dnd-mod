@@ -10,7 +10,7 @@ Goblin war parties raid hobbit villages, dwarven fortresses, elven enclaves and 
 - **Bar and music**: everyone within 96 blocks sees a red raid bar. It counts down to the next wave, then shows the wave's remaining health. They also hear **Steel on Steel**.
 - **Victory**: the settlement cheers. Everyone who took part (in survival or adventure, in range at some point during the raid) gets:
   - Hero of the Village for 40 minutes
-  - a reward loot table: emeralds and food at a village; gold, iron, gems or an enchanted axe at a fortress; emeralds, arrows, berries, amethyst, an enchanted book or bow at an enclave (`gameplay/goblin_raid_elven_enclave`); gold, blaze powder, bottles o' enchanting, Fire Resistance, an enchanted book or sword at a temple (`gameplay/goblin_raid_dragon_temple`). All can include the Steel on Steel disc.
+  - a reward loot table: emeralds and food at a village; gold, iron, gems or an enchanted axe at a fortress; emeralds, arrows, berries, amethyst, an enchanted book or bow at an enclave (`gameplay/goblin_raid_elven_enclave`); gold, blaze powder, bottles o' enchanting, Fire Resistance, an enchanted book or sword at a temple (`gameplay/goblin_raid_dragon_temple`). All can include the Steel on Steel disc. Every reward table has a 20% chance of an Uncommon magic item (unidentified), and a village's 2% of The Burglar's Ring (see [Magic loot](magic-loot.md)).
   - 40 + 20 × waves XP
   - the Hold the Line advancement
   - reputation: +60 with the settlement's faction and -40 with the goblins (see [Factions](factions.md))
@@ -19,7 +19,8 @@ Goblin war parties raid hobbit villages, dwarven fortresses, elven enclaves and 
 - **Defeat**: if no one is within 96 blocks for 2 minutes, the war party withdraws and its goblins vanish.
 - **Peaceful**: switching to Peaceful mid-raid makes the war party withdraw, with no rewards.
 - Raiders carry the `dndclasses.goblin_raider` tag. One that was unloaded when its raid ended, or that the raid lost track of (unloaded for 10 seconds while defenders are about), vanishes as soon as its chunk loads again, so no war party is left behind.
-- Raids are saved with the world and pick up again on reload.
+- **Cleared Goblin Warrens**: when a [Goblin Warren](../structures/dungeons.md#the-goblin-warren) is cleared (its Warlord killed, or `/dungeon clear`), every raid whose rally point is within 256 blocks of the warren is called off ("Word of the Warlord's fall reaches the war party..."; its goblins vanish and its settlement goes back on cooldown), and no natural raid starts on a settlement within 256 blocks for 3 in-game days. Everyone in the warren is told. The server log says `[GoblinRaid] goblin warren <key> cleared at <pos>: called off <n> raid(s) within 256 blocks; no raids there until day <d>`.
+- Raids are saved with the world and pick up again on reload (and so are the quiet zones round cleared warrens).
 
 ## Where to find it
 Stay in or near a hobbit village (`/locate structure dndclasses:hobbit_village`) a dwarven fortress (`/locate structure dndclasses:dwarven_fortress`) an elven enclave (`/locate structure dndclasses:elven_enclave`) or a dragon temple (`/locate structure dndclasses:dragon_temple`) at night.
@@ -29,7 +30,7 @@ Permission level 2.
 - `/goblinraid start`: raid the nearest village, fortress, enclave or temple within about 128 blocks, ignoring the cooldown. If there isn't one, raid the spot you're standing on.
 - `/goblinraid start here`: raid the spot you're standing on.
 - `/goblinraid stop`: call off the nearest raid.
-- `/goblinraid list`: list active raids with their state, wave and the number of raiders left.
+- `/goblinraid list`: list active raids with their state, wave and the number of raiders left, and the quiet zones round cleared goblin warrens with the minutes they have left.
 
 ## Configuration
 - `/gamerule dndGoblinRaids false`: stops natural raids. `/goblinraid` still works.
@@ -41,7 +42,7 @@ Permission level 2.
 - Natural raids only check loaded chunks near players.
 
 ## For developers
-- `entity/raid/GoblinRaids`: a per-world `PersistentState` that holds the trigger, cooldowns and gamerule.
+- `entity/raid/GoblinRaids`: a per-world `PersistentState` that holds the trigger, cooldowns and gamerule. Cooldown API: `startCooldown(world, settlementKey)`, `isQuiet(world, pos)`, `quiet(world, center, radius, ticks)` (calls off raids in range and adds a `QuietZone`, saved as `Quiet`), `getQuietZones()`. It listens for `DungeonEvents.CLEARED` on Goblin Warrens (`WARREN_RADIUS` 256, `WARREN_QUIET` 3 days).
 - `entity/raid/GoblinRaid`: one raid. It runs the waves, raid bar, music and raider steering, and gives the rewards.
 - `entity/raid/Settlement`: finds the nearest village, fortress, enclave or temple and its rally point (the village green, the gate's terrace, the Moonwell's rim, or the middle of the temple courtyard, with raiders coming up the stair side).
 - `classes/Commands/GoblinRaidCommand`: the `/goblinraid` command.

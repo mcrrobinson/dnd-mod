@@ -1,5 +1,5 @@
 # Quests
-Quests are multi-step stories written as data files. A quest has stages, each stage has objectives (slay, find, speak with, gather, deliver, pass a check, defend), and finishing a stage moves the story on. If you're in a party, everyone nearby shares the quest: anyone's kills count for all, and every participant gets the full reward. This page covers the engine and its commands. NPCs offer quests, take hand-ins and pay rewards through [NPC dialogue](dialogue.md); the Journal screen and the launch quest chains come in later tickets.
+Quests are multi-step stories written as data files. A quest has stages, each stage has objectives (slay, find, speak with, gather, deliver, pass a check, defend), and finishing a stage moves the story on. If you're in a party, everyone nearby shares the quest: anyone's kills count for all, and every participant gets the full reward. This page covers the engine and its commands. NPCs offer quests, take hand-ins and pay rewards through [NPC dialogue](dialogue.md); the [Journal](quest-journal.md) (J) and the top-right tracker show where you are. The launch quest chains come in a later ticket.
 
 ![Chat after a party's shared quest: progress, "Quest complete", and both players paid in full](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/quest-engine/quest-lan-host-rewarded.png)
 
@@ -28,7 +28,7 @@ Quests are multi-step stories written as data files. A quest has stages, each st
   - Stage actions for a participant who is offline run when they next join.
 - **Dungeon Masters**: a player in DM mode (`/dm on`) is never added to a quest and their kills, visits and raids don't count.
 - **Limits**: 8 active quests per player. Quests never expire. A quest is done once unless it's `repeatable` (with a cooldown in days).
-- **Feedback**: progress shows on the action bar ("Slay goblins 4/6"); stage completion and the finished quest go to chat with a sound.
+- **Feedback**: progress shows on the action bar ("Slay goblins 4/6"); stage completion and the finished quest go to chat with a sound and a toast. The [Journal](quest-journal.md) and the tracker show the rest.
 
 ## Where to find it
 - The sample quest **Trouble on the Road** (`dndclasses:goblin_menace/1`, the first step of The Goblin Menace): slay 6 goblins (+20 Hobbits of the Shire when done); reward 5 emeralds, 30 XP and 50 class XP from the innkeeper.
@@ -83,7 +83,6 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
 - `magic_item` rolls from the loot table `dndclasses:gameplay/quest_reward_<rarity>`: a weapon or armour piece made a magic item of that rarity (identified) with the `dndclasses:magic_item` loot function. Edit those tables to change the pool.
 
 ## Known limitations
-- No Journal or tracker HUD yet; the client receives the quest data (`dndclasses:quest_sync`) but only logs it.
 - Dev clients get a random player name each launch, so per-player quest state seems to vanish between runs; pass `-PdevUser=<name>` to keep one.
 
 ## For developers
@@ -92,7 +91,7 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
   - `QuestDefinition`, `QuestStage`, `QuestObjective` (sealed: `Kill`, `Visit`, `Talk`, `Collect`, `Deliver`, `Check`, `Defend`) and `QuestAction` (sealed, one record per action) parse the files. `QuestJson` has the shared parsing helpers and id-or-tag matchers.
   - `QuestManager` (`PersistentState` `dndclasses_quests`): instances, per-player finished quests, tracked quest and pending actions (rewards at the giver, missed stage actions). Its API for the next tickets: `whyCantStart`, `start`, `join`, `talkedTo(player, role)` (dialogue calls this; returns a `TalkResult`), `hasBusinessWith`, `checkPassed(player, skill)`, `claim`.
   - `QuestEvents`: kill hook (`AFTER_KILLED_OTHER_ENTITY`, pets credit their owner), visit tick, `onRaidWon` (called from `GoblinRaid.win`), `onPartyLeft` (called from `/party leave` and `/party kick`).
-  - `QuestSync` (S2C `dndclasses:quest_sync`, debounced to once a second) and `client/ClientQuests` (the data the Journal will read).
+  - `QuestSync` (S2C `dndclasses:quest_sync`, debounced to once a second) and `client/ClientQuests` (the data the [Journal](quest-journal.md) and tracker read).
   - `QuestHooks`: `magicItem` (set by the magic items ticket) and `ignored` (`DungeonMaster::isDm`: DMs in DM mode never join quests or make progress).
 - `LichEntity.soulFled()` tells a reforming death from the real one.
 - Devscripts: `quest-engine.txt` + `quest-engine-restart.txt` (sample quest, rewards, admin commands, saved progress), `quest-engine-objectives.txt` (every objective and action, using the test data pack in `devscripts/datapacks/quest-engine-test`, which also has two broken files) and `quest-engine-lan-host.txt` / `quest-engine-lan-guest.txt` (party sharing, join, fork). Run them with `-PdevUser=QuestDev`.

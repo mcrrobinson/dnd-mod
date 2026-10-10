@@ -1,0 +1,57 @@
+# Journal, tracker and toasts: start the sample quest, kill 2 goblins, set reputation, then open the
+# Journal on both tabs and check the tracker with and without the HUD. Screenshots: journal-*.png.
+# Run: timeout 300 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-journal.txt
+# Check run/logs/latest.log for "[Quests] toast:" lines and "[Journal] /quest" commands.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/effect clear @s
+/dndclass set @s fighter
+wait 10
+closescreen
+/fill -3 149 -3 3 149 3 minecraft:glass
+/tp @s 0.5 150 0.5 0 0
+/kill @e[tag=qj]
+/quest admin @s reset dndclasses:goblin_menace/1
+/rep @s dndclasses:hobbits set 250
+/rep @s dndclasses:mountain_dwarves set 520
+/rep @s dndclasses:goblins set -600
+/quest admin @s start dndclasses:goblin_menace/1
+wait 10
+# Toast "Quest started" top-right
+screenshot journal-toast-started
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qj"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qj"]}
+/kill @e[tag=qj]
+wait 40
+# Tracker: "Trouble on the Road" / "- Slay goblins 2/6"
+screenshot journal-tracker
+hud off
+wait 5
+screenshot journal-tracker-hud-off
+hud on
+press key.dnd-classes.journal
+wait 10
+screenshot journal-quests
+widget Factions
+wait 5
+screenshot journal-factions
+widget Quests
+wait 5
+widget Abandon
+wait 5
+# Confirm screen
+screenshot journal-abandon-confirm
+closescreen
+wait 5
+closescreen
+/quest admin @s complete dndclasses:goblin_menace/1
+wait 40
+# Toast "Quest complete"; the Journal lists it greyed under The Goblin Menace with "!" (reward waiting)
+screenshot journal-toast-finished
+press key.dnd-classes.journal
+wait 10
+screenshot journal-finished
+closescreen
+quit

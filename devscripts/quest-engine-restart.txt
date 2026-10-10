@@ -1,5 +1,5 @@
 # Run after quest-engine.txt: the half-done quest is still at 3/6 after the world was closed and
-# reopened. Run: timeout 300 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine-restart.txt
+# reopened. Run: timeout 300 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-engine-restart.txt
 wait 40
 closescreen
 /quest list

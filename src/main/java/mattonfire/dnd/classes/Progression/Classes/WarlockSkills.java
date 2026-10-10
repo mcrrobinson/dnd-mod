@@ -86,6 +86,11 @@ public class WarlockSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("warlock.fiend", "warlock.great_old_one");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("warlock.fire_breath", "Fire Breath", "Breathe a beam of fire that burns and hurts the mobs in front of you.", "minecraft:blaze_powder",
@@ -105,7 +110,7 @@ public class WarlockSkills extends ClassSkills {
                         "The mob you're looking at (up to 20 blocks) gets Weakness II, Slowness II and Glowing, "
                                 + "and takes 30% more damage from you for 15 seconds.",
                         "minecraft:fermented_spider_eye", 4, 1, 0, 2, "warlock.rain_ward"),
-                passive("warlock.dark_ones_blessing", "Dark One's Blessing",
+                passive("warlock.dark_ones_blessing", "Eldritch Hunger",
                         "Gain 2 absorption hearts per kill, up to 4.", "minecraft:golden_apple", 1, 0, 1,
                         "warlock.hex"),
                 active("warlock.hellgate", "Hellgate",

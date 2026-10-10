@@ -1,0 +1,8 @@
+{
+  "name": "Gelatinous Corridor",
+  "difficulty": "hard",
+  "spread": 1,
+  "spawns": [
+    {"entity": "dndclasses:gelatinous_cube", "count": 1}
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "state=sealed": { "model": "dndclasses:block/lesser_arcane_seal" },
+    "state=open": { "model": "dndclasses:block/lesser_arcane_seal_open" }
+  }
+}

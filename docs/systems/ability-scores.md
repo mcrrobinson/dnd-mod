@@ -8,7 +8,7 @@ Every character has a character sheet: Strength, Dexterity, Constitution, Intell
 - Modifier = floor((score - 10) / 2), so 8 is -1, 10 is +0, 15 is +2 and 20 is +5.
 - Every class uses the 5e standard array (15, 14, 13, 12, 10, 8), arranged to fit the class.
 - A player without a class has 10 in everything and no proficiencies.
-- Scores go from 1 to 30. Bonuses that add to a score (races and ability score improvements, coming later) can't push it past 20. Items that set a score ("your Strength is 19") and the admin override can.
+- Scores go from 1 to 30. Bonuses that add to a score ([races](../races/races.md), and ability score improvements later) can't push it past 20. Items that set a score ("your Strength is 19") and the admin override can.
 
 ### Proficiency bonus
 | Class level | 0-4 | 5-8 | 9-10 |
@@ -80,7 +80,7 @@ The class table lives in `data/dndclasses/class_info.json` (`abilities`, `saves`
 
 ## Known limitations
 - No Character tab yet; the sheet is only visible with `/dndclass sheet`.
-- No ability score improvements, races or items that change scores yet. The admin override stands in for them while testing.
+- No ability score improvements or items that change scores yet (races do). The admin override stands in for them while testing.
 - Saving throws against monsters, Stealth, Perception and the other skills aren't used by anything yet. Only Thieves' Tools (lockpicking) and Persuasion are.
 - Rigged rolls are kept in memory until used, cleared or the server restarts.
 

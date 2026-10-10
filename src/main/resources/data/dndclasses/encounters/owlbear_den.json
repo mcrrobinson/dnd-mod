@@ -1,0 +1,8 @@
+{
+  "name": "Owlbear Den",
+  "difficulty": "hard",
+  "spread": 4,
+  "spawns": [
+    {"entity": "dndclasses:owlbear", "count": 2}
+  ]
+}

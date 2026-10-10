@@ -1,0 +1,71 @@
+# Race picker UI check: tooltip, Escape, Dragonborn ancestry step and Back, race-then-class order, gamerule, guidebook heritage pages.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/race-verify-picker.txt (needs a classed player). Then race-verify-rejoin.txt.
+# Expect: screenshots rv-*.png; "screen after escape: ModKeybinds" in the log; dwarf at the end.
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+/dndclass set @s barbarian
+racepicker on
+/dndrace set @s none
+wait 20
+screenshot rv-picker
+hover -70 -11
+wait 5
+screenshot rv-tooltip
+escape
+wait 5
+screenshot rv-escape
+click 70 33
+wait 10
+screenshot rv-ancestry
+click -10 55
+wait 10
+screenshot rv-back
+click 70 33
+wait 10
+click -10 -33
+wait 20
+screenshot rv-ember-picked
+/dndrace get @s
+# Both none: race picker first, then the class picker
+/dndrace set @s none
+/dndclass set @s none
+wait 20
+screenshot rv-both-none
+racepick elf
+wait 20
+screenshot rv-class-after-race
+/dndclass set @s barbarian
+wait 10
+# Gamerule off then on
+/dndrace set @s none
+wait 10
+/gamerule dndRaces false
+wait 20
+screenshot rv-rule-off
+/gamerule dndRaces true
+wait 20
+screenshot rv-rule-on
+racepick dwarf
+wait 20
+# Guidebook heritage pages
+/clear @s
+/give @s dndclasses:class_guidebook
+wait 5
+hotbar 0
+use
+wait 10
+page last
+wait 5
+screenshot rv-book-last
+page 3
+wait 5
+screenshot rv-book-3
+page 4
+wait 5
+screenshot rv-book-4
+closescreen
+/dndrace get @s
+/attribute @s minecraft:generic.max_health get
+quit

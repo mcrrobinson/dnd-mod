@@ -85,7 +85,7 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
 - No NPC dialogue yet: nobody offers quests or pays rewards in-game, so quests are started and handed in with `/quest admin` (`start`, `talk`).
 - No Journal or tracker HUD yet; the client receives the quest data (`dndclasses:quest_sync`) but only logs it.
 - `check` objectives have no d20 roll yet: dialogue will offer them.
-- Dev clients get a random player name each launch, so per-player quest state seems to vanish between runs; pass `-PdevName=<name>` to keep one.
+- Dev clients get a random player name each launch, so per-player quest state seems to vanish between runs; pass `-PdevUser=<name>` to keep one.
 - DMs still get quest progress until the DM toolkit hooks in (`QuestHooks.ignored`).
 
 ## For developers
@@ -97,4 +97,4 @@ Quests are files in a data pack at `data/<namespace>/quests/<path>.json`; the id
   - `QuestSync` (S2C `dndclasses:quest_sync`, debounced to once a second) and `client/ClientQuests` (the data the Journal will read).
   - `QuestHooks`: `magicItem` (set by the magic items ticket) and `ignored` (set to `DungeonMaster::isDm` by the DM toolkit).
 - `LichEntity.soulFled()` tells a reforming death from the real one.
-- Devscripts: `quest-engine.txt` + `quest-engine-restart.txt` (sample quest, rewards, admin commands, saved progress), `quest-engine-objectives.txt` (every objective and action, using the test data pack in `devscripts/datapacks/quest-engine-test`, which also has two broken files) and `quest-engine-lan-host.txt` / `quest-engine-lan-guest.txt` (party sharing, join, fork). Run them with `-PdevName=QuestDev`.
+- Devscripts: `quest-engine.txt` + `quest-engine-restart.txt` (sample quest, rewards, admin commands, saved progress), `quest-engine-objectives.txt` (every objective and action, using the test data pack in `devscripts/datapacks/quest-engine-test`, which also has two broken files) and `quest-engine-lan-host.txt` / `quest-engine-lan-guest.txt` (party sharing, join, fork). Run them with `-PdevUser=QuestDev`.

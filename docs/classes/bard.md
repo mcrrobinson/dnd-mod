@@ -54,18 +54,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Bards get 3 XP when one of their pets kills a hostile mob, and 1 extra XP for their own hostile kills while another player is within 16 blocks.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Animal Friends | Root | Active | 0 | 9 | The special above; 4 ranks |
-| Inspiring Presence | Valor | Passive | 1 | | Other players within 8 blocks get Speed I |
-| Thunderwave | Valor | Active | 1 | 4 | 4 damage to everything within 6 blocks except players and your pets, and a big knockback |
-| Battle Hymn | Valor | Passive | 1 | | Other players within 8 blocks get Strength I |
-| Silver Tongue | Lore | Passive | 1 | | Permanent Hero of the Village (cheaper villager trades) |
-| Song of Rest | Lore | Active | 1 | 3 | Heals you, other players and your pets within 8 blocks by 3 hearts and clears harmful effects |
-| Jack of All Trades | Lore | Passive | 1 | | +1 heart of max health and 10% more damage |
+| Inspiring Presence | College of Valor | Passive | 1 | | Other players within 8 blocks get Speed I |
+| Thunderwave | College of Valor | Active | 1 | 4 | 4 damage to everything within 6 blocks except players and your pets, and a big knockback |
+| Battle Hymn | College of Valor | Passive | 1 | | Other players within 8 blocks get Strength I |
+| Silver Tongue | College of Lore | Passive | 1 | | Permanent Hero of the Village (cheaper villager trades) |
+| Song of Rest | College of Lore | Active | 1 | 3 | Heals you, other players and your pets within 8 blocks by 3 hearts and clears harmful effects |
+| Jack of All Trades | College of Lore | Passive | 1 | | +1 heart of max health and 10% more damage |
 | Crescendo | Capstone | Active | 2 | 9 | Players and your pets within 12 blocks get Strength II, Speed II and Resistance I for 20 s; hostile mobs within 12 blocks glow and get Weakness I |
 
 Inspiring Presence and Battle Hymn only buff other players, not you. They're the reason to bring a Bard on a group trip.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| College of Valor | Right | Inspiring Presence (first node, open to both), Thunderwave, Battle Hymn | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
+| College of Lore | Left | Silver Tongue (first node, open to both), Song of Rest, Jack of All Trades | **Bardic Lore**: +2 to Persuasion checks, and you identify magic items when you pick them up |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> bard` (see [Admin commands](../systems/admin-commands.md)).

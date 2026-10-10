@@ -41,6 +41,7 @@ public final class Progression {
     public static final Identifier C2S_EQUIP = new Identifier(DnDClasses.MOD_ID, "equip_skill");
     public static final Identifier C2S_RANK_UP = new Identifier(DnDClasses.MOD_ID, "rank_up_skill");
     public static final Identifier C2S_BESTIARY_UNLOCK = new Identifier(DnDClasses.MOD_ID, "bestiary_unlock");
+    public static final Identifier C2S_CHOOSE_SUBCLASS = new Identifier(DnDClasses.MOD_ID, "choose_subclass");
 
     private static final String DATA_KEY = "dndProgression";
     /** The Druid's kill list from before the bestiary; becomes its learned set on first load. */
@@ -89,6 +90,10 @@ public final class Progression {
             String id = buf.readString();
             server.execute(() -> unlockBestiary(player, id, false));
         });
+        ServerPlayNetworking.registerGlobalReceiver(C2S_CHOOSE_SUBCLASS, (server, player, handler, buf, sender) -> {
+            String id = buf.readString();
+            server.execute(() -> chooseSubclass(player, id, false));
+        });
 
         ProgressionEvents.register();
     }
@@ -110,7 +115,23 @@ public final class Progression {
             data.getList(OLD_DRUID_KILLS_KEY, NbtElement.STRING_TYPE)
                     .forEach(e -> progress.learned.add(e.asString()));
         }
+        if (!saved.isEmpty() && !saved.contains("subclass") && player instanceof ServerPlayerEntity serverPlayer) {
+            migrateSubclass(serverPlayer, progress);
+        }
         return progress;
+    }
+
+    /** Progress saved before subclasses gets one from the branch it's furthest down (see {@link ClassProgress#migrateSubclass}). */
+    private static void migrateSubclass(ServerPlayerEntity player, ClassProgress progress) {
+        int refunded = progress.migrateSubclass();
+        // Saved even with no subclass picked, so this only runs once per class.
+        save(player, progress);
+        Subclass chosen = progress.subclass();
+        if (refunded > 0 && chosen != null && player.networkHandler != null) {
+            player.sendMessage(Text.literal("Your " + name(progress.dndClass) + " tree now follows the subclass "
+                    + chosen.name() + ". " + refunded + " point" + (refunded == 1 ? "" : "s") + " refunded.")
+                    .formatted(Formatting.GOLD), false);
+        }
     }
 
     /** Progress in the player's current class. Works on both sides (the client only knows its own player). */
@@ -159,6 +180,10 @@ public final class Progression {
             player.sendMessage(message.copy().formatted(Formatting.GOLD), false);
             player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP,
                     SoundCategory.PLAYERS, 0.8F, 1.2F);
+            if (oldLevel < ClassProgress.SUBCLASS_LEVEL && progress.canChooseSubclass()) {
+                player.sendMessage(Text.literal("You can now choose a subclass at an Attunement Table.")
+                        .formatted(Formatting.LIGHT_PURPLE), false);
+            }
         }
         sync(player);
     }
@@ -371,6 +396,80 @@ public final class Progression {
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
                 SoundCategory.PLAYERS, 1.0F, 1.0F);
         return true;
+    }
+
+    /**
+     * Chooses a subclass of the player's current class. Needs class level
+     * {@link ClassProgress#SUBCLASS_LEVEL}, an Attunement Table and no subclass yet.
+     *
+     * @param force skip the level and table checks, and replace a chosen subclass (admin command)
+     * @return whether it was chosen
+     */
+    public static boolean chooseSubclass(ServerPlayerEntity player, String id, boolean force) {
+        ClassProgress progress = current(player);
+        Subclass subclass = ClassTrees.subclass(id);
+        if (subclass == null || subclass.dndClass() != progress.dndClass)
+            return false;
+        if (progress.hasSubclass(id))
+            return false;
+        if (!force) {
+            if (!progress.subclass.isEmpty()) {
+                player.sendMessage(Text.literal("You've already chosen a subclass.").formatted(Formatting.RED), true);
+                return false;
+            }
+            if (progress.level() < ClassProgress.SUBCLASS_LEVEL) {
+                player.sendMessage(Text.literal("Subclasses are chosen at " + name(progress.dndClass) + " level "
+                        + ClassProgress.SUBCLASS_LEVEL + ".").formatted(Formatting.RED), true);
+                return false;
+            }
+            if (!atAttunementTable(player)) {
+                player.sendMessage(Text.literal("Subclasses are chosen at an Attunement Table.")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+        } else if (progress.subclass() != null) {
+            progress.removeSubclassNodes(progress.subclass());
+        }
+        progress.subclass = id;
+        save(player, progress);
+        sync(player);
+
+        player.getServer().getPlayerManager().broadcast(Text.literal(title(player) + " has chosen a subclass: "
+                + subclass.name() + ".").formatted(Formatting.LIGHT_PURPLE), false);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.UI_TOAST_CHALLENGE_COMPLETE,
+                SoundCategory.PLAYERS, 0.8F, 1.0F);
+        return true;
+    }
+
+    /**
+     * Clears the subclass of the player's current class, refunding the nodes only
+     * it could have (and the capstone above them), with their ranks. For the
+     * admin command, and later the Tome of Clear Thought.
+     *
+     * @return the points refunded, or -1 if there was no subclass
+     */
+    public static int clearSubclass(ServerPlayerEntity player) {
+        ClassProgress progress = current(player);
+        Subclass subclass = progress.subclass();
+        if (subclass == null && progress.subclass.isEmpty())
+            return -1;
+        int refunded = subclass == null ? 0 : progress.removeSubclassNodes(subclass);
+        progress.subclass = "";
+        save(player, progress);
+        sync(player);
+        player.sendMessage(Text.literal("Your " + name(progress.dndClass) + " subclass was cleared. " + refunded
+                + " point" + (refunded == 1 ? "" : "s") + " refunded.").formatted(Formatting.GOLD), false);
+        return refunded;
+    }
+
+    /** "Matt the Battle Master Fighter", or "Matt the Fighter" before a subclass. */
+    public static String title(ServerPlayerEntity player) {
+        ClassProgress progress = current(player);
+        Subclass subclass = progress.subclass();
+        String name = player.getName().getString();
+        if (progress.dndClass == DndCharacter.NONE)
+            return name;
+        return name + " the " + (subclass != null ? subclass.title() : name(progress.dndClass));
     }
 
     public static String name(DndCharacter dndClass) {

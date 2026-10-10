@@ -17,6 +17,16 @@ The brewer: the only class that can brew safely and use the Fast Brewing Stand, 
   | III  | 5 blocks | 10 s | +2 |
   | IV   | 6 blocks | 12 s | +2 |
 
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Mutagenist | Right | Iron Stomach (first node, open to both), Volatile Flask, Potent Brews | **Mutagen**: drinking any potion also gives Strength I for 10 seconds |
+| Transmuter | Left | Efficient Brewer (first node, open to both), Elixir of Healing, Philosopher's Touch | **Transmuter's Eye**: Healing potions you drink heal 50% more, and you identify potions when you pick them up |
+
+The features aren't active yet; they come with the subclass feature cards.
+
 ## Known limitations
 - The class blurb mentions random potion backfires. They aren't implemented.
 

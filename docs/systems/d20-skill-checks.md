@@ -36,13 +36,16 @@ Sneak and right click a villager with an empty main hand. The villager must have
 
 Gossip is vanilla reputation, so it lowers or raises that villager's prices the same way curing a zombie villager does. It spreads to nearby villagers and fades slowly over time. Persuade the villagers whose trades you use most.
 
+### Arcana (Wizard, Warlock)
+Dispelling an Arcane Seal rolls Arcana: d20 + 5 for a level 0 Wizard (+3 plus proficiency) or d20 + 3 for a level 0 Warlock (+1 plus proficiency), against the seal's DC (10, 13, 15 or 18). Proficiency rises to +3 at class level 4 and +4 at level 8. See [Class-gated obstacles](obstacles.md).
+
 ### Attack rolls (everyone)
 Every full-strength melee swing (attack cooldown at 90% or more) at a living mob rolls a d20. Armor stands don't count. Wait for the cooldown bar to fill if you want your crits.
 
 - **Critical hit:** a natural 20 deals double damage, with crit particles and the crit sound. Fighters crit on 19 or 20 (Improved Critical). The crit only applies to the swing that rolled it. If something else cancels that attack (a Monk swinging a sword, for example), the crit is lost.
 - **Fumble:** a natural 1 misses entirely and resets your cooldown.
 
-Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your attack bonus from the sheet: the better of your STR and DEX modifier, plus your proficiency bonus (for example a level 1 Barbarian is +4, a level 9 one +6). It's for display only and doesn't change whether you hit. The crit range comes from the sheet too (20, or 19-20 for a Fighter).
+Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your attack bonus from the sheet: the better of your STR and DEX modifier, plus your proficiency bonus (for example a level 1 Barbarian is +4, a level 9 one +6). It's for display only and doesn't change whether you hit. The crit range comes from the sheet too (20, or 19-20 for a Fighter). A [+N magic weapon](magic-items.md#1--2--3-gear) adds its bonus to the shown modifier.
 
 ### Advantage, disadvantage and the HUD
 A roll with advantage rolls two dice and keeps the higher; disadvantage keeps the lower. The HUD shows the kept die, then the dropped one in grey with "adv" or "dis". Named bonuses (such as "+2 assist" from a later party feature) are listed beside the title. Nothing in the game grants advantage yet; the sheet and the roll API support it for features to come.
@@ -63,7 +66,7 @@ Locked chests are the loot chests in structures: dungeons, mineshafts, temples, 
 - `classes/SkillChecks/D20.java` holds the raw builder (`D20.roll(player)`), `Outcome`, the `Display` lane (MAIN, SAVE_LANE, SILENT), the rigged-roll queue (`/dndclass forceroll`), the `[D20]` log line and the `dndclasses:d20_roll` S2C packet (`D20.show`).
   - `D20.Roll` carries a label `Text`, the ability (or none), a `RollKind`, the kept natural, the dropped `natural2` (0 for one die), the `Advantage` mode, how many natural 1s were rerolled, the total modifier, named `bonuses`, the DC (0 for none), the outcome, the display lane and flags (`FLAG_SECRET` hides the DC and outcome). SAVE_LANE rolls draw on the main panel until the save lane exists; SILENT rolls are logged but never sent.
   - The old `D20.Skill` enum, `D20.check(player, skill, mod, dc)` and the five-argument `Roll` constructor are deprecated but still work.
-- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
+- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and take their modifier from `SkillModifiers` (not the sheet yet). `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
 - Mixins: `mixin/LootableContainerBlockEntityAccessor` reads the chest's loot table, and `mixin/PlayerAttackRollMixin` applies crit damage and plays the crit effects.
 - `Client/Hud/DiceRollHud.java` draws the HUD panel with `textures/gui/d20.png` (made by `tools/d20_texture.py`).
 - Sounds are `dndclasses:dice.roll`, `.success`, `.failure`, `.critical` and `.fumble`, made by `tools/music-gen/music_gen.py dice_*`.

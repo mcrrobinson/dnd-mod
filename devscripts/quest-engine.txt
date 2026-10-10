@@ -1,8 +1,8 @@
 # Quest engine: start the sample quest (The Goblin Menace 1, kill 6 goblins), kill 6 goblins, claim
 # the reward at the "innkeeper", then the /quest admin complete path, then leave a quest half done
 # (3/6) for quest-engine-restart.txt to check after a restart. Check [CHAT] and [Quests] in the log.
-# Run: timeout 400 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine.txt
-# (-PdevName keeps the same player UUID across runs, so the restart check finds the same quests.)
+# Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-engine.txt
+# (-PdevUser keeps the same player UUID across runs, so the restart check finds the same quests.)
 wait 40
 closescreen
 /difficulty normal

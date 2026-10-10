@@ -66,6 +66,11 @@ public class FighterSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("fighter.champion", "fighter.battle_master");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("fighter.super_regen", "Super Regeneration",

@@ -1,0 +1,16 @@
+# /dungeon commands on the dev world's natural crypt. Run after dungeon-place.txt in the same run dir: the first
+# /dungeon info should still show the Antechamber CLEARED (the state survived a restart).
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-info.txt
+# Check: [CHAT] lines in logs/latest.log: tier III, then "Cleared" with every room CLEARED, then reset to UNTOUCHED.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 247 150 983
+wait 100
+/dungeon info
+/dungeon tier 3
+/dungeon clear
+/dungeon info
+/dungeon reset
+/dungeon info
+quit

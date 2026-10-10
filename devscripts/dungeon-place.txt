@@ -1,0 +1,58 @@
+# Dungeon layouts from above: the dev world's nearest naturally generated crypt (/locate structure
+# #dndclasses:dungeons from spawn finds it at 240, 976) and one made with /place structure at -600, 600
+# (a different seed). First walks into the natural one in survival (entry title, room wards, dungeon music),
+# then cuts each away with /dungeon cutaway (destructive: use a scratch copy of the run dir, e.g.
+# -PdevRunDir=run-scratch) and shoots it from overhead in spectator.
+# Run: timeout 500 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-place.txt
+# The overhead shots are about 80 blocks over the floor: the dev client's render distance is 6 chunks.
+# Check: screenshots/dungeon-place-*.png; "/dungeon info" [CHAT] lines and "[EventMusic] ... -> DUNGEON" in logs/latest.log.
+wait 40
+closescreen
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/locate structure #dndclasses:dungeons
+
+# Natural generation: down the stair into the antechamber, in survival
+/gamemode spectator
+/tp @s 247 150 983
+wait 300
+/effect give @s minecraft:night_vision 999 0 true
+/effect give @s minecraft:resistance 999 4 true
+/tp @s 247 43 970 180 10
+/gamemode survival
+wait 30
+screenshot dungeon-place-entry
+wait 60
+/dungeon info
+/tp @s 251 67 987 135 50
+wait 40
+hud off
+screenshot dungeon-place-stair
+hud on
+/gamemode spectator
+/dungeon cutaway
+wait 60
+/tp @s 271 122 966
+look 0 90
+wait 200
+hud off
+screenshot dungeon-place-natural
+hud on
+
+# /place structure, somewhere else (a different seed)
+/tp @s -600 150 600
+wait 200
+/place structure dndclasses:crypt -600 64 600
+wait 100
+# /place leaves no structure start behind; /dungeon finds this one through its rooms' wards
+/dungeon info
+/dungeon cutaway
+wait 60
+/tp @s -601 122 590
+look 0 90
+wait 400
+hud off
+screenshot dungeon-place-placed
+hud on
+quit

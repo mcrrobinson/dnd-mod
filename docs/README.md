@@ -20,17 +20,25 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
 - [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
 
+## Races
+- [Races](races/races.md): the race picker (before the class), 8 races with stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
-- [Class progression](systems/class-progression.md): class levels, ability ranks at the Attunement Table and the Bard/Druid bestiary
-- [Admin commands](systems/admin-commands.md): `/dndclass get|set`
+- [Rests and charges](systems/rests.md): charges for major actives, short and long rests, Hit Dice
+- [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
+- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
 - [Party](systems/party.md): group up with other players
-- [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll (PR #118)
-- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, crits and fumbles
+- [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
+- [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
+- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
+- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items and `/dndmagic`
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
-- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep` (PR #123)
+- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`
+- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn
@@ -58,6 +66,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board
+- [Dungeons](structures/dungeons.md): underground multi-room Crypts with a stair, a planned route to a boss and vault, and a Challenge tier
 
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance

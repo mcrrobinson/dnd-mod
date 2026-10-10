@@ -1,0 +1,86 @@
+# DM toolkit single-player verification: encounters at the crosshair, list/clear, lich_court, mimic_hoard,
+# wyvern_pair and freeze radius. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dm-verify-encounters.txt
+wait 40
+closescreen
+respawn
+/difficulty normal
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tp @s 1000 151 1003 180 0
+wait 20
+/fill 970 150 970 1030 150 1030 minecraft:stone
+/fill 970 151 970 1030 160 1030 minecraft:air
+/tp @s 1000 151 1003 180 0
+/gamemode survival
+/kill @e[type=!player,distance=..80]
+/dm encounter clear all
+/dm unfreeze all
+/dm on
+wait 60
+# Spawn at the looked-at block: looking north and down, about 4 blocks ahead
+/tp @s 1000 151 1003 180 25
+wait 5
+/dm encounter spawn goblin_patrol
+/dm encounter list
+wait 5
+screenshot verify-patrol-at-crosshair
+/execute as @e[type=dndclasses:goblin_warrior,tag=dndclasses.dm_encounter] run data get entity @s Rotation
+/execute as @e[type=dndclasses:goblin_warrior,tag=dndclasses.dm_encounter] run data get entity @s Pos
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=dndclasses.dm_encounter]
+/kill @e[type=item]
+/dm encounter clear all
+wait 10
+/execute if entity @e[type=dndclasses:goblin_warrior]
+/execute if entity @e[type=item]
+# Lich court: phylactery appears and clear removes it
+/dm encounter spawn lich_court 1000 151 985
+wait 40
+/execute if entity @e[type=dndclasses:lich]
+/execute if entity @e[type=dndclasses:phylactery,tag=dndclasses.dm_encounter]
+/execute if entity @e[type=minecraft:skeleton,tag=dndclasses.dm_encounter]
+/tp @s 1000 152 994 180 10
+wait 10
+screenshot verify-lich-court
+/dm encounter list
+/dm encounter clear all
+wait 10
+/execute if entity @e[type=dndclasses:phylactery]
+/execute if entity @e[type=dndclasses:lich]
+/execute if entity @e[type=item]
+# Mimic hoard: mimic + 2 chests with an un-rolled treasury loot table
+/dm encounter spawn mimic_hoard 1000 151 990 frozen
+wait 10
+/execute if entity @e[type=dndclasses:mimic,tag=dndclasses.dm_encounter]
+/tp @s 1000 154 996 180 30
+wait 10
+screenshot verify-mimic-hoard
+/dm encounter clear all
+# Wyvern pair
+/dm encounter spawn wyvern_pair 1000 151 980 frozen
+wait 20
+/execute if entity @e[type=dndclasses:wyvern,tag=dndclasses.dm_encounter]
+/tp @s 1000 156 1000 180 15
+wait 10
+screenshot verify-wyvern-pair
+/dm encounter clear all
+# Freeze radius: an unfrozen crypt, then freeze everything within 24
+/tp @s 1000 151 1003 180 10
+/dm encounter spawn undead_crypt 1000 151 994
+wait 20
+/dm freeze radius
+/execute as @e[type=minecraft:zombie,tag=dndclasses.dm_encounter] run data get entity @s Glowing
+/execute as @e[type=minecraft:zombie,tag=dndclasses.dm_encounter] run data get entity @s NoAI
+/execute positioned 1000 151 994 run damage @e[type=minecraft:zombie,limit=1,sort=nearest] 5 minecraft:player_attack
+wait 5
+screenshot verify-freeze-radius
+wait 100
+/execute as @e[type=minecraft:zombie,tag=dndclasses.dm_encounter] run data get entity @s Health
+/dm unfreeze all
+/execute as @e[type=minecraft:zombie,tag=dndclasses.dm_encounter] run data get entity @s Glowing
+/execute as @e[type=minecraft:zombie,tag=dndclasses.dm_encounter] run data get entity @s NoAI
+wait 5
+screenshot verify-unfrozen
+/dm encounter clear all
+/dm off
+quit

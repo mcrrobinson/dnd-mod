@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.stream.Stream;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -28,6 +29,14 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
+import mattonfire.dnd.classes.Progression.Subclass;
+import mattonfire.dnd.classes.Rest.Charges;
+import mattonfire.dnd.classes.Rest.HitDice;
+import mattonfire.dnd.classes.Rest.RestKind;
+import mattonfire.dnd.classes.Rest.RestSnapshot;
+import mattonfire.dnd.classes.Rest.RestSource;
+import mattonfire.dnd.classes.Rest.RestSync;
+import mattonfire.dnd.classes.Rest.Rests;
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
@@ -50,7 +59,11 @@ import net.minecraft.util.Identifier;
  * /dndclass unlock|equip <player> <skill>   (ignores points and the attunement table)
  * /dndclass rank <player> <skill> <n>        (ignores points, level and the attunement table)
  * /dndclass bestiary <player> learn|unlock <entity>
+ * /dndclass subclass <player> <id|none>        (ignores level and the attunement table; none refunds)
  *
+ * /dndclass rest <player> short|long         (applies the rest's benefits, ignoring its limits)
+ * /dndclass charges <player> [n]
+ * /dndclass hitdice <player> [n]
  * /dndclass sheet <player>                    (ability scores, saves, skills, passives)
  * /dndclass score <player> <ability> <value>|clear   (admin override of one score)
  * /dndclass forceroll <player> <n...>|clear   (rigs the player's next d20 naturals, for tests)
@@ -97,6 +110,42 @@ public class DndClassCommand {
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .then(bestiaryCommand("learn", false))
                                 .then(bestiaryCommand("unlock", true))))
+                .then(CommandManager.literal("subclass")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.argument("subclass", StringArgumentType.word())
+                                        .suggests((context, builder) -> CommandSource.suggestMatching(
+                                                Stream.concat(Stream.of("none"), ClassTrees.subclasses(
+                                                        Progression.classOf(EntityArgumentType.getPlayer(context,
+                                                                "player"))).stream().map(Subclass::id)),
+                                                builder))
+                                        .executes(DndClassCommand::subclass))))
+                .then(CommandManager.literal("rest")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.literal("short")
+                                        .executes(context -> rest(context, RestKind.SHORT)))
+                                .then(CommandManager.literal("long")
+                                        .executes(context -> rest(context, RestKind.LONG)))))
+                .then(CommandManager.literal("charges")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(DndClassCommand::restInfo)
+                                .then(CommandManager.argument("n", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context,
+                                                    "player");
+                                            Charges.set(player, IntegerArgumentType.getInteger(context, "n"));
+                                            return restInfo(context);
+                                        }))))
+                .then(CommandManager.literal("hitdice")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(DndClassCommand::restInfo)
+                                .then(CommandManager.argument("n", IntegerArgumentType.integer(0))
+                                        .executes(context -> {
+                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context,
+                                                    "player");
+                                            HitDice.setRemaining(player, IntegerArgumentType.getInteger(context,
+                                                    "n"));
+                                            return restInfo(context);
+                                        }))))
                 .then(CommandManager.literal("sheet")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::sheet)))
@@ -191,18 +240,61 @@ public class DndClassCommand {
                         }));
     }
 
+    private static int rest(CommandContext<ServerCommandSource> context, RestKind kind)
+            throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        Rests.complete(player, kind, RestSource.ADMIN);
+        context.getSource().sendFeedback(Text.literal("Gave " + player.getEntityName() + " a " + kind.label()), true);
+        return restInfo(context);
+    }
+
+    /** Prints charges, Hit Dice and short rests left; returns the charges. */
+    private static int restInfo(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        RestSnapshot rest = RestSync.snapshot(player);
+        context.getSource().sendFeedback(Text.literal(player.getEntityName() + ": " + rest.charges() + "/"
+                + rest.max() + " charges" + (rest.temp() > 0 ? " (+" + rest.temp() + " temporary)" : "")
+                + ", recharge on a " + rest.rechargeGroup().label() + ", " + rest.hitDiceLeft() + "/"
+                + rest.hitDiceMax() + " Hit Dice (d" + rest.dieSize() + "), " + rest.shortRestsLeft()
+                + " short rests left" + (rest.enabled() ? "" : " (dndRests is off)")), false);
+        return rest.charges();
+    }
+
     private static int progress(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
         ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
         ClassProgress progress = Progression.current(player);
         SkillNode active = progress.activeNode();
         context.getSource().sendFeedback(Text.literal(player.getEntityName() + " " + name(progress.dndClass)
                 + ": level " + progress.level() + ", " + progress.xp + " xp, " + progress.points() + " points"
+                + ", subclass " + (progress.subclass.isEmpty() ? "-" : progress.subclass)
                 + ", unlocked " + progress.unlocked + ", active " + (active == null ? "-" : active.id())
                 + ", passives " + progress.passives + ", ranks " + progress.ranks
                 + (progress.usesBestiary() ? ", learned " + progress.learned + ", bestiary " + progress.bestiary
                         : "")),
                 false);
         return progress.level();
+    }
+
+    private static int subclass(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        String id = StringArgumentType.getString(context, "subclass");
+        if (id.equals("none")) {
+            int refunded = Progression.clearSubclass(player);
+            if (refunded < 0) {
+                context.getSource().sendError(Text.literal(player.getEntityName() + " has no subclass"));
+                return 0;
+            }
+            context.getSource().sendFeedback(Text.literal("Cleared " + player.getEntityName() + "'s subclass, "
+                    + refunded + " point" + (refunded == 1 ? "" : "s") + " refunded"), true);
+            return progress(context);
+        }
+        if (!Progression.chooseSubclass(player, id, true)) {
+            context.getSource().sendError(Text.literal("Couldn't set subclass " + id + " (it must be one of "
+                    + ClassTrees.subclasses(Progression.classOf(player)).stream().map(Subclass::id).toList()
+                    + ", and not the current one)"));
+            return 0;
+        }
+        return progress(context);
     }
 
     private static int xp(CommandContext<ServerCommandSource> context, boolean add) throws CommandSyntaxException {

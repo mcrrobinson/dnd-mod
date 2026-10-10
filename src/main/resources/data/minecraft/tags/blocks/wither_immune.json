@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:lesser_arcane_seal",
+    "dndclasses:greater_arcane_seal"
+  ]
+}

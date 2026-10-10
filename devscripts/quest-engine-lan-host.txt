@@ -1,7 +1,7 @@
 # Party-shared quests over LAN. Two clients:
-#  1. timeout 600 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine-lan-host.txt
+#  1. timeout 600 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-engine-lan-host.txt
 #  2. once its log says "Started serving on": timeout 600 ./gradlew runClient -PdevRunDir=run-2
-#     -PdevName=QuestGuest -PdevServer=localhost:25637 -PdevScript=devscripts/quest-engine-lan-guest.txt
+#     -PdevUser=QuestGuest -PdevServer=localhost:25637 -PdevScript=devscripts/quest-engine-lan-guest.txt
 # The guest has no cheats, so the host runs its commands with /execute as. Expect in the host log:
 # both on one instance, 3 kills each finish it for both, each gets the full 5 emeralds; a member
 # out of range gets a [Join] offer, one already on it is skipped, /quest join adds them; leaving the

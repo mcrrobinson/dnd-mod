@@ -4,7 +4,7 @@
 # actions (set_flag, narrate, give, start_quest), defend (a /goblinraid at the dev world's hobbit
 # village), rewards at the giver (emeralds, rep, magic_item fallback table, reveal map, loot), a
 # no-giver quest paid at once, and the Lich's final death. Check [CHAT] and [Quests] in the log.
-# Run: timeout 600 ./gradlew runClient -PdevName=QuestDev -PdevScript=devscripts/quest-engine-objectives.txt
+# Run: timeout 600 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-engine-objectives.txt
 wait 40
 closescreen
 /datapack enable "file/quest-engine-test"

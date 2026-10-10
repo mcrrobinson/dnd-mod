@@ -55,6 +55,11 @@ public class RogueSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("rogue.assassin", "rogue.thief");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("rogue.vanish", "Vanish", "Turn invisible for a few seconds, longer with each rank.", "minecraft:fermented_spider_eye", 9,

@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Misc.BloodHunterControl;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.entity.LichEntity;
+import mattonfire.dnd.dm.DungeonMaster;
 
 @Mixin(ActiveTargetGoal.class)
 public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
@@ -25,6 +26,12 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
 
     @Inject(method = "start", at = @At("HEAD"), cancellable = true)
     private void ignoreBards(CallbackInfo ci) {
+        // Players in DM mode (veiled or not) are never targets.
+        if (DungeonMaster.isDm(this.targetEntity)) {
+            this.stop();
+            ci.cancel();
+            return;
+        }
         if (this.mob instanceof Monster
                 && this.targetEntity instanceof PlayerEntity) {
             PlayerEntity targetPlayer = (PlayerEntity) this.targetEntity;
@@ -53,6 +60,10 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
 
     @Override
     protected void identity_shouldContinue(CallbackInfoReturnable<Boolean> cir) {
+        if (DungeonMaster.isDm(this.targetEntity)) {
+            cir.setReturnValue(false);
+            return;
+        }
         if (this.mob instanceof Monster && this.targetEntity instanceof PlayerEntity) {
             PlayerEntity targetPlayer = (PlayerEntity) this.targetEntity;
             boolean hasHostility = BloodHunterControl.hasIdentityHostility(targetPlayer);

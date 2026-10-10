@@ -21,6 +21,7 @@ import mattonfire.dnd.classes.Progression.Abilities;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModBlocks;
+import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.Registry.ModEntities;
@@ -117,6 +118,10 @@ public class DnDClasses implements ModInitializer {
         private static void sendPowerupPacket(MinecraftServer server, ServerPlayerEntity player,
                         ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
                 server.execute(() -> {
+                        // Held by the Dungeon Master's freeze: no powers.
+                        if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
+                                return;
+                        }
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
                         SkillNode skill = Progression.current(player).activeNode();
                         int cost = skill == null ? MANA_ICONS : skill.manaCost();
@@ -126,6 +131,12 @@ public class DnDClasses implements ModInitializer {
                         }
                         int mana = ManaManager.getMana(player);
                         if (mana < cost) {
+                                return;
+                        }
+                        // Major actives also cost charges, which only rests restore (off with dndRests false)
+                        if (!Charges.canAfford(player, skill)) {
+                                player.sendMessage(Text.literal("No charges left: rest to recover")
+                                                .formatted(Formatting.RED), true);
                                 return;
                         }
                         // A Beholder's anti-magic cone: the power fizzles and the mana is kept
@@ -139,6 +150,7 @@ public class DnDClasses implements ModInitializer {
                         if (success) {
                                 ManaManager.setMana(player, mana - cost);
                                 ManaManager.sync(player);
+                                Charges.spend(player, skill);
                                 ServerPlayNetworking.send(player,
                                                 DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
                                                 new PacketByteBuf(Unpooled.buffer()));
@@ -200,7 +212,9 @@ public class DnDClasses implements ModInitializer {
                 // Before DwarfGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
+                mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.faction.FactionEvents.register();
@@ -228,6 +242,7 @@ public class DnDClasses implements ModInitializer {
                 ModItems.registerModItems();
                 ModEffects.registerEffects();
                 ModPotions.registerPotions();
+                mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
                 ModEnchantments.registerEnchantments();
@@ -413,11 +428,24 @@ public class DnDClasses implements ModInitializer {
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> DndClassCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndRaceCommand
+                                                .register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Party.PartyCommand
                                                 .register(dispatcher));
                 mattonfire.dnd.classes.Party.PartyEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.GoblinRaidCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DungeonCommand.register(dispatcher));
+                // Dungeon Master toolkit: /dm, the veil, encounters and freeze.
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.dm.DmCommand.register(dispatcher));
+                mattonfire.dnd.dm.DmVeil.register();
+                mattonfire.dnd.dm.DmFreeze.register();
+                mattonfire.dnd.dm.encounter.Encounters.register();
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.ObstacleCommand.register(dispatcher));
 
                 // tree feller enchantment
                 TreeFeller.register();
@@ -430,6 +458,8 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Progression.register();
                 ClassLifecycle.register();
+                mattonfire.dnd.classes.Race.RaceLifecycle.register();
+                mattonfire.dnd.classes.Rest.Rests.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

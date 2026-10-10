@@ -1,6 +1,7 @@
 package mattonfire.dnd.entity;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.world.gen.enclave.Moonwell;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -28,7 +29,8 @@ import net.minecraft.world.gen.structure.Structure;
 
 /**
  * What the enclave's merchants sell and buy. Every trade has 12 uses and restocks each morning; Elves pay
- * kin prices. The Elven Longbow and Elven Chain (racial gear) join these lists in a later ticket.
+ * kin prices. The Fletcher sells the Elven Longbow to anyone; the Speaker's Elven Chain is kin stock, shown to
+ * Elves only ({@link KinStockOffers#elvenSpeaker()}).
  */
 public final class ElfTrades {
     private static final int MAX_USES = 12;
@@ -43,7 +45,10 @@ public final class ElfTrades {
     private ElfTrades() {
     }
 
-    /** The Fletcher: arrows, tipped arrows, enchanted bows and Power III; buys sticks, feathers and string. */
+    /**
+     * The Fletcher: arrows, tipped arrows, enchanted bows, Power III and the Elven Longbow; buys sticks,
+     * feathers and string.
+     */
     static TradeOfferList fletcher(Random random) {
         TradeOfferList offers = new TradeOfferList();
         offers.add(sell(1, new ItemStack(Items.ARROW, 16)));
@@ -53,10 +58,23 @@ public final class ElfTrades {
         bow.addEnchantment(Enchantments.POWER, 1 + random.nextInt(2));
         offers.add(sell(6, bow));
         offers.add(sell(14, EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(Enchantments.POWER, 3))));
+        offers.add(elvenLongbow());
         offers.add(buy(Items.STICK, 32));
         offers.add(buy(Items.FEATHER, 12));
         offers.add(buy(Items.STRING, 14));
         return offers;
+    }
+
+    /** The Elven Longbow for 16 emeralds (12 with the Elves' kin price). */
+    private static TradeOffer elvenLongbow() {
+        return sell(16, new ItemStack(ModItems.ELVEN_LONGBOW));
+    }
+
+    /** Adds the trades a saved Fletcher from an older version doesn't have yet (the Elven Longbow). */
+    static void addMissing(TradeOfferList offers, boolean speaker) {
+        if (!speaker && offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModItems.ELVEN_LONGBOW))) {
+            offers.add(elvenLongbow());
+        }
     }
 
     /** The Speaker: Moonwater, a different enchanted book each day, an explorer map to a lair, glow berries. */

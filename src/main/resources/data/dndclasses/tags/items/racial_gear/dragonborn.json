@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:draconic_scale_helmet",
+    "dndclasses:draconic_scale_chestplate",
+    "dndclasses:draconic_scale_leggings",
+    "dndclasses:draconic_scale_boots"
+  ]
+}

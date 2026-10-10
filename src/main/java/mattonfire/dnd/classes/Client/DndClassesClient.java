@@ -390,6 +390,22 @@ public class DndClassesClient implements ClientModInitializer {
 
                     return pull;
                 });
+        // Elven Longbow: the vanilla bow's pull/pulling model predicates (the Ranger's quick draw too)
+        ModelPredicateProviderRegistry.register(mattonfire.dnd.classes.Registry.ModItems.ELVEN_LONGBOW,
+                new Identifier("pull"), (stack, world, entity, seed) -> {
+                    if (entity == null || entity.getActiveItem() != stack) {
+                        return 0.0F;
+                    }
+                    float drawSpeed = entity instanceof PlayerEntityExt ext
+                            && ext.getDndClass() == DndCharacter.RANGER ? 3.0F : 20.0F;
+                    return Math.min(1.0F, (stack.getMaxUseTime() - entity.getItemUseTimeLeft()) / drawSpeed);
+                });
+        ModelPredicateProviderRegistry.register(mattonfire.dnd.classes.Registry.ModItems.ELVEN_LONGBOW,
+                new Identifier("pulling"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem()
+                        && entity.getActiveItem() == stack ? 1.0F : 0.0F);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
+                mattonfire.dnd.entity.ModEntityTypes.SLING_STONE,
+                net.minecraft.client.render.entity.FlyingItemEntityRenderer::new);
         // EntityRendererRegistry.register(EntityType.PLAYER, (ctx) -> new HybridPlayerRenderer(ctx, false));
         // model
 

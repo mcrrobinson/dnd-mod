@@ -55,6 +55,12 @@ public final class LayeredArmorRenderer implements ArmorRenderer {
         LAYERS.put(ModArmorMaterials.WARRIOR, new int[][] { { 0, 1, 2 }, { 0, 1, 2 } });
         LAYERS.put(ModArmorMaterials.WITHER, new int[][] { { 1 }, { 1 } });
         LAYERS.put(ModArmorMaterials.WOODEN, new int[][] { { 1, 2 }, { 1, 2 } });
+        // Racial gear: recoloured from other sets' layers by tools/racial_gear_textures.py
+        LAYERS.put(ModArmorMaterials.ELVEN_CHAIN, new int[][] { { 1, 2 }, { 1, 2 } });
+        LAYERS.put(ModArmorMaterials.DWARVEN_PLATE, new int[][] { { 0, 1, 2 }, { 0, 1, 2 } });
+        LAYERS.put(ModArmorMaterials.ORCISH_WARPLATE, new int[][] { { 0, 1, 2 }, { 0, 1 } });
+        LAYERS.put(ModArmorMaterials.DRACONIC_SCALE, new int[][] { { 1, 2 }, { 1 } });
+        LAYERS.put(ModArmorMaterials.INFERNAL_REGALIA, new int[][] { { 0, 1, 2 }, { 0, 1, 2 } });
         HAS_OVERLAYS.put(ModArmorMaterials.ROBE, true);
     }
 

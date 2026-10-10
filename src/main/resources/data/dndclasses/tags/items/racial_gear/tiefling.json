@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:infernal_regalia_helmet",
+    "dndclasses:infernal_regalia_chestplate",
+    "dndclasses:infernal_regalia_leggings",
+    "dndclasses:infernal_regalia_boots"
+  ]
+}

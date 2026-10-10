@@ -652,6 +652,131 @@ public class ModItems {
         public static final Item EYE_OF_THE_TYRANT = registerItem("eye_of_the_tyrant",
                         new mattonfire.dnd.magic.items.EyeOfTheTyrantItem(new FabricItemSettings().maxCount(1)));
 
+
+        // ---- Racial gear (kin stock): classes/Items/racial, docs/items/armor.md and racial-weapons.md ----
+        public static final Item ELVEN_CHAIN_HELMET = registerItem("elven_chain_helmet",
+                new mattonfire.dnd.classes.Items.racial.ElvenChainArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+                        .armor(2.0)
+                        .armorToughness(1.0)
+                        .build()));
+        public static final Item ELVEN_CHAIN_CHESTPLATE = registerItem("elven_chain_chestplate",
+                new mattonfire.dnd.classes.Items.racial.ElvenChainArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+                        .armor(5.0)
+                        .armorToughness(1.0)
+                        .build()));
+        public static final Item ELVEN_CHAIN_LEGGINGS = registerItem("elven_chain_leggings",
+                new mattonfire.dnd.classes.Items.racial.ElvenChainArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+                        .armor(4.0)
+                        .armorToughness(1.0)
+                        .build()));
+        public static final Item ELVEN_CHAIN_BOOTS = registerItem("elven_chain_boots",
+                new mattonfire.dnd.classes.Items.racial.ElvenChainArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+                        .armor(1.0)
+                        .armorToughness(1.0)
+                        .build()));
+        public static final Item DWARVEN_PLATE_HELMET = registerItem("dwarven_plate_helmet",
+                new mattonfire.dnd.classes.Items.racial.DwarvenPlateArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+                        .armor(3.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item DWARVEN_PLATE_CHESTPLATE = registerItem("dwarven_plate_chestplate",
+                new mattonfire.dnd.classes.Items.racial.DwarvenPlateArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+                        .armor(8.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item DWARVEN_PLATE_LEGGINGS = registerItem("dwarven_plate_leggings",
+                new mattonfire.dnd.classes.Items.racial.DwarvenPlateArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+                        .armor(6.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item DWARVEN_PLATE_BOOTS = registerItem("dwarven_plate_boots",
+                new mattonfire.dnd.classes.Items.racial.DwarvenPlateArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+                        .armor(3.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item ORCISH_WARPLATE_HELMET = registerItem("orcish_warplate_helmet",
+                new mattonfire.dnd.classes.Items.racial.OrcishWarplateArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+                        .armor(3.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item ORCISH_WARPLATE_CHESTPLATE = registerItem("orcish_warplate_chestplate",
+                new mattonfire.dnd.classes.Items.racial.OrcishWarplateArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+                        .armor(7.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item ORCISH_WARPLATE_LEGGINGS = registerItem("orcish_warplate_leggings",
+                new mattonfire.dnd.classes.Items.racial.OrcishWarplateArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+                        .armor(6.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item ORCISH_WARPLATE_BOOTS = registerItem("orcish_warplate_boots",
+                new mattonfire.dnd.classes.Items.racial.OrcishWarplateArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+                        .armor(2.0)
+                        .armorToughness(2.0)
+                        .knockbackResistance(0.1)
+                        .build()));
+        public static final Item DRACONIC_SCALE_HELMET = registerItem("draconic_scale_helmet",
+                new mattonfire.dnd.classes.Items.racial.DraconicScaleArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+                        .armor(3.0)
+                        .armorToughness(3.0)
+                        .build()));
+        public static final Item DRACONIC_SCALE_CHESTPLATE = registerItem("draconic_scale_chestplate",
+                new mattonfire.dnd.classes.Items.racial.DraconicScaleArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+                        .armor(8.0)
+                        .armorToughness(3.0)
+                        .build()));
+        public static final Item DRACONIC_SCALE_LEGGINGS = registerItem("draconic_scale_leggings",
+                new mattonfire.dnd.classes.Items.racial.DraconicScaleArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+                        .armor(6.0)
+                        .armorToughness(3.0)
+                        .build()));
+        public static final Item DRACONIC_SCALE_BOOTS = registerItem("draconic_scale_boots",
+                new mattonfire.dnd.classes.Items.racial.DraconicScaleArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+                        .armor(3.0)
+                        .armorToughness(3.0)
+                        .build()));
+        public static final Item INFERNAL_REGALIA_HELMET = registerItem("infernal_regalia_helmet",
+                new mattonfire.dnd.classes.Items.racial.InfernalRegaliaArmorItem(ArmorItem.Type.HELMET, FAArmorAttributes.builder()
+                        .armor(3.0)
+                        .armorToughness(2.0)
+                        .build()));
+        public static final Item INFERNAL_REGALIA_CHESTPLATE = registerItem("infernal_regalia_chestplate",
+                new mattonfire.dnd.classes.Items.racial.InfernalRegaliaArmorItem(ArmorItem.Type.CHESTPLATE, FAArmorAttributes.builder()
+                        .armor(7.0)
+                        .armorToughness(2.0)
+                        .build()));
+        public static final Item INFERNAL_REGALIA_LEGGINGS = registerItem("infernal_regalia_leggings",
+                new mattonfire.dnd.classes.Items.racial.InfernalRegaliaArmorItem(ArmorItem.Type.LEGGINGS, FAArmorAttributes.builder()
+                        .armor(5.0)
+                        .armorToughness(2.0)
+                        .build()));
+        public static final Item INFERNAL_REGALIA_BOOTS = registerItem("infernal_regalia_boots",
+                new mattonfire.dnd.classes.Items.racial.InfernalRegaliaArmorItem(ArmorItem.Type.BOOTS, FAArmorAttributes.builder()
+                        .armor(2.0)
+                        .armorToughness(2.0)
+                        .build()));
+        /** 10 attack damage (1 + diamond's 3 + 6), 0.9 attack speed (4 - 3.1); +50% to goblins (RacialGear). */
+        public static final Item DWARVEN_WARAXE = registerItem("dwarven_waraxe",
+                new mattonfire.dnd.classes.Items.racial.RacialAxeItem(ToolMaterials.DIAMOND, 6.0F, -3.1F,
+                        java.util.Set.of(mattonfire.dnd.classes.Race.DndRace.DWARF), new FabricItemSettings()));
+        /** 11 attack damage (1 + diamond's 3 + 7), 0.8 attack speed (4 - 3.2). */
+        public static final Item ORCISH_GREATAXE = registerItem("orcish_greataxe",
+                new mattonfire.dnd.classes.Items.racial.RacialAxeItem(ToolMaterials.DIAMOND, 7.0F, -3.2F,
+                        java.util.Set.of(mattonfire.dnd.classes.Race.DndRace.HALFORC), new FabricItemSettings()));
+        /** +20% arrow speed, Power I built in. */
+        public static final Item ELVEN_LONGBOW = registerItem("elven_longbow",
+                new mattonfire.dnd.classes.Items.racial.ElvenLongbowItem(new FabricItemSettings().maxDamage(480)));
+        /** Slings a cobblestone for 4 damage, 0.8 s cooldown. */
+        public static final Item HALFLING_SLING = registerItem("halfling_sling",
+                new mattonfire.dnd.classes.Items.racial.HalflingSlingItem(new FabricItemSettings().maxDamage(250)));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

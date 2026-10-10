@@ -31,7 +31,18 @@ public enum ModArmorMaterials implements ArmorMaterial {
     WITHER("wither", "wither", SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE,
             () -> Ingredient.ofItems(Items.NETHERITE_SCRAP)),
     WOODEN("wooden", "wooden", SoundEvents.ITEM_ARMOR_EQUIP_GENERIC,
-            () -> Ingredient.fromTag(ItemTags.LOGS));
+            () -> Ingredient.fromTag(ItemTags.LOGS)),
+    // Racial gear (kin stock): Classes/Items/racial
+    ELVEN_CHAIN("elven_chain", "elven_chain", SoundEvents.ITEM_ARMOR_EQUIP_CHAIN,
+            () -> Ingredient.ofItems(Items.IRON_NUGGET)),
+    DWARVEN_PLATE("dwarven_plate", "dwarven_plate", SoundEvents.ITEM_ARMOR_EQUIP_IRON,
+            () -> Ingredient.ofItems(Items.IRON_INGOT)),
+    ORCISH_WARPLATE("orcish_warplate", "orcish_warplate", SoundEvents.ITEM_ARMOR_EQUIP_IRON,
+            () -> Ingredient.ofItems(Items.IRON_INGOT)),
+    DRACONIC_SCALE("draconic_scale", "draconic_scale", SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,
+            () -> Ingredient.ofItems(Items.DIAMOND)),
+    INFERNAL_REGALIA("infernal_regalia", "infernal_regalia", SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE,
+            () -> Ingredient.ofItems(Items.NETHERITE_SCRAP));
 
     // Same numbers as vanilla ArmorMaterials.NETHERITE.
     private static final int[] BASE_DURABILITY = { 13, 15, 16, 11 }; // boots, leggings, chestplate, helmet

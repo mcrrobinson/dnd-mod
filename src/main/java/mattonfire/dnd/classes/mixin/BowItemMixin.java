@@ -52,18 +52,22 @@ public class BowItemMixin {
     @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/projectile/PersistentProjectileEntity;setVelocity(Lnet/minecraft/entity/Entity;FFFFF)V"))
     private void dnd$arrowStormSpeed(PersistentProjectileEntity arrow, Entity shooter, float pitch, float yaw,
             float roll, float speed, float divergence, Operation<Void> original,
-            @Local(argsOnly = true) LivingEntity user) {
+            @Local(argsOnly = true) LivingEntity user, @Local(argsOnly = true) ItemStack bow) {
         if (user instanceof PlayerEntity player && player.hasStatusEffect(ModEffects.ARROW_STORM)) {
             speed *= (float) RangerSkills.ARROW_STORM.fraction(player, "Arrow speed");
         }
+        // Elven Longbow: +20% arrow speed
+        speed = mattonfire.dnd.classes.Items.racial.ElvenLongbowItem.arrowSpeed(bow, speed);
         original.call(arrow, shooter, pitch, yaw, roll, speed, divergence);
     }
 
-    // +N bows: +10% arrow damage per +1
+    // +N bows: +10% arrow damage per +1 (and the Elven Longbow's built-in Power)
     @WrapOperation(method = "onStoppedUsing", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/World;spawnEntity(Lnet/minecraft/entity/Entity;)Z"))
     private boolean dnd$magicArrowDamage(World world, Entity entity, Operation<Boolean> original,
             @Local(argsOnly = true) ItemStack bow) {
         if (entity instanceof PersistentProjectileEntity arrow) {
+            // Elven Longbow: built-in Power I, before the +N multiplier
+            mattonfire.dnd.classes.Items.racial.ElvenLongbowItem.applyBuiltInPower(bow, arrow);
             mattonfire.dnd.magic.MagicGear.applyArrowBonus(bow, arrow);
         }
         return original.call(world, entity);

@@ -110,6 +110,7 @@ public final class ProgressionEvents {
                 amount = skills.modifyDealtDamage(player, progress, target, source, amount);
             }
             amount = MagicEffects.modifyDealtDamage(player, target, source, amount);
+            amount = mattonfire.dnd.classes.Items.racial.RacialGear.modifyDealtDamage(player, target, source, amount);
         }
 
         if (target instanceof PlayerEntity player) {

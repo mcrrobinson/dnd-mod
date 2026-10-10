@@ -46,7 +46,7 @@ Fill an empty glass bottle from the Moonwell at night (13000-23000) and an Elf g
 | Loot table | Found in | Contents |
 |-|-|-|
 | `chests/elven_enclave_talan` | talan chests and barrels, the glade's barrel | arrows, string, feathers, bows, green leather tunics and boots, books, glow berries, sweet berries, 1-3 emeralds, amethyst; 5% an enchanted book, 3% a golden apple |
-| `chests/elven_enclave_heart` | the Heart Tree chest in the Speaker's Hall | 2-3 of: 1-2 diamonds, enchanted books (Power, Infinity or Feather Falling), golden apples, amethyst; 15% a bow enchanted at level 20 |
+| `chests/elven_enclave_heart` | the Heart Tree chest in the Speaker's Hall | 2-3 of: 1-2 diamonds, enchanted books (Power, Infinity or Feather Falling), golden apples, amethyst; 15% an [Elven Longbow](../items/racial-weapons.md#elven-longbow); 20% one [Elven Chain](../items/armor.md#racial-armor) piece |
 
 Talan chests aren't locked. The Heart Tree chest is [locked](../systems/d20-skill-checks.md#lockpicking-rogue) at DC 15, and opening it where an elf can see is an offence.
 
@@ -55,7 +55,8 @@ Enclaves are the Elf home. An Elf gets:
 
 - a "Welcome home, Elf" title on arriving
 - Regeneration I in the Speaker's Hall while no hostile mob is within 16 blocks
-- 25% off the Speaker's and the Fletcher's trades
+- 25% off the Speaker's and the Fletcher's trades (the Elven Longbow is 12 emeralds instead of 16)
+- Kin stock: the Speaker sells Elves the Elven Chain (helmet 10, chestplate 16, leggings 14, boots 8 before kin prices); nobody else sees those trades
 - free Moonwater once a night
 - kin trust: the first tree-block offence each in-game day is forgiven with "The Warden frowns at you."
 - a Friendly (150) start with the Sylvan Court
@@ -70,7 +71,6 @@ Goblins sometimes [raid](../systems/goblin-raids.md) enclaves. The war party ral
 - `/dndhome pieces` lists every piece of the enclave you're in.
 
 ## Known limitations
-- The Elven Longbow and Elven Chain (racial gear) aren't in yet: the Fletcher and Speaker don't sell them and the Heart Tree chest has an enchanted bow in their place.
 - The Speaker's map looks for a lair within 100 chunks the first time someone opens their trades, which can stall the server for a moment. With no lair in range the map trade is left out.
 - Moonwater is a vanilla potion with its own effects, colour and name, so it brews and stacks like any potion.
 - The forest's own trees are left in place, so a birch can grow through a bridge's rail or poke out of a canopy.

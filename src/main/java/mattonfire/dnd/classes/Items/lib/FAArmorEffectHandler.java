@@ -3,6 +3,7 @@ package mattonfire.dnd.classes.Items.lib;
 import mattonfire.dnd.classes.Config.FAConfig;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Race.RaceLifecycle;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.effect.StatusEffect;
@@ -52,15 +53,32 @@ public class FAArmorEffectHandler {
         return dndClass != null && set.getMatchingClasses().contains(dndClass);
     }
 
+    /** Whether the player's race is one the set (or racial item) is made for. */
+    public static boolean raceMatches(PlayerEntity player, RacialGearItem item) {
+        return !item.getMatchingRaces().isEmpty()
+                && item.getMatchingRaces().contains(RaceLifecycle.activeRaceOf(player));
+    }
+
+    /** Whether the player wears all four pieces of a set of this class, and is of a race it's made for. */
+    public static boolean wearsKinSet(PlayerEntity player, Class<? extends SetBonusArmor> setClass) {
+        SetBonusArmor set = getFullSet(player);
+        return setClass.isInstance(set) && raceMatches(player, set);
+    }
+
     private static void applyFullSetEffects(PlayerEntity player, SetBonusArmor set) {
         boolean matches = classMatches(player, set);
         int boost = matches ? 1 : 0;
 
-        for (StatusEffectInstance effectInstance : set.getFullSetEffects()) {
+        for (StatusEffectInstance effectInstance : set.getFullSetEffects(player)) {
             apply(player, effectInstance, effectInstance.getAmplifier() + boost);
         }
         if (matches) {
             for (StatusEffectInstance effectInstance : set.getMatchingClassEffects()) {
+                apply(player, effectInstance, effectInstance.getAmplifier());
+            }
+        }
+        if (raceMatches(player, set)) {
+            for (StatusEffectInstance effectInstance : set.getMatchingRaceEffects(player)) {
                 apply(player, effectInstance, effectInstance.getAmplifier());
             }
         }
@@ -70,9 +88,11 @@ public class FAArmorEffectHandler {
         StatusEffect effect = effectInstance.getEffectType();
         StatusEffectInstance existingEffect = player.getStatusEffect(effect);
 
-        // Refresh before it runs low. A boosted effect also replaces a weaker
-        // one, e.g. right after the wearer switches to the matching class.
-        if (existingEffect == null || existingEffect.getDuration() < 221
+        // Refresh before it runs low (18 ticks after it was last given, so a
+        // short effect like the Orcish Warplate's ends soon after its condition
+        // does). A boosted effect also replaces a weaker one, e.g. right after
+        // the wearer switches to the matching class.
+        if (existingEffect == null || existingEffect.getDuration() < effectInstance.getDuration() - 18
                 || existingEffect.getAmplifier() < amplifier) {
             player.addStatusEffect(new StatusEffectInstance(effect, effectInstance.getDuration(), amplifier,
                     effectInstance.isAmbient(), effectInstance.shouldShowParticles(), effectInstance.shouldShowIcon()));

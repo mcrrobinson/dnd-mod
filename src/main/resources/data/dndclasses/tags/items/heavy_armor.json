@@ -6,6 +6,8 @@
     "minecraft:netherite_chestplate",
     "dndclasses:knight_chestplate",
     "dndclasses:holy_armor_chestplate",
-    "dndclasses:warrior_chestplate"
+    "dndclasses:warrior_chestplate",
+    "dndclasses:dwarven_plate_chestplate",
+    "dndclasses:orcish_warplate_chestplate"
   ]
 }

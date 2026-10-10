@@ -27,6 +27,10 @@ This page covers rarity tiers, item magic data, +N gear, attunement, identificat
 | [Lute, War Drum, Flute](../items/bard-instruments.md) | Common wondrous item | |
 | Ale | Common consumable | |
 | [The 14 class armor sets](../items/armor.md) (all 56 pieces) | Uncommon armor | |
+| [Racial armor](../items/armor.md#racial-armor): Elven Chain, Dwarven Plate, Orcish Warplate | Uncommon armor | |
+| [Racial armor](../items/armor.md#racial-armor): Draconic Scale, Infernal Regalia | Rare armor | |
+| [Elven Longbow, Dwarven Waraxe, Orcish Greataxe](../items/racial-weapons.md) | Uncommon weapon | |
+| [Halfling Sling](../items/racial-weapons.md#halfling-sling) | Common weapon | |
 | [Potion of Freezing, Potion of Arrow Storm](../items/potions-and-brewing.md) | Uncommon potion | |
 | Potion of Invulnerability | Rare potion | |
 | Vanilla potions with an effect | Common; Uncommon for II or extended ones | |

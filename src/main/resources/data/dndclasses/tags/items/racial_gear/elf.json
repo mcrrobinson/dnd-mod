@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:elven_chain_helmet",
+    "dndclasses:elven_chain_chestplate",
+    "dndclasses:elven_chain_leggings",
+    "dndclasses:elven_chain_boots",
+    "dndclasses:elven_longbow"
+  ]
+}

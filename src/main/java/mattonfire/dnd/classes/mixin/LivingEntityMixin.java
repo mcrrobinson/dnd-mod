@@ -86,6 +86,24 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    /** Draconic Scale: a Dragonborn in the full set takes no damage from their ancestry's element. */
+    @Inject(method = "damage", at = @At("HEAD"), cancellable = true)
+    private void dnd$draconicScaleImmunity(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!this.world.isClient
+                && mattonfire.dnd.classes.Items.racial.RacialGear.immuneTo((LivingEntity) (Object) this, source)) {
+            cir.setReturnValue(false);
+        }
+    }
+
+    /** Draconic Scale: a Frost Dragonborn in the full set can't be frozen (the Freeze effect). */
+    @Inject(method = "canHaveStatusEffect", at = @At("HEAD"), cancellable = true)
+    private void dnd$draconicScaleNoFreeze(net.minecraft.entity.effect.StatusEffectInstance effect,
+            CallbackInfoReturnable<Boolean> cir) {
+        if (mattonfire.dnd.classes.Items.racial.RacialGear.blocksEffect((LivingEntity) (Object) this, effect)) {
+            cir.setReturnValue(false);
+        }
+    }
+
     /** Downed players don't heal themselves; an outside heal stands them up instead (see Revives). */
     @Inject(method = "heal", at = @At("HEAD"), cancellable = true)
     private void dnd$noDownedHealing(float amount, CallbackInfo ci) {

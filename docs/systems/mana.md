@@ -8,14 +8,14 @@ Your mana bar is 9 pips drawn above the hotbar, in the row above the food bar. I
 
 Mana comes back at 1 pip every 2 seconds, so an empty bar fills in 18 seconds.
 
-Press the **power-up key (Z by default)** to fire your equipped active. Each active has a mana cost, shown as a line under the pips it uses. The line is grey while you can't afford it and turns gold when you can. Your class's original special, the root of its [skill tree](class-selection.md#class-levels-and-the-skill-tree), costs all 9 pips. Most actives you unlock further up the tree cost less. Firing spends only that skill's cost, plays a short music sting for your class and dips the background music under it (see [Music](../music.md)).
+Press the **power-up key (Z by default)** to fire your equipped active. Each active has a mana cost, shown as a line under the pips it uses. The line is grey while you can't afford it and turns gold when you can. Your class's original special, the root of its [skill tree](class-selection.md#class-levels-and-the-skill-tree), costs all 9 pips. Most actives you unlock further up the tree cost less. Major actives (the root special, the capstone, and anything costing 7+ mana) also cost **charges**, the gems above the mana bar, which only come back with rests; see [Rests and charges](rests.md). The gold line needs both the mana and the charges. Firing spends only that skill's cost, plays a short music sting for your class and dips the background music under it (see [Music](../music.md)).
 
-If the special can't do anything, you keep your mana. That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
+If the special can't do anything, you keep your mana (and charges). That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
 
-Mana is kept through death and leaving the End, so dying doesn't refill it.
+Mana is kept through death and leaving the End, so dying doesn't refill it. A short or long rest refills it.
 
 ### The original specials
-These are the roots of each tree, all 9 mana:
+These are the roots of each tree, all 9 mana and 1 charge:
 
 | Class | Special | What it does |
 |-|-|-|
@@ -40,7 +40,7 @@ Press O to see the rest of your tree.
 ### Tips
 - Rebind the key under Options > Controls > Key Binds > D&D Classes. It is listed as "Power Up Abililty."
 - The Wizard explosion hits everything around you, tamed pets and players outside your party included.
-- A cheap active from your tree lets you fire more often than the 9-pip root. Swap actives at an Attunement Table.
+- A cheap active from your tree lets you fire more often than the 9-pip root, and costs no charges. Swap actives at an Attunement Table.
 
 ## Known limitations
 - Mana lives on the server and is synced to your client, so the bar can look out of date for a moment after you join.
@@ -48,5 +48,5 @@ Press O to see the rest of your tree.
 ## For developers
 - Constants: `DnDClasses.MANA_ICONS` (9) and `MANA_FULL_SECONDS` (18). Regeneration runs in the `END_WORLD_TICK` handler in `DnDClasses`.
 - Storage: `ManaManager` (player persistent NBT `manorMana`). HUD: `Client/Hud/PowerupOverlay`.
-- `DnDClasses.sendPowerupPacket` reads the equipped active (`ClassProgress.activeNode`), checks its cost and the anti-magic cone, then calls `PowerUpEffect.play` for a root or `Abilities.activate` for anything else. Either returns false to keep the mana.
-- Devscripts: `mana-hud.txt`, `powerup-no-class.txt`.
+- `DnDClasses.sendPowerupPacket` reads the equipped active (`ClassProgress.activeNode`), checks its mana cost, its charge cost (`Rest.Charges.canAfford`) and the anti-magic cone, then calls `PowerUpEffect.play` for a root or `Abilities.activate` for anything else. Either returns false to keep the mana and charges; on success `Charges.spend` pays the charges.
+- Devscripts: `mana-hud.txt`, `powerup-no-class.txt`, `rests-charges.txt`.

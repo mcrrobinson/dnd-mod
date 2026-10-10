@@ -18,6 +18,8 @@ Right click to play a 4 second song where you stand. Note particles rise above y
 
 The buff doesn't come from a potion, so Fighters, Paladins and Artificers, who ignore potions, still get it.
 
+The instruments are **Common** [magic items](../systems/magic-items.md) ("Common wondrous item").
+
 ### Tips
 - The cooldown is shared, but it's shorter than the buff. Play the Lute, Drum and Flute one after another 10 seconds apart and your party keeps all three buffs running.
 - Keep all three in your hotbar so you can switch quickly.

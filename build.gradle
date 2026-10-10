@@ -161,10 +161,12 @@ def readmeWithClassTable = {
 	def classes = new groovy.json.JsonSlurper().parse(classInfoFile, 'UTF-8').classes
 	// One point per line in each cell; a stray " (done)" status marker never reaches the README
 	def cell = { List points -> points.collect { it.replace(' (done)', '').replace('(done)', '').trim() }.join('<br>') }
-	def rows = ['| Class | Strengths | Weaknesses | Special ability |', '|-|-|-|-|']
+	def roleName = { String role -> role ? role.toLowerCase().capitalize() : '' }
+	def rows = ['| Class | Role | Strengths | Weaknesses | Special ability |', '|-|-|-|-|-|']
 	classes.each { c ->
 		def page = "docs/classes/${c.name.toLowerCase().replace(' ', '-')}.md"
-		rows << "| **[${c.name}](${page})** | ${cell(c.pros)} | ${cell(c.cons)} | ${cell(c.special)} |".toString()
+		def role = "**${roleName(c.role)}**<br>${roleName(c.secondaryRole)}"
+		rows << "| **[${c.name}](${page})** | ${role} | ${cell(c.pros)} | ${cell(c.cons)} | ${cell(c.special)} |".toString()
 	}
 	def startAt = readme.indexOf(classTableStart)
 	def endAt = readme.indexOf(classTableEnd)
@@ -197,3 +199,62 @@ tasks.register('checkClassReadme') {
 }
 
 tasks.named('check') { dependsOn 'checkClassReadme' }
+
+// The race table in docs/races/races.md is generated from race_info.json, the same data the race picker,
+// the race-pick chat message and RaceStats use. Edit the JSON, then run ./gradlew generateRaceTable.
+def raceInfoFile = file('src/main/resources/data/dndclasses/race_info.json')
+def racesPage = file('docs/races/races.md')
+def raceTableStart = '<!-- race-table:start'
+def raceTableEnd = '<!-- race-table:end -->'
+
+def racesPageWithTable = {
+	def page = racesPage.getText('UTF-8')
+	def races = new groovy.json.JsonSlurper().parse(raceInfoFile, 'UTF-8').races
+	def signed = { n -> def s = (n == Math.rint(n as double)) ? (n as long).toString() : n.toString(); n > 0 ? "+${s}" : s }
+	def abilities = { Map b ->
+		def values = b.values() as List
+		(b.size() == 6 && values.unique(false).size() == 1) ? "${signed(values[0])} to all six" : b.collect { k, v -> "${k} ${signed(v)}" }.join(', ')
+	}
+	def stats = { Map st ->
+		def out = []
+		if (st.speed) out << "Speed ${signed(Math.round(st.speed * 100))}%"
+		if (st.maxHealth) out << "Max health ${signed(st.maxHealth / 2)} heart${Math.abs(st.maxHealth / 2) == 1 ? '' : 's'}"
+		if (st.knockbackResistance) out << "Knockback resistance ${signed(Math.round(st.knockbackResistance * 100))}%"
+		if (st.attackRange) out << "Attack reach ${signed(st.attackRange)} blocks"
+		out ? out.join('<br>') : 'none'
+	}
+	def rows = ['| Race | Ability bonuses | Size | Stat modifiers | Traits (planned) |', '|-|-|-|-|-|']
+	races.each { r ->
+		rows << "| **${r.name}** | ${abilities(r.abilityBonuses)} | ${r.size} (${r.scale}) | ${stats(r.stats ?: [:])} | ${r.traits.join('<br>')} |".toString()
+	}
+	def startAt = page.indexOf(raceTableStart)
+	def endAt = page.indexOf(raceTableEnd)
+	if (startAt < 0 || endAt < startAt) {
+		throw new GradleException("docs/races/races.md is missing the ${raceTableStart} ... ${raceTableEnd} markers")
+	}
+	def afterStart = page.indexOf('\n', startAt) + 1
+	return page.substring(0, afterStart) + rows.join('\n') + '\n' + page.substring(endAt)
+}
+
+tasks.register('generateRaceTable') {
+	group = 'documentation'
+	description = 'Regenerates the race table in docs/races/races.md from race_info.json.'
+	inputs.file(raceInfoFile)
+	doLast {
+		racesPage.setText(racesPageWithTable(), 'UTF-8')
+	}
+}
+
+tasks.register('checkRaceTable') {
+	group = 'verification'
+	description = 'Fails if the docs/races/races.md race table is out of date with race_info.json.'
+	inputs.files(raceInfoFile, racesPage)
+	doLast {
+		if (racesPage.getText('UTF-8') != racesPageWithTable()) {
+			throw new GradleException('docs/races/races.md race table is out of date with src/main/resources/data/dndclasses/race_info.json. '
+					+ 'Edit the JSON (not the table), then run ./gradlew generateRaceTable')
+		}
+	}
+}
+
+tasks.named('check') { dependsOn 'checkRaceTable' }

@@ -12,6 +12,8 @@ The mod's potions, the Alchemist's Fast Brewing Stand, and the exploding brewing
 
 ![A pillager and a husk held by the Potion of Freezing, tinted blue, next to an unfrozen villager](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/potions-freezing.png)
 
+- **Rarity:** potions are [magic items](../systems/magic-items.md). Freezing and Arrow Storm are Uncommon, Invulnerability is Rare. Vanilla potions with an effect are Common, or Uncommon for II and extended ones, and Healing II is called Potion of Greater Healing. Water, Awkward, Mundane and Thick potions have no rarity.
+
 ## Where to find it / How to get it
 - Fast Brewing Stand: craft a row of blaze rod, brewing stand, blaze rod.
 

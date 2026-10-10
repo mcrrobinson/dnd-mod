@@ -1,0 +1,92 @@
+# DM toolkit multiplayer verification, host (the DM). Port 25641. Pair with dm-verify-guest.txt, then
+# dm-verify-guest-rejoin.txt, both run with -PdevRunDir=run-2 -PdevServer=localhost:25641 -PdevUser=DmGuest.
+# The clients keep in step with /say + /me and waitchat.
+wait 40
+closescreen
+respawn
+/difficulty normal
+/publish false survival 25641
+/time set midnight
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tag @s add host
+/tp @s 1000 151 1003 180 0
+wait 20
+/fill 985 150 985 1020 150 1020 minecraft:stone
+/tp @s 1000 151 1003 180 0
+/gamemode survival
+/kill @e[type=!player,distance=..64]
+/dm encounter clear all
+/dm off
+/party leave
+/dndclass set @s fighter
+waitchat G_JOINED
+/tp @a[tag=!host] 1000 151 1000 0 0
+/dndclass set @a[tag=!host,limit=1] fighter
+/effect clear @a
+# 1) /dm grant to a non-op
+waitchat G_TRIED
+/dm grant @a[tag=!host]
+/say H_GRANTED
+waitchat G_GRANTTEST
+/dm revoke @a[tag=!host]
+# 2) Party: DM gets no XP share and isn't on the guest's party HUD
+/party create
+/party invite @a[tag=!host,limit=1]
+/say H_INVITED
+waitchat G_ACCEPTED
+/party list
+/dndclass progress @s
+/summon minecraft:zombie 1003 151 990 {Tags:["xz"],NoAI:1b}
+/damage @e[tag=xz,limit=1] 100 minecraft:player_attack by @a[tag=!host,limit=1]
+wait 10
+# control (not DM): XP went up
+/dndclass progress @s
+/dm on
+/dm veil on
+/summon minecraft:zombie 1003 151 990 {Tags:["xz2"],NoAI:1b}
+/damage @e[tag=xz2,limit=1] 100 minecraft:player_attack by @a[tag=!host,limit=1]
+wait 10
+# as DM: XP unchanged
+/dndclass progress @s
+/say H_VEILED
+waitchat G_SHOT
+/dm veil off
+/say H_UNVEILED
+waitchat G_SHOT2
+/dm off
+wait 30
+/say H_DMOFF
+waitchat G_SHOT3
+# 3) Freeze the guest
+/dm on
+/summon minecraft:zombie 1000 151 1002 {Tags:["fz"],NoAI:1b,PersistenceRequired:1b}
+/dm freeze @a[tag=!host]
+/data get entity @a[tag=!host,limit=1] Pos
+/effect give @a[tag=!host] minecraft:levitation 3 5
+/say H_FROZEN
+waitchat G_TRIEDFROZEN
+/data get entity @a[tag=!host,limit=1] Pos
+/data get entity @e[tag=fz,limit=1] Health
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+/say H_QUIT
+waitchat left the game
+waitchat joined the game
+wait 60
+/data get entity @a[tag=!host,limit=1] Tags
+/effect give @a[tag=!host] minecraft:levitation 3 5
+wait 60
+/data get entity @a[tag=!host,limit=1] Pos
+/say H_CHECKED
+waitchat G2_DONE
+/data get entity @e[tag=fz,limit=1] Health
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+/dm unfreeze @a[tag=!host]
+/data get entity @a[tag=!host,limit=1] Tags
+/say H_UNFROZEN
+waitchat G2_DONE2
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+/kill @e[tag=fz]
+/dm off
+/party leave
+quit

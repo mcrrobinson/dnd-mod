@@ -44,6 +44,9 @@ import net.minecraft.util.Identifier;
  * <ul>
  * <li>{@code /<command>} runs a command as the player (e.g. {@code /summon ...})</li>
  * <li>{@code wait <ticks>} pauses the script (20 ticks = 1 second)</li>
+ * <li>{@code waitchat <text>} pauses until a chat or game message containing {@code text} arrives (at most 5
+ *     minutes), to keep two clients in step: one sends {@code /say step2} or {@code /me step2}, the other waits
+ *     for {@code step2}</li>
  * <li>{@code screenshot <name>} saves {@code run/screenshots/<name>.png}</li>
  * <li>{@code hitboxes on|off} toggles hitbox rendering (F3+B)</li>
  * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
@@ -84,6 +87,12 @@ public final class DevScript {
     private final List<String> lines;
     private int next = 0;
     private int waitTicks = START_DELAY_TICKS;
+    /** Text a {@code waitchat} step is waiting for, or null. */
+    private String waitChat;
+    private int waitChatTicks;
+    private static final int WAIT_CHAT_TIMEOUT = 20 * 60 * 5;
+    /** Messages received since the last {@code waitchat} step finished (so one sent early still counts). */
+    private static final List<String> RECEIVED = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
 
     private DevScript(List<String> lines) {
         this.lines = lines;
@@ -158,6 +167,10 @@ public final class DevScript {
         DnDClasses.LOGGER.info("[DevScript] Loaded {} ({} lines)", path, lines.size());
         DevScript script = new DevScript(lines);
         ClientTickEvents.END_CLIENT_TICK.register(script::tick);
+        net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME
+                .register((message, overlay) -> RECEIVED.add(message.getString()));
+        net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.CHAT
+                .register((message, signed, sender, params, timestamp) -> RECEIVED.add(message.getString()));
     }
 
     private void tick(MinecraftClient client) {
@@ -169,6 +182,18 @@ public final class DevScript {
         if (this.waitTicks > 0) {
             this.waitTicks--;
             return;
+        }
+        if (this.waitChat != null) {
+            boolean seen;
+            synchronized (RECEIVED) {
+                seen = RECEIVED.stream().anyMatch(message -> message.contains(this.waitChat));
+            }
+            if (!seen && ++this.waitChatTicks < WAIT_CHAT_TIMEOUT) {
+                return;
+            }
+            DnDClasses.LOGGER.info("[DevScript] waitchat {}: {}", this.waitChat, seen ? "seen" : "timed out");
+            this.waitChat = null;
+            RECEIVED.clear();
         }
 
         int lineNumber = this.next + 1;
@@ -186,6 +211,10 @@ public final class DevScript {
         String argument = words.length > 1 ? words[1] : "";
         switch (words[0]) {
             case "wait" -> this.waitTicks = Integer.parseInt(argument);
+            case "waitchat" -> {
+                this.waitChat = argument;
+                this.waitChatTicks = 0;
+            }
             case "screenshot" -> ScreenshotRecorder.saveScreenshot(client.runDirectory, argument + ".png", client.getFramebuffer(),
                     message -> DnDClasses.LOGGER.info("[DevScript] {}", message.getString()));
             case "hitboxes" -> client.getEntityRenderDispatcher().setRenderHitboxes(argument.equals("on"));

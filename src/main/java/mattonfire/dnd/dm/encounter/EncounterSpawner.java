@@ -73,6 +73,8 @@ public final class EncounterSpawner {
                 if (world.getBlockEntity(pos) instanceof ChestBlockEntity blockEntity) {
                     blockEntity.setLootTable(chest.lootTable(), random.nextLong());
                 }
+                mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Encounters] {}: chest at {} with loot table {}",
+                        encounter.id(), pos.toShortString(), chest.lootTable());
                 chests.add(pos);
             }
         }

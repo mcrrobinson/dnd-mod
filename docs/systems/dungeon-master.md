@@ -28,6 +28,8 @@ Chat reports the result: `Encounter #7 "Goblin Patrol": 3 mobs at 1010, 151, 101
 
 `/dm encounter clear <n>|all` removes an encounter's mobs with a puff of smoke. They don't die, so nothing drops. `/dm encounter list` lists the encounter files and the live encounters with how many of their mobs are still around (loaded ones only).
 
+`/dm encounter list` counts every loaded entity carrying the encounter's tag, so a Lich court shows its phylactery as an extra.
+
 Encounter mobs give the normal drops, XP and bounty credit, because the DM decides the story. An encounter with `"loot": false` drops nothing, gives no XP and earns no class XP or bounty credit, like boss minions.
 
 The launch set:
@@ -125,4 +127,4 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`.
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own.

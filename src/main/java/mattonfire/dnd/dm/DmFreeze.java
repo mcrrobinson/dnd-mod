@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import mattonfire.dnd.classes.IEntityDataSaver;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
@@ -42,6 +43,7 @@ import net.minecraft.util.math.Vec3d;
 public final class DmFreeze {
     public static final String TAG = "dndclasses.dm_frozen";
 
+    private static final net.minecraft.util.Identifier FIRST = new net.minecraft.util.Identifier("dndclasses", "dm_freeze");
     private static final String DATA_KEY = "DmFreeze";
     private static final UUID SPEED_MODIFIER = UUID.fromString("5f0e6c3a-2d1b-4f6e-9b1e-d3a7c0f1a2b4");
     private static final int MESSAGE_INTERVAL = 40;
@@ -53,14 +55,21 @@ public final class DmFreeze {
 
     public static void register() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !isFrozen(entity));
-        AttackEntityCallback.EVENT.register((player, world, hand, entity, hit) -> blocked(player));
-        AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> blocked(player));
-        UseBlockCallback.EVENT.register((player, world, hand, hit) -> blocked(player));
-        UseEntityCallback.EVENT.register((player, world, hand, entity, hit) -> blocked(player));
-        UseItemCallback.EVENT.register((player, world, hand) -> blocked(player) == ActionResult.FAIL
+        // An early phase, so a frozen player's swing is stopped before other listeners (attack rolls) see it.
+        AttackEntityCallback.EVENT.addPhaseOrdering(FIRST, Event.DEFAULT_PHASE);
+        AttackBlockCallback.EVENT.addPhaseOrdering(FIRST, Event.DEFAULT_PHASE);
+        UseBlockCallback.EVENT.addPhaseOrdering(FIRST, Event.DEFAULT_PHASE);
+        UseEntityCallback.EVENT.addPhaseOrdering(FIRST, Event.DEFAULT_PHASE);
+        UseItemCallback.EVENT.addPhaseOrdering(FIRST, Event.DEFAULT_PHASE);
+        PlayerBlockBreakEvents.BEFORE.addPhaseOrdering(FIRST, Event.DEFAULT_PHASE);
+        AttackEntityCallback.EVENT.register(FIRST, (player, world, hand, entity, hit) -> blocked(player));
+        AttackBlockCallback.EVENT.register(FIRST, (player, world, hand, pos, direction) -> blocked(player));
+        UseBlockCallback.EVENT.register(FIRST, (player, world, hand, hit) -> blocked(player));
+        UseEntityCallback.EVENT.register(FIRST, (player, world, hand, entity, hit) -> blocked(player));
+        UseItemCallback.EVENT.register(FIRST, (player, world, hand) -> blocked(player) == ActionResult.FAIL
                 ? TypedActionResult.fail(player.getStackInHand(hand))
                 : TypedActionResult.pass(player.getStackInHand(hand)));
-        PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> !isFrozen(player));
+        PlayerBlockBreakEvents.BEFORE.register(FIRST, (world, player, pos, state, blockEntity) -> !isFrozen(player));
         ServerTickEvents.END_SERVER_TICK.register(DmFreeze::tick);
     }
 

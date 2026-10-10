@@ -260,8 +260,8 @@ public final class DmCommand {
         for (DungeonMaster.EncounterRecord record : live) {
             int alive = tagged(source.getServer(), ENCOUNTER_TAG_PREFIX + record.number()).size();
             source.sendFeedback(Text.literal("#" + record.number() + " \"" + record.name() + "\" at "
-                    + record.pos().toShortString() + " in " + record.dimension() + ": " + alive + "/"
-                    + record.entities().size() + " left (loaded)"), false);
+                    + record.pos().toShortString() + " in " + record.dimension() + ": " + record.entities().size()
+                    + " spawned, " + alive + " still here (loaded, incl. extras like a phylactery)"), false);
         }
         return live.size();
     }

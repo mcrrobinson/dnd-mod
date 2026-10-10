@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
@@ -133,6 +134,8 @@ public final class Progression {
         PacketByteBuf buf = PacketByteBufs.create();
         current(player).write(buf);
         ServerPlayNetworking.send(player, S2C_SYNC, buf);
+        // Level and class feed the character sheet (proficiency bonus, class scores)
+        AbilityScores.invalidate(player);
     }
 
     /** Gives XP in the player's current class, announcing any level-up. */

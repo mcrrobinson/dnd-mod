@@ -279,6 +279,12 @@ public class DndClassesClient implements ClientModInitializer {
             ClassProgress progress = ClassProgress.read(buf);
             client.execute(() -> ClassProgress.client = progress);
         });
+        ClientPlayNetworking.registerGlobalReceiver(mattonfire.dnd.classes.Abilities.AbilityScores.S2C_SHEET_SYNC,
+                (client, handler, buf, sender) -> {
+                    mattonfire.dnd.classes.Abilities.CharacterSheet sheet =
+                            mattonfire.dnd.classes.Abilities.CharacterSheet.read(buf);
+                    client.execute(() -> mattonfire.dnd.classes.Abilities.CharacterSheet.client = sheet);
+                });
         ClientPlayNetworking.registerGlobalReceiver(Progression.S2C_OPEN_ATTUNEMENT,
                 (client, handler, buf, sender) -> client.execute(() -> client.setScreen(new SkillTreeScreen(true))));
 

@@ -29,5 +29,10 @@ public class SecretRoomPiece extends DungeonPiece {
         b.chest(mx, 1, mz, toDoor, this.loot("secret"));
         b.set(mx - 1, this.height, mz - 1, Blocks.COBWEB);
         b.set(mx + 1, 1, mz + 1, Blocks.COBWEB);
+        if (CryptDressing.applies(this)) {
+            // Whoever hid this didn't get out
+            int[] c = CryptDressing.corners(this.width(), this.depth())[b.dressing.nextInt(4)];
+            CryptDressing.bonePile(b, c[0], c[1]);
+        }
     }
 }

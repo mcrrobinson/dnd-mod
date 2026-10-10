@@ -32,7 +32,8 @@ import net.minecraft.util.math.Vec3d;
  * ({@link #tick}), so the Gelatinous Cube, Owlbear and Mimic stay as they are.
  *
  * Max health is x3 for one player, +0.3 of the base per extra player (4 players: x3.9); damage
- * +25%, knockback resistance +0.3.
+ * +25%, knockback resistance +0.3. A Gelatinous Cube champion (the Crypt's Ossuary Cube) splits
+ * once at half health, shedding ordinary cubes ({@link #splitIfHurt}).
  */
 public final class DungeonChampion {
     public static final String TAG = "dndclasses.dungeon_champion";
@@ -41,6 +42,15 @@ public final class DungeonChampion {
     public static final double DAMAGE_BONUS = 0.25;
     public static final double KNOCKBACK_RESISTANCE = 0.3;
     public static final double BAR_RANGE = 32.0;
+    /**
+     * The Ossuary Cube splits once, at this share of its health, shedding {@link #SPLIT_COUNT} plain
+     * cubes ({@link #SPLIT_COUNT_SOLO} for a party of one: two more 4-threat cubes on top of the
+     * champion swamp a lone player).
+     */
+    public static final float SPLIT_AT = 0.5F;
+    public static final int SPLIT_COUNT = 2;
+    public static final int SPLIT_COUNT_SOLO = 1;
+    private static final String SPLIT_TAG = "dndclasses.dungeon_champion_split";
 
     private static final UUID HEALTH_ID = UUID.fromString("c4a1d7e2-55b0-4c1e-a7f3-0d9e2b6c1a01");
     private static final UUID DAMAGE_ID = UUID.fromString("c4a1d7e2-55b0-4c1e-a7f3-0d9e2b6c1a02");
@@ -111,6 +121,40 @@ public final class DungeonChampion {
                 bar.addPlayer(player);
             }
         }
+    }
+
+    /**
+     * The Ossuary Cube's split: the first time a Gelatinous Cube champion is at or below
+     * {@link #SPLIT_AT} of its health, {@link #splitCount} ordinary cubes (no champion buffs, no
+     * absorbed loot) burst out of it beside it, tagged with {@code tags} so the room follows them.
+     * Called from the room's ward with the champion's other ticking; returns the new cubes.
+     */
+    public static int splitCount(int partySize) {
+        return partySize <= 1 ? SPLIT_COUNT_SOLO : SPLIT_COUNT;
+    }
+
+    public static List<Entity> splitIfHurt(ServerWorld world, LivingEntity champion, List<String> tags, int partySize) {
+        if (!(champion instanceof GelatinousCubeEntity) || !champion.isAlive() || champion.getCommandTags().contains(SPLIT_TAG)
+                || champion.getHealth() > champion.getMaxHealth() * SPLIT_AT) {
+            return List.of();
+        }
+        champion.addCommandTag(SPLIT_TAG);
+        List<Entity> spawned = new java.util.ArrayList<>();
+        mattonfire.dnd.dm.encounter.Encounter.Spawn spawn = new mattonfire.dnd.dm.encounter.Encounter.Spawn(champion.getType(),
+                1, 1, 1.0F, new net.minecraft.nbt.NbtCompound(), true, List.of());
+        for (int i = 0; i < splitCount(partySize); i++) {
+            Entity cube = EncounterBuilder.spawnOne(world, spawn, champion.getBlockPos(), tags);
+            if (cube != null) {
+                spawned.add(cube);
+            }
+        }
+        world.playSound(null, champion.getBlockPos(), net.minecraft.sound.SoundEvents.ENTITY_SLIME_SQUISH,
+                net.minecraft.sound.SoundCategory.HOSTILE, 2.0F, 0.5F);
+        world.spawnParticles(net.minecraft.particle.ParticleTypes.ITEM_SLIME, champion.getX(), champion.getBodyY(0.5D),
+                champion.getZ(), 40, 0.8D, 0.6D, 0.8D, 0.1D);
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Dungeon] champion {} split at {}/{} health into {} cube(s)",
+                champion.getType().getUntranslatedName(), champion.getHealth(), champion.getMaxHealth(), spawned.size());
+        return spawned;
     }
 
     /** Takes the champion's bar down (it died, or the fight was abandoned). */

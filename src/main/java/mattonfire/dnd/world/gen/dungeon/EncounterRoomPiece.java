@@ -41,5 +41,20 @@ public class EncounterRoomPiece extends DungeonPiece {
         boolean east = (corner & 1) != 0;
         boolean south = (corner & 2) != 0;
         b.chest(east ? w - 3 : 2, 1, south ? d - 3 : 2, south ? Direction.NORTH : Direction.SOUTH, this.loot("encounter"));
+        if (CryptDressing.applies(this)) {
+            int[][] corners = CryptDressing.corners(w, d);
+            for (int i = 0; i < corners.length; i++) {
+                // Not in the chest's corner: a mimic there is an entity, so the air check can't see it.
+                if (i != corner && b.dressing.nextFloat() < 0.7F) {
+                    CryptDressing.bonePile(b, corners[i][0], corners[i][1]);
+                }
+            }
+            for (int[] c : new int[][]{{in + 1, in + 1}, {w - 2 - in, in + 1}, {in + 1, d - 2 - in}, {w - 2 - in, d - 2 - in}}) {
+                if (b.dressing.nextFloat() < 0.5F) {
+                    CryptDressing.candles(b, c[0], 1, c[1]);
+                }
+            }
+            CryptDressing.cornerCobwebs(b, w, d, top, 0.6F);
+        }
     }
 }

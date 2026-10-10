@@ -79,6 +79,37 @@ public final class SavingThrow {
     /** Player UUID to their throttle state. */
     private static final Map<UUID, Lane> LANES = new HashMap<>();
 
+    /**
+     * Changes a save's result after the roll, before it's cached, shown or returned (Evasion turns a half-damage
+     * DEX save into 0 / half). Runs for every target, players or not; return the result unchanged to skip.
+     */
+    @FunctionalInterface
+    public interface ResultHook {
+        SaveResult apply(LivingEntity target, Ability ability, SaveResult result);
+    }
+
+    /**
+     * Gives a player's failed save a second roll (Indomitable). Asked once per failed fresh save that the player
+     * would see; returning a name uses it up, the failed roll is shown on the lane under that name and the save is
+     * rolled again, the second roll standing.
+     */
+    @FunctionalInterface
+    public interface Reroll {
+        @Nullable
+        Text claim(ServerPlayerEntity player, Ability ability, D20.Roll failed);
+    }
+
+    private static final List<ResultHook> RESULT_HOOKS = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private static final List<Reroll> REROLLS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerResultHook(ResultHook hook) {
+        RESULT_HOOKS.add(hook);
+    }
+
+    public static void registerReroll(Reroll reroll) {
+        REROLLS.add(reroll);
+    }
+
     private SavingThrow() {
     }
 
@@ -244,7 +275,14 @@ public final class SavingThrow {
                 }
             }
             D20.Roll roll = rollDie();
+            if (!roll.outcome().succeeded() && !silent && target instanceof ServerPlayerEntity player
+                    && !player.isCreative() && !player.isSpectator()) {
+                roll = reroll(player, roll);
+            }
             SaveResult result = new SaveResult(roll, halvesDamage, true);
+            for (ResultHook hook : RESULT_HOOKS) {
+                result = hook.apply(target, ability, result);
+            }
             if (exposureKey != null) {
                 EXPOSURES.computeIfAbsent(target.getUuid(), k -> new HashMap<>()).put(exposureKey,
                         new Cached(result, now + exposureTicks));
@@ -253,6 +291,24 @@ public final class SavingThrow {
                 D20.show(player, roll, detail(result));
             }
             return result;
+        }
+
+        /** Offers the failed roll to the {@link Reroll}s; the first to claim it shows it and rolls again. */
+        private D20.Roll reroll(ServerPlayerEntity player, D20.Roll failed) {
+            for (Reroll reroll : REROLLS) {
+                Text name = reroll.claim(player, ability, failed);
+                if (name != null) {
+                    DnDClasses.LOGGER.info("[D20] {} {}: rerolling save {} ({})", player.getEntityName(),
+                            name.getString(), failed.natural(), failed.outcome());
+                    // Under its own label, so the lane doesn't merge it with the second roll
+                    D20.show(player, new D20.Roll(name, failed.ability(), failed.kind(), failed.natural(),
+                            failed.natural2(), failed.mode(), failed.rerolled(), failed.modifier(), failed.bonuses(),
+                            failed.dc(), failed.outcome(), failed.display(), failed.flags()),
+                            Text.translatable("save.dndclasses.reroll"));
+                    return rollDie();
+                }
+            }
+            return failed;
         }
 
         private D20.Roll rollDie() {
@@ -288,6 +344,11 @@ public final class SavingThrow {
         }
 
         private Text detail(SaveResult result) {
+            if (result.note() != null && halvesDamage) {
+                float part = result.damage(1.0F);
+                String key = part <= 0.0F ? "no_damage_note" : part < 1.0F ? "half_damage_note" : "full_damage_note";
+                return Text.translatable("save.dndclasses.effect." + key, result.note());
+            }
             if (result.succeeded()) {
                 return onSuccess != null ? onSuccess
                         : halvesDamage ? Text.translatable("save.dndclasses.effect.half_damage") : Text.empty();

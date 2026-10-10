@@ -28,7 +28,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
-- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, Hit Dice
+- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds and tavern rooms, Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
@@ -36,7 +36,9 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
 - [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
+- [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
+- [Creature study](systems/creature-study.md): V on a creature rolls Religion, Nature, Arcana or Insight (DC 10/13/15) for a card of its health, armour, save-calling attacks and immunities; a natural 20 adds its weakness; Insight reads villagers and dwarves
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
 - [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
@@ -47,7 +49,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
-- [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons
+- [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion (splits at half health) and the Lich boss leashed to its reliquary
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault
 - [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, spotting, Rogue disarming and re-arming on reset
@@ -79,8 +81,8 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
-- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board
-- [Dungeons](structures/dungeons.md): underground multi-room Crypts with a stair, a planned route to a boss and vault, and a Challenge tier
+- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board and rentable rooms (Room Keys, Well Rested)
+- [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow, with a planned route to the Lich and its reliquary, a vault, crypt dressing and a Challenge tier
 
 ## Enchantments
 - [Overview](enchantments/README.md): all enchantments at a glance

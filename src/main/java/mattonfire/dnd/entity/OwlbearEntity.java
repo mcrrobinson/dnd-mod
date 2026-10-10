@@ -77,7 +77,8 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
     private static final int HUG_CRUSH_INTERVAL = 10;
     private static final float HUG_CRUSH_DAMAGE = 3.0F;
     /** Damage the hugged target has to deal back to break free early. */
-    private static final float HUG_BREAK_DAMAGE = 6.0F;
+    /** Damage the hugged victim must deal to break free (also shown by a natural 20 Study). */
+    public static final float HUG_BREAK_DAMAGE = 6.0F;
     private static final int HUG_COOLDOWN = 160;
     /** Targets wider than this (other big mobs) can't be hugged. */
     private static final float HUG_MAX_WIDTH = 1.5F;

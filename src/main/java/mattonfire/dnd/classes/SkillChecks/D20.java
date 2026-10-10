@@ -541,6 +541,7 @@ public final class D20 {
         AttackRolls.register();
         TrapDisarm.register();
         Perception.register();
+        Study.register();
         Stealth.register();
     }
 }

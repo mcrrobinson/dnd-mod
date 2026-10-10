@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.village;
 
+import mattonfire.dnd.entity.InnkeeperEntity;
 import mattonfire.dnd.tavern.Tavern;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -13,14 +14,18 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.random.Random;
 
 /**
  * The Green Dragon: a thatched inn with a round green door, a roaring fire, a bar backed by ale
  * casks and tables laid for supper. The innkeeper tends the bar (food and drink for emeralds) and
- * a bounty board on the east wall posts jobs for adventurers.
+ * a bounty board on the east wall posts jobs for adventurers. Up a ladder in the north-east corner,
+ * a sleeping loft under the thatch has four beds for guests who rent a room.
  */
 public class InnPiece extends HobbitPiece {
+    /** The inn's name, written on the Room Keys its innkeeper sells. */
+    public static final String NAME = "Green Dragon";
     private static final int WIDTH = 15;
     private static final int DEPTH = 11;
     private static final int HEIGHT = 13;
@@ -83,6 +88,7 @@ public class InnPiece extends HobbitPiece {
         b.roundWindow(13, 3, 5, false);
 
         this.furnish(b);
+        this.loft(b);
         this.frontage(b);
     }
 
@@ -146,13 +152,38 @@ public class InnPiece extends HobbitPiece {
         b.set(3, 4, 7, lantern(true));
         b.set(11, 4, 7, lantern(true));
 
-        b.hobbit(6, 1, 7, Tavern.INNKEEPER);
+        // Room Keys from this innkeeper open the beds anywhere in the inn (the loft).
+        b.hobbit(6, 1, 7, Tavern.INNKEEPER, hobbit -> ((InnkeeperEntity) hobbit).setInn(this.boundingBox, NAME));
         b.hobbit(3, 1, 5);
         b.hobbit(9, 1, 4);
 
         // The bounty board: two boards side by side on the east wall, past the end of the bar.
         b.set(12, 2, 7, facing(Tavern.BOUNTY_BOARD, Direction.WEST));
         b.set(12, 2, 8, facing(Tavern.BOUNTY_BOARD, Direction.WEST));
+    }
+
+    /**
+     * The guest loft on the ceiling boards (y 5), under the thatch: a ladder up the east wall by the
+     * door, four beds along the eaves (z 3 and 7, where there's a block of headroom) and a walkway
+     * down the middle (z 4-6) with full headroom. Uses no random draws, so the rest of the inn is
+     * unchanged.
+     */
+    private void loft(Builder b) {
+        for (int y = 1; y <= 6; y++) {
+            b.set(12, y, 3, facing(Blocks.LADDER, Direction.WEST));
+        }
+        b.bed(3, 6, 3, Direction.WEST, DyeColor.GREEN);
+        b.bed(10, 6, 3, Direction.EAST, DyeColor.GREEN);
+        b.bed(3, 6, 7, Direction.WEST, DyeColor.GREEN);
+        b.bed(10, 6, 7, Direction.EAST, DyeColor.GREEN);
+        b.fill(3, 6, 5, 11, 6, 5, Blocks.GREEN_CARPET);
+        b.set(7, 9, 5, lantern(true));
+        // Nightstands with a candle, between the beds.
+        for (int z : new int[]{3, 7}) {
+            b.set(6, 6, z, facing(Blocks.BARREL, Direction.UP));
+            b.set(6, 7, z, Blocks.CANDLE.getDefaultState().with(net.minecraft.block.CandleBlock.CANDLES, 2)
+                    .with(net.minecraft.block.CandleBlock.LIT, true));
+        }
     }
 
     private void frontage(Builder b) {

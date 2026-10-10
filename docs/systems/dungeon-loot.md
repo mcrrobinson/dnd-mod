@@ -28,7 +28,7 @@ A Veteran (an elite encounter mob) that a player kills drops one extra roll from
 ### The Hoard Coffer
 A dark-oak, gold-banded coffer on the plinth in the treasure vault. It can't be broken, and it isn't a container, so hoppers can't drain it.
 - **Before the boss dies** it stays shut: "The Hoard Coffer is sealed until the dungeon's master falls".
-- **First use after a clear**: the player gets `chests/dungeon/vault_t<tier>` straight into their inventory (what doesn't fit drops at their feet). That's 4-6 treasure rolls and **one guaranteed magic item** from the [magic item](magic-items.md) tables. Like other random loot, it's unidentified.
+- **First use after a clear**: the player gets `chests/dungeon/vault_t<tier>` straight into their inventory (what doesn't fit drops at their feet). That's 4-6 treasure rolls and **one guaranteed magic item** from the [magic item](magic-items.md) tables. Like other random loot, it's unidentified. On top comes the theme's own extra, `chests/dungeon/<theme>_vault_t<tier>`: in a Crypt at III or IV, a **15% chance of a Staff of Ice** (nothing at I-II, and nothing for themes without one).
 
 | Tier | Vault magic item |
 |-|-|
@@ -61,11 +61,11 @@ None. The tables are generated: edit `tools/dungeon_loot.py` and run `python3 to
 ## Known limitations
 - The `theme` bias of `dndclasses:magic_item` isn't used yet. Vault magic items come from the generic `dndclasses:magic/<rarity>` tables.
 - Every player gets a guaranteed magic item from the coffer (a balance question for the magic items area).
-- The Crypt's Staff of Ice and the Ruin's Staff of Lightning vault chances come with their theme tickets.
+- The Ruin's Staff of Lightning vault chance comes with its theme ticket (as `ruin_vault_t<tier>`).
 - The coffer looks the same whether it's shut or open. Its state is only shown when you use it.
 
 ## For developers
-- `dungeon/DungeonLoot`: table ids (`chestTable`, `vaultTable`, `salvageTable`, `eliteTable`), `lockDc(table)` (the prefix rule `Lockpicking.dcFor` uses), `roll(...)` and the Veteran drop listener. `register()` also registers the loot condition and the repopulation timer.
+- `dungeon/DungeonLoot`: table ids (`chestTable`, `vaultTable`, `themeVaultTable`, `salvageTable`, `eliteTable`), `lockDc(table)` (the prefix rule `Lockpicking.dcFor` uses), `roll(...)` and the Veteran drop listener. `register()` also registers the loot condition and the repopulation timer.
 - `dungeon/DungeonTierLootCondition`: `{"condition": "dndclasses:dungeon_tier", "min": 2, "max": 4}`. It reads the tier of the recorded dungeon at the roll's `origin` (tier I outside one).
 - `dungeon/DungeonState`: `claimCoffer(uuid)` / `cofferClaimFor(uuid)` → `LOCKED`, `FULL`, `SALVAGE` or `NONE`. Saved as `Coffer: [{Player, Clear}]`. A player gets a salvage roll when the clear count has moved on since their last claim. Also `ClearedAtDay`.
 - `dungeon/DungeonRegistry`: `repopulatesIn(world, state)`, `repopulate(world, state)` and the timer (checked every 100 ticks). `DungeonEvents.REPOPULATED` fires on every repopulation, so traps and puzzles can re-arm on it.

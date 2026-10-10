@@ -69,9 +69,12 @@ The mid-boss room spawns its champion in the middle of the room, plus a 5-base b
 - +25% attack damage, +0.3 knockback resistance.
 - A white, notched boss bar for players within 32 blocks.
 - It starts with 3 stacks rolled from `minecraft:chests/simple_dungeon` inside it, which it drops when it dies.
+- **Split**: the first time it's at or below half health, it bursts and sheds ordinary Gelatinous Cubes beside it: **2** for a party of two or more, **1** for a lone player. The new cubes belong to the room (it stays sealed until they're dead too). It splits only once.
 
 ### Boss
-The boss room spawns its boss on the central dais when the first player is 5 blocks past its walls. The Crypt's boss is the **Lich** (300 HP), with its phylactery at the room's spawn point furthest from you.
+The boss room spawns its boss on the central dais when the first player is 5 blocks past its walls. The Crypt's boss is the **Lich** (300 HP), and its phylactery appears on the altar of the **reliquary**, the side room through a door in the boss room's wall (about 25 blocks from the dais).
+- **The reliquary is part of the fight**: its doorway isn't sealed, players in it count as in the boss room (for the 30 s lock-in and for the kill's participants), and the phylactery and a Lich that reforms there are followed there.
+- **The Lich's lair**: a dungeon Lich wanders round the boss room's middle, and if it's ever more than its leash (the distance to the phylactery + 8, at least 28: about 33 blocks) from it, it blinks back. It still blinks to the phylactery to defend it when it's hit. A boss that ends up outside the boss room and reliquary (a blink through a wall) is brought back to the dais instead of calling the fight off. A dungeon without a reliquary (none yet besides the Crypt) puts the phylactery at the boss room's spawn point furthest from you, and the Lich keeps its usual 28-block leash round it.
 - **Health**: x(1 + 0.35 per extra player), at most x3.45: one player 300 HP, two 405, four 615. The phylactery (and a Lich that reforms from it) gets the same multiplier.
 - Tier III and up: +20% attack damage. Tier IV: heals 15% once when it drops below half health.
 - **Lock-in**: the boss room seals when the boss appears. If no living player is in the boss room for 30 seconds, the boss (and its phylactery and minions) vanish quietly with no loot, the seals open and the room waits again: walking back in calls up a fresh boss at full health.
@@ -107,15 +110,17 @@ A tier with no list uses the nearest lower tier. `boss` is `lich` or `goblin_war
 
 ## Known limitations
 - Only the Crypt has a pool, a champion and a boss. The Goblin Warren and Dwarven Ruin come with their own tickets.
-- The Lich's phylactery stands in the boss room for now; the reliquary side room comes with the finished Crypt, as do the Ossuary Cube's split at half health and the Crypt's room dressing.
-- Veterans don't yet roll extra loot, and the Ossuary Cube's stacks come from the vanilla dungeon chest table: dungeon loot tables come in a later ticket (Veterans are tagged `dndclasses.dungeon_elite` for it).
+- The Ossuary Cube's stacks still come from the vanilla dungeon chest table, not the tier's elite table.
+- Saving throws against the Lich's spells, and its Dread Presence, come in a later ticket.
 - Seals block the way out of a fight too, so a party can only leave a sealed room by winning, dying or teleporting.
 - Arrival sounds, the champion bar and the clear fanfare are vanilla sounds until the dungeon music ticket.
 
 ## For developers
 - `dungeon/EncounterBuilder`: budget (`budget`, `roomBase`, `partyMult`, `levelMult`, `difficultyMult`), `plan` (weighted fill and Veterans), `partyFor`, `spawn` (through the DM toolkit's `EncounterSpawner`, one mob per spawn point), `makeVeteran`. Tags: `dndclasses.dungeon` and `dndclasses.dungeon=<startKey>/<roomId>` on every mob, `dndclasses.dungeon_elite` on Veterans.
 - `dungeon/DungeonEncounterPools`: the reload listener for `dungeon_encounters/*.json`, reusing `Encounter.parseSpawn`.
-- `dungeon/DungeonChampion`: champion modifiers and its `ServerBossBar`, ticked by the ward (tag `dndclasses.dungeon_champion`).
+- `dungeon/DungeonChampion`: champion modifiers and its `ServerBossBar`, ticked by the ward (tag `dndclasses.dungeon_champion`); `splitIfHurt` (the Ossuary Cube's split, once: tag `dndclasses.dungeon_champion_split`; `SPLIT_AT`, `SPLIT_COUNT`, `SPLIT_COUNT_SOLO`).
+- Boss area: the boss room's ward treats the dungeon's `RELIQUARY` rooms (from the plan) as part of its room for players, mob tracking and minion clean-up, and doesn't seal a doorway that leads into one (`area`, `leadsToAnnex`). `DungeonWardBlockEntity.reliquarySpot(dungeon)` and `lairLeash(lair, phylactery)`; `DungeonCombat.playersInBossArea`.
+- `LichEntity.setLair(centre, leash)` / `getLair()` (NBT `Lair`, `LairLeash`): home and leash round a lair instead of the phylactery. The phylactery hands the lair on to a Lich that reforms from it (NBT `LichLair`, `LichLairLeash`).
 - `dungeon/DungeonCombat`: the `AFTER_DEATH` listener (tells the room's ward a mob died; a boss's true death fires `DungeonEvents.BOSS_DEFEATED` and clears the dungeon) and the `CLEARED` listener (title, sound, `dndclasses:delver`). Boss tag: `dndclasses.dungeon_boss`.
 - `classes/Blocks/DungeonWardBlockEntity`: the state machine. NBT adds `Engaged`, `Mobs` (UUIDs), `Seals` (doorway blocks, found at the start of each fight: blocks of the inner wall ring open right through the outer ring, up to doorway height), `LastSeen` and `PartySize`.
 - `classes/Blocks/ArcaneSealBlock` (`dndclasses:arcane_seal`, in `ModBlocks`). Not the class-gate obstacles `lesser_arcane_seal`/`greater_arcane_seal`, which a Wizard can dispel.

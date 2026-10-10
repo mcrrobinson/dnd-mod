@@ -7,7 +7,8 @@ import net.minecraft.util.math.BlockBox;
 
 /**
  * The boss's hall, two cells by two: a tall pillared chamber with a raised dais in the middle,
- * where the boss will be spawned (dungeons ticket 2).
+ * where the boss appears when the party walks in. In the Crypt, a reliquary off one wall holds the
+ * Lich's phylactery ({@link ReliquaryPiece}).
  */
 public class BossRoomPiece extends DungeonPiece {
     public BossRoomPiece(Info info, BlockBox box, long seed, int roomId, RoomRole role, int height, List<Door> doors) {
@@ -44,5 +45,28 @@ public class BossRoomPiece extends DungeonPiece {
         for (int[] o : new int[][]{{-6, -6}, {6, -6}, {-6, 6}, {6, 6}, {0, -9}, {0, 9}, {-9, 0}, {9, 0}}) {
             b.spawnPoint(mx + o[0], 1, mz + o[1]);
         }
+        if (CryptDressing.applies(this)) {
+            this.tomb(b, w, d, mx, mz);
+        }
+    }
+
+    /**
+     * The Lich's tomb: sarcophagi along the middle of each wall (the doorways are a cell's middle,
+     * well to either side), candles on the dais corners, bones in the corners.
+     */
+    private void tomb(Builder b, int w, int d, int mx, int mz) {
+        CryptDressing.wallSarcophagi(b, w, d, 11, 0.75F);
+        for (int[] o : new int[][]{{-3, -3}, {3, -3}, {-3, 3}, {3, 3}}) {
+            CryptDressing.candles(b, mx + o[0], 2, mz + o[1]);
+        }
+        for (int[] c : CryptDressing.corners(w, d)) {
+            CryptDressing.bonePile(b, c[0], c[1]);
+        }
+        for (int[] o : new int[][]{{-6, -5}, {6, -5}, {-6, 5}, {6, 5}, {-5, -6}, {5, -6}, {-5, 6}, {5, 6}}) {
+            if (b.dressing.nextFloat() < 0.4F) {
+                CryptDressing.skull(b, mx + o[0], 1, mz + o[1]);
+            }
+        }
+        CryptDressing.cornerCobwebs(b, w, d, this.height, 0.9F);
     }
 }

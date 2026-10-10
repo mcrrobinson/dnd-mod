@@ -46,6 +46,7 @@ The Lich, its phylactery and its minions never hurt each other. Its minions crum
 
 ## Where to find it / How to get it
 - **Strongholds**: every stronghold library. A library generated on Peaceful gets an invisible marker instead, which raises the Lich the first time it's loaded on a higher difficulty. The Lich stands in the open row at the back, facing the entrance; its phylactery goes in the open middle row. Find one with `/locate structure minecraft:stronghold`. A stronghold can have up to two libraries, so it can have two Liches.
+- **Crypt dungeons**: the boss of every [Crypt](../structures/dungeons.md#the-crypt), called up when the party walks into the boss room, with its health scaled to the party. Its phylactery sits on the altar of the reliquary off the boss room, and it keeps to the boss room instead (it blinks back when more than about 33 blocks from the dais, which still reaches the reliquary). See [Dungeon encounters](../systems/dungeon-encounters.md#boss).
 - **Lich Spawn Egg**: in the mod's creative tab.
 
 ## Commands

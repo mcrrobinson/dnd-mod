@@ -9,6 +9,7 @@ Saving throws let you resist monster attacks, traps and spells: a d20 plus your 
 - A natural 20 always succeeds and a natural 1 always fails. This is a house rule (5e has none for saves), kept so a save is never hopeless.
 - **Advantage / disadvantage:** roll two d20s and keep the higher or lower. They cancel out. Sources on the sheet (race, items, class features) apply when they match the save's ability or tags.
 - Lucky rerolls (Halfling) reroll a natural 1 once.
+- [Class save features](class-save-features.md): the Paladin's Aura of Protection (+CHA), Evasion (Rogue, Monk), Danger Sense and Rage (Barbarian), Indomitable (Fighter), Jack of All Trades (Bard) and Diamond Soul (Monk).
 - On a success, the attack decides what happens: half damage, half the effect's duration, or no effect at all.
 - **Pets, villagers and mobs** save too, with a flat +1 and nothing shown on anyone's HUD.
 - **Creative and spectator** players roll but see nothing.
@@ -75,7 +76,8 @@ See [Dungeon Master](dungeon-master.md) for who can use `/dm`.
   - Other builder options: `.dc(n)`, `.advantage()`, `.disadvantage()`, `.advantageIf(b)`, `.mode(Advantage)`, `.bonus(text, n)`, `.rerollNaturalOnes()`, `.onSuccess(text)` / `.onFailure(text)` (the words after the tick), `.silent()`, `.secret()`, `.exposure(String key, tag, ticks)` for non-entity sources such as a trap's position.
   - Players roll through `SkillCheck.save` (sheet bonus, sheet advantage, Lucky). Non-players roll `D20.roll(entity)` with `NON_PLAYER_BONUS` (+1) and `Display.SILENT`.
   - The exposure cache is keyed by target UUID, then attacker UUID + tag, by world time. It's pruned every 200 ticks and cleared for a player on disconnect (`SavingThrow.forget`, from `ClassLifecycle`).
-- `SaveResult`: `succeeded()`, `failed()`, `outcome()`, `roll()`, `fresh()` (false when it came from the exposure cache), `damage(full)`, `duration(ticks)` (half on a success), `withDamageMultipliers(onSuccess, onFailure)` for Evasion-style features.
+- `SaveResult`: `succeeded()`, `failed()`, `outcome()`, `roll()`, `fresh()` (false when it came from the exposure cache), `damage(full)`, `duration(ticks)` (half on a success), `withDamageMultipliers(onSuccess, onFailure[, note])` for Evasion-style features (with a note, the lane says "no damage (Evasion)").
+- Hooks: `SavingThrow.registerResultHook` changes a result before it's cached and shown (Evasion); `SavingThrow.registerReroll` gives a player's failed save a second roll, showing the first under the reroll's name (Indomitable). See [class save features](class-save-features.md).
 - `MobSaveInfo.register(type, labelKey, ability, dc, halvesDamage, effectKey)` returns an `Entry`; roll it with `SavingThrow.of(target, entry)` so the creature's listing and its attack use the same numbers. `MobSaveInfo.of(type)` lists them (for the Study card).
 - Every `SAVE_LANE` roll sent with `D20.show` goes through `SavingThrow.send`: the 10-tick throttle and the merge by label + ability + outcome. The `dndclasses:d20_roll` packet has a trailing VarInt count after the detail text (1 for ordinary rolls).
 - Logs: each roll is a `[D20] <name> <label> <natural> <+mod> = <total> vs DC <dc> -> <outcome>` line; each save packet is a `[D20] save lane -> <player>: <label> <outcome> x<count>` line.

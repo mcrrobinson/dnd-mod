@@ -94,6 +94,13 @@ public class PuzzleRoomPiece extends DungeonPiece {
         }
         b.light(mx, this.height, mz, true);
         b.puzzle = puzzle;
+        if (CryptDressing.applies(this)) {
+            // Candles under the murals, so they're easy to read
+            for (int[] c : CryptDressing.corners(w, d)) {
+                CryptDressing.candles(b, c[0], 1, c[1]);
+            }
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.5F);
+        }
     }
 
     /**

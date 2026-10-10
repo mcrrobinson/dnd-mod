@@ -1,0 +1,122 @@
+# Class features that improve saves (docs/systems/class-save-features.md).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/class-save-features.txt
+# Check run/logs/latest.log:
+# - Bard L2 sheet: "Jack of All Trades: check:ALL half proficiency"; skills it isn't trained in show ½ and +1
+# - Monk L10 sheet: "Diamond Soul: save:<each> proficient" and every save marked ●; "Evasion: feature ..."
+# - Barbarian L2: "Danger Sense: adv DEX saves ..."; the first DEX save logs "17 (3 adv)", the blinded one "3" only;
+#   after the power-up key the sheet has "Rage: adv STR saves and Athletics" and the STR save logs "(.. adv)"
+# - Fighter L9: "Indomitable: rerolling save 1 (FUMBLE)" once, then the next failed save has no reroll line
+# - Paladin with Aura of Protection: "Aura of Protection: save:ALL +2" and every save 2 higher than before
+# - Rogue L7 vs Wyvern breath: nat 20 -> Health unchanged (no damage (Evasion)); nat 1 -> half the usual loss
+# Screenshots: run/screenshots/csf-*.png
+/time set day
+/weather clear
+/gamerule naturalRegeneration false
+/gamerule doMobLoot false
+/gamerule mobGriefing false
+/gamerule sendCommandFeedback true
+/kill @e[type=!player]
+respawn
+wait 40
+closescreen
+/fill -20 149 -20 20 149 26 stone
+/fill -20 150 -20 20 164 26 air
+/gamemode survival
+/effect clear @s
+/tp @s 0 150 6 180 0
+/dndclass forceroll @s clear
+
+# ---- Bard level 2: Jack of All Trades ----
+/dndclass set @s bard
+/dndclass xp @s set 120
+wait 5
+/dndclass sheet @s
+
+# ---- Monk level 10: Diamond Soul and Evasion ----
+/dndclass set @s monk
+/dndclass xp @s set 2700
+wait 5
+/dndclass sheet @s
+
+# ---- Barbarian level 2: Danger Sense, Rage ----
+/dndclass set @s barbarian
+/dndclass xp @s set 120
+wait 5
+/dndclass sheet @s
+/dndclass forceroll @s 3 17
+/dm save @s dex 30
+wait 12
+screenshot csf-danger-sense
+/effect give @s blindness 10 0 true
+wait 25
+/dndclass forceroll @s 3
+/dm save @s dex 30
+wait 12
+/effect clear @s
+/dndclass forceroll @s clear
+press key.dnd-classes.power-up
+wait 5
+/dndclass sheet @s
+/dndclass forceroll @s 4 16
+/dm save @s str 30
+wait 12
+screenshot csf-rage
+/dndclass forceroll @s clear
+
+# ---- Fighter level 9: Indomitable ----
+/dndclass set @s fighter
+/dndclass xp @s set 2200
+wait 5
+/dndclass sheet @s
+wait 25
+/dndclass forceroll @s 1 12
+/dm save @s con 30
+wait 6
+screenshot csf-indomitable
+wait 20
+/dndclass forceroll @s 1 12
+/dm save @s con 30
+wait 12
+/dndclass forceroll @s clear
+
+# ---- Paladin with Aura of Protection: +CHA to own saves ----
+/dndclass set @s paladin
+/dndclass xp @s set 2700
+/dndclass subclass @s paladin.devotion
+wait 5
+/dndclass sheet @s
+/dndclass unlock @s paladin.aura_of_protection
+/dndclass equip @s paladin.aura_of_protection
+wait 30
+/dndclass sheet @s
+
+# ---- Rogue level 7: Evasion against Wyvern breath (DC 12) ----
+/dndclass set @s rogue
+/dndclass xp @s set 1350
+wait 5
+/effect give @s health_boost 900 9 true
+/effect give @s instant_health 1 9 true
+/tp @s 0 150 6 180 -12
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 20
+/summon dndclasses:wyvern 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 44
+screenshot csf-evasion-pass
+wait 31
+/kill @e[type=dndclasses:wyvern]
+wait 20
+/data get entity @s Health
+/effect give @s instant_health 1 9 true
+wait 5
+/data get entity @s Health
+/dndclass forceroll @s 1
+/summon dndclasses:wyvern 0 150 -4 {Rotation:[0f,0f],active_effects:[{id:"minecraft:slowness",amplifier:9b,duration:6000,show_particles:0b}],ActiveEffects:[{Id:2,Amplifier:9b,Duration:6000,ShowParticles:0b}]}
+wait 44
+screenshot csf-evasion-fail
+wait 31
+/kill @e[type=dndclasses:wyvern]
+wait 20
+/data get entity @s Health
+/dndclass forceroll @s clear
+quit

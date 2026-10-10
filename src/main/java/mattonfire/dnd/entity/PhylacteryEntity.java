@@ -60,6 +60,10 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
     /** Custom name of the Lich that fled here, so it comes back under the same name. */
     @Nullable
     private String lichName;
+    /** The fled Lich's lair (a dungeon boss room) and leash, handed on to the Lich that reforms here. */
+    @Nullable
+    private net.minecraft.util.math.BlockPos lichLair;
+    private double lichLairLeash;
 
     public PhylacteryEntity(EntityType<? extends MobEntity> entityType, World world) {
         super(entityType, world);
@@ -92,6 +96,8 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
     public void beginReform(LichEntity lich) {
         this.reformTicks = REFORM_TICKS;
         this.lichName = lich.hasCustomName() ? Text2.toJson(lich.getCustomName()) : null;
+        this.lichLair = lich.getLair();
+        this.lichLairLeash = lich.getLairLeash();
         this.dataTracker.set(REFORMING, true);
         if (this.world instanceof ServerWorld world) {
             // A trail of souls from the body to the phylactery
@@ -157,6 +163,9 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
         }
         if (this.lichName != null) {
             lich.setCustomName(Text2.fromJson(this.lichName));
+        }
+        if (this.lichLair != null) {
+            lich.setLair(this.lichLair, this.lichLairLeash);
         }
         lich.linkPhylactery(this);
         // A dungeon's boss stays its dungeon's boss: the room's ward finds it again by these tags.
@@ -311,6 +320,10 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
         if (this.lichName != null) {
             nbt.putString("LichName", this.lichName);
         }
+        if (this.lichLair != null) {
+            nbt.put("LichLair", net.minecraft.nbt.NbtHelper.fromBlockPos(this.lichLair));
+            nbt.putDouble("LichLairLeash", this.lichLairLeash);
+        }
     }
 
     @Override
@@ -319,6 +332,8 @@ public class PhylacteryEntity extends MobEntity implements GeoEntity {
         this.lichUuid = nbt.containsUuid("Lich") ? nbt.getUuid("Lich") : null;
         this.reformTicks = nbt.contains("ReformTicks") ? nbt.getInt("ReformTicks") : -1;
         this.lichName = nbt.contains("LichName") ? nbt.getString("LichName") : null;
+        this.lichLair = nbt.contains("LichLair") ? net.minecraft.nbt.NbtHelper.toBlockPos(nbt.getCompound("LichLair")) : null;
+        this.lichLairLeash = nbt.getDouble("LichLairLeash");
         this.dataTracker.set(REFORMING, this.reformTicks >= 0);
     }
 

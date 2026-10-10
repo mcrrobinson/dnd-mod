@@ -1,0 +1,106 @@
+# Character tab and ability score improvements (docs/systems/ability-scores.md).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/character-tab.txt
+# Expect in latest.log ([CHAT] lines; refusals go to the action bar, so check those in the screenshots):
+#  1. step1 (level 3, Half-Orc Fighter): /dndclass sheet shows STR 17, DEX 12, no "Ability Score Improvement" lines
+#  2. step2 (level 4 at a table, two + clicks on STR, a third does nothing): STR 19
+#  3. step3 (level 8): STR 20, then a 4th STR is refused ("already 20", screenshot character-tab-cap) and the
+#     point goes to DEX: DEX 13; level 10 adds no points (sheet header still 0 to spend in the tab)
+#  4. step4 away from the table: refused (screenshot character-tab-away), sheet unchanged
+#  5. step5 after death: still STR 20, DEX 13
+#  6. step6 after resetprogress: STR 17, DEX 12 again
+# Screenshots: character-tab-o (O screen, no +), character-tab-table (+ buttons, 2 points), character-tab-after,
+#              character-tab-tooltip (STR breakdown: Fighter 15, Half-Orc +2, Ability Score Improvement +2),
+#              character-tab-cap, character-tab-level10, character-tab-away
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule keepInventory true
+/time set noon
+/fill 0 149 0 12 149 8 minecraft:stone
+/fill 0 150 0 12 154 8 minecraft:air
+/dndclass set @s fighter
+wait 10
+closescreen
+/dndrace set @s halforc
+wait 5
+closescreen
+/dndclass resetprogress @s
+/dndclass setxp @s 250
+/tp @s 4.5 150 1.5 0 30
+/say step1-level3
+/dndclass sheet @s
+# The O screen: Character tab (top right for a Fighter), no + buttons away from a table
+press key.dnd-classes.skill-tree
+wait 10
+click 97 -104
+wait 5
+screenshot character-tab-o
+closescreen
+# 2. Level 4 at a table
+/dndclass setxp @s 450
+/setblock 4 150 4 dndclasses:attunement_table
+wait 5
+use
+wait 10
+click 97 -104
+wait 5
+screenshot character-tab-table
+# STR box's + (first box of the first row)
+click -82 -64
+wait 5
+click -82 -64
+wait 5
+click -82 -64
+wait 5
+screenshot character-tab-after
+hover -100 -50
+wait 5
+screenshot character-tab-tooltip
+hover 60 0
+wait 2
+closescreen
+/say step2-level4
+/dndclass sheet @s
+# 3. Level 8: two more points; STR 19 -> 20, then a refused 4th, then DEX
+/dndclass setxp @s 1750
+use
+wait 10
+skill asi str
+wait 5
+skill asi str
+wait 3
+screenshot character-tab-cap
+skill asi dex
+wait 5
+/dndclass setxp @s 2700
+wait 5
+click 97 -104
+wait 5
+screenshot character-tab-level10
+closescreen
+/say step3-level8
+/dndclass sheet @s
+# 4. Away from the table
+/tp @s 100 150 100
+wait 5
+skill asi con
+wait 3
+screenshot character-tab-away
+/say step4-away
+/dndclass sheet @s
+/tp @s 4.5 150 1.5 0 30
+# 5. Death
+/kill @s
+wait 20
+respawn
+wait 20
+/say step5-after-death
+/dndclass sheet @s
+# 6. Reset refunds
+/dndclass resetprogress @s
+/say step6-reset
+/dndclass sheet @s
+/dndrace set @s none
+quit

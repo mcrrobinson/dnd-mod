@@ -13,6 +13,7 @@ Right click the book to open it. It reads your **current** class each time you o
 | 3 | Special ability, and the key Power Up is bound to (`Z` by default) with where to rebind it (Options > Controls > Key Binds > D&D Classes) |
 | 4 | Your role: primary and secondary [party role](party-roles.md), what your class does in a party and what the role is for |
 | 5 | Obstacles you handle. Bold ones only your class can get past |
+| 6-7 | Your abilities: your class's starting scores (with modifiers), saving throws and skills (◆ expertise), then how ability points work at levels 4 and 8 ([Ability scores](ability-scores.md#ability-score-improvements)) |
 
 If you have a [race](../races/races.md), two "Your heritage" pages follow at the back: the race (and Dragonborn ancestry), its summary, ability bonuses and stat modifiers, then its traits.
 

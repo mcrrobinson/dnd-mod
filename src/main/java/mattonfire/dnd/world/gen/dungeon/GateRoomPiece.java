@@ -71,6 +71,14 @@ public class GateRoomPiece extends DungeonPiece {
                 }
             }
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.5F);
+        } else if (WarrenDressing.applies(this)) {
+            // Skull totems warn off whoever comes this way
+            for (int[] c : CryptDressing.corners(w, d)) {
+                if (b.dressing.nextFloat() < 0.6F) {
+                    WarrenDressing.totem(b, c[0], c[1]);
+                }
+            }
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.4F);
         }
     }
 

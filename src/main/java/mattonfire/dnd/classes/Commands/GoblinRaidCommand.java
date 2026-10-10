@@ -15,11 +15,11 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * /goblinraid start        raid the hobbit village, dwarven fortress or elven enclave nearest you (within ~128 blocks),
+ * /goblinraid start        raid the hobbit village, dwarven fortress, elven enclave or dragon temple nearest you (within ~128 blocks),
  *                          or the spot you're standing on if there isn't one
  * /goblinraid start here   raid the spot you're standing on
  * /goblinraid stop         call off the raid nearest you
- * /goblinraid list         list the raids in this world
+ * /goblinraid list         list the raids in this world, and the quiet zones round cleared goblin warrens
  *
  * Ignores the dndGoblinRaids gamerule and the per-settlement cooldown, for testing.
  */
@@ -72,6 +72,13 @@ public class GoblinRaidCommand {
         List<GoblinRaid> raids = GoblinRaids.get(source.getWorld()).getRaids();
         if (raids.isEmpty()) {
             source.sendFeedback(Text.literal("No goblin raids"), false);
+        }
+        long now = source.getWorld().getTime();
+        for (GoblinRaids.QuietZone zone : GoblinRaids.get(source.getWorld()).getQuietZones()) {
+            if (now < zone.until()) {
+                source.sendFeedback(Text.literal("No raids within " + zone.radius() + " blocks of " + zone.center().toShortString()
+                        + " (a cleared goblin warren) for " + (zone.until() - now) / 1200L + " more minutes"), false);
+            }
         }
         for (GoblinRaid raid : raids) {
             source.sendFeedback(Text.literal("Goblin raid #" + raid.getId() + " on ")

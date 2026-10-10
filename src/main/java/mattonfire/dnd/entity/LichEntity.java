@@ -8,7 +8,9 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModSounds;
+import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.entity.boss.Boss;
 import mattonfire.dnd.entity.boss.BossFight;
 import mattonfire.dnd.entity.boss.BossMinions;
@@ -150,6 +152,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     private double lairLeash = LEASH_RANGE;
 
     private boolean greeted;
+    private long lastDreadPresence = -1L;
     private final Set<UUID> taunted = new HashSet<>();
 
     public LichEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -428,8 +431,11 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
                 SoundCategory.HOSTILE, 2.0F, 0.5F);
         world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL,
                 SoundCategory.HOSTILE, 1.5F, 0.6F);
+        boolean lastPhase = this.isLastPhase();
         for (LivingEntity victim : this.enemiesWithin(NOVA_RADIUS)) {
-            this.chill(victim, 8.0F, 120, 3);
+            // CON save (one per nova): half damage and half the slow, but the shove lands either way
+            SaveResult save = BossSaves.roll(victim, this, BossSaves.FROST_NOVA, lastPhase, "nova", BossSaves.NOVA_WINDOW);
+            this.chill(victim, save.damage(8.0F), save.duration(120), 3);
             victim.takeKnockback(1.6D, this.getX() - victim.getX(), this.getZ() - victim.getZ());
             victim.velocityModified = true;
         }
@@ -527,10 +533,53 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     private void enterRaisePhase() {
         this.speak("phase_raise");
+        this.dreadPresence();
         // Answer the wound with a wave straight away.
         this.nextCast[Spell.RAISE_DEAD.ordinal()] = this.world.getTime();
         ((ServerWorld) this.world).spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getBodyY(0.6D),
                 this.getZ(), 20, 0.8D, 1.0D, 0.8D, 0.02D);
+    }
+
+    /** In its last phase (below 30% health) its save DCs are one higher. */
+    public boolean isLastPhase() {
+        return this.bossFight.getPhase() >= 2;
+    }
+
+    /**
+     * Dread Presence: every player within {@value BossSaves#DREAD_RADIUS} blocks makes a WIS save
+     * (DC 15, 16 in the last phase) or is Frightened for 8 seconds. Necromancers, its rivals, have
+     * advantage. Runs as it passes 60% and 30% health and when it reforms; one save per player per
+     * trigger, even when a huge hit passes both thresholds at once.
+     */
+    public void dreadPresence() {
+        if (!(this.world instanceof ServerWorld world) || world.getTime() == this.lastDreadPresence) {
+            return; // Both thresholds passed by one hit: one Dread Presence
+        }
+        this.lastDreadPresence = world.getTime();
+        broadcast(world, this, Text.translatable("chat.dndclasses.lich.dread_presence", this.getDisplayName())
+                .formatted(Formatting.DARK_PURPLE, Formatting.ITALIC));
+        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE,
+                SoundCategory.HOSTILE, 1.5F, 0.6F);
+        for (int i = 0; i < 64; i++) {
+            float angle = i / 64.0F * MathHelper.TAU;
+            world.spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getBodyY(0.5D), this.getZ(), 0,
+                    MathHelper.cos(angle), 0.02D, MathHelper.sin(angle), 0.6D);
+        }
+        world.spawnParticles(ParticleTypes.SQUID_INK, this.getX(), this.getBodyY(0.5D), this.getZ(),
+                30, 0.6D, 1.0D, 0.6D, 0.05D);
+        boolean lastPhase = this.isLastPhase();
+        for (ServerPlayerEntity player : world.getPlayers(p -> p.isAlive() && !p.isCreative() && !p.isSpectator()
+                && p.squaredDistanceTo(this) <= BossSaves.DREAD_RADIUS * BossSaves.DREAD_RADIUS)) {
+            SaveResult save = BossSaves.save(player, this, BossSaves.DREAD_PRESENCE, lastPhase, "dread",
+                    BossSaves.DREAD_WINDOW)
+                    .tags("fear")
+                    .advantageIf(isNecromancer(player))
+                    .onFailure(Text.translatable("save.dndclasses.effect.dread_presence.failure"))
+                    .roll();
+            if (save.fresh() && save.failed()) {
+                player.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, BossSaves.DREAD_FRIGHTENED_TICKS, 0), this);
+            }
+        }
     }
 
     private void enterDesperatePhase() {
@@ -543,6 +592,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         }
         this.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, 2.0F, 0.6F);
         this.nextCast[Spell.FROST_NOVA.ordinal()] = this.world.getTime();
+        this.dreadPresence();
     }
 
     // ---------------------------------------------------------------- blinking

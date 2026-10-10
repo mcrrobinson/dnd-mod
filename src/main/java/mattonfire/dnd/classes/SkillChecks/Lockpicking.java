@@ -68,6 +68,7 @@ public final class Lockpicking {
             "dndclasses:chests/frost_lair",
             "dndclasses:chests/dwarven_fortress_treasury",
             "dndclasses:chests/elven_enclave_heart",
+            "dndclasses:chests/dragon_temple_reliquary",
             "minecraft:chests/end_city_treasure",
             "minecraft:chests/bastion_treasure",
             "minecraft:chests/ancient_city",
@@ -126,6 +127,7 @@ public final class Lockpicking {
                 && !path.contains("village")
                 && !path.startsWith("chests/hobbit_")
                 && !path.equals("chests/elven_enclave_talan")
+                && !path.equals("chests/dragon_temple_cell")
                 && !path.equals("chests/spawn_bonus_chest");
     }
 

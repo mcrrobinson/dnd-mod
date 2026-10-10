@@ -31,12 +31,15 @@ During this phase it moves in to about 2.5 blocks and bites once a second.
 ### Ray phase
 The ray phase lasts 8 seconds (10 when enraged). It shuts the central eye and hangs about 9 blocks back and 3 above you. Every 1.5 seconds (0.9 when enraged) one open eyestalk glows in its colour for 0.8 seconds, then fires. The ray goes where you were when the glow started, so moving dodges it. Rays reach 32 blocks, stop at walls and hit the first creature in the way.
 
-| Eye | Colour | Effect |
-|-|-|-|
-| Slowing | Blue | 2 magic damage and Slowness III for 6 s |
-| Telekinetic | Violet | Levitation II for 2.5 s |
-| Enervation | Red | 8 magic damage (10 when enraged) |
-| Fear | Yellow | **Frightened** for 8 s and Darkness for 4 s |
+| Eye | Colour | Effect (failed save) | Save | On a success |
+|-|-|-|-|-|
+| Slowing | Blue | 2 magic damage and Slowness III for 6 s | DEX | 2 damage, no Slowness |
+| Telekinetic | Violet | Levitation II for 2.5 s | STR | No Levitation |
+| Enervation | Red | 8 magic damage (10 when enraged) | CON | Half: 4 (5 when enraged) |
+| Fear | Yellow | **Frightened** for 8 s and Darkness for 4 s | WIS | Not Frightened, Darkness for 1 s |
+
+### Saving throws
+Every ray that hits you allows a [saving throw](../systems/saving-throws.md) against **DC 15**, or **DC 16** once it's enraged, shown on the save lane beside the crosshair. Each ray is one save, rolled when it hits. The Fear ray's save counts as a save against fear, so anything that gives advantage against fear applies. Pets and other creatures caught by a ray save silently with +1. Studying a Beholder (V) lists all four saves.
 
 **Frightened** halves your attack damage. While it lasts, the Beholder shoves you back every half second whenever you're within 7 blocks of it.
 
@@ -55,6 +58,8 @@ Below 50% health the bar turns red, every eye reopens, two different rays fire a
 | Diamonds | 3-6 | killed by a player |
 | Protection IV book, Feather Falling IV book or totem of undying | 1 | killed by a player, 30% chance (+5% per Looting level) |
 | [Eye of the Tyrant](../items/magic-items.md#eye-of-the-tyrant) (Legendary, unidentified) | 1 | killed by a player, 12% chance (+3% per Looting level) |
+| A Very Rare (80%) or Legendary (20%) magic item, unidentified ([Magic loot](../systems/magic-loot.md)) | 1 | killed by a player |
+| [Tome of Clear Thought](../items/magic-items.md#tome-of-clear-thought) (Very Rare, unidentified) | 1 | killed by a player, 10% chance |
 
 The player credited with the kill also gets **An Eye for an Eye**, a challenge advancement worth 150 XP.
 
@@ -63,12 +68,13 @@ The player credited with the kill also gets **An Eye for an Eye**, a challenge a
 - Shut the eyes. Any hit of 3 damage or more on a stalk closes it for 10 seconds. An arrow from a fully drawn bow does it, so a bow is a good way to strip its rays from range.
 - The red Enervation eye hurts most. Shut it first.
 - Keep moving sideways in the ray phase. Each ray aims at where you stood when its eye started to glow.
+- Each eye calls on a different save: high Wisdom shrugs off fear, and high Strength keeps you on the ground.
 - Bring Slow Falling or a water bucket for the Telekinetic ray, and good armour: it hits hard and is deadly without it.
 
 ## Where to find it
 Beholders only live in **Beholder lairs**, which are rare (spacing 40 chunks, separation 16). A lair can generate under any Overworld biome except the deep dark, wherever its stair comes up on dry land.
 
-**The cavern** is a dome of radius 16 and height 12, with its floor somewhere between y=-38 and y=-19. A two-block deepslate shell keeps caves, water and lava out. The floor is a great eye of calcite and blackstone round a verdant froglight iris and an obsidian pupil, and the walls have crying obsidian, amethyst, dripstone and the odd shroomlight. Five petrified adventurers (grey armour stands, arms raised) stand round the floor. Against the west wall, a hoard of gold, bones and skulls surrounds a chest (`chests/beholder_lair`). The Beholder hovers 5 blocks above the middle of the floor.
+**The cavern** is a dome of radius 16 and height 12, with its floor somewhere between y=-38 and y=-19. A two-block deepslate shell keeps caves, water and lava out. The floor is a great eye of calcite and blackstone round a verdant froglight iris and an obsidian pupil, and the walls have crying obsidian, amethyst, dripstone and the odd shroomlight. Five petrified adventurers (grey armour stands, arms raised) stand round the floor. Against the west wall, a hoard of gold, bones and skulls surrounds a chest (`chests/beholder_lair`), which always holds a magic item (Rare 40%, Very Rare 45%, Legendary 15%), plus a 4% chance of an Immovable Rod and 2% of the Eye of the Tyrant. The Beholder hovers 5 blocks above the middle of the floor.
 
 **The way in** is a deepslate spiral stair that comes up 20 blocks east of the cavern's centre, inside a mossy ring of wall with a soul lantern, and a tunnel from its foot to the cavern.
 
@@ -93,6 +99,7 @@ No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its
 - **Boss framework:** `BossFight` with `.phase(0.5F, RED, enrage)`, `.xp(120)` and `.advancement(dndclasses:beholder_slayer)`.
 - **Hit shapes:** `MultipartDragon` with a `DragonPartLayout` of 4 `pair(...)` eyestalk groups.
   - `MultipartDragon.damagePart(part, source, amount)` is the hook `DragonPart.damage` calls; by default it just damages the owner. The Beholder overrides it to shut the stalk that was hit.
+- **Saves:** `entity/BossSaves.java` holds the four ray entries (`MobSaveInfo`), `BOSS_DC` 15 / `LAST_PHASE_DC` 16 and `RAY_WINDOW` (10 ticks). `BeholderEntity.applyRay` rolls one per ray with exposure tag `ray:<id>`; the Enervation ray skips the roll for a victim the damage can't hurt (`DragonSaves.isUnaffected`).
 - **Effects:** `classes/Effects/AntiMagicEffect.java` (`isSuppressed` / `blocks` helpers) and `FrightenedEffect.java`, registered in `ModEffects`.
   - The checks are in `DnDClasses.sendPowerupPacket`, `Warlock.throwFireball` and `DoubleJumpMixin.canJump`.
 - **Client:** `client/model/BeholderModel.java` (body pitch, eyelids) and `client/renderer/BeholderRenderer.java` (a `DragonRenderer`).
@@ -102,4 +109,4 @@ No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its
   - Biome tag: `tags/worldgen/biome/has_structure/beholder_lair.json`.
   - Spawn rule: `ModSpawns.canBeholderSpawn`.
 - **Loot and advancement:** `loot_tables/entities/beholder.json`, `loot_tables/chests/beholder_lair.json` and `advancements/beholder_slayer.json`.
-- **Devscript:** `devscripts/beholder.txt` takes model and hitbox shots, then visits the dev-world lair at about (-504, 760) and fights in survival.
+- **Devscript:** `devscripts/beholder.txt` takes model and hitbox shots, then visits the dev-world lair at about (-504, 760) and fights in survival. `devscripts/boss-saves.txt` rigs the ray and Lich saves with `/dndclass forceroll`.

@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mattonfire.dnd.classes.ClassInfo;
+import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Abilities.ClassAbilities;
+import mattonfire.dnd.classes.Abilities.Contribution;
+import mattonfire.dnd.classes.Abilities.Proficiency;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Race.DragonAncestry;
@@ -103,6 +108,10 @@ public final class ClassGuidebookScreen {
 
         rolePages(pages, info);
 
+        if (yours) {
+            abilitiesPage(pages, info);
+        }
+
         if (!info.subclasses().isEmpty()) {
             pages.section(Text.translatable("book.dndclasses.class_guidebook.subclasses")
                     .formatted(Formatting.BOLD, Formatting.DARK_AQUA),
@@ -125,6 +134,40 @@ public final class ClassGuidebookScreen {
                 pages.section(lines.toArray(Text[]::new));
             }
         }
+    }
+
+    /** "Your abilities": the class's starting scores, saves and skills, and how ability points work. */
+    private static void abilitiesPage(Pages pages, ClassInfo info) {
+        ClassAbilities abilities = info.abilities() == null ? ClassAbilities.NONE : info.abilities();
+        List<Text> lines = new ArrayList<>();
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.your_abilities")
+                .formatted(Formatting.BOLD, Formatting.DARK_AQUA));
+        for (Ability a : Ability.values()) {
+            int score = abilities.score(a);
+            int mod = Ability.modifier(score);
+            lines.add(Text.translatable(a.translationKey()).append(" ")
+                    .append(Text.literal(score + " (" + (mod < 0 ? "" : "+") + mod + ")").formatted(Formatting.BOLD)));
+        }
+        lines.add(Text.literal(""));
+        List<String> saves = new ArrayList<>();
+        for (Ability a : abilities.saves()) {
+            saves.add(Text.translatable(a.shortTranslationKey()).getString());
+        }
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.saves",
+                saves.isEmpty() ? "-" : String.join(", ", saves)).formatted(Formatting.DARK_GREEN));
+        List<String> skills = new ArrayList<>();
+        for (Skill s : Skill.values()) {
+            Proficiency p = abilities.proficiency(s);
+            if (p != Proficiency.NONE) {
+                skills.add(Text.translatable(s.translationKey()).getString() + (p == Proficiency.EXPERTISE ? " ◆" : ""));
+            }
+        }
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.skills",
+                skills.isEmpty() ? "-" : String.join(", ", skills)).formatted(Formatting.DARK_PURPLE));
+        pages.section(lines.toArray(Text[]::new));
+        pages.section(Text.translatable("book.dndclasses.class_guidebook.ability_points",
+                ClassProgress.ASI_POINTS_PER_LEVEL, ClassProgress.ASI_LEVELS[0], ClassProgress.ASI_LEVELS[1],
+                Contribution.NATURAL_CAP));
     }
 
     /** "Your heritage": the race's summary, ability bonuses, body modifiers and traits. */

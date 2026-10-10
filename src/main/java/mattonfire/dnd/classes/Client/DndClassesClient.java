@@ -189,6 +189,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_WARDEN, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elf);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_SPEAKER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elfMerchant);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_FLETCHER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elfMerchant);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_TEMPLAR, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonborn);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_ELDER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonbornElder);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIMIC, mattonfire.dnd.client.renderer.MimicRenderer::new);
         mattonfire.dnd.client.MimicTexture.register();
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);

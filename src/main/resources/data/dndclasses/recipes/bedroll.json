@@ -1,0 +1,12 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+        "WWW",
+        "LLL"
+    ],
+    "key": {
+        "W": { "tag": "minecraft:wool" },
+        "L": { "item": "minecraft:leather" }
+    },
+    "result": { "item": "dndclasses:bedroll" }
+}

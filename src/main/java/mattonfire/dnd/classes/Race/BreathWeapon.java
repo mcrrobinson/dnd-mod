@@ -340,7 +340,8 @@ public final class BreathWeapon {
 
     // --- effects ---
 
-    private static void playSound(ServerWorld world, ServerPlayerEntity player, DragonAncestry ancestry) {
+    /** The breath's sound at {@code player} (a Dragonborn Templar's too). */
+    public static void playSound(ServerWorld world, Entity player, DragonAncestry ancestry) {
         switch (ancestry) {
             case FROST -> world.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.ENTITY_PLAYER_HURT_FREEZE, SoundCategory.PLAYERS, 1.0F, 0.6F);
@@ -362,8 +363,11 @@ public final class BreathWeapon {
         }
     }
 
-    /** Everyone who can see the breather (and the breather) draws the cone on their own client. */
-    private static void sendVisuals(ServerPlayerEntity player, DragonAncestry ancestry, Vec3d eye, Vec3d look) {
+    /**
+     * Everyone who can see the breather (and the breather, if a player) draws the cone on their own client.
+     * NPCs that breathe (the Dragon Temple's Templars) use this too.
+     */
+    public static void sendVisuals(Entity player, DragonAncestry ancestry, Vec3d eye, Vec3d look) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeVarInt(player.getId());
         buf.writeVarInt(ancestry.getValue());
@@ -378,7 +382,9 @@ public final class BreathWeapon {
                 ServerPlayNetworking.send(viewer, S2C_BREATH, PacketByteBufs.copy(buf));
             }
         }
-        ServerPlayNetworking.send(player, S2C_BREATH, buf);
+        if (player instanceof ServerPlayerEntity self) {
+            ServerPlayNetworking.send(self, S2C_BREATH, buf);
+        }
     }
 
     // --- cooldown ---

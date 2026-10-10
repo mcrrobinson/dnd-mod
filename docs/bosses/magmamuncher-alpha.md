@@ -34,6 +34,7 @@ It's immune to fire and lava, and its bites knock you back hard. It hunts player
 | Enchanted book: Fire Protection IV or Fire Aspect II | 1 | killed by a player, 25% chance (+5% per Looting level) |
 | [Staff of Fire](../items/staffs.md) | 1 | killed by a player, 25% chance (+5% per Looting level) |
 | [Heart of the Furnace](../items/magic-items.md#heart-of-the-furnace) (Rare, unidentified) | 1 | killed by a player, 20% chance (+5% per Looting level) |
+| A Rare magic item, unidentified ([Magic loot](../systems/magic-loot.md)) | 1 | killed by a player, 50% chance |
 
 It's worth 100 XP.
 

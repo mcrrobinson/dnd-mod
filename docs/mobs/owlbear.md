@@ -25,7 +25,7 @@ When its target is 5 to 16 blocks away, in sight, and within 3 blocks of its hei
 3. The first living thing in its path takes 12 damage (1.5 times its swipe) and is thrown back and up.
 4. If it runs into a wall or a tree instead, it's stunned for 2.5 seconds. It can't move or attack, and crit particles circle its head.
 
-It charges at most once every 6 seconds.
+It charges at most once every 6 seconds (every 4 seconds below half health for Grimclaw, the Goblin Warren's champion: see [Dungeon encounters](../systems/dungeon-encounters.md)).
 
 ### Bear hug
 A swipe that lands has a 35% chance to turn into a hug. This only works on targets up to 1.5 blocks wide that aren't riding anything and aren't in creative mode.

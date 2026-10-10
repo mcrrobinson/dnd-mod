@@ -9,7 +9,7 @@ import net.minecraft.util.math.BlockBox;
 
 /**
  * The safe room at the foot of the stair: a cold campfire to rest by, before the first fight. In
- * the Crypt, sarcophagi line its walls.
+ * the Crypt, sarcophagi line its walls; in the Goblin Warren, hide lean-tos.
  */
 public class AntechamberPiece extends DungeonPiece {
     public AntechamberPiece(Info info, BlockBox box, long seed, int roomId, RoomRole role, int height, List<Door> doors) {
@@ -36,6 +36,10 @@ public class AntechamberPiece extends DungeonPiece {
             // The dead laid out along the walls, either side of the doorways
             CryptDressing.wallSarcophagi(b, w, d, 3, 0.5F);
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.6F);
+        } else if (WarrenDressing.applies(this)) {
+            // The goblins' sleeping den: hide lean-tos along the walls
+            WarrenDressing.wallProps(b, w, d, 3, 0.6F, false);
+            CryptDressing.cornerCobwebs(b, w, d, this.height, 0.4F);
         }
     }
 }

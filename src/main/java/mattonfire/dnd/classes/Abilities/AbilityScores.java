@@ -196,6 +196,7 @@ public final class AbilityScores {
     public static void bootstrap() {
         ClassAbilities.validateAll();
         register(CLASS, AbilityScores::classContribution);
+        register(AbilityIncreases.ASI, AbilityIncreases::contribute);
         register(ADMIN, (player, c) -> {
             for (Ability a : Ability.values()) {
                 Integer score = override(player, a);

@@ -181,7 +181,7 @@ public final class RaceLifecycle {
             player.sendMessage(Text.literal("Body: " + String.join(", ", stats) + ".").formatted(Formatting.GREEN),
                     false);
         }
-        player.sendMessage(Text.literal("Ability scores: " + info.abilityText() + " (once ability scores arrive).")
+        player.sendMessage(Text.literal("Ability scores: " + info.abilityText() + ".")
                 .formatted(Formatting.AQUA), false);
         player.sendMessage(Text.literal("Traits (coming soon): " + ClassInfo.joinForGame(info.traits()))
                 .formatted(Formatting.DARK_PURPLE), false);

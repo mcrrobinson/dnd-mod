@@ -167,13 +167,14 @@ hotbar 0
 wait 5
 use
 wait 10
-page 3
+# Pages 3 and 4 are the party role pages
+page 5
 wait 3
 screenshot v-guide-subclasses
-page 4
+page 6
 wait 3
 screenshot v-guide-sub1
-page 5
+page 7
 wait 3
 screenshot v-guide-sub2
 closescreen

@@ -5,6 +5,9 @@ import java.util.List;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
 import mattonfire.dnd.classes.Blocks.HoardCofferBlock;
 import mattonfire.dnd.classes.Blocks.HoardCofferBlockEntity;
+import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
+import mattonfire.dnd.classes.Obstacles.ObstacleType;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.dungeon.DungeonLoot;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.dungeon.RoomRole;
@@ -246,6 +249,11 @@ public abstract class DungeonPiece extends StructurePiece {
         final DungeonTheme.Palette palette;
         private BlockPos ward;
         private final List<BlockPos> spawnPoints = new ArrayList<>();
+        /** Extra room data handed to the ward with its setup (puzzle rooms, class-check gates). */
+        @Nullable
+        mattonfire.dnd.dungeon.PuzzleState puzzle;
+        @Nullable
+        mattonfire.dnd.dungeon.GateState gate;
 
         Builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
             this.world = world;
@@ -395,6 +403,38 @@ public abstract class DungeonPiece extends StructurePiece {
             }
         }
 
+        /**
+         * Local (x, z) of the 3 doorway columns of {@code door}, {@code depthIn} blocks into the wall
+         * (0 = outer skin, 1 = inner wall), in order along the wall.
+         */
+        List<int[]> doorwayColumns(Door door, int depthIn) {
+            BlockBox box = DungeonPiece.this.boundingBox;
+            int w = DungeonPiece.this.width();
+            int d = DungeonPiece.this.depth();
+            boolean alongX = door.side().getAxis() == Direction.Axis.Z;
+            int centre = alongX ? door.along() - box.getMinX() : door.along() - box.getMinZ();
+            List<int[]> columns = new ArrayList<>();
+            for (int t = -DOOR_WIDTH / 2; t <= DOOR_WIDTH / 2; t++) {
+                columns.add(switch (door.side()) {
+                    case NORTH -> new int[]{centre + t, depthIn};
+                    case SOUTH -> new int[]{centre + t, d - 1 - depthIn};
+                    case WEST -> new int[]{depthIn, centre + t};
+                    default -> new int[]{w - 1 - depthIn, centre + t};
+                });
+            }
+            return columns;
+        }
+
+        /**
+         * One block of a class-gated obstacle (Area 1) at local (x, y, z), through {@link ObstaclePlacer}
+         * so it's only written in this chunk. Returns its world position either way.
+         */
+        BlockPos obstacle(int x, int y, int z, ObstacleType type, Tier tier, boolean critical, long groupSeed) {
+            BlockPos pos = this.pos(x, y, z);
+            ObstaclePlacer.place(this.world, this.chunkBox, pos, type, tier, critical, groupSeed);
+            return pos;
+        }
+
         /** Where the room's ward goes (local); placed after the build, once its data is complete. */
         void ward(int x, int y, int z) {
             this.ward = this.pos(x, y, z);
@@ -413,6 +453,12 @@ public abstract class DungeonPiece extends StructurePiece {
             if (this.world.getBlockEntity(this.ward) instanceof DungeonWardBlockEntity ward) {
                 ward.setup(DungeonPiece.this.info.startKey(), DungeonPiece.this.roomId, DungeonPiece.this.role,
                         DungeonPiece.this.boundingBox, this.spawnPoints, DungeonPiece.this.summary);
+                if (this.puzzle != null) {
+                    ward.setPuzzle(this.puzzle);
+                }
+                if (this.gate != null) {
+                    ward.setGate(this.gate);
+                }
             }
         }
 

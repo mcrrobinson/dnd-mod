@@ -8,6 +8,7 @@ import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
 import mattonfire.dnd.classes.Blocks.FastBrewingStandBlock;
 import mattonfire.dnd.classes.Blocks.HoardCofferBlock;
 import mattonfire.dnd.classes.Blocks.HoardCofferBlockEntity;
+import mattonfire.dnd.classes.Blocks.RuneBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
@@ -52,6 +53,12 @@ public class ModBlocks {
         public static final BlockEntityType<HoardCofferBlockEntity> HOARD_COFFER_ENTITY = FabricBlockEntityTypeBuilder
                         .create(HoardCofferBlockEntity::new, HOARD_COFFER).build(null);
 
+        /** A rune pillar's turning face in a dungeon puzzle room (see RuneBlock). Unbreakable. */
+        public static final RuneBlock RUNE_BLOCK = new RuneBlock(
+                        FabricBlockSettings.of(Material.STONE).strength(-1.0F, 3600000.0F).dropsNothing()
+                                        .luminance(state -> 5).sounds(BlockSoundGroup.DEEPSLATE_BRICKS)
+                                        .allowsSpawning((state, world, pos, type) -> false));
+
         public static void registerBlocks() {
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "arcane_seal"), ARCANE_SEAL);
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "dungeon_ward"), DUNGEON_WARD);
@@ -66,6 +73,9 @@ public class ModBlocks {
                 Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, "fast_brewing_stand"),
                                 new BlockItem(FAST_BREWING_STAND_BLOCK, new FabricItemSettings().maxCount(64)));
                 Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "hoard_coffer"), HOARD_COFFER);
+                Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "rune_block"), RUNE_BLOCK);
+                Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, "rune_block"),
+                                new BlockItem(RUNE_BLOCK, new FabricItemSettings()));
                 Registry.register(Registries.BLOCK_ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, "hoard_coffer"),
                                 HOARD_COFFER_ENTITY);
         }

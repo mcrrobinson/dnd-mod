@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import mattonfire.dnd.dungeon.DungeonState;
+import mattonfire.dnd.dungeon.GateKind;
 import mattonfire.dnd.dungeon.RoomRole;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructurePiece;
@@ -89,6 +90,19 @@ public final class DungeonPlanner {
         }
         roles.add(RoomRole.CHAMPION);
         return roles;
+    }
+
+    /**
+     * The class-check gate for a gate room or a side vault. The check that keeps the route open: a gate
+     * on the main path must let at least two classes through or have a bypass anyone can use (see
+     * {@link GateKind#mainPathSafe()}); only optional side rooms get strict gates.
+     */
+    static GateKind gateFor(RoomRole role, Random random) {
+        GateKind kind = GateKind.pick(role, random);
+        if (!role.branch() && !kind.mainPathSafe()) {
+            throw new IllegalStateException("Gate " + kind + " would leave the main path to one class");
+        }
+        return kind;
     }
 
     /** Rooms the path has to go straight through. */

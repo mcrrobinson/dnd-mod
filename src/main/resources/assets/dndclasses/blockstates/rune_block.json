@@ -1,0 +1,94 @@
+{
+  "variants": {
+    "facing=north,glyph=0": {
+      "model": "dndclasses:block/rune_sun"
+    },
+    "facing=east,glyph=0": {
+      "model": "dndclasses:block/rune_sun",
+      "y": 90
+    },
+    "facing=south,glyph=0": {
+      "model": "dndclasses:block/rune_sun",
+      "y": 180
+    },
+    "facing=west,glyph=0": {
+      "model": "dndclasses:block/rune_sun",
+      "y": 270
+    },
+    "facing=north,glyph=1": {
+      "model": "dndclasses:block/rune_moon"
+    },
+    "facing=east,glyph=1": {
+      "model": "dndclasses:block/rune_moon",
+      "y": 90
+    },
+    "facing=south,glyph=1": {
+      "model": "dndclasses:block/rune_moon",
+      "y": 180
+    },
+    "facing=west,glyph=1": {
+      "model": "dndclasses:block/rune_moon",
+      "y": 270
+    },
+    "facing=north,glyph=2": {
+      "model": "dndclasses:block/rune_eye"
+    },
+    "facing=east,glyph=2": {
+      "model": "dndclasses:block/rune_eye",
+      "y": 90
+    },
+    "facing=south,glyph=2": {
+      "model": "dndclasses:block/rune_eye",
+      "y": 180
+    },
+    "facing=west,glyph=2": {
+      "model": "dndclasses:block/rune_eye",
+      "y": 270
+    },
+    "facing=north,glyph=3": {
+      "model": "dndclasses:block/rune_flame"
+    },
+    "facing=east,glyph=3": {
+      "model": "dndclasses:block/rune_flame",
+      "y": 90
+    },
+    "facing=south,glyph=3": {
+      "model": "dndclasses:block/rune_flame",
+      "y": 180
+    },
+    "facing=west,glyph=3": {
+      "model": "dndclasses:block/rune_flame",
+      "y": 270
+    },
+    "facing=north,glyph=4": {
+      "model": "dndclasses:block/rune_crown"
+    },
+    "facing=east,glyph=4": {
+      "model": "dndclasses:block/rune_crown",
+      "y": 90
+    },
+    "facing=south,glyph=4": {
+      "model": "dndclasses:block/rune_crown",
+      "y": 180
+    },
+    "facing=west,glyph=4": {
+      "model": "dndclasses:block/rune_crown",
+      "y": 270
+    },
+    "facing=north,glyph=5": {
+      "model": "dndclasses:block/rune_skull"
+    },
+    "facing=east,glyph=5": {
+      "model": "dndclasses:block/rune_skull",
+      "y": 90
+    },
+    "facing=south,glyph=5": {
+      "model": "dndclasses:block/rune_skull",
+      "y": 180
+    },
+    "facing=west,glyph=5": {
+      "model": "dndclasses:block/rune_skull",
+      "y": 270
+    }
+  }
+}

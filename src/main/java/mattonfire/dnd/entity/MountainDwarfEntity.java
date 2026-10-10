@@ -76,6 +76,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     public static final Identifier BARTER_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_barter");
     /** What dwarves barter to players they honour (Honored and Exalted). */
     public static final Identifier HONORED_BARTER_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_barter_honored");
+    /** Kin stock: an extra roll for Dwarves only, usually nothing, sometimes Dwarven Plate or the Waraxe. */
+    public static final Identifier KIN_STOCK_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_kin_stock");
     private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
     /** How long after hitting a dwarf a player still counts as its kin's enemy. */
     private static final int KIN_GRUDGE_TICKS = 20 * 10;
@@ -309,6 +311,10 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         // Friends of the mountain sometimes get a second helping.
         if (this.random.nextFloat() < TierEffects.secondBarterRollChance(tier)) {
             loot.addAll(this.rollBarter(world, table));
+        }
+        // Kin stock (Dwarves only, not the interim Gnome kin): the racial gear.
+        if (KinStock.isKin(player, this)) {
+            loot.addAll(this.rollBarter(world, world.getServer().getLootManager().getTable(KIN_STOCK_LOOT)));
         }
         this.swingHand(Hand.OFF_HAND);
         for (ItemStack stack : loot) {

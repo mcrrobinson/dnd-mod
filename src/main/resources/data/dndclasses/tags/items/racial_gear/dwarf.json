@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:dwarven_plate_helmet",
+    "dndclasses:dwarven_plate_chestplate",
+    "dndclasses:dwarven_plate_leggings",
+    "dndclasses:dwarven_plate_boots",
+    "dndclasses:dwarven_waraxe"
+  ]
+}

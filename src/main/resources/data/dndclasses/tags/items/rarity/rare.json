@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:draconic_scale_helmet",
+    "dndclasses:draconic_scale_chestplate",
+    "dndclasses:draconic_scale_leggings",
+    "dndclasses:draconic_scale_boots",
+    "dndclasses:infernal_regalia_helmet",
+    "dndclasses:infernal_regalia_chestplate",
+    "dndclasses:infernal_regalia_leggings",
+    "dndclasses:infernal_regalia_boots"
+  ]
+}

@@ -31,6 +31,9 @@ Each trade has 12 uses and restocks every morning. Prices follow your standing w
 | Potion of Fire Resistance (8:00) | 4 |
 | Explorer map to the nearest unexplored dragon lair | 12 |
 | Explorer map to the nearest unexplored frost lair | 12 |
+| **Dragonborn only:** [Draconic Scale](../items/armor.md#racial-armor) helmet, chestplate, leggings, boots | 12, 20, 18, 10 |
+
+The Draconic Scale is kin stock: only Dragonborn players see those four offers (after the others).
 
 | Buys (the wyvern and drake drops) | For |
 |-|-|
@@ -54,11 +57,10 @@ Only in Dragon Temples, where Templars also spawn naturally on the terrace (up t
 - `/summon dndclasses:dragonborn_templar` and `/summon dndclasses:dragonborn_elder`
 
 ## Known limitations
-- The Elder doesn't sell Draconic Scale armour yet (racial gear ticket).
 - Templars don't throw their tridents.
 
 ## For developers
-- `entity/DragonbornEntity` (base: variant, `getAncestry`, home and ranges, defence), `DragonbornTemplarEntity` (`Angerable`, `BreathGoal`, `breathe`), `DragonbornElderEntity` (`Merchant`, `ELDER_TAG`), `DragonbornTrades` (`KIN_STOCK` hook), `TempleLaw`.
+- `entity/DragonbornEntity` (base: variant, `getAncestry`, home and ranges, defence), `DragonbornTemplarEntity` (`Angerable`, `BreathGoal`, `breathe`), `DragonbornElderEntity` (`Merchant`, `ELDER_TAG`), `DragonbornTrades`, kin stock through `KinStock` / `KinStockOffers.dragonTemple`, `TempleLaw`.
 - The breath visuals reuse `BreathWeapon.sendVisuals` and `BreathWeapon.playSound` (now public and taking any entity). Logs `[DragonTemple] Templar <name> breathed <ancestry> at <target> (<n> hit)`.
 - Renderer: `RacialHumanoidRenderer.dragonborn` / `dragonbornElder` (`Look DRAGONBORN`); the head feature uses each NPC's ancestry.
 - `ModSpawns.canTemplarSpawn` (in a temple piece, at most 7 within 48 blocks).

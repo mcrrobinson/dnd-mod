@@ -1,0 +1,20 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:elven_chain_helmet",
+    "dndclasses:elven_chain_chestplate",
+    "dndclasses:elven_chain_leggings",
+    "dndclasses:elven_chain_boots",
+    "dndclasses:dwarven_plate_helmet",
+    "dndclasses:dwarven_plate_chestplate",
+    "dndclasses:dwarven_plate_leggings",
+    "dndclasses:dwarven_plate_boots",
+    "dndclasses:orcish_warplate_helmet",
+    "dndclasses:orcish_warplate_chestplate",
+    "dndclasses:orcish_warplate_leggings",
+    "dndclasses:orcish_warplate_boots",
+    "dndclasses:elven_longbow",
+    "dndclasses:dwarven_waraxe",
+    "dndclasses:orcish_greataxe"
+  ]
+}

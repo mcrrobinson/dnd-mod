@@ -48,6 +48,8 @@ public class DragonbornElderEntity extends DragonbornEntity implements Merchant 
     @Nullable
     private TradeOfferList offers;
     private long lastRestockDay = Long.MIN_VALUE;
+    /** Draconic Scale, for Dragonborn only. */
+    private final KinStock kinStock = new KinStock(KinStockOffers::dragonTemple);
 
     public DragonbornElderEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -106,6 +108,7 @@ public class DragonbornElderEntity extends DragonbornEntity implements Merchant 
             this.lastRestockDay = today;
             if (this.offers != null) {
                 this.offers.forEach(TradeOffer::resetUses);
+                this.kinStock.restock();
             }
         }
     }
@@ -158,6 +161,9 @@ public class DragonbornElderEntity extends DragonbornEntity implements Merchant 
         if (customer == null && this.offers != null) {
             this.offers.forEach(TradeOffer::clearSpecialPrice);
         }
+        if (!this.world.isClient) {
+            this.kinStock.setCustomer(this, customer, this.baseOffers());
+        }
         this.customer = customer;
     }
 
@@ -167,8 +173,13 @@ public class DragonbornElderEntity extends DragonbornEntity implements Merchant 
         return this.customer;
     }
 
+    /** What the Elder shows the current customer: the normal offers, plus Draconic Scale for Dragonborn. */
     @Override
     public TradeOfferList getOffers() {
+        return this.kinStock.view(this.baseOffers());
+    }
+
+    private TradeOfferList baseOffers() {
         if (this.offers == null) {
             this.offers = this.world instanceof ServerWorld serverWorld
                     ? DragonbornTrades.elder(serverWorld, this.getBlockPos(), this.random)
@@ -229,6 +240,7 @@ public class DragonbornElderEntity extends DragonbornEntity implements Merchant 
         if (this.offers != null) {
             nbt.put("Offers", this.offers.toNbt());
         }
+        this.kinStock.write(nbt);
     }
 
     @Override
@@ -240,5 +252,6 @@ public class DragonbornElderEntity extends DragonbornEntity implements Merchant 
         if (nbt.contains("Offers")) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
+        this.kinStock.read(nbt);
     }
 }

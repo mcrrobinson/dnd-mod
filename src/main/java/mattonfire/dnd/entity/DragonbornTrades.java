@@ -1,8 +1,5 @@
 package mattonfire.dnd.entity;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
@@ -35,6 +32,8 @@ import net.minecraft.world.gen.structure.Structure;
  * <li>Buys the wyvern and drake drops (from {@code loot_tables/entities/*wyvern*}, {@code frost_drake} and
  * {@code lightning_chaser}): phantom membrane, magma cream, blaze powder, blue ice, copper blocks and
  * netherite scrap, for 3-8 emeralds.</li>
+ * <li>Kin stock, to Dragonborn only: Draconic Scale ({@link KinStockOffers#dragonTemple()}, shown through
+ * {@link KinStock}).</li>
  * </ul>
  */
 public final class DragonbornTrades {
@@ -47,12 +46,6 @@ public final class DragonbornTrades {
             new Identifier(DnDClasses.MOD_ID, "dragon_temple_maps/dragon_lair"));
     public static final TagKey<Structure> FROST_LAIR_MAPS = TagKey.of(RegistryKeys.STRUCTURE,
             new Identifier(DnDClasses.MOD_ID, "dragon_temple_maps/frost_lair"));
-
-    /**
-     * Kin stock: Draconic Scale armour (Dragonborn only). Hook for the "Add racial gear and kin-only trades"
-     * ticket, which owns the gear and the rule that only kin see these offers; nothing registers here yet.
-     */
-    public static final List<Function<Random, TradeOffer>> KIN_STOCK = new ArrayList<>();
 
     private DragonbornTrades() {
     }
@@ -76,9 +69,6 @@ public final class DragonbornTrades {
         offers.add(buy(Items.BLUE_ICE, 2, 5));
         offers.add(buy(Items.COPPER_BLOCK, 2, 3));
         offers.add(buy(Items.NETHERITE_SCRAP, 1, 8));
-        for (Function<Random, TradeOffer> kin : KIN_STOCK) {
-            offers.add(kin.apply(random));
-        }
         return offers;
     }
 

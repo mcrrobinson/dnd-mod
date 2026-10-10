@@ -45,6 +45,9 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
     @Nullable
     private TradeOfferList offers;
     private long lastRestockDay = Long.MIN_VALUE;
+    /** The Speaker's Elven Chain, for Elves only. The Fletcher has none. */
+    private final KinStock kinStock = new KinStock(
+            () -> this.isSpeaker() ? KinStockOffers.elvenSpeaker() : new TradeOfferList());
 
     public ElfMerchantEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -117,6 +120,7 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
             this.lastRestockDay = today;
             if (this.offers != null) {
                 this.offers.forEach(TradeOffer::resetUses);
+                this.kinStock.restock();
                 if (this.isSpeaker()) {
                     ElfTrades.newDailyBook(this.offers, this.random);
                 }
@@ -172,6 +176,9 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
         if (customer == null && this.offers != null) {
             this.offers.forEach(TradeOffer::clearSpecialPrice);
         }
+        if (!this.world.isClient) {
+            this.kinStock.setCustomer(this, customer, this.baseOffers());
+        }
         this.customer = customer;
     }
 
@@ -181,8 +188,13 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
         return this.customer;
     }
 
+    /** What this merchant shows the current customer: the normal offers, plus kin stock for Elves. */
     @Override
     public TradeOfferList getOffers() {
+        return this.kinStock.view(this.baseOffers());
+    }
+
+    private TradeOfferList baseOffers() {
         if (this.offers == null) {
             this.offers = this.isSpeaker() && this.world instanceof ServerWorld serverWorld
                     ? ElfTrades.speaker(serverWorld, this.getBlockPos(), this.random)
@@ -243,6 +255,7 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
         if (this.offers != null) {
             nbt.put("Offers", this.offers.toNbt());
         }
+        this.kinStock.write(nbt);
     }
 
     @Override
@@ -253,6 +266,8 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
         }
         if (nbt.contains("Offers")) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
+            ElfTrades.addMissing(this.offers, this.isSpeaker());
         }
+        this.kinStock.read(nbt);
     }
 }

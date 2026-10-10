@@ -52,6 +52,7 @@ Temples are the Dragonborn home. A Dragonborn gets:
 - a "Welcome home, Dragonborn" title on arriving
 - Regeneration I in the sanctum while no hostile mob is within 16 blocks
 - 25% off the Elder's trades
+- Kin stock: the Elder sells Dragonborn the [Draconic Scale](../items/armor.md#racial-armor) set (helmet 12, chestplate 20, leggings 18, boots 10 before kin prices); nobody else sees those trades
 - the Blessing of the Ancestors and the Rite of Rebirth
 - a Friendly (150) start with the Dragonsworn
 
@@ -71,7 +72,6 @@ Goblins sometimes [raid](../systems/goblin-raids.md) temples. The war party clim
 - `/dndhome pieces` lists every piece of the temple you're in.
 
 ## Known limitations
-- Draconic Scale armour (Dragonborn kin stock) isn't in yet; `DragonbornTrades.KIN_STOCK` is the hook for the racial gear ticket.
 - Killing lair dragons doesn't raise standing with the Dragonsworn yet: the dragons aren't a faction.
 - The Elder's maps look for a lair within 100 chunks the first time someone opens his trades, which can stall the server for a moment. With no lair in range that map trade is left out.
 - Steep mountainsides don't qualify as sites (the climb under the terrace must be at most 18 blocks), so temples sit on the gentler slopes.

@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_17",
     "mixins": [
         "BowItemMixin",
+        "ElvenChainVibrationMixin",
         "CrossbowItemMixin",
         "ItemStackNameMixin",
         "PlayerEntityMixin",

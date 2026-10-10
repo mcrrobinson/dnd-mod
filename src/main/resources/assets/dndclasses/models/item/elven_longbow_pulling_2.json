@@ -1,0 +1,6 @@
+{
+  "parent": "dndclasses:item/elven_longbow",
+  "textures": {
+    "layer0": "dndclasses:item/elven_longbow_pulling_2"
+  }
+}

@@ -132,7 +132,18 @@ public final class MagicItems {
         register(MagicItemDef.of(ModItems.SCROLL_OF_IDENTIFY, MagicTier.COMMON, MagicKind.SCROLL, "scroll"));
         register(MagicItemDef.of(ModItems.SCROLL_OF_REMOVE_CURSE, MagicTier.RARE, MagicKind.SCROLL, "scroll"));
         register(MagicItemDef.of(Tavern.ALE, MagicTier.COMMON, MagicKind.CONSUMABLE, "drink"));
-        // The 14 class armor sets: every ArmorItem the mod registers
+        // Racial gear (kin stock). Also tagged #dndclasses:rarity/<tier> and #dndclasses:racial_gear/<race>.
+        register(MagicItemDef.of(ModItems.ELVEN_LONGBOW, MagicTier.UNCOMMON, MagicKind.WEAPON, "bow"));
+        register(MagicItemDef.of(ModItems.DWARVEN_WARAXE, MagicTier.UNCOMMON, MagicKind.WEAPON, "axe"));
+        register(MagicItemDef.of(ModItems.ORCISH_GREATAXE, MagicTier.UNCOMMON, MagicKind.WEAPON, "axe"));
+        register(MagicItemDef.of(ModItems.HALFLING_SLING, MagicTier.COMMON, MagicKind.WEAPON, "sling"));
+        for (Item item : new Item[] { ModItems.DRACONIC_SCALE_HELMET, ModItems.DRACONIC_SCALE_CHESTPLATE,
+                ModItems.DRACONIC_SCALE_LEGGINGS, ModItems.DRACONIC_SCALE_BOOTS, ModItems.INFERNAL_REGALIA_HELMET,
+                ModItems.INFERNAL_REGALIA_CHESTPLATE, ModItems.INFERNAL_REGALIA_LEGGINGS,
+                ModItems.INFERNAL_REGALIA_BOOTS }) {
+            register(MagicItemDef.of(item, MagicTier.RARE, MagicKind.ARMOR, typeOf(item)));
+        }
+        // The 14 class armor sets and the other racial sets (Uncommon): every ArmorItem the mod registers
         for (Item item : Registries.ITEM) {
             Identifier id = Registries.ITEM.getId(item);
             if (id.getNamespace().equals(DnDClasses.MOD_ID) && item instanceof ArmorItem && !DEFS.containsKey(item)) {

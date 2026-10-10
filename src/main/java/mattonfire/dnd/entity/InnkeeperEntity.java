@@ -57,6 +57,8 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
     private String innName;
     /** Real uses of the Room Key offer while it's shown sold out to this customer; -1 when it isn't. */
     private int roomKeyUsesHeld = -1;
+    /** The Halfling Sling, for Halflings only. */
+    private final KinStock kinStock = new KinStock(KinStockOffers::halflingInnkeeper);
 
     public InnkeeperEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -133,6 +135,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
             this.lastRestockDay = today;
             if (this.offers != null) {
                 this.offers.forEach(TradeOffer::resetUses);
+                this.kinStock.restock();
             }
         }
     }
@@ -246,6 +249,9 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
             this.offers.forEach(TradeOffer::clearSpecialPrice);
             this.releaseRoomKeyOffer();
         }
+        if (!this.world.isClient) {
+            this.kinStock.setCustomer(this, customer, this.baseOffers());
+        }
         this.customer = customer;
     }
 
@@ -268,8 +274,13 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         return this.customer;
     }
 
+    /** What the innkeeper shows the current customer: the normal offers, plus kin stock for Halflings. */
     @Override
     public TradeOfferList getOffers() {
+        return this.kinStock.view(this.baseOffers());
+    }
+
+    private TradeOfferList baseOffers() {
         if (this.offers == null) {
             this.offers = InnkeeperTrades.create();
         } else {
@@ -347,6 +358,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
                 this.holdRoomKeyOffer();
             }
         }
+        this.kinStock.write(nbt);
         if (this.innBox != null) {
             nbt.putIntArray("InnBox", new int[]{this.innBox.getMinX(), this.innBox.getMinY(), this.innBox.getMinZ(),
                     this.innBox.getMaxX(), this.innBox.getMaxY(), this.innBox.getMaxZ()});
@@ -365,6 +377,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         if (nbt.contains("Offers")) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
+        this.kinStock.read(nbt);
         int[] box = nbt.getIntArray("InnBox");
         if (box.length == 6) {
             this.innBox = new BlockBox(box[0], box[1], box[2], box[3], box[4], box[5]);

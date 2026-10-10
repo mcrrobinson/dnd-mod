@@ -103,14 +103,37 @@
         },
         {
           "type": "minecraft:item",
-          "name": "minecraft:bow",
-          "weight": 15,
-          "functions": [
-            {
-              "function": "minecraft:enchant_with_levels",
-              "levels": 20
-            }
-          ]
+          "name": "dndclasses:elven_longbow",
+          "weight": 15
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:empty",
+          "weight": 80
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:elven_chain_helmet",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:elven_chain_chestplate",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:elven_chain_leggings",
+          "weight": 5
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:elven_chain_boots",
+          "weight": 5
         }
       ]
     }

@@ -23,7 +23,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Dragonborn Breath Weapon](races/breath-weapon.md): R breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
-- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves) and Dragonborn (Dragon Temples): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience, the temple's blessing and rebirth
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves) and Dragonborn (Dragon Temples): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
@@ -98,7 +98,8 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Featherfall](enchantments/featherfall.md): boots enchantment that cuts fall damage and slows big drops
 
 ## Items
-- [Armor](items/armor.md): 14 class sets with full-set and matching-class bonuses
+- [Armor](items/armor.md): 14 class sets with full-set and matching-class bonuses; 5 racial sets (Elven Chain, Dwarven Plate, Orcish Warplate, Draconic Scale, Infernal Regalia) with race bonuses, sold as kin stock (PR #NN)
+- [Racial weapons](items/racial-weapons.md): Elven Longbow (+20% arrow speed, built-in Power I), Dwarven Waraxe (+50% to goblins), Orcish Greataxe and Halfling Sling; kin-only trades (PR #NN)
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute

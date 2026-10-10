@@ -216,6 +216,16 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // The Halfling Sling's cobblestone (classes/Items/racial/HalflingSlingItem)
+    public static final EntityType<SlingStoneEntity> SLING_STONE = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "sling_stone"),
+            FabricEntityTypeBuilder.<SlingStoneEntity>create(SpawnGroup.MISC, SlingStoneEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.25f, 0.25f))
+                    .trackRangeBlocks(4).trackedUpdateRate(10)
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LairDragonEntity.createLairDragonAttributes());

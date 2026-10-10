@@ -1,0 +1,165 @@
+# Racial armor: set bonus for anyone, race bonus only for the matching race.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/racial-gear.txt
+# Expect in latest.log (ActiveEffects ids: 1 Speed, 3 Haste, 5 Strength, 11 Resistance, 12 Fire Resistance):
+#   elven_chain: elf and human both Speed I only; dwarven_plate: dwarf Resistance + Haste, human Resistance only;
+#   orcish_warplate after instant damage (under half health): halforc Strength + Resistance, human Strength only;
+#   infernal_regalia: Fire Resistance for both;
+#   draconic_scale: frost dragonborn takes no damage from /damage ... freeze (health stays 20), human takes it.
+wait 40
+closescreen
+/gamemode survival
+/tp @s 0.5 150 0.5 0 0
+/effect give @s minecraft:slow_falling 600 0 true
+/clear @s
+/dndrace set @s elf
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:elven_chain_helmet
+/item replace entity @s armor.chest with dndclasses:elven_chain_chestplate
+/item replace entity @s armor.legs with dndclasses:elven_chain_leggings
+/item replace entity @s armor.feet with dndclasses:elven_chain_boots
+wait 20
+/say SET elven_chain RACE elf
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s human
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:elven_chain_helmet
+/item replace entity @s armor.chest with dndclasses:elven_chain_chestplate
+/item replace entity @s armor.legs with dndclasses:elven_chain_leggings
+/item replace entity @s armor.feet with dndclasses:elven_chain_boots
+wait 20
+/say SET elven_chain RACE human
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s dwarf
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:dwarven_plate_helmet
+/item replace entity @s armor.chest with dndclasses:dwarven_plate_chestplate
+/item replace entity @s armor.legs with dndclasses:dwarven_plate_leggings
+/item replace entity @s armor.feet with dndclasses:dwarven_plate_boots
+wait 20
+/say SET dwarven_plate RACE dwarf
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s human
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:dwarven_plate_helmet
+/item replace entity @s armor.chest with dndclasses:dwarven_plate_chestplate
+/item replace entity @s armor.legs with dndclasses:dwarven_plate_leggings
+/item replace entity @s armor.feet with dndclasses:dwarven_plate_boots
+wait 20
+/say SET dwarven_plate RACE human
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s halforc
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:orcish_warplate_helmet
+/item replace entity @s armor.chest with dndclasses:orcish_warplate_chestplate
+/item replace entity @s armor.legs with dndclasses:orcish_warplate_leggings
+/item replace entity @s armor.feet with dndclasses:orcish_warplate_boots
+/effect give @s minecraft:instant_damage 1 1 true
+wait 30
+wait 20
+/say SET orcish_warplate RACE halforc
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s human
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:orcish_warplate_helmet
+/item replace entity @s armor.chest with dndclasses:orcish_warplate_chestplate
+/item replace entity @s armor.legs with dndclasses:orcish_warplate_leggings
+/item replace entity @s armor.feet with dndclasses:orcish_warplate_boots
+/effect give @s minecraft:instant_damage 1 1 true
+wait 30
+wait 20
+/say SET orcish_warplate RACE human
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s dragonborn frost
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:draconic_scale_helmet
+/item replace entity @s armor.chest with dndclasses:draconic_scale_chestplate
+/item replace entity @s armor.legs with dndclasses:draconic_scale_leggings
+/item replace entity @s armor.feet with dndclasses:draconic_scale_boots
+wait 20
+/say SET draconic_scale RACE dragonborn frost
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/damage @s 4 minecraft:freeze
+wait 5
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s human
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:draconic_scale_helmet
+/item replace entity @s armor.chest with dndclasses:draconic_scale_chestplate
+/item replace entity @s armor.legs with dndclasses:draconic_scale_leggings
+/item replace entity @s armor.feet with dndclasses:draconic_scale_boots
+wait 20
+/say SET draconic_scale RACE human
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/damage @s 4 minecraft:freeze
+wait 5
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s tiefling
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:infernal_regalia_helmet
+/item replace entity @s armor.chest with dndclasses:infernal_regalia_chestplate
+/item replace entity @s armor.legs with dndclasses:infernal_regalia_leggings
+/item replace entity @s armor.feet with dndclasses:infernal_regalia_boots
+wait 20
+/say SET infernal_regalia RACE tiefling
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+/dndrace set @s human
+wait 10
+closescreen
+/effect clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/item replace entity @s armor.head with dndclasses:infernal_regalia_helmet
+/item replace entity @s armor.chest with dndclasses:infernal_regalia_chestplate
+/item replace entity @s armor.legs with dndclasses:infernal_regalia_leggings
+/item replace entity @s armor.feet with dndclasses:infernal_regalia_boots
+wait 20
+/say SET infernal_regalia RACE human
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/effect give @s minecraft:instant_health 1 3 true
+screenshot racial-gear
+quit

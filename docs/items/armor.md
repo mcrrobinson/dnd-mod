@@ -1,5 +1,5 @@
 # Armor
-Fourteen class-themed armor sets. A full set gives a bonus to anyone, boosted when your class matches the set.
+Fourteen class-themed armor sets and five racial sets. A full set gives a bonus to anyone, boosted when your class (or, for the racial sets, your race) matches the set.
 
 ![Armor stands wearing, from left: Thief, Assassin, Wizard, Cleric, Blood Hunter, Golden Horns and Holy Armor](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/armor-sets-1.png)
 ![Armor stands wearing, from left: Knight, Warrior, Prismarine, Wooden, Robe, Steampunk and Wither](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/armor-sets-2.png)
@@ -28,8 +28,34 @@ Fourteen class-themed armor sets. A full set gives a bonus to anyone, boosted wh
 | **Steampunk** | Jump Boost I | Artificer | Jump Boost II + Haste I |
 | **Wither** | Jump Boost I | Warlock, Necromancer | Jump Boost II + Strength I |
 
+### Racial armor
+Five sets made by and for one race each, sold as kin stock in that race's home settlement (see [Racial homes](../races/racial-homes.md)). Their tooltip says who they're made for in gold ("Made for Elves"). Anyone can wear them and gets the set bonus; a wearer of the matching race also gets the race bonus. Unlike the class sets, a matching race doesn't raise the set effect's level: it adds the race bonus on top.
+
+| Set | Set bonus (anyone) | Made for | Race bonus | Armor (helmet, chest, legs, boots) | Toughness | Rarity |
+|-|-|-|-|-|-|-|
+| **Elven Chain** | Speed I | Elf | No sculk vibrations while sneaking: sculk sensors, shriekers and wardens ignore everything you do (steps, breaking and placing blocks, hits, eating) | 2, 5, 4, 1 | 1 | Uncommon |
+| **Dwarven Plate** | Resistance I | Dwarf | Haste I | 3, 8, 6, 3 | 2, +10% knockback resistance | Uncommon |
+| **Orcish Warplate** | Strength I while under half health (it wears off about 3 s after you heal above half) | Half-Orc | Resistance I (always) | 3, 7, 6, 2 | 2, +10% knockback resistance | Uncommon |
+| **Draconic Scale** | Fire Resistance | Dragonborn | No damage from your ancestry's element: fire (Ember), freezing, powder snow, frost breath and the Freeze effect (Frost), or lightning (Storm) | 3, 8, 6, 3 | 3 | Rare |
+| **Infernal Regalia** | Fire Resistance | Tiefling | Hellish Rebuke's cooldown is halved | 3, 7, 5, 2 | 2 | Rare |
+
+- **Durability, enchanting and repair:** netherite durability and enchantability 15, like the other sets. Repair with an iron nugget (Elven Chain), iron ingot (Dwarven Plate, Orcish Warplate), diamond (Draconic Scale) or netherite scrap (Infernal Regalia).
+- **Stealth:** the Dwarven Plate and Orcish Warplate chestplates are heavy armor (`#dndclasses:heavy_armor`) for [Stealth](../systems/stealth-and-perception.md).
+- **Check a bonus:** wear the full set and read your effects with `/data get entity @s ActiveEffects`, or watch the effect icons. `/dndrace set <player> <race>` switches race to compare.
+
+| Set | Sold by | Also found |
+|-|-|-|
+| Elven Chain | the Speaker in an [Elven Enclave](../structures/elven-enclaves.md), to Elves only: helmet 10, chestplate 16, leggings 14, boots 8 emeralds | 20% one piece in the Heart Tree chest |
+| Dwarven Plate | dwarves in a [Dwarven Fortress](../structures/dwarven-fortresses.md), as a rare extra barter roll for Dwarves only (1% per piece per gold ingot) | |
+| Draconic Scale | the Elder in a [Dragon Temple](../structures/dragon-temples.md), to Dragonborn only: helmet 12, chestplate 20, leggings 18, boots 10 | |
+| Orcish Warplate | nobody yet (the Orc Stronghold will sell it to Half-Orcs) | |
+| Infernal Regalia | nobody yet (the Brimstone Sanctum will sell it to Tieflings) | |
+
+Kin prices (25% off) apply to these trades too. The racial weapons are on their own page: [Racial weapons](racial-weapons.md).
+
 ## Where to find it / How to get it
 - The mod's creative tab. There are no crafting recipes yet.
+- The racial sets: see [Racial armor](#racial-armor), or `/give @s dndclasses:elven_chain_helmet` (also `dwarven_plate_*`, `orcish_warplate_*`, `draconic_scale_*`, `infernal_regalia_*`).
 
 ## Configuration
 `config/dndclasses/dndclasses.json`:
@@ -38,9 +64,16 @@ Fourteen class-themed armor sets. A full set gives a bonus to anyone, boosted wh
 - `showDescriptions` (default `true`) and `descrtiptionsLength` (default 250, 20-1000): tooltip descriptions and their wrap width.
 
 ## Known limitations
+- Hellish Rebuke doesn't exist yet (it's part of the racial traits update), so the Infernal Regalia's Tiefling bonus does nothing until then: the set exposes `RacialGear.rebukeCooldown(player, ticks)` for it.
+- The Orcish Warplate and Infernal Regalia have no seller until their settlements exist.
+- The racial sets' textures are recoloured from other sets (Wooden, Warrior, Steampunk, Prismarine and Holy Armor) by `tools/racial_gear_textures.py`.
 - The Wither set has no boots in the creative tab (`/give @s dndclasses:wither_boots` works).
 - The Thief set's items are named `rogue_*`.
 - Prismarine, Holy Armor, Robe, Steampunk, Warrior, Wither and Wooden render as layered vanilla-style armor, not 3D models. Their capes, shoulder pads and gears have textures but no model yet. Holy Armor's layers are a placeholder recoloured from the Warrior set (its own texture is for a model that was never added).
 
 ## For developers
 - Items: `Items/*ArmorItem` on `Items/lib/FAArmorItem` (GeckoLib armor, `ArmorMaterials.NETHERITE`) or `Items/lib/DndArmorItem` (vanilla `ArmorItem` with `Items/lib/ModArmorMaterials`, rendered by `Client/Render/LayeredArmorRenderer` from `textures/models/armor/<set>/{body,leggings}_{lower,middle,upper}.png`). Set logic: `Items/lib/SetBonusArmor`, `Items/lib/FAArmorEffectHandler`. Devscript: `armor-class-bonus.txt`.
+- Racial sets: `Items/racial/*ArmorItem` on `DndArmorItem`. `SetBonusArmor` extends `Items/lib/RacialGearItem` (`getMatchingRaces()`, also used by the racial weapons) and adds `getMatchingRaceEffects(wearer)` and `getFullSetEffects(wearer)` (for conditional bonuses such as the Warplate's). `FAArmorEffectHandler.raceMatches` / `wearsKinSet` check the wearer's active race (`RaceLifecycle.activeRaceOf`, so `/gamerule dndRaces false` turns race bonuses off). An effect is refreshed once it has run 18 ticks, so a short conditional effect ends soon after its condition does.
+- The race bonuses that aren't status effects are in `Items/racial/RacialGear`: `silencesVibrations` (`ElvenChainVibrationMixin` on `Entity.occludeVibrationSignals`), `immuneTo` and `blocksEffect` (`LivingEntityMixin`, cancelling `damage` and `canHaveStatusEffect`; elements by damage type tag `is_fire`, `is_freezing`, `is_lightning`), and `rebukeCooldown` (a hook for Hellish Rebuke).
+- `ArmorTooltips.appendRaces` adds the gold "Made for ..." line (lang `tooltip.dndclasses.racial_gear.*`). Devscript: `racial-gear.txt` (each set worn by its race and by a Human, with `ActiveEffects` and `Health` in the log).
+- Magic item tiers are in `MagicItems.registerDefaults` (Draconic Scale and Infernal Regalia Rare, the rest Uncommon), and the tags `#dndclasses:rarity/<common|uncommon|rare>` and `#dndclasses:racial_gear/<race>` list the racial gear for the magic items area (e.g. attunement "by a Dwarf").

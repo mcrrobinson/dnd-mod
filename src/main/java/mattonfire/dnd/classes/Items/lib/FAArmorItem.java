@@ -80,6 +80,7 @@ public abstract class FAArmorItem extends ArmorItem implements GeoItem, SetBonus
 
     @Override
     public void appendTooltip(ItemStack stack, World world, List<Text> tooltip, TooltipContext context) {
+        ArmorTooltips.appendRaces(this.getMatchingRaces(), tooltip);
         if (FAConfig.getValues().showDescriptions()) {
             super.appendTooltip(stack, world, tooltip, context);
 

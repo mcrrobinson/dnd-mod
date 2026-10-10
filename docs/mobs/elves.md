@@ -25,8 +25,10 @@ Each trade has 12 uses and restocks every morning. Prices follow your [standing]
 
 | Merchant | Sells | Buys for 1 emerald |
 |-|-|-|
-| Fletcher | 16 arrows for 1 emerald; 4 tipped arrows of Slowness or of Poison for 2; a bow with Power I-II for 6; a Power III book for 14 | 32 sticks, 12 feathers, 14 string |
-| Speaker | Moonwater for 3; one random enchanted book a day for 12-20; an explorer map to the nearest unexplored dragon or beholder lair for 14; glow berries for 1 | - |
+| Fletcher | 16 arrows for 1 emerald; 4 tipped arrows of Slowness or of Poison for 2; a bow with Power I-II for 6; a Power III book for 14; the [Elven Longbow](../items/racial-weapons.md#elven-longbow) for 16 | 32 sticks, 12 feathers, 14 string |
+| Speaker | Moonwater for 3; one random enchanted book a day for 12-20; an explorer map to the nearest unexplored dragon or beholder lair for 14; glow berries for 1. **Elves only:** [Elven Chain](../items/armor.md#racial-armor) helmet 10, chestplate 16, leggings 14, boots 8 | - |
+
+The Speaker's Elven Chain is kin stock: only Elf players see those four offers (after the others), and everyone else gets the normal list.
 
 ![The Speaker's trades for an Elf, at kin prices](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/elven-enclave/speaker-trades.png)
 
@@ -46,7 +48,7 @@ Only in Elven Enclaves, where they also spawn naturally inside the trees, the gl
 - `#dndclasses:faction/sylvan_court` lists the elf entity types.
 
 ## For developers
-- `entity/ElfEntity` (the Wood Elf and base class: variant, name, home, `mayTarget` filter, Warden call for help on being struck), `ElfWardenEntity` (`Angerable`, `RangedAttackMob`, its own `WardenAttackGoal` because `BowAttackGoal` needs a `HostileEntity`), `ElfMerchantEntity` + `ElfTrades`, `SylvanLaw`.
+- `entity/ElfEntity` (the Wood Elf and base class: variant, name, home, `mayTarget` filter, Warden call for help on being struck), `ElfWardenEntity` (`Angerable`, `RangedAttackMob`, its own `WardenAttackGoal` because `BowAttackGoal` needs a `HostileEntity`), `ElfMerchantEntity` + `ElfTrades` (kin stock through `KinStock` / `KinStockOffers.elvenSpeaker`), `SylvanLaw`.
 - `client/renderer/RacialHumanoidRenderer`: the racial NPC kit (player model, slim or classic arms, armour, arm poses for held items and drawn bows, scale). Head features come from `RaceFeatures.renderHead`, as on players, for the `Look`'s race; they're skipped while something is worn on the head.
 - Skins: `python3 tools/elf_skins.py` writes `textures/entity/elf/`.
 - `ModSpawns.canElfSpawn`: natural and chunk-generation spawns only inside real enclave pieces, at most 12 elves within 48 blocks.

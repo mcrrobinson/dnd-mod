@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:orcish_warplate_helmet",
+    "dndclasses:orcish_warplate_chestplate",
+    "dndclasses:orcish_warplate_leggings",
+    "dndclasses:orcish_warplate_boots",
+    "dndclasses:orcish_greataxe"
+  ]
+}

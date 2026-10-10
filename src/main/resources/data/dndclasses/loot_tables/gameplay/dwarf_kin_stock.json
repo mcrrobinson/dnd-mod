@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:barter",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {"type": "minecraft:empty", "weight": 94},
+        {"type": "minecraft:item", "name": "dndclasses:dwarven_plate_helmet", "weight": 1},
+        {"type": "minecraft:item", "name": "dndclasses:dwarven_plate_chestplate", "weight": 1},
+        {"type": "minecraft:item", "name": "dndclasses:dwarven_plate_leggings", "weight": 1},
+        {"type": "minecraft:item", "name": "dndclasses:dwarven_plate_boots", "weight": 1},
+        {"type": "minecraft:item", "name": "dndclasses:dwarven_waraxe", "weight": 2}
+      ]
+    }
+  ]
+}

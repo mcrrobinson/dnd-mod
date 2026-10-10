@@ -23,7 +23,14 @@ A save is rolled once per *exposure* (one breath, one ray, one grab), not on eve
 - A save with the same name and outcome as a row still showing adds to its counter (`×4`) and refreshes it, instead of adding a row.
 - Natural 20s say `Nat 20`, natural 1s `Nat 1`. With advantage the dropped die shows grey in brackets: `17(5 adv)+4=21`.
 - Success and failure sounds play at 40% volume. Natural 20s and 1s play at full volume.
-- On a narrow screen the detail ("half damage") is left out so the numbers and the counter still fit.
+- Every line stays on screen. When a line is too wide it first slides left (never over the crosshair), then gives up parts in this order until it fits:
+  1. the detail ("half damage");
+  2. the ability suffix of a named save ("Frost breath (DEX)" becomes "Frost breath"; plain saves keep "DEX save");
+  3. "vs 14" and the dropped advantage die;
+  4. the `Nat 20` / `Nat 1` word (the die face still shows it) and the bold label;
+  5. the label is cut short with "…".
+
+  The sum, the tick or cross and the `×N` counter always stay. On a tiny window where even that is too wide, the line is drawn smaller (down to half size).
 - The server sends at most one save to a player every 10 ticks. Saves in between still apply, and arrive together as one row's counter: ten saves in the same second are two packets and one `×10` row.
 
 ![Ten saves in one tick: one row, ×10](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/saving-throws/saves-merge.png)

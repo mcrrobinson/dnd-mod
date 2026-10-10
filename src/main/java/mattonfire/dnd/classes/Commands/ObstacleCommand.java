@@ -12,6 +12,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 
+import mattonfire.dnd.classes.Obstacles.CryptSleepers;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlockEntity;
 import mattonfire.dnd.classes.Obstacles.ObstacleGroups;
@@ -24,6 +25,8 @@ import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.classes.Obstacles.types.WinchType;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
+import net.minecraft.entity.EntityGroup;
+import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.command.argument.BlockPosArgumentType;
 import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
@@ -42,6 +45,7 @@ import net.minecraft.util.math.BlockPos;
  * /dndobstacle reseal &lt;pos&gt; &lt;ticks&gt;                       reseal the group this long after it opens (0 = never)
  * /dndobstacle link &lt;winch&gt; &lt;target&gt;                      connect a winch to its portcullis or chasm bridge
  * /dndobstacle list [radius]                              obstacle groups near you (default 64 blocks)
+ * /dndobstacle sleep|wake [radius]                        lay undead near you down as crypt sleepers, or wake them (default 8)
  *
  * Op level 2. The DM toolkit's seam for obstacles.
  */
@@ -96,6 +100,16 @@ public final class ObstacleCommand {
                         .then(CommandManager.argument("winch", BlockPosArgumentType.blockPos())
                                 .then(CommandManager.argument("target", BlockPosArgumentType.blockPos())
                                         .executes(ObstacleCommand::link))))
+                .then(CommandManager.literal("sleep")
+                        .executes(context -> sleepers(context, 8, true))
+                        .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 64))
+                                .executes(context -> sleepers(context,
+                                        IntegerArgumentType.getInteger(context, "radius"), true))))
+                .then(CommandManager.literal("wake")
+                        .executes(context -> sleepers(context, 8, false))
+                        .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 64))
+                                .executes(context -> sleepers(context,
+                                        IntegerArgumentType.getInteger(context, "radius"), false))))
                 .then(CommandManager.literal("list")
                         .executes(context -> list(context, 64))
                         .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 512))
@@ -233,5 +247,27 @@ public final class ObstacleCommand {
             source.sendFeedback(Text.literal("No obstacles within " + radius + " blocks"), false);
         }
         return groups;
+    }
+
+    /** Lays every undead mob within {@code radius} down as a crypt sleeper, or wakes the sleepers there. */
+    private static int sleepers(CommandContext<ServerCommandSource> context, int radius, boolean sleep) {
+        ServerCommandSource source = context.getSource();
+        ServerWorld world = source.getWorld();
+        net.minecraft.util.math.Box box = new net.minecraft.util.math.Box(source.getPosition(), source.getPosition())
+                .expand(radius);
+        int count = 0;
+        for (MobEntity mob : world.getEntitiesByClass(MobEntity.class, box, m -> m.isAlive()
+                && (sleep ? m.getGroup() == EntityGroup.UNDEAD && !CryptSleepers.isSleeper(m) : CryptSleepers.isSleeper(m)))) {
+            if (sleep) {
+                CryptSleepers.sleep(mob);
+            } else {
+                CryptSleepers.wake(world, mob, null);
+            }
+            count++;
+        }
+        int total = count;
+        source.sendFeedback(Text.literal((sleep ? "Laid down " : "Woke ") + total + " crypt sleeper"
+                + (total == 1 ? "" : "s") + " within " + radius + " blocks"), true);
+        return total;
     }
 }

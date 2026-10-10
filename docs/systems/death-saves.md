@@ -3,8 +3,6 @@ At 0 HP you don't die straight away if someone could help you. You go **Downed**
 
 ![A Downed player crawling, seen by a party member](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-death-saves/downed-lan-guest-sees-host.png)
 
-![Your own view while Downed: the tally on the action bar](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-death-saves/downed-lan-guest-crawl.png)
-
 ![A death save on the d20 HUD](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-death-saves/downed-save-1.png)
 
 ## How it works
@@ -25,7 +23,7 @@ Going Downed sets you to 1 HP, removes Regeneration and Absorption and puts out 
 - You crawl (the swimming pose, 0.6 blocks tall) at half the vanilla crawl speed, about 15% of walking speed. You can't jump, sprint, swim up (you sink), or glide.
 - You can't attack, use or break blocks, use items or entities (so no eating or drinking), drop items with Q, or fire your special. Inventory and container screens close. You can look around, chat and change hotbar slot.
 - You don't heal on your own (natural regeneration, Second Wind, Hit Dice; see Helping a Downed player for heals that stand you up) and you don't regain mana or trickle charges. You can't rest, and going Downed interrupts a campfire short rest in progress (within half a second).
-- The action bar shows your tally: `DOWNED ●●○ ✕○○ next save in 4 s`, or `STABLE standing up in 22 s`.
+- Your screen shows the [downed HUD](#the-downed-hud): a red vignette, your passes and fails, and the time to your next save.
 
 ### Death saves
 Every 6 seconds (120 ticks), starting 6 seconds after you go down, you roll a flat d20 (no ability modifier) against **DC 10**. It shows on the d20 HUD as "Death Save".
@@ -67,7 +65,7 @@ You can't start a rest while Downed, while a party member within 32 blocks is Do
 ### Helping a Downed player
 Anyone who isn't Downed can help. In PvP, the player who downed you won't help you up.
 
-- **Stabilise:** look at the Downed player within 3 blocks and **hold right-click** for 3 seconds with an empty hand (or any item you can't use, like a sword or a block). A progress bar shows on both players' action bars. Letting go, looking away, walking off or taking a hit stops it; keep holding and it starts again. They're **stable**, and you roll **Medicine** (d20 + your sheet's Medicine bonus) against DC 15 on your d20 HUD: on a success they stand up in **10 seconds** instead of 30. Stabilising itself always works.
+- **Stabilise:** look at the Downed player within 3 blocks and **hold right-click** for 3 seconds with an empty hand (or any item you can't use, like a sword or a block). A progress bar shows on both players' screens (see [The downed HUD](#the-downed-hud)). Letting go, looking away, walking off or taking a hit stops it; keep holding and it starts again. They're **stable**, and you roll **Medicine** (d20 + your sheet's Medicine bonus) against DC 15 on your d20 HUD: on a success they stand up in **10 seconds** instead of 30. Stabilising itself always works.
 - **Help up:** let go, then hold right-click for another 3 seconds on a **stable** player: they stand up with **4 HP** (2 hearts).
 - **Heal them:** any heal from someone else stands a Downed player up with that much HP (at least 1): Cure Wounds (8 HP), Song of Rest, Elixir of Healing, Circle of Healing, Divine Intervention, splash and lingering Healing potions, Healing arrows, and Regeneration put on after they went down (Druid Regrowth, a Bard's lute, a beacon). Their own healing stays blocked: natural regeneration, Fighter Second Wind, life drain, Hit Dice. Classes immune to potions stay immune: a splash Healing potion stands a Rogue up but not a Paladin, Artificer or Fighter.
 - **Feed them:** right-click a Downed player holding:
@@ -86,6 +84,32 @@ Three fails, giving up, or logging out while unstable kills you with whatever do
 **Give up:** hold the power-up key (Z) for 3 seconds while Downed to die now, so a party that can't reach you doesn't keep you waiting.
 
 **Logging out** while Downed and unstable kills you (no combat logging). If you're stable you stand up with 1 HP as you leave. If the server stops, you're still Downed when you join again, with the same tally and a fresh 6 second timer.
+
+### The downed HUD
+What you see while you're Downed:
+
+- **A red vignette** round the screen edge that pulses with a **heartbeat**. The heartbeat speeds up with each fail (every 1.7 s, 1.4 s, 1.1 s) and slows to every 2.5 s once you're stable, when the vignette also fades.
+- **A panel above the crosshair:**
+  - `DOWNED` in red, then three green pass gems and three red fail skulls (empty ones are grey)
+  - `Next save in 4 s`, counting down to your next death save
+  - `Hold Z to give up` (your power-up key), with a dark red bar filling while you hold it
+  - once stable: `STABLE` in yellow and `Standing up in 22 s`, with no pips
+  - while someone holds right-click on you: "Alex is stabilising you" (or "is helping you up") with a green bar filling over the 3 seconds
+- **Empty hearts:** the health row shows no hearts, though you're kept at 1 HP.
+- **The d20 HUD** below the crosshair shows only your death saves (and Last Stand). Other main-panel roll popups are dropped while you're Downed, so they can't hide a save. Saving throws still show in the compact save lane right of the crosshair.
+- The obstacle hint panel doesn't show while you're Downed (it uses the same spot).
+
+The helper sees a smaller panel above their crosshair: "Stabilising Steve" (or "Helping Steve up") with the same bar.
+
+Everything hides with F1.
+
+**Sounds:** a thud and a falling chord when someone goes Downed, the heartbeat (only you hear it), and a rising chime when you get back up. Death save rolls use the d20 sounds.
+
+### Seeing Downed players
+- **Party members** within 64 blocks are drawn with a **red outline through walls** while Downed (gold once stable), so you can find them in a cave or behind a wall.
+- **Everyone else** sees red damage particles rise from a Downed player every second.
+- **Name tag:** a Downed player's name tag reads "Steve (Downed)".
+- **Party HUD:** a Downed member's entry shows `DOWNED ●●○ ✕○○` in red (green dots for passes, red crosses for fails) in place of their HP, or `STABLE` in yellow, over a pulsing red (or yellow) bar. See [Party](party.md).
 
 ### Last Stand
 With nobody to help you, you get one roll against **DC 15** instead (it shows as "Last Stand"):
@@ -114,10 +138,10 @@ Permission level 2.
 - Data pack: add damage types to `data/dndclasses/tags/damage_type/bypasses_death_saves.json` to make them kill outright (default `minecraft:out_of_world`).
 
 ## Known limitations
-- The stabilise progress is an action-bar line for now (the target's own tally line replaces it once a second); a proper progress bar comes with the downed HUD.
 - Heals from new sources (magic items, scripted healers) only revive if they're marked as coming from someone else (see For developers); anything else counts as the Downed player's own and is blocked.
 - Mobs only ignore Downed players as targets: a mob's area attack aimed at someone else still costs fails. Brain-driven vanilla mobs (piglins, hoglins, wardens) drop a Downed target within half a second rather than never picking it.
-- No downed overlay, party HUD status or ally outline yet; the tally is on the action bar. Other players see you crawling.
+- The outline only shows for party members the client can see (in render and tracking range), and an entity's outline uses vanilla's glowing pass, so it also shows if a mod or effect is already using that pass.
+- The hearts row is drawn empty by vanilla's heart renderer; mods that replace the health bar draw it their own way.
 - Inventory items can still be thrown out of an open inventory screen for the moment it takes the screen to close.
 - Massive damage deaths use the hit's normal death message.
 
@@ -133,6 +157,11 @@ Permission level 2.
 - `Revives`: the heal rule and feeding. `LivingEntity.heal` on a Downed player calls `Revives.onHeal`: it revives when the heal is an outside heal, else it's dropped. Outside heals: anything inside `Revives.asHealer(caster, ...)` landing on someone other than the caster (the power-up key wraps every active skill and special in it), `Revives.healFrom(healer, target, amount)`, and Instant Health / Regeneration effect heals (`DownedHealMixin` redirects the `heal` calls in `StatusEffect`). Feeding is a `UseEntityCallback` (claimed on the client too, so the helper doesn't drink the potion themselves).
 - `DeathSaveModifier.rerollFailure(player)`: reroll a failed death save (Fighter Indomitable). Paladin's +2 is `PaladinSkills.auraDeathSaveBonus`, Indomitable is `FighterSkills.indomitableReroll`, both registered in `Revives.register`.
 - Client `DownedClient`: closes handled screens and sends the give-up hold state of the power-up key.
+- HUD sync: `DownedHudSync` sends S2C `dndclasses:downed_hud` every 5 ticks to each player who is Downed or holding use on a Downed player (and one empty packet when that ends): flags (downed, stable, helped, helping), the tally from `Downed.snapshot(player)` (passes, fails, ticks to the next save or to standing up, give-up ticks held), the helper's name and hold ticks (`Stabilise.helperOf`), and the helping target's name, stable flag and hold ticks (`Stabilise.target`). The client counts down between packets.
+- `Client/Hud/DownedHud`: the panel, the helper's bar, the heartbeat and the particles over non-party Downed players. `DownedHud.showing()` is true while the local player is Downed and has the tally.
+- Mixins (client): `DownedHudMixin` (the vignette at `InGameHud.render` HEAD with vanilla's world-border blend; `renderHealthBar` gets 0 health), `DownedOutlineMixin` (`MinecraftClient.hasOutline`) and `DownedOutlineColorMixin` (`Entity.getTeamColorValue`) for party members from `PartyHud.isMember`, `DownedNameTagMixin` (`PlayerEntityRenderer.renderLabelIfPresent`).
+- Party HUD: `PartyEvents.syncHud` adds each member's UUID, a status byte (the Downed bits) and the passes and fails.
+- Sounds `dndclasses:player.downed`, `downed.heartbeat` and `player.revived` from `tools/music-gen` (`downed_thud`, `downed_heartbeat`, `revived`); pips from `tools/death_save_textures.py` (`textures/gui/death_saves.png`).
 - DevScript `holdkey <key> on|off` holds a key binding.
 - `BossFight.fightNear(player)`, `inAnyFight(player)`, `isFightingNear(player)` and `isPartyWiped()`; `GelatinousCubeEntity.SPIT_DOWNED_AFTER` (60 ticks).
 - Devscripts: `devscripts/downed-revive-lan-host.txt` + `downed-revive-lan-guest.txt` (stabilise with a failed and a successful Medicine roll, help up, interruption, golden apple, potion on a Rogue and a Paladin, ale, Cure Wounds, Paladin aura), `devscripts/downed-revive-solo.txt` (splash potion on a Rogue and a Paladin, natural regen and Second Wind blocked, Regeneration revives, Indomitable), `devscripts/downed-mobs-host.txt` + `downed-mobs-guest.txt` (zombie target switch with a Fighter, creeper, cube spit, rest refusals, Lich party wipe, PvP finisher), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout), `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).

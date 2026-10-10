@@ -6,7 +6,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Obstacles.types.BloodSealType;
 import mattonfire.dnd.classes.Obstacles.types.BridgeWinchType;
+import mattonfire.dnd.classes.Obstacles.types.DesecratedAltarType;
+import mattonfire.dnd.classes.Obstacles.types.DreadWardType;
+import mattonfire.dnd.classes.Obstacles.types.HolyWardType;
+import mattonfire.dnd.classes.Obstacles.types.OssuaryGateType;
 import mattonfire.dnd.classes.Obstacles.types.ChasmType;
 import mattonfire.dnd.classes.Obstacles.types.CollapsedPassageType;
 import mattonfire.dnd.classes.Obstacles.types.CrumblingLedgeType;
@@ -70,6 +75,25 @@ public final class ObstacleTypes {
     public static final ObstacleBlock CRUMBLING_LEDGE_BLOCK = register(CRUMBLING_LEDGE,
             solidSettings(Material.STONE, BlockSoundGroup.STONE));
 
+    // Divine and death obstacles: Clerics, Paladins, Necromancers and Blood Hunters
+    public static final HolyWardType HOLY_WARD = new HolyWardType(id("holy_ward"));
+    public static final DesecratedAltarType DESECRATED_ALTAR = new DesecratedAltarType(id("desecrated_altar"));
+    public static final DreadWardType DREAD_WARD = new DreadWardType(id("dread_ward"));
+    public static final OssuaryGateType OSSUARY_GATE = new OssuaryGateType(id("ossuary_gate"));
+    public static final BloodSealType BLOOD_SEAL = new BloodSealType(id("blood_seal"));
+
+    public static final ObstacleBlock HOLY_WARD_BLOCK = register(HOLY_WARD,
+            glowSettings(Material.STONE, BlockSoundGroup.STONE, 8));
+    public static final ObstacleBlock DESECRATED_ALTAR_BLOCK = register(DESECRATED_ALTAR,
+            solidSettings(Material.STONE, BlockSoundGroup.GILDED_BLACKSTONE)
+                    .luminance(state -> state.get(ObstacleBlock.STATE) == ObstacleState.SEALED ? 10 : 12));
+    public static final ObstacleBlock DREAD_WARD_BLOCK = register(DREAD_WARD,
+            solidSettings(Material.STONE, BlockSoundGroup.DEEPSLATE_BRICKS));
+    public static final ObstacleBlock OSSUARY_GATE_BLOCK = register(OSSUARY_GATE,
+            solidSettings(Material.STONE, BlockSoundGroup.BONE));
+    public static final ObstacleBlock BLOOD_SEAL_BLOCK = register(BLOOD_SEAL,
+            glowSettings(Material.STONE, BlockSoundGroup.NETHER_WART, 4));
+
     public static final BlockEntityType<ObstacleBlockEntity> BLOCK_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, id("obstacle"),
             FabricBlockEntityTypeBuilder.create(ObstacleBlockEntity::new,
@@ -106,6 +130,12 @@ public final class ObstacleTypes {
                 .blockVision((state, world, pos) -> false);
     }
 
+    /** Like {@link #solidSettings}, glowing at {@code light} while sealed (wards and sigils). */
+    private static FabricBlockSettings glowSettings(Material material, BlockSoundGroup sounds, int light) {
+        return solidSettings(material, sounds)
+                .luminance(state -> state.get(ObstacleBlock.STATE) == ObstacleState.SEALED ? light : 0);
+    }
+
     /** Registers a type with its block and block item, under the type's id. */
     private static ObstacleBlock register(ObstacleType type, FabricBlockSettings settings) {
         settings.strength(type.hardness(), type.blastResistance());
@@ -136,6 +166,7 @@ public final class ObstacleTypes {
             }
         });
         ObstacleInteractions.register();
+        CryptSleepers.register();
         for (ObstacleType type : TYPES.values()) {
             type.registerEvents();
         }

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/desecrated_altar"
+    },
+    "state=open": {
+      "model": "dndclasses:block/consecrated_altar"
+    }
+  }
+}

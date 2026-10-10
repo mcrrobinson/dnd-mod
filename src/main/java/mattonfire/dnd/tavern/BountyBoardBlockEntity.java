@@ -36,7 +36,7 @@ public class BountyBoardBlockEntity extends BlockEntity {
             return;
         }
         this.day = today;
-        List<Bounty> drawn = Bounty.draw(world.getRandom(), this.posted.length);
+        List<Bounty> drawn = Bounty.draw(world.getRandom(), this.posted.length, bounty -> bounty.isAvailable(world));
         this.rumour = !world.isClient && QuestLeadItem.anyRumours() && world.getRandom().nextFloat() < RUMOUR_CHANCE;
         BlockState state = world.getBlockState(this.pos);
         for (int i = 0; i < this.posted.length; i++) {

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/dread_ward"
+    },
+    "state=open": {
+      "model": "dndclasses:block/dread_ward"
+    }
+  }
+}

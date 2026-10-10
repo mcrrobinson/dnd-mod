@@ -95,6 +95,14 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
+    /** Hellish Rebuke: after a Tiefling actually took a melee hit, the attacker burns. */
+    @Inject(method = "damage", at = @At("RETURN"))
+    private void dnd$hellishRebuke(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+        if (!this.world.isClient && cir.getReturnValueZ()) {
+            mattonfire.dnd.classes.Race.RaceTraits.afterDamaged((LivingEntity) (Object) this, source, amount);
+        }
+    }
+
     /** Draconic Scale: a Frost Dragonborn in the full set can't be frozen (the Freeze effect). */
     @Inject(method = "canHaveStatusEffect", at = @At("HEAD"), cancellable = true)
     private void dnd$draconicScaleNoFreeze(net.minecraft.entity.effect.StatusEffectInstance effect,

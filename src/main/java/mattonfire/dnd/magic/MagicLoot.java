@@ -115,6 +115,11 @@ public final class MagicLoot {
         chest("beholder_lair", 0.04F, named(ModItems.IMMOVABLE_ROD));
         chest("beholder_lair", 0.02F, named(ModItems.EYE_OF_THE_TYRANT));
 
+        // Dragon Temples: a small chance in the monks' cells; the reliquary (locked at DC 15, guarded) always rolls,
+        // mostly Rare. Its staff chances stay in the JSON.
+        chest("dragon_temple_cell", 0.08F, tier(u, 1));
+        chest("dragon_temple_reliquary", 1.0F, tier(r, 90), tier(vr, 10));
+
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 

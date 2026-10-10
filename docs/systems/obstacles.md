@@ -1,7 +1,7 @@
 # Class-gated obstacles
 Some walls, doors and barriers can only be got past by the right class. Look at one and a hint above the crosshair says what it is, how hard it is and who can deal with it. The right class right-clicks it and rolls a d20 on the [skill check HUD](d20-skill-checks.md). Everyone else has a fallback that costs something, or has to bring the right adventurer.
 
-So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks) and the **physical obstacles** for Barbarians, Fighters and Monks: Collapsed Passages, Heavy Boulders, Portcullises with their winches, Chasms and Crumbling Ledges. More kinds (holy wards, thornwalls, hidden doors and so on) are planned on the same framework.
+So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks) the **physical obstacles** for Barbarians, Fighters and Monks (Collapsed Passages, Heavy Boulders, Portcullises with their winches, Chasms and Crumbling Ledges), and the **divine and death obstacles** for Clerics, Paladins, Necromancers and Blood Hunters (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers and Blood Seals). More kinds (thornwalls, hidden doors and so on) are planned on the same framework.
 
 ![A Wizard's Arcana roll shattering a Lesser Arcane Seal](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/obstacle-framework/obstacle-wizard-open.png)
 
@@ -38,10 +38,30 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 
 **Crumbling Ledge.** Ledge blocks that give way under you: each one crumbles 10 ticks (half a second) after a player first stands on it, or 40 ticks (2 seconds) for a Monk, and comes back 100 ticks (5 seconds) later once nothing is in the way. Sneaking doesn't help (standing on it is checked every tick). There's no roll and nothing to break; creative and spectator players don't set it off.
 
+### Divine and death obstacles (Clerics, Paladins, Necromancers, Blood Hunters)
+| | Holy Ward | Desecrated Altar | Ossuary Gate |
+|-|-|-|-|
+| Looks like | Pale stone with a gold sunburst glyph and gold rim, glowing (light 8) | A cracked blackstone altar with soul fire on top (light 10) | Stacked bone with a skull keystone |
+| Check | Religion | Religion | Intimidation ("command the dead") |
+| Who | Cleric (primary), Paladin (secondary) | Cleric only | Necromancer only |
+| Success | The whole ward opens | Consecrated (gold cross, light 12): every mob spawner within 12 blocks stops for 10 minutes, and the Cleric and their party within 8 blocks are healed 8 health (4 hearts). After 10 minutes the altar desecrates itself again and the spawners wake; only the first consecration earns XP | The bones part |
+| Failed roll | 2 magic damage | Wither I for 5 s | The skull cackles (no harm) |
+| Natural 1 | 4 magic damage and Blindness for 3 s; alarm | Wither I, and 2 zombies rise beside it; alarm | 2 skeletons rise; alarm |
+| Fallback | Can't be broken. Throw Potions of Healing at it (splash or lingering): each one bursting within 2.5 blocks of a sealed ward counts once, and the 3rd opens it. No XP | Smash it: hardness 5, pickaxe. The spawners stay on and 4 undead (2 zombies, 2 skeletons) rise | Smash it: hardness 2 (like bone), pickaxe. Breaking one block brings the whole gate down; 4 skeletons and 1 wither skeleton rise, and an alarm goes off |
+
+**Dread Ward.** Black-bannered deepslate that fills the passage round it with dread. There's no roll and nothing to click. Its zone is every block within 2 of a sealed Dread Ward block (a 5x5x5 cube round a single block), so a builder paints the ward blocks into an archway's frame and the passage through it is the zone. Once a second, a player in the zone gets **Frightened** (half melee damage), **Slowness IV** and **Weakness II**, each for 1.5 seconds (30 ticks), so it wears off soon after you leave. A **Paladin** is immune, and so is every player within 6 blocks of a Paladin (any player, not just party members). Anyone else can still push through, slowly. It can't be broken; `/dndobstacle open` turns it off.
+
+**Crypt Sleepers.** Dormant undead laid in alcoves: any mob with the command tag `dndclasses.sleeper` and its AI off (`NoAI`). A sleeper wakes for good, and goes for that player, when a living player comes within 5 blocks, when something attacks it (sunlight and drowning don't count), or when an obstacle alarm goes off within 16 blocks. **Deathly Escort:** a Necromancer never wakes them, and nor does any member of the Necromancer's `/party` within 6 blocks of them, so a Necromancer can lead the party past. Creative and spectator players never wake them. Put undead near you to sleep with `/dndobstacle sleep`, or summon one with `{NoAI:1b,Tags:["dndclasses.sleeper"]}`.
+
+**Blood Seal.** A dripping red sigil door (light 4) that opens for a price in blood, not a roll. Right-click it with an empty hand:
+- A **Blood Hunter** pays 4 health (2 hearts) and it opens, for class XP.
+- Anyone else pays toward 16 health (8 hearts). Up to 3 players (not creative or spectating) within 4 blocks of the clicked block split it: each right-click pays one share, the price over the number of players there rounded up (16 alone, 8 each for two, 6 for three), never more than what's still owed. It opens once all 16 are paid. Paying it earns no XP. Payments so far are kept until the seal reseals.
+- It's never lethal: a payment that would take you to 0 health is refused. The price comes straight off your health, so armour, absorption hearts and resistance don't change it. A player with 16 health or less can't pay it alone (a Wizard has 10).
+
 ### The roll
 Right-click a sealed obstacle with an empty main hand. If your class can't attempt it, the action bar says who can ("Lesser Arcane Seal (Hard). A Wizard or Warlock could dispel it.").
 
-The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the physical obstacles) against its DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
+The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the physical obstacles, Religion for Holy Wards and Desecrated Altars, Intimidation for Ossuary Gates) against its DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
 
 | Tier | DC | Class XP for the solver |
 |-|-|-|
@@ -68,7 +88,7 @@ Obstacles can't be dug or built round. In survival, nobody can place a block in,
 Creative players open obstacles by right-clicking (no roll, no XP) and ignore the protected volume, so DMs can test. Spectators ignore obstacles.
 
 ## Where to find it
-- [Dungeon gates](dungeon-puzzles-and-gates.md): a dungeon's main-path gate can be a Collapsed Passage, and its side vault can be sealed by a Heavy Boulder (dungeons generated after this change).
+- [Dungeon gates](dungeon-puzzles-and-gates.md): a dungeon's main-path gate can be a Collapsed Passage, a Holy Ward or an Ossuary Gate, and its side vault can be sealed by a Heavy Boulder or a Blood Seal (dungeons generated after each change).
 - Other structure placements come in a later ticket. Operators can place obstacles with `/dndobstacle place`, and creative players can take the blocks from the DnD Classes creative tab (hand-placed obstacles are Medium). The Chasm Bridge item places the invisible retracted bridge.
 
 ## Commands
@@ -76,7 +96,7 @@ Operators (permission level 2):
 
 | Command | What it does |
 |-|-|
-| `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
+| `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`, `dndclasses:holy_ward`, `dndclasses:desecrated_altar`, `dndclasses:dread_ward`, `dndclasses:ossuary_gate`, `dndclasses:blood_seal`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
 | `/dndobstacle info <pos>` | Type, tier, DC, state, group size and who can attempt it |
 | `/dndobstacle open <pos>` | Opens the whole group (no XP) |
 | `/dndobstacle reset <pos>` | Reseals the whole group |
@@ -84,6 +104,8 @@ Operators (permission level 2):
 | `/dndobstacle reseal <pos> <ticks>` | The group reseals itself this long after opening (0 = never, the default) |
 | `/dndobstacle link <winch> <target>` | Connects a portcullis winch to a portcullis block, or a bridge winch to a chasm block |
 | `/dndobstacle list [radius]` | Lists obstacle groups near you (default 64 blocks) |
+| `/dndobstacle sleep [radius]` | Lays every undead mob within the radius (default 8) down as a Crypt Sleeper |
+| `/dndobstacle wake [radius]` | Wakes the Crypt Sleepers within the radius (default 8) |
 
 ## Configuration
 None.
@@ -97,6 +119,9 @@ None.
 - Chasm width is set from the jump physics, not measured in game yet: a Monk's triple jump should clear 7 blocks and a sprint jump shouldn't. Speed potions or other movement abilities may change that.
 - A Heavy Boulder that "rolls aside" just loses its collision and model; it doesn't move 3 blocks as a block.
 - A Crumbling Ledge's reform tick still runs if an operator resets the ledge with `/dndobstacle reset` in the meantime, so it can crumble once more on its own.
+- A Desecrated Altar only quiets spawner blocks. Dungeon or structure spawning that doesn't use a spawner block isn't affected.
+- Crypt Sleepers have no crosshair hint, and a Bard gets no special way past them yet.
+- Dread Wards apply their effects to players only; mobs in the zone aren't frightened.
 - A wedged portcullis that an operator reseals directly (rather than through its winch) leaves the winch showing as wedged until the winch is reset too.
 
 ## For developers
@@ -115,7 +140,10 @@ None.
 - Physical obstacle types live in `classes/Obstacles/types/`: `CollapsedPassageType`, `HeavyBoulderType`, `PortcullisType`, `WinchType` (with `PortcullisWinchType` and `BridgeWinchType`; the target's position is `Data.Target` in the winch's block entity), `ChasmType` and `CrumblingLedgeType`. Each family adds a block of fields to `ObstacleTypes`, before the shared block entity type.
 - `ObstacleType` hooks a type can override: `hardness()`, `blastResistance()`, `interactive()` (false: right-click passes), `solid(state)` (collision and outline per state), `ownWhoText()` (hint uses `<key>.who`), `solve(world, pos, solver)` (what success does and whether it earns XP; default opens the group), `scheduledTick`, `onExploded` and `registerEvents()`. A type with no skill that a class can try is worked with a right-click and no roll.
 - `ObstacleGroups.openFor(world, pos, ticks)` opens a group on a timer (reseal ticks are checked every tick); `ObstaclePlacer.chasm(...)` lays a chasm bridge and `ObstaclePlacer.winch(...)` places a winch linked to its target.
-- `dungeon/GateKind` has `COLLAPSED_PASSAGE` (main-path safe) and `HEAVY_BOULDER` (strict, side vaults).
+- `dungeon/GateKind` has `COLLAPSED_PASSAGE`, `HOLY_WARD` and `OSSUARY_GATE` (main-path safe) and `HEAVY_BOULDER` and `BLOOD_SEAL` (strict, side vaults).
+- Divine and death types: `HolyWardType` (potion count in the group's `Data.Doused`; `PotionEntityMixin` calls `onPotionBurst`), `DesecratedAltarType` (`MobSpawnerLogicMixin` cancels `serverTick` while an open altar is within 12 blocks, found through `ObstacleIndex`; it reopens on a 12000-tick `ObstacleGroups.openFor` timer), `DreadWardType` (per-second `END_WORLD_TICK` aura), `OssuaryGateType`, `BloodSealType` (payments in `Data.Paid`) and `RisenUndead.raise(...)` for undead that rise beside an obstacle. `Obstacles/CryptSleepers` holds the sleeper tag, `sleep(mob)`, `wake(...)` and `undeadAllied(player)`.
+- `ObstacleGroups.dataInt` / `setDataInt` keep a per-type number on every block of a group. `ObstacleEvents.SOLVED` fires only for a solve that earns XP (not re-cranking a winch, paying a Blood Seal's fallback price, or re-consecrating an altar).
+- Textures are made by `tools/divine_obstacle_textures.py`. `devscripts/obstacle-divine.txt` covers a Cleric, a Fighter's fallbacks, the Dread Ward, a Necromancer, a crypt sleeper and the Blood Seal.
 - Textures are made by `tools/physical_obstacle_textures.py`. `devscripts/obstacle-physical.txt` covers a Barbarian, a Fighter, a Monk and a Wizard's solo fallbacks.
 - Textures are made by `tools/obstacle_textures.py`.
 - Every roll, sting, solve and broken focus logs an `[Obstacle]` line. `devscripts/obstacle-verify.txt` rolls 40 times on an Easy seal (successes, failures, crits, fumbles) and breaks a focus by moving and by damage.

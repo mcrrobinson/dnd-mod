@@ -20,7 +20,7 @@ public final class ObstacleEvents {
 
     @FunctionalInterface
     public interface Solved {
-        /** {@code solver} got past the obstacle group at {@code pos} by its class route (not by breaking it). */
+        /** {@code solver} got past the obstacle group at {@code pos} by its class route and earned XP for it (not by breaking it, paying a fallback price or working it again). */
         void onSolved(ServerPlayerEntity solver, ObstacleType type, Tier tier, BlockPos pos);
     }
 

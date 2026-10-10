@@ -43,6 +43,7 @@
         "PotionItemMixin",
         "AlchemistPotionMixin",
         "PotionEntityMixin",
+        "MobSpawnerLogicMixin",
         "AreaEffectCloudEntityMixin",
         "ArrowEntityMixin",
         "PotionImmunityMixin",
@@ -70,9 +71,14 @@
         "DownedPlayerManagerMixin",
         "DownedHealMixin",
         "DownedTargetMixin",
-        "StealthMixin"
+        "StealthMixin",
+        "SavingThrowMixin"
     ],
     "client": [
+        "DownedHudMixin",
+        "DownedOutlineMixin",
+        "DownedOutlineColorMixin",
+        "DownedNameTagMixin",
         "AbstractClientPlayerEntityMixin",
         "LivingEntityRendererAccessor",
         "LivingEntityRendererMixin",

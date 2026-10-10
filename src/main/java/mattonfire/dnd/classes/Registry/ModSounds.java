@@ -55,6 +55,11 @@ public class ModSounds {
     public static final SoundEvent DICE_CRITICAL = registerSoundEvent("dice.critical");
     public static final SoundEvent DICE_FUMBLE = registerSoundEvent("dice.fumble");
 
+    // Downed players (tools/music-gen): the fall, the heartbeat on the downed HUD, and getting back up
+    public static final SoundEvent PLAYER_DOWNED = registerSoundEvent("player.downed");
+    public static final SoundEvent DOWNED_HEARTBEAT = registerSoundEvent("downed.heartbeat");
+    public static final SoundEvent PLAYER_REVIVED = registerSoundEvent("player.revived");
+
     private static SoundEvent registerSoundEvent(String name) {
         Identifier id = new Identifier(DnDClasses.MOD_ID, name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));

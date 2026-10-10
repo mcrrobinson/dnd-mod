@@ -178,7 +178,6 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.HOBBIT, mattonfire.dnd.client.renderer.HobbitRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.tavern.Tavern.INNKEEPER, mattonfire.dnd.client.renderer.HobbitRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, mattonfire.dnd.client.renderer.MountainDwarfRenderer::new);
-        net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry.registerModelLayer(mattonfire.dnd.client.renderer.RacialHumanoidRenderer.EARS, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::earsModelData);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WOOD_ELF, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elf);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_WARDEN, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elf);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_SPEAKER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elfMerchant);

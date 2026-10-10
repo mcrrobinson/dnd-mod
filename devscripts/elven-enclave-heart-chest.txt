@@ -1,0 +1,52 @@
+# The Heart Tree chest in the "Enclave A" test world (seed 1111): chest at 1220 96 -1368 in the Speaker's Hall.
+# Run after elven-enclave-elves.txt or on a fresh world: timeout 400 ./gradlew runClient -PdevScript=devscripts/elven-enclave-heart-chest.txt "-PdevWorld=Enclave A"
+# Expect: ee:heart-locked: a non-Rogue's click leaves the LootTable (chests/elven_enclave_heart) in place;
+# ee:heart-rogue: "[D20] ... Lockpicking ... vs DC 15", then "[Grudges] dndclasses:sylvan_court OPEN ..." and
+# the watching Warden's AngryAt (if the pick succeeded). ee:monster-pos: where any monsters near the enclave are.
+wait 40
+closescreen
+/gamemode survival
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/dndrace set @s human
+/dndclass set @s wizard
+wait 20
+closescreen
+/tp @s 1221.5 96 -1367.5 90 40
+wait 100
+/kill @e[type=dndclasses:elf_speaker,distance=..20]
+/summon dndclasses:elf_warden 1220.5 96 -1371.5 {Tags:["eeh"],NoAI:1b}
+/clear @s
+/tp @s 1221.5 96 -1367.5 90 40
+wait 20
+use
+wait 5
+screenshot ee-heart-locked
+/say ee:heart-locked
+/data get block 1220 96 -1368 LootTable
+/dndclass set @s rogue
+wait 20
+closescreen
+/tp @s 1221.5 96 -1367.5 90 40
+wait 10
+use
+wait 60
+screenshot ee-heart-rogue
+closescreen
+/say ee:heart-rogue
+/data get block 1220 96 -1368 LootTable
+/data get entity @e[tag=eeh,limit=1] AngryAt
+/kill @e[tag=eeh]
+/time set 18000
+/gamerule doMobSpawning true
+/tp @s 1224 74 -1352
+wait 1200
+/say ee:monster-pos
+/execute positioned 1224 73 -1368 run data get entity @e[type=minecraft:zombie,limit=1,sort=nearest] Pos
+/execute positioned 1224 73 -1368 run data get entity @e[type=minecraft:creeper,limit=1,sort=nearest] Pos
+/execute positioned 1224 73 -1368 run data get entity @e[type=minecraft:skeleton,limit=1,sort=nearest] Pos
+/execute positioned 1224 73 -1368 run data get entity @e[type=minecraft:spider,limit=1,sort=nearest] Pos
+/gamerule doMobSpawning false
+quit

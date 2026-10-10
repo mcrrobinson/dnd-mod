@@ -613,5 +613,6 @@
     "message.dndclasses.moonwell.day": "The Moonwell is only water by day. Come back under the moon.",
     "message.dndclasses.moonwell.not_kin": "The moonlight slips out of the bottle. Only elves may draw Moonwater; the Speaker sells it.",
     "message.dndclasses.moonwell.drawn": "You have drawn your Moonwater for tonight.",
-    "message.dndclasses.moonwell.drawn_free": "The Moonwell fills your bottle with Moonwater."
+    "message.dndclasses.moonwell.drawn_free": "The Moonwell fills your bottle with Moonwater.",
+    "entity.dndclasses.elf_merchant.refuses": "%s turns away from you."
 }

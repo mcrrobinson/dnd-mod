@@ -3,6 +3,7 @@ package mattonfire.dnd.entity;
 import java.util.EnumSet;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -169,6 +170,13 @@ public class ElfWardenEntity extends ElfEntity implements Angerable, RangedAttac
             return player == this.getAttacker() || this.shouldAngerAt(player);
         }
         return !(target instanceof ElfEntity);
+    }
+
+    /** Angry at the player it holds a grudge against, and at anyone Hostile with the Sylvan Court, on sight. */
+    @Override
+    public boolean shouldAngerAt(LivingEntity entity) {
+        return Angerable.super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
+                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
     }
 
     @Override

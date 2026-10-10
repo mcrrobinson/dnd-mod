@@ -2,6 +2,7 @@ package mattonfire.dnd.entity;
 
 import java.util.List;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.faction.TierEffects;
 import mattonfire.dnd.world.gen.RacialHomes;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
@@ -44,8 +45,6 @@ import org.jetbrains.annotations.Nullable;
  * off a goblin raid on the enclave forgives everything ({@link SettlementGrudges#forgive}).
  */
 final class SylvanLaw implements SettlementGrudges.Rules {
-    private static final double RANGE = 16.0D;
-
     SylvanLaw() {
     }
 
@@ -128,14 +127,15 @@ final class SylvanLaw implements SettlementGrudges.Rules {
         };
     }
 
+    /** 16 blocks, adjusted for the player's standing with the Sylvan Court (as for the dwarves). */
     @Override
-    public double witnessRange() {
-        return RANGE;
+    public double witnessRange(PlayerEntity player) {
+        return TierEffects.witnessRange(TierEffects.tierWith(player, ModEntityTypes.ELF_WARDEN));
     }
 
     @Override
     public List<ElfEntity> witnesses(PlayerEntity player, BlockPos pos) {
-        return player.world.getEntitiesByClass(ElfEntity.class, new Box(pos).expand(RANGE),
+        return player.world.getEntitiesByClass(ElfEntity.class, new Box(pos).expand(this.witnessRange(player)),
                 elf -> elf.isAlive() && elf.canSee(player));
     }
 

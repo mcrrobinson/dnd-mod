@@ -9,6 +9,9 @@
 # - ee:moon-elf: Moonwater (minecraft:potion with CustomPotionEffects) in the inventory; ee:moon-elf-2 and
 #   ee:moon-human: no second Moonwater.
 # - ee:monsters: "Test failed" for zombies, skeletons, spiders and creepers inside the enclave's box at night.
+# - ee:heart-locked: the chest still has its LootTable (chests/elven_enclave_heart); ee:heart-rogue: a "[D20]"
+#   lockpicking line against DC 15 and, if it opened, a "[Grudges] ... OPEN" line with the watcher's AngryAt.
+# - ee:hostile-*: at -600 (Hostile) the Speaker's trades don't open and the Warden's arrows lower Health.
 # - ee:raid: "Started goblin raid ... on the elven enclave".
 wait 40
 closescreen
@@ -179,6 +182,54 @@ wait 1200
 /execute positioned 1224 73 -1368 run data get entity @e[type=minecraft:spider,limit=1,sort=nearest] Pos
 /execute positioned 1224 73 -1368 if entity @e[type=#dndclasses:faction/sylvan_court,distance=..64]
 /gamerule doMobSpawning false
+# --- The Heart Tree chest: locked (DC 15); a Rogue's pick is an offence where an elf can see ---
+/time set 6000
+/gamemode survival
+/clear @s
+/dndclass get @s
+/summon dndclasses:elf_warden 1223.5 96 -1371.5 {Tags:["eeh"],NoAI:1b}
+/tp @s 1222.5 96 -1367.5 90 35
+wait 20
+use
+wait 10
+screenshot ee-heart-locked
+/say ee:heart-locked
+/data get block 1220 96 -1368 LootTable
+/dndclass set @s rogue
+wait 20
+closescreen
+/tp @s 1222.5 96 -1367.5 90 35
+wait 10
+use
+wait 60
+closescreen
+/say ee:heart-rogue
+/data get entity @e[tag=eeh,limit=1] AngryAt
+/kill @e[tag=eeh]
+# --- Hostile with the Sylvan Court: Wardens shoot on sight, merchants refuse ---
+/rep @s dndclasses:sylvan_court set -600
+/tp @s 1224 156 -1300
+wait 40
+/fill 1214 149 -1310 1234 149 -1290 minecraft:glass
+/summon dndclasses:elf_warden 1216 150 -1300 {Tags:["eew"],Rotation:[-90f,0f]}
+/summon dndclasses:elf_speaker 1224 150 -1296 {Tags:["ees"],NoAI:1b,Rotation:[180f,0f]}
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5 true
+/tp @s 1224.5 150 -1298.5 0 15
+wait 5
+/say ee:hostile-before
+/data get entity @s Health
+use
+wait 5
+screenshot ee-hostile-refuse
+/say ee:hostile-trade
+slots
+wait 100
+/say ee:hostile-after
+/data get entity @s Health
+/effect give @s minecraft:resistance 900 4 true
+/kill @e[tag=eew]
+/kill @e[tag=ees]
 # --- A goblin raid can target the enclave ---
 /goblinraid start
 wait 20

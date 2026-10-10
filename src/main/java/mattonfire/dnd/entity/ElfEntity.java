@@ -1,5 +1,6 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -84,6 +85,9 @@ public class ElfEntity extends PathAwareEntity {
         this.goalSelector.add(0, new SwimGoal(this));
         this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4D));
         this.goalSelector.add(2, new FleeEntityGoal<>(this, HostileEntity.class, 10.0F, 0.9D, 1.3D));
+        // Players Hostile with the Sylvan Court are kept at a distance.
+        this.goalSelector.add(2, new FleeEntityGoal<>(this, PlayerEntity.class, 8.0F, 0.9D, 1.3D,
+                player -> TierEffects.fleesFrom(TierEffects.tierWith((PlayerEntity) player, this))));
         this.goalSelector.add(3, new LongDoorInteractGoal(this, true));
         this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.8D));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.6D));

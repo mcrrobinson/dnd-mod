@@ -28,7 +28,7 @@ The Heart Tree and talans are built from birch *wood*, never logs, so the forest
 No monsters spawn anywhere inside an enclave's box.
 
 ### Sylvan Law
-Every elf within 16 blocks who can see you takes offence, and the Wardens turn on you for 30-50 s, if inside an enclave you:
+Every elf within 16 blocks (24 if you are Unfriendly or worse with the Sylvan Court) who can see you takes offence, and the Wardens turn on you for 30-50 s, if inside an enclave you:
 
 - break a log or leaf block of the Heart Tree or a talan (anything inside their pieces' boxes)
 - kill an animal
@@ -74,11 +74,11 @@ Goblins sometimes [raid](../systems/goblin-raids.md) enclaves. The war party ral
 - The Speaker's map looks for a lair within 100 chunks the first time someone opens their trades, which can stall the server for a moment. With no lair in range the map trade is left out.
 - Moonwater is a vanilla potion with its own effects, colour and name, so it brews and stacks like any potion.
 - The forest's own trees are left in place, so a birch can grow through a bridge's rail or poke out of a canopy.
-- Elves are always neutral; reputation tiers don't change how they treat you yet.
+- Monsters that spawn just outside an enclave can still wander in.
 
 ## For developers
 - `world/gen/enclave/`. `ElvenEnclaveStructure` finds the site (`EnclaveTerrain`), `ElvenEnclavePlanner` places the pieces and plans the bridges, `EnclavePiece` is the shared base (local coordinates round an origin, no rotation, a per-piece seed and a position hash `noise` so every chunk builds the same slice), and each part is a piece: `HeartTreePiece`, `SpeakersHallPiece`, `TalanPiece`, `BridgePiece`, `MoonwellPiece`, `ArcheryGladePiece`, `EnclaveGardenPiece`, `EnclaveGroundsPiece` (lava to water). `ElvenEnclaveStructures` registers them; `TREES` lists the pieces Sylvan Law protects.
 - `Moonwell`: the bottle hook (`UseItemCallback`), `moonwater()`, night tracked as `DndMoonwaterNight` in persistent data.
 - Data: `worldgen/structure/elven_enclave.json` (elves in the `creature` override for pieces, an empty `monster` list for the whole box), `worldgen/structure_set/elven_enclaves.json`, `#dndclasses:has_structure/elven_enclave`, `#dndclasses:elf_speaker_maps` (the map's targets), `loot_tables/chests/elven_enclave_*.json`, `factions/sylvan_court.json`.
 - `RacialHomes.ELVEN_ENCLAVE` (hearth: `ElvenEnclaveStructures.HALL`), `Settlement.Kind.ENCLAVE`, `SettlementGrudges.SYLVAN_COURT` (`entity/SylvanLaw`), `Lockpicking` (the heart table at DC 15, talan chests unlocked), `GoblinCampStructure` (keeps 8 chunks from enclaves).
-- Devscripts: `elven-enclave-locate.txt`, `elven-enclave-survey.txt` (close-up screenshots), `elven-enclave-elves.txt` (Wardens, Sylvan Law, trades, Moonwell, hearth, spawns, raids) and `elven-enclave-models.txt`. The last three use an "Enclave A" world: a fresh `level.dat` with seed 1111.
+- Devscripts: `elven-enclave-locate.txt`, `elven-enclave-survey.txt` (close-up screenshots), `elven-enclave-elves.txt` (Wardens, Sylvan Law, trades, Moonwell, hearth, spawns, the Heart Tree chest, Hostile standing, raids), `elven-enclave-heart-chest.txt` and `elven-enclave-models.txt`. These use an "Enclave A" world: a fresh `level.dat` with seed 1111.

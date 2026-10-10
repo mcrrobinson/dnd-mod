@@ -4,8 +4,8 @@
 
 Writes textures/entity/elf/elf_0..5.png (wood elves and wardens: robes in greens, silver and white),
 speaker.png (white and silver robes with gold trim and a silver circlet) and fletcher.png (a leather
-jerkin over green, with a quiver strap). The ears used by RacialHumanoidRenderer read the skin's spare
-corner at (56, 0): 4x4 pixels of skin.
+jerkin over green, with a quiver strap). The ears come from RaceFeatures, which textures them from the
+head's side pixels; the spare corner at (56, 0) is also painted with skin.
 """
 import os
 import sys

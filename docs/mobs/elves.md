@@ -6,7 +6,7 @@ The folk of the [Elven Enclaves](../structures/elven-enclaves.md): Wood Elves, t
 ## How it works
 | Elf | Health | Speed | Carries | Behaviour |
 |-|-|-|-|-|
-| Wood Elf | 18 | 0.30 | nothing | Wanders up to 24 blocks from home by day and 8 at night, opens doors, runs from monsters |
+| Wood Elf | 18 | 0.30 | nothing | Wanders up to 24 blocks from home by day and 8 at night, opens doors, runs from monsters (and from players Hostile with the Sylvan Court) |
 | Elf Warden | 24 (2 armour) | 0.32 | a bow (Power I 30% of the time) and an iron sword; green leather tunic and boots | The guard: hunts monsters (not creepers) within 24 blocks of home |
 | Speaker | 30 | 0.25 | a book | Merchant; keeps within 4 blocks of the Speaker's Hall |
 | Fletcher | 20 | 0.28 | arrows | Merchant; keeps within 4 blocks of the archery glade |
@@ -16,12 +16,12 @@ Every elf has a Sindarin-style name such as "Aelar Galanodel", never despawns, a
 ### Wardens
 A Warden fights with its bow from 8-12 blocks off: it closes in when its target is farther or out of sight, backs away when it's nearer, strafes, and draws for 30 ticks (1.5 s) a shot. When a target gets within 3 blocks it switches to its sword. Its arrows can't be picked up and don't hurt other elves.
 
-Wardens leave players alone unless the player hits an elf (every Warden within 16 blocks joins in) or breaks Sylvan Law where an elf can see (see [Elven Enclaves](../structures/elven-enclaves.md#sylvan-law)). They stay angry for 30-50 s. Helping to drive off a goblin raid on the enclave forgives you.
+Wardens leave players alone unless the player is Hostile with the Sylvan Court (-500 or lower: shot on sight), hits an elf (every Warden within 16 blocks joins in) or breaks Sylvan Law where an elf can see (see [Elven Enclaves](../structures/elven-enclaves.md#sylvan-law)). They stay angry for 30-50 s. Helping to drive off a goblin raid on the enclave forgives you.
 
 ![A Warden drawing on a zombie](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/elven-enclave/warden-bow.png)
 
 ### Trades
-Each trade has 12 uses and restocks every morning. Elves pay 25% less (kin prices: the first price item's count × 0.75, rounded down, at least 1).
+Each trade has 12 uses and restocks every morning. Prices follow your [standing](../systems/factions.md) with the Sylvan Court like the innkeeper's (Unfriendly +50%, Friendly -10%, Honored -25%, Exalted -40%), and the merchants won't trade at all with Hostile players. On top of that, Elves pay 25% less (kin prices: the first price item's count × 0.75, rounded down, at least 1).
 
 | Merchant | Sells | Buys for 1 emerald |
 |-|-|-|
@@ -31,7 +31,7 @@ Each trade has 12 uses and restocks every morning. Elves pay 25% less (kin price
 ![The Speaker's trades for an Elf, at kin prices](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/elven-enclave/speaker-trades.png)
 
 ### Looks
-Elves use the player model with slim arms and pointed ears (a 1x3x1 cuboid each side of the head), at full player size. There are six Wood Elf skins (robes in greens, silver and white; Wardens wear their leathers over them) plus one each for the Speaker and the Fletcher.
+Elves use the player model with slim arms and the same pointed ears Elf players get, at full player size. There are six Wood Elf skins (robes in greens, silver and white; Wardens wear their leathers over them) plus one each for the Speaker and the Fletcher.
 
 ![Pointed ears](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/elven-enclave/elves-ears.png)
 
@@ -47,6 +47,6 @@ Only in Elven Enclaves, where they also spawn naturally inside the trees, the gl
 
 ## For developers
 - `entity/ElfEntity` (the Wood Elf and base class: variant, name, home, `mayTarget` filter, Warden call for help on being struck), `ElfWardenEntity` (`Angerable`, `RangedAttackMob`, its own `WardenAttackGoal` because `BowAttackGoal` needs a `HostileEntity`), `ElfMerchantEntity` + `ElfTrades`, `SylvanLaw`.
-- `client/renderer/RacialHumanoidRenderer`: the racial NPC kit (player model, slim or classic arms, armour, arm poses for held items and drawn bows, optional head features, scale). Elf ears are the `racial_ears` model layer, textured from the skin's spare corner at (56, 0). The races ticket's `RaceFeatures.renderHead` can take the ears over for both players and NPCs once both are in.
+- `client/renderer/RacialHumanoidRenderer`: the racial NPC kit (player model, slim or classic arms, armour, arm poses for held items and drawn bows, scale). Head features come from `RaceFeatures.renderHead`, as on players, for the `Look`'s race; they're skipped while something is worn on the head.
 - Skins: `python3 tools/elf_skins.py` writes `textures/entity/elf/`.
 - `ModSpawns.canElfSpawn`: natural and chunk-generation spawns only inside real enclave pieces, at most 12 elves within 48 blocks.

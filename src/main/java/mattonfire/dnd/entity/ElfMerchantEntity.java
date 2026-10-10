@@ -1,5 +1,7 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.faction.ReputationTier;
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ExperienceOrbEntity;
@@ -18,6 +20,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.village.Merchant;
 import net.minecraft.village.TradeOffer;
@@ -135,6 +138,12 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
             return ActionResult.success(this.world.isClient);
         }
         if (!this.world.isClient) {
+            if (TierEffects.refusesService(TierEffects.tierWith(player, this))) {
+                player.sendMessage(Text.translatable("entity.dndclasses.elf_merchant.refuses", this.getDisplayName())
+                        .formatted(Formatting.RED), true);
+                this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
+                return ActionResult.CONSUME;
+            }
             this.setCustomer(player);
             this.prepareOffersFor(player);
             this.sendOffers(player, this.getDisplayName(), 1);
@@ -142,10 +151,17 @@ public class ElfMerchantEntity extends ElfEntity implements Merchant {
         return ActionResult.success(this.world.isClient);
     }
 
-    /** Sets this customer's special prices: cleared, then each price modifier adds its share. */
+    /**
+     * Sets this customer's special prices: cleared, then each price modifier adds its share of the base price
+     * (the reputation tier, then the kin discount), as at the hobbit innkeeper.
+     */
     private void prepareOffersFor(PlayerEntity player) {
         TradeOfferList offers = this.getOffers();
         offers.forEach(TradeOffer::clearSpecialPrice);
+        ReputationTier tier = TierEffects.tierWith(player, this);
+        for (TradeOffer offer : offers) {
+            offer.increaseSpecialPrice(TierEffects.reputationPriceDelta(tier, offer.getOriginalFirstBuyItem().getCount()));
+        }
         KinPrices.apply(this, player, offers);
     }
 

@@ -163,6 +163,9 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Render.LayeredArmorRenderer.registerAll();
         mattonfire.dnd.faction.client.ClientReputation.register();
         mattonfire.dnd.quest.client.ClientQuests.register();
+        // Journal (J) and the quest tracker in the top-right corner
+        mattonfire.dnd.classes.Client.Hud.QuestJournalScreen.register();
+        mattonfire.dnd.classes.Client.Hud.QuestTrackerHud.register();
         mattonfire.dnd.classes.Client.Hud.DialogueScreen.register();
         // The model has see-through quads like the vanilla brewing stand, which draw black on the default solid layer
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(

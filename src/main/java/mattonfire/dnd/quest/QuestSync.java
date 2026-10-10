@@ -24,6 +24,7 @@ import net.minecraft.util.Identifier;
  *   varint stage (0-based), varint stages, text stage title, text stage text,
  *   varint objectives, per objective: text description, varint progress, varint count
  *   varint participants, per participant: string name, bool party leader
+ *   text description ("" for none), text rewards summary ("" for none)
  * varint n, per finished quest: id quest, text title, id chain, bool reward waiting
  * </pre>
  */
@@ -68,6 +69,8 @@ public final class QuestSync {
                 buf.writeString(manager.name(server, participant));
                 buf.writeBoolean(party != null && party.isLeader(participant));
             }
+            buf.writeText(quest.description() != null ? quest.description() : Text.empty());
+            buf.writeText(QuestCommand.describe(quest.rewards()));
         }
         Map<Identifier, Long> finished = manager.finished(uuid);
         List<Identifier> unclaimed = manager.unclaimed(uuid);

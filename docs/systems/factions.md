@@ -147,11 +147,10 @@ The entity tags `dndclasses:faction/<id>` and structure tags `dndclasses:faction
 ## Known limitations
 - Not yet: Friendly's earlier raid horn, Honored's extra innkeeper trade and free long rest, Exalted's double raid loot, the Honored barrel exception at the hoard, Exalted dwarves joining your fights and identifying items, and goblin aggro for opening a camp chief's chest. Quest and dialogue unlocks come with the quest tickets.
 - Hobbit gift cooldowns are per hobbit: each gift starts that player's wait, and the next player gets a gift once their own wait has passed since it (or the last one's wait is over).
-- No Journal screen yet; the client keeps the synced values for it.
 - Bounty boards outside every faction's settlements credit every faction with a `bounties` reward.
 
 ## For developers
-- Code: `mattonfire.dnd.faction`. `Faction` (record + JSON parser), `Factions` (server data reload listener), `ReputationTier`, `Reputation` (API and storage), `FactionEvents` (kill/hit hooks, decay tick, and the calls below), `RepCommand`, `client/ClientReputation`.
+- Code: `mattonfire.dnd.faction`. `Faction` (record + JSON parser), `Factions` (server data reload listener), `ReputationTier`, `Reputation` (API and storage), `FactionEvents` (kill/hit hooks, decay tick, and the calls below), `RepCommand`, `client/ClientReputation` (read by the [Journal](quest-journal.md)'s Factions tab).
 - API: `Reputation.get(player, faction)`, `tier(...)`, `factionOf(entity)`, `add(player, faction, delta, Source)`, and `change(player, source).add(...).add(..., Cap, limit).apply()` for one event touching several factions (one action-bar line).
 - Hooks in existing code: `FactionEvents.raidWon` (`GoblinRaid.win`), `bountyClaimed` (`BountyRewards.claim`), `traded` (`InnkeeperEntity.trade`, `MountainDwarfEntity` barter), `theftWitnessed` (`SettlementGrudges.witness`). The crowned dwarf gets the command tag `dndclasses.role.dwarf_king`.
 - Hooks: `Reputation.raceOf` gives the player's active race as `dndclasses:<race>` (`RaceLifecycle.activeRaceOf`, null with no race or `dndRaces` off) for `start_by_race`, and `Reputation.ignored` is `DungeonMaster::isDm`, so [Dungeon Masters](dungeon-master.md) don't gain or lose reputation.

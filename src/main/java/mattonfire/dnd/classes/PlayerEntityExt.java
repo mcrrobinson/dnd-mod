@@ -16,4 +16,13 @@ public interface PlayerEntityExt {
 
 	/** Server side: saves and syncs the race (and recalculates the hitbox, for racial sizes). */
 	void setDndRace(DndRace race, DragonAncestry ancestry);
+
+	/**
+	 * The race whose body size applies: the race while {@code dndRaces} is on, NONE while it's off.
+	 * Synced to every client through the DataTracker (clients can't read the gamerule).
+	 */
+	DndRace getBodyRace();
+
+	/** Server side: set by {@code RaceStats.apply}; recalculates the hitbox when it changes. */
+	void setBodyRace(DndRace race);
 }

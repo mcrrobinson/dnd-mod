@@ -1,0 +1,51 @@
+# Resting together: the host (a Bard with the Song of Rest active, 2d6) and a guest Fighter in
+# the same party sit at campfires 4 blocks apart. The Bard finishes first; the guest's rest still
+# counts the Bard and heals an extra 2d6 ("Song of Rest (<host>): 2d6: ...").
+#  1. timeout 700 ./gradlew runClient -PdevRunDir=run-4 -PdevScript=devscripts/rests-party-host.txt
+#  2. once its log says "Started serving on": timeout 700 ./gradlew runClient -PdevRunDir=run-3 -PdevServer=localhost:25641 -PdevScript=devscripts/rests-party-guest.txt
+# Expect in the host's latest.log: "[Rest] <guest> finished a short rest with [<guest>, <host>]";
+# in the guest's: the Song of Rest [CHAT] line. Screenshots party-rest-host, party-rest-guest.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set 1000
+/fill -6 149 -4 8 149 6 minecraft:stone
+/fill -6 150 -4 8 155 6 minecraft:air
+/setblock 0 150 2 minecraft:campfire[lit=true]
+/setblock 4 150 2 minecraft:campfire[lit=true]
+/kill @e[type=!minecraft:player]
+/tag @s add host
+/dndclass set @s bard
+/clear @s
+/dndclass resetprogress @s
+/dndclass unlock @s bard.song_of_rest
+/tp @s 0.5 150 0.5 0 35
+/publish false survival 25641
+# Time for the guest to join, and to wait out any short rest cooldown left in this run dir
+wait 3700
+/list
+/party invite @a[tag=!host,limit=1]
+wait 200
+/party invite @a[tag=!host,limit=1]
+wait 100
+/party list
+/dndclass set @a[tag=!host,limit=1] fighter
+wait 10
+/clear @a[tag=!host]
+/damage @a[tag=!host,limit=1] 10 minecraft:generic
+/tp @a[tag=!host] 4.5 150 0.5 0 35
+wait 20
+clearchat
+sneak on
+use
+wait 5
+sneak off
+/tellraw @a "GUEST_REST_NOW"
+wait 1300
+/data get entity @a[tag=!host,limit=1] Health
+screenshot party-rest-host
+wait 40
+quit

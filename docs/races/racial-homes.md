@@ -12,7 +12,7 @@ Once a second the mod checks where each player is. A player is in a settlement w
 | Welcome | A "Welcome home, &lt;race&gt;" title with the settlement's name. It shows again only after you've been away for 5 minutes. |
 | First-visit gift | Some settlements give a gift the first time you visit each one (see below). Each settlement is remembered separately. |
 | Hearth | In the hearth building you get Regeneration I, refreshed every 3 s (it lasts 5 s), while no hostile mob is within 16 blocks. |
-| Kin prices | The settlement's merchants charge 25% less: the first price item's count × 0.75, rounded down, never below 1. |
+| Kin prices | The settlement's merchants charge 25% less: the first price item's count × 0.75, rounded down, never below 1. It stacks with your [reputation tier](../systems/factions.md) price change: both are worked out from the base price and added together. |
 | Kin trust | The guards let you off some offences (see each settlement). |
 | Standing | You start Friendly with the settlement's [faction](../systems/factions.md) instead of Neutral. |
 
@@ -20,9 +20,9 @@ Once a second the mod checks where each player is. A player is in a settlement w
 | Bonus | Value |
 |-|-|
 | Hearth | The Green Dragon inn |
-| Kin prices | The innkeeper's trades. For example, rabbit stew costs 1 emerald instead of 2, cake 2 instead of 3, and the innkeeper buys 15 wheat instead of 20. One-emerald trades stay at 1. |
+| Kin prices | The innkeeper's trades. For example, rabbit stew costs 1 emerald instead of 2, cake 2 instead of 3, and the innkeeper buys 15 wheat instead of 20. One-emerald trades stay at 1. A Halfling starts Friendly with the Hobbits, whose -10% stacks on top: the wheat trade is then 13. |
 | Welcome basket | On your first visit to each village: 1 cake, 4 cookies and 2 Mugs of Ale |
-| Hobbit gifts | A hobbit gives a Halfling a snack 2 minutes after its last gift instead of 5 |
+| Hobbit gifts | A Halfling waits 2/5 of the usual wait for their reputation tier between a hobbit's gifts: 2 minutes instead of 5 at Neutral or Friendly, 1 instead of 2.5 at Honored or Exalted, 6 instead of 15 at Unfriendly |
 | Kin trust | Hobbits never hold a grudge anyway |
 | Standing | Hobbits of the Shire: 150 (Friendly) |
 

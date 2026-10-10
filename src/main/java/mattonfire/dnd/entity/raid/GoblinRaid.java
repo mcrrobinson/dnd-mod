@@ -16,6 +16,7 @@ import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import mattonfire.dnd.entity.boss.BossMusic;
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.advancement.Advancement;
 import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.entity.Entity;
@@ -560,7 +561,12 @@ public class GoblinRaid {
         }
         for (ServerPlayerEntity player : players) {
             double distance = goblin.squaredDistanceTo(player);
-            if (distance < best && !player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
+            // Marked players are the horde's favourite target: they count as half as far away.
+            if (TierEffects.isMarked(player, goblin.getType())) {
+                distance /= 4.0D;
+            }
+            if (distance < best && !player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)
+                    && TierEffects.goblinMayTarget(goblin, player, false)) {
                 best = distance;
                 nearest = player;
             }

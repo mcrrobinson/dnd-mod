@@ -57,8 +57,10 @@ public final class HomeBonuses {
     public static final int HEARTH_INTERVAL = 60;
     public static final int HEARTH_DURATION = 100;
     public static final double HEARTH_HOSTILE_RANGE = 16.0D;
-    /** How long a hobbit makes a Halfling wait between gifts (everyone else waits the full 5 minutes). */
+    /** How long a hobbit makes a Halfling wait between gifts at Neutral (everyone else waits 5 minutes). */
     public static final int HALFLING_GIFT_COOLDOWN = 20 * 60 * 2;
+    /** The Neutral wait the Halfling one is scaled from: Halflings wait 2/5 of their tier's wait. */
+    private static final int NORMAL_GIFT_COOLDOWN = 20 * 60 * 5;
     /** Gossip a villager gains for a Human the first time they trade. */
     public static final int HUMAN_KIN_GOSSIP = 10;
 
@@ -157,10 +159,13 @@ public final class HomeBonuses {
 
     // ---- Per-settlement extras ----
 
-    /** How long a hobbit makes {@code player} wait between gifts. */
+    /**
+     * How long a hobbit makes {@code player} wait between gifts, given the wait for their reputation tier:
+     * Halflings wait 2/5 of it (2 minutes instead of 5 at Neutral or Friendly).
+     */
     public static int giftCooldown(PlayerEntity player, int normal) {
         return RacialHomes.HOBBIT_VILLAGE.isHomeOf(RaceLifecycle.activeRaceOf(player))
-                ? Math.min(normal, HALFLING_GIFT_COOLDOWN) : normal;
+                ? (int) ((long) normal * HALFLING_GIFT_COOLDOWN / NORMAL_GIFT_COOLDOWN) : normal;
     }
 
     /**

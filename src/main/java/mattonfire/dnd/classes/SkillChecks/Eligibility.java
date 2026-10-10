@@ -1,15 +1,15 @@
 package mattonfire.dnd.classes.SkillChecks;
 
 /**
- * How well trained a character is for a check. Class-gated obstacles use it to decide who may try
- * and which placeholder modifier they roll at ({@link SkillModifiers}).
+ * Whether a class may attempt a class-gated check (obstacles). It only gates the attempt and orders
+ * the classes named in hints; the modifier always comes from the character sheet ({@link SkillCheck}).
  */
 public enum Eligibility {
-    /** The class the check is built for: +3 ability, plus proficiency. */
+    /** The class the check is built for (named first in hints). */
     PRIMARY,
-    /** A class that can also do it: +1 ability, plus proficiency. */
+    /** A class that can also do it. */
     SECONDARY,
-    /** Anyone may try, at +0. */
+    /** Anyone may try (not named in hints). */
     UNTRAINED,
     /** Not allowed to try at all. */
     NONE;

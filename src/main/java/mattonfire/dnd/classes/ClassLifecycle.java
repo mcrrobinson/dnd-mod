@@ -13,6 +13,7 @@ import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.SkillChecks.AttackRolls;
 import mattonfire.dnd.classes.SkillChecks.Lockpicking;
 import mattonfire.dnd.classes.SkillChecks.Persuasion;
+import mattonfire.dnd.classes.SkillChecks.SavingThrow;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -176,6 +177,7 @@ public final class ClassLifecycle {
             skills.forget(player);
         }
         AttackRolls.forget(player.getUuid());
+        SavingThrow.forget(player.getUuid());
         AbilityScores.forget(player.getUuid());
         Featherfall.forget(player.getUuid());
         Lockpicking.pruneRetries(player.getWorld().getTime());

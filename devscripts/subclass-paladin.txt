@@ -1,0 +1,87 @@
+# Paladin subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-paladin.txt
+# Expect in latest.log:
+#  1. Devotion: /effect give wither and poison fail ("Unable to apply this effect"); a husk's 4 damage takes 3.4,
+#     a pig's takes 4
+#  2. Devotion: Divine Judgment leaves no Frightened effect on the husks
+#  3. Conquest: wither applies; husk damage takes 4; after Divine Judgment both husks have the frightened effect
+#     (an extra ActiveEffects entry with Duration ~60)
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=husk]
+/kill @e[type=pig]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s paladin
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s paladin.devotion
+/clear @s
+/tp @s 2.5 150 0.5 0 5
+/summon minecraft:husk 2.5 150 7.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["a"]}
+/summon minecraft:husk 4.5 150 7.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["b"]}
+/summon minecraft:pig 6.5 150 1.5 {NoAI:1b}
+wait 40
+# --- 1. Purity of Spirit ---
+/effect give @s minecraft:wither 10
+/effect give @s minecraft:poison 10
+/data get entity @s ActiveEffects
+/data get entity @s Health
+/damage @s 4 minecraft:mob_attack by @e[type=husk,tag=a,limit=1]
+wait 2
+/data get entity @s Health
+wait 15
+/damage @s 4 minecraft:mob_attack by @e[type=pig,limit=1]
+wait 2
+/data get entity @s Health
+# --- 2. Devotion Divine Judgment: no fright ---
+wait 400
+/data get entity @s Health
+/data get entity @e[type=husk,tag=a,limit=1] Health
+/tp @s 2.5 150 0.5
+look 0 8
+wait 5
+press key.dnd-classes.power-up
+wait 10
+/data get entity @e[type=husk,tag=a,limit=1] Health
+/data get entity @e[type=husk,tag=b,limit=1] Health
+/data get entity @e[type=husk,tag=a,limit=1] ActiveEffects
+/data get entity @e[type=husk,tag=b,limit=1] ActiveEffects
+# --- 3. Conquest ---
+/dndclass subclass @s paladin.conquest
+/effect give @s minecraft:instant_health 1 10
+wait 200
+/effect give @s minecraft:wither 2
+/data get entity @s ActiveEffects
+/effect clear @s
+wait 5
+/data get entity @s Health
+/data get entity @s Health
+/damage @s 4 minecraft:mob_attack by @e[type=husk,tag=a,limit=1]
+wait 2
+/data get entity @s Health
+wait 400
+/data get entity @s Health
+/data get entity @e[type=husk,tag=a,limit=1] Health
+/tp @s 2.5 150 0.5
+look 0 8
+wait 5
+press key.dnd-classes.power-up
+wait 10
+/data get entity @e[type=husk,tag=a,limit=1] Health
+/data get entity @e[type=husk,tag=b,limit=1] Health
+/data get entity @e[type=husk,tag=a,limit=1] ActiveEffects
+/data get entity @e[type=husk,tag=b,limit=1] ActiveEffects
+screenshot subclass-paladin-conquest
+quit

@@ -1,0 +1,27 @@
+# How other players see racial sizes, guest side. See race-sizes-lan-host.txt for how to run the pair.
+# The two scripts hand over with /me rsready, rsack<n> (guest) and /say rsphase<n> (host).
+wait 40
+closescreen
+/me rsready
+waitchat rsphase1
+wait 30
+closescreen
+hitboxes on
+hud off
+sizes
+screenshot lan-guest-sees-halfling
+/me rsack1
+waitchat rsphase2
+wait 20
+sizes
+screenshot lan-guest-sees-tiefling
+/me rsack2
+waitchat rsphase3
+wait 20
+sizes
+screenshot lan-guest-sees-halfling-sneaking
+/me rsack3
+waitchat rsdone
+hitboxes off
+hud on
+quit

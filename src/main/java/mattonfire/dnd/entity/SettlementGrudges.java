@@ -6,6 +6,7 @@ import java.util.Set;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
 import mattonfire.dnd.faction.FactionEvents;
+import mattonfire.dnd.faction.TierEffects;
 import mattonfire.dnd.world.gen.RacialHomes;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
@@ -69,8 +70,8 @@ public final class SettlementGrudges {
         /** Whether doing {@code offence} to this block is meddling. */
         boolean protects(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity, Offence offence);
 
-        /** Guards within this range of the block who can see the player witness it. */
-        double witnessRange();
+        /** Guards within this range of the block who can see {@code player} witness it. */
+        double witnessRange(PlayerEntity player);
 
         /** The guards of this settlement near {@code pos} who can see {@code player}. */
         List<? extends MobEntity> witnesses(PlayerEntity player, BlockPos pos);
@@ -211,15 +212,16 @@ public final class SettlementGrudges {
             return blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity;
         }
 
+        /** 16 blocks, 24 for players the dwarves already distrust (Unfriendly or worse). */
         @Override
-        public double witnessRange() {
-            return 16.0D;
+        public double witnessRange(PlayerEntity player) {
+            return TierEffects.witnessRange(TierEffects.tierWith(player, ModEntityTypes.MOUNTAIN_DWARF));
         }
 
         @Override
         public List<MountainDwarfEntity> witnesses(PlayerEntity player, BlockPos pos) {
             return player.world.getEntitiesByClass(MountainDwarfEntity.class,
-                    new Box(pos).expand(this.witnessRange()), dwarf -> dwarf.canSee(player));
+                    new Box(pos).expand(this.witnessRange(player)), dwarf -> dwarf.canSee(player));
         }
 
         @Override

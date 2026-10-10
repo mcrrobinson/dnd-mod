@@ -495,6 +495,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Downed.DownedEvents.register();
                 mattonfire.dnd.classes.Downed.Revives.register();
                 mattonfire.dnd.classes.Downed.Stabilise.register();
+                mattonfire.dnd.classes.Downed.DownedHudSync.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

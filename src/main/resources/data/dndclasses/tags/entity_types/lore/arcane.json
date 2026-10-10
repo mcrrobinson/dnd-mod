@@ -1,0 +1,28 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:beholder",
+    "dndclasses:mimic",
+    "dndclasses:gelatinous_cube",
+    "dndclasses:wyvern",
+    "dndclasses:ember_wyvern",
+    "dndclasses:lightning_chaser",
+    "dndclasses:frost_drake",
+    "minecraft:ender_dragon",
+    "minecraft:enderman",
+    "minecraft:endermite",
+    "minecraft:shulker",
+    "minecraft:blaze",
+    "minecraft:ghast",
+    "minecraft:vex",
+    "minecraft:allay",
+    "minecraft:warden",
+    "minecraft:guardian",
+    "minecraft:elder_guardian",
+    "minecraft:slime",
+    "minecraft:magma_cube",
+    "minecraft:creeper",
+    "minecraft:iron_golem",
+    "minecraft:snow_golem"
+  ]
+}

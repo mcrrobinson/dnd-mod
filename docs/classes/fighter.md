@@ -19,6 +19,8 @@ Picking the class sets your health to 25.
 
 **Special (power-up key, full mana): Super Regeneration.** Regeneration V, about 3 hearts a second, for 4 seconds at rank I, 6 at II, 8 at III and 10 at IV. Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)). It isn't a potion, so it works.
 
+**Indomitable on saves (level 9).** When you fail a saving throw, roll it again; the second roll stands. Once every 5 minutes, separate from the tree's Indomitable active. See [class save features](../systems/class-save-features.md).
+
 ### Tips
 In a group, stand in front: the mobs come to you, so your friends can shoot or cast in peace. You have no ranged attack, so carry a shield for skeletons and close in on them. Golden apples and beacons still work for you, since they aren't potions.
 

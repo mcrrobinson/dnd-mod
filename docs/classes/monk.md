@@ -40,6 +40,8 @@ Raise its rank at an Attunement Table (see [Class progression](../systems/class-
 | III | 6 | 7 | 3 | 4 |
 | IV | 9 | 10 | 5 | 4 |
 
+**Evasion (level 7) and Diamond Soul (level 10).** On a DEX save that halves damage, a success takes no damage and a failure takes half. At level 10 you're proficient in every saving throw. See [class save features](../systems/class-save-features.md).
+
 ### Tips
 Fight unarmored or in light armor, and lean on speed and the triple jump to avoid hits. A late triple jump is also a way to cancel a long fall: jump just before landing. Flurry Rush is a safe way into a crowd: you can't be hurt during it and you end where you started, so start it from somewhere out of reach. Fire Quivering Palm first to add its 20 damage to the rush's first hit.
 

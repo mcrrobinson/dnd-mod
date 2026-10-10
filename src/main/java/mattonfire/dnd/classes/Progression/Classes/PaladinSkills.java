@@ -11,7 +11,14 @@ import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
+import org.jetbrains.annotations.Nullable;
+
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.CharacterSheet;
+import mattonfire.dnd.classes.Abilities.ClassAbilities;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
@@ -136,7 +143,7 @@ public class PaladinSkills extends ClassSkills {
                         "Strength for 15 seconds, and your melee hits set targets alight.", "minecraft:blaze_rod", 4,
                         1, 2, 2, "paladin.divine_smite"),
                 passive(AURA_OF_PROTECTION, "Aura of Protection",
-                        "You and players within 8 blocks take 15% less damage and get +2 on death saves.", "minecraft:beacon", 1, 2, 1,
+                        "You and players within 8 blocks take 15% less damage, add your CHA modifier (at least +1) to saving throws and get +2 on death saves.", "minecraft:beacon", 1, 2, 1,
                         "paladin.sacred_weapon"),
                 // Oath of Conquest
                 passive(HELLFORGED, "Hellforged", "The Nether no longer weakens you.", "minecraft:netherite_ingot",
@@ -292,6 +299,48 @@ public class PaladinSkills extends ClassSkills {
             }
         }
         return 0;
+    }
+
+    /** Aura of Protection's least bonus to saves, for a Paladin with a CHA modifier below +1. */
+    public static final int AURA_MIN_SAVE_BONUS = 1;
+
+    /** A Paladin's Aura of Protection covering a player, and what it adds to their saves. */
+    public record AuraSave(PlayerEntity paladin, int bonus) {
+    }
+
+    /**
+     * Aura of Protection on saving throws: a player within 8 blocks of a standing Paladin with the aura (the Paladin
+     * included) adds the Paladin's CHA modifier, at least +1, to every save. With several Paladins around, the best
+     * one counts; auras don't stack. Null when no aura covers the player. Read by the character sheet
+     * ({@code ClassSaveFeatures}).
+     */
+    @Nullable
+    public static AuraSave auraSave(PlayerEntity player) {
+        AuraSave best = null;
+        for (PlayerEntity paladin : playersNear(player, AURA_RADIUS)) {
+            if (Progression.classOf(paladin) != DndCharacter.PALADIN
+                    || !Progression.hasPassive(paladin, AURA_OF_PROTECTION)
+                    || Downed.is(paladin)) {
+                continue;
+            }
+            int bonus = Math.max(AURA_MIN_SAVE_BONUS, charismaModifier(paladin));
+            if (best == null || bonus > best.bonus()) {
+                best = new AuraSave(paladin, bonus);
+            }
+        }
+        return best;
+    }
+
+    /**
+     * The Paladin's CHA modifier from their last built sheet; the class's own score if there's none yet. Never
+     * rebuilds the Paladin's sheet, which would read this aura again.
+     */
+    private static int charismaModifier(PlayerEntity paladin) {
+        CharacterSheet sheet = AbilityScores.peek(paladin);
+        if (sheet != null) {
+            return sheet.modifier(Ability.CHA);
+        }
+        return Ability.modifier(ClassAbilities.of(DndCharacter.PALADIN).score(Ability.CHA));
     }
 
     /**

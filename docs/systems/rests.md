@@ -82,13 +82,16 @@ Everyone who was fully asleep when the night was skipped gets the rest. Players 
 - **Woken up early:** getting up after you've fallen asleep, before the rest is done, gives nothing ("You got up before you'd rested: no long rest."). Taking damage wakes you with nothing too ("You were woken up: no long rest.").
 - **Refused** (with the reason in chat) while you're Downed, while a party member within 32 blocks is Downed, during a boss fight, and inside a dungeon whose boss is alive. These are checked when you get into bed and again when the rest completes. Vanilla still keeps you out of bed with monsters within 8 blocks.
 
+### Tavern rooms
+Rent a room from an innkeeper (**3 emeralds** for a Room Key) and sleep in any bed at that inn for a long rest **at any time of day**: 10 seconds asleep, the time isn't skipped, and the key is used up. You also wake **Well Rested** for 10 minutes: one temporary (gold) charge on top of your max, spent first, and Absorption I. The once-a-day limit still applies. See [Hobbit Tavern](../structures/hobbit-tavern.md#rooms-for-the-night).
+
 ### Dungeons
 Inside a dungeon whose boss is still alive (`DungeonRegistry.isInsideUncleared`), long rests are refused and short rests are only allowed in the Entrance, the Antechamber and rooms you've cleared: "This place is too dangerous to rest."
 
 ## Where to find it
 - Short rests: any lit campfire (above).
-- Long rests: any bed, at night.
-- `/dndclass rest` for admins. Tavern rooms and party camps are coming.
+- Long rests: any bed, at night, or a rented tavern room at any time.
+- `/dndclass rest` for admins. Party camps are coming.
 
 ## Commands
 Permission level 2.

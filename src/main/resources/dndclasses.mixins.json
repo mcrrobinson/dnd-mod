@@ -70,7 +70,8 @@
         "DownedPlayerManagerMixin",
         "DownedHealMixin",
         "DownedTargetMixin",
-        "StealthMixin"
+        "StealthMixin",
+        "SavingThrowMixin"
     ],
     "client": [
         "AbstractClientPlayerEntityMixin",

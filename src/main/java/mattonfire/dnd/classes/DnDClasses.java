@@ -232,6 +232,7 @@ public class DnDClasses implements ModInitializer {
                 // Before SettlementGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();
+                mattonfire.dnd.classes.SkillChecks.SaveRules.register();
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();

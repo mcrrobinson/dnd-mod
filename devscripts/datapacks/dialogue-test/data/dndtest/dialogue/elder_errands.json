@@ -1,0 +1,14 @@
+{
+  "role": "hobbit_elder",
+  "topics": [
+    {
+      "text": "Something is troubling you, Thain.",
+      "requires": {"quest": "dndtest:errands", "stage": 3},
+      "check": {"skill": "insight", "dc": 10, "success": "truth", "failure": "hub",
+                "on_success": [{"type": "set_flag", "flag": "saw_through"}]}
+    }
+  ],
+  "nodes": {
+    "truth": {"lines": ["\"Sharp eyes. Very well: the bread was for the goblins. A bribe. Don't tell anyone.\""]}
+  }
+}

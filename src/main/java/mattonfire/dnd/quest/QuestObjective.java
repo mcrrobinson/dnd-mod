@@ -88,8 +88,8 @@ public sealed interface QuestObjective {
     }
 
     /**
-     * Pass a d20 check offered in dialogue. Stub until NPC dialogue lands: {@link QuestManager#checkPassed}
-     * is the hook the dialogue will call.
+     * Pass a d20 check offered in dialogue: a dialogue option with a {@code check} for this skill calls
+     * {@link QuestManager#checkPassed} when the roll succeeds.
      */
     record Check(String skill, int dc, @Nullable Text text) implements QuestObjective {
         @Override

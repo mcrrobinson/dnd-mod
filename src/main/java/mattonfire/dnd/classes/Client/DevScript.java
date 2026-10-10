@@ -86,7 +86,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code slots} logs every non-empty slot of the open screen (or the inventory); on a merchant screen it
  *     also logs each trade with the price this player is shown, after every modifier ({@code trade <i>: <price>
  *     [+ <second>] -> <result> (base <count>, special <n>)})</li>
- * <li>{@code button <id>} clicks a screen button such as an enchanting option (0-2)</li>
+ * <li>{@code button <id>} clicks a screen button such as an enchanting option (0-2); in an NPC dialogue it
+ *     picks reply {@code <id>} (0 = the first)</li>
  * <li>{@code rename <text>} sets the item name in an open anvil</li>
  * <li>{@code click <dx> <dy> [button]} clicks the open screen at GUI coordinates measured from its centre
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
@@ -309,8 +310,15 @@ public final class DevScript {
             });
             case "slot" -> clickSlot(client, argument.split("\\s+"));
             case "slots" -> logSlots(client.player.currentScreenHandler);
-            case "button" -> client.interactionManager.clickButton(client.player.currentScreenHandler.syncId,
-                    Integer.parseInt(argument));
+            case "button" -> {
+                // NPC dialogue: the reply with this index (0 = first); otherwise a container screen's button
+                if (client.currentScreen instanceof mattonfire.dnd.classes.Client.Hud.DialogueScreen dialogue) {
+                    dialogue.choose(Integer.parseInt(argument));
+                } else {
+                    client.interactionManager.clickButton(client.player.currentScreenHandler.syncId,
+                            Integer.parseInt(argument));
+                }
+            }
             case "rename" -> {
                 if (client.player.currentScreenHandler instanceof AnvilScreenHandler anvil) {
                     anvil.setNewItemName(argument);

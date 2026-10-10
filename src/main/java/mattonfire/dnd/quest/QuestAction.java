@@ -243,7 +243,7 @@ public sealed interface QuestAction {
         spoils.forEach(stack -> give(player, stack));
     }
 
-    static QuestAction parse(JsonElement element) {
+    public static QuestAction parse(JsonElement element) {
         JsonObject json = QuestJson.object(element, "action");
         String type = QuestJson.string(json, "type");
         return switch (type) {

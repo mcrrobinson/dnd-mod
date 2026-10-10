@@ -120,7 +120,7 @@ Abilities with ranks (values for ranks I / II / III / IV unless noted):
 - A Druid's old kill list is turned into learned creatures the first time their progress loads.
 
 ## Where to find it
-Right-click an Attunement Table (D&D Classes creative tab, recipe in [Class selection](class-selection.md#class-levels-and-the-skill-tree)). Press **O** to look at ranks and the bestiary anywhere.
+Right-click an Attunement Table (D&D Classes creative tab, recipe in [Class selection](class-selection.md#class-levels-and-the-skill-tree)). Press **O** to look at ranks and the bestiary anywhere. Every class also has a **Character** tab (top right) with its character sheet, where ability points from levels 4 and 8 are spent at a table; see [Ability scores](ability-scores.md#where-to-find-it).
 
 ## Commands
 - `/dndclass rank <player> <skill> <n>`: sets a rank, skipping points, level and the table.

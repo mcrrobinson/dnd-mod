@@ -12,20 +12,24 @@ A late-game undead caster boss that haunts stronghold libraries. It keeps its di
 |-|-|-|
 | Wither Bolt | A wither skull from its staff. The blast hurts but never breaks blocks. Bolts aren't saved, so one in flight when the chunk unloads is gone rather than coming back as a vanilla skull | 2.5 s |
 | Ray of Frost | A beam (up to 20 blocks, needs line of sight): 7 damage, Slowness III for 5 s, powder-snow freeze | 4.5 s |
-| Frost Nova | When anyone is within 4 blocks: 8 damage, Slowness IV for 6 s, freezing and a strong shove to everyone within 5 blocks | 7 s |
+| Frost Nova | When anyone is within 4 blocks: 8 damage, Slowness IV for 6 s, freezing and a strong shove to everyone within 5 blocks. **CON save** DC 15 (16 below 30%): half damage (4) and Slowness IV for 3 s; the shove still lands | 7 s |
 | Raise Dead | A wave of undead around it: zombies, husks and skeletons | 20 s |
 
 The Lich, its phylactery and its minions never hurt each other. Its minions crumble when it dies. Like an evoker's vexes, they drop no loot, equipment or XP and give no class XP or bounty progress (tag `dndclasses.boss_minion`), so a Lich can't be kept alive as a wither skeleton skull farm.
 
+**Dread Presence**: as it passes 60% and 30% health, and when it reforms, a wave of dread rolls out (a chat line, a ring of souls and the elder guardian's curse). Every player within 24 blocks (not creative or spectator) makes a **WIS save**, DC 15 (16 below 30%), or is **Frightened** for 8 s: your attacks deal half damage. Necromancers, its rivals, have advantage on the save. It's one save per player per wave, even when one big hit passes both thresholds at once.
+
+**Saving throws** show on the [save lane](../systems/saving-throws.md) beside the crosshair, and studying the Lich (V) lists them. The Wither Bolt's wither has no save yet (generic poison and wither saves are a later ticket).
+
 **Phases** (boss bar visible within 48 blocks):
 - **Start** (purple bar): waves of 2, at most 4 minions at once.
-- **Below 60%** (blue bar): raises a wave immediately. Waves of 3 every 15 s (at most 6 minions), which can include strays and wither skeletons.
-- **Below 30%** (red bar): 25% faster, 40% shorter cooldowns, waves of 4 (at most 8 minions), three bolts at a time (the middle one a blue charged skull), an immediate nova, and a 40% chance to teleport 6-10 blocks away when hit in melee (at most once every 3 s).
+- **Below 60%** (blue bar): Dread Presence, and raises a wave immediately. Waves of 3 every 15 s (at most 6 minions), which can include strays and wither skeletons.
+- **Below 30%** (red bar): Dread Presence (DC 16), its saves become DC 16, 25% faster, 40% shorter cooldowns, waves of 4 (at most 8 minions), three bolts at a time (the middle one a blue charged skull), an immediate nova, and a 40% chance to teleport 6-10 blocks away when hit in melee (at most once every 3 s).
 
 **Phylactery** (60 health, 8 armour, can't be pushed, immune to status effects):
 - On its first tick, the Lich places its phylactery 4-7 blocks away, or at a set spot in strongholds.
 - While the phylactery stands, the Lich heals 1 health a second and a thread of soul fire links them.
-- If the Lich dies with the phylactery intact, its soul flees into it: no loot, XP or advancement. The phylactery spins faster and the Lich **reforms 30 s later** next to it at full health, attacking the nearest player within 24 blocks. This repeats without limit.
+- If the Lich dies with the phylactery intact, its soul flees into it: no loot, XP or advancement. The phylactery spins faster and the Lich **reforms 30 s later** next to it at full health, unleashes its Dread Presence and attacks the nearest player within 24 blocks. This repeats without limit.
 - Hitting the phylactery makes the Lich target you. At most once every 30 s it shouts, and it teleports back if it's more than 8 blocks away. A Lich lured more than 28 blocks from its phylactery teleports home.
 - Smash the phylactery and the Lich's next death is final.
 - Smash the phylactery while the Lich is reforming and the Lich is destroyed: the phylactery drops the Lich's loot and XP and grants Lichbane.
@@ -64,8 +68,9 @@ No config options. `doMobLoot` controls loot as usual. On Peaceful, Liches and p
 
 ## For developers
 - `entity/LichEntity.java`: spells, the caster movement goal, phases (`BossFight`), the phylactery link, rivalry, dialogue, and `registerEvents()` (no friendly fire, via `ALLOW_DAMAGE`).
+- `entity/BossSaves.java`: the Frost Nova and Dread Presence `MobSaveInfo` entries, `BOSS_DC` / `LAST_PHASE_DC`, `DREAD_RADIUS` (24) and `DREAD_FRIGHTENED_TICKS` (160). `LichEntity.castFrostNova` rolls one save per nova (exposure tag `nova`); `LichEntity.dreadPresence()` runs from both phase callbacks and from `PhylacteryEntity.reformLich`, at most once per tick, with exposure tag `dread`, the `fear` tag and Necromancer advantage. `isLastPhase()` is phase 2 (below 30%).
 - `entity/PhylacteryEntity.java`: the reform timer, defending, and final-death rewards. Uses `BossFight.grantAdvancement`.
 - `classes/mixin/StrongholdLibraryMixin.java`: library placement. `ActiveTargetGoalMixin`: the minion exemption from the Necromancer truce (`LichEntity.defiesNecromancers`).
 - Assets: `tools/lich_models.py` generates `geo/entity/{lich,phylactery}.geo.json` and the textures and glow masks. Animations are in `animations/entity/`. The music is `loop_lich_fight` in `tools/music-gen/music_gen.py` (sound event `music.lich_fight`).
 - Data: `loot_tables/entities/{lich,phylactery}.json`, `advancements/lichbane.json`.
-- Devscript: `devscripts/lich.txt` covers phylactery spawning, flee and reform, final death, and a survival fight with spells and minions.
+- Devscript: `devscripts/lich.txt` covers phylactery spawning, flee and reform, final death, and a survival fight with spells and minions. `devscripts/boss-saves.txt` rigs the Frost Nova and Dread Presence saves with `/dndclass forceroll`.

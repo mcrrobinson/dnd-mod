@@ -216,6 +216,7 @@ public class DnDClasses implements ModInitializer {
 
                 mattonfire.dnd.entity.ModEntityTypes.registerEntityTypes();
                 mattonfire.dnd.entity.DragonSaves.register();
+                mattonfire.dnd.entity.BossSaves.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
@@ -226,6 +227,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
                 mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures.register();
                 mattonfire.dnd.world.gen.enclave.Moonwell.register();
+                mattonfire.dnd.world.gen.temple.DragonTempleStructures.register();
+                mattonfire.dnd.world.gen.temple.TempleShrine.register();
                 // Before SettlementGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();

@@ -36,7 +36,8 @@ import net.minecraft.util.Identifier;
  * with a bestiary get a second page listing the creatures they've learned,
  * unlocked there too. A banner over each branch names its subclass; from
  * class level 3, clicking one at a table chooses it (after a confirm). At a
- * table there's also an Items tab ({@link MagicItemsTab}) for attunement.
+ * table there's also an Items tab ({@link MagicItemsTab}) for attunement. The Character tab
+ * ({@link CharacterSheetPanel}) shows the character sheet for every class, and at a table spends ability points.
  */
 public class SkillTreeScreen extends Screen {
     private static final int PANEL_WIDTH = 260;
@@ -66,7 +67,7 @@ public class SkillTreeScreen extends Screen {
     private static final int PADLOCK = 0xFFB0B0B8;
 
     private enum Tab {
-        TREE("Tree"), MAGIC("Items"), BESTIARY("Bestiary");
+        TREE("Tree"), MAGIC("Items"), CHARACTER("Character"), BESTIARY("Bestiary");
 
         final String label;
 
@@ -77,6 +78,7 @@ public class SkillTreeScreen extends Screen {
 
     private final boolean attuning;
     private final MagicItemsTab magicTab = new MagicItemsTab();
+    private final CharacterSheetPanel characterPanel = new CharacterSheetPanel();
     private int left;
     private int top;
     private Tab tab = Tab.TREE;
@@ -127,8 +129,18 @@ public class SkillTreeScreen extends Screen {
         if (tabs.size() > 1) {
             renderTabs(matrices, tabs, mouseX, mouseY);
         }
+        if (tab == Tab.CHARACTER) {
+            drawTitle(matrices, tabs, Text.literal(Progression.name(dndClass) + " " + progress.level() + " - Character"));
+            List<OrderedText> tooltip = characterPanel.render(matrices, textRenderer, left, top, PANEL_WIDTH,
+                    PANEL_HEIGHT, mouseX, mouseY, attuning);
+            super.render(matrices, mouseX, mouseY, delta);
+            if (tooltip != null) {
+                renderOrderedTooltip(matrices, tooltip, mouseX, mouseY);
+            }
+            return;
+        }
         if (tab == Tab.MAGIC) {
-            drawCenteredTextWithShadow(matrices, textRenderer, "Magic Items", centerX, top + 6, 0xFFFFFF);
+            drawTitle(matrices, tabs, Text.literal("Magic Items"));
             ItemStack hoveredStack = magicTab.render(matrices, textRenderer, itemRenderer, left, top, PANEL_WIDTH,
                     PANEL_HEIGHT, mouseX, mouseY);
             super.render(matrices, mouseX, mouseY, delta);
@@ -138,7 +150,7 @@ public class SkillTreeScreen extends Screen {
             return;
         }
 
-        renderHeader(matrices, progress, centerX);
+        renderHeader(matrices, progress, tabs, centerX);
 
         {
             if (bestiaryPage) {
@@ -196,11 +208,11 @@ public class SkillTreeScreen extends Screen {
         }
     }
 
-    private void renderHeader(MatrixStack matrices, ClassProgress progress, int centerX) {
+    private void renderHeader(MatrixStack matrices, ClassProgress progress, List<Tab> tabs, int centerX) {
         int level = progress.level();
         String title = Progression.name(progress.dndClass) + " - Level " + level
                 + (level == ClassProgress.MAX_LEVEL ? " (max)" : "");
-        drawCenteredTextWithShadow(matrices, textRenderer, title, centerX, top + 6, 0xFFFFFF);
+        drawTitle(matrices, tabs, Text.literal(title));
 
         // XP bar towards the next level.
         int barWidth = 160;
@@ -553,26 +565,50 @@ public class SkillTreeScreen extends Screen {
 
     // ---- Tabs and bestiary ----
 
-    /** Tree always; Items at a table; Bestiary for classes with one. */
+    /** Tree and Character always; Items at a table; Bestiary for classes with one. */
     private List<Tab> tabs(ClassProgress progress) {
         List<Tab> tabs = new ArrayList<>();
         tabs.add(Tab.TREE);
         if (attuning) {
             tabs.add(Tab.MAGIC);
         }
+        tabs.add(Tab.CHARACTER);
         if (progress.usesBestiary()) {
             tabs.add(Tab.BESTIARY);
         }
         return tabs;
     }
 
-    /** Tree and Items on the left, Bestiary on the right. */
+    /** Tree and Items on the left, Character and Bestiary on the right. */
     private int tabX(Tab tab) {
         return switch (tab) {
             case TREE -> left + 4;
             case MAGIC -> left + 4 + tabWidth(Tab.TREE) + 2;
+            case CHARACTER -> left + PANEL_WIDTH - 4 - tabWidth(Tab.CHARACTER)
+                    - (ClassProgress.client.usesBestiary() ? tabWidth(Tab.BESTIARY) + 2 : 0);
             case BESTIARY -> left + PANEL_WIDTH - 4 - tabWidth(Tab.BESTIARY);
         };
+    }
+
+    /** Draws the panel title centred in the gap between the left and right tabs, shrunk if it doesn't fit. */
+    private void drawTitle(MatrixStack matrices, List<Tab> tabs, Text title) {
+        int from = left + 4;
+        int to = left + PANEL_WIDTH - 4;
+        for (Tab each : tabs) {
+            int x = tabX(each);
+            if (x < left + PANEL_WIDTH / 2) {
+                from = Math.max(from, x + tabWidth(each) + 3);
+            } else {
+                to = Math.min(to, x - 3);
+            }
+        }
+        int width = textRenderer.getWidth(title);
+        float scale = Math.min(1.0F, (to - from) / (float) Math.max(1, width));
+        matrices.push();
+        matrices.translate((from + to) / 2.0, top + 6 + (1 - scale) * 4, 0);
+        matrices.scale(scale, scale, 1.0F);
+        textRenderer.drawWithShadow(matrices, title, -width / 2.0F, 0, 0xFFFFFF);
+        matrices.pop();
     }
 
     private int tabWidth(Tab tab) {
@@ -710,6 +746,9 @@ public class SkillTreeScreen extends Screen {
         if (tab == Tab.MAGIC) {
             return magicTab.mouseScrolled(amount);
         }
+        if (tab == Tab.CHARACTER) {
+            return characterPanel.mouseScrolled(amount);
+        }
         if (bestiaryPage) {
             bestiaryScroll = Math.max(0, Math.min(maxBestiaryScroll(ClassProgress.client),
                     bestiaryScroll - (int) Math.signum(amount)));
@@ -744,6 +783,10 @@ public class SkillTreeScreen extends Screen {
 
         if (tab == Tab.MAGIC) {
             return magicTab.mouseClicked(mouseX, mouseY, button) || super.mouseClicked(mouseX, mouseY, button);
+        }
+        if (tab == Tab.CHARACTER) {
+            return characterPanel.mouseClicked(mouseX, mouseY, button, left, top, attuning)
+                    || super.mouseClicked(mouseX, mouseY, button);
         }
 
         if (bestiaryPage) {

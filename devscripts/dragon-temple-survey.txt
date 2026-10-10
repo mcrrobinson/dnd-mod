@@ -1,0 +1,49 @@
+# Dragon Temple placement survey and close-up shots.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dragon-temple-survey.txt (add -PdevWorld=<world>
+# for another world; temples need mountains with dragon or frost lairs, so a fresh world is best).
+# Checks, in <run dir>/logs/latest.log:
+# - the [CHAT] lines of both /locate commands (nearest temple, nearest dragon and frost lair from it)
+# - "[TempleSurvey] temple at X Z: dragon lair N chunks, frost lair M chunks: PASS" for every temple found from a
+#   3x3 grid of points 3000 blocks apart, and the summary "[TempleSurvey] n temples, n pass, 0 fail"
+# - "[Home] Dragon Temple at chunk ..." from /dndhome temple; then screenshots dt-top, dt-front, dt-court,
+#   dt-sanctum, dt-cloister, dt-yard
+# - the "Test passed" counts of Templars (4-7 when freshly generated) and the Elder within 48 blocks
+wait 40
+closescreen
+/gamemode spectator
+/locate structure dndclasses:dragon_temple
+wait 200
+/dndhome templesurvey 3 3000
+wait 600
+/dndhome temple
+wait 200
+/execute at @s run locate structure dndclasses:dragon_lair
+wait 100
+/execute at @s run locate structure dndclasses:frost_lair
+wait 100
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+screenshot dt-sanctum
+/tp @s ~ ~40 ~ ~ 90
+wait 200
+screenshot dt-top
+/tp @s ~ ~-30 ~ ~180 30
+wait 100
+screenshot dt-front
+/tp @s ^ ^ ^-20
+wait 100
+screenshot dt-court
+/tp @s ^10 ^ ^
+wait 60
+screenshot dt-cloister
+/tp @s ^-20 ^ ^
+wait 60
+screenshot dt-yard
+hud on
+/execute at @s run say dt:count
+/execute at @s if entity @e[type=dndclasses:dragonborn_templar,distance=..48]
+/execute at @s if entity @e[type=dndclasses:dragonborn_elder,distance=..48]
+/execute at @s if entity @e[type=minecraft:zombie,distance=..48]
+quit

@@ -6,8 +6,9 @@ import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectCategory;
 
 /**
- * Struck by a Beholder's fear ray: your blows land at half strength, and the Beholder that
- * frightened you keeps driving you back when you try to close in (see BeholderEntity).
+ * Struck by a Beholder's fear ray or a Lich's Dread Presence (after a failed WIS save): your blows
+ * land at half strength, and a Beholder keeps driving you back when you try to close in (see
+ * BeholderEntity).
  */
 public class FrightenedEffect extends StatusEffect {
     public FrightenedEffect(StatusEffectCategory category, int color) {

@@ -1,0 +1,86 @@
+# Tavern rooms (solo, a Cleric): at noon, a valid Room Key lets you sleep in a bed inside its inn, with a
+# monster next to you, and after 10 s you get a long rest, the key is used up, the time isn't skipped, and
+# you're Well Rested (a gold temporary charge + Absorption). A bed outside the key's inn does nothing special,
+# an expired key says "Expired", and a second rest the same day is refused (the key is kept).
+# Buying the key from the innkeeper (dialogue -> "Let's trade.") is checked by hand.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/tavern-room.txt
+# Check logs/latest.log for the [CHAT] lines after each "[DevScript]" step; screenshots
+# room-asleep, room-rested, room-outside, room-expired, room-again.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/difficulty easy
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests true
+/weather clear
+/kill @e[type=!minecraft:player]
+/fill 4 149 6 30 149 18 minecraft:stone
+/fill 4 150 6 30 154 18 minecraft:air
+# The "inn": x 4-16, y 145-160, z 6-18. One bed inside it, one outside (x 26).
+/setblock 10 150 12 minecraft:green_bed[facing=south,part=foot]
+/setblock 10 150 13 minecraft:green_bed[facing=south,part=head]
+/setblock 26 150 12 minecraft:red_bed[facing=south,part=foot]
+/setblock 26 150 13 minecraft:red_bed[facing=south,part=head]
+# A frozen zombie next to the inn bed: vanilla would say "You may not rest now; there are monsters nearby".
+/summon minecraft:zombie 13 150 12 {NoAI:1b,PersistenceRequired:1b}
+/clear @s
+/dndclass set @s cleric
+/dndclass rest @s long
+/dndclass rest @s allow
+/effect clear @s
+# Noon of day 100.
+/time set 6000
+/time add 2400000
+/time query day
+/time query daytime
+/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;4,145,6,16,160,18],Day:100L}
+/dndclass charges @s 0
+/dndclass mana @s 0
+/tp @s 10.5 150 10.5 0 40
+wait 20
+clearchat
+use
+wait 40
+screenshot room-asleep
+wait 200
+# Expect: "Long rest: ...", "Well Rested ...", daytime still 6000, no key left, charges full +1 temporary.
+/time query daytime
+/dndclass charges @s
+/execute if entity @s[nbt={ActiveEffects:[{Id:22}]}]
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:room_key"}]}]
+wait 10
+screenshot room-rested
+# --- Same day again, a fresh key: the long rest is refused and the key is kept.
+/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;4,145,6,16,160,18],Day:100L}
+/tp @s 10.5 150 10.5 0 40
+clearchat
+use
+wait 20
+screenshot room-again
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:room_key"}]}]
+# --- Day 101: the bed outside the inn is an ordinary bed ("You can sleep only at night").
+/time add 24000
+/dndclass rest @s allow
+/clear @s
+/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;4,145,6,16,160,18],Day:101L}
+/tp @s 26.5 150 10.5 0 40
+clearchat
+use
+wait 20
+screenshot room-outside
+# --- An expired key (bought on day 100): the inn bed is an ordinary bed and the tooltip says "Expired".
+/clear @s
+/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;4,145,6,16,160,18],Day:100L}
+/tp @s 10.5 150 10.5 0 40
+clearchat
+use
+wait 20
+press key.inventory
+wait 10
+screenshot room-expired
+closescreen
+/gamerule doDaylightCycle true
+/time set 1000
+quit

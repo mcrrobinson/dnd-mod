@@ -28,7 +28,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
-- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, Hit Dice
+- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds and tavern rooms, Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
@@ -81,7 +81,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
-- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper and bounty board
+- [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board and rentable rooms (Room Keys, Well Rested)
 - [Dungeons](structures/dungeons.md): underground multi-room Crypts with a stair, a planned route to a boss and vault, and a Challenge tier
 
 ## Enchantments

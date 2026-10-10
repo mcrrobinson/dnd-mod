@@ -1,5 +1,6 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.*;
@@ -13,6 +14,7 @@ import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -60,8 +62,38 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
         this.goalSelector.add(7, new LookAroundGoal(this));
 
         this.targetSelector.add(1, new RevengeGoal(this, ZombifiedPiglinEntity.class));
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
+        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false,
+                player -> TierEffects.goblinMayTarget(this, (PlayerEntity) player, false)));
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, IronGolemEntity.class, true));
+    }
+
+    /**
+     * Goblin standing decides who's fair game: players at goblin Neutral or better are left alone unless
+     * they start something, and at Unfriendly only once they come within parley range. This covers every
+     * way a goblin picks a target (its goals, raids, the Warlord's waves).
+     */
+    @Override
+    public void setTarget(@Nullable LivingEntity target) {
+        if (target instanceof PlayerEntity player && !this.world.isClient
+                && target != this.getTarget() && !TierEffects.goblinMayTarget(this, player, false)) {
+            return;
+        }
+        super.setTarget(target);
+    }
+
+    /** Joins a fight someone else started with the horde (the Warlord calling for help): no standing check. */
+    void rallyAgainst(LivingEntity attacker) {
+        super.setTarget(attacker);
+    }
+
+    @Override
+    protected void mobTick() {
+        super.mobTick();
+        // Stand down if the player's standing changed mid-fight (e.g. a quest or /rep made peace).
+        if (this.age % 20 == 0 && this.getTarget() instanceof PlayerEntity player
+                && !TierEffects.goblinMayTarget(this, player, true)) {
+            super.setTarget(null);
+        }
     }
 
     @Override

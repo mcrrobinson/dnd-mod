@@ -1,0 +1,68 @@
+# Bard subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-bard.txt
+# Expect in latest.log:
+#  1. Lore: armor stays 0 after playing the lute (control); /dndclass sheet lists "Bardic Lore: skill:PERSUASION +2";
+#     the villager persuasion [D20] roll's modifier is 2 more than the Valor one in 3
+#  2. Valor: armor 0 -> 2 after playing the lute, back to 0 about 30 s later
+#  3. Valor: [D20] persuasion roll without the +2
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/time set noon
+/kill @e[type=villager]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s bard
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s bard.lore
+/clear @s
+/give @s dndclasses:lute
+hotbar 0
+/tp @s 2.5 150 2.5 0 20
+wait 20
+# --- 1. Lore ---
+/attribute @s minecraft:generic.armor get
+use
+wait 5
+/attribute @s minecraft:generic.armor get
+/dndclass sheet @s
+hotbar 1
+/summon minecraft:villager 2.5 150 4.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:farmer",level:1,type:"minecraft:plains"}}
+wait 30
+sneak on
+wait 2
+use
+wait 5
+sneak off
+/kill @e[type=villager]
+hotbar 0
+# --- 2. Valor ---
+/dndclass subclass @s bard.valor
+wait 220
+/attribute @s minecraft:generic.armor get
+use
+wait 5
+/attribute @s minecraft:generic.armor get
+screenshot subclass-bard-valor
+/dndclass sheet @s
+hotbar 1
+/summon minecraft:villager 2.5 150 4.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:farmer",level:1,type:"minecraft:plains"}}
+wait 30
+sneak on
+wait 2
+use
+wait 5
+sneak off
+/kill @e[type=villager]
+wait 600
+/attribute @s minecraft:generic.armor get
+quit

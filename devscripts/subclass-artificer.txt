@@ -1,0 +1,73 @@
+# Artificer subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-artificer.txt
+# Expect in latest.log:
+#  1. Armorer: after Arcane Armor, dndclasses:armor_buff Duration ~900 and knockback resistance 0.5;
+#     0.0 again once the effect is gone
+#  2. Battle Smith control: Arcane Armor Duration ~600 and knockback resistance 0.0
+#  3. Battle Smith: a hit with an identified magic iron sword takes 2 more Health from the husk than the same hit
+#     as an Armorer; an unidentified one doesn't
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 12 149 12 minecraft:stone
+/fill 0 150 0 12 156 12 minecraft:air
+/dndclass set @s artificer
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s artificer.armorer
+/clear @s
+/effect clear @s
+/tp @s 2.5 150 2.5 0 15
+# --- 1. Power Armor ---
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 10
+/data get entity @s ActiveEffects
+/attribute @s minecraft:generic.knockback_resistance get
+/effect clear @s dndclasses:armor_buff
+wait 30
+/attribute @s minecraft:generic.knockback_resistance get
+# --- 2. Battle Smith control ---
+/dndclass subclass @s artificer.battle_smith
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 30
+/data get entity @s ActiveEffects
+/attribute @s minecraft:generic.knockback_resistance get
+/effect clear @s
+# --- 3. Battle Ready ---
+/give @s minecraft:iron_sword{dndclasses_magic:{tier:"uncommon"}}
+/give @s minecraft:iron_sword{dndclasses_magic:{tier:"uncommon",identified:0b}}
+hotbar 0
+/summon minecraft:husk 2.5 150 4.5 {NoAI:1b,Health:200f,Attributes:[{Name:"minecraft:generic.max_health",Base:200d}],Rotation:[180f,0f],Tags:["sc"]}
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 30
+/data get entity @e[tag=sc,limit=1] Health
+hotbar 1
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 30
+/data get entity @e[tag=sc,limit=1] Health
+/dndclass subclass @s artificer.armorer
+hotbar 0
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 30
+/data get entity @e[tag=sc,limit=1] Health
+/kill @e[type=!player,distance=..30]
+quit

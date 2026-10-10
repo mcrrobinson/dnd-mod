@@ -8,9 +8,12 @@
         "CrossbowItemMixin",
         "ItemStackNameMixin",
         "PlayerEntityMixin",
+        "PlayerDimensionsMixin",
         "SmiteDragonsMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
+        "ShieldBlockMixin",
+        "SubclassEffectImmunityMixin",
         "HungerManagerMixin",
         "ModEntityDataSaverMixin",
         "EnchantingTableMixin",
@@ -46,6 +49,7 @@
         "ArtificerItemStackMixin",
         "TridentEntityMixin",
         "ProjectileEntityMixin",
+        "ExplosionSculptMixin",
         "VampiricMixin",
         "FeatherfallMixin",
         "ExperienceOrbEntityMixin",
@@ -80,7 +84,8 @@
         "SoundSystemMusicDuckMixin",
         "WarlockFireballMixin",
         "RangerBowZoomMixin",
-        "ClientPlayerSwordDropMixin"
+        "ClientPlayerSwordDropMixin",
+        "RestMovementLockMixin"
     ],
     "injectors": {
         "defaultRequire": 1

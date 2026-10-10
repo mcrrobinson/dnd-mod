@@ -35,6 +35,15 @@ The plates and hams in item frames can be taken too.
 
 Taking food is safe: the hobbits don't mind. They're peaceful and even share food with you.
 
+## For your race
+Hobbit Villages are the Halfling home (see [Racial homes](../races/racial-homes.md)). A Halfling gets:
+
+- a "Welcome home, Halfling" title on arriving, and a Shire welcome basket (1 cake, 4 cookies, 2 Mugs of Ale) on the first visit to each village
+- Regeneration I in the Green Dragon inn while no hostile mob is within 16 blocks
+- 25% off the innkeeper's trades
+- hobbit gifts every 2 minutes instead of 5 (2/5 of the wait for your reputation tier)
+- a Friendly (150) start with the Hobbits of the Shire
+
 ## Where to find it
 Plains, Sunflower Plains and Meadow. Villages use a spacing of 24 chunks and a separation of 8, and stay at least 6 chunks away from vanilla villages. Hobbits spawn inside the village (1 or 2 at a time).
 

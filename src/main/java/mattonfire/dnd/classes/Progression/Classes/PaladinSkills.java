@@ -16,6 +16,9 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Registry.ModEffects;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.registry.tag.DamageTypeTags;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -79,6 +82,13 @@ public class PaladinSkills extends ClassSkills {
     private static final int ANGEL_TICKS = 20 * 20;
     private static final double ANGEL_RADIUS = 10;
     private static final int ANGEL_FIRE_SECONDS = 3;
+
+    public static final String DEVOTION = "paladin.devotion";
+    public static final String CONQUEST = "paladin.conquest";
+    /** Purity of Spirit: damage from undead is multiplied by this. */
+    public static final float PURITY_UNDEAD_MULTIPLIER = 0.85F;
+    /** Conquering Presence: how long Divine Judgment frightens hostile mobs. */
+    public static final int CONQUERING_FRIGHT_TICKS = 3 * 20;
 
     private static final String CIRCLE_OF_HEALING = "paladin.circle_of_healing";
     /** Every player this close is fully healed. */
@@ -229,7 +239,32 @@ public class PaladinSkills extends ClassSkills {
     }
 
     @Override
+    public float modifyTakenDamage(PlayerEntity player, ClassProgress progress, DamageSource source, float amount) {
+        // Purity of Spirit: undead hit softer, in melee or with their arrows.
+        if (progress.hasSubclass(DEVOTION) && source.getAttacker() instanceof LivingEntity attacker
+                && isUndead(attacker) && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
+            return amount * PURITY_UNDEAD_MULTIPLIER;
+        }
+        return amount;
+    }
+
+    /**
+     * Purity of Spirit: a Devotion Paladin can't get Wither or Poison. Called from
+     * {@code SubclassEffectImmunityMixin} for every effect a player gets on the server.
+     */
+    public static boolean blocksEffect(PlayerEntity player, StatusEffect effect) {
+        return (effect == StatusEffects.WITHER || effect == StatusEffects.POISON)
+                && Progression.classOf(player) == DndCharacter.PALADIN
+                && Progression.current(player).hasSubclass(DEVOTION);
+    }
+
+    @Override
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
+        if (progress.hasSubclass(DEVOTION)) {
+            // Anything picked up before the oath was taken
+            player.removeStatusEffect(StatusEffects.WITHER);
+            player.removeStatusEffect(StatusEffects.POISON);
+        }
         if (progress.hasPassive("paladin.aura_of_courage")) {
             for (PlayerEntity ally : playersNear(player, AURA_RADIUS)) {
                 ally.removeStatusEffect(StatusEffects.WEAKNESS);
@@ -372,18 +407,32 @@ public class PaladinSkills extends ClassSkills {
 
         hurt(player, target, damage);
         target.setOnFireFor(JUDGMENT_FIRE_SECONDS);
+        boolean conquering = Progression.current(player).hasSubclass(CONQUEST);
+        if (conquering && target instanceof Monster) {
+            frighten(player, target);
+        }
 
         for (LivingEntity mob : world.getEntitiesByClass(LivingEntity.class, new Box(at, at).expand(radius),
                 e -> e instanceof Monster && e.isAlive() && e.squaredDistanceTo(at) <= radius * radius)) {
             if (!hit.add(mob))
                 continue; // Each mob is hit once, by its own beam or the first shockwave
             hurt(player, mob, damage * SHOCKWAVE_SHARE);
+            if (conquering) {
+                frighten(player, mob);
+            }
             if (isUndead(mob))
                 mob.setOnFireFor(JUDGMENT_FIRE_SECONDS);
             double dx = mob.getX() - at.x;
             double dz = mob.getZ() - at.z;
             if (dx * dx + dz * dz > 1.0E-4)
                 mob.takeKnockback(0.6, -dx, -dz);
+        }
+    }
+
+    /** Conquering Presence: Frightened (their blows land at half strength) for 3 seconds. */
+    private static void frighten(ServerPlayerEntity player, LivingEntity mob) {
+        if (mob.isAlive()) {
+            mob.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, CONQUERING_FRIGHT_TICKS, 0), player);
         }
     }
 

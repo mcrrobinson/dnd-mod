@@ -56,7 +56,9 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Order of the Profane Soul | Right | Crimson Rite (first node, open to both), Curse of Binding, Hemocraft | **Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3 |
 | Order of the Lycan | Left | Sunshield (first node, open to both), Hybrid Transformation, Predator | **Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15 |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Rite Focus** (Profane Soul): Crimson Rite's Wither lasts 4 s instead of 2 s, and Curse of Binding costs 2 mana instead of 3 (the tree, the footer and the mana bar's underline show 2).
+- **Stalker's Prowess** (Lycan): +10% movement speed at night (the same 13000-23000 window as the class's night damage), and Hybrid Transformation's Strength II, Speed and Jump Boost II last 20 s instead of 15 s.
 
 ## Commands
 - `/dndclass set <player> bloodhunter` (see [Admin commands](../systems/admin-commands.md)).

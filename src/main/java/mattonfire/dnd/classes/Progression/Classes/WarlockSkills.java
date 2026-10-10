@@ -8,7 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.SkillChecks.D20;
+import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
@@ -52,6 +57,17 @@ public class WarlockSkills extends ClassSkills {
 
     /** Read by {@code Warlock} for the fireball cooldown. */
     public static final String INFERNAL_FIREBALLS = "warlock.infernal_fireballs";
+
+    public static final String FIEND = "warlock.fiend";
+    public static final String GREAT_OLD_ONE = "warlock.great_old_one";
+    /** Dark One's Own Luck: at most one reroll this often. */
+    public static final int DARK_ONES_LUCK_COOLDOWN_TICKS = 2 * 60 * 20;
+    /** Entropic Ward: at most one projectile turned aside this often. */
+    public static final int ENTROPIC_WARD_COOLDOWN_TICKS = 60 * 20;
+
+    /** Server tick each player's Dark One's Own Luck / Entropic Ward is ready again. */
+    private static final Map<UUID, Integer> LUCK_READY = new HashMap<>();
+    private static final Map<UUID, Integer> WARD_READY = new HashMap<>();
 
     private static final int FIRE_KILL_BONUS_XP = 2;
     private static final int NETHER_KILL_BONUS_XP = 1;
@@ -120,6 +136,21 @@ public class WarlockSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Dark One's Own Luck: a failed d20 roll of a Fiend Warlock's is rolled again, once every 2 minutes.
+        D20.registerReroll((player, kind, outcome) -> {
+            if (!(player instanceof ServerPlayerEntity warlock) || Progression.classOf(player) != DndCharacter.WARLOCK
+                    || !Progression.current(player).hasSubclass(FIEND))
+                return null;
+            int now = warlock.getServer().getTicks();
+            if (now < LUCK_READY.getOrDefault(warlock.getUuid(), 0))
+                return null;
+            LUCK_READY.put(warlock.getUuid(), now + DARK_ONES_LUCK_COOLDOWN_TICKS);
+            warlock.sendMessage(Text.literal("Dark One's Own Luck: you roll again").formatted(Formatting.DARK_RED),
+                    false);
+            warlock.getWorld().playSound(null, warlock.getBlockPos(), SoundEvents.ENTITY_BLAZE_AMBIENT,
+                    SoundCategory.PLAYERS, 0.6F, 0.7F);
+            return "Dark One's Own Luck";
+        });
         // Don't carry hexes or fire rings (and their worlds) into the next singleplayer session
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             HEXES.clear();
@@ -218,6 +249,32 @@ public class WarlockSkills extends ClassSkills {
         if (progress.hasPassive("warlock.rain_ward") && source.isOf(ModDamageTypes.WARLOCK_WET_DAMAGE_SOURCE))
             return amount * RAIN_WARD_MULTIPLIER;
         return amount;
+    }
+
+    /**
+     * Entropic Ward: whether a Great Old One Warlock turns aside the projectile about to hit them, using
+     * up the ward for 60 seconds. Called from {@code ProjectileEntityMixin} once per projectile that would
+     * really hit (server only); the projectile then can't hit the player at all.
+     */
+    public static boolean entropicWard(PlayerEntity player) {
+        if (!(player instanceof ServerPlayerEntity warlock) || Progression.classOf(player) != DndCharacter.WARLOCK
+                || !Progression.current(player).hasSubclass(GREAT_OLD_ONE))
+            return false;
+        int now = warlock.getServer().getTicks();
+        if (now < WARD_READY.getOrDefault(warlock.getUuid(), 0))
+            return false;
+        WARD_READY.put(warlock.getUuid(), now + ENTROPIC_WARD_COOLDOWN_TICKS);
+        warlock.sendMessage(Text.literal("Entropic Ward turns the shot aside").formatted(Formatting.DARK_PURPLE),
+                true);
+        DnDClasses.LOGGER.debug("[Subclass] Entropic Ward: {} dodged a projectile", warlock.getEntityName());
+        return true;
+    }
+
+    @Override
+    public void forget(ServerPlayerEntity player) {
+        int now = player.getServer().getTicks();
+        LUCK_READY.values().removeIf(t -> now >= t);
+        WARD_READY.values().removeIf(t -> now >= t);
     }
 
     /** The first living non-player, non-pet in the crosshair within range, not behind blocks. */

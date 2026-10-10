@@ -48,7 +48,9 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Champion | Right | Improved Critical (first node, open to both), Action Surge, Brawler | **Superior Critical**: melee attack rolls crit on 18-20 |
 | Battle Master | Left | Defensive Style (first node, open to both), Riposte, Second Wind | **Combat Superiority**: blocking a melee hit with a shield restores 1 mana pip (at most once every 5 seconds) |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Superior Critical** (Champion): your melee attack roll crits on a natural 18-20 instead of 19-20. It's on your character sheet, so the D20 HUD shows it.
+- **Combat Superiority** (Battle Master): blocking a melee hit with a raised shield gives you 1 mana pip, at most once every 5 s. Arrows and other projectiles don't count.
 
 ## Commands
 - `/dndclass set <player> fighter` (see [Admin commands](../systems/admin-commands.md)).

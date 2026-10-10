@@ -1,7 +1,7 @@
 # Dungeons
 Underground adventure sites for a party: an entrance on the surface, a spiral stair down, and 11-13 rooms on a planned route to a boss and its treasure vault. Each dungeon has a name ("The Barrow of Ashmoor") and a Challenge tier (I-IV) that rises with distance from spawn.
 
-This page covers the framework and the first theme, the **Crypt**, whose rooms are still empty: encounters, seals, traps, the puzzle, class gates, loot and bosses arrive in later Dungeons tickets.
+This page covers the framework and the first theme, the **Crypt**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); traps, the puzzle, class gates and loot arrive in later Dungeons tickets.
 
 ## How it works
 - **Layout**: a 7x7 grid of 16x16 cells (112x112 blocks, one chunk per cell) centred on the structure's start chunk. The entrance is the middle cell; a random walk from it lays out the main path, in this order:
@@ -40,7 +40,7 @@ This page covers the framework and the first theme, the **Crypt**, whose rooms a
 | IV | 4500+ |
 
 ### Rooms and wards
-Each room has an invisible, unbreakable **Dungeon Ward** under the middle of its floor. Every 10 ticks it looks for survival or adventure players in its room. The first time it sees a player in the dungeon, it shows the dungeon's name and tier as a title. For now a room counts as cleared as soon as a player walks in (UNTOUCHED -> CLEARED); room fights replace this in a later ticket.
+Each room has an invisible, unbreakable **Dungeon Ward** under the middle of its floor. Every 10 ticks it looks for survival or adventure players in its room. The first time it sees a player in the dungeon, it shows the dungeon's name and tier as a title. Rooms without a fight count as cleared as soon as a player walks in (UNTOUCHED -> CLEARED); fighting rooms spawn a party-scaled encounter and seal their doorways until it's beaten (UNTOUCHED -> ACTIVE -> CLEARED, see [Dungeon encounters](../systems/dungeon-encounters.md)).
 
 The server remembers each dungeon (theme, tier, name, room states, whether the boss is dead, when it was cleared and how often, who has been inside) in `data/dndclasses_dungeons.dat` in the world folder, so it survives restarts.
 
@@ -54,10 +54,11 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 - `/dungeon clear`: marks it cleared (boss defeated, every room cleared).
 - `/dungeon reset`: every room back to untouched and the boss available again.
 - `/dungeon tier <1-4>`: changes its tier.
+- `/dungeon trigger <room>`: starts that room's fight now (see [Dungeon encounters](../systems/dungeon-encounters.md)).
 - `/dungeon cutaway`: for screenshots: removes everything from 3 blocks above the floor up to the sky over the dungeon. Destructive.
 
 ## Known limitations
-- The rooms are empty shells: no monsters, traps, puzzle, gates, boss or real loot yet.
+- No traps, puzzle, class gates or real loot yet.
 - A dungeon made with `/place structure` plays no dungeon music (vanilla `/place` doesn't record a structure start), but its wards and `/dungeon` commands work.
 - Only the Crypt theme exists. The Goblin Warren and Dwarven Ruin are placeholders in `DungeonTheme`.
 - Trees growing over the entrance can leave a canopy over the shaft (trunks are cleared out of it up to 7 blocks above the ground).
@@ -72,9 +73,9 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 - `src/main/java/mattonfire/dnd/dungeon/`:
   - `DungeonRegistry` (PersistentState `dndclasses_dungeons`): `find`, `containing`, `roomAt`, `isInsideUncleared`, `nearest`, `clear`. Entries are created lazily from the structure start or from a ward.
   - `DungeonState` (keyed by `StructureStart.getPos().toLong()`), `RoomRole`, `RoomState`.
-  - `DungeonEvents`: `ENTERED`, `ROOM_CLEARED`, `BOSS_DEFEATED`, `CLEARED`. `ENTERED` and `ROOM_CLEARED` fire from wards; `CLEARED` fires from `DungeonRegistry.clear` (`/dungeon clear`); `BOSS_DEFEATED` isn't fired yet.
+  - `DungeonEvents`: `ENTERED`, `ROOM_CLEARED`, `BOSS_DEFEATED`, `CLEARED`. `ENTERED` and `ROOM_CLEARED` fire from wards; `BOSS_DEFEATED` from the boss's death (`DungeonCombat`); `CLEARED` from `DungeonRegistry.clear` (the boss's death or `/dungeon clear`).
 - `classes/Blocks/DungeonWardBlock` + `DungeonWardBlockEntity` (NBT: `StartKey`, `RoomId`, `Role`, `Box`, `SpawnPoints`, and `Dungeon`, the whole plan, so a ward can record its dungeon without a structure start).
-- Doorway seals and gate obstacles will come from the obstacle framework (PR #122: `classes/Obstacles/`, the Arcane Seal blocks and `ObstaclePlacer`); this ticket adds no seal block.
+- Doorway seals are `dndclasses:arcane_seal` (`classes/Blocks/ArcaneSealBlock`), placed by the wards during fights; gate obstacles will come from the obstacle framework (`classes/Obstacles/`).
 - `classes/Commands/DungeonCommand`.
 - Data: `worldgen/structure/crypt.json`, `worldgen/structure_set/crypts.json`, `tags/worldgen/biome/has_structure/crypt.json`, `tags/worldgen/structure/dungeons.json`.
 - Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots).

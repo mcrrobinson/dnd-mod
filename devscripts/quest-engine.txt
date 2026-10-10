@@ -1,0 +1,90 @@
+# Quest engine: start the sample quest (The Goblin Menace 1, kill 6 goblins), kill 6 goblins, claim
+# the reward at the "innkeeper", then the /quest admin complete path, then leave a quest half done
+# (3/6) for quest-engine-restart.txt to check after a restart. Check [CHAT] and [Quests] in the log.
+# Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-engine.txt
+# (-PdevUser keeps the same player UUID across runs, so the restart check finds the same quests.)
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/dndclass set @s fighter
+wait 10
+closescreen
+/fill -3 149 -3 3 149 3 minecraft:glass
+/tp @s 0.5 150 0.5 0 0
+/kill @e[tag=qe]
+/quest admin @s reset dndclasses:goblin_menace/1
+/rep @s dndclasses:hobbits set 0
+/clear @s minecraft:emerald
+/dndclass progress @s
+/quest list
+# Start: chat shows "Quest started: Trouble on the Road" and the objective 0/6
+/quest admin @s start dndclasses:goblin_menace/1
+/quest info dndclasses:goblin_menace/1
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+# A boss minion never counts
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe","dndclasses.boss_minion"]}
+wait 10
+/damage @e[tag=dndclasses.boss_minion,limit=1] 1000 minecraft:player_attack by @s
+/quest list
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 2
+screenshot quest-engine-progress
+/quest list
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 10
+# Stage done: +20 hobbits; quest finished, reward waiting at the innkeeper
+/rep
+/quest list
+screenshot quest-engine-finished
+# Talking to someone else pays nothing; the innkeeper pays 5 emeralds, 30 XP, 50 class XP
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald"}]}]
+/quest admin @s talk innkeeper
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:5b}]}]
+/dndclass progress @s
+/quest list
+wait 10
+screenshot quest-engine-rewarded
+# Not repeatable: an admin start still works after a reset
+/quest admin @s start dndclasses:goblin_menace/1
+/quest admin @s reset dndclasses:goblin_menace/1
+/clear @s minecraft:emerald
+# /quest admin complete: finish early, then claim
+/quest admin @s start dndclasses:goblin_menace/1
+/quest admin @s complete dndclasses:goblin_menace/1
+/quest list
+/quest admin @s talk innkeeper
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:5b}]}]
+# Stage jump, track, abandon
+/quest admin @s reset dndclasses:goblin_menace/1
+/quest admin @s start dndclasses:goblin_menace/1
+/quest admin @s stage dndclasses:goblin_menace/1 2
+/quest admin @s stage dndclasses:goblin_menace/1 1
+/quest track dndclasses:goblin_menace/1
+/quest abandon dndclasses:goblin_menace/1
+/quest list
+# Leave it at 3/6 for the restart check
+/quest admin @s reset dndclasses:goblin_menace/1
+/quest admin @s start dndclasses:goblin_menace/1
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+/summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qe"]}
+wait 10
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=qe,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 10
+/quest list
+quit

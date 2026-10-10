@@ -37,6 +37,7 @@ public final class Magic {
         MagicGear.register();
         MagicItemLootFunction.register();
         Attunement.register();
+        ForgeBlessing.register();
         registerEffects();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> MagicCommand
                 .register(dispatcher));

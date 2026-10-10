@@ -8,7 +8,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.ManaManager;
+import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Progression.Progression;
+import net.minecraft.registry.tag.DamageTypeTags;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
@@ -55,6 +62,14 @@ public class FighterSkills extends ClassSkills {
 
     private static final UUID INDOMITABLE_KNOCKBACK = UUID
             .nameUUIDFromBytes("dndclasses:fighter.indomitable".getBytes());
+
+    public static final String CHAMPION = "fighter.champion";
+    public static final String BATTLE_MASTER = "fighter.battle_master";
+    /** Superior Critical: a Champion's melee attack rolls crit on this or higher. */
+    public static final int SUPERIOR_CRITICAL_RANGE = 18;
+    /** Combat Superiority: at most one mana pip from shield blocks this often. */
+    public static final int COMBAT_SUPERIORITY_COOLDOWN_TICKS = 5 * 20;
+    private static final Map<UUID, Integer> SUPERIORITY_READY = new HashMap<>();
 
     /** Server tick each player's buff or cooldown ends at. */
     private static final Map<UUID, Integer> RIPOSTE_UNTIL = new HashMap<>();
@@ -131,6 +146,39 @@ public class FighterSkills extends ClassSkills {
     /** A new Downed spell: Indomitable's reroll is back. */
     public static void resetIndomitableReroll(ServerPlayerEntity player) {
         INDOMITABLE_REROLLED.remove(player.getUuid());
+    }
+
+    @Override
+    public void register() {
+        // Superior Critical, on the sheet so the attack roll (and its HUD and log) uses it.
+        AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/fighter_champion"), (player, c) -> {
+            if (Progression.classOf(player) == DndCharacter.FIGHTER
+                    && Progression.current(player).hasSubclass(CHAMPION)) {
+                c.critRange(SUPERIOR_CRITICAL_RANGE, "Superior Critical");
+            }
+        });
+    }
+
+    /**
+     * Combat Superiority: a Battle Master who blocks a melee hit with a shield gets a mana pip back, once
+     * every 5 seconds. Called from {@code ShieldBlockMixin} for every player shield block.
+     */
+    public static void onShieldBlock(PlayerEntity player, DamageSource source) {
+        if (!(player instanceof ServerPlayerEntity fighter) || source.isIn(DamageTypeTags.IS_PROJECTILE)
+                || !(source.getAttacker() instanceof LivingEntity attacker) || source.getSource() != attacker
+                || Progression.classOf(player) != DndCharacter.FIGHTER
+                || !Progression.current(player).hasSubclass(BATTLE_MASTER)) {
+            return;
+        }
+        int now = fighter.getServer().getTicks();
+        if (now < SUPERIORITY_READY.getOrDefault(fighter.getUuid(), 0) || ManaManager.hasFullMana(fighter))
+            return;
+        SUPERIORITY_READY.put(fighter.getUuid(), now + COMBAT_SUPERIORITY_COOLDOWN_TICKS);
+        ManaManager.regenerateMana(fighter);
+        DnDClasses.LOGGER.debug("[Subclass] Combat Superiority: {} +1 mana, now {}", fighter.getEntityName(),
+                ManaManager.getMana(fighter));
+        fighter.getWorld().playSound(null, fighter.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
+                SoundCategory.PLAYERS, 0.8F, 1.6F);
     }
 
     @Override
@@ -240,5 +288,6 @@ public class FighterSkills extends ClassSkills {
         }
         RIPOSTE_UNTIL.remove(id);
         SECOND_WIND_READY.values().removeIf(t -> now >= t);
+        SUPERIORITY_READY.values().removeIf(t -> now >= t);
     }
 }

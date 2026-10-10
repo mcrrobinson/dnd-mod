@@ -56,6 +56,27 @@ public abstract class ClassSkills {
         return false;
     }
 
+    /**
+     * The mana an active costs this player (subclass features can lower it). Both sides: the client
+     * reads it for the HUD with {@code ClassProgress.client}.
+     */
+    public int manaCost(ClassProgress progress, SkillNode node) {
+        return node.manaCost();
+    }
+
+    /** {@link #manaCost} for the progress's class, or the node's own cost. */
+    public static int manaCostFor(ClassProgress progress, SkillNode node) {
+        ClassSkills skills = ClassTrees.skills(progress.dndClass);
+        return skills == null ? node.manaCost() : skills.manaCost(progress, node);
+    }
+
+    /**
+     * Called after the player's equipped active (the root special included) fired and its mana was
+     * spent. Server only.
+     */
+    public void afterActivate(ServerPlayerEntity player, ClassProgress progress, @org.jetbrains.annotations.Nullable SkillNode node) {
+    }
+
     /** XP on top of the {@link ProgressionEvents#HOSTILE_KILL_XP} every class gets for a hostile kill. */
     public int killXp(ServerPlayerEntity player, LivingEntity killed, DamageSource source) {
         return 0;

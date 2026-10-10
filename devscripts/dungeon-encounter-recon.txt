@@ -1,0 +1,10 @@
+# Finds the dev world's natural crypt and lists its rooms (coordinates for the dungeon-encounter scripts).
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-enc -PdevScript=devscripts/dungeon-encounter-recon.txt
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 247 150 983
+wait 300
+/dungeon reset
+/dungeon info
+quit

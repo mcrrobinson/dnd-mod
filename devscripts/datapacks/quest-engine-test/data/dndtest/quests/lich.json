@@ -1,0 +1,5 @@
+{
+  "title": "Lichbane (test)",
+  "stages": [{"text": "Destroy the Lich for good.", "objectives": [{"type": "kill", "entity": "dndclasses:lich"}]}],
+  "rewards": [{"type": "give", "item": "minecraft:nether_star", "count": 1}]
+}

@@ -63,6 +63,7 @@
         "BackgroundRendererMixin",
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
+        "MouseAccessor",
         "DoubleJumpMixin",
         "InGameHudMixin",
         "EntityRenderDispatcherMixin",
@@ -71,8 +72,7 @@
         "SoundSystemMusicDuckMixin",
         "WarlockFireballMixin",
         "RangerBowZoomMixin",
-        "ClientPlayerSwordDropMixin",
-        "MouseAccessor"
+        "ClientPlayerSwordDropMixin"
     ],
     "injectors": {
         "defaultRequire": 1

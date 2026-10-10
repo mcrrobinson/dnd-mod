@@ -52,6 +52,7 @@ import net.minecraft.util.Identifier;
  * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
  *     {@code serverhitboxes measure} logs how far they are from the client's</li>
  * <li>{@code hud on|off} toggles the HUD (F1)</li>
+ * <li>{@code clearchat} clears the chat (F3+D), so it doesn't cover the HUD in a screenshot</li>
  * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join); a container screen is
  *     closed on the server too, like pressing Esc</li>
  * <li>{@code respawn} respawns the player if it's dead (a world saved mid-death loads dead)</li>
@@ -206,6 +207,7 @@ public final class DevScript {
                 }
             }
             case "hud" -> client.options.hudHidden = argument.equals("off");
+            case "clearchat" -> client.inGameHud.getChatHud().clear(false);
             case "closescreen" -> {
                 // setScreen(null) alone leaves a container open on the server (brewing stand, chest, ...)
                 if (client.currentScreen instanceof HandledScreen<?>) {

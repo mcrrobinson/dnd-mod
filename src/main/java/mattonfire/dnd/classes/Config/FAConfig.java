@@ -58,6 +58,11 @@ public final class FAConfig {
             DnDClasses.LOGGER.warn("Config file is empty, default parameters will be used");
             loadDefaults();
         }
+        if (values.saveRolls() == null) { // Written before the option existed: add it with its default
+            values = new ConfigValues(values.applyArmorEffects(), values.applyModifiers(),
+                    values.showDescriptions(), values.descrtiptionsLength(), SaveRollsMode.COMPACT.id());
+            save();
+        }
     }
 
     public static void loadDefaults() {
@@ -65,7 +70,8 @@ public final class FAConfig {
                 true,
                 true,
                 true,
-                250
+                250,
+                SaveRollsMode.COMPACT.id()
         );
     }
 

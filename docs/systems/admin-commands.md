@@ -31,6 +31,9 @@ These all act on the player's current class. See [Class selection](class-selecti
 
 Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree; entity ids look like `minecraft:cow`. `unlock`, `equip`, `rank`, `bestiary` and `xp` print the progress line afterwards, so you can check the result straight away. See [Class progression](class-progression.md) for ranks and the bestiary.
 
+### Magic items
+See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
+
 ### Goblin raids
 | Command | What it does |
 |-|-|

@@ -74,6 +74,7 @@ Some actions roll a d20 plus a class modifier, shown on the HUD with a sound: Ro
 - [Armor](docs/items/armor.md): 14 class-themed sets. A full set gives a bonus to anyone, boosted for the classes it's made for.
 - [Staffs](docs/items/staffs.md): Staffs of Fire, Ice and Lightning, and the Monk Staff.
 - [Potions and brewing](docs/items/potions-and-brewing.md): the Alchemist's Fast Brewing Stand, the Potion of Freezing, and brewing stands that explode for non-Alchemists.
+- [Magic items](docs/systems/magic-items.md): D&D rarity tiers shown by name colour, +1/+2/+3 weapons and armor, and unidentified loot.
 - [Bard instruments](docs/items/bard-instruments.md): the Lute, War Drum and Flute. When a Bard plays one, every player within 16 blocks gets Regeneration, Strength or Speed for 30 seconds.
 
 ### Enchantments

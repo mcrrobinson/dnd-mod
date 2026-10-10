@@ -42,7 +42,7 @@ Every full-strength melee swing (attack cooldown at 90% or more) at a living mob
 - **Critical hit:** a natural 20 deals double damage, with crit particles and the crit sound. Fighters crit on 19 or 20 (Improved Critical). The crit only applies to the swing that rolled it. If something else cancels that attack (a Monk swinging a sword, for example), the crit is lost.
 - **Fumble:** a natural 1 misses entirely and resets your cooldown.
 
-Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your class's attack bonus, which is for display only and doesn't change whether you hit.
+Only crits and fumbles show on the HUD. Every other roll is silent and hits as normal. The modifier shown is your class's attack bonus, which is for display only and doesn't change whether you hit. A [+N magic weapon](magic-items.md#1--2--3-gear) adds its bonus to it.
 
 | Attack bonus | Classes |
 |-|-|

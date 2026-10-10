@@ -188,6 +188,12 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
+        // Magic items: "Rare weapon (Wizard only)" under the name
+        net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback.EVENT.register((stack, context, lines) -> {
+            net.minecraft.text.Text line = mattonfire.dnd.magic.MagicNames.tooltipLine(stack);
+            if (line != null)
+                lines.add(Math.min(1, lines.size()), line);
+        });
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();

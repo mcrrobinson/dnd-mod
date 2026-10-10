@@ -22,7 +22,7 @@ import net.minecraft.util.ActionResult;
  * <li>Natural 20: a critical hit, doing double damage. Fighters (Improved Critical) crit on 19-20.</li>
  * <li>Natural 1: a fumble; the swing misses completely.</li>
  * </ul>
- * The modifier shown is the class's attack bonus (ability modifier + proficiency).
+ * The modifier shown is the class's attack bonus (ability modifier + proficiency), plus a +N weapon's bonus.
  */
 public final class AttackRolls {
     /**
@@ -53,7 +53,7 @@ public final class AttackRolls {
             }
             DndCharacter dndClass = D20.classOf(player);
             int natural = D20.d20(player);
-            int bonus = attackBonus(dndClass);
+            int bonus = attackBonus(dndClass) + mattonfire.dnd.magic.MagicGear.attackBonus(player.getMainHandStack());
             if (natural == 1) {
                 D20.Roll roll = new D20.Roll(D20.Skill.ATTACK, natural, bonus, 0, D20.Outcome.FUMBLE);
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.fumble"));

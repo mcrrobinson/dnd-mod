@@ -73,6 +73,8 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code skill unlock|equip|rankup|bestiary <id>} sends what clicking the skill tree screen would (left-click,
  *     left-click at a table, right-click at a table, a bestiary entry), so the server's checks apply</li>
+ * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
+ *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
  * </ul>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -253,6 +255,15 @@ public final class DevScript {
                 }
             }
             case "skill" -> skill(argument.split("\\s+"), lineNumber);
+            case "tooltips" -> {
+                java.util.List<ItemStack> hotbar = new java.util.ArrayList<>();
+                for (int i = 0; i < 9; i++) {
+                    if (!client.player.getInventory().getStack(i).isEmpty()
+                            && (argument.isEmpty() || java.util.Arrays.asList(argument.split("\\s+")).contains(String.valueOf(i))))
+                        hotbar.add(client.player.getInventory().getStack(i));
+                }
+                client.setScreen(new TooltipPreviewScreen(hotbar));
+            }
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
     }

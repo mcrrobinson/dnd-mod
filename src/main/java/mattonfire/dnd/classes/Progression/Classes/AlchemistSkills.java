@@ -70,6 +70,13 @@ public class AlchemistSkills extends ClassSkills {
             .seconds("Cloud", 6, 8, 10, 12)
             .amount("Extra levels", "", 1, 1, 2, 2);
 
+    public static final String MUTAGENIST = "alchemist.mutagenist";
+    public static final String TRANSMUTER = "alchemist.transmuter";
+    /** Mutagen: drinking a potion also gives a Mutagenist Strength I for this long. */
+    public static final int MUTAGEN_TICKS = 10 * 20;
+    /** Transmuter's Eye: Instant Health from potions a Transmuter drinks heals this much more. */
+    public static final double TRANSMUTER_HEALING_MULTIPLIER = 1.5;
+
     private static final int BREW_XP = 2;
     private static final int POTION_USE_XP = 1;
     private static final int POTION_KILL_BONUS_XP = 2;
@@ -401,6 +408,26 @@ public class AlchemistSkills extends ClassSkills {
         if (isAlchemist(player) && !PotionUtil.getPotionEffects(stack).isEmpty()) {
             Progression.addXp(player, POTION_USE_XP);
         }
+    }
+
+    /** Mutagen: a Mutagenist who drinks a potion with any effect also gets Strength I for 10 s. */
+    public static void onPotionDrunk(ServerPlayerEntity player, ItemStack stack) {
+        if (isAlchemist(player) && Progression.current(player).hasSubclass(MUTAGENIST)
+                && !PotionUtil.getPotionEffects(stack).isEmpty()) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, MUTAGEN_TICKS, 0));
+        }
+    }
+
+    /**
+     * Transmuter's Eye: the proximity factor of an instant effect from a potion the player drinks;
+     * vanilla heals {@code 4 << amplifier} times it, so 1.5 for a Transmuter's Instant Health.
+     */
+    public static double transmuterHealing(LivingEntity user, StatusEffect effect, double proximity) {
+        if (effect == StatusEffects.INSTANT_HEALTH && user instanceof ServerPlayerEntity player && isAlchemist(player)
+                && Progression.current(player).hasSubclass(TRANSMUTER)) {
+            return proximity * TRANSMUTER_HEALING_MULTIPLIER;
+        }
+        return proximity;
     }
 
     /** Potent Brews: lengthens an effect from a potion the player drinks. */

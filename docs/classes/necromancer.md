@@ -57,10 +57,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| Bonecaller | Right | Bone Armor (first node, open to both), Skeletal Archers, Grave Pact | **Undying Servants**: your summons last 25% longer |
-| Plaguebringer | Left | Life Drain (first node, open to both), Wither Cloud, Death's Embrace | **Grim Harvest**: killing a mob that has your Wither heals you 2 hearts |
+| Bonecaller | Right | Bone Armor (first node, open to both), Skeletal Archers, Grave Pact | **Undying Servants**: your summons (Raise Dead, Skeletal Archers, Army of the Dead) last 25% longer |
+| Plaguebringer | Left | Life Drain (first node, open to both), Wither Cloud, Death's Embrace | **Grim Harvest**: killing a mob that's withering heals you 2 hearts |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Undying Servants** (Bonecaller): Raise Dead's undead and Bone Wyvern, Skeletal Archers and Army of the Dead all stay 25% longer (Raise Dead rank I: 12.5 s instead of 10 s; the two skills: 75 s instead of 60 s).
+- **Grim Harvest** (Plaguebringer): whenever a mob you kill is withering (Wither Cloud, Death's Embrace, a Wither potion...), you heal 2 hearts. A hostile mob the wither finishes off after your hit counts too. The class's own quarter-second wither on every hit doesn't count.
 
 ## Commands
 - `/dndclass set <player> necromancer` (see [Admin commands](../systems/admin-commands.md)).

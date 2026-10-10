@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.magic.MagicItems;
+import mattonfire.dnd.magic.MagicKind;
+import net.minecraft.entity.attribute.EntityAttributeInstance;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
@@ -38,6 +41,18 @@ import net.minecraft.stat.Stats;
 import net.minecraft.util.Hand;
 
 public class ArtificerSkills extends ClassSkills {
+    public static final String ARMORER = "artificer.armorer";
+    public static final String BATTLE_SMITH = "artificer.battle_smith";
+    /** Arcane Armor (the root special) lasts this long... */
+    public static final int ARCANE_ARMOR_TICKS = 30 * 20;
+    /** ...or this long for an Armorer (Power Armor)... */
+    public static final int POWER_ARMOR_TICKS = 45 * 20;
+    /** ...who also gets this much knockback resistance while it's on. */
+    public static final double POWER_ARMOR_KNOCKBACK_RESISTANCE = 0.5;
+    private static final UUID POWER_ARMOR_ID = UUID.nameUUIDFromBytes("dndclasses:artificer.armorer".getBytes());
+    /** Battle Ready: added to a Battle Smith's melee hits with an identified magic weapon. */
+    public static final float BATTLE_READY_DAMAGE = 2.0F;
+
     private static final int CRAFT_XP = 1;
     private static final int CRAFT_XP_PER_MINUTE = 10; // Stops XP farming with wooden swords
     private static final int ENCHANT_XP = 3;
@@ -145,6 +160,49 @@ public class ArtificerSkills extends ClassSkills {
         return true;
     }
 
+    /** The root special, Arcane Armor; called from the ARTIFICER case in {@code PowerUpEffect}. */
+    public static void arcaneArmor(PlayerEntity player) {
+        boolean armorer = Progression.classOf(player) == DndCharacter.ARTIFICER
+                && Progression.current(player).hasSubclass(ARMORER);
+        player.addStatusEffect(new StatusEffectInstance(ModEffects.ARMOR_BUFF,
+                armorer ? POWER_ARMOR_TICKS : ARCANE_ARMOR_TICKS, 0));
+        powerArmor(player, armorer);
+    }
+
+    /** Power Armor's knockback resistance, on while an Armorer's Arcane Armor is. */
+    private static void powerArmor(PlayerEntity player, boolean armorer) {
+        EntityAttributeInstance instance = player.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+        if (instance == null)
+            return;
+        boolean wanted = armorer && player.hasStatusEffect(ModEffects.ARMOR_BUFF);
+        boolean has = instance.getModifier(POWER_ARMOR_ID) != null;
+        if (wanted && !has) {
+            instance.addTemporaryModifier(new EntityAttributeModifier(POWER_ARMOR_ID, ARMORER,
+                    POWER_ARMOR_KNOCKBACK_RESISTANCE, EntityAttributeModifier.Operation.ADDITION));
+        } else if (!wanted && has) {
+            instance.removeModifier(POWER_ARMOR_ID);
+        }
+    }
+
+    /**
+     * Battle Ready: a magic weapon (of the Weapon kind) whose magic works for the player: identified, and
+     * attuned if it needs it ({@code Attunement.isActive}).
+     */
+    public static boolean isAwakeMagicWeapon(PlayerEntity player, ItemStack stack) {
+        MagicItems.Info info = MagicItems.info(stack);
+        return info != null && info.kind() == MagicKind.WEAPON && mattonfire.dnd.magic.Attunement.isActive(player, stack);
+    }
+
+    @Override
+    public float modifyDealtDamage(PlayerEntity player, ClassProgress progress, LivingEntity target,
+            DamageSource source, float amount) {
+        if (progress.hasSubclass(BATTLE_SMITH) && source.getSource() == player
+                && isAwakeMagicWeapon(player, player.getMainHandStack())) {
+            amount += BATTLE_READY_DAMAGE;
+        }
+        return amount;
+    }
+
     /** Repairs part of a damaged item; false if there was nothing to repair. */
     private static boolean repair(ItemStack stack) {
         if (stack.isEmpty() || !stack.isDamageable() || !stack.isDamaged())
@@ -171,6 +229,7 @@ public class ArtificerSkills extends ClassSkills {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 60, 0, true, false, true));
         }
         giveStatXp(player);
+        powerArmor(player, progress.hasSubclass(ARMORER));
     }
 
     /** XP for enchanting and smithing, read from the player's stats so no shared mixin is needed. */
@@ -221,6 +280,7 @@ public class ArtificerSkills extends ClassSkills {
 
     @Override
     public void forget(ServerPlayerEntity player) {
+        powerArmor(player, false);
         SNAPSHOTS.remove(player.getUuid());
         long minute = player.getWorld().getTime() / 1200;
         CRAFT_XP_GIVEN.values().removeIf(given -> given[0] != minute);

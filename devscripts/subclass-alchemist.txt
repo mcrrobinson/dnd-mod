@@ -1,0 +1,79 @@
+# Alchemist subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-alchemist.txt
+# Expect in latest.log:
+#  1. Mutagenist: drinking a Swiftness potion gives Strength (id 5) Duration ~200 too; a Healing potion at
+#     Health 10 heals to 14
+#  2. Transmuter: no Strength from the Swiftness potion; a Healing potion at Health 10 heals to 16
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 12 149 12 minecraft:stone
+/fill 0 150 0 12 156 12 minecraft:air
+/dndclass set @s alchemist
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s alchemist.mutagenist
+/clear @s
+/effect clear @s
+/tp @s 2.5 150 2.5 0 15
+# --- Mutagenist ---
+/give @s minecraft:potion{Potion:"minecraft:swiftness"}
+hotbar 0
+holduse on
+wait 45
+holduse off
+wait 5
+/data get entity @s ActiveEffects
+/effect clear @s
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 5
+/damage @s 10 minecraft:generic
+wait 5
+/data get entity @s Health
+/give @s minecraft:potion{Potion:"minecraft:healing"}
+hotbar 0
+holduse on
+wait 45
+holduse off
+wait 5
+/data get entity @s Health
+/effect clear @s
+/clear @s
+# --- Transmuter ---
+/dndclass subclass @s alchemist.transmuter
+/give @s minecraft:potion{Potion:"minecraft:swiftness"}
+hotbar 0
+holduse on
+wait 45
+holduse off
+wait 5
+/data get entity @s ActiveEffects
+/effect clear @s
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 15
+/damage @s 10 minecraft:generic
+wait 5
+/data get entity @s Health
+/give @s minecraft:potion{Potion:"minecraft:healing"}
+hotbar 0
+holduse on
+wait 45
+holduse off
+wait 5
+/data get entity @s Health
+screenshot subclass-alchemist-transmuter
+/clear @s
+quit

@@ -1,0 +1,332 @@
+# Verifies the Arcane Seal rolls over many tries. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-verify.txt
+# Expect in the log: [Obstacle] roll lines; each SUCCESS/CRITICAL followed ~26 ticks later by "solved ... 9 blocks opened, +5";
+# FAILURE stings 2 (health drops by 2), FUMBLE stings 4 and gives weakness; "lost focus" after moving and after /damage.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/fill 2 150 5 6 153 5 minecraft:stone_bricks
+/dndobstacle place 3 150 5 5 152 5 dndclasses:lesser_arcane_seal easy
+/dndclass set @s wizard
+wait 5
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 3.5 0 20
+wait 20
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-roll-1
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-roll-2
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-roll-3
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+screenshot obstacle-verify-roll-4
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect give @s minecraft:instant_health 1 5
+wait 2
+use
+wait 20
+wait 15
+/dndobstacle reset 4 151 5
+wait 2
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 110
+# Focus broken by moving
+sneak on
+wait 2
+use
+wait 2
+sneak off
+wait 40
+screenshot obstacle-verify-focusing
+/tp @s 4.5 150 2.8 0 20
+wait 5
+screenshot obstacle-verify-focus-moved
+/tp @s 4.5 150 3.5 0 20
+wait 10
+# Focus broken by damage
+sneak on
+wait 2
+use
+wait 2
+sneak off
+wait 40
+/damage @s 1 minecraft:generic
+wait 5
+screenshot obstacle-verify-focus-hurt
+/execute if block 4 151 5 dndclasses:lesser_arcane_seal[state=sealed]
+quit

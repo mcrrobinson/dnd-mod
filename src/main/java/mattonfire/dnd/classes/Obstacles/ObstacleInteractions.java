@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
@@ -167,6 +168,9 @@ public final class ObstacleInteractions {
             D20.Roll roll) {
         String key = type.translationKey();
         long now = world.getTime();
+        DnDClasses.LOGGER.info("[Obstacle] {} rolled {} {} + {} = {} vs DC {} on {} at {} -> {}",
+                player.getEntityName(), type.skill(), roll.natural(), roll.modifier(), roll.total(), roll.dc(),
+                type.id(), pos.toShortString(), roll.outcome());
         if (roll.outcome().succeeded()) {
             RETRY_AT.remove(player.getUuid());
             D20.show(player, roll, Text.translatable(key
@@ -186,6 +190,8 @@ public final class ObstacleInteractions {
         } else {
             type.onFailure(world, pos, player);
         }
+        DnDClasses.LOGGER.info("[Obstacle] {} took the sting: health {}, weakness {}", player.getEntityName(),
+                player.getHealth(), player.hasStatusEffect(net.minecraft.entity.effect.StatusEffects.WEAKNESS));
     }
 
     // ---- Ticking: pending opens and focus channels ----
@@ -214,7 +220,9 @@ public final class ObstacleInteractions {
 
     /** Opens the group for its solver and rewards them. */
     public static void solve(ServerWorld world, BlockPos pos, ObstacleType type, Tier tier, ServerPlayerEntity solver) {
-        ObstacleGroups.open(world, pos);
+        int opened = ObstacleGroups.open(world, pos);
+        DnDClasses.LOGGER.info("[Obstacle] {} solved {} at {}: {} blocks opened, +{} class XP",
+                solver.getEntityName(), type.id(), pos.toShortString(), opened, type.xp(tier));
         Progression.addXp(solver, type.xp(tier));
         type.onSolved(world, pos, solver);
         ObstacleEvents.SOLVED.invoker().onSolved(solver, type, tier, pos);
@@ -232,6 +240,7 @@ public final class ObstacleInteractions {
         }
         if (player.getPos().squaredDistanceTo(channel.start()) > 0.25 || player.getHealth() < channel.health()) {
             player.sendMessage(Text.translatable("obstacle.dndclasses.focus.broken"), true);
+            DnDClasses.LOGGER.info("[Obstacle] {} lost focus", player.getEntityName());
             return true;
         }
         long elapsed = world.getTime() - channel.startedAt();

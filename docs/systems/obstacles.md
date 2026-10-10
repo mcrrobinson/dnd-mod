@@ -85,4 +85,5 @@ None.
 - `SkillChecks/SkillModifiers` computes the placeholder modifier from `Eligibility` (`PRIMARY`, `SECONDARY`, `UNTRAINED`, `NONE`) and runs registered `SkillModifierProvider`s, the seam for ability scores, races, subclasses and items. `D20.Skill.ARCANA` labels the roll.
 - `Client/Hud/ObstacleHintHud` draws the crosshair hint.
 - Textures are made by `tools/obstacle_textures.py`.
+- Every roll, sting, solve and broken focus logs an `[Obstacle]` line. `devscripts/obstacle-verify.txt` rolls 40 times on an Easy seal (successes, failures, crits, fumbles) and breaks a focus by moving and by damage.
 - `devscripts/obstacle-arcane-seal.txt` covers a Fighter (hint, refusal, protected volume, mining with backlash), a Wizard (roll, take your time, XP, reset), a Warlock (take your time on Medium) and the Greater seal. It uses the DevScript step `mine on|off`, which keeps breaking the block at the crosshair.

@@ -101,6 +101,8 @@ public final class ClassGuidebookScreen {
         }
         pages.section(special.toArray(Text[]::new));
 
+        rolePages(pages, info);
+
         if (!info.subclasses().isEmpty()) {
             pages.section(Text.translatable("book.dndclasses.class_guidebook.subclasses")
                     .formatted(Formatting.BOLD, Formatting.DARK_AQUA),
@@ -144,13 +146,50 @@ public final class ClassGuidebookScreen {
         pages.section(bulletList("book.dndclasses.class_guidebook.traits", Formatting.DARK_PURPLE, race.traits()));
     }
 
+    /** "Your role" page, then "Obstacles you handle" (bold entries are the ones only this class can handle). */
+    private static void rolePages(Pages pages, ClassInfo info) {
+        List<Text> role = new ArrayList<>();
+        role.add(Text.translatable("book.dndclasses.class_guidebook.role").formatted(Formatting.BOLD, Formatting.DARK_AQUA));
+        role.add(Text.translatable("book.dndclasses.class_guidebook.role.primary",
+                info.role().text().formatted(Formatting.BOLD)));
+        role.add(Text.translatable("book.dndclasses.class_guidebook.role.secondary", info.secondaryRole().text()));
+        if (!info.roleBlurb().isEmpty()) {
+            role.add(Text.literal(""));
+            role.add(Text.literal(ClassInfo.forGame(info.roleBlurb()) + "."));
+        }
+        role.add(Text.literal(""));
+        role.add(Text.translatable(info.role().translationKey() + ".description").formatted(Formatting.GRAY));
+        pages.section(role.toArray(Text[]::new));
+
+        if (!info.obstacles().isEmpty()) {
+            List<Text> obstacles = new ArrayList<>(List.of(bulletList("book.dndclasses.class_guidebook.obstacles",
+                    Formatting.GOLD, info.obstacles())));
+            obstacles.add(Text.literal(""));
+            obstacles.add(Text.translatable("book.dndclasses.class_guidebook.obstacles.note").formatted(Formatting.GRAY));
+            pages.section(obstacles.toArray(Text[]::new));
+        }
+    }
+
     private static Text[] bulletList(String headerKey, Formatting color, List<String> points) {
         Text[] lines = new Text[points.size() + 1];
         lines[0] = Text.translatable(headerKey).formatted(Formatting.BOLD, color);
         for (int i = 0; i < points.size(); i++) {
-            lines[i + 1] = Text.literal("• " + ClassInfo.forGame(points.get(i)));
+            lines[i + 1] = Text.literal("• ").append(withBold(points.get(i)));
         }
         return lines;
+    }
+
+    /** In-game text for a point, keeping its leading **bold** name bold. */
+    private static Text withBold(String point) {
+        String text = point.replace(" (done)", "").replace("(done)", "").trim();
+        if (text.startsWith("**")) {
+            int end = text.indexOf("**", 2);
+            if (end > 2) {
+                return Text.empty().append(Text.literal(text.substring(2, end)).formatted(Formatting.BOLD))
+                        .append(text.substring(end + 2).replace("*", ""));
+            }
+        }
+        return Text.literal(ClassInfo.forGame(text));
     }
 
     /** Packs paragraphs onto pages, starting each section on a fresh page. */

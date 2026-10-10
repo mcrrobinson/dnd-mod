@@ -161,10 +161,12 @@ def readmeWithClassTable = {
 	def classes = new groovy.json.JsonSlurper().parse(classInfoFile, 'UTF-8').classes
 	// One point per line in each cell; a stray " (done)" status marker never reaches the README
 	def cell = { List points -> points.collect { it.replace(' (done)', '').replace('(done)', '').trim() }.join('<br>') }
-	def rows = ['| Class | Strengths | Weaknesses | Special ability |', '|-|-|-|-|']
+	def roleName = { String role -> role ? role.toLowerCase().capitalize() : '' }
+	def rows = ['| Class | Role | Strengths | Weaknesses | Special ability |', '|-|-|-|-|-|']
 	classes.each { c ->
 		def page = "docs/classes/${c.name.toLowerCase().replace(' ', '-')}.md"
-		rows << "| **[${c.name}](${page})** | ${cell(c.pros)} | ${cell(c.cons)} | ${cell(c.special)} |".toString()
+		def role = "**${roleName(c.role)}**<br>${roleName(c.secondaryRole)}"
+		rows << "| **[${c.name}](${page})** | ${role} | ${cell(c.pros)} | ${cell(c.cons)} | ${cell(c.special)} |".toString()
 	}
 	def startAt = readme.indexOf(classTableStart)
 	def endAt = readme.indexOf(classTableEnd)

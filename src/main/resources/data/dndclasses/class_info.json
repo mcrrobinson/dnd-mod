@@ -1,5 +1,5 @@
 {
-  "_comment": "Single source of truth for each class's strengths, weaknesses, special ability, subclass text (the nodes each subclass locks are in Progression/ClassTrees) and ability scores. Read by the game (class guidebook, class-pick chat message) and used to generate the Player Classes table in README.md: after editing, run ./gradlew generateClassReadme. Write each point as a short phrase without a trailing full stop; the game joins them into sentences. specialOnKey says whether the special is fired with the Power Up key (otherwise it is always active). abilities are the class's ability scores (a permutation of the standard array 15, 14, 13, 12, 10, 8); saves are its two saving throw proficiencies; skills are its skill proficiencies; expertise lists the skills it has double proficiency in (each must also be in skills). See docs/systems/ability-scores.md.",
+  "_comment": "Single source of truth for each class's strengths, weaknesses, special ability, subclass text (the nodes each subclass locks are in Progression/ClassTrees) and ability scores. Read by the game (class guidebook, class-pick chat message) and used to generate the Player Classes table in README.md: after editing, run ./gradlew generateClassReadme. Write each point as a short phrase without a trailing full stop; the game joins them into sentences. specialOnKey says whether the special is fired with the Power Up key (otherwise it is always active). abilities are the class's ability scores (a permutation of the standard array 15, 14, 13, 12, 10, 8); saves are its two saving throw proficiencies; skills are its skill proficiencies; expertise lists the skills it has double proficiency in (each must also be in skills). See docs/systems/ability-scores.md. role and secondaryRole are the party roles (TANK, HEALER, DAMAGE, SUPPORT, UTILITY); roleBlurb and obstacles fill the guidebook's Your role page.",
   "classes": [
     {
       "id": "BARBARIAN",
@@ -8,6 +8,10 @@
       "cons": ["Limited vision: fog closes in at about 24 blocks", "Moves very slowly"],
       "special": ["**Rage**: Strength I for 8 seconds, rising to Strength III for 12 seconds with ranks"],
       "specialOnKey": true,
+      "role": "TANK",
+      "secondaryRole": "DAMAGE",
+      "roleBlurb": "Soak hits up front and smash through what blocks the way",
+      "obstacles": ["**Heavy Boulders**: heave them aside while raging (only you)", "Collapsed Passages"],
       "subclasses": [
         {"id": "barbarian.berserker", "name": "Path of the Berserker", "title": "Berserker Barbarian", "flavour": "Rage without end: every kill feeds the fury.", "feature": "**Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage)"},
         {"id": "barbarian.totem_warrior", "name": "Path of the Totem Warrior", "title": "Totem Warrior Barbarian", "flavour": "A bear spirit stands with you, shrugging off blows.", "feature": "**Bear Totem Spirit**: while Rage is active you take 15% less damage"}
@@ -24,6 +28,10 @@
       "cons": ["Less health"],
       "special": ["**Animal Friends**: nearby animals you have charmed with an instrument become companions that follow and fight for you"],
       "specialOnKey": true,
+      "role": "SUPPORT",
+      "secondaryRole": "HEALER",
+      "roleBlurb": "Keep the party fighting with songs, inspiration and rest",
+      "obstacles": ["**Singing Doors**: sing them open and skip the tune puzzle (only you)", "Calming Guardian Beasts"],
       "subclasses": [
         {"id": "bard.valor", "name": "College of Valor", "title": "Valor Bard", "flavour": "Songs of heroes, sung at the front line.", "feature": "**Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds"},
         {"id": "bard.lore", "name": "College of Lore", "title": "Lore Bard", "flavour": "A head full of stories, secrets and silver words.", "feature": "**Bardic Lore**: +2 to Persuasion checks, and you identify magic items when you pick them up"}
@@ -40,6 +48,10 @@
       "cons": ["Shorter view distance: fog closes in at about 48 blocks", "Slightly less attack damage"],
       "special": ["**Sanctuary**: a circle mobs won't target, lasting 6 to 15 seconds by rank. From rank II, party members within 8 to 16 blocks share it and regenerate"],
       "specialOnKey": true,
+      "role": "HEALER",
+      "secondaryRole": "SUPPORT",
+      "roleBlurb": "Keep the party alive and turn back the unholy",
+      "obstacles": ["**Desecrated Altars**: consecrate them to stop nearby spawners and heal the party (only you)", "Holy Wards"],
       "subclasses": [
         {"id": "cleric.life", "name": "Life Domain", "title": "Life Cleric", "flavour": "A healer first, and a scourge of the undead.", "feature": "**Disciple of Life**: Cure Wounds, Sanctuary's party Regeneration and Divine Intervention heal 25% more"},
         {"id": "cleric.forge", "name": "Forge Domain", "title": "Forge Cleric", "flavour": "Blessed hammer, blessed ore, blessed steel.", "feature": "**Blessing of the Forge**: once a day, make one held weapon or worn armor piece +1 until the next day, at an Attunement Table"}
@@ -56,6 +68,10 @@
       "cons": ["Cannot swim", "Gets hungry in the dark (light level 4 or lower)"],
       "special": ["**Wild Shape**: become an animal you have killed and unlocked at an Attunement Table for 15 to 30 seconds by rank. Sneak and press the key to choose the form"],
       "specialOnKey": true,
+      "role": "HEALER",
+      "secondaryRole": "UTILITY",
+      "roleBlurb": "Regrow the party's wounds and take whatever shape the moment needs",
+      "obstacles": ["**Thornwalls**: part them (only you)", "Calming Guardian Beasts"],
       "subclasses": [
         {"id": "druid.moon", "name": "Circle of the Moon", "title": "Moon Druid", "flavour": "More beast than human, at home in any wild shape.", "feature": "**Primal Strike**: your attacks deal +2 damage in animal form"},
         {"id": "druid.land", "name": "Circle of the Land", "title": "Land Druid", "flavour": "Rooted in the land, drawing strength from it.", "feature": "**Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss"}
@@ -72,6 +88,10 @@
       "cons": ["Cannot use bows or crossbows", "No beneficial potions: potions can't be drunk and buffs don't apply, but harmful effects still do"],
       "special": ["**Super Regeneration**: Regeneration V for 4 seconds, up to 10 seconds with ranks"],
       "specialOnKey": true,
+      "role": "TANK",
+      "secondaryRole": "DAMAGE",
+      "roleBlurb": "Draw the enemy's attention and outlast them",
+      "obstacles": ["**Portcullises**: wedge them open for good (only you)", "Collapsed Passages", "Portcullis Winches"],
       "subclasses": [
         {"id": "fighter.champion", "name": "Champion", "title": "Champion Fighter", "flavour": "Raw might and perfect strikes.", "feature": "**Superior Critical**: melee attack rolls crit on 18-20"},
         {"id": "fighter.battle_master", "name": "Battle Master", "title": "Battle Master Fighter", "flavour": "Every block, parry and counter is a lesson.", "feature": "**Combat Superiority**: blocking a melee hit with a shield restores 1 mana pip (at most once every 5 seconds)"}
@@ -88,6 +108,10 @@
       "cons": ["Reduced damage: 75% unarmored, and less the more armor you wear", "Can only attack with a staff or bare fists"],
       "special": ["**Flurry Rush**: blink between the mob you're looking at and hostiles near it for a rapid chain of hits, then blink back. 3 hits on 1 target, up to 10 hits across 5 targets with ranks"],
       "specialOnKey": true,
+      "role": "DAMAGE",
+      "secondaryRole": "UTILITY",
+      "roleBlurb": "Strike fast and reach places nobody else can",
+      "obstacles": ["**Chasms**: leap them and lower the bridge for everyone (only you)", "Crumbling Ledges"],
       "subclasses": [
         {"id": "monk.open_hand", "name": "Way of the Open Hand", "title": "Open Hand Monk", "flavour": "Fists that topple giants.", "feature": "**Open Hand Technique**: each Flurry Rush hit gives the target Slowness II for 2 seconds and knocks it back a little"},
         {"id": "monk.drunken_master", "name": "Way of the Drunken Master", "title": "Drunken Master Monk", "flavour": "A sway, a stagger, and the blow misses.", "feature": "**Tipsy Sway**: with no chestplate on, 15% of melee hits miss you, and drinking Ale gives 2 mana pips"}
@@ -104,6 +128,10 @@
       "cons": ["Cannot craft (crafting table, stonecutter, smithing table, loom) or brew potions", "Very weak in the Nether: half damage and armor, 20% slower"],
       "special": ["**Divine Judgment**: a beam of holy light strikes the mob you look at within 30 blocks, sets it alight and sends out a shockwave. Undead take 50% more damage. Damage, shockwave and extra beams grow with rank"],
       "specialOnKey": true,
+      "role": "TANK",
+      "secondaryRole": "HEALER",
+      "roleBlurb": "Shield your allies with your aura and heal them when it counts",
+      "obstacles": ["**Dread Wards**: walk through and shield allies within 6 blocks from the fear (only you)", "Holy Wards"],
       "subclassTerm": "oath",
       "subclasses": [
         {"id": "paladin.devotion", "name": "Oath of Devotion", "title": "Devotion Paladin", "flavour": "Sworn to honour, light and the slaying of the undead.", "feature": "**Purity of Spirit**: you're immune to Wither and Poison, and undead deal you 15% less damage"},
@@ -121,6 +149,10 @@
       "cons": ["Cannot pick up swords", "Weak to fire"],
       "special": ["**Arrow Storm**: hold right click to fire arrows without using ammo. Fire rate, arrow speed and duration grow with rank; no zooming while it runs"],
       "specialOnKey": true,
+      "role": "DAMAGE",
+      "secondaryRole": "UTILITY",
+      "roleBlurb": "Bring down foes from range and spot what others miss",
+      "obstacles": ["**Hidden doors and traps**: spot them without searching (only you)", "Searching"],
       "subclasses": [
         {"id": "ranger.hunter", "name": "Hunter", "title": "Hunter Ranger", "flavour": "Patient, precise, and always on the trail.", "feature": "**Colossus Slayer**: your first arrow hit each second on a target below full health deals +3 damage"},
         {"id": "ranger.horizon_walker", "name": "Horizon Walker", "title": "Horizon Walker Ranger", "flavour": "A guardian of the borders between worlds.", "feature": "**Planar Warrior**: in the Nether and the End you deal 20% more damage and have Speed I"}
@@ -137,6 +169,10 @@
       "cons": ["Low health"],
       "special": ["**Vanish**: invisibility for 6 seconds at rank I, up to 15 seconds at rank IV"],
       "specialOnKey": true,
+      "role": "DAMAGE",
+      "secondaryRole": "UTILITY",
+      "roleBlurb": "Strike from the shadows and open what is locked",
+      "obstacles": ["**Locked chests and doors**: pick them (only you)", "**Spotted traps**: disarm them (only you)", "Miasma Vents (immune to poison)"],
       "subclasses": [
         {"id": "rogue.assassin", "name": "Assassin", "title": "Assassin Rogue", "flavour": "Strike first, from the dark, and once is enough.", "feature": "**Assassinate**: double damage to a mob that isn't targeting you, and your first hit after Vanish ends is a critical"},
         {"id": "rogue.thief", "name": "Thief", "title": "Thief Rogue", "flavour": "Quick hands, light feet and an eye for treasure.", "feature": "**Fast Hands**: +3 to lockpicking, and you ignore class restrictions when attuning magic items"}
@@ -153,6 +189,10 @@
       "cons": ["Slightly less health", "Much less damage"],
       "special": ["**Raise Dead**: 2 undead allies for 10 seconds, up to 5 stronger undead and a Bone Wyvern for 20 seconds with ranks"],
       "specialOnKey": true,
+      "role": "UTILITY",
+      "secondaryRole": "DAMAGE",
+      "roleBlurb": "Walk among the dead and raise an army of your own",
+      "obstacles": ["**Ossuary Gates**: command them open (only you)", "Lead the party past sleeping crypt undead"],
       "subclasses": [
         {"id": "necromancer.bonecaller", "name": "Bonecaller", "title": "Bonecaller Necromancer", "flavour": "Master of a tireless skeleton host.", "feature": "**Undying Servants**: your summons last 25% longer"},
         {"id": "necromancer.plaguebringer", "name": "Plaguebringer", "title": "Plaguebringer Necromancer", "flavour": "Rot and wither in your wake.", "feature": "**Grim Harvest**: killing a mob that has your Wither heals you 2 hearts"}
@@ -169,6 +209,10 @@
       "cons": ["Reduced damage", "Hurt by water and rain: 1 damage every 4 seconds, never below 1 heart"],
       "special": ["**Fire Breath**: hold the key to breathe fire, 8 seconds and 3 blocks at rank I up to 20 seconds and 7 blocks at rank IV"],
       "specialOnKey": true,
+      "role": "DAMAGE",
+      "secondaryRole": "SUPPORT",
+      "roleBlurb": "Blast foes with eldritch fire and curse them for your allies",
+      "obstacles": ["**Fire Curtains**: walk through and douse the brazier (only you)", "Lesser Arcane Seals"],
       "subclasses": [
         {"id": "warlock.fiend", "name": "The Fiend", "title": "Fiend Warlock", "flavour": "A pact sealed in hellfire.", "feature": "**Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours is rerolled"},
         {"id": "warlock.great_old_one", "name": "The Great Old One", "title": "Great Old One Warlock", "flavour": "A pact with something vast, from beyond the stars.", "feature": "**Entropic Ward**: once every 60 seconds, a projectile that would hit you misses"}
@@ -185,6 +229,10 @@
       "cons": ["Greatly reduced health", "Can't wear armor heavier than iron"],
       "special": ["**Arcane Explosion**: a 12-block blast with Resistance V for 2 seconds, up to 72 blocks and 5 seconds with ranks"],
       "specialOnKey": true,
+      "role": "DAMAGE",
+      "secondaryRole": "UTILITY",
+      "roleBlurb": "Deal huge area damage and unravel magic",
+      "obstacles": ["**Greater Arcane Seals**: dispel them (only you)", "Lesser Arcane Seals"],
       "subclasses": [
         {"id": "wizard.evocation", "name": "School of Evocation", "title": "Evocation Wizard", "flavour": "Raw elemental power, shaped so it spares your friends.", "feature": "**Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt party members or their pets"},
         {"id": "wizard.abjuration", "name": "School of Abjuration", "title": "Abjuration Wizard", "flavour": "Wards, shields and the art of staying alive.", "feature": "**Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4) for 60 seconds"}
@@ -201,6 +249,10 @@
       "cons": ["Deals 25% less damage", "Unaffected by potions: can't drink them and is immune to splash, lingering and tipped-arrow effects (ability effects still apply)"],
       "special": ["**Reinforced Armor**: +8 armor and +4 toughness for 30 seconds"],
       "specialOnKey": true,
+      "role": "UTILITY",
+      "secondaryRole": "TANK",
+      "roleBlurb": "Craft better gear and keep the party's armour strong",
+      "obstacles": ["**Clockwork Doors**: repair them (only you)", "Disarming mechanical traps"],
       "subclasses": [
         {"id": "artificer.armorer", "name": "Armorer", "title": "Armorer Artificer", "flavour": "Your armor is your greatest invention.", "feature": "**Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance"},
         {"id": "artificer.battle_smith", "name": "Battle Smith", "title": "Battle Smith Artificer", "flavour": "A smith of war, with a steel companion at your side.", "feature": "**Battle Ready**: +2 attack damage with any identified magic weapon"}
@@ -217,6 +269,10 @@
       "cons": ["Half damage during the day", "Can't drop swords (they still drop on death)"],
       "special": ["**Blood Control**: take control of the mob you look at, 8 seconds within 15 blocks at 60% success, up to 20 seconds, 30 blocks and 100% with ranks. Strong mobs resist more, a failure costs the mana and a heart, and bosses can't be controlled. Requires the Identity mod"],
       "specialOnKey": true,
+      "role": "DAMAGE",
+      "secondaryRole": "UTILITY",
+      "roleBlurb": "Hunt by night and turn your enemies' blood against them",
+      "obstacles": ["**Blood Seals**: open them for 2 hearts (anyone else pays 8, and can split it)"],
       "subclasses": [
         {"id": "bloodhunter.profane_soul", "name": "Order of the Profane Soul", "title": "Profane Soul Blood Hunter", "flavour": "Blood curses, honed to a fine edge.", "feature": "**Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3"},
         {"id": "bloodhunter.lycan", "name": "Order of the Lycan", "title": "Lycan Blood Hunter", "flavour": "The beast inside, held on a leash.", "feature": "**Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15"}
@@ -233,6 +289,10 @@
       "cons": ["Cannot enchant (enchanting table or enchanted books on an anvil)"],
       "special": ["**Transmute**: throw your held potion (or an unstable brew) as a lingering cloud with stronger effects, buffing allies and harming mobs. Bigger and longer-lasting with ranks"],
       "specialOnKey": true,
+      "role": "SUPPORT",
+      "secondaryRole": "HEALER",
+      "roleBlurb": "Brew clouds that strengthen allies and weaken foes",
+      "obstacles": ["**Alchemical Seals**: dissolve them (only you)", "**Miasma Vents**: neutralise them"],
       "subclasses": [
         {"id": "alchemist.mutagenist", "name": "Mutagenist", "title": "Mutagenist Alchemist", "flavour": "Every potion changes you a little more.", "feature": "**Mutagen**: drinking any potion also gives Strength I for 10 seconds"},
         {"id": "alchemist.transmuter", "name": "Transmuter", "title": "Transmuter Alchemist", "flavour": "Lead to gold, poison to medicine.", "feature": "**Transmuter's Eye**: Healing potions you drink heal 50% more, and you identify potions when you pick them up"}

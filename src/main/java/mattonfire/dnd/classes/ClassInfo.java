@@ -19,14 +19,14 @@ import com.google.gson.Gson;
 import mattonfire.dnd.classes.Abilities.ClassAbilities;
 
 /**
- * Pros, cons and special ability of each class, loaded from
+ * Pros, cons, special ability and party role of each class, loaded from
  * {@code data/dndclasses/class_info.json}. The same file generates the Player
  * Classes table in the README ({@code ./gradlew generateClassReadme}), so the
  * guidebook, the class-pick chat message and the README never drift apart.
  */
 public record ClassInfo(DndCharacter id, String name, List<String> pros, List<String> cons, List<String> special,
-        boolean specialOnKey, String subclassTerm, List<SubclassInfo> subclasses,
-        @Nullable ClassAbilities abilities) {
+        boolean specialOnKey, PartyRole role, PartyRole secondaryRole, String roleBlurb, List<String> obstacles,
+        String subclassTerm, List<SubclassInfo> subclasses, @Nullable ClassAbilities abilities) {
 
     public static final String RESOURCE = "/data/" + DnDClasses.MOD_ID + "/class_info.json";
 
@@ -45,7 +45,8 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
     }
 
     private record Entry(String id, String name, List<String> pros, List<String> cons, List<String> special,
-            Boolean specialOnKey, String subclassTerm, List<SubclassEntry> subclasses,
+            Boolean specialOnKey, PartyRole role, PartyRole secondaryRole, String roleBlurb, List<String> obstacles,
+            String subclassTerm, List<SubclassEntry> subclasses,
             Map<String, Integer> abilities, List<String> saves, List<String> skills, List<String> expertise) {
     }
 
@@ -106,6 +107,9 @@ public record ClassInfo(DndCharacter id, String name, List<String> pros, List<St
                     }
                     map.put(character, new ClassInfo(character, e.name(), orEmpty(e.pros()), orEmpty(e.cons()),
                             orEmpty(e.special()), e.specialOnKey() == null || e.specialOnKey(),
+                            e.role() == null ? PartyRole.DAMAGE : e.role(),
+                            e.secondaryRole() == null ? PartyRole.UTILITY : e.secondaryRole(),
+                            e.roleBlurb() == null ? "" : e.roleBlurb(), orEmpty(e.obstacles()),
                             e.subclassTerm() == null ? "subclass" : e.subclassTerm(), List.copyOf(subclasses),
                             abilities));
                 }

@@ -11,6 +11,8 @@ Right click the book to open it. It reads your **current** class each time you o
 | 1 | Class name and pros |
 | 2 | Cons |
 | 3 | Special ability, and the key Power Up is bound to (`Z` by default) with where to rebind it (Options > Controls > Key Binds > D&D Classes) |
+| 4 | Your role: primary and secondary [party role](party-roles.md), what your class does in a party and what the role is for |
+| 5 | Obstacles you handle. Bold ones only your class can get past |
 
 If you have a [race](../races/races.md), two "Your heritage" pages follow at the back: the race (and Dragonborn ancestry), its summary, ability bonuses and stat modifiers, then its traits.
 
@@ -28,7 +30,7 @@ To make another, craft a book and a lapis lazuli together in any shape. It's als
 - If you die without keepInventory, the book drops with the rest of your inventory and you respawn with a new one, so you end up with a spare once you collect your things.
 
 ## For developers
-- The data lives in `src/main/resources/data/dndclasses/class_info.json`: one entry per class with `id` (a `DndCharacter` name), `name`, `pros`, `cons`, `special` and `specialOnKey`.
+- The data lives in `src/main/resources/data/dndclasses/class_info.json`: one entry per class with `id` (a `DndCharacter` name), `name`, `pros`, `cons`, `special`, `specialOnKey`, and the [party role](party-roles.md) fields `role`, `secondaryRole`, `roleBlurb` and `obstacles`.
   - A trailing ` (done)` is a dev status marker. It shows in the README only; the game strips it, along with markdown `*`.
 - The README "Player Classes" table between the `class-table:start` and `class-table:end` markers is generated from this JSON. Edit the JSON, never the table, then run `./gradlew generateClassReadme`. `checkClassReadme` runs as part of `check` (and so `build`) and fails if the table is stale.
 - Key files:

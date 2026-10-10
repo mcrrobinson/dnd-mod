@@ -3,8 +3,9 @@
 #  Fighter: the hint names Wizard or Warlock (obstacle-fighter-hint); right-click is refused on the action bar;
 #   cobblestone next to the seal isn't placed and the wall beside it can't be mined (both "Test passed");
 #   mining the lesser seal works and the backlash drops Health by 6.
-#  Wizard: the hint shows "You could dispel it" and the roll; a roll (obstacle-wizard-roll) or, failing that,
-#   taking your time (obstacle-wizard-focus) opens the whole doorway; class XP goes up; reset reseals it.
+#  Wizard: the hint shows "You could dispel it" and Arcana +4 (sheet: INT 15 +2, proficiency +2); a rigged 10
+#   rolls 10 +4 = 14 vs DC 15 -> FAILURE (obstacle-wizard-roll), then taking your time (20 +4 = 24, obstacle-wizard-focus)
+#   opens the whole doorway; class XP goes up; reset reseals it.
 #  Warlock: takes their time on a Medium seal and opens it.
 #  Greater seal: Warlocks are refused, a Fighter can't mine it, a Wizard can't take their time on Very Hard.
 wait 40
@@ -70,6 +71,9 @@ wait 5
 /clear @s
 /effect give @s minecraft:instant_health 1 5
 /dndclass progress @s
+/dndclass sheet @s
+/dndclass forceroll @s clear
+/dndclass forceroll @s 10
 /tp @s 4.5 150 3.5 0 20
 wait 30
 screenshot obstacle-wizard-hint
@@ -79,7 +83,7 @@ screenshot obstacle-wizard-roll
 wait 20
 screenshot obstacle-wizard-after
 /execute if block 4 151 5 dndclasses:lesser_arcane_seal[state=open]
-# If the roll failed, take your time: 20 + 5 beats DC 15
+# The roll failed: take your time, 20 + 4 beats DC 15
 wait 100
 /effect give @s minecraft:instant_health 1 5
 sneak on
@@ -99,7 +103,7 @@ screenshot obstacle-wizard-open
 /dndobstacle reset 4 151 5
 /execute if block 5 152 5 dndclasses:lesser_arcane_seal[state=sealed]
 
-# Warlock takes their time on a Medium seal (20 + 3 beats DC 13)
+# Warlock takes their time on a Medium seal (20 + 3 beats DC 13; sheet: INT 12 +1, proficiency +2)
 /dndobstacle settier 4 151 5 medium
 /dndclass set @s warlock
 wait 5

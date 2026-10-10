@@ -2,7 +2,7 @@ package mattonfire.dnd.classes.Obstacles;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Effects.AntiMagicEffect;
-import mattonfire.dnd.classes.SkillChecks.D20;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -43,8 +43,8 @@ public final class ArcaneSealType extends ObstacleType {
     }
 
     @Override
-    public D20.Skill skill() {
-        return D20.Skill.ARCANA;
+    public Skill skill() {
+        return Skill.ARCANA;
     }
 
     @Override

@@ -43,6 +43,7 @@ import net.minecraft.util.Identifier;
  *
  * <ul>
  * <li>{@link Lockpicking}: Rogues pick the locks of dungeon and lair loot chests (Thieves' Tools)</li>
+ * <li>{@link TrapDisarm}: Rogues disarm dungeon traps (Thieves' Tools)</li>
  * <li>{@link Persuasion}: Bards talk villagers into better prices (Persuasion)</li>
  * <li>{@link AttackRolls}: every full-strength melee swing rolls; natural 20 crits, natural 1 fumbles</li>
  * <li>{@code Obstacles.ObstacleInteractions}: class-gated obstacles (Arcane Seals), through
@@ -56,6 +57,8 @@ public final class D20 {
     public static final String LOCKPICKING = "skill.dndclasses.lockpicking";
     public static final String PERSUASION = "skill.dndclasses.persuasion";
     public static final String ATTACK = "skill.dndclasses.attack";
+    /** Disarming a dungeon trap ({@link TrapDisarm}): a Thieves' Tools check under its own label. */
+    public static final String DISARM = "skill.dndclasses.disarm";
 
     /** Roll flag: show the player their total but not the DC or the outcome (secret DM rolls). */
     public static final int FLAG_SECRET = 1;
@@ -517,5 +520,6 @@ public final class D20 {
         SavingThrow.register();
         Persuasion.register();
         AttackRolls.register();
+        TrapDisarm.register();
     }
 }

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "lit=false": {"model": "dndclasses:block/flame_vent"},
+    "lit=true": {"model": "dndclasses:block/flame_vent_lit"}
+  }
+}

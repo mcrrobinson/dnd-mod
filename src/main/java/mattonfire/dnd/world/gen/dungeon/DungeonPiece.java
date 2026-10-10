@@ -431,6 +431,9 @@ public abstract class DungeonPiece extends StructurePiece {
             if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
                 container.setLootTable(lootTable, lootSeed);
             }
+            if (DungeonPiece.this.info.tier() >= 2 && this.chance(TrapCorridorPiece.NEEDLE_CHANCE)) {
+                TrapCorridorPiece.needle(DungeonPiece.this, this, x, y, z);
+            }
         }
 
         /** A mimic sitting where a chest would be, holding that chest's loot. */

@@ -1,0 +1,6 @@
+{
+  "variants": {
+    "armed=true": {"model": "dndclasses:block/trap_trigger"},
+    "armed=false": {"model": "dndclasses:block/trap_trigger_spent"}
+  }
+}

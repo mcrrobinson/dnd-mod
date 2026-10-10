@@ -265,6 +265,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
+                mattonfire.dnd.classes.Blocks.TrapBlocks.register();
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();
 

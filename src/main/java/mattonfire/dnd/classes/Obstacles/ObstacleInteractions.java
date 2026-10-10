@@ -9,8 +9,9 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.D20;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
-import mattonfire.dnd.classes.SkillChecks.SkillModifiers;
+import mattonfire.dnd.classes.SkillChecks.SkillCheck;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -41,13 +42,14 @@ import net.minecraft.world.World;
  * <ul>
  * <li>Empty main hand (or the type's {@link ObstacleType#requiredItem}). A class that can't attempt
  * it gets a hint on the action bar.</li>
- * <li>The roll is d20 + {@link SkillModifiers} against the tier's DC. On a success the group opens
+ * <li>The roll is a {@link SkillCheck} (d20 + the solver's character-sheet bonus for the type's skill,
+ * tagged {@value #CHECK_TAG}) against the tier's DC. On a success the group opens
  * {@value #OPEN_DELAY_TICKS} ticks later, once the HUD has shown the die, and the solver earns
  * class XP. On a failure the type's sting fires and you wait {@value #FAIL_COOLDOWN_TICKS} ticks
  * (natural 1: {@value #FUMBLE_COOLDOWN_TICKS} ticks, the fumble sting and an alarm).</li>
  * <li><b>Take your time:</b> sneak + right-click with no hostile mob within {@value #HOSTILE_RADIUS}
  * blocks starts a {@value #TAKE_YOUR_TIME_TICKS}-tick focus. Moving or taking damage breaks it; it
- * resolves as 20 + modifier with no crit. Not allowed on Very Hard obstacles.</li>
+ * resolves as a taken 20 + the sheet bonus, with no crit. Not allowed on Very Hard obstacles.</li>
  * <li><b>Protected volume:</b> in survival, nobody can place blocks in, or break non-obstacle blocks
  * in, the 1-block shell round a sealed obstacle, so you can't dig or build round it.</li>
  * </ul>
@@ -63,11 +65,13 @@ public final class ObstacleInteractions {
     public static final int HOSTILE_RADIUS = 16;
     /** Blocks round a sealed obstacle that can't be built in or dug out. */
     public static final int PROTECTION_SHELL = 1;
+    /** Roll tag, so sheet advantage filters can pick out obstacle checks. */
+    public static final String CHECK_TAG = "obstacle";
 
     private record PendingOpen(ServerPlayerEntity player, BlockPos pos, ObstacleType type, Tier tier, long openAt) {
     }
 
-    private record Channel(ServerPlayerEntity player, BlockPos pos, ObstacleType type, Tier tier, int modifier,
+    private record Channel(ServerPlayerEntity player, BlockPos pos, ObstacleType type, Tier tier, Skill skill,
             Vec3d start, float health, long startedAt) {
     }
 
@@ -120,7 +124,7 @@ public final class ObstacleInteractions {
     private static void attempt(ServerPlayerEntity player, ServerWorld world, BlockPos pos, ObstacleType type) {
         Tier tier = world.getBlockEntity(pos) instanceof ObstacleBlockEntity be ? be.tier() : Tier.MEDIUM;
         Eligibility eligibility = type.eligibility(D20.classOf(player));
-        D20.Skill skill = type.skill();
+        Skill skill = type.skill();
         if (!eligibility.canTry() || skill == null) {
             player.sendMessage(ObstacleText.cannot(type, tier), true);
             world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.BLOCKS, 0.8f, 0.6f);
@@ -139,15 +143,13 @@ public final class ObstacleInteractions {
         if (type.blocked(player)) {
             return;
         }
-        int modifier = SkillModifiers.modifier(player, skill, eligibility);
-
         if (player.isSneaking()) {
             if (!type.allowsTakeYourTime(tier)) {
                 player.sendMessage(Text.translatable("obstacle.dndclasses.focus.too_hard"), true);
             } else if (hostileNearby(world, player)) {
                 player.sendMessage(Text.translatable("obstacle.dndclasses.focus.not_safe"), true);
             } else {
-                CHANNELS.put(id, new Channel(player, pos.toImmutable(), type, tier, modifier, player.getPos(),
+                CHANNELS.put(id, new Channel(player, pos.toImmutable(), type, tier, skill, player.getPos(),
                         player.getHealth(), now));
                 player.sendMessage(Text.translatable("obstacle.dndclasses.focus.start",
                         TAKE_YOUR_TIME_TICKS / 20), true);
@@ -156,7 +158,7 @@ public final class ObstacleInteractions {
             return;
         }
 
-        resolve(player, world, pos, type, tier, D20.check(player, skill, modifier, tier.dc));
+        resolve(player, world, pos, type, tier, SkillCheck.builder(player, skill, tier.dc, CHECK_TAG).roll());
     }
 
     private static boolean hostileNearby(ServerWorld world, PlayerEntity player) {
@@ -252,11 +254,9 @@ public final class ObstacleInteractions {
             return false;
         }
         // Take 20: no crit, no fumble, no sting
-        int natural = TAKE_YOUR_TIME_NATURAL;
-        int dc = channel.tier().dc;
-        D20.Outcome outcome = natural + channel.modifier() >= dc ? D20.Outcome.SUCCESS : D20.Outcome.FAILURE;
-        D20.Roll roll = new D20.Roll(channel.type().skill(), natural, channel.modifier(), dc, outcome);
-        if (outcome.succeeded()) {
+        D20.Roll roll = SkillCheck.builder(player, channel.skill(), channel.tier().dc, CHECK_TAG)
+                .take(TAKE_YOUR_TIME_NATURAL).roll();
+        if (roll.outcome().succeeded()) {
             resolve(player, world, channel.pos(), channel.type(), channel.tier(), roll);
         } else {
             D20.show(player, roll, Text.translatable("obstacle.dndclasses.focus.beyond"));

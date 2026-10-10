@@ -1,0 +1,192 @@
+# Stabilising and revives in a LAN party (host side), with downed-revive-lan-guest.txt (-PdevUser=Guest).
+# The host is downed again and again and the guest helps:
+#  A hold use 3 s (Medicine forced 2: fail) -> stable, stands up 30 s later
+#  B hold use 3 s (Medicine forced 19: success) -> stable, stands up 10 s later
+#  C stable host, hold use 3 s -> helped up with 4 HP
+#  D a hit on the guest mid-hold interrupts the stabilise
+#  E feeding a golden apple -> up with 4 HP and the apple's effects
+#  F feeding a Potion of Healing -> up (Rogue); a Paladin host shrugs it off and the guest keeps the potion
+#  G a Mug of Ale stabilises
+#  H Cure Wounds from the guest (Cleric) -> up with 8 HP
+#  I a Paladin guest with Aura of Protection: the host's death save shows +2
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/downed-revive-lan-host.txt
+# then, once the log says "Started serving on":
+#   timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25677 -PdevScript=devscripts/downed-revive-lan-guest.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule keepInventory true
+/gamerule naturalRegeneration false
+/gamerule dndDeathSaves 1
+/gamerule dndRests false
+/time set noon
+/weather clear
+/kill @e[type=!player]
+/party leave
+/fill 0 149 0 20 149 20 minecraft:stone
+/fill 0 150 0 20 155 20 minecraft:air
+/setworldspawn 10 150 10
+/spawnpoint @s 10 150 10
+/tp @s 10.5 150 10.5 0 10
+/dndclass set @s rogue
+/attribute @s minecraft:generic.max_health base set 20
+/publish false survival 25677
+waitchat guest-ready
+wait 20
+/dndclass set Guest cleric
+/attribute Guest minecraft:generic.max_health base set 20
+/spawnpoint @a 10 150 10
+/clear @a
+/party create
+/party invite Guest
+waitchat Guest joined the party
+/party list
+/effect give @a minecraft:instant_health 1 3
+wait 20
+# ---- A: stabilise, Medicine fails, stands up after 30 s ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/dndclass forceroll Guest 2
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-a
+waitchat helped-a
+/dndclass downed @s
+wait 5
+clearchat
+screenshot revive-host-stable
+/dndclass forceroll @s clear
+waitchat back on your feet
+/data get entity @s Health
+wait 40
+# ---- B: stabilise, Medicine succeeds, stands up after 10 s ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/dndclass forceroll Guest 19
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-b
+waitchat helped-b
+/dndclass downed @s
+/dndclass forceroll @s clear
+waitchat back on your feet
+wait 40
+# ---- C: help a stable player up ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/dndclass down @s
+/dndclass stabilise @s
+/me need-help-c
+waitchat helped-c
+/data get entity @s Health
+/dndclass downed @s
+wait 40
+# ---- D: a hit interrupts ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-d
+wait 30
+/damage Guest 1 minecraft:generic
+waitchat helped-d
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+wait 40
+# ---- E: feed a golden apple ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/item replace entity Guest hotbar.1 with minecraft:golden_apple 2
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-e
+waitchat helped-e
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/dndclass downed @s
+/dndclass forceroll @s clear
+wait 40
+# ---- F: feed a Potion of Healing: a Rogue stands up, a Paladin doesn't ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/item replace entity Guest hotbar.2 with minecraft:potion{Potion:"minecraft:healing"} 1
+/item replace entity Guest hotbar.3 with minecraft:potion{Potion:"minecraft:healing"} 1
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-f1
+waitchat helped-f1
+/data get entity @s Health
+/dndclass downed @s
+/dndclass forceroll @s clear
+wait 40
+/dndclass set @s paladin
+wait 10
+closescreen
+/attribute @s minecraft:generic.max_health base set 20
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-f2
+waitchat helped-f2
+/data get entity @s Health
+/dndclass downed @s
+/data get entity Guest Inventory[{Slot:3b}]
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+/dndclass set @s rogue
+wait 10
+closescreen
+/attribute @s minecraft:generic.max_health base set 20
+wait 40
+# ---- G: a Mug of Ale stabilises ----
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/item replace entity Guest hotbar.4 with dndclasses:ale 1
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-g
+waitchat helped-g
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+wait 40
+# ---- H: Cure Wounds from the guest Cleric ----
+/dndclass xp Guest set 20000
+/dndclass unlock Guest cleric.cure_wounds
+/dndclass equip Guest cleric.cure_wounds
+/dndclass progress Guest
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+wait 400
+/dndclass forceroll @s 12 12
+/dndclass down @s
+/me need-help-h
+waitchat helped-h
+/data get entity @s Health
+/dndclass downed @s
+/dndclass forceroll @s clear
+wait 40
+# ---- I: Paladin aura +2 on the host's death save ----
+/dndclass set Guest paladin
+/dndclass xp Guest set 20000
+/dndclass unlock Guest paladin.aura_of_protection
+/dndclass progress Guest
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 14.5 180 20
+/dndclass forceroll @s 9
+/dndclass down @s
+wait 110
+clearchat
+wait 30
+screenshot revive-host-aura-save
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+/me all-done
+wait 40
+quit

@@ -126,7 +126,7 @@ public class PaladinSkills extends ClassSkills {
                         "Strength for 15 seconds, and your melee hits set targets alight.", "minecraft:blaze_rod", 4,
                         1, 2, 2, "paladin.divine_smite"),
                 passive(AURA_OF_PROTECTION, "Aura of Protection",
-                        "You and players within 8 blocks take 15% less damage.", "minecraft:beacon", 1, 2, 1,
+                        "You and players within 8 blocks take 15% less damage and get +2 on death saves.", "minecraft:beacon", 1, 2, 1,
                         "paladin.sacred_weapon"),
                 // Oath of Conquest
                 passive(HELLFORGED, "Hellforged", "The Nether no longer weakens you.", "minecraft:netherite_ingot",
@@ -239,6 +239,24 @@ public class PaladinSkills extends ClassSkills {
         if (running(AVENGING_ANGEL, player)) {
             burnUndead(player);
         }
+    }
+
+    /** Aura of Protection's bonus on death saves, from a standing Paladin with the aura. */
+    public static final int AURA_DEATH_SAVE_BONUS = 2;
+
+    /**
+     * Aura of Protection on death saves: +2 for a Downed player within 8 blocks of a Paladin with the aura
+     * who isn't Downed themselves (a Downed Paladin's aura is down too). Registered from {@code Revives}.
+     */
+    public static int auraDeathSaveBonus(ServerPlayerEntity player) {
+        for (PlayerEntity paladin : playersNear(player, AURA_RADIUS)) {
+            if (paladin != player && Progression.classOf(paladin) == DndCharacter.PALADIN
+                    && Progression.hasPassive(paladin, AURA_OF_PROTECTION)
+                    && !mattonfire.dnd.classes.Downed.Downed.is(paladin)) {
+                return AURA_DEATH_SAVE_BONUS;
+            }
+        }
+        return 0;
     }
 
     /**

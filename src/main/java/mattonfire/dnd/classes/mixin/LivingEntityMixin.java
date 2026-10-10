@@ -86,11 +86,14 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    /** Downed players don't heal (natural regen, potions, Regeneration); revives set health directly. */
+    /** Downed players don't heal themselves; an outside heal stands them up instead (see Revives). */
     @Inject(method = "heal", at = @At("HEAD"), cancellable = true)
     private void dnd$noDownedHealing(float amount, CallbackInfo ci) {
         if ((Object) this instanceof PlayerEntity player && Downed.is(player)) {
             ci.cancel();
+            if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
+                mattonfire.dnd.classes.Downed.Revives.onHeal(serverPlayer, amount);
+            }
         }
     }
 

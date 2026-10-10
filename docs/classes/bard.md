@@ -61,7 +61,7 @@ Bards get 3 XP when one of their pets kills a hostile mob, and 1 extra XP for th
 | Thunderwave | College of Valor | Active | 1 | 4 | 4 damage to everything within 6 blocks except players and your pets, and a big knockback |
 | Battle Hymn | College of Valor | Passive | 1 | | Other players within 8 blocks get Strength I |
 | Silver Tongue | College of Lore | Passive | 1 | | Permanent Hero of the Village (cheaper villager trades) |
-| Song of Rest | College of Lore | Active | 1 | 3 | Heals you, other players and your pets within 8 blocks by 3 hearts and clears harmful effects |
+| Song of Rest | College of Lore | Active | 1 | 3 | Heals you, other players and your pets within 8 blocks by 3 hearts and clears harmful effects. Stands [Downed](../systems/death-saves.md) players up |
 | Jack of All Trades | College of Lore | Passive | 1 | | +1 heart of max health and 10% more damage |
 | Crescendo | Capstone | Active | 2 | 9 | Players and your pets within 12 blocks get Strength II, Speed II and Resistance I for 20 s; hostile mobs within 12 blocks glow and get Weakness I |
 

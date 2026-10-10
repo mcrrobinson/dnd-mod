@@ -14,6 +14,8 @@ The player who creates the party leads it. If the leader leaves, the member who 
 
 **No friendly fire.** Party members can't damage each other. That covers melee, arrows, fireballs, thrown potions and explosions, and attacks by a member's tamed pets (wolves, cats and so on). You can still hurt yourself.
 
+**Downed instead of dead.** At 0 HP with a party member within 64 blocks you go [Downed](death-saves.md) instead of dying. Members bring you back by holding right-click on you for 3 seconds (stabilise, then again to help you up), by healing you (Cure Wounds, Circle of Healing, a splash Healing potion), or by feeding you a Potion of Healing, a golden apple or a Mug of Ale.
+
 **Party HUD.** The top-left corner lists the other members, updated every half second. Each entry shows the member's [party role](party-roles.md) icon, the name (with a ★ for the leader), HP as text, and a health bar that is green above 50%, yellow above 25% and red below that. A gold strip shows absorption. A grey name means that member is out of XP range, and dark grey means they're offline. The HUD hides with F1 and the F3 debug screen.
 
 **Cleric special.** It reaches party members too:

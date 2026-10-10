@@ -52,6 +52,22 @@ Hits don't take health while you're Downed; each one is a failed death save inst
 
 Party members still can't hurt each other. Mobs keep attacking Downed players for now (see Known limitations).
 
+### Helping a Downed player
+Anyone who isn't Downed can help. In PvP, the player who downed you won't help you up.
+
+- **Stabilise:** look at the Downed player within 3 blocks and **hold right-click** for 3 seconds with an empty hand (or any item you can't use, like a sword or a block). A progress bar shows on both players' action bars. Letting go, looking away, walking off or taking a hit stops it; keep holding and it starts again. They're **stable**, and you roll **Medicine** (d20 + your sheet's Medicine bonus) against DC 15 on your d20 HUD: on a success they stand up in **10 seconds** instead of 30. Stabilising itself always works.
+- **Help up:** let go, then hold right-click for another 3 seconds on a **stable** player: they stand up with **4 HP** (2 hearts).
+- **Heal them:** any heal from someone else stands a Downed player up with that much HP (at least 1): Cure Wounds (8 HP), Song of Rest, Elixir of Healing, Circle of Healing, Divine Intervention, splash and lingering Healing potions, Healing arrows, and Regeneration put on after they went down (Druid Regrowth, a Bard's lute, a beacon). Their own healing stays blocked: natural regeneration, Fighter Second Wind, life drain, Hit Dice. Classes immune to potions stay immune: a splash Healing potion stands a Rogue up but not a Paladin, Artificer or Fighter.
+- **Feed them:** right-click a Downed player holding:
+  - a **Potion of Healing**: its normal heal, so they stand up (not a potion-immune class; the potion isn't used up)
+  - a **golden apple**: up with 4 HP and the apple's effects
+  - an **enchanted golden apple**: up with 4 HP and all of its effects (Regeneration II, Absorption IV, Resistance, Fire Resistance)
+  - a **Mug of Ale**: stabilises them ("A stiff drink.")
+
+### Class features
+- **Paladin, Aura of Protection:** Downed players within 8 blocks of a standing Paladin with the aura get **+2** on death saves (shown as "+2 bonus" on the d20 HUD). A Downed Paladin's aura doesn't help anyone.
+- **Fighter, Indomitable:** a Fighter who has unlocked Indomitable rerolls their first failed death save each time they're Downed ("Indomitable! You reroll the failed save.").
+
 ### Dying
 Three fails, giving up, or logging out while unstable kills you with whatever downed you: the death message ("Steve was slain by Zombie"), kill credit and advancements all go to the original attacker. A Totem of Undying in hand at that moment still saves you.
 
@@ -68,7 +84,7 @@ With nobody to help you, you get one roll against **DC 15** instead (it shows as
 You get one Last Stand every 10 minutes (12000 ticks of world time). While it's cooling down, solo deaths are instant.
 
 ## Where to find it
-Anywhere: it's how dying works with the default `dndDeathSaves 1`. To try it, party up with a friend and take a lethal hit, or use `/dndclass down`.
+Anywhere: it's how dying works with the default `dndDeathSaves 1`. To try it, party up with a friend and take a lethal hit, or use `/dndclass down`. To help someone up, hold right-click on them.
 
 ## Commands
 Permission level 2.
@@ -86,7 +102,8 @@ Permission level 2.
 - Data pack: add damage types to `data/dndclasses/tags/damage_type/bypasses_death_saves.json` to make them kill outright (default `minecraft:out_of_world`).
 
 ## Known limitations
-- Allies can't help you up yet: stabilising by holding right-click, healing to revive, and feeding potions or golden apples are coming. Until then you get up by rolling, by waiting out the stable timer, or with `/dndclass revive`. All healing is blocked while Downed.
+- The stabilise progress is an action-bar line for now (the target's own tally line replaces it once a second); a proper progress bar comes with the downed HUD.
+- Heals from new sources (magic items, scripted healers) only revive if they're marked as coming from someone else (see For developers); anything else counts as the Downed player's own and is blocked.
 - Mobs don't ignore Downed players yet, so a mob that keeps attacking finishes you in two hits.
 - No downed overlay, party HUD status or ally outline yet; the tally is on the action bar. Other players see you crawling.
 - Inventory items can still be thrown out of an open inventory screen for the moment it takes the screen to close.
@@ -99,6 +116,9 @@ Permission level 2.
   - `DeathSaves`: `roll(player, label, dc, Advantage)` builds a `RollKind.DEATH` roll through `D20.roll`; `lastStand(player)`.
   - `DeathSaveModifier.EVENT`: `bonus(player)` (summed, capped at +5) and `mode(player)` (advantage / disadvantage) for auras, racial traits, items and boss party wipes.
 - Mixins: `PlayerEntityMixin` (the `DND$DOWNED` tracked byte, `updatePose` forced to `SWIMMING`, no `jump` or `checkFallFlying`, records the overflow past 0 HP in `applyDamage`), `LivingEntityMixin` (no `heal`, no sprinting, no `swimUpward`), `LivingEntityInvoker` (`tryUseTotem`), `DownedServerPlayerMixin` (no Q drop).
+- `Stabilise`: hold-use help. The client (`StabiliseClient`) sends C2S `dndclasses:downed_help_hold` with the target's entity id while use is held on a Downed player (refreshed every second, -1 on release); the server checks range 3.5, line of sight, an empty or no-use main hand, the helper not hurt or Downed and not the PvP attacker, and counts 60 ticks. `progress(helper)` gives 0-1 for a HUD.
+- `Revives`: the heal rule and feeding. `LivingEntity.heal` on a Downed player calls `Revives.onHeal`: it revives when the heal is an outside heal, else it's dropped. Outside heals: anything inside `Revives.asHealer(caster, ...)` landing on someone other than the caster (the power-up key wraps every active skill and special in it), `Revives.healFrom(healer, target, amount)`, and Instant Health / Regeneration effect heals (`DownedHealMixin` redirects the `heal` calls in `StatusEffect`). Feeding is a `UseEntityCallback` (claimed on the client too, so the helper doesn't drink the potion themselves).
+- `DeathSaveModifier.rerollFailure(player)`: reroll a failed death save (Fighter Indomitable). Paladin's +2 is `PaladinSkills.auraDeathSaveBonus`, Indomitable is `FighterSkills.indomitableReroll`, both registered in `Revives.register`.
 - Client `DownedClient`: closes handled screens and sends the give-up hold state of the power-up key.
 - DevScript `holdkey <key> on|off` holds a key binding.
-- Devscripts: `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout).
+- Devscripts: `devscripts/downed-revive-lan-host.txt` + `downed-revive-lan-guest.txt` (stabilise with a failed and a successful Medicine roll, help up, interruption, golden apple, potion on a Rogue and a Paladin, ale, Cure Wounds, Paladin aura), `devscripts/downed-revive-solo.txt` (splash potion on a Rogue and a Paladin, natural regen and Second Wind blocked, Regeneration revives, Indomitable), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout).

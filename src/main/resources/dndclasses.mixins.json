@@ -60,7 +60,8 @@
         "DmEntityTrackerMixin",
         "LivingEntityInvoker",
         "DownedServerPlayerMixin",
-        "DownedPlayerManagerMixin"
+        "DownedPlayerManagerMixin",
+        "DownedHealMixin"
     ],
     "client": [
         "AbstractClientPlayerEntityMixin",

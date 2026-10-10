@@ -36,7 +36,7 @@ Fighters get 2 extra XP for each hostile mob killed in melee, and 3 more on top 
 | Defensive Style | Battle Master | Passive | 1 | | +2 armor and +2 armor toughness |
 | Riposte | Battle Master | Active | 1 | 3 | For 6 s, anything that hits you in melee takes half that damage back |
 | Second Wind | Battle Master | Passive | 1 | | Dropping below 25% health heals 3 hearts, once a minute |
-| Indomitable | Capstone | Active | 2 | 9 | Resistance II, Strength II and no knockback for 15 s |
+| Indomitable | Capstone | Active | 2 | 9 | Resistance II, Strength II and no knockback for 15 s. Once each time you're [Downed](../systems/death-saves.md), reroll a failed death save |
 
 None of these effects come from potions, so your potion ban doesn't block them. Riposte pays off when you're drawing a crowd, which a Fighter does anyway.
 

@@ -36,7 +36,7 @@ Clerics get 3 extra XP for killing undead, and XP for mining ores outside creati
 |-|-|-|-|-|-|
 | Sanctuary | Root | Active | 0 | 9 | The special above: 6 / 9 / 12 / 15 s, party share from rank II (ranks I-IV) |
 | Preserve Life | Life Domain | Passive | 1 | | Dropping below 30% health gives Regeneration II for 5 s, once a minute |
-| Cure Wounds | Life Domain | Active | 1 | 4 | Heals you, other players and your pets within 8 blocks by 4 hearts |
+| Cure Wounds | Life Domain | Active | 1 | 4 | Heals you, other players and your pets within 8 blocks by 4 hearts. Stands [Downed](../systems/death-saves.md) players up with 8 HP |
 | Smite Undead | Life Domain | Passive | 1 | | 50% more damage to undead |
 | Prospector | Forge Domain | Passive | 1 | | 20% chance an ore drops its loot twice. Not with Silk Touch, and the XP orbs aren't doubled |
 | Radiance | Forge Domain | Active | 1 | 4 | Everything within 8 blocks except players and your pets glows for 10 s; undead also burn for 5 s and take 4 damage |

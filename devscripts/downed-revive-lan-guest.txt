@@ -1,0 +1,87 @@
+# Guest side of downed-revive-lan-host.txt (see there). Run after the host says "Started serving on":
+#   timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25677 -PdevScript=devscripts/downed-revive-lan-guest.txt
+wait 40
+closescreen
+respawn
+wait 60
+/party leave
+/me guest-ready
+waitchat invited you to their party
+/party accept
+# A, B: hold use 3 s with an empty hand
+hotbar 0
+waitchat need-help-a
+wait 10
+closescreen
+holduse on
+wait 30
+clearchat
+screenshot revive-guest-stabilising
+wait 40
+holduse off
+/me helped-a
+waitchat need-help-b
+wait 10
+closescreen
+holduse on
+wait 70
+holduse off
+/me helped-b
+# C: the host is stable; hold again to help them up
+waitchat need-help-c
+wait 10
+closescreen
+holduse on
+wait 70
+holduse off
+/me helped-c
+# D: the host hits us at about tick 30; the hold restarts on its own and finishes
+waitchat need-help-d
+wait 5
+closescreen
+holduse on
+wait 170
+holduse off
+/me helped-d
+# E: golden apple
+waitchat need-help-e
+hotbar 1
+wait 10
+closescreen
+use
+wait 10
+/me helped-e
+# F: potions
+waitchat need-help-f1
+hotbar 2
+wait 10
+closescreen
+use
+wait 10
+/me helped-f1
+waitchat need-help-f2
+hotbar 3
+wait 10
+closescreen
+use
+wait 40
+/me helped-f2
+# G: ale
+waitchat need-help-g
+hotbar 4
+wait 10
+closescreen
+use
+wait 10
+/me helped-g
+# H: Cure Wounds with the power-up key
+waitchat need-help-h
+hotbar 0
+wait 10
+closescreen
+press key.dnd-classes.power-up
+wait 20
+/me helped-h
+waitchat all-done
+wait 20
+quit

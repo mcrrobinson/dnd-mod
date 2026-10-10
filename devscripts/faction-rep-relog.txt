@@ -1,0 +1,8 @@
+# Second half of faction-rep.txt: after a relog /rep shows the same values.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/faction-rep-relog.txt
+wait 40
+closescreen
+/rep
+wait 10
+screenshot faction-rep-relog
+quit

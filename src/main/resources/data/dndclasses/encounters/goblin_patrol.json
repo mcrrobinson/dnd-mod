@@ -1,0 +1,8 @@
+{
+  "name": "Goblin Patrol",
+  "difficulty": "medium",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:goblin_warrior", "count": [2, 3]}
+  ]
+}

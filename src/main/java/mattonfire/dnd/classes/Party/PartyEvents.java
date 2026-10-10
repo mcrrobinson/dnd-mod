@@ -7,6 +7,8 @@ import java.util.UUID;
 import java.util.function.BiConsumer;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.dm.DungeonMaster;
+import mattonfire.dnd.classes.PlayerEntityExt;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
@@ -83,6 +85,8 @@ public class PartyEvents {
     public static void shareXp(ServerPlayerEntity collector, int amount, String channel,
             BiConsumer<ServerPlayerEntity, Integer> grant) {
         List<ServerPlayerEntity> nearby = PartyManager.nearbyMembers(collector, PartyManager.SHARE_RADIUS);
+        // A Dungeon Master takes no share of the party's XP.
+        nearby.removeIf(DungeonMaster::isDm);
         if (nearby.isEmpty() || amount <= 0) {
             grant.accept(collector, amount);
             return;
@@ -101,7 +105,7 @@ public class PartyEvents {
         }
     }
 
-    /** Sends every online party member the health of the rest of their party. */
+    /** Sends every online party member the health and class of the rest of their party. */
     public static void syncHud(MinecraftServer server) {
         PartyManager manager = PartyManager.get(server);
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
@@ -109,12 +113,13 @@ public class PartyEvents {
             if (party == null) {
                 continue;
             }
+            // Dungeon Masters don't show on the party HUD.
+            DungeonMaster dm = DungeonMaster.get(server);
+            List<UUID> shown = party.getMembers().stream()
+                    .filter(uuid -> !uuid.equals(player.getUuid()) && !dm.isDm(uuid)).toList();
             PacketByteBuf buf = PacketByteBufs.create();
-            buf.writeVarInt(party.size() - 1);
-            for (UUID uuid : party.getMembers()) {
-                if (uuid.equals(player.getUuid())) {
-                    continue;
-                }
+            buf.writeVarInt(shown.size());
+            for (UUID uuid : shown) {
                 ServerPlayerEntity member = server.getPlayerManager().getPlayer(uuid);
                 buf.writeString(manager.getName(uuid));
                 buf.writeBoolean(party.isLeader(uuid));
@@ -124,6 +129,9 @@ public class PartyEvents {
                 buf.writeFloat(member != null ? member.getAbsorptionAmount() : 0);
                 buf.writeBoolean(member != null && member.getWorld() == player.getWorld()
                         && member.squaredDistanceTo(player) <= PartyManager.SHARE_RADIUS * PartyManager.SHARE_RADIUS);
+                // Class id (DndCharacter value, 0 when offline or unknown) for the role icon.
+                buf.writeVarInt(member instanceof PlayerEntityExt ext && ext.getDndClass() != null
+                        ? ext.getDndClass().getValue() : 0);
             }
             ServerPlayNetworking.send(player, S2C_PARTY_HUD, buf);
         }

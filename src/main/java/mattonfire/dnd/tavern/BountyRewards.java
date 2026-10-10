@@ -54,7 +54,8 @@ public final class BountyRewards {
 
     /** One kill counts towards one notice: the first unfinished one for that kind of creature. */
     private static void onKill(ServerPlayerEntity player, LivingEntity killed) {
-        if (BossMinions.isMinion(killed)) {
+        // Dungeon Masters earn no bounty credit.
+        if (BossMinions.givesNothing(killed) || mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
             return;
         }
         PlayerInventory inventory = player.getInventory();
@@ -158,6 +159,7 @@ public final class BountyRewards {
         spoils.forEach(stack -> give(player, stack));
         player.addExperience(bounty.xp);
         Progression.addXp(player, bounty.classXp);
+        mattonfire.dnd.faction.FactionEvents.bountyClaimed(player, bounty.tier, net.minecraft.util.math.BlockPos.ofFloored(where));
 
         player.sendMessage(Text.translatable("bounty.dndclasses.claimed", bounty.title()).formatted(Formatting.GOLD), false);
         world.playSound(null, where.x, where.y, where.z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.8F, 1.2F);

@@ -180,10 +180,14 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         }
     }
 
+    /** Command tag on the fortress's king (faction files match it as {@code @dndclasses.role.dwarf_king}). */
+    public static final String KING_TAG = "dndclasses.role.dwarf_king";
+
     /** Makes this dwarf the fortress's king: a crown, a netherite axe and twice the health. */
     public void crown() {
         String name = this.getCustomName() != null ? this.getCustomName().getString() : FIRST_NAMES[0];
         this.setCustomName(Text.literal("King " + name));
+        this.addCommandTag(KING_TAG);
         this.equipStack(EquipmentSlot.HEAD, new ItemStack(Items.GOLDEN_HELMET));
         this.equipStack(EquipmentSlot.CHEST, new ItemStack(Items.GOLDEN_CHESTPLATE));
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(Items.NETHERITE_AXE));
@@ -209,6 +213,9 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
             dwarf.setAngryAt(player.getUuid());
             dwarf.chooseRandomAngerTime();
             dwarf.setTarget(player);
+        }
+        if (!dwarves.isEmpty() && player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
+            mattonfire.dnd.faction.FactionEvents.theftWitnessed(serverPlayer, dwarves.get(0));
         }
     }
 
@@ -265,6 +272,9 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         }
         this.barterCooldown = BARTER_COOLDOWN;
         this.barter(player);
+        if (player instanceof net.minecraft.server.network.ServerPlayerEntity serverPlayer) {
+            mattonfire.dnd.faction.FactionEvents.traded(serverPlayer, this);
+        }
         return ActionResult.CONSUME;
     }
 
@@ -357,6 +367,11 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         this.readAngerFromNbt(this.world, nbt);
         if (nbt.contains("Home")) {
             this.setHome(NbtHelper.toBlockPos(nbt.getCompound("Home")));
+        }
+        // Kings crowned before the tag existed.
+        if (this.getCustomName() != null && this.getCustomName().getString().startsWith("King ")
+                && this.getEquippedStack(EquipmentSlot.HEAD).isOf(Items.GOLDEN_HELMET)) {
+            this.addCommandTag(KING_TAG);
         }
     }
 }

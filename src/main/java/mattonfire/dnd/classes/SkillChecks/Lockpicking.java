@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.mixin.LootableContainerBlockEntityAccessor;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -37,18 +38,19 @@ import net.minecraft.world.World;
 
 /**
  * Dungeon and lair loot chests start locked: any chest still holding an unrolled {@code chests/...}
- * loot table (except village, hobbit and bonus chests). Only a Rogue can open one, by picking the lock
- * (d20 + 5 against DC 10, or DC 15 for the richest hoards). Anyone else, a Rogue included, can break
+ * loot table (except village, hobbit and bonus chests). Only a Rogue can open one, by picking the lock:
+ * a Thieves' Tools check ({@link SkillCheck}: DEX modifier + expertise) against DC 10, or DC 15 for the
+ * richest hoards. Anyone else, a Rogue included, can break
  * the chest open instead, but smashing the lock ruins some of the loot inside.
  *
  * A picked lock rolls the loot, so the chest is unlocked for good; it swings open a moment later, once
  * the roll has shown on the HUD.
  */
 public final class Lockpicking {
-    /** Rogue: Dexterity +3 and expertise with thieves' tools. */
-    public static final int ROGUE_MODIFIER = 5;
     public static final int DC = 10;
     public static final int HARD_DC = 15;
+    /** For vault chests (offered to dungeons; no table uses it yet). */
+    public static final int VAULT_DC = 20;
     /** Chance that each stack in a locked chest is ruined when it's broken open. */
     public static final float RUIN_CHANCE = 0.4f;
     private static final int FAIL_COOLDOWN_TICKS = 30;
@@ -188,7 +190,8 @@ public final class Lockpicking {
             return ActionResult.FAIL;
         }
 
-        D20.Roll roll = D20.check(player, D20.Skill.LOCKPICKING, ROGUE_MODIFIER, dcFor(table));
+        D20.Roll roll = SkillCheck.builder(player, Skill.THIEVES_TOOLS, dcFor(table), "lock")
+                .label(D20.LOCKPICKING).roll();
         if (roll.outcome().succeeded()) {
             RETRY_AT.remove(player.getUuid());
             D20.show(player, roll, Text.translatable(roll.outcome() == D20.Outcome.CRITICAL

@@ -1,0 +1,22 @@
+# DM freeze persists across relog: run after dm-toolkit-host.txt left the player frozen.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-freeze-rejoin.txt
+# Expect: Tags still has dndclasses.dm_frozen, Pos unchanged after levitation, zombie Health 20 after attack.
+wait 40
+closescreen
+/data get entity @s Tags
+/data get entity @s Pos
+/effect give @s minecraft:levitation 3 5
+wait 60
+/data get entity @s Pos
+/summon minecraft:zombie 1000 151 1001 {Tags:["z2"],NoAI:1b,PersistenceRequired:1b}
+/tp @s 1000 151 1003 180 30
+wait 10
+attack
+wait 10
+attack
+/data get entity @e[tag=z2,limit=1] Health
+screenshot dm-frozen-player
+/dm unfreeze @s
+/kill @e[tag=z2]
+/data get entity @s Tags
+quit

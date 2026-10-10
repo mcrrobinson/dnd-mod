@@ -1,0 +1,12 @@
+{
+  "name": "faction.dndclasses.goblins",
+  "color": "#5E8C31",
+  "members": "#dndclasses:faction/goblins",
+  "settlements": "#dndclasses:faction/goblins",
+  "start": -600,
+  "rivals": {"dndclasses:hobbits": -0.5, "dndclasses:mountain_dwarves": -0.5},
+  "kill_member": -3,
+  "kill_member_overrides": {"dndclasses:goblin_warlord": -50},
+  "betrayal": -40,
+  "raid_defeated": -40
+}

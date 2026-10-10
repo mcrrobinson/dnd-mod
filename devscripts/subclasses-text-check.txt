@@ -1,0 +1,19 @@
+# Re-checks the "Needs an oath" tooltip and the capitalised feature text. Screenshots v2-*.png.
+wait 40
+closescreen
+/tp @s 4.5 150 1.5 0 30
+/dndclass set @s paladin
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 450
+press key.dnd-classes.skill-tree
+wait 10
+hover 0 14
+wait 3
+screenshot v2-paladin-needs-an-oath
+hover 80 -49
+wait 3
+screenshot v2-paladin-banner
+closescreen
+quit

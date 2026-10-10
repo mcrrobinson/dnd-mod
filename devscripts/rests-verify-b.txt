@@ -1,0 +1,9 @@
+# Rest core checks, part B: run after rests-verify-a.txt; the charge left there survives the relog.
+wait 40
+closescreen
+/dndclass charges @s
+wait 20
+clearchat
+wait 3
+screenshot verify-relog
+quit

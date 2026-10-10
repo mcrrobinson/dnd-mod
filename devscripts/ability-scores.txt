@@ -1,0 +1,90 @@
+# Ability scores and the sheet-driven d20 checks. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ability-scores.txt
+# Expect in the log ([CHAT] and [D20] lines):
+# - /dndclass sheet for a fresh Rogue: DEX 15 (+2), proficiency +2, Thieves' Tools +6
+# - lockpick (rigged 10): "Lockpicking 10 +6 = 16 vs DC 10 -> SUCCESS" (screenshot abilities-lockpick-l1)
+# - at level 5 (rigged 3): "3 +8 = 11 vs DC 10 -> SUCCESS" (abilities-lockpick-l5)
+# - with /dndclass score DEX 20 (rigged 2): "2 +11 = 13 vs DC 10 -> SUCCESS" (abilities-lockpick-dex20)
+# - Bard persuasion (rigged 12): "Persuasion 12 +6 = 18 vs DC 12 -> SUCCESS" (abilities-persuade)
+# - Fighter swing (rigged 19): "Attack Roll 19 +4 = 23 -> CRITICAL" (abilities-fighter-crit)
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/clear @s
+/dndclass set @s rogue
+/dndclass score @s DEX clear
+/dndclass xp @s set 0
+/dndclass forceroll @s clear
+wait 5
+/dndclass sheet @s
+wait 5
+screenshot abilities-sheet
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/tp @s 3.5 150 3.5 0 35
+# Let the chat fade so the roll panel is readable
+wait 220
+/dndclass forceroll @s 10
+use
+wait 18
+screenshot abilities-lockpick-l1
+wait 20
+closescreen
+/setblock 3 150 5 minecraft:air
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/dndclass xp @s set 700
+wait 5
+/dndclass sheet @s
+/dndclass forceroll @s 3
+use
+wait 18
+screenshot abilities-lockpick-l5
+wait 20
+closescreen
+/setblock 3 150 5 minecraft:air
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/dndclass score @s DEX 20
+/dndclass forceroll @s 2
+use
+wait 18
+screenshot abilities-lockpick-dex20
+wait 20
+closescreen
+/dndclass score @s DEX clear
+/setblock 3 150 5 minecraft:air
+/dndclass set @s bard
+/dndclass xp @s set 0
+/clear @s
+wait 5
+/dndclass sheet @s
+/summon minecraft:villager 3.5 150 5.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:librarian",level:2,type:"minecraft:plains"}}
+/tp @s 3.5 150 3.5 0 20
+wait 20
+/dndclass forceroll @s 12
+sneak on
+wait 2
+use
+wait 18
+screenshot abilities-persuade
+sneak off
+/kill @e[type=minecraft:villager]
+/dndclass set @s fighter
+/dndclass xp @s set 0
+/time set 18000
+/item replace entity @s weapon.mainhand with minecraft:iron_sword
+/summon minecraft:zombie 3.5 150 5.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Attributes:[{Name:"generic.max_health",Base:500d}],Health:500f}
+/tp @s 3.5 150 3.5 0 10
+hotbar 0
+wait 40
+/dndclass forceroll @s 19
+attack
+wait 18
+screenshot abilities-fighter-crit
+/kill @e[type=minecraft:zombie,distance=..5]
+/dndclass forceroll @s clear
+/time set noon
+wait 10
+quit

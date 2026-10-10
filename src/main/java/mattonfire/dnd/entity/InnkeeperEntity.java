@@ -145,6 +145,9 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
     @Override
     public void trade(TradeOffer offer) {
         offer.use();
+        if (this.getCustomer() instanceof net.minecraft.server.network.ServerPlayerEntity player) {
+            mattonfire.dnd.faction.FactionEvents.traded(player, this);
+        }
         this.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, this.getSoundPitch());
         if (offer.shouldRewardPlayerExperience()) {
             this.world.spawnEntity(new ExperienceOrbEntity(this.world, this.getX(), this.getY() + 0.5D, this.getZ(),

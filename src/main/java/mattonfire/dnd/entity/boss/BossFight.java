@@ -125,7 +125,12 @@ public class BossFight {
 
     public boolean isFightingPlayer() {
         return this.boss.isAlive() && this.canFight.getAsBoolean()
-                && (this.boss.getTarget() instanceof PlayerEntity || this.boss.getAttacker() instanceof PlayerEntity);
+                && (isPlayer(this.boss.getTarget()) || isPlayer(this.boss.getAttacker()));
+    }
+
+    /** A real player in the fight: Dungeon Masters don't start or keep up boss fights. */
+    private static boolean isPlayer(net.minecraft.entity.Entity entity) {
+        return entity instanceof PlayerEntity && !mattonfire.dnd.dm.DungeonMaster.isDm(entity);
     }
 
     /** Call from the boss's tick(); does nothing on the client. */

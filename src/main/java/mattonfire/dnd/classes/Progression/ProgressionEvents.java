@@ -51,7 +51,7 @@ public final class ProgressionEvents {
             xp += skills.killXp(player, entity, source);
         }
         // Boss minions are endless; they give no class XP.
-        if (!BossMinions.isMinion(entity)) {
+        if (!BossMinions.givesNothing(entity)) {
             // Split with party members nearby, like vanilla XP; each gets it in their own class.
             PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp);
         }
@@ -73,7 +73,8 @@ public final class ProgressionEvents {
                 EntityAttributeInstance instance = player.getAttributeInstance(bonus.attribute());
                 if (instance == null)
                     continue;
-                boolean wanted = progress.hasPassive(bonus.skill());
+                // A bonus keyed on a subclass id is that subclass's feature, always on.
+                boolean wanted = progress.hasPassive(bonus.skill()) || progress.hasSubclass(bonus.skill());
                 boolean has = instance.getModifier(bonus.uuid()) != null;
                 if (wanted && !has) {
                     // Temporary so it isn't saved; it's re-added here after a relog.

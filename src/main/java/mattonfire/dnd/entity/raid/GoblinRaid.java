@@ -330,7 +330,7 @@ public class GoblinRaid {
                     BossMusic.send(player, this.bar.getUuid(), ModSounds.MUSIC_GOBLIN_RAID);
                 }
             }
-            if (!player.isCreative()) {
+            if (!player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
                 this.participants.add(player.getUuid());
             }
         }
@@ -557,7 +557,7 @@ public class GoblinRaid {
         }
         for (ServerPlayerEntity player : players) {
             double distance = goblin.squaredDistanceTo(player);
-            if (distance < best && !player.isCreative()) {
+            if (distance < best && !player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
                 best = distance;
                 nearest = player;
             }
@@ -610,6 +610,8 @@ public class GoblinRaid {
                 }
             }
             ExperienceOrbEntity.spawn(world, player.getPos(), 40 + 20 * this.totalWaves);
+            mattonfire.dnd.faction.FactionEvents.raidWon(player, world, new Identifier(DnDClasses.MOD_ID, this.kind.id),
+                    mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
             if (this.kind == Settlement.Kind.FORTRESS) {
                 DwarfGrudges.forgive(player, this.rally, RADIUS);
             }

@@ -1,0 +1,152 @@
+# Class-gated obstacles: Arcane Seals. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/obstacle-arcane-seal.txt
+# Expect (screenshots + log):
+#  Fighter: the hint names Wizard or Warlock (obstacle-fighter-hint); right-click is refused on the action bar;
+#   cobblestone next to the seal isn't placed and the wall beside it can't be mined (both "Test passed");
+#   mining the lesser seal works and the backlash drops Health by 6.
+#  Wizard: the hint shows "You could dispel it" and the roll; a roll (obstacle-wizard-roll) or, failing that,
+#   taking your time (obstacle-wizard-focus) opens the whole doorway; class XP goes up; reset reseals it.
+#  Warlock: takes their time on a Medium seal and opens it.
+#  Greater seal: Warlocks are refused, a Fighter can't mine it, a Wizard can't take their time on Very Hard.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/fill 2 150 5 6 153 5 minecraft:stone_bricks
+/dndobstacle place 3 150 5 5 152 5 dndclasses:lesser_arcane_seal hard
+/dndobstacle info 4 151 5
+/clear @s
+/effect clear @s
+/dndclass set @s fighter
+wait 5
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+/tp @s 4.5 150 3.5 0 20
+wait 30
+screenshot obstacle-fighter-hint
+use
+wait 2
+screenshot obstacle-fighter-refused
+# Protected volume: cobblestone on the floor right in front of the seal is refused
+/give @s minecraft:cobblestone 4
+hotbar 0
+look 0 55
+wait 5
+use
+wait 5
+/execute if block 4 150 4 minecraft:air
+# ...and so is mining the wall beside it
+/give @s minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+hotbar 1
+/tp @s 2.5 150 3.5 0 20
+wait 5
+mine on
+wait 40
+mine off
+/execute if block 2 151 5 minecraft:stone_bricks
+# Fallback: mine the lesser seal itself, taking the backlash
+/tp @s 4.5 150 3.5 0 20
+wait 5
+/data get entity @s Health
+mine on
+wait 70
+mine off
+wait 5
+/execute if block 4 151 5 minecraft:air
+/data get entity @s Health
+screenshot obstacle-fighter-mined
+
+# Wizard
+/clear @s
+/effect clear @s
+/fill 3 150 5 5 152 5 minecraft:air
+/dndobstacle place 3 150 5 5 152 5 dndclasses:lesser_arcane_seal hard
+/dndclass set @s wizard
+wait 5
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+/dndclass progress @s
+/tp @s 4.5 150 3.5 0 20
+wait 30
+screenshot obstacle-wizard-hint
+use
+wait 18
+screenshot obstacle-wizard-roll
+wait 20
+screenshot obstacle-wizard-after
+/execute if block 4 151 5 dndclasses:lesser_arcane_seal[state=open]
+# If the roll failed, take your time: 20 + 5 beats DC 15
+wait 100
+/effect give @s minecraft:instant_health 1 5
+sneak on
+wait 2
+use
+wait 2
+sneak off
+wait 100
+screenshot obstacle-wizard-focusing
+wait 80
+screenshot obstacle-wizard-focus
+wait 30
+/execute if block 4 151 5 dndclasses:lesser_arcane_seal[state=open]
+/execute if block 3 150 5 dndclasses:lesser_arcane_seal[state=open]
+/dndclass progress @s
+screenshot obstacle-wizard-open
+/dndobstacle reset 4 151 5
+/execute if block 5 152 5 dndclasses:lesser_arcane_seal[state=sealed]
+
+# Warlock takes their time on a Medium seal (20 + 3 beats DC 13)
+/dndobstacle settier 4 151 5 medium
+/dndclass set @s warlock
+wait 5
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 10
+screenshot obstacle-warlock-hint
+sneak on
+wait 2
+use
+wait 2
+sneak off
+wait 200
+screenshot obstacle-warlock-focus
+/execute if block 4 151 5 dndclasses:lesser_arcane_seal[state=open]
+
+# Greater seal
+/fill 3 150 5 5 152 5 minecraft:air
+/dndobstacle place 3 150 5 5 152 5 dndclasses:greater_arcane_seal very_hard
+wait 10
+screenshot obstacle-greater-warlock-hint
+use
+wait 2
+screenshot obstacle-greater-warlock-refused
+/dndclass set @s fighter
+wait 5
+/clear @s
+/give @s minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+hotbar 0
+wait 5
+mine on
+wait 60
+mine off
+/execute if block 4 151 5 dndclasses:greater_arcane_seal[state=sealed]
+/clear @s
+/dndclass set @s wizard
+wait 5
+/clear @s
+wait 10
+screenshot obstacle-greater-wizard-hint
+sneak on
+wait 2
+use
+wait 2
+sneak off
+wait 2
+screenshot obstacle-greater-wizard-no-focus
+/dndobstacle list 32
+wait 10
+quit

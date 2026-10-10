@@ -1,0 +1,9 @@
+# After race-verify-picker.txt: the Dwarf's race and extra heart survive a rejoin; then clears the race for race-verify-join.txt.
+# Expect: dwarf, max health 42 (Barbarian 40 + 2).
+wait 40
+/dndrace get @s
+/attribute @s minecraft:generic.max_health get
+/attribute @s minecraft:generic.movement_speed get
+/dndrace set @s none
+wait 5
+quit

@@ -11,5 +11,15 @@ A tinkerer that enchants as it crafts and is the only class that can roll the mo
 - **Unaffected by potions:** you can't drink potions (splash and lingering can still be thrown at others). Potion effects from any potion source never apply to you. Ability effects still work.
 - **Special (power-up key, full mana): reinforced armor.** +8 armor and +4 armor toughness for 30 seconds.
 
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Armorer | Right | Reinforced Plating (first node, open to both), Repair Field, Thorned Plating | **Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance |
+| Battle Smith | Left | Tinkerer (first node, open to both), Steel Defender, Overclock | **Battle Ready**: +2 attack damage with any identified magic weapon |
+
+The features aren't active yet; they come with the subclass feature cards.
+
 ## For developers
 - `Misc/ArtificerDamage`, `Misc/ArtificerCrafting` (+ `mixin/CraftingResultSlotMixin`, `CraftingQuickMoveMixin`), `mixin/EnchantingTableMixin`, `Effects/ArmorBuffEffect`.

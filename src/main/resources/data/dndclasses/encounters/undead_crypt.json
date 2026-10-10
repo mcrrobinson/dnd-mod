@@ -1,0 +1,10 @@
+{
+  "name": "Undead Crypt",
+  "difficulty": "hard",
+  "spread": 5,
+  "spawns": [
+    {"entity": "minecraft:zombie", "count": 4},
+    {"entity": "minecraft:skeleton", "count": 2},
+    {"entity": "minecraft:wither_skeleton", "count": 1}
+  ]
+}

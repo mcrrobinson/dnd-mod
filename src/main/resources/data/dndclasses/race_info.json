@@ -1,0 +1,93 @@
+{
+  "_comment": "Single source of truth for each playable race. Read by the game (race picker tooltips, race-pick chat message, guidebook heritage page, RaceStats modifiers, RaceAbilityBonuses) and used to generate the race table in docs/races/races.md: after editing, run ./gradlew generateRaceTable. abilityBonuses use STR/DEX/CON/INT/WIS/CHA and are added to the character sheet. stats are attribute modifiers on top of the class: speed is a fraction of base movement speed (0.05 = +5%), maxHealth is in half-hearts (2 = one heart), knockbackResistance is 0-1, attackRange is in blocks. scale is the planned body size (not applied yet). Write each trait as a short phrase without a trailing full stop.",
+  "races": [
+    {
+      "id": "HUMAN",
+      "name": "Human",
+      "icon": "minecraft:textures/item/wheat.png",
+      "summary": "Adaptable and ambitious, at home anywhere",
+      "abilityBonuses": {"STR": 1, "DEX": 1, "CON": 1, "INT": 1, "WIS": 1, "CHA": 1},
+      "size": "Medium",
+      "scale": 1.0,
+      "stats": {},
+      "traits": ["**Ambitious**: +10% class XP from every source", "**Diplomat**: +2 on Persuasion and other social checks"]
+    },
+    {
+      "id": "ELF",
+      "name": "Elf",
+      "icon": "minecraft:textures/block/birch_sapling.png",
+      "summary": "Graceful forest folk with keen senses",
+      "abilityBonuses": {"DEX": 2, "WIS": 1},
+      "size": "Medium",
+      "scale": 1.0,
+      "stats": {"speed": 0.05},
+      "traits": ["**Darkvision**: caves are dim but readable", "**Keen Senses**: while sneaking, see hostile mobs within 12 blocks through walls", "**Trance**: never need sleep, so phantoms never come for you"]
+    },
+    {
+      "id": "DWARF",
+      "name": "Dwarf",
+      "icon": "minecraft:textures/item/iron_pickaxe.png",
+      "summary": "Stout, stubborn and hard to knock down",
+      "abilityBonuses": {"CON": 2, "STR": 1},
+      "size": "Stocky",
+      "scale": 0.85,
+      "stats": {"speed": -0.08, "maxHealth": 2, "knockbackResistance": 0.2},
+      "traits": ["**Darkvision**: caves are dim but readable", "**Dwarven Resilience**: poison lasts half as long and hurts half as much", "**Stonecunning**: mine stone, deepslate and ores 20% faster"]
+    },
+    {
+      "id": "HALFLING",
+      "name": "Halfling",
+      "icon": "minecraft:textures/item/bread.png",
+      "summary": "Small, cheerful and uncommonly lucky",
+      "abilityBonuses": {"DEX": 2, "CHA": 1},
+      "size": "Small",
+      "scale": 0.65,
+      "stats": {"attackRange": -0.5},
+      "traits": ["**Lucky**: a natural 1 on a d20 is rerolled once", "**Small**: sneak through one-block gaps", "**Second Breakfast**: food restores one extra hunger point"]
+    },
+    {
+      "id": "GNOME",
+      "name": "Gnome",
+      "icon": "minecraft:textures/item/comparator.png",
+      "summary": "Small tinkerers who shrug off magic",
+      "abilityBonuses": {"INT": 2, "DEX": 1},
+      "size": "Small",
+      "scale": 0.65,
+      "stats": {"attackRange": -0.5},
+      "traits": ["**Darkvision**: caves are dim but readable", "**Gnome Cunning**: 30% less damage from magic", "**Tinker**: crafting a redstone component has a 25% chance to make one extra"]
+    },
+    {
+      "id": "HALFORC",
+      "name": "Half-Orc",
+      "icon": "minecraft:textures/item/iron_axe.png",
+      "summary": "Fierce and enduring, hard to put down",
+      "abilityBonuses": {"STR": 2, "CON": 1},
+      "size": "Medium",
+      "scale": 1.0,
+      "stats": {},
+      "traits": ["**Darkvision**: caves are dim but readable", "**Relentless Endurance**: once every 10 minutes, a killing blow leaves you at 1 HP instead", "**Savage Attacks**: critical hits deal x2.5 instead of x2"]
+    },
+    {
+      "id": "TIEFLING",
+      "name": "Tiefling",
+      "icon": "minecraft:textures/item/blaze_powder.png",
+      "summary": "Infernal heritage, at ease in fire",
+      "abilityBonuses": {"CHA": 2, "INT": 1},
+      "size": "Medium",
+      "scale": 1.0,
+      "stats": {},
+      "traits": ["**Darkvision**: caves are dim but readable", "**Hellish Resistance**: half damage from fire, lava and burning", "**Hellish Rebuke**: a melee attacker is set on fire (20 second cooldown)"]
+    },
+    {
+      "id": "DRAGONBORN",
+      "name": "Dragonborn",
+      "icon": "minecraft:textures/item/dragon_breath.png",
+      "summary": "Dragon-blooded, with a breath weapon of their ancestry",
+      "abilityBonuses": {"STR": 2, "CHA": 1},
+      "size": "Tall",
+      "scale": 1.05,
+      "stats": {},
+      "traits": ["**Draconic Ancestry**: Ember (fire), Frost or Storm (lightning)", "**Breath Weapon**: breathe your ancestry's element in a cone (R key)", "**Draconic Resistance**: half damage from your ancestry's element"]
+    }
+  ]
+}

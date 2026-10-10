@@ -99,11 +99,16 @@ public class ClericSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("cleric.life", "cleric.forge");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("cleric.sanctuary", "Sanctuary", "Mobs ignore you for a few seconds; higher ranks last longer and protect your party.", "minecraft:bell", 9, 0, 1,
                         3),
-                // Life
+                // Life Domain
                 passive("cleric.preserve_life", "Preserve Life",
                         "Below 30% health, gain Regeneration II for 5 seconds (once a minute).",
                         "minecraft:golden_apple", 1, 2, 3, "cleric.sanctuary"),
@@ -111,7 +116,7 @@ public class ClericSkills extends ClassSkills {
                         "minecraft:glistering_melon_slice", 4, 1, 2, 2, "cleric.preserve_life"),
                 passive("cleric.smite_undead", "Smite Undead", "Deal 50% more damage to undead.",
                         "minecraft:golden_sword", 1, 2, 1, "cleric.cure_wounds"),
-                // Forge
+                // Forge Domain
                 passive("cleric.prospector", "Prospector", "20% chance of an extra drop from ores.",
                         "minecraft:raw_gold", 1, 0, 3, "cleric.sanctuary"),
                 active("cleric.radiance", "Radiance",

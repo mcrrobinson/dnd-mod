@@ -55,10 +55,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| School of Evocation | Right | Arcane Focus (first node, open to both), Frost Nova, Spell Mastery | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt party members or their pets |
-| School of Abjuration | Left | Mage Armor (first node, open to both), Arcane Shield, Fortitude | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4) for 60 seconds |
+| School of Evocation | Right | Arcane Focus (first node, open to both), Frost Nova, Spell Mastery | **Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt or knock back party members or their pets |
+| School of Abjuration | Left | Mage Armor (first node, open to both), Arcane Shield, Fortitude | **Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4), fading 60 seconds after the last |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Sculpt Spells** (Evocation): your staff blasts, Arcane Explosion and Meteor Swarm meteors treat your party members, your pets and theirs (tamed wolves, cats, horses...) as immune: no damage and no knockback. The Ice staff doesn't freeze them, and the Lightning staff's bolts don't land within 3 blocks of them. Party members already couldn't hurt each other; this also spares pets and stops the knockback. You still get blasted yourself unless you have Spell Mastery.
+- **Arcane Ward** (Abjuration): every active you fire (Arcane Explosion included) adds 2 absorption hearts, up to 4 from the ward. Hits take it first. Whatever is left fades 60 s after the last active, or when you log off or change class.
 
 ## Commands
 - `/dndclass set <player> wizard` (see [Admin commands](../systems/admin-commands.md)).

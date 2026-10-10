@@ -174,8 +174,8 @@
       "roleBlurb": "Strike from the shadows and open what is locked",
       "obstacles": ["**Locked chests and doors**: pick them (only you)", "**Spotted traps**: disarm them (only you)", "Miasma Vents (immune to poison)"],
       "subclasses": [
-        {"id": "rogue.assassin", "name": "Assassin", "title": "Assassin Rogue", "flavour": "Strike first, from the dark, and once is enough.", "feature": "**Assassinate**: double damage to a mob that isn't targeting you, and your first hit after Vanish ends is a critical"},
-        {"id": "rogue.thief", "name": "Thief", "title": "Thief Rogue", "flavour": "Quick hands, light feet and an eye for treasure.", "feature": "**Fast Hands**: +3 to lockpicking, and you ignore class restrictions when attuning magic items"}
+        {"id": "rogue.assassin", "name": "Assassin", "title": "Assassin Rogue", "flavour": "Strike first, from the dark, and once is enough.", "feature": "**Assassinate**: double melee damage to a mob that isn't targeting you, and your first melee swing out of Vanish (while it lasts or up to 5 seconds after) is a critical", "featureReady": true},
+        {"id": "rogue.thief", "name": "Thief", "title": "Thief Rogue", "flavour": "Quick hands, light feet and an eye for treasure.", "feature": "**Fast Hands**: +3 to lockpicking (Thieves' Tools), and you ignore class restrictions when attuning magic items", "featureReady": true}
       ],
       "abilities": {"STR": 8, "DEX": 15, "CON": 12, "INT": 14, "WIS": 13, "CHA": 10},
       "saves": ["DEX", "INT"],
@@ -194,8 +194,8 @@
       "roleBlurb": "Walk among the dead and raise an army of your own",
       "obstacles": ["**Ossuary Gates**: command them open (only you)", "Lead the party past sleeping crypt undead"],
       "subclasses": [
-        {"id": "necromancer.bonecaller", "name": "Bonecaller", "title": "Bonecaller Necromancer", "flavour": "Master of a tireless skeleton host.", "feature": "**Undying Servants**: your summons last 25% longer"},
-        {"id": "necromancer.plaguebringer", "name": "Plaguebringer", "title": "Plaguebringer Necromancer", "flavour": "Rot and wither in your wake.", "feature": "**Grim Harvest**: killing a mob that has your Wither heals you 2 hearts"}
+        {"id": "necromancer.bonecaller", "name": "Bonecaller", "title": "Bonecaller Necromancer", "flavour": "Master of a tireless skeleton host.", "feature": "**Undying Servants**: your summons (Raise Dead, Skeletal Archers, Army of the Dead) last 25% longer", "featureReady": true},
+        {"id": "necromancer.plaguebringer", "name": "Plaguebringer", "title": "Plaguebringer Necromancer", "flavour": "Rot and wither in your wake.", "feature": "**Grim Harvest**: killing a mob that's withering heals you 2 hearts", "featureReady": true}
       ],
       "abilities": {"STR": 8, "DEX": 14, "CON": 10, "INT": 15, "WIS": 12, "CHA": 13},
       "saves": ["INT", "WIS"],
@@ -214,8 +214,8 @@
       "roleBlurb": "Blast foes with eldritch fire and curse them for your allies",
       "obstacles": ["**Fire Curtains**: walk through and douse the brazier (only you)", "Lesser Arcane Seals"],
       "subclasses": [
-        {"id": "warlock.fiend", "name": "The Fiend", "title": "Fiend Warlock", "flavour": "A pact sealed in hellfire.", "feature": "**Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours is rerolled"},
-        {"id": "warlock.great_old_one", "name": "The Great Old One", "title": "Great Old One Warlock", "flavour": "A pact with something vast, from beyond the stars.", "feature": "**Entropic Ward**: once every 60 seconds, a projectile that would hit you misses"}
+        {"id": "warlock.fiend", "name": "The Fiend", "title": "Fiend Warlock", "flavour": "A pact sealed in hellfire.", "feature": "**Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours (a check, a save or a fumbled attack) is rolled again", "featureReady": true},
+        {"id": "warlock.great_old_one", "name": "The Great Old One", "title": "Great Old One Warlock", "flavour": "A pact with something vast, from beyond the stars.", "feature": "**Entropic Ward**: once every 60 seconds, a projectile that would hit you misses", "featureReady": true}
       ],
       "abilities": {"STR": 8, "DEX": 14, "CON": 13, "INT": 12, "WIS": 10, "CHA": 15},
       "saves": ["WIS", "CHA"],
@@ -234,8 +234,8 @@
       "roleBlurb": "Deal huge area damage and unravel magic",
       "obstacles": ["**Greater Arcane Seals**: dispel them (only you)", "Lesser Arcane Seals"],
       "subclasses": [
-        {"id": "wizard.evocation", "name": "School of Evocation", "title": "Evocation Wizard", "flavour": "Raw elemental power, shaped so it spares your friends.", "feature": "**Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt party members or their pets"},
-        {"id": "wizard.abjuration", "name": "School of Abjuration", "title": "Abjuration Wizard", "flavour": "Wards, shields and the art of staying alive.", "feature": "**Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4) for 60 seconds"}
+        {"id": "wizard.evocation", "name": "School of Evocation", "title": "Evocation Wizard", "flavour": "Raw elemental power, shaped so it spares your friends.", "feature": "**Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt or knock back party members or their pets", "featureReady": true},
+        {"id": "wizard.abjuration", "name": "School of Abjuration", "title": "Abjuration Wizard", "flavour": "Wards, shields and the art of staying alive.", "feature": "**Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4), fading 60 seconds after the last", "featureReady": true}
       ],
       "abilities": {"STR": 8, "DEX": 14, "CON": 12, "INT": 15, "WIS": 13, "CHA": 10},
       "saves": ["INT", "WIS"],
@@ -254,8 +254,8 @@
       "roleBlurb": "Craft better gear and keep the party's armour strong",
       "obstacles": ["**Clockwork Doors**: repair them (only you)", "Disarming mechanical traps"],
       "subclasses": [
-        {"id": "artificer.armorer", "name": "Armorer", "title": "Armorer Artificer", "flavour": "Your armor is your greatest invention.", "feature": "**Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance"},
-        {"id": "artificer.battle_smith", "name": "Battle Smith", "title": "Battle Smith Artificer", "flavour": "A smith of war, with a steel companion at your side.", "feature": "**Battle Ready**: +2 attack damage with any identified magic weapon"}
+        {"id": "artificer.armorer", "name": "Armorer", "title": "Armorer Artificer", "flavour": "Your armor is your greatest invention.", "feature": "**Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance", "featureReady": true},
+        {"id": "artificer.battle_smith", "name": "Battle Smith", "title": "Battle Smith Artificer", "flavour": "A smith of war, with a steel companion at your side.", "feature": "**Battle Ready**: +2 melee damage with any identified magic weapon", "featureReady": true}
       ],
       "abilities": {"STR": 10, "DEX": 13, "CON": 14, "INT": 15, "WIS": 12, "CHA": 8},
       "saves": ["CON", "INT"],
@@ -274,8 +274,8 @@
       "roleBlurb": "Hunt by night and turn your enemies' blood against them",
       "obstacles": ["**Blood Seals**: open them for 2 hearts (anyone else pays 8, and can split it)"],
       "subclasses": [
-        {"id": "bloodhunter.profane_soul", "name": "Order of the Profane Soul", "title": "Profane Soul Blood Hunter", "flavour": "Blood curses, honed to a fine edge.", "feature": "**Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3"},
-        {"id": "bloodhunter.lycan", "name": "Order of the Lycan", "title": "Lycan Blood Hunter", "flavour": "The beast inside, held on a leash.", "feature": "**Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15"}
+        {"id": "bloodhunter.profane_soul", "name": "Order of the Profane Soul", "title": "Profane Soul Blood Hunter", "flavour": "Blood curses, honed to a fine edge.", "feature": "**Rite Focus**: Crimson Rite's bleed lasts 2 seconds longer, and Curse of Binding costs 2 mana instead of 3", "featureReady": true},
+        {"id": "bloodhunter.lycan", "name": "Order of the Lycan", "title": "Lycan Blood Hunter", "flavour": "The beast inside, held on a leash.", "feature": "**Stalker's Prowess**: +10% movement speed at night, and Hybrid Transformation lasts 20 seconds instead of 15", "featureReady": true}
       ],
       "abilities": {"STR": 15, "DEX": 13, "CON": 14, "INT": 12, "WIS": 10, "CHA": 8},
       "saves": ["DEX", "INT"],
@@ -294,8 +294,8 @@
       "roleBlurb": "Brew clouds that strengthen allies and weaken foes",
       "obstacles": ["**Alchemical Seals**: dissolve them (only you)", "**Miasma Vents**: neutralise them"],
       "subclasses": [
-        {"id": "alchemist.mutagenist", "name": "Mutagenist", "title": "Mutagenist Alchemist", "flavour": "Every potion changes you a little more.", "feature": "**Mutagen**: drinking any potion also gives Strength I for 10 seconds"},
-        {"id": "alchemist.transmuter", "name": "Transmuter", "title": "Transmuter Alchemist", "flavour": "Lead to gold, poison to medicine.", "feature": "**Transmuter's Eye**: Healing potions you drink heal 50% more, and you identify potions when you pick them up"}
+        {"id": "alchemist.mutagenist", "name": "Mutagenist", "title": "Mutagenist Alchemist", "flavour": "Every potion changes you a little more.", "feature": "**Mutagen**: drinking any potion also gives Strength I for 10 seconds", "featureReady": true},
+        {"id": "alchemist.transmuter", "name": "Transmuter", "title": "Transmuter Alchemist", "flavour": "Lead to gold, poison to medicine.", "feature": "**Transmuter's Eye**: Healing potions you drink heal 50% more", "featureReady": true}
       ],
       "abilities": {"STR": 8, "DEX": 13, "CON": 14, "INT": 15, "WIS": 12, "CHA": 10},
       "saves": ["CON", "INT"],

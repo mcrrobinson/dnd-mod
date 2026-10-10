@@ -1,0 +1,79 @@
+# Necromancer subclass features. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/subclass-necromancer.txt
+# Expect in latest.log:
+#  1. Bonecaller: Raise Dead (rank I, 10 s) undead still there after 11.5 s ("Test passed"), gone by 13.5 s
+#     ("Test failed"); Plaguebringer control: already gone at 11.5 s
+#  2. Plaguebringer: Health goes up by 4 (e.g. 14 -> 18) after killing a spider with Wither on it; then no heal for a spider
+#     with only the class's own on-hit wither. Bonecaller control: no heal
+wait 40
+closescreen
+respawn
+wait 20
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests false
+/gamerule naturalRegeneration false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/dndclass set @s necromancer
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass subclass @s necromancer.bonecaller
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 4.5 0 15
+# --- 1. Undying Servants ---
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 230
+/execute if entity @e[tag=dndclasses.raised_dead]
+wait 40
+/execute if entity @e[tag=dndclasses.raised_dead]
+/kill @e[type=!player,distance=..30]
+/dndclass subclass @s necromancer.plaguebringer
+/dndclass mana @s 9
+press key.dnd-classes.power-up
+wait 230
+/execute if entity @e[tag=dndclasses.raised_dead]
+/kill @e[type=!player,distance=..30]
+# --- 2. Grim Harvest ---
+/give @s minecraft:diamond_sword
+hotbar 0
+/tp @s 2.5 150 2.5 0 15
+/effect give @s minecraft:instant_health 1 5
+wait 5
+/damage @s 6 minecraft:generic
+wait 5
+/data get entity @s Health
+/summon minecraft:spider 2.5 150 4.5 {NoAI:1b,Health:6f,Rotation:[180f,0f],Tags:["sc"]}
+/effect give @e[tag=sc] minecraft:wither 10 0
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 20
+/data get entity @s Health
+/kill @e[type=!player,distance=..30]
+/summon minecraft:spider 2.5 150 4.5 {NoAI:1b,Health:6f,Rotation:[180f,0f],Tags:["sc"]}
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 20
+/data get entity @s Health
+/kill @e[type=!player,distance=..30]
+# --- Bonecaller control ---
+/dndclass subclass @s necromancer.bonecaller
+/summon minecraft:spider 2.5 150 4.5 {NoAI:1b,Health:6f,Rotation:[180f,0f],Tags:["sc"]}
+/effect give @e[tag=sc] minecraft:wither 10 0
+wait 30
+/dndclass forceroll @s 10
+attack
+wait 20
+/data get entity @s Health
+/kill @e[type=!player,distance=..30]
+quit

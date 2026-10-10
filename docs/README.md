@@ -4,43 +4,46 @@ The detailed reference for the mod, one page per feature, grouped by area. The [
 Each page follows the same template: summary, How it works, Where to find it, Commands, Configuration, Known limitations, For developers.
 
 ## Classes
-- [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted; subclass features (PR #136)
-- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you; subclass features (PR #136)
-- [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target; subclass features (PR #136)
-- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals; subclass features (PR #136)
-- [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions; subclass features (PR #136)
-- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special; subclass features (PR #136)
-- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether; subclass features (PR #136)
-- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank; subclass features (PR #136)
-- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
-- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
-- [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
-- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
-- [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
-- [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
-- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
+- [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted; subclass features
+- [Bard](classes/bard.md): ignored by monsters; a built-in lute slot (G) charms animals, which become companions that follow and fight for you; subclass features
+- [Cleric](classes/cleric.md): Haste and Night Vision; a circle mobs can't target; subclass features
+- [Druid](classes/druid.md): hearts from tamed animals, light regen, Wild Shape into killed and unlocked animals; subclass features
+- [Fighter](classes/fighter.md): tough tank that draws mobs; no bows or potions; subclass features
+- [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special; subclass features
+- [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether; subclass features
+- [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank; subclass features
+- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense; subclass features (PR #137)
+- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern; subclass features (PR #137)
+- [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water; subclass features (PR #137)
+- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks; subclass features (PR #137)
+- [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments; subclass features (PR #137)
+- [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs; subclass features (PR #137)
+- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant; subclass features (PR #137)
 
 ## Races
-- [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule (body sizes and head features: PR #130)
+- [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses) and Elves (Elven Enclaves): welcome, hearth regeneration, 25% kin prices, kin trust, the Dwarf King's audience
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
-- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests, Hit Dice (PR #133)
+- [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests, Hit Dice
+- [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; solo players get one Last Stand roll (PR #138)
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list`
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll
-- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check` (PR #128)
-- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles (PR #127)
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`, rolled from the character sheet (PR #127)
+- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
+- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals only Wizards and Warlocks can dispel, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
-- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items, attunement (3 bonds, the table's Items tab) and `/dndmagic` (PR #129)
+- [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, unidentified items, attunement (3 bonds, the table's Items tab) and `/dndmagic`
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
-- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids (PR #131)
+- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids
+- [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
+- [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn

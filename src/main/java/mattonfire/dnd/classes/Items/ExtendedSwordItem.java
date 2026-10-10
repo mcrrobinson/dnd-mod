@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes.Items;
 
+import mattonfire.dnd.classes.Progression.Classes.WizardSkills;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -123,8 +125,10 @@ public class ExtendedSwordItem extends SwordItem {
 
             if (this.toString().equals("staff_of_ice")) {
                 Box totalBox = new Box(hitPos).expand(3, 5, 3); // Encompasses entire area
+                // Sculpt Spells: an Evocation Wizard's freeze spares their party and pets
+                boolean sculpt = WizardSkills.isEvoker(player);
                 List<LivingEntity> entities = world.getEntitiesByClass(LivingEntity.class, totalBox,
-                        LivingEntity::isAttackable);
+                        e -> e.isAttackable() && !(sculpt && WizardSkills.spares(player, e)));
 
                 for (LivingEntity entity : entities) {
                     entity.addStatusEffect(new StatusEffectInstance(ModEffects.FREEZE, 200));
@@ -160,6 +164,13 @@ public class ExtendedSwordItem extends SwordItem {
                         if (serverWorld.getBlockState(pos.up()).getMaterial().isReplaceable())
                             targets.add(pos.up());
                     });
+                    // Sculpt Spells: no bolts within 3 blocks of an Evocation Wizard's party members or pets
+                    if (WizardSkills.isEvoker(player)) {
+                        List<LivingEntity> spared = world.getEntitiesByClass(LivingEntity.class,
+                                new Box(hitPos).expand(8), e -> WizardSkills.spares(player, e));
+                        targets.removeIf(pos -> spared.stream()
+                                .anyMatch(e -> e.squaredDistanceTo(Vec3d.ofBottomCenter(pos)) < 9.0));
+                    }
                     Collections.shuffle(targets);
                     for (BlockPos pos : targets.subList(0, Math.min(MAX_LIGHTNING_BOLTS, targets.size()))) {
                         LightningEntity lightningEntity = EntityType.LIGHTNING_BOLT.create(world);

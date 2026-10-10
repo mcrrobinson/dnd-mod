@@ -1,0 +1,195 @@
+# Downed state and death saves, solo. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/downed-solo-laststand.txt
+# Expect in latest.log ([Downed], [D20] and [CHAT] lines):
+#  1 Last Stand success (forced 18): "Last Stand succeeded", Health 1.0f; screenshot downed-laststand-success
+#  2 Last Stand failure (forced 3): "Last Stand failed" and a death message
+#  3 cooldown: "has no Last Stand" and an instant death, no roll
+#  4 dndLastStand false and dndDeathSaves 0: instant deaths, no roll
+#  5 totem in hand: the totem pops (Absorption), no [Downed] line
+#  6 massive damage: "killed outright by massive damage"
+#  7 /dndclass down: crawl pose (downed-crawl-back), speed modifier, saves every 6 s; 3 passes -> stable,
+#    30 s later standing with Weakness
+#  8 natural 20 -> "stood up with 1.0 HP"; natural 1 -> 2 fails
+#  9 hits while Downed -> fails ("hit while Downed"), death with the original source
+# 10 lava -> death about 3 s after going in; void and /kill -> instant
+# 11 holding the power-up key 3 s -> "give in"; attack on a pig does nothing; jump does nothing
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule keepInventory true
+/gamerule dndLastStand true
+/gamerule dndDeathSaves 1
+/time set noon
+/weather clear
+/kill @e[type=!player]
+/party leave
+/fill 0 149 0 10 149 10 minecraft:stone
+/fill 0 150 0 10 155 10 minecraft:air
+/setworldspawn 5 150 5
+/spawnpoint @s 5 150 5
+/tp @s 5.5 150 5.5 0 10
+/dndclass set @s rogue
+/clear @s
+/effect clear @s
+/attribute @s minecraft:generic.max_health base set 20
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/data get entity @s Health
+/dndclass laststand @s ready
+# 1: Last Stand success
+/dndclass forceroll @s 18
+/damage @s 24 minecraft:generic
+wait 16
+screenshot downed-laststand-success
+/data get entity @s Health
+/dndclass laststand @s
+wait 80
+# 2: Last Stand failure
+/dndclass laststand @s ready
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/dndclass forceroll @s 3
+/damage @s 24 minecraft:generic
+wait 30
+respawn
+wait 70
+# 3: cooldown: instant death
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/damage @s 24 minecraft:generic
+wait 20
+respawn
+wait 70
+# 4: rules off
+/dndclass laststand @s ready
+/gamerule dndLastStand false
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/damage @s 24 minecraft:generic
+wait 20
+respawn
+wait 70
+/gamerule dndLastStand true
+/gamerule dndDeathSaves 0
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/damage @s 24 minecraft:generic
+wait 20
+respawn
+wait 70
+/gamerule dndDeathSaves 1
+# 5: totem
+/dndclass laststand @s ready
+/item replace entity @s weapon.offhand with minecraft:totem_of_undying
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/damage @s 24 minecraft:generic
+wait 10
+/data get entity @s Inventory
+/execute if entity @s[nbt={ActiveEffects:[{Id:22}]}]
+/dndclass laststand @s
+wait 80
+# 6: massive damage
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/damage @s 60 minecraft:generic
+wait 20
+respawn
+wait 70
+# 7: down, crawl, 3 passes, stable, stand up
+/tp @s 5.5 150 5.5 0 10
+/effect clear @s
+/dndclass down @s
+wait 5
+/attribute @s minecraft:generic.movement_speed get
+clearchat
+perspective back
+wait 10
+screenshot downed-crawl-back
+perspective first
+/dndclass downed @s
+/dndclass forceroll @s 12 13 14
+wait 125
+screenshot downed-save-1
+wait 245
+/dndclass downed @s
+wait 600
+/dndclass downed @s
+/data get entity @s Health
+/execute if entity @s[nbt={ActiveEffects:[{Id:18}]}]
+wait 30
+# 8: natural 20, natural 1
+/dndclass down @s
+/dndclass forceroll @s 20
+wait 125
+/dndclass downed @s
+/data get entity @s Health
+wait 30
+/dndclass down @s
+/dndclass forceroll @s 1 15
+wait 125
+screenshot downed-nat1
+/dndclass downed @s
+wait 120
+/dndclass downed @s
+/dndclass revive @s 6
+/data get entity @s Health
+wait 30
+# 9: hits while Downed, death with the original source
+/summon minecraft:zombie 5.5 150 8.5 {NoAI:1b,CustomName:'"Grumbo"',PersistenceRequired:1b}
+/dndclass down @s
+/damage @s 2 minecraft:mob_attack by @e[type=zombie,limit=1]
+wait 2
+/dndclass downed @s
+/damage @s 1 minecraft:generic
+wait 20
+respawn
+wait 70
+# 10: lava, void, /kill
+/kill @e[type=zombie]
+/tp @s 5.5 150 5.5 0 10
+/fill 1 150 1 2 150 2 minecraft:lava
+/dndclass down @s
+wait 10
+/tp @s 1.5 150 1.5
+wait 100
+respawn
+wait 70
+/fill 1 150 1 2 150 2 minecraft:air
+/tp @s 5.5 150 5.5 0 10
+/dndclass down @s
+wait 10
+/kill @s
+wait 20
+respawn
+wait 70
+/dndclass down @s
+wait 10
+/tp @s 5.5 -100 5.5
+wait 20
+respawn
+wait 70
+# 11: restrictions and giving up
+/tp @s 5.5 150 5.5 0 30
+/summon minecraft:pig 5.5 150 7.5 {NoAI:1b,Rotation:[0f,0f]}
+/give @s minecraft:diamond_sword
+/dndclass down @s
+wait 10
+attack
+wait 5
+/data get entity @e[type=pig,limit=1] Health
+holdkey key.jump on
+wait 10
+/data get entity @s Pos
+holdkey key.jump off
+holdkey key.dnd-classes.power-up on
+wait 70
+holdkey key.dnd-classes.power-up off
+wait 20
+respawn
+wait 70
+/dndclass downed @s
+quit

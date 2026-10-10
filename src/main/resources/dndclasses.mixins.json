@@ -49,6 +49,7 @@
         "ArtificerItemStackMixin",
         "TridentEntityMixin",
         "ProjectileEntityMixin",
+        "ExplosionSculptMixin",
         "VampiricMixin",
         "FeatherfallMixin",
         "ExperienceOrbEntityMixin",
@@ -60,7 +61,10 @@
         "ServerPlayerSwordDropMixin",
         "StatusEffectMixin",
         "ThreadedAnvilChunkStorageAccessor",
-        "DmEntityTrackerMixin"
+        "DmEntityTrackerMixin",
+        "LivingEntityInvoker",
+        "DownedServerPlayerMixin",
+        "DownedPlayerManagerMixin"
     ],
     "client": [
         "AbstractClientPlayerEntityMixin",

@@ -141,8 +141,7 @@ public final class Charges {
         }
         int needed = minutes * 60 * 20;
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-            // TODO(downed state): also skip Downed players once it exists.
-            if (player.isSpectator() || !player.isAlive()) {
+            if (player.isSpectator() || !player.isAlive() || mattonfire.dnd.classes.Downed.Downed.is(player)) {
                 continue;
             }
             int max = max(player);

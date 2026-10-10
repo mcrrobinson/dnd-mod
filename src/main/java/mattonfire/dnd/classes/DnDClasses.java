@@ -122,11 +122,17 @@ public class DnDClasses implements ModInitializer {
                         if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
                                 return;
                         }
+                        // Downed: no specials (holding the key gives up instead, see DownedEvents).
+                        if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
+                                return;
+                        }
                         // Firing a power gets you up from a short rest.
                         mattonfire.dnd.classes.Rest.RestSession.cancel(player, "you used a power");
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.
-                        SkillNode skill = Progression.current(player).activeNode();
-                        int cost = skill == null ? MANA_ICONS : skill.manaCost();
+                        mattonfire.dnd.classes.Progression.ClassProgress progress = Progression.current(player);
+                        SkillNode skill = progress.activeNode();
+                        int cost = skill == null ? MANA_ICONS
+                                        : mattonfire.dnd.classes.Progression.ClassSkills.manaCostFor(progress, skill);
                         // Sneak + power-up picks the Druid's Wild Shape form; free, so before the mana check.
                         if (Druid.cycleForm(player)) {
                                 return;
@@ -153,6 +159,11 @@ public class DnDClasses implements ModInitializer {
                                 ManaManager.setMana(player, mana - cost);
                                 ManaManager.sync(player);
                                 Charges.spend(player, skill);
+                                mattonfire.dnd.classes.Progression.ClassSkills skills = mattonfire.dnd.classes.Progression.ClassTrees
+                                                .skills(progress.dndClass);
+                                if (skills != null) {
+                                        skills.afterActivate(player, progress, skill);
+                                }
                                 ServerPlayNetworking.send(player,
                                                 DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
                                                 new PacketByteBuf(Unpooled.buffer()));
@@ -219,12 +230,16 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
+                mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();
                 mattonfire.dnd.world.gen.HomeBonuses.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.faction.FactionEvents.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.faction.RepCommand.register(dispatcher));
+                mattonfire.dnd.quest.QuestEvents.register();
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.quest.QuestCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndHomeCommand.register(dispatcher));
                 mattonfire.dnd.entity.boss.StructureBosses.register();
@@ -287,6 +302,10 @@ public class DnDClasses implements ModInitializer {
 
                                 if (currentTick % MANA_TICKS_PER_INCREMENT == 0) {
                                         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+                                                // Downed players don't regain mana
+                                                if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
+                                                        continue;
+                                                }
                                                 ManaManager.regenerateMana(player);
                                         }
                                 }
@@ -464,6 +483,7 @@ public class DnDClasses implements ModInitializer {
                 ClassLifecycle.register();
                 mattonfire.dnd.classes.Race.RaceLifecycle.register();
                 mattonfire.dnd.classes.Rest.Rests.register();
+                mattonfire.dnd.classes.Downed.DownedEvents.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         System.out.println("Identity Mod is loaded!");

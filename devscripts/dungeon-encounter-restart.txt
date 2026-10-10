@@ -1,0 +1,25 @@
+# A fight survives a restart. Run this twice in a row: the first run starts the large encounter (room #4)
+# and quits mid-fight; the second finds it still ACTIVE and sealed, kills its mobs and sees it clear.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dungeon-encounter-restart.txt  (twice)
+# Check: second run's log: "#4 Encounter (large): ACTIVE (n mob(s) left, 18 seal block(s))", then
+# "room #4 Encounter (large) cleared" and "Test passed" for the air check.
+wait 40
+closescreen
+/difficulty normal
+/gamemode spectator
+/tp @s 263 150 935
+wait 200
+/dungeon info
+/execute if block 269 44 935 dndclasses:arcane_seal
+/execute if block 263 44 941 dndclasses:arcane_seal
+/kill @e[tag=dndclasses.dungeon]
+wait 30
+/dungeon info
+/execute if block 269 44 935 minecraft:air
+/dungeon reset
+/effect give @s minecraft:resistance 9999 4 true
+/tp @s 263 43 931 0 0
+/gamemode survival
+wait 40
+/dungeon info
+quit

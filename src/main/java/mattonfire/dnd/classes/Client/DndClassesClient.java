@@ -44,6 +44,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 @Environment(EnvType.CLIENT)
 public class DndClassesClient implements ClientModInitializer {
     public static final MinecraftClient MC = MinecraftClient.getInstance();
+    /** The power-up key (Z); while Downed, holding it gives up. */
+    public static KeyBinding POWER_UP_KEY;
     public static Color chestESPColor = new Color(1, 1, 0, 1);
 
     private boolean isBreathingFire = false;
@@ -160,6 +162,7 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Items.ClassGuidebookItem.clientOpener = mattonfire.dnd.classes.Client.Hud.ClassGuidebookScreen::open;
         mattonfire.dnd.classes.Client.Render.LayeredArmorRenderer.registerAll();
         mattonfire.dnd.faction.client.ClientReputation.register();
+        mattonfire.dnd.quest.client.ClientQuests.register();
         // The model has see-through quads like the vanilla brewing stand, which draw black on the default solid layer
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
                 mattonfire.dnd.classes.Registry.ModBlocks.FAST_BREWING_STAND_BLOCK, net.minecraft.client.render.RenderLayer.getCutout());
@@ -209,13 +212,15 @@ public class DndClassesClient implements ClientModInitializer {
                 });
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
+        DownedClient.register();
         mattonfire.dnd.classes.Client.Hud.SaveLaneHud.register();
         mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();
         // Arcane Seals are translucent glyph walls
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getTranslucent(),
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.LESSER_ARCANE_SEAL_BLOCK,
-                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK);
+                mattonfire.dnd.classes.Obstacles.ObstacleTypes.GREATER_ARCANE_SEAL_BLOCK,
+                mattonfire.dnd.classes.Registry.ModBlocks.ARCANE_SEAL);
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();
@@ -277,7 +282,7 @@ public class DndClassesClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);
 
-        KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        KeyBinding keyBinding = POWER_UP_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.dnd-classes.power-up", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_Z, // The keycode of the key

@@ -23,9 +23,11 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
 | Mutagenist | Right | Iron Stomach (first node, open to both), Volatile Flask, Potent Brews | **Mutagen**: drinking any potion also gives Strength I for 10 seconds |
-| Transmuter | Left | Efficient Brewer (first node, open to both), Elixir of Healing, Philosopher's Touch | **Transmuter's Eye**: Healing potions you drink heal 50% more, and you identify potions when you pick them up |
+| Transmuter | Left | Efficient Brewer (first node, open to both), Elixir of Healing, Philosopher's Touch | **Transmuter's Eye**: Healing potions you drink heal 50% more |
 
-The features aren't active yet; they come with the subclass feature cards.
+How the features work:
+- **Mutagen** (Mutagenist): drinking any potion with an effect also gives you Strength I for 10 s (not lengthened by Potent Brews). Water and other effectless bottles don't count, and nor do splash or lingering potions.
+- **Transmuter's Eye** (Transmuter): Instant Health from a potion you drink heals 50% more (Healing: 3 hearts instead of 2; Healing II: 6 instead of 4). Identifying potions on pickup comes with the identification card.
 
 ## Known limitations
 - The class blurb mentions random potion backfires. They aren't implemented.

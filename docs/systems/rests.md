@@ -85,7 +85,8 @@ Permission level 2.
 ## Configuration
 - `/gamerule dndRests false`: turns charges off. Actives only cost mana, as before charges existed, and the gems are hidden. Rests still heal and refill mana.
 - `/gamerule dndChargeTrickleMinutes <n>`: minutes per trickle charge (default 10, 0 turns it off).
-- `dndDeathSaves`, `dndLastStand` and `dndPvpDowned` are registered for the downed state and do nothing yet.
+- `dndDeathSaves`, `dndLastStand` and `dndPvpDowned` belong to the [downed state](death-saves.md).
+- You can't rest while Downed.
 
 ## Known limitations
 - No sitting pose yet: you stand still while resting.

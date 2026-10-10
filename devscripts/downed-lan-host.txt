@@ -1,0 +1,107 @@
+# Downed in a LAN party (host side). Opens the world on port 25683, waits for downed-lan-guest.txt (-PdevUser=Guest),
+# parties up, then: the host is downed by a husk with the guest near, rolls 3 forced fails 6 s apart and dies
+# "slain by Grumbo"; /kill and dndDeathSaves 0 kill instantly with the ally near; dndDeathSaves 2 downs without a
+# party; finally the guest is downed and logs out, which kills them.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/downed-lan-host.txt
+# then, once the log says "Started serving on":
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25683 -PdevScript=devscripts/downed-lan-guest.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule keepInventory true
+/gamerule dndDeathSaves 1
+/gamerule dndLastStand true
+/time set noon
+/weather clear
+/kill @e[type=!player]
+/party leave
+/fill 0 149 0 20 149 20 minecraft:stone
+/fill 0 150 0 20 155 20 minecraft:air
+/setworldspawn 10 150 10
+/spawnpoint @s 10 150 10
+/tp @s 10.5 150 10.5 0 10
+/dndclass set @s rogue
+/attribute @s minecraft:generic.max_health base set 20
+/publish false survival 25683
+waitchat guest-ready
+wait 20
+/dndclass set Guest rogue
+/attribute Guest minecraft:generic.max_health base set 20
+/spawnpoint @a 10 150 10
+/clear @a
+/party create
+/party invite Guest
+waitchat Guest joined the party
+/party list
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 14.5 180 25
+/summon minecraft:husk 13.5 150 10.5 {NoAI:1b,CustomName:'"Grumbo"',PersistenceRequired:1b,Rotation:[90f,0f]}
+/attribute @s minecraft:generic.max_health base set 20
+/effect give @a minecraft:instant_health 1 3
+wait 20
+/data get entity @s Health
+# 1: downed by Grumbo with the guest near, three forced fails
+/dndclass forceroll @s 5 6 7
+/damage @s 24 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 5
+/dndclass downed @s
+/me host-downed
+clearchat
+perspective back
+wait 30
+screenshot downed-lan-host-crawl
+perspective first
+wait 400
+respawn
+wait 70
+# 2: /kill with an ally near: instant
+/tp @s 10.5 150 10.5 0 10
+/kill @s
+wait 20
+respawn
+wait 70
+# 3: dndDeathSaves 0: vanilla
+/tp @s 10.5 150 10.5 0 10
+/gamerule dndDeathSaves 0
+/attribute @s minecraft:generic.max_health base set 20
+/effect give @s minecraft:instant_health 1 3
+wait 5
+/data get entity @s Health
+/damage @s 24 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 20
+respawn
+wait 70
+# 4: dndDeathSaves 2: no party needed
+/gamerule dndDeathSaves 2
+/party leave
+/tp @s 10.5 150 10.5 0 10
+/attribute @s minecraft:generic.max_health base set 20
+/effect give @s minecraft:instant_health 1 3
+wait 5
+/data get entity @s Health
+/damage @s 24 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 5
+/dndclass downed @s
+/dndclass revive @s 4
+/data get entity @s Health
+/gamerule dndDeathSaves 1
+wait 30
+# 5: the guest is downed (party again) and logs out while dying
+/party create
+/party invite Guest
+waitchat Guest joined the party
+/attribute Guest minecraft:generic.max_health base set 20
+/effect give @a minecraft:instant_health 1 3
+wait 10
+/data get entity Guest Health
+/damage Guest 24 minecraft:mob_attack by @e[type=husk,limit=1]
+wait 5
+/dndclass downed Guest
+/me guest-downed
+waitchat Guest left the game
+wait 20
+/list
+quit

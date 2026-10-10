@@ -4,9 +4,12 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
+import org.spongepowered.asm.mixin.injection.ModifyVariable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.ProgressionEvents;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -20,6 +23,8 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.SwordItem;
 import net.minecraft.world.World;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.registry.tag.TagKey;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -78,6 +83,28 @@ public abstract class LivingEntityMixin extends Entity {
         if (ModEffects.INVULNERABILITY != null && ((LivingEntity) (Object) this).hasStatusEffect(ModEffects.INVULNERABILITY)
                 && !source.isIn(DamageTypeTags.BYPASSES_INVULNERABILITY)) {
             cir.setReturnValue(false);
+        }
+    }
+
+    /** Downed players don't heal (natural regen, potions, Regeneration); revives set health directly. */
+    @Inject(method = "heal", at = @At("HEAD"), cancellable = true)
+    private void dnd$noDownedHealing(float amount, CallbackInfo ci) {
+        if ((Object) this instanceof PlayerEntity player && Downed.is(player)) {
+            ci.cancel();
+        }
+    }
+
+    /** Downed players can't sprint (or sprint-swim). */
+    @ModifyVariable(method = "setSprinting", at = @At("HEAD"), argsOnly = true)
+    private boolean dnd$noDownedSprint(boolean sprinting) {
+        return sprinting && !((Object) this instanceof PlayerEntity player && Downed.is(player));
+    }
+
+    /** Downed players can't swim up: they sink. */
+    @Inject(method = "swimUpward", at = @At("HEAD"), cancellable = true)
+    private void dnd$noDownedSwimUp(TagKey<Fluid> fluid, CallbackInfo ci) {
+        if ((Object) this instanceof PlayerEntity player && Downed.is(player)) {
+            ci.cancel();
         }
     }
 

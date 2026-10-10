@@ -44,6 +44,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 @Environment(EnvType.CLIENT)
 public class DndClassesClient implements ClientModInitializer {
     public static final MinecraftClient MC = MinecraftClient.getInstance();
+    /** The power-up key (Z); while Downed, holding it gives up. */
+    public static KeyBinding POWER_UP_KEY;
     public static Color chestESPColor = new Color(1, 1, 0, 1);
 
     private boolean isBreathingFire = false;
@@ -206,6 +208,7 @@ public class DndClassesClient implements ClientModInitializer {
                 });
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
+        DownedClient.register();
         mattonfire.dnd.classes.Client.Hud.SaveLaneHud.register();
         mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();
         // Arcane Seals are translucent glyph walls
@@ -275,7 +278,7 @@ public class DndClassesClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);
 
-        KeyBinding keyBinding = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        KeyBinding keyBinding = POWER_UP_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.dnd-classes.power-up", // The translation key of the keybinding's name
                 InputUtil.Type.KEYSYM, // The type of the keybinding, KEYSYM for keyboard, MOUSE for mouse.
                 GLFW.GLFW_KEY_Z, // The keycode of the key

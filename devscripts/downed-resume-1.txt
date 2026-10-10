@@ -1,0 +1,10 @@
+# Server stop keeps the Downed state (part 1 of 2): goes Downed with 1 pass and 1 fail, then quits (stops the
+# integrated server). Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/downed-resume-1.txt, then downed-resume-2.txt.
+wait 40
+closescreen
+/gamerule dndDeathSaves 1
+/dndclass down @s
+/dndclass forceroll @s 15 4
+wait 250
+/dndclass downed @s
+quit

@@ -36,6 +36,11 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass sheet <player>` | Prints the player's [character sheet](ability-scores.md): scores, saves, skills and passives |
 | `/dndclass score <player> <ability> <1-30>\|clear` | Overrides one ability score (or clears the override), for testing |
 | `/dndclass forceroll <player> <n...>\|clear` | Rigs the player's next d20 naturals, for tests |
+| `/dndclass down <player>` | Downs the player (death saves), even with nobody near. See [Downed and death saves](death-saves.md) |
+| `/dndclass stabilise <player>` | A Downed player stops rolling and stands up on their own in 30 s |
+| `/dndclass revive <player> [hp]` | A Downed player stands up with `hp` HP (default 1) |
+| `/dndclass downed <player>` | Prints the death save tally: passes, fails, seconds to the next save or to standing up |
+| `/dndclass laststand <player> [ready]` | Prints the Last Stand cooldown; `ready` clears it |
 
 Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree; entity ids look like `minecraft:cow`. `unlock`, `equip`, `rank`, `bestiary` and `xp` print the progress line afterwards, so you can check the result straight away. See [Class progression](class-progression.md) for ranks and the bestiary.
 
@@ -76,4 +81,4 @@ See [Goblin raids](goblin-raids.md) for the details.
 - `Commands/DndClassCommand`, `Commands/DndRaceCommand`, `Commands/DndHomeCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`. `/dndrace set` calls `RaceLifecycle.change`.
 - `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
 - `sheet`, `score` and `forceroll` use `AbilityScores.sheet`, `AbilityScores.setOverride` and `D20.force`.
-- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/ability-scores.txt`, `devscripts/rests-charges.txt`, `devscripts/race-pick.txt`.
+- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/ability-scores.txt`, `devscripts/rests-charges.txt`, `devscripts/downed-solo-laststand.txt`, `devscripts/race-pick.txt`.

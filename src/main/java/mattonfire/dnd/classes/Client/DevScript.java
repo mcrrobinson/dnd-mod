@@ -77,6 +77,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code mine on|off} keeps breaking the block at the crosshair every tick, like holding the attack
  *     button (which needs a focused window), e.g. {@code mine on}, {@code wait 60}, {@code mine off}</li>
  * <li>{@code press <key>} presses a key binding once, by translation key (e.g. {@code key.dnd-classes.power-up})</li>
+ * <li>{@code holdkey <key> on|off} holds or releases a key binding, by translation key (e.g. holding
+ *     {@code key.dnd-classes.power-up} for 3 s gives up while Downed)</li>
  * <li>{@code perspective first|back|front} sets the camera (F5)</li>
  * <li>{@code slot <index> [action] [button]} clicks a slot of the open screen; action is a
  * {@link SlotActionType} name (default {@code pickup}; {@code quick_move} = shift-click, {@code swap} with
@@ -299,6 +301,7 @@ public final class DevScript {
             }
             case "hotbar" -> client.player.getInventory().selectedSlot = Integer.parseInt(argument);
             case "press" -> press(client, argument, lineNumber);
+            case "holdkey" -> holdKey(client, argument.split("\\s+"), lineNumber);
             case "perspective" -> client.options.setPerspective(switch (argument) {
                 case "back" -> Perspective.THIRD_PERSON_BACK;
                 case "front" -> Perspective.THIRD_PERSON_FRONT;
@@ -439,6 +442,16 @@ public final class DevScript {
             }
         }
         DnDClasses.LOGGER.warn("[DevScript] {}: no key binding '{}'", lineNumber, translationKey);
+    }
+
+    private static void holdKey(MinecraftClient client, String[] args, int lineNumber) {
+        for (KeyBinding binding : client.options.allKeys) {
+            if (binding.getTranslationKey().equals(args[0])) {
+                binding.setPressed(args.length < 2 || args[1].equals("on"));
+                return;
+            }
+        }
+        DnDClasses.LOGGER.warn("[DevScript] {}: no key binding '{}'", lineNumber, args[0]);
     }
 
     private static void clickSlot(MinecraftClient client, String[] args) {

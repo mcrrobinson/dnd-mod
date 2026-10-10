@@ -43,11 +43,11 @@ screenshot dragonborn-breath-frost
 /data get entity @e[type=zombie,tag=breath,limit=1] active_effects
 /kill @e[type=zombie,tag=breath]
 /fill 2 149 4 5 149 7 minecraft:stone
-# --- Storm (arc to a second zombie behind the first) ---
+# --- Storm (arc to a second zombie 3.5 blocks from the first, outside the cone) ---
 /dndrace set @s dragonborn storm
 /dndclass rest @s short
 /summon zombie 3.5 150 6.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["breath"]}
-/summon zombie 7.5 150 9.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["arc"]}
+/summon zombie 7.0 150 6.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["arc"]}
 /tp @s 3.5 150 2.5 0 10
 wait 10
 press key.dnd-classes.racial

@@ -1,5 +1,14 @@
 package mattonfire.dnd.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.SkillChecks.Perceivable;
+import mattonfire.dnd.classes.SkillChecks.Perception;
+import mattonfire.dnd.classes.SkillChecks.PerceptionService;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -19,6 +28,9 @@ import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.text.Text;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -48,7 +60,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * settles back onto the grid and goes dormant again. When it dies it drops the loot it was
  * guarding: its loot table is the one of the chest it replaced.
  */
-public class MimicEntity extends HostileEntity implements GeoEntity {
+public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable {
     private static final TrackedData<Boolean> DORMANT = DataTracker.registerData(MimicEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     /** Ticks without a target before an awake mimic shuts its lid and pretends again. */
@@ -57,6 +69,10 @@ public class MimicEntity extends HostileEntity implements GeoEntity {
     private static final int GRAB_TICKS = 30;
     /** Pause after a grab ends before the next bite can grab again. */
     private static final int GRAB_COOLDOWN = 60;
+    /** Passive Perception that notices a dormant mimic breathing, and the DC a Search must beat. */
+    public static final int TELL_DC = 13;
+    /** How close a player must be for the passive tell. */
+    public static final double TELL_RANGE = 6.0;
 
     private static final RawAnimation DORMANT_ANIM = RawAnimation.begin().thenLoop("dormant");
     private static final RawAnimation AWAKE_ANIM = RawAnimation.begin().thenLoop("awake");
@@ -74,6 +90,8 @@ public class MimicEntity extends HostileEntity implements GeoEntity {
     private int grabCooldown;
     @Nullable
     private LivingEntity grabbed;
+    /** Players who got the passive tell from this mimic (not saved). */
+    private final Set<UUID> noticed = new HashSet<>();
 
     public MimicEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -217,6 +235,56 @@ public class MimicEntity extends HostileEntity implements GeoEntity {
         victim.velocityModified = true;
         victim.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 10, 3, false, false, true), this);
         this.getLookControl().lookAt(victim, 30.0F, 30.0F);
+    }
+
+    // ---- Being noticed ----
+
+    @Override
+    public void tick() {
+        super.tick();
+        if (this.world instanceof ServerWorld server && this.isDormant() && this.isAlive()
+                && this.age % PerceptionService.PASSIVE_INTERVAL == 0) {
+            Vec3d at = this.getPos();
+            for (ServerPlayerEntity player : server.getPlayers(p -> p.isAlive() && !p.isSpectator()
+                    && !this.noticed.contains(p.getUuid()) && p.squaredDistanceTo(at) <= TELL_RANGE * TELL_RANGE)) {
+                if (PerceptionService.noticesPassively(player, Skill.PERCEPTION, TELL_DC)) {
+                    DnDClasses.LOGGER.info("[Perception] {} notices the mimic at {} breathing (passive {} vs DC {})",
+                            player.getEntityName(), this.getBlockPos().toShortString(),
+                            PerceptionService.passive(player, Skill.PERCEPTION), TELL_DC);
+                    this.perceive(player, false);
+                }
+            }
+        }
+    }
+
+    @Override
+    public int perceptionDc() {
+        return TELL_DC;
+    }
+
+    @Override
+    public Vec3d perceptionPos() {
+        return this.getPos();
+    }
+
+    /** A dormant mimic can always be Searched (each Search outlines it again); the passive tell comes once. */
+    @Override
+    public boolean hiddenFrom(ServerPlayerEntity player) {
+        return this.isDormant();
+    }
+
+    @Override
+    public void perceive(ServerPlayerEntity player, boolean searched) {
+        if (this.noticed.add(player.getUuid())) {
+            Perception.mark(player, this, Perception.Mark.BREATH, 0);
+            if (!searched) {
+                player.sendMessage(Text.translatable("perception.dndclasses.mimic_tell"), true);
+            }
+        }
+        if (searched) {
+            Perception.mark(player, this, Perception.Mark.OUTLINE, Perception.OUTLINE_TICKS);
+            player.sendMessage(Text.translatable("perception.dndclasses.mimic_found"), true);
+        }
     }
 
     // ---- Ticking ----

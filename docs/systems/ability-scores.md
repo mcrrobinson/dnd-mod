@@ -81,7 +81,7 @@ The class table lives in `data/dndclasses/class_info.json` (`abilities`, `saves`
 ## Known limitations
 - No Character tab yet; the sheet is only visible with `/dndclass sheet`.
 - No ability score improvements or items that change scores yet (races do). The admin override stands in for them while testing.
-- Saving throws against monsters, Stealth, Perception and the other skills aren't used by anything yet. Only Thieves' Tools (lockpicking) and Persuasion are.
+- Most skills aren't used by anything yet. Thieves' Tools (lockpicking), Persuasion, passive Stealth and Perception ([Stealth and Perception](stealth-and-perception.md)) are.
 - Rigged rolls are kept in memory until used, cleared or the server restarts.
 
 ## For developers

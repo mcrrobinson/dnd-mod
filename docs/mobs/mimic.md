@@ -25,6 +25,8 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 
 **Loot.** It drops the loot table of the chest it replaced, plus 10 XP. One from a spawn egg or `/summon` drops simple dungeon chest loot (`dndclasses:entities/mimic`).
 
+**Noticing one.** A dormant mimic gives itself away to a player with passive Perception 13 or more within 6 blocks: "That chest just... breathed." and faint puffs over its lid that only they see. A Search (V) within 8 blocks that totals 13 outlines it in red for 5 s. See [Stealth and Perception](../systems/stealth-and-perception.md).
+
 ### Tips
 - Be suspicious of a chest in a dungeon, a dragon lair or a dwarven fortress. Left-click it before you open it. A real chest starts to break; a mimic takes the hit and wakes up.
 - Don't fight one with your back to a wall. Being held at its mouth for 1.5 seconds hurts less if you can step away right after.

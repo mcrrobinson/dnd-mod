@@ -24,6 +24,7 @@ Each trap has one **trigger tile** (`dndclasses:trap_trigger`) that looks like t
 Every half second, each player within 6 blocks of an armed trap is checked by the `TrapSense` rule. If they spot it, its tiles (or the needle's chest) are outlined in orange dust that only they can see, and the first time they're told "You spot a dart trap" on the action bar. By default:
 - Rogues and Rangers always spot traps.
 - Anyone else spots a trap if their passive Perception (10 + Perception bonus, see [ability scores](ability-scores.md)) is at least the trap's DC.
+- A **Search** (V, see [Stealth and Perception](stealth-and-perception.md)) within 8 blocks whose Perception total meets the trap's DC also reveals it, until it is spent, disarmed or re-armed.
 
 ### Disarming
 A **Rogue** sneak-uses any of a trap's floor tiles (the trigger, a vent or a cracked tile) with an empty hand. That rolls **Disarm**, a Thieves' Tools check against the trap's DC, shown on the HUD like lockpicking.
@@ -49,7 +50,7 @@ None.
 
 ## Known limitations
 - Only dart, flame, pit and needle traps exist. The collapsing ceiling (T3+) from the design is still to come.
-- Spotting uses passive Perception, not a rolled check when you walk in.
+- Spotting uses passive Perception, not a rolled check when you walk in; roll one yourself with Search (V).
 - Dart damage is arrow damage, not the `dndclasses:trap` damage type (so Danger Sense works on it).
 - Trap blocks have no items. Place them with `/setblock` plus block entity NBT if you need one by hand.
 
@@ -58,7 +59,7 @@ None.
 - Block entity NBT: `Kind` (dart/flame/pit/needle), `StartKey`, `Tier`, `Armed`, `Disarmed`, `SpentAt` (the dungeon's reset count when spent), `Linked` (launchers, vents, the chest), `Crumbles`, `Ladder`, plus running effects.
 - Re-arming: `DungeonState.resets()` goes up on every `reset()`. A trap whose `SpentAt` differs re-arms itself. Repopulation (`DungeonRegistry.repopulate`, used by both the timed repopulation and `/dungeon reset`) calls `reset()`, so it re-arms traps too.
 - Disarm and needles: `classes/SkillChecks/TrapDisarm` (label `D20.DISARM`, Thieves' Tools). `Lockpicking` calls `TrapDisarm.lockFailed` / `lockForced`.
-- Spotting rule: `TrapSense.set(...)` replaces the default.
+- Spotting rule: `TrapSense.set(...)` replaces the default, which uses `PerceptionService.noticesPassively`. `TrapTriggerBlockEntity` is a `Perceivable`, so Search finds it; `spottedBy(player)` combines the two.
 - Generation: `TrapCorridorPiece` lays out the traps from the piece seed. `DungeonPiece.Builder.chest` adds needles at T2+.
 - Damage type: `data/dndclasses/damage_type/trap.json` (`ModDamageTypes.TRAP`).
 - Logs: `[Trap]` lines for set off, spotted, disarmed, re-armed, every hit (`takes N (dart|trap|stalagmite)`) and pit falls. Disarm rolls log as `[D20] <player> Disarm ...`.

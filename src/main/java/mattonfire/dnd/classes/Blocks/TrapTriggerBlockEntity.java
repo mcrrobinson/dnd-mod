@@ -12,6 +12,7 @@ import org.joml.Vector3f;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Abilities.Ability;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
+import mattonfire.dnd.classes.SkillChecks.Perceivable;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.classes.SkillChecks.SavingThrow;
 import mattonfire.dnd.classes.SkillChecks.TrapSense;
@@ -66,7 +67,7 @@ import net.minecraft.world.World;
  *
  * Numbers by tier: DC {@link TrapKind#dc}; darts 2/3/4/5 damage each; flames 4 + 2 per tier over I.
  */
-public class TrapTriggerBlockEntity extends BlockEntity {
+public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
     public static final double SPOT_RANGE = 6.0;
     public static final int DARTS = 3;
     private static final int DART_INTERVAL = 5;
@@ -106,6 +107,8 @@ public class TrapTriggerBlockEntity extends BlockEntity {
 
     /** Who has been told they spotted this trap since it was last armed (not saved). */
     private final Set<UUID> spotted = new HashSet<>();
+    /** Who found this trap with a Search (V) since it was last armed (not saved). */
+    private final Set<UUID> searched = new HashSet<>();
 
     public TrapTriggerBlockEntity(BlockPos pos, BlockState state) {
         super(TrapBlocks.TRAP_TRIGGER_ENTITY, pos, state);
@@ -285,6 +288,7 @@ public class TrapTriggerBlockEntity extends BlockEntity {
         this.spentAt = this.resets();
         this.setArmedState(false);
         this.spotted.clear();
+        this.searched.clear();
         this.markDirty();
     }
 
@@ -308,6 +312,7 @@ public class TrapTriggerBlockEntity extends BlockEntity {
         this.crumbleAt = -1L;
         this.flameUntil = -1L;
         this.spotted.clear();
+        this.searched.clear();
         for (BlockPos p : this.crumbles) {
             if (!(this.world.getBlockState(p).getBlock() instanceof CrumblingFloorBlock)) {
                 this.world.setBlockState(p, TrapBlocks.CRUMBLING_FLOOR.getDefaultState(), Block.NOTIFY_ALL);
@@ -504,7 +509,7 @@ public class TrapTriggerBlockEntity extends BlockEntity {
         List<BlockPos> outline = this.kind == TrapKind.NEEDLE ? this.linked : this.pressureTiles();
         for (ServerPlayerEntity player : world.getPlayers(p -> p.isAlive() && !p.isSpectator()
                 && p.squaredDistanceTo(centre) <= SPOT_RANGE * SPOT_RANGE)) {
-            if (!TrapSense.get().spots(player, this, this.dc())) {
+            if (!this.spottedBy(player)) {
                 continue;
             }
             for (BlockPos tile : outline) {
@@ -523,6 +528,35 @@ public class TrapTriggerBlockEntity extends BlockEntity {
                 DnDClasses.LOGGER.info("[Trap] {} spots the {} trap at {}", player.getEntityName(), this.kind.id(),
                         this.pos.toShortString());
             }
+        }
+    }
+
+    /** Whether the player sees this trap: found with a Search, or noticed by {@link TrapSense}. */
+    public boolean spottedBy(ServerPlayerEntity player) {
+        return this.searched.contains(player.getUuid()) || TrapSense.get().spots(player, this, this.dc());
+    }
+
+    // A Search (V) within range rolls against an armed trap's DC; finding it outlines it like a passive spot.
+
+    @Override
+    public int perceptionDc() {
+        return this.dc();
+    }
+
+    @Override
+    public Vec3d perceptionPos() {
+        return Vec3d.ofCenter(this.pos);
+    }
+
+    @Override
+    public boolean hiddenFrom(ServerPlayerEntity player) {
+        return this.armed && !this.spottedBy(player);
+    }
+
+    @Override
+    public void perceive(ServerPlayerEntity player, boolean searched) {
+        if (searched && this.searched.add(player.getUuid()) && this.world instanceof ServerWorld server) {
+            this.showToSpotters(server);
         }
     }
 

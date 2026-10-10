@@ -1,0 +1,42 @@
+# Passive Perception and Search. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/stealth-perception.txt
+# Expect: a Wizard (passive Perception 11) 5 blocks from a dormant mimic gets no tell (perception-wizard); a Ranger
+# (14) does: "That chest just... breathed." on the action bar and faint puffs over the lid (perception-ranger),
+# and the log has "[Perception] ... notices the mimic". Then V (key.dnd-classes.study) with forceroll 20 rolls
+# Search on the HUD and outlines the mimic red (perception-search); the log has "[Perception] ... searches: ... found".
+# A second V within 10 s says "You can search again in Ns." (perception-cooldown). /dndclass sheet prints the
+# sneaking Stealth factor for a Rogue and a Wizard (grep "sneaking:").
+wait 40
+closescreen
+/gamemode survival
+/difficulty peaceful
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill -2 149 0 10 149 12 minecraft:stone
+/fill -2 150 0 10 155 12 minecraft:air
+/kill @e[type=!minecraft:player]
+/difficulty normal
+/effect give @s minecraft:resistance 120 4 true
+/summon dndclasses:mimic 4.5 150 6.5 {Rotation:[180f,0f]}
+/dndclass set @s wizard
+/tp @s 4.5 150 1.5 0 20
+wait 60
+screenshot perception-wizard
+/dndclass set @s ranger
+wait 50
+screenshot perception-ranger
+wait 40
+screenshot perception-ranger-breath
+/dndclass forceroll @s 20
+press key.dnd-classes.study
+wait 20
+screenshot perception-search
+press key.dnd-classes.study
+wait 3
+screenshot perception-cooldown
+/dndclass set @s rogue
+/dndclass sheet @s
+/dndclass set @s wizard
+/dndclass sheet @s
+wait 10
+quit

@@ -49,6 +49,8 @@ Farm animals are just for fun: they follow you, but they can't fight, so they ne
 ### Song of Rest on short rests
 A [short rest](../systems/rests.md#short-rests-at-campfires) with a Bard in it (party members resting at campfires within 8 blocks, the Bard included) heals everyone an extra 1d6 HP when their rest finishes, or 2d6 if the Bard has unlocked the Song of Rest active.
 
+**Jack of All Trades (level 2).** Half your proficiency bonus on every check you aren't trained in. This is the class feature; the College of Lore passive of the same name is unchanged. See [class save features](../systems/class-save-features.md).
+
 ### Tips
 Press G next to foxes, llamas or a farm to fill your bestiary, then rank Animal Friends up as you level for the big animals. Use the special next to a wolf pack before a fight, then lead the mob in. Companions stay yours after the special ends, so the cap is the real limit. The [Bard instruments](../items/bard-instruments.md) are built for this class.
 

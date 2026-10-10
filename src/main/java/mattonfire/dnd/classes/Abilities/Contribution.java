@@ -156,6 +156,15 @@ public final class Contribution {
         return this;
     }
 
+    /**
+     * A feature that works outside the sheet's numbers (Evasion, Indomitable): listed in the breakdown only, so
+     * {@code /dndclass sheet} and the Character tab can say where it comes from.
+     */
+    public Contribution feature(String description, String source) {
+        line(source, "feature", description);
+        return this;
+    }
+
     /** Attacks crit on this natural roll or higher. The lowest from any source counts. */
     public Contribution critRange(int lowest, String source) {
         critRange = Math.min(critRange, Math.max(2, lowest));

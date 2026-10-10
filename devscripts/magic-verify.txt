@@ -43,8 +43,8 @@ tooltips 2 3
 wait 10
 screenshot magic-verify-helmet-water
 closescreen
-# Forced natural 20 against a frozen zombie: Wizard bonus 3, +2 sword shows 5
-d20 20
+# Forced natural 20s against a frozen zombie: the +2 sword shows the sheet attack bonus + 2
+/dndclass forceroll @s 20 20
 /summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Health:100f,Attributes:[{Name:"generic.max_health",Base:100d}]}
 look 0 10
 hotbar 4
@@ -57,7 +57,7 @@ wait 40
 attack
 wait 4
 screenshot magic-verify-crit-plain
-d20 off
+/dndclass forceroll @s clear
 /kill @e[type=minecraft:zombie,distance=..10]
 /clear @s
 /loot give @s loot dndclasses:magic/uncommon

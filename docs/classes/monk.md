@@ -48,18 +48,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Monks get 3 extra XP for each hostile mob killed with a fist or the Monk Staff.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Flurry Rush | Root | Active | 0 | 9 | Blink-strike chain on the mob you're looking at and hostiles near it (see above) |
-| Flurry of Blows | Open Hand | Passive | 1 | | Every 3rd hit in a row on the same target deals 50% more. The combo breaks if you wait more than 3 s between hits |
-| Stunning Strike | Open Hand | Active | 1 | 3 | Hostile mobs within 4 blocks get Slowness IV and Weakness II for 4 s |
-| Deflect Missiles | Open Hand | Passive | 1 | | 50% chance to take no damage from a projectile |
-| Slow Fall | Way of the Wind | Passive | 1 | | 75% less fall damage |
-| Step of the Wind | Way of the Wind | Active | 1 | 3 | Dash about 8 blocks the way you're looking, with no fall damage from the dash |
-| Unarmored Movement | Way of the Wind | Passive | 1 | | 15% faster while you aren't wearing a chestplate |
+| Flurry of Blows | Way of the Open Hand | Passive | 1 | | Every 3rd hit in a row on the same target deals 50% more. The combo breaks if you wait more than 3 s between hits |
+| Stunning Strike | Way of the Open Hand | Active | 1 | 3 | Hostile mobs within 4 blocks get Slowness IV and Weakness II for 4 s |
+| Deflect Missiles | Way of the Open Hand | Passive | 1 | | 50% chance to take no damage from a projectile |
+| Slow Fall | Way of the Drunken Master | Passive | 1 | | 75% less fall damage |
+| Step of the Wind | Way of the Drunken Master | Active | 1 | 3 | Dash about 8 blocks the way you're looking, with no fall damage from the dash |
+| Unarmored Movement | Way of the Drunken Master | Passive | 1 | | 15% faster while you aren't wearing a chestplate |
 | Quivering Palm | Capstone | Active | 2 | 9 | Your next melee hit within 10 s deals 20 extra damage |
 
 Quivering Palm's bonus is added before armor, and it's spent on your next strike even if that hit is on a weak mob, so line it up on the target you want. Flurry of Blows and Quivering Palm only count hits with a fist or the Monk Staff.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Way of the Open Hand | Right | Flurry of Blows (first node, open to both), Stunning Strike, Deflect Missiles | **Open Hand Technique**: each Flurry Rush hit gives the target Slowness II for 2 seconds and knocks it back a little |
+| Way of the Drunken Master | Left | Slow Fall (first node, open to both), Step of the Wind, Unarmored Movement | **Tipsy Sway**: with no chestplate on, 15% of melee hits miss you, and drinking Ale gives 2 mana pips |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> monk` (see [Admin commands](../systems/admin-commands.md)).

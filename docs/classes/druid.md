@@ -38,18 +38,28 @@ Press **O** to open your skill tree. Class XP gives you a skill point per level,
 
 Druids get 3 XP for each animal they kill, and 4 extra for each hostile mob killed while in an animal form.
 
-| Skill | Branch | Type | Points | Mana | Effect |
+| Skill | Subclass | Type | Points | Mana | Effect |
 |-|-|-|-|-|-|
 | Wild Shape | Root | Active | 0 | 9 | The special above; 4 ranks |
-| Hardy Form | Moon | Passive | 1 | | Resistance I while in animal form |
-| Thorn Burst | Moon | Active | 1 | 4 | Hostile mobs within 6 blocks take 3 thorns damage and get Slowness IV for 4 s |
-| Beast Bond | Moon | Passive | 1 | | Tamed animals give up to 10 extra hearts instead of 5 |
-| Tidecaller | Land | Passive | 1 | | You can swim again |
-| Regrowth | Land | Active | 1 | 4 | Regeneration II for 8 s to you, other players and your pets within 8 blocks |
-| Photosynthesis | Land | Passive | 1 | | In light level 10 or higher you also get half a drumstick of food every 3 seconds |
+| Hardy Form | Circle of the Moon | Passive | 1 | | Resistance I while in animal form |
+| Thorn Burst | Circle of the Moon | Active | 1 | 4 | Hostile mobs within 6 blocks take 3 thorns damage and get Slowness IV for 4 s |
+| Beast Bond | Circle of the Moon | Passive | 1 | | Tamed animals give up to 10 extra hearts instead of 5 |
+| Tidecaller | Circle of the Land | Passive | 1 | | You can swim again |
+| Regrowth | Circle of the Land | Active | 1 | 4 | Regeneration II for 8 s to you, other players and your pets within 8 blocks |
+| Photosynthesis | Circle of the Land | Passive | 1 | | In light level 10 or higher you also get half a drumstick of food every 3 seconds |
 | Call of the Wild | Capstone | Active | 2 | 9 | Three tamed wolves appear around you and fight for 60 s |
 
 With Beast Bond and ten pets you reach 40 health, the same as a Barbarian. Photosynthesis means you barely need food on the surface.
+
+### Subclasses
+From class level 3, choose one of these two at an Attunement Table (see [Subclasses](../systems/class-progression.md#subclasses)). Your subclass's branch opens fully. The other branch's first node stays open, but the rest of it is sealed.
+
+| Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
+|-|-|-|-|
+| Circle of the Moon | Right | Hardy Form (first node, open to both), Thorn Burst, Beast Bond | **Primal Strike**: your attacks deal +2 damage in animal form |
+| Circle of the Land | Left | Tidecaller (first node, open to both), Regrowth, Photosynthesis | **Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss |
+
+The features aren't active yet; they come with the subclass feature cards.
 
 ## Commands
 - `/dndclass set <player> druid` (see [Admin commands](../systems/admin-commands.md)).

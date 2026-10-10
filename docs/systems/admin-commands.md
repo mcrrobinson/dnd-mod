@@ -19,7 +19,7 @@ These all act on the player's current class. See [Class selection](class-selecti
 
 | Command | What it does |
 |-|-|
-| `/dndclass progress <player>` | Prints level, XP, unspent points, unlocked skills, the equipped active, the passives, skill ranks and, for the Bard and Druid, the learned and unlocked bestiary |
+| `/dndclass progress <player>` | Prints level, XP, unspent points, the subclass, unlocked skills, the equipped active, the passives, skill ranks and, for the Bard and Druid, the learned and unlocked bestiary |
 | `/dndclass xp <player> add <amount>` | Adds class XP, announcing any level-up as normal |
 | `/dndclass xp <player> set <amount>` | Sets class XP. If it drops below what their skills cost, they have 0 points until later levels cover it |
 | `/dndclass unlock <player> <skill>` | Unlocks a skill without needing points or the node below it. Its cost still counts, so later levels pay it off before giving new points |
@@ -27,7 +27,14 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass rank <player> <skill> <n>` | Sets an unlocked skill's rank without points, level or an Attunement Table. `n` is from 1 to the skill's max rank. Ranks still count toward points spent, as with `unlock` |
 | `/dndclass bestiary <player> learn <entity>` | Adds a creature to the class's bestiary as if they'd killed it (Bard and Druid only) |
 | `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
+| `/dndclass subclass <player> <id\|none>` | Sets the subclass of the player's current class (e.g. `barbarian.berserker`), skipping the level and the Attunement Table; replacing another subclass refunds it first. `none` clears it and refunds the subclass's upper nodes, the capstone and their ranks |
 | `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |
+| `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
+| `/dndclass charges <player> [n]` | Prints charges, recharge group, Hit Dice and short rests left; `n` sets the charges (capped at the class's max) |
+| `/dndclass hitdice <player> [n]` | Prints the same; `n` sets the Hit Dice left (capped at the pool) |
+| `/dndclass sheet <player>` | Prints the player's [character sheet](ability-scores.md): scores, saves, skills and passives |
+| `/dndclass score <player> <ability> <1-30>\|clear` | Overrides one ability score (or clears the override), for testing |
+| `/dndclass forceroll <player> <n...>\|clear` | Rigs the player's next d20 naturals, for tests |
 
 Skill ids look like `barbarian.war_cry` and tab-complete from the player's class tree; entity ids look like `minecraft:cow`. `unlock`, `equip`, `rank`, `bestiary` and `xp` print the progress line afterwards, so you can check the result straight away. See [Class progression](class-progression.md) for ranks and the bestiary.
 
@@ -52,4 +59,5 @@ See [Goblin raids](goblin-raids.md) for the details.
 ## For developers
 - `Commands/DndClassCommand` and `Commands/GoblinRaidCommand`, registered in `DnDClasses`.
 - `unlock` and `equip` call `Progression.unlock` and `Progression.equip` with `force = true`; `rank` calls `Progression.setRank`; `bestiary` calls `Progression.learn` and `Progression.unlockBestiary(..., true)`.
-- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`.
+- `sheet`, `score` and `forceroll` use `AbilityScores.sheet`, `AbilityScores.setOverride` and `D20.force`.
+- Devscripts: `devscripts/dndclass-command.txt`, `devscripts/ability-ranks.txt`, `devscripts/ability-scores.txt`, `devscripts/rests-charges.txt`.

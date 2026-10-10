@@ -6,6 +6,7 @@ import java.util.List;
 import mattonfire.dnd.classes.ClassInfo;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Progression.ClassProgress;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -92,6 +93,29 @@ public final class ClassGuidebookScreen {
             special.add(Text.translatable("book.dndclasses.class_guidebook.passive"));
         }
         pages.section(special.toArray(Text[]::new));
+
+        if (!info.subclasses().isEmpty()) {
+            pages.section(Text.translatable("book.dndclasses.class_guidebook.subclasses")
+                    .formatted(Formatting.BOLD, Formatting.DARK_AQUA),
+                    Text.translatable("book.dndclasses.class_guidebook.subclasses_intro",
+                            ClassProgress.SUBCLASS_LEVEL));
+            for (ClassInfo.SubclassInfo sub : info.subclasses()) {
+                List<Text> lines = new ArrayList<>();
+                lines.add(Text.literal(sub.name()).formatted(Formatting.BOLD, Formatting.DARK_PURPLE));
+                if (yours && ClassProgress.client.dndClass == info.id() && ClassProgress.client.hasSubclass(sub.id())) {
+                    lines.add(Text.translatable("book.dndclasses.class_guidebook.your_subclass")
+                            .formatted(Formatting.ITALIC, Formatting.DARK_GREEN));
+                }
+                if (!sub.flavour().isEmpty()) {
+                    lines.add(Text.literal(sub.flavour()).formatted(Formatting.ITALIC));
+                }
+                lines.add(Text.literal(""));
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.subclass_feature",
+                        Text.literal(sub.featureName()).formatted(Formatting.BOLD)));
+                lines.add(Text.literal(sub.featureDescription() + "."));
+                pages.section(lines.toArray(Text[]::new));
+            }
+        }
     }
 
     private static Text[] bulletList(String headerKey, Formatting color, List<String> points) {

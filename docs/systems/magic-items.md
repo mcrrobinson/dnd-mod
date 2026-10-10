@@ -44,7 +44,7 @@ Any sword, axe, trident, bow, crossbow or armor piece can be magic gear:
 
 - The name gets the bonus in front: "+2 Diamond Sword", "+1 Iron Chestplate". A renamed item keeps its custom name (still coloured).
 - The bonus shows as its own blue line in the attribute list, e.g. `+2 Attack Damage` under the sword's base damage.
-- A +N melee weapon's bonus is added to the modifier shown on [attack rolls](d20-skill-checks.md) (d20 + class bonus + N). Crits and fumbles are still only on natural 20 and 1.
+- A +N melee weapon's bonus is added to the modifier shown on [attack rolls](d20-skill-checks.md) (d20 + the sheet's attack bonus + N). Crits and fumbles are still only on natural 20 and 1.
 - No attunement is needed.
 
 ### Unidentified items

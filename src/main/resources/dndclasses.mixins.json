@@ -65,6 +65,7 @@
         "BackgroundRendererMixin",
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
+        "MouseAccessor",
         "DoubleJumpMixin",
         "InGameHudMixin",
         "EntityRenderDispatcherMixin",

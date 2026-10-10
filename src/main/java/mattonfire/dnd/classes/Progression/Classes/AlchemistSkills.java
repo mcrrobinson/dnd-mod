@@ -125,13 +125,18 @@ public class AlchemistSkills extends ClassSkills {
     }
 
     @Override
+    public List<String> subclassIds() {
+        return List.of("alchemist.mutagenist", "alchemist.transmuter");
+    }
+
+    @Override
     public List<SkillNode> nodes() {
         return List.of(
                 active("alchemist.distill", "Transmute",
                         "Throw your held potion as a lingering cloud with stronger effects: buffs for allies, harmful effects for mobs. With no potion, it's an unstable brew.",
                         "minecraft:glowstone_dust",
                         9, 0, 1, 3),
-                // Mutagen
+                // Mutagenist
                 passive("alchemist.iron_stomach", "Iron Stomach", "You're immune to Poison, Wither and Nausea.",
                         "minecraft:milk_bucket", 1, 2, 3, "alchemist.distill"),
                 active("alchemist.volatile_flask", "Volatile Flask",

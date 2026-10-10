@@ -1,0 +1,52 @@
+# Extra checks for ability scores. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/ability-scores-verify.txt
+# Expect: score override restored by clear and kept through death; forceroll 20 -> CRITICAL panel, 1 -> FUMBLE panel;
+# Barbarian L1 attack +4; classless sheet all 10s, no proficiencies.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/dndclass set @s rogue
+/dndclass xp @s set 0
+/clear @s
+/dndclass score @s DEX 18
+/kill @s
+wait 20
+respawn
+wait 20
+/dndclass sheet @s
+/dndclass score @s DEX clear
+/dndclass sheet @s
+/tp @s 3.5 150 3.5 0 35
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+wait 220
+/dndclass forceroll @s 20
+use
+wait 18
+screenshot verify-nat20
+wait 20
+closescreen
+/setblock 3 150 5 minecraft:air
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/dndclass forceroll @s 1
+use
+wait 18
+screenshot verify-nat1
+/setblock 3 150 5 minecraft:air
+/dndclass set @s barbarian
+/dndclass xp @s set 0
+/dndclass sheet @s
+/dndclass set @s none
+wait 20
+closescreen
+/dndclass sheet @s
+wait 10
+screenshot verify-classless
+/dndclass set @s rogue
+/gamerule doImmediateRespawn false
+wait 10
+quit

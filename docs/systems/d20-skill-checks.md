@@ -37,7 +37,7 @@ Sneak and right click a villager with an empty main hand. The villager must have
 Gossip is vanilla reputation, so it lowers or raises that villager's prices the same way curing a zombie villager does. It spreads to nearby villagers and fades slowly over time. Persuade the villagers whose trades you use most.
 
 ### Arcana (Wizard, Warlock)
-Dispelling an Arcane Seal rolls Arcana: d20 + 5 for a level 0 Wizard (+3 plus proficiency) or d20 + 3 for a level 0 Warlock (+1 plus proficiency), against the seal's DC (10, 13, 15 or 18). Proficiency rises to +3 at class level 4 and +4 at level 8. See [Class-gated obstacles](obstacles.md).
+Dispelling an Arcane Seal rolls Arcana from the character sheet: d20 + 4 for a level 0 Wizard (INT 15 +2, proficiency +2) or d20 + 3 for a level 0 Warlock (INT 12 +1, proficiency +2), against the seal's DC (10, 13, 15 or 18). Proficiency rises to +3 at class level 5 and +4 at level 9. See [Class-gated obstacles](obstacles.md).
 
 ### Attack rolls (everyone)
 Every full-strength melee swing (attack cooldown at 90% or more) at a living mob rolls a d20. Armor stands don't count. Wait for the cooldown bar to fill if you want your crits.
@@ -65,8 +65,8 @@ Locked chests are the loot chests in structures: dungeons, mineshafts, temples, 
 - `classes/SkillChecks/SkillCheck.java` is the usual entry point. `SkillCheck.check(player, Skill, dc)` rolls with the sheet's bonus; `SkillCheck.builder(player, skill, dc, tags...)`, `abilityCheck(...)`, `save(...)` and `flat(...)` return a `D20.Builder` to add `.bonus(label, n)`, `.advantageIf(...)`, `.disadvantage()`, `.label(...)`, `.secret()` or `.display(...)` before `.roll()`. Tags let the sheet's advantage filters pick out rolls ("obstacle", "poison", "trap").
 - `classes/SkillChecks/D20.java` holds the raw builder (`D20.roll(player)`), `Outcome`, the `Display` lane (MAIN, SAVE_LANE, SILENT), the rigged-roll queue (`/dndclass forceroll`), the `[D20]` log line and the `dndclasses:d20_roll` S2C packet (`D20.show`).
   - `D20.Roll` carries a label `Text`, the ability (or none), a `RollKind`, the kept natural, the dropped `natural2` (0 for one die), the `Advantage` mode, how many natural 1s were rerolled, the total modifier, named `bonuses`, the DC (0 for none), the outcome, the display lane and flags (`FLAG_SECRET` hides the DC and outcome). SAVE_LANE rolls draw on the main panel until the save lane exists; SILENT rolls are logged but never sent.
-  - The old `D20.Skill` enum, `D20.check(player, skill, mod, dc)` and the five-argument `Roll` constructor are deprecated but still work.
-- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and take their modifier from `SkillModifiers` (not the sheet yet). `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
+  - `D20.Builder.take(n)` uses a fixed natural instead of rolling (obstacles' take your time): no die, no advantage, never a crit or a fumble.
+- `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and roll through `SkillCheck` like the rest. `D20.register()` is called before `DwarfGrudges` so that a failed pick never reaches the dwarves.
 - Mixins: `mixin/LootableContainerBlockEntityAccessor` reads the chest's loot table, and `mixin/PlayerAttackRollMixin` applies crit damage and plays the crit effects.
 - `Client/Hud/DiceRollHud.java` draws the HUD panel with `textures/gui/d20.png` (made by `tools/d20_texture.py`).
 - Sounds are `dndclasses:dice.roll`, `.success`, `.failure`, `.critical` and `.fumble`, made by `tools/music-gen/music_gen.py dice_*`.

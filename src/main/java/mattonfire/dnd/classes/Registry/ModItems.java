@@ -556,6 +556,8 @@ public class ModItems {
 
         public static final Item LIGHTNING_CHASER_SPAWN_EGG = registerItem("lightning_chaser_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, 0x2E3A5C, 0xF2E85A, new FabricItemSettings()));
+        public static final Item FROST_DRAKE_SPAWN_EGG = registerItem("frost_drake_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.FROST_DRAKE, 0xDCEBFA, 0x2F5FC8, new FabricItemSettings()));
 
         public static final Item RIVER_PIKEHORN_SPAWN_EGG = registerItem("river_pikehorn_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, 0x3C6E78, 0xC9D8A0, new FabricItemSettings()));

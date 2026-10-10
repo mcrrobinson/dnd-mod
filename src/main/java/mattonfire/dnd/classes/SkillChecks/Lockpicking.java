@@ -64,6 +64,7 @@ public final class Lockpicking {
     /** The best-guarded hoards. */
     private static final Set<String> HARD_TABLES = Set.of(
             "dndclasses:chests/dragon_lair",
+            "dndclasses:chests/frost_lair",
             "dndclasses:chests/dwarven_fortress_treasury",
             "minecraft:chests/end_city_treasure",
             "minecraft:chests/bastion_treasure",

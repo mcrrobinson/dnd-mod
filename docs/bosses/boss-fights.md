@@ -20,6 +20,7 @@ Bosses and the big dragons share one fight system: a boss bar, fight music, heal
 | [Beholder](beholder.md) | 250 | purple, notched | 48 | Tooth and Claw | red enrage below 50% | 120 | An Eye for an Eye |
 | [Wyvern](../mobs/dragons.md) (wild) | 40 | red | 64 | Tooth and Claw | none | 20 | Dragon Slayer |
 | [Lightning Chaser](../mobs/dragons.md) (wild) | 200 | yellow | 64 | Tooth and Claw | none | 80 | Dragon Slayer |
+| [Frost Drake](../mobs/dragons.md) (wild) | 200 | blue | 64 | Tooth and Claw | none | 80 | Dragon Slayer |
 
 Tamed dragons never start a boss fight. The Ember Wyvern is a dragon too, but a common one, so it has no bar or music.
 

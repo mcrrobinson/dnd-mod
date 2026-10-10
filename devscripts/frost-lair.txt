@@ -1,0 +1,29 @@
+# Looks over a frost lair and checks its drakes and hoard chest.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/frost-lair.txt
+# The nearest frost lair to the dev world's spawn (/locate structure dndclasses:frost_lair, run by
+# frost-drake.txt) is centred on 3348 167 4696, on a Frozen Peaks summit.
+# Output: run/screenshots/frost_lair-*.png; the log shows the nearest drake's Lair and whether the
+# hoard chest is in the middle of the nest.
+/time set day
+/weather clear
+respawn
+wait 40
+closescreen
+/gamemode spectator
+hud off
+/tp @s 3348 190 4724 180 35
+# Chunks the first visit didn't save still have to be generated
+wait 300
+screenshot frost_lair-south
+/tp @s 3366 181 4714 135 32
+wait 60
+screenshot frost_lair-corner
+/tp @s 3348 205 4696 0 90
+wait 60
+screenshot frost_lair-top
+/execute if block 3348 168 4696 minecraft:chest
+/data get block 3348 168 4696 LootTable
+/data get entity @e[type=dndclasses:frost_drake,limit=1,sort=nearest] Lair
+/execute if entity @e[type=dndclasses:frost_drake,distance=..64]
+hud on
+quit

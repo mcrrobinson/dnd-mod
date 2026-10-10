@@ -8,12 +8,15 @@ import net.minecraft.util.Identifier;
 import net.minecraft.world.gen.structure.StructureType;
 
 /**
- * Registers the dragon lair structure type and its piece. Where lairs generate is data:
- * {@code data/dndclasses/worldgen/structure/dragon_lair.json} and the matching structure set.
+ * Registers the dragon lair and frost lair structure types and their piece. Where lairs generate is
+ * data: {@code data/dndclasses/worldgen/structure/dragon_lair.json} and {@code frost_lair.json}, and
+ * the matching structure sets.
  */
 public final class DragonLairStructures {
     public static final StructureType<DragonLairStructure> DRAGON_LAIR = Registry.register(
             Registries.STRUCTURE_TYPE, id("dragon_lair"), () -> DragonLairStructure.CODEC);
+    public static final StructureType<DragonLairStructure> FROST_LAIR = Registry.register(
+            Registries.STRUCTURE_TYPE, id("frost_lair"), () -> DragonLairStructure.FROST_CODEC);
 
     public static final StructurePieceType LAIR = Registry.register(Registries.STRUCTURE_PIECE, id("dragon_lair"),
             (StructurePieceType.Simple) LairPiece::new);

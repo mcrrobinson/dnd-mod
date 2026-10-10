@@ -22,7 +22,7 @@ The shorter view is the main cost. You'll spot mobs and landmarks late on the su
 | III | 6 | 12 s | within 12 blocks | I for 8 s |
 | IV | 9 | 15 s | within 16 blocks | II for 10 s |
 
-A ring of particles shows the circle: at the party reach, or a small 2-block ring at rank I. Bosses (Wyvern, Lightning Chaser, Lich, Goblin Warlord) and their minions pick targets through the same code as other mobs, so they ignore you too.
+A ring of particles shows the circle: at the party reach, or a small 2-block ring at rank I. Bosses (Wyvern, Lightning Chaser, Frost Drake, Lich, Goblin Warlord) and their minions pick targets through the same code as other mobs, so they ignore you too.
 
 ### Tips
 Sanctuary is an escape button: use it when a cave fight goes wrong and walk out. Early on it only lasts 6 seconds, so start walking straight away. Mobs ignore you, but they still hit anything else, so it won't protect pets or villagers.

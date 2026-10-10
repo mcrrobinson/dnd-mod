@@ -83,7 +83,7 @@ Lunge, Invulnerability, Tree Feller, Grid Miner, Returning, Vampiric, Smite Drag
 Event music for boss fights, goblin raids, low health, dungeons, Nether Fortresses, travelling and night, a sting when you use your special, five music discs, and a Lich fight theme. See [Music](docs/music.md).
 
 ### Mobs and Bosses
-- [Dragons](docs/mobs/dragons.md): the Wyvern, Ember Wyvern, Lightning Chaser and the tameable River Pikehorn. They breathe fire, have hittable wings and tails, and killing any of them earns **Dragon Slayer**.
+- [Dragons](docs/mobs/dragons.md): the Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn. They breathe fire (or frost), have hittable wings and tails, and killing any of them earns **Dragon Slayer**.
 - [Goblins](docs/mobs/goblins.md), [Magmamunchers](docs/mobs/magmamunchers.md), [Hobbits](docs/mobs/hobbits.md) and [Mountain Dwarves](docs/mobs/mountain-dwarves.md).
 - [Mimic](docs/mobs/mimic.md): a chest that isn't. It bites and grabs whoever opens or hits it, and hides in dungeons, dragon lairs and dwarven fortresses.
 - [Owlbear](docs/mobs/owlbear.md): a hostile owl-headed bear in dark and old-growth forests that charges and bear-hugs. Druids who kill one can take its form.
@@ -92,6 +92,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 
 ### Structures
 - [Dragon Lairs](docs/structures/dragon-lairs.md) on mountain summits (`/locate structure dndclasses:dragon_lair`).
+- [Frost Lairs](docs/structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits (`dndclasses:frost_lair`).
 - [Hobbit Villages](docs/structures/hobbit-villages.md) in plains and meadows (`dndclasses:hobbit_village`).
 - [Hobbit Tavern](docs/structures/hobbit-tavern.md): every village inn has an innkeeper who trades food and ale, and a bounty board with daily hunts and expeditions.
 - [Goblin Camps](docs/structures/goblin-camps.md): palisaded war camps in forests and plains (`dndclasses:goblin_camp`).

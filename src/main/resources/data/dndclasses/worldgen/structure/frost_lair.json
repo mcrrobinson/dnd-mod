@@ -1,0 +1,23 @@
+{
+  "type": "dndclasses:frost_lair",
+  "biomes": "#dndclasses:has_structure/frost_lair",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {
+    "creature": {
+      "bounding_box": "piece",
+      "spawns": [
+        {
+          "type": "dndclasses:frost_drake",
+          "weight": 1,
+          "minCount": 1,
+          "maxCount": 1
+        }
+      ]
+    },
+    "monster": {
+      "bounding_box": "piece",
+      "spawns": []
+    }
+  }
+}

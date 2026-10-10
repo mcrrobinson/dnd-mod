@@ -13,7 +13,7 @@ Only a Rogue can pick a lock. Right click the chest as if opening it (if you're 
 
 | DC | Chests |
 |-|-|
-| 15 | `dndclasses:chests/dragon_lair`, `dndclasses:chests/dwarven_fortress_treasury`, and vanilla `end_city_treasure`, `bastion_treasure`, `ancient_city`, `woodland_mansion`, `stronghold_corridor`, `stronghold_crossing` and `stronghold_library` |
+| 15 | `dndclasses:chests/dragon_lair`, `dndclasses:chests/frost_lair`, `dndclasses:chests/dwarven_fortress_treasury`, and vanilla `end_city_treasure`, `bastion_treasure`, `ancient_city`, `woodland_mansion`, `stronghold_corridor`, `stronghold_crossing` and `stronghold_library` |
 | 10 | Every other locked chest |
 
 On a success the loot is rolled, so the chest (both halves) stays unlocked for good. It opens 1.3 seconds later so you can read the roll first. [Mountain Dwarves](../mobs/mountain-dwarves.md) who see you still count it as opening their chest.

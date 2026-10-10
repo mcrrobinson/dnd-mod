@@ -32,7 +32,7 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 
 ## Where to find it
 - **Dungeons (monster rooms):** 20% of their chests are mimics with dungeon loot.
-- **[Dragon lairs](../structures/dragon-lairs.md):** half of all lairs have a second "chest" 2 blocks from the hoard, holding hoard loot (`chests/dragon_lair`).
+- **[Dragon lairs](../structures/dragon-lairs.md) and [frost lairs](../structures/frost-lairs.md):** half of all lairs have a second "chest" 2 blocks from the hoard, holding hoard loot (`chests/dragon_lair` or `chests/frost_lair`).
 - **[Dwarven fortresses](../structures/dwarven-fortresses.md):** 10% of chests (treasury, forge, barracks, mine) are mimics with that room's loot.
 - Mimic Spawn Egg in the mod's creative tab.
 

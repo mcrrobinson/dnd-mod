@@ -34,23 +34,26 @@ import software.bernie.geckolib.core.object.PlayState;
  * The dragon registers the two tracked values (they must be registered on the dragon's own class),
  * calls {@link #track} from initDataTracker and {@link #tick} every tick, and adds
  * {@link #createAnimationController}, which plays the model's "attack.breath" animation.
+ * <p>
+ * Subclasses change what the breath is made of ({@link FrostBreath}) by overriding {@link #hit},
+ * {@link #affectGround}, {@link #spawnParticles} and the sounds; the timing and cone stay the same.
  */
 public class FireBreath {
     public static final int WINDUP = 12;
     public static final int DURATION = 40;
     // Half-angle of the flame: a narrow jet that fans out a little towards the end, like a flamethrower
-    private static final double CONE_TAN = Math.tan(Math.toRadians(10.0));
+    protected static final double CONE_TAN = Math.tan(Math.toRadians(10.0));
     // How far the aim moves towards the target each tick while breathing (0..1)
     private static final float TRACKING = 0.12F;
 
-    private final TameableEntity dragon;
+    protected final TameableEntity dragon;
     private final DragonPart head;
     // Ticks left of the whole breath (wind-up + flame); 0 when not breathing
     private final TrackedData<Integer> ticksKey;
     // Unit vector the flame points along
     private final TrackedData<Vector3f> aimKey;
     public final double range;
-    private final float damage;
+    protected final float damage;
 
     public FireBreath(TameableEntity dragon, DragonPart head, TrackedData<Integer> ticksKey, TrackedData<Vector3f> aimKey,
             double range, float damage) {
@@ -91,7 +94,7 @@ public class FireBreath {
         this.dragon.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 2.0F, 1.4F);
     }
 
-    private Vec3d getAim() {
+    protected Vec3d getAim() {
         return new Vec3d(this.dragon.getDataTracker().get(this.aimKey));
     }
 
@@ -145,16 +148,43 @@ public class FireBreath {
 
         if (flame) {
             if (ticks == DURATION) {
-                this.dragon.playSound(SoundEvents.ITEM_FIRECHARGE_USE, 2.0F, 0.6F);
+                this.playStartSound();
             }
             if (ticks % 4 == 0) {
-                this.dragon.world.playSound(null, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(),
-                        SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.HOSTILE, 1.5F,
-                        0.5F + this.dragon.getRandom().nextFloat() * 0.2F);
+                this.playLoopSound();
             }
             this.burnCone();
         }
         this.dragon.getDataTracker().set(this.ticksKey, ticks - 1);
+    }
+
+    /** Played once as the flame starts. */
+    protected void playStartSound() {
+        this.dragon.playSound(SoundEvents.ITEM_FIRECHARGE_USE, 2.0F, 0.6F);
+    }
+
+    /** Played every 4 ticks while the flame pours out. */
+    protected void playLoopSound() {
+        this.dragon.world.playSound(null, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ(),
+                SoundEvents.ENTITY_BLAZE_SHOOT, SoundCategory.HOSTILE, 1.5F,
+                0.5F + this.dragon.getRandom().nextFloat() * 0.2F);
+    }
+
+    /** Something caught in the cone (damage cooldowns limit how often this lands). */
+    protected void hit(LivingEntity living) {
+        if (living.damage(this.dragon.getDamageSources().create(DamageTypes.IN_FIRE, this.dragon), this.damage)) {
+            living.setOnFireFor(5);
+        }
+    }
+
+    /** Where the flame meets a block, every 5 ticks with mobGriefing on: sometimes lights a fire. */
+    protected void affectGround(BlockHitResult hit) {
+        if (this.dragon.getRandom().nextInt(3) == 0) {
+            BlockPos firePos = hit.getBlockPos().offset(hit.getSide());
+            if (AbstractFireBlock.canPlaceAt(this.dragon.world, firePos, hit.getSide().getOpposite())) {
+                this.dragon.world.setBlockState(firePos, AbstractFireBlock.getState(this.dragon.world, firePos));
+            }
+        }
     }
 
     private void burnCone() {
@@ -168,20 +198,15 @@ public class FireBreath {
             if (this.isAlly(living) || !this.inCone(mouth, aim, living)) {
                 continue;
             }
-            if (living.damage(this.dragon.getDamageSources().create(DamageTypes.IN_FIRE, this.dragon), this.damage)) {
-                living.setOnFireFor(5);
-            }
+            this.hit(living);
         }
 
         // Scorch the ground where the flame lands
         if (this.dragon.age % 5 == 0 && this.dragon.world.getGameRules().getBoolean(GameRules.DO_MOB_GRIEFING)) {
             BlockHitResult hit = this.dragon.world.raycast(new RaycastContext(mouth, end,
                     RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.ANY, this.dragon));
-            if (hit.getType() == HitResult.Type.BLOCK && this.dragon.getRandom().nextInt(3) == 0) {
-                BlockPos firePos = hit.getBlockPos().offset(hit.getSide());
-                if (AbstractFireBlock.canPlaceAt(this.dragon.world, firePos, hit.getSide().getOpposite())) {
-                    this.dragon.world.setBlockState(firePos, AbstractFireBlock.getState(this.dragon.world, firePos));
-                }
+            if (hit.getType() == HitResult.Type.BLOCK) {
+                this.affectGround(hit);
             }
         }
     }
@@ -222,7 +247,7 @@ public class FireBreath {
                 && entity instanceof TameableEntity other && !other.isTamed();
     }
 
-    private void spawnParticles() {
+    protected void spawnParticles() {
         Vec3d mouth = this.getMouthPos();
         Vec3d aim = this.getAim();
         var random = this.dragon.getRandom();

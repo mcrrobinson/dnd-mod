@@ -167,6 +167,7 @@ public class DndClassesClient implements ClientModInitializer {
                 mattonfire.dnd.classes.Registry.ModBlocks.FAST_BREWING_STAND_BLOCK, net.minecraft.client.render.RenderLayer.getCutout());
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.FROST_DRAKE, mattonfire.dnd.client.renderer.FrostDrakeRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, mattonfire.dnd.client.renderer.EmberWyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BONE_WYVERN, mattonfire.dnd.client.renderer.BoneWyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, mattonfire.dnd.client.renderer.RiverPikehornRenderer::new);
@@ -303,6 +304,9 @@ public class DndClassesClient implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(
                 ModParticles.DRAGON_FLAME,
                 mattonfire.dnd.particle.DragonFlameParticle.Factory::new);
+        ParticleFactoryRegistry.getInstance().register(
+                ModParticles.DRAGON_FROST,
+                mattonfire.dnd.particle.DragonFlameParticle.FrostFactory::new);
 
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"),
                 (stack, world, entity, seed) -> {

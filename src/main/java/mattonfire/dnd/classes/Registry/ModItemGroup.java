@@ -100,6 +100,7 @@ public class ModItemGroup {
             entries.add(ModItems.BEHOLDER_SPAWN_EGG);
             entries.add(ModItems.WYVERN_SPAWN_EGG);
             entries.add(ModItems.LIGHTNING_CHASER_SPAWN_EGG);
+            entries.add(ModItems.FROST_DRAKE_SPAWN_EGG);
             entries.add(ModItems.RIVER_PIKEHORN_SPAWN_EGG);
             entries.add(ModItems.MAGMAMUNCHER_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARRIOR_SPAWN_EGG);

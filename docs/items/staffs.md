@@ -39,12 +39,13 @@ The Monk's Staff is the only weapon a [Monk](../classes/monk.md) can attack with
 None of the staffs can be crafted.
 
 - **Staff of Lightning:** a 15% drop (+5% per level of Looting) from a [Lightning Chaser](../mobs/dragons.md) killed by a player. Each chest in a [dragon lair](../structures/dragon-lairs.md) hoard also has a 25% chance to hold one.
+- **Staff of Ice:** a 15% drop (+5% per level of Looting) from a [Frost Drake](../mobs/dragons.md) killed by a player. Each chest in a [frost lair](../structures/frost-lairs.md) hoard on Frozen Peaks also has a 25% chance to hold one.
 - **All four:** the D&D Classes creative tab.
 
 ## Known limitations
 - Casting uses no durability. Melee hits wear the staff down like any diamond sword.
 - Mining the Staff of Ice's ice with Silk Touch gives you ice blocks.
-- The Staff of Fire and the Staff of Ice have no survival source yet.
+- The Staff of Fire has no survival source yet.
 
 ## For developers
 - `Items/ExtendedSwordItem`: staff behaviour by item id, `canWield` for the Wizard check, `BEAM_RANGE` and the cast and restore timings.

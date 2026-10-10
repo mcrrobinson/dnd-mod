@@ -1,6 +1,6 @@
 package mattonfire.dnd.entity.ai.goal;
 
-import mattonfire.dnd.entity.LightningChaserEntity;
+import mattonfire.dnd.entity.LairDragonEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -8,13 +8,13 @@ import net.minecraft.util.math.random.Random;
 
 import java.util.EnumSet;
 
-public class LightningChaserFlyRandomlyGoal extends Goal {
+public class LairDragonFlyRandomlyGoal extends Goal {
     /** How far it wanders from its lair before turning back. */
     private static final double LAIR_RANGE = 24.0;
 
-    private final LightningChaserEntity entity;
+    private final LairDragonEntity entity;
 
-    public LightningChaserFlyRandomlyGoal(LightningChaserEntity entity) {
+    public LairDragonFlyRandomlyGoal(LairDragonEntity entity) {
         this.entity = entity;
         this.setControls(EnumSet.of(Control.MOVE));
     }

@@ -25,6 +25,7 @@ public enum Bounty {
     GOBLIN_WARLORD("goblin_warlord", hunt("bounty/goblin_warlords"), 1, 16, Tier.MAJOR, 60, 150, 4),
     WYVERN_HUNT("wyvern_hunt", hunt("wyverns"), 1, 12, Tier.MAJOR, 50, 120, 6),
     STORM_DRAGON("storm_dragon", hunt("bounty/storm_dragons"), 1, 24, Tier.MAJOR, 100, 250, 2),
+    FROST_DRAKE("frost_drake", hunt("bounty/frost_drakes"), 1, 24, Tier.MAJOR, 100, 250, 2),
     SPIDERS("spiders", hunt("bounty/spiders"), 8, 5, Tier.MINOR, 20, 30, 10),
     BARROW_WIGHTS("barrow_wights", hunt("bounty/undead"), 15, 6, Tier.MINOR, 25, 40, 10),
     BRIGANDS("brigands", hunt("bounty/brigands"), 5, 10, Tier.MINOR, 30, 60, 6),

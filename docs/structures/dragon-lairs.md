@@ -12,9 +12,10 @@ The home of a [Lightning Chaser](../mobs/dragons.md), on the very summit of a mo
 
 ## Where to find it / How to get it
 - Jagged Peaks, Frozen Peaks, Stony Peaks. Structure set spacing 12 chunks, separation 4, and at least 6 chunks from dwarven fortresses (which share the peaks).
+- Frozen Peaks also have [frost lairs](frost-lairs.md), the Frost Drake's version in snow and ice, which keep at least 6 chunks from dragon lairs.
 
 ## Commands
 - `/locate structure dndclasses:dragon_lair`
 
 ## For developers
-- `world/gen/lair/` (`DragonLairStructure`, `LairPiece`, `LairRespawns` for the per-lair respawn timer). Devscripts: `dragon-lair-locate.txt`, `dragon-lair-survey.txt`, `lightning-chaser-lair-lookup.txt`.
+- `world/gen/lair/` (`DragonLairStructure`, `LairPiece`, `LairRespawns` for the per-lair respawn timer). Frost lairs are the same code with `LairPiece.Kind.FROST`. Devscripts: `dragon-lair-locate.txt`, `dragon-lair-survey.txt`, `lightning-chaser-lair-lookup.txt`.

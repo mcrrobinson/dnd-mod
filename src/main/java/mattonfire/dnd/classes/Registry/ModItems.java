@@ -545,6 +545,12 @@ public class ModItems {
         public static final Item ELF_FLETCHER_SPAWN_EGG = registerItem("elf_fletcher_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ELF_FLETCHER, 0x6B4E2E, 0x7FAF5A, new FabricItemSettings()));
 
+        public static final Item DRAGONBORN_TEMPLAR_SPAWN_EGG = registerItem("dragonborn_templar_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_TEMPLAR, 0x8E2A1E, 0xD4A73A, new FabricItemSettings()));
+
+        public static final Item DRAGONBORN_ELDER_SPAWN_EGG = registerItem("dragonborn_elder_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_ELDER, 0xC9A24A, 0x3A2A4A, new FabricItemSettings()));
+
         public static final Item MIMIC_SPAWN_EGG = registerItem("mimic_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MIMIC, 0xA0692B, 0x3A2A1A, new FabricItemSettings()));
 

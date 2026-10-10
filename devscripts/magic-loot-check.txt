@@ -1,0 +1,122 @@
+# Magic loot placement (docs/systems/magic-loot.md): rolls source tables and logs what came out.
+# timeout 300 ./gradlew runClient -PdevScript=devscripts/magic-loot-check.txt
+# Grep the log for 'slots of' and count names in a rarity colour / 'Unidentified'.
+wait 40
+closescreen
+/clear @s
+/gamerule sendCommandFeedback true
+# Beholder lair x20: one magic item per roll (Rare 40 / Very Rare 45 / Legendary 15), +4% Rod, +2% Eye
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+wait 5
+slots
+/clear @s
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+wait 5
+slots
+/clear @s
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+wait 5
+slots
+/clear @s
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+/loot give @s loot dndclasses:chests/beholder_lair
+wait 5
+slots
+/clear @s
+# Vanilla simple dungeon x30: 8% Uncommon (unidentified) + 2% Wand of Magic Missiles
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+wait 5
+slots
+/clear @s
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+wait 5
+slots
+/clear @s
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+/loot give @s loot minecraft:chests/simple_dungeon
+wait 5
+slots
+/clear @s
+# Major bounty x10: 35% magic item, identified (real name, not 'Unidentified ...')
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+/loot give @s loot dndclasses:gameplay/bounty_major
+wait 5
+slots
+/clear @s
+# Stronghold library x10: 20% Rare/Very Rare, 25% Scroll of Identify, 10% Scroll of Remove Curse
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+/loot give @s loot minecraft:chests/stronghold_library
+wait 5
+slots
+/clear @s
+# Tier tables: named items now appear among the +N gear
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+/loot give @s loot dndclasses:magic/rare
+wait 5
+slots
+quit

@@ -27,6 +27,8 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.loot.LootTable;
+import net.minecraft.loot.context.LootContextTypes;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -373,6 +375,19 @@ public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable
     @Override
     protected Identifier getLootTableId() {
         return this.loot != null ? this.loot : super.getLootTableId();
+    }
+
+    /** Every mimic's own magic on top of the chest loot: {@code entities/mimic_magic} (25% Uncommon, 10% Bag of Holding). */
+    public static final Identifier MAGIC_LOOT = new Identifier(DnDClasses.MOD_ID, "entities/mimic_magic");
+
+    @Override
+    protected void dropLoot(DamageSource source, boolean causedByPlayer) {
+        super.dropLoot(source, causedByPlayer);
+        if (this.world instanceof ServerWorld serverWorld) {
+            LootTable table = serverWorld.getServer().getLootManager().getTable(MAGIC_LOOT);
+            table.generateLoot(this.getLootContextBuilder(causedByPlayer, source).build(LootContextTypes.ENTITY),
+                    this::dropStack);
+        }
     }
 
     @Override

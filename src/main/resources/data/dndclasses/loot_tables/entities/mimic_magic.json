@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:entity",
+  "pools": [
+    {
+      "rolls": 1,
+      "conditions": [
+        {"condition": "minecraft:killed_by_player"},
+        {"condition": "minecraft:random_chance", "chance": 0.25}
+      ],
+      "entries": [
+        {"type": "minecraft:loot_table", "name": "dndclasses:magic/uncommon"}
+      ]
+    },
+    {
+      "rolls": 1,
+      "conditions": [
+        {"condition": "minecraft:killed_by_player"},
+        {"condition": "minecraft:random_chance", "chance": 0.1}
+      ],
+      "entries": [
+        {"type": "minecraft:item", "name": "dndclasses:bag_of_holding",
+         "functions": [{"function": "dndclasses:magic_item"}]}
+      ]
+    }
+  ]
+}

@@ -10,7 +10,8 @@ import net.minecraft.network.PacketByteBuf;
 /**
  * A player's final ability scores, proficiencies and roll bonuses, built by {@link AbilityScores} from
  * every registered {@link AbilityContributor}. The server computes it; the client gets a copy
- * ({@link #client}) for display, without the advantage filters (only their {@link #lines}).
+ * ({@link #client}) for display, without the advantage filters (only their {@link #lines}, plus stand-ins
+ * that give the same advantage on plain saves and passive checks).
  *
  * @param lines where each number comes from, for tooltips and {@code /dndclass sheet}
  */
@@ -88,7 +89,7 @@ public record CharacterSheet(DndCharacter dndClass, int level, int[] scores, int
     /** Passive score: 10 + check bonus, +5 with advantage, -5 with disadvantage. */
     public int passive(Skill skill) {
         int base = 10 + check(skill);
-        return switch (advantage(RollQuery.check(skill, "passive"))) {
+        return switch (advantage(RollQuery.check(skill, PASSIVE_TAG))) {
             case ADVANTAGE -> base + 5;
             case DISADVANTAGE -> base - 5;
             case NORMAL -> base;
@@ -129,7 +130,18 @@ public record CharacterSheet(DndCharacter dndClass, int level, int[] scores, int
             b.writeString(line.target());
             b.writeString(line.detail());
         });
+        // Advantage filters can't be sent, so send what they come to for the rolls the Character tab shows:
+        // each save, and each skill's passive score.
+        for (Ability a : Ability.values()) {
+            buf.writeEnumConstant(advantage(RollQuery.save(a)));
+        }
+        for (Skill s : Skill.values()) {
+            buf.writeEnumConstant(advantage(RollQuery.check(s, PASSIVE_TAG)));
+        }
     }
+
+    /** Tag of the query {@link #passive} uses. */
+    public static final String PASSIVE_TAG = "passive";
 
     public static CharacterSheet read(PacketByteBuf buf) {
         DndCharacter dndClass = buf.readEnumConstant(DndCharacter.class);
@@ -145,8 +157,24 @@ public record CharacterSheet(DndCharacter dndClass, int level, int[] scores, int
         int crit = buf.readVarInt();
         boolean reroll = buf.readBoolean();
         List<Line> lines = buf.readList(b -> new Line(b.readString(), b.readString(), b.readString()));
+        // Stand-ins for the server's advantage filters: plain saves and passive checks only.
+        List<AdvantageSource> advantages = new ArrayList<>();
+        for (Ability a : Ability.values()) {
+            synced(advantages, buf.readEnumConstant(Advantage.class), RollFilter.save(a)
+                    .and(q -> q.tags().isEmpty()));
+        }
+        for (Skill s : Skill.values()) {
+            synced(advantages, buf.readEnumConstant(Advantage.class), RollFilter.check(s)
+                    .and(RollFilter.tag(PASSIVE_TAG)));
+        }
         return new CharacterSheet(dndClass, level, scores, prof, saveProf, saveFlat, skillProf, skillFlat, checkFlat,
-                floor, crit, reroll, List.of(), lines);
+                floor, crit, reroll, List.copyOf(advantages), lines);
+    }
+
+    private static void synced(List<AdvantageSource> out, Advantage advantage, RollFilter filter) {
+        if (advantage != Advantage.NORMAL) {
+            out.add(new AdvantageSource(filter, advantage == Advantage.ADVANTAGE, "synced", "server"));
+        }
     }
 
     private static void writeProfs(PacketByteBuf buf, Proficiency[] profs) {

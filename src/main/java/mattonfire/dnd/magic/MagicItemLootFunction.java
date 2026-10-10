@@ -56,6 +56,14 @@ public class MagicItemLootFunction extends ConditionalLootFunction {
         return builder(conditions -> new MagicItemLootFunction(conditions, null, null, false, -1.0F, null));
     }
 
+    /**
+     * Marks an already-rolled magic item (e.g. from a {@code dndclasses:magic/<tier>} table entry) as identified, known
+     * goods: it keeps its tier and +N, a random curse is lifted, and a built-in curse is shown. Bounty rewards use it.
+     */
+    public static ConditionalLootFunction.Builder<?> identified() {
+        return builder(conditions -> new MagicItemLootFunction(conditions, null, null, true, -1.0F, null));
+    }
+
     static void register() {
         Registry.register(Registries.LOOT_FUNCTION_TYPE, new Identifier(DnDClasses.MOD_ID, "magic_item"), TYPE);
     }
@@ -78,9 +86,19 @@ public class MagicItemLootFunction extends ConditionalLootFunction {
      * (bounty rewards, known goods) is only cursed with an explicit chance, and its curse is known.
      */
     public static void rollCurse(ItemStack stack, float chance, boolean identified, Random random) {
-        if (stack.isEmpty() || !Curse.canCurse(stack) || !MagicData.curse(stack).isEmpty())
+        if (stack.isEmpty() || !Curse.canCurse(stack))
             return;
         MagicItemDef def = MagicItems.def(stack.getItem());
+        if (!MagicData.curse(stack).isEmpty()) {
+            // Already rolled (an outer function over a tier table): identified loot is known goods
+            if (identified) {
+                boolean fixed = def != null && Curse.byId(def.fixedCurse()) != null;
+                if (!fixed && chance < 0)
+                    MagicData.setCurse(stack, "");
+                MagicData.setCurseKnown(stack, true);
+            }
+            return;
+        }
         Curse curse = def != null ? Curse.byId(def.fixedCurse()) : null;
         if (curse == null) {
             if (identified && chance < 0)
@@ -101,6 +119,14 @@ public class MagicItemLootFunction extends ConditionalLootFunction {
         if (stack.isEmpty())
             return stack;
         MagicItemDef def = MagicItems.def(stack.getItem());
+        MagicTier stored = MagicData.storedTier(stack);
+        // No tier given and the stack already has one (an outer pass over a tier table): keep its tier and +N
+        if (tier == null && def == null && stored != null) {
+            if (plus != null && MagicGear.canHavePlus(stack.getItem()))
+                MagicData.setPlus(stack, Math.min(plus, MagicGear.MAX_PLUS));
+            MagicData.setIdentified(stack, identified);
+            return stack;
+        }
         MagicTier effective = tier != null ? tier : def != null ? def.tier() : MagicTier.UNCOMMON;
         if (tier != null || def == null)
             MagicData.setTier(stack, effective);

@@ -1,5 +1,5 @@
 # Racial homes
-Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md) and Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
+Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md) and Elves in [Elven Enclaves](../structures/elven-enclaves.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
 
 ![A Halfling arriving at the Green Dragon inn: "Welcome home, Halfling", the welcome basket in the hotbar and Regeneration from the hearth](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-homes/rh-halfling-welcome.png)
 
@@ -37,12 +37,22 @@ Once a second the mod checks where each player is. A player is in a settlement w
 
 **Gnomes** get the fortress's kin prices (the double barter roll) and start at 100 (Friendly) with the Mountain Dwarves. They get no welcome, hearth or kin trust there.
 
+### Elf: Elven Enclaves
+| Bonus | Value |
+|-|-|
+| Hearth | The Speaker's Hall up in the Heart Tree |
+| Kin prices | The Speaker's and the Fletcher's trades. For example, a Power III book costs 10 emeralds instead of 14, a Power bow 4 instead of 6, Moonwater 2 instead of 3, and the Fletcher buys 24 sticks instead of 32. |
+| Moonwater | Fill a glass bottle at the Moonwell at night for free Moonwater, once a night |
+| Kin trust | The first time each in-game day you break a block of the Heart Tree or a talan where an elf can see, you're let off with "The Warden frowns at you." Killing animals, fire and the Heart Tree chest are never forgiven. |
+| Standing | Sylvan Court: 150 (Friendly) |
+
 ### Human: vanilla villages
 The first time a Human opens a villager's trades, that villager gains 10 `minor_positive` gossip about them, which makes its trades a little cheaper. Each villager does this once per player. Villages have no hearth, welcome or kin trust.
 
 ## Where to find it
 - [Hobbit Villages](../structures/hobbit-villages.md): `/locate structure dndclasses:hobbit_village`
 - [Dwarven Fortresses](../structures/dwarven-fortresses.md): `/locate structure dndclasses:dwarven_fortress`
+- [Elven Enclaves](../structures/elven-enclaves.md): `/locate structure dndclasses:elven_enclave`
 
 ## Commands
 - `/dndhome [player]` (operators): which racial home the player is in, the piece under their feet, and whether it's their own home and hearth.
@@ -63,7 +73,7 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - `world/gen/RacialHomes`: the registry. A `Home` has the structure id, home race, extra price-kin races, faction id, hearth piece type and an optional first-visit gift. `homeAt(world, pos)` returns a `Visit` (home plus `StructureStart`, with `pieceAt` and `inHearth`), `ownHomeAt(player)` only for the home race, `isHearth(player)` (a Safe Haven hook for rests), and `homeOfMember(npc)` maps an NPC to its home through `Reputation.factionOf`. A new settlement registers one `Home`.
 - `world/gen/HomeBonuses`: the 1 s tick (welcome, first-visit gift, hearth), `giftCooldown` (used by `HobbitEntity`), `kingAudience` (used by `MountainDwarfEntity`, with an `onKingAudience` quest hook) and the Human villager gossip (`UseEntityCallback`, remembered as a `dndclasses.kin_greeted.<uuid>` command tag on the villager).
 - `entity/KinPrices`: the kin discount, a separate special-price modifier. `InnkeeperEntity.prepareOffersFor` clears the special prices, then each modifier adds its share, so other modifiers such as reputation tiers stack with it. `KinPrices.barter` is the double roll for barterers. It reads entry weights from the loot table's JSON and logs `[KinPrices] Kin barter for ...`.
-- `entity/SettlementGrudges` (was `DwarfGrudges`): per-settlement `Rules` (what's protected, witnesses, provoke, warn, kin-trust `judge`). `MOUNTAIN_DWARVES` keeps the old behaviour for everyone but Dwarves. `opened(player, pos)` is for containers opened another way (picked locks). `dailyWarning` stores the day in `DndKinTrust`. `D20.register()` must still run before `SettlementGrudges.register()`.
+- `entity/SettlementGrudges` (was `DwarfGrudges`): per-settlement `Rules` (what's protected, witnesses, provoke, warn, kin-trust `judge`). `MOUNTAIN_DWARVES` keeps the old behaviour for everyone but Dwarves; `SYLVAN_COURT` is the enclaves' Sylvan Law (`entity/SylvanLaw`), which adds the `HARM` and `FIRE` offences. `witness` logs `[Grudges] <rules> <offence> at <pos> by <player>: <n> witness(es), <verdict>`. `forgive` calms dwarves and Elf Wardens. `opened(player, pos)` is for containers opened another way (picked locks). `dailyWarning` stores the day in `DndKinTrust`. `D20.register()` must still run before `SettlementGrudges.register()`.
 - `world/gen/StructureProximity.near(context, set, radius)`: the "is another structure's start nearby" check, taken from `GoblinCampStructure`, for later settlements to reuse.
 - Player persistent data: `DndHomeBaskets` (start-chunk longs of visited settlements), `DndKingAudienceDay`, `DndKinTrust`.
 - DevScript `slots` also logs a trade screen's offers with their adjusted prices.

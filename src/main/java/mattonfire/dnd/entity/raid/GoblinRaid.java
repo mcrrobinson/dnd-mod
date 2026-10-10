@@ -521,9 +521,12 @@ public class GoblinRaid {
             }
         }
         // Dwarves rush out to meet the raiders.
-        if (this.kind == Settlement.Kind.FORTRESS && !goblins.isEmpty()) {
+        // (and Elf Wardens).
+        Class<? extends MobEntity> defenders = this.kind == Settlement.Kind.FORTRESS ? MountainDwarfEntity.class
+                : this.kind == Settlement.Kind.ENCLAVE ? mattonfire.dnd.entity.ElfWardenEntity.class : null;
+        if (defenders != null && !goblins.isEmpty()) {
             Box area = new Box(this.rally).expand(48.0D, 24.0D, 48.0D);
-            for (MountainDwarfEntity dwarf : world.getEntitiesByClass(MountainDwarfEntity.class, area,
+            for (MobEntity dwarf : world.getEntitiesByClass(defenders, area,
                     dwarf -> dwarf.isAlive() && dwarf.getTarget() == null)) {
                 MobEntity nearest = null;
                 double best = 32.0D * 32.0D;
@@ -612,7 +615,7 @@ public class GoblinRaid {
             ExperienceOrbEntity.spawn(world, player.getPos(), 40 + 20 * this.totalWaves);
             mattonfire.dnd.faction.FactionEvents.raidWon(player, world, new Identifier(DnDClasses.MOD_ID, this.kind.id),
                     mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
-            if (this.kind == Settlement.Kind.FORTRESS) {
+            if (this.kind == Settlement.Kind.FORTRESS || this.kind == Settlement.Kind.ENCLAVE) {
                 SettlementGrudges.forgive(player, this.rally, RADIUS);
             }
             if (advancement != null) {

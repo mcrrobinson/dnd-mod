@@ -15,7 +15,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.math.BlockPos;
 
 /**
- * /goblinraid start        raid the hobbit village or dwarven fortress nearest you (within ~128 blocks),
+ * /goblinraid start        raid the hobbit village, dwarven fortress or elven enclave nearest you (within ~128 blocks),
  *                          or the spot you're standing on if there isn't one
  * /goblinraid start here   raid the spot you're standing on
  * /goblinraid stop         call off the raid nearest you

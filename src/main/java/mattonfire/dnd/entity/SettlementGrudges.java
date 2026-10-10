@@ -44,7 +44,11 @@ import org.jetbrains.annotations.Nullable;
 public final class SettlementGrudges {
     /** What a player did to a protected block. */
     public enum Offence {
-        OPEN, BREAK
+        OPEN, BREAK,
+        /** Killing a creature the settlement protects (an enclave's animals). */
+        HARM,
+        /** Fire, lava or lit TNT. */
+        FIRE
     }
 
     /** How the guards take it. */
@@ -86,6 +90,8 @@ public final class SettlementGrudges {
 
     /** The mountain dwarves guarding their fortress's chests, barrels and gold. */
     public static final Rules MOUNTAIN_DWARVES = add(new DwarfRules());
+    /** The elves of the enclaves guarding their trees, animals and Heart Tree chest. */
+    public static final Rules SYLVAN_COURT = add(new SylvanLaw());
 
     private SettlementGrudges() {
     }
@@ -96,6 +102,7 @@ public final class SettlementGrudges {
     }
 
     public static void register() {
+        SylvanLaw.register();
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             // Sneaking with an item in hand places it against the chest instead of opening it
             boolean opens = !(player.shouldCancelInteraction() && !player.getStackInHand(hand).isEmpty());
@@ -135,6 +142,8 @@ public final class SettlementGrudges {
         }
         Verdict verdict = player instanceof ServerPlayerEntity serverPlayer
                 ? rules.judge(serverPlayer, pos, offence) : Verdict.GRUDGE;
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Grudges] {} {} at {} by {}: {} witness(es), {}", rules.id(), offence,
+                pos.toShortString(), player.getEntityName(), witnesses.size(), verdict);
         switch (verdict) {
             case TRUSTED -> {
             }
@@ -164,12 +173,13 @@ public final class SettlementGrudges {
         return Verdict.WARNING;
     }
 
-    /** Every dwarf within {@code range} of {@code pos} drops its grudge against {@code player}. */
+    /** Every settlement guard (dwarf or Elf Warden) within {@code range} of {@code pos} drops its grudge against {@code player}. */
     public static void forgive(PlayerEntity player, BlockPos pos, double range) {
-        for (MountainDwarfEntity dwarf : player.world.getEntitiesByClass(MountainDwarfEntity.class,
-                new Box(pos).expand(range), dwarf -> dwarf.isAlive())) {
-            if (dwarf.shouldAngerAt(player) || dwarf.getTarget() == player) {
-                dwarf.stopAnger();
+        for (MobEntity guard : player.world.getEntitiesByClass(MobEntity.class, new Box(pos).expand(range),
+                mob -> mob.isAlive() && (mob instanceof MountainDwarfEntity || mob instanceof ElfWardenEntity))) {
+            net.minecraft.entity.mob.Angerable angerable = (net.minecraft.entity.mob.Angerable) guard;
+            if (angerable.shouldAngerAt(player) || guard.getTarget() == player) {
+                angerable.stopAnger();
             }
         }
     }

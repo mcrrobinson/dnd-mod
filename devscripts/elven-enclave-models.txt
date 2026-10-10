@@ -1,0 +1,47 @@
+# Elf models and a Warden at work, on a glass platform high over the "Enclave A" test world (seed 1111).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/elven-enclave-models.txt "-PdevWorld=Enclave A"
+# Expect: ee-models shows the four elves with pointed ears; ee-bow-draw a Warden drawing on a zombie;
+# ee:zombie-hurt shows the helmeted zombie (which can't burn) below 20 health or gone.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 1224 156 -1312 0 40
+wait 200
+/fill 1214 149 -1310 1234 149 -1290 minecraft:glass
+/fill 1214 150 -1310 1234 154 -1290 minecraft:air
+/summon dndclasses:wood_elf 1221 150 -1300 {NoAI:1b,Tags:["eem"],Rotation:[180f,0f]}
+/summon dndclasses:elf_warden 1223 150 -1300 {NoAI:1b,Tags:["eem"],Rotation:[180f,0f]}
+/summon dndclasses:elf_speaker 1225 150 -1300 {NoAI:1b,Tags:["eem"],Rotation:[180f,0f]}
+/summon dndclasses:elf_fletcher 1227 150 -1300 {NoAI:1b,Tags:["eem"],Rotation:[180f,0f]}
+/tp @s 1224 151.2 -1304.5 0 10
+wait 40
+clearchat
+hud off
+screenshot ee-models
+/tp @s 1221.5 151.5 -1301.8 30 20
+wait 20
+screenshot ee-ears
+hud on
+/kill @e[tag=eem]
+/summon dndclasses:elf_warden 1216 150 -1300 {Tags:["eew"],Rotation:[-90f,0f]}
+/summon minecraft:zombie 1230 150 -1300 {Tags:["eez"],NoAI:1b,PersistenceRequired:1b,ArmorItems:[{},{},{},{id:"minecraft:iron_helmet",Count:1b}]}
+/tp @s 1222 153 -1306 -30 20
+clearchat
+wait 25
+hud off
+screenshot ee-bow-draw
+wait 10
+screenshot ee-bow-draw-2
+hud on
+wait 30
+/say ee:zombie-hurt
+/data get entity @e[tag=eez,limit=1] Health
+wait 200
+/say ee:zombie-later
+/execute if entity @e[tag=eez]
+/data get entity @e[tag=eez,limit=1] Health
+quit

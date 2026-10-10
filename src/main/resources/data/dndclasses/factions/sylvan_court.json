@@ -1,0 +1,20 @@
+{
+  "name": "faction.dndclasses.sylvan_court",
+  "color": "#8FCB9B",
+  "members": "#dndclasses:faction/sylvan_court",
+  "settlements": "#dndclasses:faction/sylvan_court",
+  "start": 0,
+  "start_by_race": {"dndclasses:elf": 150},
+  "rivals": {"dndclasses:goblins": -0.5},
+  "decay_per_day": 5,
+  "hit_member": -15,
+  "kill_member": -150,
+  "kill_member_overrides": {"dndclasses:elf_speaker": -500},
+  "enemy_kills": {"dndclasses:goblins": 1},
+  "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
+  "kill_cap": 30,
+  "raid_won": 60,
+  "trade": 1,
+  "trade_cap": 15,
+  "theft_witnessed": -40
+}

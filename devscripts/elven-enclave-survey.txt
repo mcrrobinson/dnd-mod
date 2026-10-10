@@ -1,0 +1,42 @@
+# Close-up survey of the elven enclave in the "Enclave A" test world (seed 1111: make the world from a
+# level.dat with that seed), Heart Tree at 1224 73 -1368. Screenshots of the canopy from above, the trees
+# and bridges from four sides, the Speaker's Hall, the bridge deck and the foot of the tree, then counts of
+# the elves and of any zombies or skeletons within 64 blocks ("Test passed/failed" in latest.log).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/elven-enclave-survey.txt "-PdevWorld=Enclave A"
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/tp @s 1224 133 -1368 0 90
+wait 300
+hud off
+screenshot ee-A-c-top
+/tp @s 1250 97 -1342 135 20
+wait 100
+screenshot ee-A-c-side1
+/tp @s 1198 97 -1394 -45 20
+wait 100
+screenshot ee-A-c-side2
+/tp @s 1250 83 -1394 45 -5
+wait 100
+screenshot ee-A-c-side3
+/tp @s 1224 97 -1363 180 30
+wait 60
+screenshot ee-A-c-hall
+/tp @s 1229 91 -1368 90 10
+wait 60
+screenshot ee-A-c-deck
+/tp @s 1236 75 -1356 135 -10
+wait 60
+screenshot ee-A-c-base
+hud on
+/execute positioned 1224 73 -1368 run say ee:count
+/execute positioned 1224 73 -1368 if entity @e[type=dndclasses:elf_warden,distance=..64]
+/execute positioned 1224 73 -1368 if entity @e[type=dndclasses:wood_elf,distance=..64]
+/execute positioned 1224 73 -1368 if entity @e[type=dndclasses:elf_speaker,distance=..64]
+/execute positioned 1224 73 -1368 if entity @e[type=dndclasses:elf_fletcher,distance=..64]
+/execute positioned 1224 73 -1368 if entity @e[type=#minecraft:skeletons,distance=..64]
+/execute positioned 1224 73 -1368 if entity @e[type=minecraft:zombie,distance=..64]
+quit

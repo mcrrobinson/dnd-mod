@@ -2,6 +2,8 @@ package mattonfire.dnd.entity.raid;
 
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
+import mattonfire.dnd.world.gen.enclave.MoonwellPiece;
 import mattonfire.dnd.world.gen.fortress.GatePiece;
 import mattonfire.dnd.world.gen.village.VillageGreenPiece;
 import net.minecraft.registry.Registry;
@@ -19,7 +21,7 @@ import net.minecraft.world.gen.structure.Structure;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A place goblins raid: a hobbit village, a dwarven fortress, or (for /goblinraid start here)
+ * A place goblins raid: a hobbit village, a dwarven fortress, an elven enclave, or (for /goblinraid start here)
  * just a spot in the world.
  *
  * @param key     identifies the settlement for raid cooldowns (its structure start chunk)
@@ -30,6 +32,7 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
     public enum Kind {
         VILLAGE("hobbit_village"),
         FORTRESS("dwarven_fortress"),
+        ENCLAVE("elven_enclave"),
         WILDS("wilds");
 
         public final String id;
@@ -72,7 +75,8 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
         Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
         Structure village = registry.get(HOBBIT_VILLAGE);
         Structure fortress = registry.get(DWARVEN_FORTRESS);
-        if (village == null && fortress == null) {
+        Structure enclave = registry.get(ElvenEnclaveStructures.KEY);
+        if (village == null && fortress == null && enclave == null) {
             return Optional.empty();
         }
         ChunkPos center = new ChunkPos(pos);
@@ -84,7 +88,7 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
                     continue;
                 }
                 for (StructureStart start : world.getStructureAccessor().getStructureStarts(new ChunkPos(x, z),
-                        structure -> structure == village || structure == fortress)) {
+                        structure -> structure == village || structure == fortress || structure == enclave)) {
                     if (!start.hasChildren() || !reaches(start.getBoundingBox(), pos, margin)) {
                         continue;
                     }
@@ -99,7 +103,9 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
         if (best == null) {
             return Optional.empty();
         }
-        return Optional.of(of(best, best.getStructure() == fortress ? Kind.FORTRESS : Kind.VILLAGE));
+        Kind kind = best.getStructure() == fortress ? Kind.FORTRESS
+                : best.getStructure() == enclave ? Kind.ENCLAVE : Kind.VILLAGE;
+        return Optional.of(of(best, kind));
     }
 
     private static boolean reaches(BlockBox box, BlockPos pos, int margin) {
@@ -121,6 +127,9 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
                 BlockBox box = piece.getBoundingBox();
                 rally = new BlockPos(box.getCenter().getX(), box.getMinY() + 1, box.getCenter().getZ());
                 outward = piece.getFacing().getOpposite();
+            } else if (kind == Kind.ENCLAVE && piece instanceof MoonwellPiece moonwell) {
+                // The elves rally to the Moonwell; stand on its rim.
+                rally = moonwell.origin().add(MoonwellPiece.RIM, 1, 0);
             }
         }
         if (rally == null) {

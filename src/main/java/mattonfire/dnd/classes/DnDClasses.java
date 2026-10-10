@@ -209,6 +209,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
+                mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures.register();
+                mattonfire.dnd.world.gen.enclave.Moonwell.register();
                 // Before SettlementGrudges: a failed lockpick stops the chest opening, so the dwarves see nothing
                 mattonfire.dnd.classes.Abilities.AbilityScores.bootstrap();
                 mattonfire.dnd.classes.SkillChecks.D20.register();

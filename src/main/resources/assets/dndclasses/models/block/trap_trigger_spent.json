@@ -1,0 +1,21 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "dndclasses:block/trap_trigger_spent",
+    "tile": "dndclasses:block/trap_trigger_spent"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 15, 16],
+      "faces": {
+        "down": {"uv": [0, 0, 16, 16], "texture": "#tile", "cullface": "down"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#tile"},
+        "north": {"uv": [0, 1, 16, 16], "texture": "#tile", "cullface": "north"},
+        "south": {"uv": [0, 1, 16, 16], "texture": "#tile", "cullface": "south"},
+        "west": {"uv": [0, 1, 16, 16], "texture": "#tile", "cullface": "west"},
+        "east": {"uv": [0, 1, 16, 16], "texture": "#tile", "cullface": "east"}
+      }
+    }
+  ]
+}

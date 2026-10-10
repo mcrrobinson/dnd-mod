@@ -1,7 +1,7 @@
 # Dungeons
 Underground adventure sites for a party: an entrance on the surface, a spiral stair down, and 11-13 rooms on a planned route to a boss and its treasure vault. Each dungeon has a name ("The Barrow of Ashmoor") and a Challenge tier (I-IV) that rises with distance from spawn.
 
-This page covers the framework and the first theme, the **Crypt**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); loot and the Hoard Coffer are on [Dungeon loot](../systems/dungeon-loot.md); traps, the puzzle and class gates arrive in later Dungeons tickets.
+This page covers the framework and the first theme, the **Crypt**. Room fights, seals, the champion and the boss are on [Dungeon encounters](../systems/dungeon-encounters.md); loot and the Hoard Coffer are on [Dungeon loot](../systems/dungeon-loot.md); traps are on [Dungeon traps](../systems/dungeon-traps.md); the puzzle and class gates arrive in later Dungeons tickets.
 
 ## How it works
 - **Layout**: a 7x7 grid of 16x16 cells (112x112 blocks, one chunk per cell) centred on the structure's start chunk. The entrance is the middle cell; a random walk from it lays out the main path, in this order:
@@ -11,7 +11,7 @@ This page covers the framework and the first theme, the **Crypt**. Room fights, 
 | 0 | Entrance: 7x7 spiral-stair shaft from the surface | 7x7 | to the surface |
 | 1 | Antechamber (safe room, cold campfire) | 13x13 | 5 |
 | 2 | Encounter (small) | 13x13 | 6 |
-| 3 | Trap corridor (walked straight through, empty for now) | 7x16 | 4 |
+| 3 | Trap corridor (walked straight through, 3-5 [traps](../systems/dungeon-traps.md)) | 7x16 | 4 |
 | 4 | Encounter (large) | 15x15 | 7 |
 | 5 | Class-check gate (wall across the room with an open 3-wide gateway, walked straight through) | 11x11 | 5 |
 | 6 | Puzzle room (four empty plinths) | 15x15 | 7 |
@@ -58,7 +58,7 @@ Crypts generate under plains, sunflower plains, meadows, forests, flower forests
 - `/dungeon cutaway`: for screenshots: removes everything from 3 blocks above the floor up to the sky over the dungeon. Destructive.
 
 ## Known limitations
-- No traps, puzzle or class gates yet.
+- No puzzle or class gates yet.
 - A dungeon made with `/place structure` plays no dungeon music (vanilla `/place` doesn't record a structure start), but its wards and `/dungeon` commands work.
 - Only the Crypt theme exists. The Goblin Warren and Dwarven Ruin are placeholders in `DungeonTheme`.
 - Trees growing over the entrance can leave a canopy over the shaft (trunks are cleared out of it up to 7 blocks above the ground).

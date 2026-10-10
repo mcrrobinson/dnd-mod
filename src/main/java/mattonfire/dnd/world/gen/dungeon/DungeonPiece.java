@@ -442,6 +442,9 @@ public abstract class DungeonPiece extends StructurePiece {
             if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
                 container.setLootTable(lootTable, lootSeed);
             }
+            if (DungeonPiece.this.info.tier() >= 2 && this.chance(TrapCorridorPiece.NEEDLE_CHANCE)) {
+                TrapCorridorPiece.needle(DungeonPiece.this, this, x, y, z);
+            }
         }
 
         /** The vault's Hoard Coffer, tied to this dungeon (see HoardCofferBlockEntity). */

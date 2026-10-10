@@ -37,6 +37,10 @@ public class ModDamageTypes {
     public static final RegistryKey<DamageType> HAILSTONE = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
             new Identifier(DnDClasses.MOD_ID, "hailstone"));
 
+    /** Dungeon traps: flame vents and poison needles. */
+    public static final RegistryKey<DamageType> TRAP = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "trap"));
+
     public static DamageSource of(World world, RegistryKey<DamageType> key, Entity attacker) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key), attacker);
     }

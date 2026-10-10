@@ -219,6 +219,7 @@ public final class Lockpicking {
         }
 
         boolean fumble = roll.outcome() == D20.Outcome.FUMBLE;
+        TrapDisarm.lockFailed(world, pos, other, player);
         RETRY_AT.put(player.getUuid(), now + (fumble ? FUMBLE_COOLDOWN_TICKS : FAIL_COOLDOWN_TICKS));
         D20.show(player, roll, Text.translatable(fumble
                 ? "skill.dndclasses.lockpicking.fumble"
@@ -241,6 +242,7 @@ public final class Lockpicking {
                 || lockedTableAt(world, pos) == null) {
             return true;
         }
+        TrapDisarm.lockForced(world, pos, player);
         chest.checkLootInteraction(player);
         int ruined = 0;
         for (int i = 0; i < chest.size(); i++) {

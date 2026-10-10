@@ -46,6 +46,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion and the Lich boss in dungeons
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
+- [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, spotting, Rogue disarming and re-arming on reset
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn; DEX saves against breath and storms

@@ -40,6 +40,8 @@ public class DungeonState {
     private long clearedAt = -1L;
     private int clears;
     private long lastOccupied;
+    /** How many times it has been reset; traps re-arm when this moves past the count they were spent at. */
+    private int resets;
     private final Set<UUID> visitors = new HashSet<>();
     /** Day clock ({@code getTimeOfDay}) at the last clear, or -1: repopulation counts on either clock. */
     private long clearedAtDay = -1L;
@@ -154,6 +156,11 @@ public class DungeonState {
         return this.lastOccupied;
     }
 
+    /** Bumped by every {@link #reset()}: anything spent since the last reset (traps) comes back. */
+    public int resets() {
+        return this.resets;
+    }
+
     /** Day clock ({@code getTimeOfDay}) at the last clear, or -1. */
     public long clearedAtDay() {
         return this.clearedAtDay;
@@ -228,6 +235,7 @@ public class DungeonState {
         }
         this.bossDefeated = false;
         this.clearedAt = -1L;
+        this.resets++;
         this.clearedAtDay = -1L;
         this.changed();
     }
@@ -269,6 +277,7 @@ public class DungeonState {
         nbt.putLong("ClearedAt", this.clearedAt);
         nbt.putInt("Clears", this.clears);
         nbt.putLong("LastOccupied", this.lastOccupied);
+        nbt.putInt("Resets", this.resets);
         NbtList rooms = new NbtList();
         for (Room room : this.rooms) {
             NbtCompound r = new NbtCompound();
@@ -312,6 +321,7 @@ public class DungeonState {
         state.clearedAt = nbt.getLong("ClearedAt");
         state.clears = nbt.getInt("Clears");
         state.lastOccupied = nbt.getLong("LastOccupied");
+        state.resets = nbt.getInt("Resets");
         NbtList visitors = nbt.getList("Visitors", net.minecraft.nbt.NbtElement.INT_ARRAY_TYPE);
         for (int i = 0; i < visitors.size(); i++) {
             state.visitors.add(NbtHelper.toUuid(visitors.get(i)));

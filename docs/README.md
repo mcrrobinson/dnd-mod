@@ -12,13 +12,13 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Monk](classes/monk.md): triple jump and fast fists; staff or fists only; Flurry Rush blink-strike special
 - [Paladin](classes/paladin.md): protective auras, Divine Judgment beams and a Circle of Healing; no potions, crafting or brewing; weak in the Nether
 - [Ranger](classes/ranger.md): instant bow draw and an ammo-free Arrow Storm that scales with its rank
-- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense
-- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern
-- [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water
-- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks
-- [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments
-- [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs
-- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant
+- [Rogue](classes/rogue.md): no hunger or poison; turns invisible (longer with each rank) and dodges projectiles with Danger Sense; subclass features (PR #137)
+- [Necromancer](classes/necromancer.md): undead ignore you; Raise Dead ranks up to more, stronger undead and a Bone Wyvern; subclass features (PR #137)
+- [Warlock](classes/warlock.md): empty-hand fireballs, fireproof, fire breath; hurt by water; subclass features (PR #137)
+- [Wizard](classes/wizard.md): 10 HP glass cannon with a self-centred explosion that grows with ranks; subclass features (PR #137)
+- [Artificer](classes/artificer.md): auto-enchants crafted gear, the only one to roll mod enchantments; subclass features (PR #137)
+- [Blood Hunter](classes/blood-hunter.md): burning swords, strong at night, possesses mobs; subclass features (PR #137)
+- [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant; subclass features (PR #137)
 
 ## Races
 - [Races](races/races.md): the race picker (before the class), 8 races with stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule

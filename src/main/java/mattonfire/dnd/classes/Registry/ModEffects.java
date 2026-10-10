@@ -23,6 +23,7 @@ public class ModEffects {
     public static StatusEffect ANTI_MAGIC;
     public static StatusEffect FRIGHTENED;
     public static StatusEffect DANGER_SENSE;
+    public static StatusEffect WELL_RESTED;
 
     public static StatusEffect registerStatusEffect(String name, StatusEffect effect) {
         return Registry.register(Registries.STATUS_EFFECT, new Identifier(DnDClasses.MOD_ID, name),
@@ -44,5 +45,8 @@ public class ModEffects {
         // Rogue: projectiles miss (ProjectileEntityMixin)
         DANGER_SENSE = registerStatusEffect("danger_sense",
                 new DangerSenseEffect(StatusEffectCategory.BENEFICIAL, 0x9FB4C8));
+        // Tavern rooms: a temporary charge (TavernRooms)
+        WELL_RESTED = registerStatusEffect("well_rested",
+                new mattonfire.dnd.classes.Effects.WellRestedEffect(StatusEffectCategory.BENEFICIAL, 0xF2D27A));
     }
 }

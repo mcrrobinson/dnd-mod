@@ -59,7 +59,7 @@ Temples are the Dragonborn home. A Dragonborn gets:
 ## Where to find it
 Jagged Peaks, Stony Peaks, Frozen Peaks, Snowy Slopes and Groves. Temples use a spacing of 20 chunks and a separation of 7, and only generate:
 
-- where a dragon lair or frost lair really generates (its own peak check passes) within 10 chunks of the temple's start chunk, so every temple has a lair nearby
+- where a dragon lair or frost lair really generates (its own peak check passes, and its grid slot isn't in the lair set's exclusion zone, e.g. dragon lairs within 6 chunks of a dwarven fortress grid slot) within 10 chunks of the temple's start chunk, so every temple has a lair nearby
 - at least 4 chunks from any dwarven fortress that really generates
 - on a slope: a stair foot with open ground below it, and the ground under the terrace 6-18 blocks higher on average, within 12 blocks above or 14 below the terrace floor everywhere
 

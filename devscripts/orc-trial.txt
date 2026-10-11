@@ -7,6 +7,8 @@
 # - after /dndhome trialreset: "started" again, and "... won the Trial ... (champion yielded)" after the
 #   Champion takes /damage 60; "Blood and Thunder" in chat; the Orcish Greataxe in the slots dump
 # - screenshots trial-bar (the duel bar), trial-lost, trial-won
+# - each drum "use" logs "use -> block minecraft:note_block": /dndhome stronghold pit aims at the drum's near
+#   face (aiming at its middle from the pit floor hit the hay bale under it)
 wait 40
 closescreen
 /gamemode survival

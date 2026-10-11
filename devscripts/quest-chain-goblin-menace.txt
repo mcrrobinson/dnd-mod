@@ -15,6 +15,8 @@ closescreen
 wait 10
 closescreen
 /kill @e[tag=qc]
+# A dying NPC can still be clicked for 20 ticks: let NPCs left by an earlier chain script finish dying
+wait 25
 /fill -4 149 -4 4 149 4 minecraft:glass
 /clear @s
 /quest admin @s reset dndclasses:goblin_menace/1

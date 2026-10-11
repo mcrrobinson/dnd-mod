@@ -101,6 +101,9 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     @Nullable
     private UUID angryAt;
     private int barterCooldown;
+    /** Game time this dwarf was last saved (0 if unknown), read back on load for {@link FortressForgiveness}. */
+    private long savedAt;
+    private boolean checkForgiveness;
 
     public MountainDwarfEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -256,7 +259,24 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
             this.barterCooldown--;
         }
         if (!this.world.isClient) {
+            if (this.checkForgiveness) {
+                this.checkForgiveness = false;
+                this.applyForgiveness((ServerWorld) this.world);
+            }
             this.tickAngerLogic((ServerWorld) this.world, true);
+        }
+    }
+
+    /**
+     * Just loaded: drop a grudge held when this dwarf was saved against a player its fortress has forgiven
+     * since (a Dwarven Ruin cleared while the fortress was unloaded).
+     */
+    private void applyForgiveness(ServerWorld world) {
+        UUID grudge = this.getAngryAt();
+        if (grudge != null && FortressForgiveness.get(world).forgivenSince(this.getBlockPos(), grudge, this.savedAt)) {
+            this.stopAnger();
+            DnDClasses.LOGGER.info("[Grudges] {} at {} forgives {} (its fortress was told while it was unloaded)",
+                    this.getName().getString(), this.getBlockPos().toShortString(), grudge);
         }
     }
 
@@ -393,6 +413,7 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("Variant", this.getVariant());
         this.writeAngerToNbt(nbt);
+        nbt.putLong("DndSavedAt", this.world.getTime());
         if (this.home != null) {
             nbt.put("Home", NbtHelper.fromBlockPos(this.home));
         }
@@ -403,6 +424,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         super.readCustomDataFromNbt(nbt);
         this.dataTracker.set(VARIANT, Math.floorMod(nbt.getInt("Variant"), VARIANTS));
         this.readAngerFromNbt(this.world, nbt);
+        this.savedAt = nbt.getLong("DndSavedAt");
+        this.checkForgiveness = true;
         if (nbt.contains("Home")) {
             this.setHome(NbtHelper.toBlockPos(nbt.getCompound("Home")));
         }

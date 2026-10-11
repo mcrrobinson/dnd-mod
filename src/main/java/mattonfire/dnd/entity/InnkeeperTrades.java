@@ -50,6 +50,11 @@ final class InnkeeperTrades {
         }
     }
 
+    /** Honored with the hobbits: a round of 3 ale for 1 emerald (the innkeeper adds a cake on the house). */
+    static TradeOffer honoredRound() {
+        return sell(1, Tavern.ALE, 3);
+    }
+
     static boolean isRoomKey(TradeOffer offer) {
         return offer.getSellItem().isOf(Tavern.ROOM_KEY);
     }

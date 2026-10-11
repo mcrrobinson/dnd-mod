@@ -134,6 +134,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
 
         this.targetSelector.add(1, new RevengeGoal(this).setGroupRevenge());
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
+        // Exalted with the dwarves: they fight at your side.
+        this.targetSelector.add(2, new mattonfire.dnd.entity.ai.goal.DwarfFriendGoal(this));
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, MobEntity.class, 5, true, false,
                 entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)
                         // A sleeping mimic passes for a chest, even to a dwarf.
@@ -288,6 +290,21 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
             if (!this.world.isClient) {
                 this.getLookControl().lookAt(player);
                 HomeBonuses.kingAudience((ServerPlayerEntity) player, this);
+            }
+            return ActionResult.success(this.world.isClient);
+        }
+        // Exalted with the dwarves: sneak + right-click holding an unidentified magic item, and they name it free.
+        if (hand == Hand.MAIN_HAND && player.isSneaking() && mattonfire.dnd.magic.Identify.isUnidentified(stack)) {
+            if (!this.world.isClient) {
+                this.getLookControl().lookAt(player);
+                if (this.getTarget() == null && TierEffects.dwarfFriend(TierEffects.tierWith(player, this))) {
+                    mattonfire.dnd.magic.Identify.reveal((ServerPlayerEntity) player, stack, "dwarf");
+                    this.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, this.getSoundPitch());
+                } else {
+                    player.sendMessage(Text.translatable("entity.dndclasses.mountain_dwarf.no_identify",
+                            this.getDisplayName()).formatted(net.minecraft.util.Formatting.GRAY), true);
+                    this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch());
+                }
             }
             return ActionResult.success(this.world.isClient);
         }

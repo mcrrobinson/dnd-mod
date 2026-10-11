@@ -444,6 +444,7 @@
     "study.dndclasses.insight.mood.hostile": "hostile",
     "study.dndclasses.insight.persuaded": "You've already tried to persuade it today",
     "study.dndclasses.insight.persuadable": "It would hear you out today",
+    "study.dndclasses.insight.unpersuadable": "It has no trade, so there's nothing to talk it into",
     "study.dndclasses.insight.grudge": "It holds a grudge against you",
     "study.dndclasses.insight.no_grudge": "It holds no grudge against you",
     "perception.dndclasses.mimic_tell": "That chest just... breathed.",

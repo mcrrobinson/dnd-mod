@@ -163,4 +163,9 @@ public final class BloodSealType extends ObstacleType {
             world.playSound(null, pos, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0f, 0.6f);
         }
     }
+
+    @Override
+    public List<String> progressKeys() {
+        return List.of(PAID_KEY);
+    }
 }

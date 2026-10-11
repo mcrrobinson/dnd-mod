@@ -133,7 +133,7 @@ For all of them, the entrance has to be on dry land, and at most 2 of the 25 gro
 - `/place structure dndclasses:crypt` (or `dndclasses:goblin_warren`, `dndclasses:dwarven_ruin`) builds one at your chunk, if the ground there passes the checks above ("Failed to place structure" otherwise).
 - `/dungeon info`: the dungeon you're in or standing over: name, theme, tier, entrance, floor level, bounds, whether it's cleared, and every room with its state. Op level 2, like the rest.
 - `/dungeon clear`: marks it cleared (boss defeated, every room cleared).
-- `/dungeon reset`: repopulates it now: every room back to untouched and the boss available again (Hoard Coffer claims stay).
+- `/dungeon reset`: repopulates it now: every room back to untouched (class-check gates reseal and forget potions thrown or health paid towards them) and the boss available again (Hoard Coffer claims stay).
 - `/dungeon tier <1-4>`: changes its tier.
 - `/dungeon trigger <room>`: starts that room's fight now (see [Dungeon encounters](../systems/dungeon-encounters.md)).
 - `/dungeon cutaway`: for screenshots: removes everything from 3 blocks above the floor up to the sky over the dungeon. Destructive.

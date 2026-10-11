@@ -7,7 +7,7 @@ Every hold is a circle round its Fighting Pit, turned so its gate faces one of t
 | Piece | What it is |
 |-|-|
 | Palisade | Radius 22. Dark oak and stripped dark oak logs 4 high, most topped with pointed dripstone stakes, a torch here and there, patched with red terracotta and blackstone. The floor inside is coarse dirt, red sand, packed mud, terracotta and gravel, with a packed-mud road out of the gate. |
-| Gatehouse | Two 9-high watchtowers of dark oak, 4 blocks either side of a 5-wide gate. A ladder runs up the inside of each to a 5x5 archer platform with a rail. The gate's lintel is lined with skulls (a wither skeleton skull in the middle) and hung with lanterns. Red war banners with a black skull and border hang on both towers, inside and out. |
+| Gatehouse | Two 9-high watchtowers of dark oak, 4 blocks either side of a 5-wide gate. A ladder runs up the inside of each to a 5x5 archer platform. Its fence rail has a one-block gap in the middle of each side (the inside gap is the ladder hole), where the archer steps up to shoot down. The gate's lintel is lined with skulls (a wither skeleton skull in the middle) and hung with lanterns. Red war banners with a black skull and border hang on both towers, inside and out. |
 | Great Longhouse (hearth) | 21 by 11 at the back of the hold, its door facing the pit. Spruce plank walls on dark oak posts under an A-frame roof of spruce and dark oak stairs. Inside: a campfire in a blackstone fire pit, log benches, four war drums (note blocks on hay), lanterns hung from the ridge, a trophy wall of 12 mob heads on the back wall, and the **War Chief's seat**: a blackstone throne between two gold blocks on a polished blackstone dais, with a gold block, a wither skeleton skull and two war banners behind it. The **hoard** chest stands beside the seat. |
 | Fighting Pit | In the middle. Round, radius 7, sunk 3 blocks, a sand floor, mud-brick walls and a dark oak fence round the rim, with mud-brick steps down on the gate side. The **war drum** stands on the far rim: a note block on a hay bale under a red banner. |
 | Smithy | On one side of the pit: an open-sided shed (8 by 11) under a dark oak slab roof. A polished blackstone forge wall with a blast furnace and a furnace, a channel of lava behind iron bars, an anvil, a grindstone, a smithing table, the armoury chest and a barrel. |
@@ -73,7 +73,7 @@ Badlands, Wooded Badlands and Eroded Badlands. Strongholds use a spacing of 28 c
 ## Known limitations
 - Only one Trial can run at a hold at a time, and a duel in progress is lost if the server stops (the Champion leaves when the hold loads again).
 - Blood-Sworn is per hold, so a Blood-Sworn player's party is only safe near them at that hold.
-- The archers on the towers hold their post and only shoot what they can see within 16 blocks.
+- The archers on the towers hold their post and only shoot what they can see within 16 blocks. From the middle of the platform the planks hide the ground near the tower, so an archer counts a target as seen when any spot within 3 blocks of its post has a clear line to it, and walks to that spot (usually a gap in the rail) to shoot. Archers standing in a gap can be knocked off the tower.
 - A tall hoodoo or mesa wall that reaches past 32 blocks above the floor is cut off flat, and steep edges outside the clearing are left as they are.
 - Natural spawns only top up warriors, not archers.
 

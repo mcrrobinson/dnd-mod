@@ -178,6 +178,26 @@ public class ModEntityTypes {
     /** The Orc War Chief, a stronghold's boss: 1.25x tall, 1.3x wide. */
     public static final EntityType<OrcWarChiefEntity> ORC_WAR_CHIEF = orc("orc_war_chief", OrcWarChiefEntity::new, 0.78f, 2.25f);
 
+    /** A Tiefling Exile of a Brimstone Sanctum: the player model with horns and a tail. Fire immune. */
+    public static final EntityType<TieflingExileEntity> TIEFLING_EXILE = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "tiefling_exile"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, TieflingExileEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .fireImmune()
+                    .build()
+    );
+
+    /** The Pactbroker of a Brimstone Sanctum, in the Pact Hall. Fire immune. */
+    public static final EntityType<TieflingPactbrokerEntity> TIEFLING_PACTBROKER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "tiefling_pactbroker"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, TieflingPactbrokerEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .fireImmune()
+                    .build()
+    );
+
     private static <T extends OrcEntity> EntityType<T> orc(String name, EntityType.EntityFactory<T> factory, float width, float height) {
         return Registry.register(Registries.ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, name),
                 FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, factory)
@@ -264,6 +284,8 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(ELF_FLETCHER, ElfMerchantEntity.createFletcherAttributes());
         FabricDefaultAttributeRegistry.register(DRAGONBORN_TEMPLAR, DragonbornTemplarEntity.createTemplarAttributes());
         FabricDefaultAttributeRegistry.register(DRAGONBORN_ELDER, DragonbornElderEntity.createElderAttributes());
+        FabricDefaultAttributeRegistry.register(TIEFLING_EXILE, TieflingExileEntity.createExileAttributes());
+        FabricDefaultAttributeRegistry.register(TIEFLING_PACTBROKER, TieflingPactbrokerEntity.createPactbrokerAttributes());
         FabricDefaultAttributeRegistry.register(ORC_WARRIOR, OrcWarriorEntity.createOrcWarriorAttributes());
         FabricDefaultAttributeRegistry.register(ORC_ARCHER, OrcArcherEntity.createOrcArcherAttributes());
         FabricDefaultAttributeRegistry.register(ORC_QUARTERMASTER, OrcQuartermasterEntity.createOrcQuartermasterAttributes());

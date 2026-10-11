@@ -31,6 +31,9 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Orc stronghold](../structures/orc-strongholds.md) yurt chests (`chests/orc_stronghold_yurt`) | 5%: Uncommon | |
 | Orc stronghold armoury (`chests/orc_stronghold_armory`) | 15%: Uncommon (75) / Rare (25) | |
 | Orc stronghold hoard (`chests/orc_stronghold_hoard`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | |
+| [Brimstone sanctum](../structures/brimstone-sanctums.md) Refuge and market (`chests/brimstone_sanctum_refuge`, `_market`) | 5%: Uncommon | |
+| Brimstone sanctum den (`chests/brimstone_sanctum_den`) | 12%: Uncommon (80) / Rare (20) | |
+| Brimstone sanctum offering chest (`chests/brimstone_sanctum_altar`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | |
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
 | [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md), [Orc War Chief](../bosses/orc-war-chief.md) (player kill) | 50%: Rare | their trophies (boss drops) |
 | [Lich](../bosses/lich.md) (final kill), [Beholder](../bosses/beholder.md) (player kill) | 1 roll: Very Rare (80) / Legendary (20) | Tome of Clear Thought 10% each, plus their trophies |

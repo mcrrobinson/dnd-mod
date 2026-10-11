@@ -1,0 +1,10 @@
+{
+  "role": "tiefling_pactbroker",
+  "greeting": {
+    "default": "dialogue.dndclasses.tiefling_pactbroker.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.tiefling_pactbroker.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.tiefling_pactbroker.greeting.friendly",
+    "honored": "dialogue.dndclasses.tiefling_pactbroker.greeting.honored",
+    "exalted": "dialogue.dndclasses.tiefling_pactbroker.greeting.exalted"
+  }
+}

@@ -145,6 +145,8 @@ public class ModItemGroup {
             entries.add(ModItems.ELF_FLETCHER_SPAWN_EGG);
             entries.add(ModItems.DRAGONBORN_TEMPLAR_SPAWN_EGG);
             entries.add(ModItems.DRAGONBORN_ELDER_SPAWN_EGG);
+            entries.add(ModItems.TIEFLING_EXILE_SPAWN_EGG);
+            entries.add(ModItems.TIEFLING_PACTBROKER_SPAWN_EGG);
             entries.add(ModItems.ORC_WARRIOR_SPAWN_EGG);
             entries.add(ModItems.ORC_ARCHER_SPAWN_EGG);
             entries.add(ModItems.ORC_QUARTERMASTER_SPAWN_EGG);

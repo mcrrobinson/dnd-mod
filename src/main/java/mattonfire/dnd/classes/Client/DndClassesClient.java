@@ -191,6 +191,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_FLETCHER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elfMerchant);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_TEMPLAR, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonborn);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_ELDER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonbornElder);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.TIEFLING_EXILE, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::tiefling);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.TIEFLING_PACTBROKER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::pactbroker);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_WARRIOR, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orc);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_ARCHER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orc);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_QUARTERMASTER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orcQuartermaster);

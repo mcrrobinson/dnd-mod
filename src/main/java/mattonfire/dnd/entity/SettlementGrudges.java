@@ -97,6 +97,8 @@ public final class SettlementGrudges {
     public static final Rules DRAGONSWORN = add(new TempleLaw());
     /** The orcs of the strongholds guarding the War Chief's hoard. */
     public static final Rules BLOODTUSK_HORDE = add(new OrcLaw());
+    /** The Tieflings of the Brimstone Sanctums guarding their chests and barrels. */
+    public static final Rules BRIMSTONE_COVENANT = add(new SanctumLaw());
 
     private SettlementGrudges() {
     }
@@ -178,7 +180,7 @@ public final class SettlementGrudges {
         return Verdict.WARNING;
     }
 
-    /** Every settlement guard (dwarf, Elf Warden or Dragonborn Templar) within {@code range} of {@code pos} drops its grudge against {@code player}. */
+    /** Every settlement guard (dwarf, Elf Warden, Dragonborn Templar or Tiefling Exile) within {@code range} of {@code pos} drops its grudge against {@code player}. */
     public static void forgive(PlayerEntity player, BlockPos pos, double range) {
         forgive(player, new Box(pos).expand(range));
     }
@@ -188,7 +190,7 @@ public final class SettlementGrudges {
         int forgiven = 0;
         for (MobEntity guard : player.world.getEntitiesByClass(MobEntity.class, area,
                 mob -> mob.isAlive() && (mob instanceof MountainDwarfEntity || mob instanceof ElfWardenEntity
-                        || mob instanceof DragonbornTemplarEntity))) {
+                        || mob instanceof DragonbornTemplarEntity || mob instanceof TieflingExileEntity))) {
             net.minecraft.entity.mob.Angerable angerable = (net.minecraft.entity.mob.Angerable) guard;
             if (angerable.shouldAngerAt(player) || guard.getTarget() == player) {
                 angerable.stopAnger();

@@ -1,5 +1,6 @@
 package mattonfire.dnd.entity;
 
+import java.util.function.BiPredicate;
 import java.util.function.Supplier;
 
 import mattonfire.dnd.classes.Race.RaceLifecycle;
@@ -24,6 +25,9 @@ public final class KinStock {
     private static final String NBT_KEY = "KinOffers";
 
     private final Supplier<TradeOfferList> factory;
+    /** Who sees these offers: kin of the merchant's settlement, or (for gated stock) some other rule. */
+    private final BiPredicate<PlayerEntity, Entity> audience;
+    private final String nbtKey;
     @Nullable
     private TradeOfferList offers;
     /** Normal + kin offers, while a kin customer trades. The same offer objects, so uses are shared. */
@@ -31,7 +35,22 @@ public final class KinStock {
     private TradeOfferList shown;
 
     public KinStock(Supplier<TradeOfferList> factory) {
+        this(factory, KinStock::isKin, NBT_KEY);
+    }
+
+    /**
+     * Offers only {@code audience} sees, saved under {@code nbtKey}: e.g. the Pactbroker's class-gated stock
+     * for Warlocks and Alchemists. A merchant with several of these combines them itself ({@link #shownTo}).
+     */
+    public KinStock(Supplier<TradeOfferList> factory, BiPredicate<PlayerEntity, Entity> audience, String nbtKey) {
         this.factory = factory;
+        this.audience = audience;
+        this.nbtKey = nbtKey;
+    }
+
+    /** Whether {@code player} sees these offers at {@code npc}. */
+    public boolean shownTo(PlayerEntity player, Entity npc) {
+        return this.audience.test(player, npc);
     }
 
     /**
@@ -58,7 +77,7 @@ public final class KinStock {
 
     /** The merchant's customer changed. Call before preparing the customer's prices. */
     public void setCustomer(Entity npc, @Nullable PlayerEntity customer, TradeOfferList base) {
-        if (customer != null && isKin(customer, npc) && !this.offers().isEmpty()) {
+        if (customer != null && this.shownTo(customer, npc) && !this.offers().isEmpty()) {
             TradeOfferList all = new TradeOfferList();
             all.addAll(base);
             all.addAll(this.offers());
@@ -79,13 +98,13 @@ public final class KinStock {
 
     public void write(NbtCompound nbt) {
         if (this.offers != null) {
-            nbt.put(NBT_KEY, this.offers.toNbt());
+            nbt.put(this.nbtKey, this.offers.toNbt());
         }
     }
 
     public void read(NbtCompound nbt) {
-        if (nbt.contains(NBT_KEY)) {
-            this.offers = new TradeOfferList(nbt.getCompound(NBT_KEY));
+        if (nbt.contains(this.nbtKey)) {
+            this.offers = new TradeOfferList(nbt.getCompound(this.nbtKey));
         }
     }
 }

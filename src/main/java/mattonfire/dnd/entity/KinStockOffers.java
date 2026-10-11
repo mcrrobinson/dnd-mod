@@ -12,8 +12,8 @@ import net.minecraft.village.TradeOfferList;
  * Every offer has 12 uses and restocks each morning, like the merchants' other trades.
  * <p>
  * Dwarves have no merchant: their kin stock is the {@code gameplay/dwarf_kin_stock} barter table
- * ({@link MountainDwarfEntity}). The settlements that don't exist yet get their lists here, ready for their
- * vendors: {@link #orcStronghold()}, {@link #brimstoneSanctum()} and {@link #cogsdeep()}.
+ * ({@link MountainDwarfEntity}). Cogsdeep doesn't exist yet; its list ({@link #cogsdeep()}) waits here for
+ * its vendor.
  */
 public final class KinStockOffers {
     private static final int MAX_USES = 12;
@@ -58,7 +58,7 @@ public final class KinStockOffers {
     }
 
     /**
-     * Hook for the Brimstone Sanctum's vendor (not built yet), to Tieflings: Infernal Regalia (helmet 12,
+     * The Pactbroker of a Brimstone Sanctum, to Tieflings: Infernal Regalia (helmet 12,
      * chestplate 20, leggings 18, boots 10).
      */
     public static TradeOfferList brimstoneSanctum() {

@@ -13,6 +13,7 @@ import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Reputation;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
+import mattonfire.dnd.world.gen.sanctum.BrimstoneSanctumStructures;
 import mattonfire.dnd.world.gen.stronghold.OrcStrongholdStructures;
 import mattonfire.dnd.world.gen.temple.DragonTempleStructures;
 import mattonfire.dnd.world.gen.village.HobbitVillageStructures;
@@ -57,6 +58,12 @@ public final class RacialHomes {
     /** The hearth is the Great Longhouse. Entering also rallies a Half-Orc ({@link HomeBonuses#RALLY_DURATION}). */
     public static final Home ORC_STRONGHOLD = register(new Home(id("orc_stronghold"), DndRace.HALFORC, Set.of(),
             id("bloodtusk_horde"), OrcStrongholdStructures.LONGHOUSE, null));
+    /**
+     * The hearth is the Pact Hall. Inside the sanctum a Tiefling is immune to fire, and binds to a Refuge anchor
+     * for free ({@link mattonfire.dnd.world.gen.sanctum.SanctumRefuge}).
+     */
+    public static final Home BRIMSTONE_SANCTUM = register(new Home(id("brimstone_sanctum"), DndRace.TIEFLING, Set.of(),
+            id("brimstone_covenant"), BrimstoneSanctumStructures.PACT_HALL, null));
 
     private RacialHomes() {
     }

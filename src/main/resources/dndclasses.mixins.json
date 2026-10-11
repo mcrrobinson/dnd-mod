@@ -6,6 +6,9 @@
     "mixins": [
         "BowItemMixin",
         "ElvenChainVibrationMixin",
+        "ElvenChainBreakMixin",
+        "ElvenChainDropsMixin",
+        "ElvenChainItemVibrationMixin",
         "CrossbowItemMixin",
         "ItemStackNameMixin",
         "PlayerEntityMixin",
@@ -87,6 +90,8 @@
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
         "MouseAccessor",
+        "InGameHudAccessor",
+        "MerchantScreenAccessor",
         "DoubleJumpMixin",
         "InGameHudMixin",
         "EntityRenderDispatcherMixin",

@@ -137,8 +137,11 @@ public abstract class LivingEntityMixin extends Entity {
         }
     }
 
-    @Inject(method = "addStatusEffect", at = @At("HEAD"), cancellable = true)
-    private void onAddStatusEffect(StatusEffectInstance effectInstance, CallbackInfoReturnable<Boolean> cir) {
+    // The two-argument overload: the one-argument addStatusEffect calls it, and so do mobs that pass
+    // themselves as the source (cave spider, witch potions, Frost Drake hail), so every effect goes through here.
+    @Inject(method = "addStatusEffect(Lnet/minecraft/entity/effect/StatusEffectInstance;Lnet/minecraft/entity/Entity;)Z", at = @At("HEAD"), cancellable = true)
+    private void onAddStatusEffect(StatusEffectInstance effectInstance, Entity source,
+            CallbackInfoReturnable<Boolean> cir) {
         LivingEntity entity = (LivingEntity) (Object) this;
         if (entity instanceof PlayerEntity) {
             if (entity instanceof PlayerEntityExt) {

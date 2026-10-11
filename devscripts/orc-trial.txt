@@ -18,6 +18,7 @@ closescreen
 /effect give @s resistance 10 4 true
 /dndrace set @s human
 /dndhome stronghold pit
+waitserver 2
 wait 60
 use
 wait 20
@@ -40,6 +41,7 @@ wait 20
 /dndhome trialreset @s
 /effect give @s instant_health 1 5 true
 /dndhome stronghold pit
+waitserver 2
 wait 40
 use
 wait 40

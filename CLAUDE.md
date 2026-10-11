@@ -50,11 +50,15 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
   - Scripted runs use a **hidden window that never takes keyboard focus**, so they run in the background while the user keeps working. Pass `-PdevHidden=false` to show it, or `-PdevHidden` to hide a plain `runClient`.
   - Don't drive clients with xdotool or other OS input: it steals the user's focus and drops keystrokes. Use the DevScript input steps instead.
   - Two players: the first client runs `/publish false survival 25599` (wait for `Started serving on` in its log), then start a second client with `-PdevRunDir=run-2 -PdevServer=localhost:25599`; it joins that world instead of opening its own (see `devscripts/lan-host-check.txt` and `lan-guest-check.txt`).
+  - Scripted runs get a fixed player name, so per-player state (quests, reputation) carries over: `Dev`, or `DevGuest` with `-PdevServer`, plus `_<run dir>` outside `run/`. `-PdevUser=<name>` overrides it.
+  - The window is 854x480, which caps the GUI scale at 2. For scale 3-4 checks pass `-PdevWidth=1920 -PdevHeight=1080` and use `guiscale <n>`.
   - Several clients can run at once. Each one needs its own run directory, because a world can only be open once: copy `run/` to `run-2/` (skip `run/logs`) and pass `-PdevRunDir=run-2`. Each client uses about 2-3 GB of RAM, so check `free -g` first.
 - DevScript steps (documented in `DevScript.java`):
-  - `/command`, `wait <ticks>`, `screenshot <name>`, `hitboxes on|off` (F3+B), `hud on|off` (F1), `closescreen`, `respawn` (if the saved player is dead), `quit`
-  - Input, simulated inside the game: `look <yaw> <pitch>`, `use` (right click), `attack` (left click), `hotbar <0-8>`, `press <key binding translation key>` (e.g. `key.dnd-classes.power-up`), `perspective first|back|front` (F5), `sneak on|off`
-  - Screens: `slot <index> [action] [button]` clicks a slot of the open screen (`pickup` by default, `quick_move` = shift-click, `swap <0-8>` = number key, `throw` = Q), `button <id>` (e.g. enchanting option 0-2), `rename <text>` (anvil), `slots` logs every non-empty slot so you can check results in the log.
+  - `/command`, `wait <ticks>`, `screenshot <name>`, `hitboxes on|off` (F3+B), `hud on|off` (F1), `debug on|off` (F3), `guiscale <n>`, `closescreen`, `respawn` (if the saved player is dead), `quit`
+  - Barriers: `waitchat <text>` waits for a chat line (sync two clients with `/say step2`), `waitserver <ticks>` waits for server ticks. `wait` counts client ticks, which keep running while the server is stuck in a long command (e.g. `/dndhome ...survey`); put `waitserver 2` after it.
+  - Input, simulated inside the game: `look <yaw> <pitch>`, `use` (right click), `attack` (left click), `hotbar <0-8>`, `press <key binding translation key>` (e.g. `key.dnd-classes.power-up`), `key <name>` (a keyboard key such as `j`, `tab`, `f3`, sent to the open screen), `perspective first|back|front` (F5), `sneak on|off`. `use` and `attack` log what the crosshair is on.
+  - Screens: `slot <index> [action] [button]` clicks a slot of the open screen (`pickup` by default, `quick_move` = shift-click, `swap <0-8>` = number key, `throw` = Q), `button <id>` (e.g. enchanting option 0-2), `rename <text>` (anvil), `scroll <amount> [dx dy]` (mouse wheel), `trade <index>` (merchant), `slots` logs every non-empty slot so you can check results in the log.
+  - Readouts: `actionbar` logs the action bar (each new action-bar message is logged anyway), `target <selector>` logs each mob's attack target.
 
   See `devscripts/headless-input-check.txt` (enchants a sword and attacks a zombie) and `devscripts/dragon-hitboxes.txt`.
 - Check results yourself:
@@ -65,8 +69,16 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
   - For repeatable shots, use absolute coordinates high in the air (e.g. y=150) and freeze mobs with `{NoAI:1b,NoGravity:1b,Rotation:[0f,0f]}`.
   - Aim with `/tp @s X Y Z <yaw> <pitch>` or `look`, with the target block or mob about 2 blocks ahead; `use` and `attack` act on whatever the crosshair hits.
   - Slot indexes depend on the screen: container slots first, then the 27 inventory slots, then the 9 hotbar slots (e.g. the enchanting table is 0 item, 1 lapis, 2-28 inventory, 29-37 hotbar). Run `slots` to see them.
-  - Action-bar messages aren't logged; take a screenshot right after the action.
+  - Grep the log for `[DevScript] actionbar:` instead of screenshotting action-bar messages.
+  - `sneak on` needs a few ticks to reach the server: `wait 3` before the `use`.
   - Hitbox rendering also draws dragon part shapes as green boxes.
+- Script gotchas:
+  - `/dndclass set` puts the Class Guidebook in the first empty slot, often the hand, and a later `use` opens it (pausing the game). Run `/clear @s dndclasses:class_guidebook` after it.
+  - NPCs only open dialogue for an empty hand (the innkeeper also with most items in hand). The innkeeper's trades open on sneak + right-click with an empty hand.
+  - Quests and bounties count player kills only. `/kill` doesn't count; use `/damage <mob> 1000 minecraft:player_attack by @s`.
+  - `/summon` with NBT skips the mob's spawn setup (`initialize`), so e.g. orc archers have no crossbow. Summon without NBT, then `/data merge`.
+  - `NoAI:1b` stops more than movement: a NoAI mountain dwarf barters once and then never again (its cooldown counts down in its AI tick), and a NoAI Lich never places its phylactery, so its first death is final.
+  - `/party invite`, `/dndclass set` and `/dndrace set` take one player: add `limit=1` to a selector. Only ops can use selectors, so a LAN guest can't. An invite also needs `/party accept` from the guest.
 - Stopping a client:
   - End scripts with `quit`. To stop one early, find its PID with `ps -eo pid,args | grep "[j]ava.*<worktree>"` and `kill` it.
   - Don't `pkill -f <pattern>`: the pattern matches your own shell, which then dies (exit 144).

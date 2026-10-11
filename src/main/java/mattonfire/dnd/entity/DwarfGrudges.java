@@ -27,7 +27,8 @@ import org.jetbrains.annotations.Nullable;
  * <li>gains standing with the Mountain Dwarves: at least {@link #REPUTATION}, and enough to lift a
  * negative standing back to Neutral (their grudge over past thefts and blows is wiped);</li>
  * <li>is forgiven by every dwarf of the nearest dwarven fortress within {@link #FORTRESS_RANGE}
- * blocks of the Ruin ({@link SettlementGrudges#forgive}): dwarves angry at them calm down.</li>
+ * blocks of the Ruin: loaded dwarves angry at them calm down at once ({@link SettlementGrudges#forgive}),
+ * and the rest when they next load ({@link FortressForgiveness}).</li>
  * </ul>
  */
 public final class DwarfGrudges {
@@ -65,12 +66,15 @@ public final class DwarfGrudges {
                 Box area = new Box(fortress.getX() - FORTRESS_RADIUS, world.getBottomY(), fortress.getZ() - FORTRESS_RADIUS,
                         fortress.getX() + FORTRESS_RADIUS, world.getTopY(), fortress.getZ() + FORTRESS_RADIUS);
                 calmed = SettlementGrudges.forgive(player, area);
+                // The fortress is usually unloaded from here: its dwarves forgive the player when they load.
+                FortressForgiveness.get(world).record(world, fortress, player.getUuid());
             }
             player.sendMessage(Text.translatable(fortress != null ? "dungeon.dndclasses.dwarven_ruin.forgiven"
                     : "dungeon.dndclasses.dwarven_ruin.reclaimed").formatted(Formatting.GOLD), false);
-            DnDClasses.LOGGER.info("[Dungeon] {} helped reclaim dwarven ruin {}: Mountain Dwarves standing now {}, fortress {}, {} dwarf grudge(s) dropped",
+            DnDClasses.LOGGER.info("[Dungeon] {} helped reclaim dwarven ruin {}: Mountain Dwarves standing now {}, fortress {}, {} loaded dwarf grudge(s) dropped{}",
                     player.getEntityName(), dungeon.startKey(), dwarves == null ? "?" : Reputation.get(player, dwarves),
-                    fortress == null ? "none within " + FORTRESS_RANGE : fortress.toShortString(), calmed);
+                    fortress == null ? "none within " + FORTRESS_RANGE : fortress.toShortString(), calmed,
+                    fortress == null ? "" : ", the rest forgive on load");
         }
     }
 

@@ -12,6 +12,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Race.BreathWeapon;
 import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.particle.ModParticles;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -30,7 +31,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
 
 /**
- * Client side of the Dragonborn Breath Weapon: the racial key (R), the cone of flame, frost or sparks drawn
+ * Client side of the Dragonborn Breath Weapon: the racial key (B), the cone of flame, frost or sparks drawn
  * for every breath nearby, and the cooldown icon right of the mana bar.
  */
 public final class BreathWeaponClient {
@@ -60,9 +61,31 @@ public final class BreathWeaponClient {
     private BreathWeaponClient() {
     }
 
+    /**
+     * Saved options from before the move still bind the racial key to R, the old default. If that clashes with
+     * another binding (Identity's ability key), put it back on the new default so the power works again.
+     */
+    private static void migrateOldDefault(MinecraftClient client) {
+        if (!RACIAL_KEY.getBoundKeyTranslationKey().equals("key.keyboard.r")) {
+            return;
+        }
+        for (KeyBinding other : client.options.allKeys) {
+            if (other != RACIAL_KEY && other.equals(RACIAL_KEY)) {
+                RACIAL_KEY.setBoundKey(RACIAL_KEY.getDefaultKey());
+                KeyBinding.updateKeysByCode();
+                client.options.write();
+                DnDClasses.LOGGER.info("Racial power key moved from R to {}: R is also bound to {}",
+                        RACIAL_KEY.getBoundKeyTranslationKey(), other.getTranslationKey());
+                return;
+            }
+        }
+    }
+
     public static void register() {
+        // B: R is Identity's ability key, and a key drives only one binding in 1.19.4 (KEY_TO_BINDINGS is a map)
         RACIAL_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding("key.dnd-classes.racial",
-                InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "category.dnd-classes.dnd-classes"));
+                InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B, "category.dnd-classes.dnd-classes"));
+        ClientLifecycleEvents.CLIENT_STARTED.register(BreathWeaponClient::migrateOldDefault);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (RACIAL_KEY.wasPressed()) {

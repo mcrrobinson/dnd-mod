@@ -91,7 +91,7 @@
       "scale": 1.05,
       "hitboxWidth": 1.0,
       "stats": {},
-      "traits": ["**Draconic Ancestry**: Ember (fire), Frost or Storm (lightning)", "**Breath Weapon**: breathe your ancestry's element in a cone (R key)", "**Draconic Resistance**: half damage from your ancestry's element"]
+      "traits": ["**Draconic Ancestry**: Ember (fire), Frost or Storm (lightning)", "**Breath Weapon**: breathe your ancestry's element in a cone (B key)", "**Draconic Resistance**: half damage from your ancestry's element"]
     }
   ]
 }

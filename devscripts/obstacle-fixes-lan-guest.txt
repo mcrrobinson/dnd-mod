@@ -1,0 +1,47 @@
+# PR #179 two-player checks (guest side of obstacle-fixes-lan-host.txt)
+wait 40
+closescreen
+respawn
+wait 60
+/party leave
+/me guest-ready
+waitchat blood-reset
+waitchat invited you to their party
+/party accept
+wait 40
+closescreen
+waitchat hud-normal
+wait 5
+clearchat
+screenshot ofg-hud-normal
+waitchat host-downed
+wait 40
+clearchat
+screenshot ofg-downed-fresh
+waitchat host-save1
+wait 5
+clearchat
+screenshot ofg-downed-save1
+waitchat host-save2
+wait 5
+clearchat
+screenshot ofg-downed-save2
+waitchat host-save3
+wait 5
+clearchat
+screenshot ofg-downed-save3
+waitchat host-stable
+wait 5
+clearchat
+screenshot ofg-stable
+waitchat no-bossbar
+wait 5
+clearchat
+screenshot ofg-no-bossbar
+waitchat downed-no-bossbar
+wait 5
+clearchat
+screenshot ofg-downed-no-bossbar
+/me guest-done
+wait 20
+quit

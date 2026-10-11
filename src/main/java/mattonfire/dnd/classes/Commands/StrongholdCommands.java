@@ -26,6 +26,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.structure.Structure;
@@ -102,7 +103,13 @@ final class StrongholdCommands {
             }
         }
         Vec3d eye = new Vec3d(stand.getX() + 0.5D, stand.getY() + player.getStandingEyeHeight(), stand.getZ() + 0.5D);
-        Vec3d to = Vec3d.ofCenter(look).subtract(eye);
+        Vec3d target = Vec3d.ofCenter(look);
+        if (spot.equals("pit")) {
+            // Aim at the drum's near face: from the pit floor, aiming at its middle grazes the hay bale under it
+            Direction toward = Direction.getFacing(stand.getX() - look.getX(), 0, stand.getZ() - look.getZ());
+            target = target.add(toward.getOffsetX() * 0.45D, 0.0D, toward.getOffsetZ() * 0.45D);
+        }
+        Vec3d to = target.subtract(eye);
         float yaw = (float) (MathHelper.atan2(to.z, to.x) * 180.0D / Math.PI) - 90.0F;
         float pitch = (float) -(MathHelper.atan2(to.y, Math.sqrt(to.x * to.x + to.z * to.z)) * 180.0D / Math.PI);
         player.teleport(world, stand.getX() + 0.5D, stand.getY(), stand.getZ() + 0.5D, yaw, pitch);

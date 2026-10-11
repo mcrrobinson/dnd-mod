@@ -9,8 +9,9 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The gatehouse in the palisade: two 9-high watchtowers of dark oak (a ladder up the inside, an archer
- * platform with a rail on top) either side of a five-wide gate whose lintel is lined with skulls, and red war
- * banners with a black skull hung on the towers. An Orc Archer keeps watch on each tower.
+ * platform on top with a fence post on each corner and open sides, so the archers can step up and shoot down)
+ * either side of a five-wide gate whose lintel is lined with skulls, and red war banners with a black skull
+ * hung on the towers. An Orc Archer keeps watch on each tower.
  */
 public class GatehousePiece extends StrongholdPiece {
     static final int TOWER_HEIGHT = 9;
@@ -44,14 +45,15 @@ public class GatehousePiece extends StrongholdPiece {
             for (int y = 1; y <= TOWER_HEIGHT; y++) {
                 b.set(x, y, w - 2, Blocks.LADDER.getDefaultState().with(LadderBlock.FACING, Direction.NORTH));
             }
-            // The platform, with a rail and a hole for the ladder.
+            // The platform, with a hole for the ladder and a fence post on each corner. The sides are open:
+            // the archer steps to the edge to shoot down (from further in, the platform hides the ground).
             for (int dx = -2; dx <= 2; dx++) {
                 for (int dz = -2; dz <= 2; dz++) {
                     if (dx == 0 && dz == -2) {
                         continue;
                     }
                     b.set(x + dx, TOWER_HEIGHT, w + dz, Blocks.DARK_OAK_PLANKS);
-                    if (Math.abs(dx) == 2 || Math.abs(dz) == 2) {
+                    if (Math.abs(dx) == 2 && Math.abs(dz) == 2) {
                         b.set(x + dx, TOWER_HEIGHT + 1, w + dz, Blocks.DARK_OAK_FENCE);
                     }
                 }

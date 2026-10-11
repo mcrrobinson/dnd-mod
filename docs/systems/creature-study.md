@@ -44,7 +44,7 @@ A plain success never shows the weakness, and a known type doesn't roll again, s
 
 ### Insight on people
 When the skill is Insight, the card also shows what you read in that person. It's read fresh each time, even for a known type:
-- **Villager:** how it feels about you (fond, warm, indifferent, wary or hostile) with its gossip reputation number, and whether you've already tried to [persuade](d20-skill-checks.md) it today.
+- **Villager:** how it feels about you (fond, warm, indifferent, wary or hostile) with its gossip reputation number, and whether you can still [persuade](d20-skill-checks.md) it today (already tried today, or not at all: a jobless villager, nitwit or child has no trade to be talked into).
 - **Mountain Dwarf:** whether it holds a grudge against you.
 
 ### What the key does

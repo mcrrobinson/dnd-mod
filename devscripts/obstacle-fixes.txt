@@ -1,0 +1,143 @@
+# PR #179 checks: Fighter holy water, drink still blocked, resets clear Doused, portcullis XP once
+wait 40
+closescreen
+respawn
+wait 20
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 14 149 40 minecraft:stone
+/fill 0 150 0 14 156 40 minecraft:air
+/effect clear @s
+/effect give @s minecraft:resistance 9999 4 true
+# 1. Fighter throws three healing potions at a Holy Ward
+/dndobstacle place 3 150 12 5 151 12 dndclasses:holy_ward hard
+/dndclass set @s fighter
+/clear @s
+/give @s minecraft:splash_potion{Potion:"minecraft:healing"} 3
+/tp @s 4.5 150 9.5 0 30
+wait 10
+hotbar 0
+use
+wait 3
+clearchat
+screenshot of-fighter-douse-1
+wait 30
+hotbar 1
+use
+wait 30
+hotbar 2
+use
+wait 30
+/execute if block 4 150 12 dndclasses:holy_ward[state=open]
+/say check-inventory-after-throws
+/data get entity @s Inventory
+# 2. Fighter still can't drink; a splash regeneration at your feet does nothing
+/clear @s
+/give @s minecraft:potion{Potion:"minecraft:healing"}
+hotbar 0
+use
+wait 3
+clearchat
+screenshot of-fighter-drink
+wait 30
+/data get entity @s Inventory
+/clear @s
+/effect clear @s
+/give @s minecraft:splash_potion{Potion:"minecraft:regeneration"}
+/tp @s 4.5 150 5.5 0 90
+hotbar 0
+wait 10
+use
+wait 3
+/say check-no-regen
+/data get entity @s Inventory
+/data get entity @s ActiveEffects
+/effect give @s minecraft:resistance 9999 4 true
+# 3. /dndobstacle reset clears a part-doused ward
+/dndobstacle place 9 150 12 11 151 12 dndclasses:holy_ward hard
+/clear @s
+/give @s minecraft:splash_potion{Potion:"minecraft:healing"} 3
+/tp @s 10.5 150 9.5 0 30
+hotbar 0
+wait 10
+use
+wait 30
+/data get block 10 150 12 Data
+/dndobstacle reset 10 150 12
+/say after-reset
+/data get block 10 150 12 Data
+/data get block 9 151 12 Data
+hotbar 1
+use
+wait 30
+hotbar 2
+use
+wait 30
+/data get block 10 150 12 Data
+/execute if block 10 150 12 dndclasses:holy_ward[state=sealed]
+/clear @s
+# 4. Portcullis: the winch earns XP once (first raise); a second raise and the wedge earn +0; a winch reset re-arms it
+/dndobstacle place 3 150 24 5 152 24 dndclasses:portcullis medium
+/dndobstacle place 6 150 23 6 150 23 dndclasses:portcullis_winch medium
+/dndobstacle link 6 150 23 4 150 24
+/tp @s 6.5 150 21.5 0 30
+wait 10
+/say pc-raise-1
+/dndclass forceroll @s 18
+use
+wait 130
+/execute if block 4 151 24 dndclasses:portcullis[state=sealed]
+/say pc-raise-2
+/dndclass forceroll @s 18
+use
+wait 40
+/say pc-wedge-1
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 6 150 23 dndclasses:portcullis_winch[state=open]
+/say pc-reset-winch
+/dndobstacle reset 6 150 23
+wait 10
+/execute if block 4 151 24 dndclasses:portcullis[state=sealed]
+/say pc-raise-3
+/dndclass forceroll @s 18
+use
+wait 40
+/say pc-wedge-2
+/dndclass forceroll @s 18
+use
+wait 40
+# 5. /dungeon reset clears a sealed holy ward gate's count (crypt gate x -1129, z 998..1000)
+/dndclass set @s wizard
+/clear @s
+/gamemode spectator
+/tp @s -1129 60 999
+wait 200
+/execute positioned -1129 43 999 run dungeon reset
+/gamemode survival
+/effect give @s minecraft:resistance 9999 4 true
+/give @s minecraft:splash_potion{Potion:"minecraft:healing"} 3
+/tp @s -1126.5 42 999.5 90 25
+wait 10
+hotbar 0
+use
+wait 30
+/data get block -1129 43 999 Data
+/say dungeon-reset
+/execute positioned -1129 43 999 run dungeon reset
+wait 20
+/data get block -1129 43 999 Data
+hotbar 1
+use
+wait 30
+hotbar 2
+use
+wait 30
+/execute if block -1129 43 999 dndclasses:holy_ward[state=sealed]
+quit

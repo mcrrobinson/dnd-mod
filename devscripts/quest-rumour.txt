@@ -1,8 +1,11 @@
 # Rumour notices: a bounty board whose third notice is a Rumour (forced with /data), taking it gives a
 # quest lead for a quest the taker can start, right-clicking the lead starts the quest.
 # Run: timeout 300 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-rumour.txt
+# Expect in latest.log: "Test passed" once the lead is taken, the quest in /quest list, then "Test failed"
+# (the lead was used up).
 wait 40
 closescreen
+respawn
 /gamemode survival
 /time set noon
 /kill @e[tag=qc]
@@ -16,28 +19,42 @@ closescreen
 /quest admin @s reset dndclasses:ice_and_storm/1
 /rep @s dndclasses:hobbits set 150
 /rep @s dndclasses:mountain_dwarves set 0
-# /setblock skips onPlaced, so the board posts notices on first use; then force today's rumour
-/tp @s 0.5 150 0.5 0 20
+# /setblock skips onPlaced, so the board posts notices on first use (a sneak-read refreshes it). Only then
+# force today's rumour: merged before that first refresh, it would be rerolled. Pitch 5 aims at the board
+# (pitch 20 hits the planks under it).
+/tp @s 0.5 150 0.5 0 5
 wait 10
 sneak on
+wait 3
 use
+wait 5
 sneak off
 /data merge block 0 151 2 {Rumour:1b}
 /data get block 0 151 2
+clearchat
 sneak on
+wait 3
 use
+wait 5
 sneak off
-wait 5
+# Expect "A Rumour" on the right in the board listing
+screenshot qc-r-0-read
 # The third notice is on the board's right (from the front): aim at it and take it
-look 15 20
+look 8 5
+wait 3
 use
-wait 5
+wait 10
 /execute if entity @s[nbt={Inventory:[{id:"dndclasses:quest_lead"}]}]
+/data get entity @s Inventory
 screenshot qc-r-1-lead
-# Follow it (Friendly hobbits: The Whispering Library, Trouble on the Road or, with Friendly dwarves, Ice and Storm)
+# Follow it (Friendly hobbits: The Whispering Library, Trouble on the Road or, with Friendly dwarves, Ice and
+# Storm). Aim at the sky first: used on the board, the lead would just touch the board.
 hotbar 0
+look 180 -60
+wait 3
 use
 wait 10
 /quest list
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:quest_lead"}]}]
 screenshot qc-r-2-started
 quit

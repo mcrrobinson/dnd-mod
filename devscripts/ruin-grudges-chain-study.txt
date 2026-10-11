@@ -1,0 +1,241 @@
+# PR #178 bug fixes: Study vs Persuasion, Elven Chain sculk, Dwarven Ruin forgiveness.
+# Dev world "New World": fortress -4544 -1728, ruin "The Sunken Forge of Khazbarum" -4393 85 -1481 (279 blocks apart).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/ruin-grudges-chain-study.txt
+# Check the log for "====" markers, [CHAT] lines, [Study], [Grudges] and [Dungeon].
+wait 40
+closescreen
+respawn
+wait 10
+/gamemode spectator
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set noon
+/weather clear
+/tp @s 0.5 150 0.5 0 0
+wait 100
+/kill @e[type=!player,distance=..60]
+/fill -10 149 -10 30 149 20 minecraft:stone
+/fill -10 150 -10 30 156 20 minecraft:air
+/gamemode survival
+/clear @s
+/effect clear @s
+/effect give @s resistance 9999 4 true
+/effect give @s regeneration 9999 4 true
+/dndrace set @s human
+# ---------------------------------------------------------------- Study vs Persuasion
+/dndclass set @s bard
+/clear @s
+/tp @s 20.5 150 2.5 0 0
+/summon villager 20.5 150 4.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:none",level:1,type:"minecraft:plains"}}
+wait 10
+/say ==== STUDY jobless
+/dndclass forceroll @s 20
+press key.dnd-classes.study
+wait 20
+screenshot study-jobless
+/say ==== PERSUADE jobless
+sneak on
+wait 3
+/dndclass forceroll @s 15
+use
+wait 5
+sneak off
+wait 10
+/kill @e[type=villager]
+/summon villager 20.5 150 4.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:nitwit",level:1,type:"minecraft:plains"}}
+wait 10
+/say ==== STUDY nitwit
+press key.dnd-classes.study
+wait 20
+/kill @e[type=villager]
+/summon villager 20.5 150 4.5 {NoAI:1b,Rotation:[180f,0f],VillagerData:{profession:"minecraft:farmer",level:1,type:"minecraft:plains"}}
+wait 10
+/say ==== STUDY farmer
+press key.dnd-classes.study
+wait 20
+screenshot study-farmer
+/say ==== PERSUADE farmer
+sneak on
+wait 3
+/dndclass forceroll @s 15
+use
+wait 5
+sneak off
+wait 10
+/say ==== STUDY farmer after persuading
+press key.dnd-classes.study
+wait 20
+/kill @e[type=villager]
+/dndclass forceroll @s clear
+# ---------------------------------------------------------------- Elven Chain and sculk
+/dndclass set @s fighter
+/clear @s
+/setblock 4 150 0 minecraft:sculk_sensor
+/item replace entity @s armor.head with dndclasses:elven_chain_helmet
+/item replace entity @s armor.chest with dndclasses:elven_chain_chestplate
+/item replace entity @s armor.legs with dndclasses:elven_chain_leggings
+/item replace entity @s armor.feet with dndclasses:elven_chain_boots
+/dndrace set @s elf
+/tp @s 0.5 150 0.5 0 0
+/setblock 0 151 2 minecraft:dirt
+sneak on
+wait 100
+/say ==== SCULK pre-check elf sneaking dirt
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=inactive]
+mine on
+wait 30
+mine off
+wait 30
+/say ==== SCULK elf sneaking dirt broken (want passed, passed)
+/execute if block 0 151 2 minecraft:air
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=inactive]
+screenshot sculk-elf-break
+/kill @e[type=item]
+/item replace entity @s weapon.mainhand with minecraft:diamond_pickaxe
+/setblock 0 151 2 minecraft:diamond_ore
+wait 100
+/say ==== SCULK pre-check elf sneaking ore
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=inactive]
+mine on
+wait 30
+mine off
+wait 30
+/say ==== SCULK elf sneaking ore broken, items and xp dropped (want passed, passed)
+/execute if block 0 151 2 minecraft:air
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=inactive]
+/kill @e[type=item]
+/kill @e[type=experience_orb]
+/item replace entity @s weapon.mainhand with minecraft:air
+sneak off
+/setblock 0 151 2 minecraft:dirt
+wait 100
+/say ==== SCULK pre-check elf standing
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=inactive]
+mine on
+wait 30
+mine off
+wait 4
+/say ==== SCULK elf standing broken (want active)
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=active]
+/kill @e[type=item]
+/dndrace set @s human
+/setblock 0 151 2 minecraft:dirt
+sneak on
+wait 100
+/say ==== SCULK pre-check human sneaking
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=inactive]
+mine on
+wait 30
+mine off
+wait 4
+/say ==== SCULK human sneaking broken (want active)
+/execute if block 4 150 0 minecraft:sculk_sensor[sculk_sensor_phase=active]
+sneak off
+/kill @e[type=item]
+/setblock 4 150 0 minecraft:air
+/clear @s
+/dndrace set @s dwarf
+/dndrace set @s human
+# ---------------------------------------------------------------- Ruin forgiveness, fortress unloaded
+/gamemode spectator
+/tp @s -4536 160 -1720
+wait 400
+/execute if entity @e[type=dndclasses:mountain_dwarf,distance=..160]
+/tag @e[type=dndclasses:mountain_dwarf,limit=1,sort=nearest] add vdtarget
+/execute at @e[tag=vdtarget] run tp @s ~2 ~ ~ 90 0
+/gamemode survival
+wait 20
+/damage @e[tag=vdtarget,limit=1] 1 minecraft:player_attack by @s
+wait 20
+/damage @e[tag=vdtarget,limit=1] 1 minecraft:player_attack by @s
+wait 20
+/say ==== RUIN A angry before clear
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+/data get entity @e[tag=vdtarget,limit=1] AngryAt
+/rep @s dndclasses:mountain_dwarves set -50
+/gamemode spectator
+/tp @s -4393 160 -1481
+wait 400
+/say ==== RUIN A fortress loaded at the ruin? (want failed)
+/execute if entity @e[tag=vdtarget]
+# inside the dungeon's bounds (spreadplayers can land on a tree above them)
+/tp @s -4393 85 -1481
+/gamemode survival
+wait 20
+/say ==== RUIN A clear
+/dungeon clear
+wait 20
+/rep
+screenshot ruin-cleared
+/gamemode spectator
+/tp @s -4536 160 -1720
+wait 300
+/say ==== RUIN A back at the fortress (want AngerTime 0, no AngryAt)
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+/data get entity @e[tag=vdtarget,limit=1] AngryAt
+/execute at @e[tag=vdtarget] run tp @s ~2 ~ ~ 90 0
+/gamemode survival
+wait 100
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+/data get entity @e[tag=vdtarget,limit=1] AngryAt
+screenshot ruin-forgiven
+# ---------------------------------------------------------------- A grudge after the clear sticks
+/damage @e[tag=vdtarget,limit=1] 1 minecraft:player_attack by @s
+wait 20
+/damage @e[tag=vdtarget,limit=1] 1 minecraft:player_attack by @s
+wait 20
+/say ==== RUIN B angry again after the clear
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+/gamemode spectator
+/tp @s -4393 160 -1481
+wait 400
+/execute if entity @e[tag=vdtarget]
+/tp @s -4536 160 -1720
+wait 300
+/say ==== RUIN B back at the fortress (want AngerTime > 0, AngryAt set)
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+/data get entity @e[tag=vdtarget,limit=1] AngryAt
+# ---------------------------------------------------------------- Ruin forgiveness, fortress loaded
+/execute at @e[tag=vdtarget] run tp @s ~2 ~ ~ 90 0
+/gamemode survival
+wait 10
+/damage @e[tag=vdtarget,limit=1] 1 minecraft:player_attack by @s
+wait 20
+# a long grudge, so it's still angry when the Ruin is cleared
+/data merge entity @e[tag=vdtarget,limit=1] {AngerTime:30000}
+/execute at @e[tag=vdtarget] run forceload add ~-24 ~-24 ~24 ~24
+/gamemode spectator
+/tp @s -4393 160 -1481
+wait 300
+/say ==== RUIN C fortress forceloaded (want passed, AngerTime > 0)
+/execute if entity @e[tag=vdtarget]
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+# inside the dungeon's bounds (spreadplayers can land on a tree above them)
+/tp @s -4393 85 -1481
+/gamemode survival
+wait 20
+/dungeon clear
+wait 5
+/say ==== RUIN C after clear (want AngerTime 0, no AngryAt)
+/data get entity @e[tag=vdtarget,limit=1] AngerTime
+/data get entity @e[tag=vdtarget,limit=1] AngryAt
+/forceload remove all
+# ---------------------------------------------------------------- No fortress in range
+# A natural Dwarven Ruin at -288 1744 (/locate from 848 2192); its nearest fortress is over 512 blocks away.
+/execute positioned -288 100 1744 run locate structure #dndclasses:faction/mountain_dwarves
+wait 60
+/gamemode spectator
+/tp @s -288 160 1744
+wait 400
+# its Entrance room (floor y=-8): inside the dungeon's bounds
+/tp @s -281 -7 1751
+/gamemode survival
+wait 20
+/say ==== RUIN D no fortress in range (want the "think better of you" message)
+/dungeon info
+/dungeon clear
+wait 10
+screenshot ruin-no-fortress
+quit

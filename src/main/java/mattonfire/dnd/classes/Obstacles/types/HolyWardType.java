@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes.Obstacles.types;
 
+import java.util.List;
+
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
@@ -164,5 +166,10 @@ public final class HolyWardType extends ObstacleType {
             be.data().remove(DOUSED_KEY);
             be.markDirty();
         }
+    }
+
+    @Override
+    public List<String> progressKeys() {
+        return List.of(DOUSED_KEY);
     }
 }

@@ -179,7 +179,7 @@ public final class ObstacleCommand {
         ServerWorld world = context.getSource().getWorld();
         BlockPos pos = BlockPosArgumentType.getLoadedBlockPos(context, "pos");
         obstacleAt(context, pos);
-        int changed = open ? ObstacleGroups.open(world, pos) : ObstacleGroups.seal(world, pos);
+        int changed = open ? ObstacleGroups.open(world, pos) : ObstacleGroups.reset(world, pos);
         context.getSource().sendFeedback(Text.literal((open ? "Opened " : "Resealed ") + changed + " obstacle block"
                 + (changed == 1 ? "" : "s")), true);
         return changed;

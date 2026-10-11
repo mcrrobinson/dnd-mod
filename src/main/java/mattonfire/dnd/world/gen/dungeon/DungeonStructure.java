@@ -11,6 +11,7 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.biome.BiomeKeys;
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
@@ -53,16 +54,31 @@ public class DungeonStructure extends Structure {
 
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
-        Optional<DungeonPlanner.Site> site = new DungeonPlanner.Terrain(context).findSite(this.theme);
+        boolean placed = placedByCommand(context);
+        Optional<DungeonPlanner.Site> site = new DungeonPlanner.Terrain(context).findSite(this.theme, placed);
         if (site.isEmpty()) {
             return Optional.empty();
         }
         Optional<DungeonPlanner.Layout> layout = DungeonPlanner.plan(context.random(), site.get(), this.theme);
-        if (layout.isEmpty() || nearOtherStructure(context, KEEP_CLEAR_OF, CLEARANCE)
-                || nearOtherStructure(context, otherDungeons(this.theme), DUNGEON_CLEARANCE)) {
+        if (layout.isEmpty()) {
+            return Optional.empty();
+        }
+        if (!placed && (nearOtherStructure(context, KEEP_CLEAR_OF, CLEARANCE)
+                || nearOtherStructure(context, otherDungeons(this.theme), DUNGEON_CLEARANCE))) {
             return Optional.empty();
         }
         return Optional.of(new StructurePosition(site.get().entrance(), collector -> layout.get().addPieces(collector)));
+    }
+
+    /**
+     * Whether a /place structure command asked for this dungeon. The command's biome check lets every
+     * biome through, while world generation, /locate and the clearance checks only allow the
+     * structure's own biomes, which never include the void. A placed dungeon skips the dry-land and
+     * clearance checks, so /place works wherever it's used (it used to fail on any wet or low ground).
+     */
+    private static boolean placedByCommand(Context context) {
+        return context.dynamicRegistryManager().get(RegistryKeys.BIOME).getEntry(BiomeKeys.THE_VOID)
+                .map(context.biomePredicate()::test).orElse(false);
     }
 
     /**

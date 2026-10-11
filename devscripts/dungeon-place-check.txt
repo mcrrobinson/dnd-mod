@@ -1,0 +1,72 @@
+# /place structure for every dungeon theme, at spots that used to answer "Failed to place structure"
+# (wet or low ground, near other structures), then a dwarven fortress left loaded with no /kill.
+# Run on a scratch copy of the run dir: timeout 600 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-place-check.txt
+# Check in logs/latest.log: a "Generated structure" [CHAT] line for every /place (none "Failed to place structure"),
+# the /dungeon info lines, and the fortress dwarf counts ("Test passed, count is N") staying the same with no
+# "fell out of the world" deaths. Screenshots: screenshots/dungeon-place-check-*.png.
+wait 40
+closescreen
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/gamemode spectator
+
+# Crypt on low beach ground (entrance at y 62, below sea level)
+/tp @s 1207 150 1207
+wait 200
+/place structure dndclasses:crypt 1200 64 1200
+wait 60
+/dungeon info
+# Crypt in the sea (entrance on water)
+/tp @s -2393 150 2393
+wait 200
+/place structure dndclasses:crypt -2400 64 2400
+wait 60
+/dungeon info
+/tp @s -2393 90 2393 0 60
+wait 60
+hud off
+screenshot dungeon-place-check-sea-crypt
+hud on
+# Goblin Warren on wet ground
+/tp @s 2407 150 -2393
+wait 200
+/place structure dndclasses:goblin_warren 2400 64 -2400
+wait 60
+/dungeon info
+# Dwarven Ruin outside the mountains
+/tp @s 607 150 607
+wait 200
+/place structure dndclasses:dwarven_ruin 600 64 600
+wait 60
+/dungeon info
+# The new devscript spots (dry land the natural site check accepts)
+/tp @s 1095 150 1223
+wait 200
+/place structure dndclasses:crypt 1088 64 1216
+wait 60
+/dungeon info
+/tp @s 1095 90 1223 0 60
+wait 40
+hud off
+screenshot dungeon-place-check-puzzle-spot
+hud on
+/tp @s 2455 150 -2409
+wait 200
+/place structure dndclasses:goblin_warren 2448 64 -2416
+wait 60
+/dungeon info
+
+# Mountain Dwarves at the fortress near -4010, 135, 4185: load it, wait, count them twice
+/locate structure dndclasses:dwarven_fortress
+/tp @s -4010 160 4185
+wait 400
+/execute if entity @e[type=dndclasses:mountain_dwarf,distance=..128]
+wait 600
+/execute if entity @e[type=dndclasses:mountain_dwarf,distance=..128]
+hud off
+screenshot dungeon-place-check-fortress
+hud on
+quit

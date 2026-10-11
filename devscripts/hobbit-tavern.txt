@@ -26,8 +26,9 @@ screenshot tavern-board-after
 /clear @s
 /give @s minecraft:diamond_sword
 /give @s dndclasses:bounty_notice{Bounty:"spiders",Progress:7}
-/summon minecraft:spider 3.5 150 5.0 {NoAI:1b,Health:1f,Rotation:[180f,0f]}
-/tp @s 3.5 150 3.2 0 45
+# Away from the boards: looking down at a spider under a board hits the board and takes a notice instead
+/summon minecraft:spider 3.5 150 1.5 {NoAI:1b,Health:1f,Rotation:[0f,0f]}
+/tp @s 3.5 150 3.2 180 45
 hotbar 0
 wait 5
 # Expect "attack -> entity minecraft:spider" in the log. If the swing missed, the /damage below makes the same

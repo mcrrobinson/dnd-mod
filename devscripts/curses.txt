@@ -70,6 +70,8 @@ closescreen
 /dndclass set @s cleric
 wait 10
 closescreen
+# /dndclass set puts the Class Guidebook in the empty hand; use would open it (and pause the game)
+/clear @s dndclasses:class_guidebook
 /dndclass mana @s 9
 /dndclass forceroll @s 2
 /say step2-fail

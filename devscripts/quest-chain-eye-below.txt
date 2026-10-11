@@ -27,6 +27,8 @@ screenshot qc-d-1-not-offered
 closescreen
 /quest admin @s start dndclasses:ice_and_storm/1
 /quest admin @s complete dndclasses:ice_and_storm/1
+# NPCs other than the innkeeper only talk to an empty hand
+/clear @s
 use
 wait 10
 screenshot qc-d-2-offer

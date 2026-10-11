@@ -1,8 +1,10 @@
 # Checks the tavern bounty board and innkeeper. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hobbit-tavern.txt
 # Expect in latest.log: a bounty notice in the inventory after using the board, the spider notice's Progress going 7 -> 8,
-# emeralds after handing it in, and the innkeeper's trade screen listing its offers.
+# emeralds after handing it in, and the innkeeper's trade screen listing its offers (sneak + right-click: a plain
+# right-click opens the innkeeper's dialogue when it has a quest to offer).
 wait 40
 closescreen
+respawn
 /gamemode survival
 /gamerule doDaylightCycle false
 /time set noon
@@ -28,7 +30,11 @@ screenshot tavern-board-after
 /tp @s 3.5 150 3.2 0 45
 hotbar 0
 wait 5
+# Expect "attack -> entity minecraft:spider" in the log. If the swing missed, the /damage below makes the same
+# player kill (it finds no spider if the swing landed).
 attack
+wait 10
+/damage @e[type=minecraft:spider,limit=1,sort=nearest,distance=..6] 5 minecraft:player_attack by @s
 wait 10
 /data get entity @s Inventory[1]
 hotbar 1
@@ -43,8 +49,11 @@ screenshot tavern-claim
 hotbar 5
 /tp @s 3.5 150 3.2 0 25
 wait 10
+sneak on
+wait 3
 use
 wait 10
+sneak off
 screenshot tavern-innkeeper-trades
 slots
 closescreen

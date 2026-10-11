@@ -26,7 +26,9 @@ closescreen
 /quest admin @s start dndclasses:goblin_menace/1
 /quest admin @s complete dndclasses:goblin_menace/1
 /quest admin @s talk innkeeper
-# The innkeeper now offers The Warlord's Trail: accept it in dialogue
+# The innkeeper now offers The Warlord's Trail: accept it in dialogue (empty-handed, as for every NPC)
+/clear @s
+hotbar 0
 /summon dndclasses:innkeeper 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["qc"]}
 /tp @s 0.5 150 0.5 0 25
 wait 10

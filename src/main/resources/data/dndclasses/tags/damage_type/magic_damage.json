@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:magic",
+    "minecraft:indirect_magic",
+    "dndclasses:wizard_explosion",
+    "dndclasses:hellish_rebuke"
+  ]
+}

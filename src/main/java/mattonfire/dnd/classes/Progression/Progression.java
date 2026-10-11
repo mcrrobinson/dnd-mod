@@ -177,6 +177,8 @@ public final class Progression {
         DndCharacter dndClass = classOf(player);
         if (dndClass == DndCharacter.NONE || amount <= 0)
             return;
+        // Human Ambitious: +10% from every source
+        amount = mattonfire.dnd.classes.Race.RacePassives.ambitiousXp(player, amount);
 
         ClassProgress progress = get(player, dndClass);
         int oldLevel = progress.level();

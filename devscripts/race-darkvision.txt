@@ -1,0 +1,36 @@
+# Darkvision only: the same sealed, unlit stone room as an Elf, a Dwarf and a Human (screenshots darkvision-<race>).
+# Run: timeout 300 ./gradlew runClient --offline -PdevScript=devscripts/race-darkvision.txt
+wait 40
+closescreen
+/gamemode survival
+/time set noon
+# --- Darkvision: a sealed stone room with some blocks to see ---
+/fill 294 160 294 306 166 306 minecraft:stone
+/fill 295 161 295 305 165 305 minecraft:air
+/setblock 300 161 304 minecraft:red_wool
+/setblock 299 161 304 minecraft:iron_ore
+/setblock 301 161 304 minecraft:white_wool
+/setblock 300 162 304 minecraft:gold_block
+/setblock 297 161 303 minecraft:chest
+/setblock 303 161 303 minecraft:barrel
+/tp @s 300.5 161 296.5 0 10
+/dndrace set @s elf
+wait 60
+hud off
+screenshot darkvision-elf
+hud on
+/dndrace set @s dwarf
+wait 40
+hud off
+screenshot darkvision-dwarf
+hud on
+/dndrace set @s human
+wait 40
+hud off
+screenshot darkvision-human
+hud on
+/fill 294 160 294 306 166 306 minecraft:air
+/tp @s 300.5 150 300.5 0 0
+/gamerule naturalRegeneration true
+wait 20
+quit

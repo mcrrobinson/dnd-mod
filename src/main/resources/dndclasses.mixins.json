@@ -16,6 +16,9 @@
         "SmiteDragonsMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
+        "RacePassivesLivingMixin",
+        "RacePassivesPlayerMixin",
+        "RacePoisonMixin",
         "ShieldBlockMixin",
         "SubclassEffectImmunityMixin",
         "MagicItemEffectImmunityMixin",
@@ -104,6 +107,8 @@
         "RestMovementLockMixin",
         "RemoveCurseUseMixin",
         "PerceivedOutlineMixin",
+        "KeenSensesOutlineMixin",
+        "DarkvisionLightmapMixin",
         "PerceivedTeamColorMixin",
         "BossBarHudAccessor"
     ],

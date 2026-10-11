@@ -1,5 +1,5 @@
 # Races
-Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling or Dragonborn. A race is a small layer on top of your class. For now it changes your body size and a few body stats, gives a few races head features, and adds its ability score bonuses; its traits arrive in later updates.
+Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, Gnome, Half-Orc, Tiefling or Dragonborn. A race is a small layer on top of your class. It changes your body size and a few body stats, gives a few races head features, adds its ability score bonuses, and gives you its traits.
 
 ![The race picker](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/races/race-picker.png)
 
@@ -14,7 +14,7 @@ Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, G
 
 ### The races
 <!-- race-table:start - generated from src/main/resources/data/dndclasses/race_info.json, the same data the picker, chat intro and RaceStats use. Edit that file and run ./gradlew generateRaceTable -->
-| Race | Ability bonuses | Size | Stat modifiers | Traits (planned) |
+| Race | Ability bonuses | Size | Stat modifiers | Traits |
 |-|-|-|-|-|
 | **Human** | +1 to all six | Medium (1.0) | none | **Ambitious**: +10% class XP from every source<br>**Diplomat**: +2 on Persuasion and other social checks |
 | **Elf** | DEX +2, WIS +1 | Medium (1.0) | Speed +5% | **Darkvision**: caves are dim but readable<br>**Keen Senses**: while sneaking, see hostile mobs within 12 blocks through walls<br>**Trance**: never need sleep, so phantoms never come for you |
@@ -28,7 +28,7 @@ Every player picks a **race** before their class: Human, Elf, Dwarf, Halfling, G
 
 - **Stat modifiers** are live now. They're attribute modifiers on top of your class's base values, so a race and a class never overwrite each other, and switching class keeps them. Speed is a percentage of your class's base speed: a Barbarian Dwarf walks at 0.08 × 0.92 = 0.0736.
 - **Ability bonuses** are added to your [ability scores](../systems/ability-scores.md); `/dndclass sheet` lists them under the race's name.
-- **Traits** are arriving ticket by ticket. Working so far: the [Dragonborn Breath Weapon](breath-weapon.md) and the [d20 and combat traits](combat-traits.md) (Halfling Lucky, Half-Orc Savage Attacks and Relentless Endurance, Tiefling Hellish Rebuke). The rest are listed so you can choose, but do nothing yet.
+- **Traits** all work: the [passive traits](passive-traits.md) (Darkvision, resistances, Keen Senses, Trance, Dwarven Resilience, Stonecunning, Second Breakfast, Gnome Cunning, Tinker, Ambitious, Diplomat), the [d20 and combat traits](combat-traits.md) (Halfling Lucky, Half-Orc Savage Attacks and Relentless Endurance, Tiefling Hellish Rebuke) and the [Dragonborn Breath Weapon](breath-weapon.md). Halfling **Small** is the body size below.
 
 ### Body size
 Your race sets your size: your hitbox, your eye height (the camera) and your model, which everyone else sees too. Sizes come from `scale`, `hitboxWidth` and `modelWidth` in `race_info.json`.
@@ -73,13 +73,12 @@ Halflings and Dwarves have a home settlement where they get a welcome, a healing
 The race picker opens on its own. Your race is on the last page of the Class Guidebook.
 
 ## Commands
-`/dndrace get|set|list` (operators). See [Admin commands](../systems/admin-commands.md#races).
+`/dndrace get|set|list|cooldowns|traits` (operators). See [Admin commands](../systems/admin-commands.md#races).
 
 ## Configuration
 `/gamerule dndRaces false` turns races off: nobody is prompted, and no race modifiers, sizes or head features apply (saved races are kept and come back if you turn it on again). Turning it back on prompts every online player without a race. Default: `true`.
 
 ## Known limitations
-- Only the stat modifiers, body sizes, head features, ability bonuses, the [Dragonborn Breath Weapon](breath-weapon.md) and the [d20 and combat traits](combat-traits.md) work. The other traits come in later tickets.
 - Shadows aren't scaled, so a Halfling's shadow is a little big.
 - Head features are hidden under any helmet, so horns don't poke through.
 - You can't change race yourself. Ask an operator.

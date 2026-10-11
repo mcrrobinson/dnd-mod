@@ -52,6 +52,37 @@ public final class RacialGear {
                 && FAArmorEffectHandler.wearsKinSet(player, ElvenChainArmorItem.class);
     }
 
+    /** How long (ticks) the drops of a block a silenced Elf broke stay silent: long enough to land. */
+    public static final int SILENT_DROP_TICKS = 100;
+    /** How many silenced Elves' block breaks are running on the server thread right now. */
+    private static int silentBreaks;
+
+    /**
+     * A block break by {@code player} starts ({@code ServerPlayerInteractionManager.tryBreakBlock}). The
+     * break event itself has the player as its source, but the items and experience it drops are entities of
+     * their own and would set off sensors when they land, so while a silenced Elf's break runs, every entity
+     * spawned is silenced for {@link #SILENT_DROP_TICKS} ticks ({@link #onEntitySpawned}).
+     */
+    public static void blockBreakStarted(PlayerEntity player) {
+        if (silencesVibrations(player)) {
+            silentBreaks++;
+        }
+    }
+
+    /** The break that {@link #blockBreakStarted} saw for {@code player} is over. */
+    public static void blockBreakEnded(PlayerEntity player) {
+        if (silentBreaks > 0 && silencesVibrations(player)) {
+            silentBreaks--;
+        }
+    }
+
+    /** An entity was spawned on the server: a silenced Elf's break drop makes no vibrations for a while. */
+    public static void onEntitySpawned(Entity entity) {
+        if (silentBreaks > 0 && entity instanceof SilencedVibrations silenced) {
+            silenced.dnd$silenceVibrationsUntil(entity.getWorld().getTime() + SILENT_DROP_TICKS);
+        }
+    }
+
     /** Draconic Scale: whether {@code source} is the element of a Dragonborn wearer's ancestry. */
     public static boolean immuneTo(LivingEntity entity, DamageSource source) {
         if (!(entity instanceof PlayerEntity player)

@@ -16,6 +16,8 @@ import mattonfire.dnd.classes.Obstacles.types.ChasmType;
 import mattonfire.dnd.classes.Obstacles.types.CollapsedPassageType;
 import mattonfire.dnd.classes.Obstacles.types.CrumblingLedgeType;
 import mattonfire.dnd.classes.Obstacles.types.HeavyBoulderType;
+import mattonfire.dnd.classes.Obstacles.types.HiddenDoorType;
+import mattonfire.dnd.classes.Obstacles.types.LockedDoorType;
 import mattonfire.dnd.classes.Obstacles.types.PortcullisType;
 import mattonfire.dnd.classes.Obstacles.types.PortcullisWinchType;
 import mattonfire.dnd.classes.Registry.ModItemGroup;
@@ -23,6 +25,7 @@ import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.Material;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.item.BlockItem;
@@ -93,6 +96,23 @@ public final class ObstacleTypes {
             solidSettings(Material.STONE, BlockSoundGroup.BONE));
     public static final ObstacleBlock BLOOD_SEAL_BLOCK = register(BLOOD_SEAL,
             glowSettings(Material.STONE, BlockSoundGroup.NETHER_WART, 4));
+
+    // Hidden and locked: Rangers and Rogues
+    public static final HiddenDoorType HIDDEN_DOOR = new HiddenDoorType(id("hidden_door"), Blocks.STONE_BRICKS);
+    public static final HiddenDoorType HIDDEN_DEEPSLATE_DOOR = new HiddenDoorType(id("hidden_deepslate_door"),
+            Blocks.DEEPSLATE_BRICKS);
+    public static final HiddenDoorType HIDDEN_BLACKSTONE_DOOR = new HiddenDoorType(id("hidden_blackstone_door"),
+            Blocks.POLISHED_BLACKSTONE_BRICKS);
+    public static final LockedDoorType LOCKED_DOOR = new LockedDoorType(id("locked_door"));
+
+    public static final ObstacleBlock HIDDEN_DOOR_BLOCK = register(HIDDEN_DOOR,
+            solidSettings(Material.STONE, BlockSoundGroup.STONE));
+    public static final ObstacleBlock HIDDEN_DEEPSLATE_DOOR_BLOCK = register(HIDDEN_DEEPSLATE_DOOR,
+            solidSettings(Material.STONE, BlockSoundGroup.DEEPSLATE_BRICKS));
+    public static final ObstacleBlock HIDDEN_BLACKSTONE_DOOR_BLOCK = register(HIDDEN_BLACKSTONE_DOOR,
+            solidSettings(Material.STONE, BlockSoundGroup.STONE));
+    public static final ObstacleBlock LOCKED_DOOR_BLOCK = register(LOCKED_DOOR,
+            solidSettings(Material.METAL, BlockSoundGroup.METAL));
 
     public static final BlockEntityType<ObstacleBlockEntity> BLOCK_ENTITY = Registry.register(
             Registries.BLOCK_ENTITY_TYPE, id("obstacle"),
@@ -167,6 +187,9 @@ public final class ObstacleTypes {
         });
         ObstacleInteractions.register();
         CryptSleepers.register();
+        HiddenSearch.register();
+        ObstacleAuras.register();
+        VanillaTraps.register();
         for (ObstacleType type : TYPES.values()) {
             type.registerEvents();
         }

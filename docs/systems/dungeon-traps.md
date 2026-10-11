@@ -1,5 +1,5 @@
 # Dungeon traps
-Every dungeon's trap corridor holds 3-5 hidden traps: dart launchers, flame vents and pits that crumble under you. From Challenge II, some locked chests also hide a poison needle. Rogues and Rangers (and anyone with a sharp enough passive Perception) see the traps outlined. A Rogue can disarm one with Thieves' Tools; anyone can set one off from a distance by throwing an item onto it or shooting it. A spent trap stays spent until the dungeon is reset.
+Every dungeon's trap corridor holds 3-5 hidden traps: dart launchers, flame vents and pits that crumble under you. From Challenge II, some locked chests also hide a poison needle. Rogues and Rangers (and anyone with a sharp enough passive Perception) see the traps outlined, and so does the rest of their party. A Rogue or an Artificer can disarm one with Thieves' Tools; anyone can set one off from a distance by throwing an item onto it or shooting it. A spent trap stays spent until the dungeon is reset.
 
 The dungeons themselves are on [Dungeons](../structures/dungeons.md), and the fights on [Dungeon encounters](dungeon-encounters.md).
 
@@ -25,17 +25,20 @@ Every half second, each player within 6 blocks of an armed trap is checked by th
 - Rogues and Rangers always spot traps.
 - Anyone else spots a trap if their passive Perception (10 + Perception bonus, see [ability scores](ability-scores.md)) is at least the trap's DC.
 - A **Search** (V, see [Stealth and Perception](stealth-and-perception.md)) within 8 blocks whose Perception total meets the trap's DC also reveals it, until it is spent, disarmed or re-armed.
+- **Party:** once anyone has spotted a trap, every member of their `/party` sees it too (while it stays armed), whatever their own Perception.
 
 ### Disarming
-A **Rogue** sneak-uses any of a trap's floor tiles (the trigger, a vent or a cracked tile) with an empty hand. That rolls **Disarm**, a Thieves' Tools check against the trap's DC, shown on the HUD like lockpicking.
-- **Success**: "the dart trap is disarmed". It stays safe until the dungeon resets.
+A **Rogue** (or an **Artificer**, as a secondary disarmer) sneak-uses any of a trap's floor tiles (the trigger, a vent or a cracked tile) with an empty hand. That rolls **Disarm**, a Thieves' Tools check against the trap's DC, shown on the HUD like lockpicking.
+- **Success**: "the dart trap is disarmed". It stays safe until the dungeon resets. It gives up its parts (2 arrows from a dart trap, a redstone dust from a flame or pit trap) and class XP by tier: 5 / 10 / 15 / 25 for Challenge I-IV, once per dungeon reset (a trap re-armed by someone's fumble pays nothing more).
 - **Failure**: the trap goes off on the Rogue.
 - **Natural 1**: it goes off, and the nearest spent or disarmed trap within 16 blocks arms itself again.
 
-Anyone else who has spotted the trap is told only a Rogue could disarm it. They can still set it off from a distance with a thrown item or an arrow. Needles can't be disarmed: a Rogue who picks the lock never sets one off.
+Anyone else who has spotted the trap is told only a Rogue or Artificer could disarm it. They can still set it off from a distance with a thrown item or an arrow. Needles can't be disarmed: a Rogue who picks the lock never sets one off.
 
 ## Where to find it
 The trap corridor of every dungeon (room 3 on the Crypt's route), on rows 3-12 of the 16-block hall, with at least one plain row between two traps. Each corridor has at least two kinds of trap and at most one pit. Poison needles can be under any dungeon chest from Challenge II.
+
+The desert pyramid's pressure plate and the jungle temple's tripwires count as hidden traps too; see [Class-gated obstacles](obstacles.md#hidden-and-locked-rangers-rogues-artificers).
 
 Only dungeons generated after this change have traps. Corridors generated before it stay empty.
 
@@ -58,6 +61,7 @@ None.
 - Blocks: `classes/Blocks/TrapTriggerBlock` (+ `TrapTriggerBlockEntity`, all the trap logic), `DartLauncherBlock`, `FlameVentBlock`, `CrumblingFloorBlock`, `TrapKind`, registered in `TrapBlocks`. All are unbreakable and drop nothing.
 - Block entity NBT: `Kind` (dart/flame/pit/needle), `StartKey`, `Tier`, `Armed`, `Disarmed`, `SpentAt` (the dungeon's reset count when spent), `Linked` (launchers, vents, the chest), `Crumbles`, `Ladder`, plus running effects.
 - Re-arming: `DungeonState.resets()` goes up on every `reset()`. A trap whose `SpentAt` differs re-arms itself. Repopulation (`DungeonRegistry.repopulate`, used by both the timed repopulation and `/dungeon reset`) calls `reset()`, so it re-arms traps too.
+- Party spotting: `TrapTriggerBlockEntity.spottedBy` also checks the in-memory `spotted` set for party members. Disarm XP: `claimDisarmReward()` stores `RewardedAt` (the dungeon's reset count + 1). `TrapDisarm.eligibility(DndCharacter)` is Rogue primary, Artificer secondary.
 - Disarm and needles: `classes/SkillChecks/TrapDisarm` (label `D20.DISARM`, Thieves' Tools). `Lockpicking` calls `TrapDisarm.lockFailed` / `lockForced`.
 - Spotting rule: `TrapSense.set(...)` replaces the default, which uses `PerceptionService.noticesPassively`. `TrapTriggerBlockEntity` is a `Perceivable`, so Search finds it; `spottedBy(player)` combines the two.
 - Generation: `TrapCorridorPiece` lays out the traps from the piece seed. `DungeonPiece.Builder.chest` adds needles at T2+.

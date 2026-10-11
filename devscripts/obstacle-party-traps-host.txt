@@ -1,0 +1,50 @@
+# Two-player check that a found Hidden Door and a spotted trap are shared with the party.
+# Host (a Ranger, "Dev"): timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-party-traps-host.txt
+# Once its log says "Started serving on", start the guest (a Fighter):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25634 -PdevScript=devscripts/obstacle-party-traps-guest.txt
+# Expect in the host's latest.log:
+#  "[Obstacle] Dev found the dndclasses:hidden_door ... revealed to 2 player(s)" and, before that, no find by the guest;
+#  no "[Trap] DevGuest_run_2 spots" while the guest is alone by the trap, then "[Trap] Dev spots the dart trap"
+#  followed by "[Trap] DevGuest_run_2 spots the dart trap" once the Ranger has seen it.
+# The guest's screenshots show the gold door outline and its hint, then the orange trap outline.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 14 149 40 minecraft:stone
+/fill 0 150 0 14 156 40 minecraft:air
+/fill 0 150 8 14 153 8 minecraft:stone_bricks
+/dndobstacle place 4 150 8 4 151 8 dndclasses:hidden_door medium
+/setblock 10 149 24 dndclasses:trap_trigger{Kind:"dart",Tier:4,Armed:1b}
+/dndclass set @s ranger
+/tp @s 12.5 150 1.5 0 10
+/publish true survival 25634
+# About 90 s for the guest to start and join
+wait 1800
+/list
+/party leave
+/execute as DevGuest_run_2 run party leave
+/party create
+/party invite DevGuest_run_2
+/execute as DevGuest_run_2 run party accept
+/party list
+/dndclass set DevGuest_run_2 fighter
+/gamemode survival DevGuest_run_2
+/tp DevGuest_run_2 4.5 150 5.5 0 10
+wait 100
+# The guest alone by the door finds nothing; the Ranger walks up and notices it for both
+/tp @s 5.5 150 4.5 0 10
+wait 600
+# The guest alone by the trap doesn't spot it (passive Perception below DC 17)
+/tp DevGuest_run_2 10.5 150 21.5 0 45
+/tp @s 12.5 150 1.5 0 10
+wait 100
+/tp @s 8.5 150 21.5 0 45
+wait 600
+/party leave
+quit

@@ -12,6 +12,8 @@ import org.joml.Vector3f;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Abilities.Ability;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
+import mattonfire.dnd.classes.Party.Party;
+import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.SkillChecks.Perceivable;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.classes.SkillChecks.SavingThrow;
@@ -105,6 +107,8 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
     private long flameUntil = -1L;
     private long crumbleAt = -1L;
 
+    /** The dungeon's reset count + 1 when the trap last paid out disarm XP (0: never). */
+    private int rewardedAt;
     /** Who has been told they spotted this trap since it was last armed (not saved). */
     private final Set<UUID> spotted = new HashSet<>();
     /** Who found this trap with a Search (V) since it was last armed (not saved). */
@@ -531,9 +535,43 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         }
     }
 
-    /** Whether the player sees this trap: found with a Search, or noticed by {@link TrapSense}. */
+    /**
+     * Whether the player sees this trap: found with a Search, noticed by {@link TrapSense}, or spotted by a
+     * member of their {@code /party} since it was last armed.
+     */
     public boolean spottedBy(ServerPlayerEntity player) {
-        return this.searched.contains(player.getUuid()) || TrapSense.get().spots(player, this, this.dc());
+        return this.searched.contains(player.getUuid()) || TrapSense.get().spots(player, this, this.dc())
+                || this.spottedByParty(player);
+    }
+
+    private boolean spottedByParty(ServerPlayerEntity player) {
+        if (this.spotted.isEmpty() || player.getServer() == null) {
+            return false;
+        }
+        Party party = PartyManager.get(player.getServer()).getParty(player.getUuid());
+        if (party == null) {
+            return false;
+        }
+        for (UUID other : this.spotted) {
+            if (!other.equals(player.getUuid()) && party.contains(other)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Claims the disarm XP: true once per dungeon reset (a trap re-armed by a fumble in the same run pays
+     * nothing more).
+     */
+    public boolean claimDisarmReward() {
+        int resets = this.resets();
+        if (this.rewardedAt == resets + 1) {
+            return false;
+        }
+        this.rewardedAt = resets + 1;
+        this.markDirty();
+        return true;
     }
 
     // A Search (V) within range rolls against an armed trap's DC; finding it outlines it like a passive spot.
@@ -575,6 +613,7 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         nbt.putBoolean("Armed", this.armed);
         nbt.putBoolean("Disarmed", this.disarmed);
         nbt.putInt("SpentAt", this.spentAt);
+        nbt.putInt("RewardedAt", this.rewardedAt);
         nbt.put("Linked", writePositions(this.linked));
         nbt.put("Crumbles", writePositions(this.crumbles));
         if (this.ladder != null) {
@@ -600,6 +639,7 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         this.armed = !nbt.contains("Armed") || nbt.getBoolean("Armed");
         this.disarmed = nbt.getBoolean("Disarmed");
         this.spentAt = nbt.getInt("SpentAt");
+        this.rewardedAt = nbt.getInt("RewardedAt");
         readPositions(nbt.getList("Linked", NbtElement.INT_ARRAY_TYPE), this.linked);
         readPositions(nbt.getList("Crumbles", NbtElement.INT_ARRAY_TYPE), this.crumbles);
         this.ladder = nbt.contains("Ladder") ? BlockPos.fromLong(nbt.getLong("Ladder")) : null;

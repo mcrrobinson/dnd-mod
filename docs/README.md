@@ -41,8 +41,8 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
 - [Creature study](systems/creature-study.md): V on a creature rolls Religion, Nature, Arcana or Insight (DC 10/13/15) for a card of its health, armour, save-calling attacks and immunities; a natural 20 adds its weakness; Insight reads villagers and dwarves
-- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, and divine and death obstacles (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers, Blood Seals) for Clerics, Paladins, Necromancers and Blood Hunters, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
+- [D20 skill checks](systems/d20-skill-checks.md): lockpicking (chests and doors, with a lock glint for Rogues and Rangers), searching walls, persuasion, Arcana, crits and fumbles
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, and divine and death obstacles (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers, Blood Seals) for Clerics, Paladins, Necromancers and Blood Hunters, and Hidden Doors, Locked Doors and temple traps for Rangers and Rogues, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
@@ -55,7 +55,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion (splits at half health) and the Lich boss leashed to its reliquary
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault
-- [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, spotting, Rogue disarming and re-arming on reset
+- [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, party-shared spotting, Rogue and Artificer disarming and re-arming on reset
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn; DEX saves against breath and storms

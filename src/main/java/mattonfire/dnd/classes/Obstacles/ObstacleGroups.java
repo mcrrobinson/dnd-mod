@@ -21,6 +21,11 @@ import net.minecraft.world.World;
 public final class ObstacleGroups {
     /** Most blocks one group can have. */
     public static final int MAX_BLOCKS = 48;
+    /**
+     * Set in {@code Data} on every block of a group once it has paid out class XP; cleared only by
+     * {@link #reset}, so a group that reseals on a timer (or is worked again) doesn't pay twice.
+     */
+    public static final String REWARDED_KEY = "XpEarned";
 
     private ObstacleGroups() {
     }
@@ -75,7 +80,8 @@ public final class ObstacleGroups {
             BlockState state = world.getBlockState(pos);
             if (state.getBlock() instanceof ObstacleBlock block
                     && world.getBlockEntity(pos) instanceof ObstacleBlockEntity be) {
-                boolean cleared = false;
+                boolean cleared = be.data().contains(REWARDED_KEY);
+                be.data().remove(REWARDED_KEY);
                 for (String key : block.type().progressKeys()) {
                     if (be.data().contains(key)) {
                         be.data().remove(key);
@@ -145,6 +151,24 @@ public final class ObstacleGroups {
             }
         }
         return group.size();
+    }
+
+    /**
+     * Claims the group's class XP: true the first time since the group was placed or last
+     * {@linkplain #reset reset}, false after that. Marks every block of the group.
+     */
+    public static boolean claimReward(World world, BlockPos origin) {
+        if (!(world.getBlockEntity(origin) instanceof ObstacleBlockEntity originBe)
+                || originBe.data().getBoolean(REWARDED_KEY)) {
+            return false;
+        }
+        for (BlockPos pos : group(world, origin)) {
+            if (world.getBlockEntity(pos) instanceof ObstacleBlockEntity be) {
+                be.data().putBoolean(REWARDED_KEY, true);
+                be.markDirty();
+            }
+        }
+        return true;
     }
 
     /** A per-type integer kept in the group's {@code Data} (read from {@code origin}; 0 if unset). */

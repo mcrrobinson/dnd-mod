@@ -105,6 +105,10 @@ public final class ObstacleInteractions {
             return ActionResult.PASS;
         }
         ObstacleType type = block.type();
+        if (type.hiddenFrom(world, pos, player)) {
+            // Just a wall, as far as this player knows
+            return ActionResult.PASS;
+        }
         ItemStack held = player.getMainHandStack();
         ItemStack required = type.requiredItem();
         if (required == null ? !held.isEmpty() : !ItemStack.areItemsEqual(held, required)) {
@@ -163,7 +167,13 @@ public final class ObstacleInteractions {
             return;
         }
 
-        resolve(player, world, pos, type, tier, SkillCheck.builder(player, skill, tier.dc, CHECK_TAG).roll());
+        resolve(player, world, pos, type, tier, builder(player, type, skill, tier).roll());
+    }
+
+    /** The obstacle roll: the type's skill against the tier's DC, under the type's HUD label if it has one. */
+    private static D20.Builder builder(ServerPlayerEntity player, ObstacleType type, Skill skill, Tier tier) {
+        D20.Builder builder = SkillCheck.builder(player, skill, tier.dc, CHECK_TAG);
+        return type.rollLabel() == null ? builder : builder.label(type.rollLabel());
     }
 
     private static boolean hostileNearby(ServerWorld world, PlayerEntity player) {
@@ -225,9 +235,13 @@ public final class ObstacleInteractions {
         return true;
     }
 
-    /** Opens the group for its solver and rewards them. */
+    /**
+     * Opens the group for its solver and rewards them: the tier's class XP, once per group until it's reset
+     * (a group that reseals on a timer and is solved again earns nothing more).
+     */
     public static void solve(ServerWorld world, BlockPos pos, ObstacleType type, Tier tier, ServerPlayerEntity solver) {
-        boolean rewarded = type.solve(world, pos, solver);
+        boolean rewarded = type.solve(world, pos, solver) && !solver.isCreative()
+                && ObstacleGroups.claimReward(world, pos);
         int xp = rewarded ? type.xp(tier) : 0;
         DnDClasses.LOGGER.info("[Obstacle] {} solved {} at {}: +{} class XP",
                 solver.getEntityName(), type.id(), pos.toShortString(), xp);
@@ -265,7 +279,7 @@ public final class ObstacleInteractions {
             return false;
         }
         // Take 20: no crit, no fumble, no sting
-        D20.Roll roll = SkillCheck.builder(player, channel.skill(), channel.tier().dc, CHECK_TAG)
+        D20.Roll roll = builder(player, channel.type(), channel.skill(), channel.tier())
                 .take(TAKE_YOUR_TIME_NATURAL).roll();
         if (roll.outcome().succeeded()) {
             resolve(player, world, channel.pos(), channel.type(), channel.tier(), roll);
@@ -278,11 +292,12 @@ public final class ObstacleInteractions {
 
     // ---- Protected volume ----
 
-    /** Whether pos is inside, or in the shell round, a sealed obstacle. */
+    /** Whether pos is inside, or in the shell round, a sealed obstacle that protects its shell. */
     public static boolean isProtected(World world, BlockPos pos) {
         for (BlockPos near : BlockPos.iterate(pos.add(-PROTECTION_SHELL, -PROTECTION_SHELL, -PROTECTION_SHELL),
                 pos.add(PROTECTION_SHELL, PROTECTION_SHELL, PROTECTION_SHELL))) {
-            if (ObstacleBlock.isSealed(world.getBlockState(near))) {
+            BlockState state = world.getBlockState(near);
+            if (ObstacleBlock.isSealed(state) && ((ObstacleBlock) state.getBlock()).type().protectsShell()) {
                 return true;
             }
         }

@@ -1,7 +1,7 @@
 # Class-gated obstacles
 Some walls, doors and barriers can only be got past by the right class. Look at one and a hint above the crosshair says what it is, how hard it is and who can deal with it. The right class right-clicks it and rolls a d20 on the [skill check HUD](d20-skill-checks.md). Everyone else has a fallback that costs something, or has to bring the right adventurer.
 
-So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks) the **physical obstacles** for Barbarians, Fighters and Monks (Collapsed Passages, Heavy Boulders, Portcullises with their winches, Chasms and Crumbling Ledges), and the **divine and death obstacles** for Clerics, Paladins, Necromancers and Blood Hunters (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers and Blood Seals). More kinds (thornwalls, hidden doors and so on) are planned on the same framework.
+So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks) the **physical obstacles** for Barbarians, Fighters and Monks (Collapsed Passages, Heavy Boulders, Portcullises with their winches, Chasms and Crumbling Ledges), and the **divine and death obstacles** for Clerics, Paladins, Necromancers and Blood Hunters (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers and Blood Seals), and the **hidden and locked** obstacles for Rangers and Rogues (Hidden Doors, Locked Doors, and the vanilla temple traps as hidden traps). More kinds (thornwalls, singing doors and so on) are planned on the same framework.
 
 ![A Wizard's Arcana roll shattering a Lesser Arcane Seal](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/obstacle-framework/obstacle-wizard-open.png)
 
@@ -58,10 +58,44 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 - Anyone else pays toward 16 health (8 hearts). Up to 3 players (not creative or spectating) within 4 blocks of the clicked block split it: each right-click pays one share, the price over the number of players there rounded up (16 alone, 8 each for two, 6 for three), never more than what's still owed. It opens once all 16 are paid. Paying it earns no XP. Payments so far are kept until the seal reseals or is reset.
 - It's never lethal: a payment that would take you to 0 health is refused. The price comes straight off your health, so armour, absorption hearts and resistance don't change it. A player with 16 health or less can't pay it alone (a Wizard has 10).
 
+### Hidden and locked (Rangers, Rogues, Artificers)
+**Hidden Door.** A door that looks exactly like the wall it's in: stone bricks (`hidden_door`), deepslate bricks (`hidden_deepslate_door`) or polished blackstone bricks (`hidden_blackstone_door`), shaded like a full block. Until you've found it, it's just a wall: no crosshair hint, and right-clicking does nothing. It can't be broken, and it has no protected shell (a refused block would give it away).
+- **Rangers notice them passively.** Once a second, every Hidden Door within 6 blocks of a Ranger is checked against the Ranger's passive score: 10 + the better of their Perception and Investigation bonuses. A Ranger at class levels 0-4 has a passive 14 (WIS 14 +2, proficient +2), so they notice Easy (DC 10) and Medium (DC 13) doors on their own, but not Hard (15) or Very Hard (18) ones.
+- **Anyone can search.** Sneak and right-click the side of any plain full block (a wall, not the floor or ceiling) with both hands empty. That rolls Investigation ("Search the Wall" on the HUD) on a 5 second cooldown, and finds every Hidden Door within 3 blocks of the block you clicked whose DC the total meets (a natural 20 finds them all, a natural 1 nothing). The roll shows whether or not there's a door. Blocks that do something when used (crafting tables, note blocks and the like), and anything with a block entity (chests, trap tiles), don't count as walls. The Search key (V) also finds Hidden Doors within 8 blocks, using the better of Perception and Investigation.
+- **Found for the whole party.** A door you find is revealed to you and to every member of your `/party`, and they're told who found it. It's outlined in gold dust for everyone who knows about it (within 16 blocks), and its crosshair hint appears: "Found! Anyone can open it now".
+- **Opening.** Anyone who knows about it right-clicks it with an empty hand: no roll. It slides open (no collision).
+- **XP:** whoever finds it earns the tier's class XP (Easy 5 to Very Hard 25), once until it's reset. Opening it earns nothing.
+
+**Locked Door.** An iron door with a brass keyhole. Only a **Rogue** can pick it: a Thieves' Tools roll (shown as "Lockpicking", like a locked chest) against the obstacle's tier DC, with the usual take-your-time option.
+
+| | Locked Door |
+|-|-|
+| Check | Thieves' Tools (the sheet's bonus: DEX modifier + expertise for a Rogue) |
+| Who | Rogue only |
+| Failed roll | The lock holds |
+| Natural 1 | The pick snaps (a 5 second wait); no alarm |
+| Fallback | Tear it down: hardness 50 (like obsidian). Breaking one block brings the whole door down, and raises an alarm. A key from elsewhere in the structure is meant to be the other way in, once dungeons and quests hand keys out |
+
+**Lock glint.** Rogues and Rangers see a glint of gold dust on every locked chest within 6 blocks (every half second), so they know which chests are locked before trying them.
+
+**Hidden traps.** The [dungeon traps](dungeon-traps.md) (darts, flame vents, pits) are this ticket's hidden traps: a trap one member of your `/party` has spotted is outlined for all of you, an Artificer can disarm them as well as a Rogue, and disarming one gives up its parts and class XP once per dungeon reset. The **vanilla temple traps** count too:
+
+| | Desert pyramid | Jungle temple |
+|-|-|-|
+| Trigger | The stone pressure plate in the treasure room | The tripwire hooks and string |
+| Payload | The TNT under the floor | The arrow dispensers |
+| Spotted by | Rogues and Rangers always; anyone else with a passive Perception of 13 or more; everyone in the party of someone who has spotted it. Within 6 blocks of a trigger, outlined in orange for that player only | Same |
+| Disarm | Rogue (primary) or Artificer (secondary): sneak + right-click a trigger with an empty hand. Thieves' Tools against DC 13, "Disarm" on the HUD | Same |
+| Success | The TNT turns to sandstone; you get a redstone dust. 10 class XP, once (it stays disarmed) | The dispensers turn to mossy cobblestone (their arrows gone) and the string and hooks come away; you get 2 arrows. 10 class XP, once |
+| Failed roll | Nothing; try again after 1.5 s | Same |
+| Natural 1 | The TNT is lit (2 second fuse) | Every dispenser looses an arrow at you |
+
+Only temples generated after this change are registered (a mixin on each temple piece's `generate` records their trap blocks as each chunk generates). `/place structure` counts.
+
 ### The roll
 Right-click a sealed obstacle with an empty main hand. If your class can't attempt it, the action bar says who can ("Lesser Arcane Seal (Hard). A Wizard or Warlock could dispel it.").
 
-The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the physical obstacles, Religion for Holy Wards and Desecrated Altars, Intimidation for Ossuary Gates) against its DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
+The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the physical obstacles, Religion for Holy Wards and Desecrated Altars, Intimidation for Ossuary Gates, Thieves' Tools for Locked Doors) against its DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
 
 | Tier | DC | Class XP for the solver |
 |-|-|-|
@@ -73,6 +107,7 @@ The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the
 Your class decides whether you may try (Wizards and Warlocks for a Lesser seal, only Wizards for a Greater one); the sheet decides how good you are. Both classes are proficient in Arcana. With the class scores alone, a Wizard (INT 15) rolls +4 and a Warlock (INT 12) +3 at class levels 0-4, one more at 5-8 (proficiency +3) and two more at 9-10 (+4). Race bonuses and admin overrides on the sheet count too. The crosshair hint shows the same bonus.
 
 - **Success:** the roll shows, and 1.3 seconds (26 ticks) later the whole seal opens: every touching block of the same seal, up to 48. Open seal blocks have no collision and leave a faint broken frame. The solver gets the class XP above.
+- **XP once per reset:** an obstacle group pays out its class XP only once. If it reseals on a timer (`/dndobstacle reseal`) or is worked again, solving it again earns nothing until it's reset (`/dndobstacle reset`, or a dungeon reset).
 - **Failure:** the seal's sting (above) and a 1.5 second wait before you can try again.
 - **Natural 1:** the fumble sting, a 5 second wait, and an alarm that will wake dormant monsters within 16 blocks once dungeons use it.
 
@@ -96,13 +131,15 @@ Operators (permission level 2):
 
 | Command | What it does |
 |-|-|
-| `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`, `dndclasses:holy_ward`, `dndclasses:desecrated_altar`, `dndclasses:dread_ward`, `dndclasses:ossuary_gate`, `dndclasses:blood_seal`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
+| `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`, `dndclasses:holy_ward`, `dndclasses:desecrated_altar`, `dndclasses:dread_ward`, `dndclasses:ossuary_gate`, `dndclasses:blood_seal`, `dndclasses:hidden_door`, `dndclasses:hidden_deepslate_door`, `dndclasses:hidden_blackstone_door`, `dndclasses:locked_door`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
 | `/dndobstacle info <pos>` | Type, tier, DC, state, group size and who can attempt it |
 | `/dndobstacle open <pos>` | Opens the whole group (no XP) |
-| `/dndobstacle reset <pos>` | Reseals the whole group and clears its progress: a Holy Ward's potion count, a Blood Seal's payments, and the "already earned XP" mark of a portcullis winch or desecrated altar |
+| `/dndobstacle reset <pos>` | Reseals the whole group and clears its progress: a Holy Ward's potion count, a Blood Seal's payments, who has found a Hidden Door, and the "already earned XP" mark every group carries |
 | `/dndobstacle settier <pos> <tier>` | Retiers the whole group |
 | `/dndobstacle reseal <pos> <ticks>` | The group reseals itself this long after opening (0 = never, the default) |
 | `/dndobstacle link <winch> <target>` | Connects a portcullis winch to a portcullis block, or a bridge winch to a chasm block |
+| `/dndobstacle traps` | Lists the vanilla temple traps within 256 blocks (trigger position, armed or disarmed) |
+| `/dndobstacle traps tp` | Teleports you to a safe spot beside the nearest temple trap trigger |
 | `/dndobstacle list [radius]` | Lists obstacle groups near you (default 64 blocks) |
 | `/dndobstacle sleep [radius]` | Lays every undead mob within the radius (default 8) down as a Crypt Sleeper |
 | `/dndobstacle wake [radius]` | Wakes the Crypt Sleepers within the radius (default 8) |
@@ -122,6 +159,11 @@ None.
 - A Desecrated Altar only quiets spawner blocks. Dungeon or structure spawning that doesn't use a spawner block isn't affected.
 - Crypt Sleepers have no crosshair hint, and a Bard gets no special way past them yet.
 - Dread Wards apply their effects to players only; mobs in the zone aren't frightened.
+- Hidden Doors are unbreakable, so mining at a wall can still give one away if the blocks round it break normally. Who has found a door is kept on the door, so it survives restarts; who has spotted a temple trap is kept in memory and is found again on the next pass.
+- A Hidden Door found before you joined a party stays hidden from your new party members until one of them finds it too.
+- The wall search uses the character sheet's Investigation bonus, with no extra for Utility characters yet (that's the party-role synergies ticket).
+- Locked Doors have no key yet: the key item belongs to the dungeon and quest work.
+- Temple traps can't be found with the Search key (V), and a jungle temple's two tripwires count as one trap: disarming either disarms both.
 - A wedged portcullis that an operator reseals directly (rather than through its winch) leaves the winch showing as wedged until the winch is reset too.
 
 ## For developers
@@ -142,9 +184,13 @@ None.
 - `ObstacleGroups.openFor(world, pos, ticks)` opens a group on a timer (reseal ticks are checked every tick); `ObstaclePlacer.chasm(...)` lays a chasm bridge and `ObstaclePlacer.winch(...)` places a winch linked to its target.
 - `dungeon/GateKind` has `COLLAPSED_PASSAGE`, `HOLY_WARD` and `OSSUARY_GATE` (main-path safe) and `HEAVY_BOULDER` and `BLOOD_SEAL` (strict, side vaults).
 - Divine and death types: `HolyWardType` (potion count in the group's `Data.Doused`; `PotionEntityMixin` calls `onPotionBurst`), `DesecratedAltarType` (`MobSpawnerLogicMixin` cancels `serverTick` while an open altar is within 12 blocks, found through `ObstacleIndex`; it reopens on a 12000-tick `ObstacleGroups.openFor` timer), `DreadWardType` (per-second `END_WORLD_TICK` aura), `OssuaryGateType`, `BloodSealType` (payments in `Data.Paid`) and `RisenUndead.raise(...)` for undead that rise beside an obstacle. `Obstacles/CryptSleepers` holds the sleeper tag, `sleep(mob)`, `wake(...)` and `undeadAllied(player)`.
+- Hidden and locked types: `HiddenDoorType` (one per look; who has found it is `Data.Revealed`, a list of UUID strings, synced to clients for the hint; `reveal(...)` adds the finder's whole party), `LockedDoorType`. `HiddenSearch` is the sneak + right-click wall search, `ObstacleAuras` the per-second Ranger passive check, door outlines and lock glint. `ObstacleBlockEntity` is a `Perceivable`, so a Search (V) finds hidden obstacles. `VanillaTraps` (a per-dimension `PersistentState`) holds the temple traps; `mixin/TempleTrapsMixin` fills it from `DesertTempleGenerator` and `JungleTempleGenerator`.
+- New `ObstacleType` hooks: `hiddenFrom(world, pos, player)` (no hint, right-click passes), `disguised()` (shaded like a full block while sealed), `protectsShell()` and `rollLabel()` (the HUD label, e.g. Lockpicking).
+- `ObstacleInteractions.solve` pays XP through `ObstacleGroups.claimReward`, which marks the group's `Data.XpEarned`; `ObstacleGroups.reset` clears it.
 - `ObstacleGroups.dataInt` / `setDataInt` keep a per-type number on every block of a group. `ObstacleEvents.SOLVED` fires only for a solve that earns XP (not re-cranking a winch, paying a Blood Seal's fallback price, or re-consecrating an altar).
 - Textures are made by `tools/divine_obstacle_textures.py`. `devscripts/obstacle-divine.txt` covers a Cleric, a Fighter's fallbacks, the Dread Ward, a Necromancer, a crypt sleeper and the Blood Seal.
 - Textures are made by `tools/physical_obstacle_textures.py`. `devscripts/obstacle-physical.txt` covers a Barbarian, a Fighter, a Monk and a Wizard's solo fallbacks.
-- Textures are made by `tools/obstacle_textures.py`.
+- Textures are made by `tools/obstacle_textures.py`. The Locked Door's comes from `tools/locked_door_texture.py`; Hidden Doors use the vanilla brick models.
+- `devscripts/obstacle-hidden-locked.txt` covers a Fighter searching for a Hidden Door, a Ranger noticing one, a Locked Door (refused, picked, XP once per reset), an Artificer disarming and fumbling dungeon traps, the lock glint, and a freshly placed desert pyramid's plate spotted by a Ranger and disarmed by a Rogue. `devscripts/obstacle-party-traps-host.txt` and `-guest.txt` check that a found door and a spotted trap are shared with a party member over LAN.
 - Every roll, sting, solve and broken focus logs an `[Obstacle]` line. `devscripts/obstacle-verify.txt` rolls 40 times on an Easy seal (successes, failures, crits, fumbles) and breaks a focus by moving and by damage.
 - `devscripts/obstacle-arcane-seal.txt` covers a Fighter (hint, refusal, protected volume, mining with backlash), a Wizard (roll, take your time, XP, reset), a Warlock (take your time on Medium) and the Greater seal. It uses the DevScript step `mine on|off`, which keeps breaking the block at the crosshair.

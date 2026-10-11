@@ -1,5 +1,5 @@
 # Dungeon Master
-An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. Later tickets add roll calls, narration, loot planting, a DM Wand and a DM panel on top of this.
+An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD. Later tickets add narration, loot planting, a DM Wand and a DM panel on top of this.
 
 ## How it works
 ### DM mode
@@ -50,6 +50,18 @@ The launch set:
 ### Calling for rolls
 `/dm save @a dex 14` makes every player roll a Dexterity save: it pops up on their [save lane](saving-throws.md) and each result comes back to you in chat (`Player: Dexterity Save 13 +4 = 17 vs DC 14 -> SUCCESS`). `/dm check @p stealth 15` does the same with a skill check on the big d20 panel. Add `adv` or `dis` for advantage or disadvantage, and `silent` to roll without showing the players. Mobs can be targets of `/dm save` too (flat +1, nothing shown). For command blocks: a roll nobody succeeds at makes the command fail, so `execute store success` gives 1 or 0, and `execute store result` gives the total (one target) or how many succeeded.
 
+### Roll calls
+`/dm roll <players> <check> <dc> [advantage] [disadvantage] [secret] [auto]` asks each player for a roll on their [d20 HUD](d20-skill-checks.md#dm-roll-calls):
+- `<check>` is `str`, `dex`, `con`, `int`, `wis` or `cha` for a saving throw, any skill id (`perception`, `stealth`, `athletics`, `thieves_tools`, ...) for a skill check, or `flat` for a plain d20. Modifiers come from the player's character sheet (ability modifier, proficiency, Jack of All Trades and so on); saves go through the saving-throw rules, so Indomitable still works.
+- Each player sees a prompt with the check, the DC and "[R] Roll", and has 20 seconds to press R. After that the server rolls for them. The client only says "roll now": the server rolls, so nobody can send a result.
+- `auto` rolls for everyone at once with no prompt. `secret` hides the DC and the outcome from the players (they see their total); you still see everything. `advantage` / `disadvantage` (or `adv` / `dis`) roll two dice and keep the higher / lower, and the HUD shows both.
+- Natural 20 and natural 1 pass and fail automatically, for saves too (as everywhere in the mod).
+- Players in DM mode are left out of a call, unless they're the only one picked (so `/dm roll @s dex 14` works for testing).
+- Results come back to you in chat as they arrive (`#3 Alice 19 (nat 16 +3) PASS`, with "(timed out)" when the server rolled), then a summary once everyone has rolled: `Dexterity Save DC 14: Alice 19 (nat 16 +3) PASS · Bob 7 (nat 7 +0) FAIL · 1 of 2 failed [Passed] [Failed]`. Clicking **[Passed]** or **[Failed]** puts `/dm apply pass ` or `/dm apply fail ` in your chat box.
+- A player who still has a prompt open when a new call reaches them rolls the old one first. A player who logs out before rolling shows as "absent".
+
+`/dm apply <pass|fail|all> <command>` (op only) runs a command as and at each player of the last roll call who passed, failed, or all of them, like `execute as <player> at <player> run <command>`. For example `/dm apply fail effect give @s minecraft:slowness 10`.
+
 ### Freeze
 `/dm freeze <targets>`, `/dm freeze radius [r]` (mobs and players within `r` blocks, default 24), `/dm unfreeze <targets>`, `/dm unfreeze radius [r]` and `/dm unfreeze all`.
 - **Mobs** stop thinking (`NoAI`) and moving, glow, and hang in place if they were in the air (`NoGravity`). Their old `NoAI`, `NoGravity` and glowing are kept and put back on unfreeze.
@@ -61,7 +73,7 @@ The launch set:
 Server-side commands only; nothing to craft.
 
 ## Commands
-Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant` and `revoke`; `/dm revoke <player>` takes it back (and ends their DM mode).
+Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant`, `revoke` and `apply`; `/dm revoke <player>` takes it back (and ends their DM mode).
 
 | Command | What it does |
 |-|-|
@@ -76,6 +88,8 @@ Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets 
 | `/dm unfreeze <targets>\|radius [r]\|all` | Let them go |
 | `/dm check <players> <skill> <dc> [adv\|dis] [silent]` | A skill check on each player's big d20 panel, reported to you |
 | `/dm save <targets> <ability> <dc> [adv\|dis] [silent]` | A saving throw on the save lane; mobs roll +1 silently. See [Saving throws](saving-throws.md) |
+| `/dm roll <players> <check> <dc> [advantage\|disadvantage] [secret] [auto]` | A roll call: a prompt on each player's d20 HUD, R to roll, 20 s timeout, results and a summary to you |
+| `/dm apply pass\|fail\|all <command>` | (op only) Run a command as and at each player of the last roll call who passed / failed / all |
 
 Encounter ids tab-complete. Ids from this mod can be written without the namespace (`goblin_patrol`); others need it (`mypack:bandits`).
 
@@ -121,6 +135,8 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
 - `unfreeze all` and `encounter clear` only reach loaded entities. Mobs in unloaded chunks stay frozen (or stay put) until you go back.
 - Chests from an encounter stay after `clear`.
 - A veiled DM is still listed in the tab list, and mobs still bump into them on the server.
+- The last roll call (for `/dm apply`) and open prompts are kept in memory, so a server restart forgets them.
+- A player in creative or spectator mode rolls a called save without seeing it (the saving-throw rules hide those); skill checks and flat rolls still show.
 - DMs gain and lose no [faction reputation](factions.md). The quest hook (no quest progress for DMs) arrives with quests.
 
 ## For developers
@@ -128,8 +144,9 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `DungeonMaster`: `PersistentState` (`dndclasses_dm`) with the DM, granted and veiled sets and the live encounters. Static `isDm(entity)`, `isVeiled(entity)`, `isGranted(entity)`, `canUse(source)`. Use `isDm` to leave DMs out of any new player-counting system.
   - `DmCommand`: `/dm`, registered in `DnDClasses`.
   - `DmVeil`: veil abilities, damage cancel and `refreshTracking`. `classes/mixin/DmEntityTrackerMixin` stops `ThreadedAnvilChunkStorage.EntityTracker` tracking a veiled DM for non-DM viewers; `ThreadedAnvilChunkStorageAccessor` + `DmTracked` re-run tracking when the veil changes.
+  - `DmRolls`: the `/dm check`, `/dm save`, `/dm roll` and `/dm apply` command trees. `DmRollCalls`: pending calls (one per player), the `dndclasses:roll_prompt` S2C packet (label, caller, DC or 0 when secret, `Advantage`, ticks left, 0 clears it) and the empty `dndclasses:roll_answer` C2S packet, the 400-tick timeout on `END_SERVER_TICK`, the result and summary lines, and `last()` for `/dm apply`. Logs `[DmRolls] call #n ...` lines.
   - `DmFreeze`: freeze/unfreeze, Fabric attack/use/break callbacks, the player hold tick; the power-up packet in `DnDClasses` checks `DmFreeze.isFrozen`.
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own.
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Roll calls: `dm-roll-calls.txt` (single player: prompt, R, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`).

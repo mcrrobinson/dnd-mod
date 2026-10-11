@@ -10,7 +10,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 2 | Bag of Holding | Uncommon wondrous item | no | Right-click: a private 27-slot inventory stored on the bag |
 | 3 | Decanter of Endless Water | Uncommon wondrous item | no | A water bucket that never empties. Sneak + right-click: a geyser |
 | 4 | Immovable Rod | Uncommon wondrous item | no | Right-click: a solid rod fixed in place where you look, for 60 s |
-| 5 | Cloak of Protection | Uncommon wondrous item | yes | +1 armor, +1 armor toughness |
+| 5 | Cloak of Protection | Uncommon wondrous item | yes | +1 armor, +1 armor toughness, +1 to every saving throw |
 | 6 | Periapt of Wound Closure | Uncommon wondrous item | yes | You stabilise as soon as you're Downed; natural regeneration twice as fast |
 | 7 | Ring of Protection | Rare ring | yes | +2 armor, +1 to every saving throw |
 | 8 | Amulet of Health | Rare wondrous item | yes | +6 max health (3 hearts), and your Constitution is at least 19 |
@@ -164,7 +164,6 @@ Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water
 - The wand's three darts land as one 6-damage hit (Minecraft's damage cooldown would swallow three quick 2-damage hits).
 - The Periapt doubles the slow natural heal only, not the fast saturation heal.
 - If you release the Immovable Rod and fix it again on the same spot within 60 s, the first placement's timer can take the new rod away early.
-- The Cloak of Protection's +1 to saving throws is a separate update.
 - The textures are 16x16 placeholders (`tools/wondrous_item_textures.py`, `tools/boss_item_textures.py`). The Storm-Chaser Boots look like diamond boots when worn.
 - The Burglar's Ring makes mobs that use the old target system forget you; brain-driven mobs (piglins, wardens) and the invisibility rules of vanilla still apply as usual.
 - The Ring's day count follows the world's time of day, so `/time set` backwards doesn't give health back until the curse is broken.

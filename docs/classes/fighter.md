@@ -15,7 +15,7 @@ Picking the class sets your health to 25.
 
 **No bows or crossbows.** Using one is refused with "Fighters cannot use bows!".
 
-**No potions.** You can't drink or throw potions, and potion buffs from any source (drinking, splash, lingering clouds, tipped arrows) don't apply to you. Harmful potion effects still do, so a witch's splash potion hurts you as normal.
+**No potions.** You can't drink potions, and potion buffs from any source (drinking, splash, lingering clouds, tipped arrows) don't apply to you. Harmful potion effects still do, so a witch's splash potion hurts you as normal. You can still throw splash and lingering potions, for example holy water at a [Holy Ward](../systems/obstacles.md).
 
 **Special (power-up key, full mana): Super Regeneration.** Regeneration V, about 3 hearts a second, for 4 seconds at rank I, 6 at II, 8 at III and 10 at IV. Rank it up at an Attunement Table (see [Class progression](../systems/class-progression.md#ability-ranks)). It isn't a potion, so it works.
 

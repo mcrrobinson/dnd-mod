@@ -104,7 +104,8 @@
         "RestMovementLockMixin",
         "RemoveCurseUseMixin",
         "PerceivedOutlineMixin",
-        "PerceivedTeamColorMixin"
+        "PerceivedTeamColorMixin",
+        "BossBarHudAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

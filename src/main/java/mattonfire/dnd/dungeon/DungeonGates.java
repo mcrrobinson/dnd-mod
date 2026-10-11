@@ -92,7 +92,7 @@ public final class DungeonGates {
                 }
             }
             if (origin != null) {
-                ObstacleGroups.seal(world, origin);
+                ObstacleGroups.reset(world, origin);
             }
             return;
         }

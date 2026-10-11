@@ -385,9 +385,10 @@ public class DnDClasses implements ModInitializer {
                                                 || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
                                         ItemStack itemStack = player.getStackInHand(hand);
 
-                                        // Check if the item is a potion
-                                        if (itemStack.isOf(Items.POTION) || itemStack.isOf(Items.SPLASH_POTION)
-                                                        || itemStack.isOf(Items.LINGERING_POTION)) {
+                                        // Only drinking is blocked. Splash and lingering potions can still be
+                                        // thrown (e.g. holy water at a Holy Ward); PotionImmunity keeps their
+                                        // buffs off the thrower.
+                                        if (itemStack.isOf(Items.POTION)) {
                                                 // Prevent the player from using it
                                                 player.sendMessage(Text
                                                                 .of("You are not allowed to drink potions!"),

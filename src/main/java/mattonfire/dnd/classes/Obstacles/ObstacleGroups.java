@@ -63,6 +63,33 @@ public final class ObstacleGroups {
         return setState(world, origin, ObstacleState.SEALED);
     }
 
+    /**
+     * Puts the group back as new (a dungeon reset, {@code /dndobstacle reset}): reseals it and clears its
+     * {@linkplain ObstacleType#progressKeys() progress}, even on blocks that were still sealed, such as a
+     * part-doused Holy Ward. Returns how many blocks were resealed.
+     */
+    public static int reset(ServerWorld world, BlockPos origin) {
+        List<BlockPos> group = group(world, origin);
+        int changed = seal(world, origin);
+        for (BlockPos pos : group) {
+            BlockState state = world.getBlockState(pos);
+            if (state.getBlock() instanceof ObstacleBlock block
+                    && world.getBlockEntity(pos) instanceof ObstacleBlockEntity be) {
+                boolean cleared = false;
+                for (String key : block.type().progressKeys()) {
+                    if (be.data().contains(key)) {
+                        be.data().remove(key);
+                        cleared = true;
+                    }
+                }
+                if (cleared) {
+                    be.markDirty();
+                }
+            }
+        }
+        return changed;
+    }
+
     private static int setState(ServerWorld world, BlockPos origin, ObstacleState target) {
         int changed = 0;
         long now = world.getTime();

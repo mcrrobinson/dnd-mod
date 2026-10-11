@@ -154,6 +154,15 @@ public abstract class ObstacleType {
     public void onBrokenByHand(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {
     }
 
+    /**
+     * Keys in a block's {@code Data} that hold progress towards the obstacle (potions thrown, health paid,
+     * "already earned XP" flags). {@link ObstacleGroups#reset} clears them on every block of the group,
+     * sealed or not; a reseal on a timer keeps them.
+     */
+    public List<String> progressKeys() {
+        return List.of();
+    }
+
     /** Effects when a group opens or reseals, played at each block. */
     /** {@code first} is true for one block of the group, for sounds. */
     public void openEffects(ServerWorld world, BlockPos pos, boolean first) {

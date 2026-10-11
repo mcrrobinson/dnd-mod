@@ -1,0 +1,105 @@
+# PR #179 two-player checks (host). Port 25619. Run with -PdevUser=LongestNameHere1 so the guest's party HUD shows a 16-character name.
+# Guest: devscripts/obstacle-fixes-lan-guest.txt with -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25619
+wait 40
+closescreen
+respawn
+wait 20
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule naturalRegeneration false
+/gamerule dndDeathSaves 1
+/gamerule dndRests false
+/gamerule sendCommandFeedback true
+/time set noon
+/weather clear
+/kill @e[type=!minecraft:player]
+/party leave
+/fill 0 149 0 20 149 40 minecraft:stone
+/fill 0 150 0 20 156 40 minecraft:air
+/publish false survival 25619
+waitchat guest-ready
+wait 20
+/gamemode survival @a
+/clear @a
+/effect clear @a
+# Blood Seal: host pays half with two sharers, a reset clears the payment
+/dndobstacle place 9 150 36 11 151 36 dndclasses:blood_seal medium
+/dndclass set @s fighter
+/dndclass set Guest fighter
+/effect give @a minecraft:instant_health 1 4 true
+wait 10
+/tp @s 10.5 150 34.5 0 20
+/tp Guest 11.5 150 34.5 0 20
+wait 20
+/execute as @a run data get entity @s Health
+use
+wait 20
+/execute as @a run data get entity @s Health
+/data get block 10 150 36 Data
+/data get block 11 151 36 Data
+/execute if block 10 150 36 dndclasses:blood_seal[state=sealed]
+/say blood-reset
+/dndobstacle reset 10 150 36
+/data get block 10 150 36 Data
+/data get block 11 151 36 Data
+/effect give @a minecraft:instant_health 1 4 true
+wait 10
+use
+wait 20
+/data get block 10 150 36 Data
+/execute if block 10 150 36 dndclasses:blood_seal[state=sealed]
+/fill 9 150 36 11 151 36 minecraft:air
+# Downed row with a boss bar
+/dndclass set @s rogue
+/dndclass set Guest rogue
+/attribute @s minecraft:generic.max_health base set 20
+/attribute Guest minecraft:generic.max_health base set 20
+/effect give @a minecraft:instant_health 1 4 true
+/party create
+/party invite Guest
+waitchat Guest joined the party
+/bossbar add dndtest "Test Boss"
+/bossbar set dndtest players @a
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 18.5 180 10
+wait 40
+/me hud-normal
+wait 40
+/dndclass forceroll @s 15 5 5
+/dndclass down @s
+/me host-downed
+wait 2
+screenshot ofh-host-downed-own
+wait 130
+/me host-save1
+wait 120
+/me host-save2
+wait 120
+/me host-save3
+wait 60
+/dndclass stabilise @s
+wait 20
+/me host-stable
+wait 60
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+/bossbar remove dndtest
+wait 20
+/me no-bossbar
+wait 40
+/dndclass forceroll @s 15 15 15
+/dndclass down @s
+wait 30
+/me downed-no-bossbar
+waitchat guest-done
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+/party leave
+/attribute @s minecraft:generic.max_health base set 20
+wait 20
+quit

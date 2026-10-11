@@ -31,7 +31,7 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 
 - **Rage:** a raging Barbarian rolls Athletics with advantage (two dice, keep the higher). This comes from the [character sheet](ability-scores.md), so it covers every Athletics obstacle.
 - **Wedge (Fighters only):** while the portcullis is up, a Fighter who succeeds at the winch again jams it. The gate stays up for good and the winch shows as wedged. Resetting the winch (`/dndobstacle reset`) drops the gate again.
-- Only the first raise of a winch earns class XP, so cranking it over and over isn't a way to level. A wedge earns XP once.
+- Only the first raise of a winch earns class XP, so cranking it over and over isn't a way to level. A wedge earns XP once too. Both count again after the winch is reset (`/dndobstacle reset`).
 - The **Portcullis** itself has no check. Its hint says its winch raises it; right-clicking it just says so. A winch works the nearest portcullis within 6 blocks, unless a structure or `/dndobstacle link` tells it which one.
 
 **Chasm.** A gap with a pit under it, and a **Bridge Winch** on the far side. The chasm's top layer is its retracted bridge: invisible and with no collision, so you fall straight through, but it's a sealed obstacle, so nobody can build across it or pillar up within a block of it. There's no roll: whoever gets across right-clicks the bridge winch (with an empty hand) and the bridge (spruce planks) swings down for everyone. The first lowering earns the winch's tier XP. Chasms are meant to be 7 blocks long: a Monk's triple jump clears that, a sprint jump (about 4 blocks) doesn't. An ender pearl or a Rogue's 12-block Shadowstep also gets across, and falling in means climbing out of the pit the hard way. A bridge winch works the nearest chasm within 8 blocks unless linked.
@@ -55,7 +55,7 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 
 **Blood Seal.** A dripping red sigil door (light 4) that opens for a price in blood, not a roll. Right-click it with an empty hand:
 - A **Blood Hunter** pays 4 health (2 hearts) and it opens, for class XP.
-- Anyone else pays toward 16 health (8 hearts). Up to 3 players (not creative or spectating) within 4 blocks of the clicked block split it: each right-click pays one share, the price over the number of players there rounded up (16 alone, 8 each for two, 6 for three), never more than what's still owed. It opens once all 16 are paid. Paying it earns no XP. Payments so far are kept until the seal reseals.
+- Anyone else pays toward 16 health (8 hearts). Up to 3 players (not creative or spectating) within 4 blocks of the clicked block split it: each right-click pays one share, the price over the number of players there rounded up (16 alone, 8 each for two, 6 for three), never more than what's still owed. It opens once all 16 are paid. Paying it earns no XP. Payments so far are kept until the seal reseals or is reset.
 - It's never lethal: a payment that would take you to 0 health is refused. The price comes straight off your health, so armour, absorption hearts and resistance don't change it. A player with 16 health or less can't pay it alone (a Wizard has 10).
 
 ### The roll
@@ -99,7 +99,7 @@ Operators (permission level 2):
 | `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`, `dndclasses:holy_ward`, `dndclasses:desecrated_altar`, `dndclasses:dread_ward`, `dndclasses:ossuary_gate`, `dndclasses:blood_seal`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
 | `/dndobstacle info <pos>` | Type, tier, DC, state, group size and who can attempt it |
 | `/dndobstacle open <pos>` | Opens the whole group (no XP) |
-| `/dndobstacle reset <pos>` | Reseals the whole group |
+| `/dndobstacle reset <pos>` | Reseals the whole group and clears its progress: a Holy Ward's potion count, a Blood Seal's payments, and the "already earned XP" marks of a portcullis winch or desecrated altar |
 | `/dndobstacle settier <pos> <tier>` | Retiers the whole group |
 | `/dndobstacle reseal <pos> <ticks>` | The group reseals itself this long after opening (0 = never, the default) |
 | `/dndobstacle link <winch> <target>` | Connects a portcullis winch to a portcullis block, or a bridge winch to a chasm block |

@@ -9,6 +9,7 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.pathing.Path;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.MobEntity;
@@ -22,6 +23,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.RaycastContext;
@@ -35,7 +37,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>An archer posted on a tower ({@link #isPosted}) can't see the ground near the tower from the middle of
  * its platform, so it counts a target as seen when some spot of the platform has a clear line to it
- * ({@link #firingSpot}), and steps to that spot (a gap in the rail) to shoot.
+ * ({@link #firingSpot}), and steps to that spot (usually its edge) to shoot.
  */
 public class OrcArcherEntity extends OrcEntity implements CrossbowUser {
     public static final float RANGE = 16.0F;
@@ -43,9 +45,13 @@ public class OrcArcherEntity extends OrcEntity implements CrossbowUser {
     public static final int POST_RANGE = 4;
     /** How far from its post a posted archer looks for a spot to shoot from. */
     private static final int FIRING_SPOT_RADIUS = 3;
+    /** How far off a block's middle a firing spot may be. */
+    private static final double SPOT_STEP = 0.3D;
+    /** How far from a firing spot its line of sight must still be clear. */
+    private static final double SPOT_SLACK = 0.12D;
 
     @Nullable
-    private BlockPos firingSpot;
+    private Vec3d firingSpot;
     @Nullable
     private Entity firingSpotTarget;
     private int firingSpotAge = -1;
@@ -80,12 +86,13 @@ public class OrcArcherEntity extends OrcEntity implements CrossbowUser {
     }
 
     /**
-     * For a posted archer: the nearest spot within {@link #FIRING_SPOT_RADIUS} blocks of its post, on the
-     * post's level, where it could stand and see {@code target} within {@link #RANGE} blocks. Null if none,
-     * or if the archer isn't posted. Worked out at most once a tick per target.
+     * For a posted archer: the nearest point within {@link #FIRING_SPOT_RADIUS} blocks of its post, on the
+     * post's level, where it could stand and see {@code target} within {@link #RANGE} blocks. Each block is
+     * tried at its middle and {@link #SPOT_STEP} blocks off it, so the archer can stand near an edge and look
+     * steeply down. Null if none, or if the archer isn't posted. Worked out at most once a tick per target.
      */
     @Nullable
-    BlockPos firingSpot(Entity target) {
+    Vec3d firingSpot(Entity target) {
         if (!this.isPosted() || target.world != this.world) {
             return null;
         }
@@ -98,36 +105,56 @@ public class OrcArcherEntity extends OrcEntity implements CrossbowUser {
     }
 
     @Nullable
-    private BlockPos findFiringSpot(Entity target) {
+    private Vec3d findFiringSpot(Entity target) {
         BlockPos home = this.getHome();
         Vec3d eyes = target.getEyePos();
         double reach = RANGE + FIRING_SPOT_RADIUS + 1;
         if (home == null || Vec3d.ofBottomCenter(home).squaredDistanceTo(eyes) > reach * reach) {
             return null;
         }
-        BlockPos best = null;
+        Vec3d best = null;
         double bestDistance = Double.MAX_VALUE;
-        BlockPos.Mutable spot = new BlockPos.Mutable();
+        BlockPos.Mutable block = new BlockPos.Mutable();
         for (int dx = -FIRING_SPOT_RADIUS; dx <= FIRING_SPOT_RADIUS; dx++) {
             for (int dz = -FIRING_SPOT_RADIUS; dz <= FIRING_SPOT_RADIUS; dz++) {
-                spot.set(home.getX() + dx, home.getY(), home.getZ() + dz);
-                double distance = this.squaredDistanceTo(spot.getX() + 0.5D, spot.getY(), spot.getZ() + 0.5D);
-                if (distance >= bestDistance || !this.canStandAt(spot)) {
+                block.set(home.getX() + dx, home.getY(), home.getZ() + dz);
+                if (!this.canStandAt(block)) {
                     continue;
                 }
-                Vec3d from = new Vec3d(spot.getX() + 0.5D, spot.getY() + this.getStandingEyeHeight(), spot.getZ() + 0.5D);
-                if (from.squaredDistanceTo(eyes) > RANGE * RANGE) {
-                    continue;
-                }
-                HitResult hit = this.world.raycast(new RaycastContext(from, eyes, RaycastContext.ShapeType.COLLIDER,
-                        RaycastContext.FluidHandling.NONE, this));
-                if (hit.getType() == HitResult.Type.MISS) {
-                    best = spot.toImmutable();
-                    bestDistance = distance;
+                for (int ox = -1; ox <= 1; ox++) {
+                    for (int oz = -1; oz <= 1; oz++) {
+                        Vec3d feet = new Vec3d(block.getX() + 0.5D + ox * SPOT_STEP, block.getY(), block.getZ() + 0.5D + oz * SPOT_STEP);
+                        double distance = this.squaredDistanceTo(feet);
+                        if (distance >= bestDistance) {
+                            continue;
+                        }
+                        Vec3d from = feet.add(0.0D, this.getStandingEyeHeight(), 0.0D);
+                        if (from.squaredDistanceTo(eyes) <= RANGE * RANGE && this.clearAround(from, eyes)) {
+                            best = feet;
+                            bestDistance = distance;
+                        }
+                    }
                 }
             }
         }
         return best;
+    }
+
+    /**
+     * Whether the line to {@code eyes} is clear from {@code from} and from points {@link #SPOT_SLACK} blocks
+     * either side of it, since the archer never stops exactly on its spot.
+     */
+    private boolean clearAround(Vec3d from, Vec3d eyes) {
+        double[][] offsets = {{0, 0}, {SPOT_SLACK, 0}, {-SPOT_SLACK, 0}, {0, SPOT_SLACK}, {0, -SPOT_SLACK}};
+        for (double[] offset : offsets) {
+            Vec3d start = from.add(offset[0], 0.0D, offset[1]);
+            HitResult hit = this.world.raycast(new RaycastContext(start, eyes, RaycastContext.ShapeType.COLLIDER,
+                    RaycastContext.FluidHandling.NONE, this));
+            if (hit.getType() != HitResult.Type.MISS) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean canStandAt(BlockPos pos) {
@@ -138,17 +165,22 @@ public class OrcArcherEntity extends OrcEntity implements CrossbowUser {
                 && this.world.getBlockState(head).getCollisionShape(this.world, head).isEmpty();
     }
 
-    /** Walks to the middle of {@code spot}: by path while it's further than a block, then straight. */
-    void stepTo(BlockPos spot) {
-        double x = spot.getX() + 0.5D;
-        double z = spot.getZ() + 0.5D;
-        double dx = x - this.getX();
-        double dz = z - this.getZ();
-        if (dx * dx + dz * dz > 1.0D) {
-            this.getNavigation().startMovingTo(x, spot.getY(), z, 1.0D);
+    /**
+     * Walks to {@code spot}: by path while it's more than a block and a half away, then straight at it,
+     * slowing down near it so it stops close to the point.
+     */
+    void stepTo(Vec3d spot) {
+        double dx = spot.x - this.getX();
+        double dz = spot.z - this.getZ();
+        double distance = Math.sqrt(dx * dx + dz * dz);
+        if (distance > 1.5D) {
+            Path path = this.getNavigation().findPathTo(BlockPos.ofFloored(spot), 0);
+            this.getNavigation().startMovingAlong(path, 1.0D);
         } else {
             this.getNavigation().stop();
-            this.getMoveControl().moveTo(x, spot.getY(), z, 0.6D);
+            if (distance > 0.05D) {
+                this.getMoveControl().moveTo(spot.x, spot.y, spot.z, MathHelper.clamp(distance * 1.5D, 0.15D, 0.8D));
+            }
         }
     }
 
@@ -241,7 +273,7 @@ public class OrcArcherEntity extends OrcEntity implements CrossbowUser {
             double distance = this.archer.squaredDistanceTo(target);
             boolean inRange = sees && distance <= RANGE * RANGE;
             // Archers posted on a tower hold their post, stepping to the edge to see down.
-            BlockPos spot = null;
+            Vec3d spot = null;
             if (inRange) {
                 this.archer.getNavigation().stop();
             } else if (this.archer.isPosted()) {

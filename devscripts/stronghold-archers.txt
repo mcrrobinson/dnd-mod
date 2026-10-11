@@ -1,0 +1,103 @@
+# Orc Stronghold tower archers (fix/stronghold-temple): run on a fresh copy of New World with the region,
+# entities, poi and data folders deleted, so the stronghold at -1080 -648 generates with the new rail:
+#   timeout 400 ./gradlew runClient -PdevWorld=<fresh copy> -PdevScript=devscripts/stronghold-archers.txt
+# A Hostile human stands outside the gate, in front of it and in the yard, 15 s each: health should drop
+# (bolts hit; the player is healed every 5 s) in each spot, then the archers should be back on their towers.
+wait 40
+closescreen
+respawn
+wait 20
+/gamemode spectator
+/difficulty normal
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/dndrace set @s human
+/rep @s dndclasses:bloodtusk_horde set -600
+/tp @s -1050 110 -648
+/say sync1
+waitchat sync1
+wait 100
+/kill @e[type=dndclasses:orc_warrior]
+/say ARCHERS at their posts
+/execute as @e[type=dndclasses:orc_archer] run data get entity @s Pos
+/execute as @e[type=dndclasses:orc_archer] run data get entity @s Home
+hud off
+/tp @s -1046 104 -647.5 90 35
+wait 40
+screenshot sa-rail-gate
+/tp @s -1057.5 106 -634 180 50
+wait 40
+screenshot sa-rail-south
+hud on
+/gamemode survival
+/effect clear @s
+/effect give @s resistance 1000 3 true
+/attribute @s minecraft:generic.max_health base set 40
+/effect give @s instant_health 1 5 true
+/kill @e[type=arrow]
+/tp @s -1047.5 87 -647.5 90 -35
+/say sync2
+waitchat sync2
+/say ARCHERS outside start
+/data get entity @s Health
+wait 100
+clearchat
+screenshot sa-outside
+/data get entity @s Health
+/effect give @s instant_health 1 5 true
+wait 100
+/data get entity @s Health
+/effect give @s instant_health 1 5 true
+wait 100
+/say ARCHERS outside after 15 s
+/data get entity @s Health
+/execute if entity @e[type=arrow]
+/execute as @e[type=dndclasses:orc_archer] run data get entity @s Pos
+/kill @e[type=arrow]
+/effect give @s instant_health 1 5 true
+/tp @s -1052.5 87 -647.5 90 -45
+/say sync3
+waitchat sync3
+/say ARCHERS gateway start
+/data get entity @s Health
+wait 100
+/data get entity @s Health
+/effect give @s instant_health 1 5 true
+wait 100
+/data get entity @s Health
+/effect give @s instant_health 1 5 true
+wait 100
+/say ARCHERS gateway after 15 s
+/data get entity @s Health
+/execute if entity @e[type=arrow]
+/execute as @e[type=dndclasses:orc_archer] run data get entity @s Pos
+/kill @e[type=arrow]
+/effect give @s instant_health 1 5 true
+/tp @s -1066.5 87 -647.5 -90 -35
+/say sync4
+waitchat sync4
+/say ARCHERS yard start
+/data get entity @s Health
+wait 100
+clearchat
+screenshot sa-yard
+/data get entity @s Health
+/effect give @s instant_health 1 5 true
+wait 100
+/data get entity @s Health
+/effect give @s instant_health 1 5 true
+wait 100
+/say ARCHERS yard after 15 s
+/data get entity @s Health
+/execute if entity @e[type=arrow]
+/execute as @e[type=dndclasses:orc_archer] run data get entity @s Pos
+/gamemode spectator
+/tp @s -1050 130 -648
+wait 400
+/say ARCHERS after the fight
+/execute as @e[type=dndclasses:orc_archer] run data get entity @s Pos
+/execute if entity @e[type=dndclasses:orc_archer]
+/attribute @s minecraft:generic.max_health base set 20
+quit

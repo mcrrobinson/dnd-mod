@@ -1,0 +1,33 @@
+# Dragon Temple lair distance (fix/stronghold-temple): run on a fresh copy of New World (seed
+# 8279404060499977235) with the region, entities, poi and data folders deleted:
+#   timeout 900 ./gradlew runClient -PdevWorld=<fresh copy> -PdevScript=devscripts/temple-lair-distance.txt
+# Checks, in logs/latest.log:
+# - the nearest temple to -5400 5304 is not the bad one at -5408 5296 (no lair generates within 10 chunks)
+# - "[TempleSurvey] ... 0 fail" for 3x3 grids round -5400 5304 and 1440 7232, with at least one temple
+# - goblin camps, elven enclaves, hobbit villages and dragon lairs are still found by /locate
+wait 40
+closescreen
+/gamemode spectator
+/tp @s -5400 200 5304
+wait 40
+/locate structure dndclasses:dragon_temple
+waitchat dndclasses:
+/dndhome templesurvey 3 2000
+waitchat temples,
+/tp @s 1440 200 7232
+wait 40
+/locate structure dndclasses:dragon_temple
+waitchat dndclasses:
+/dndhome templesurvey 3 2000
+waitchat temples,
+/tp @s 0 200 0
+wait 40
+/locate structure dndclasses:goblin_camp
+waitchat dndclasses:
+/locate structure dndclasses:elven_enclave
+waitchat dndclasses:
+/locate structure dndclasses:hobbit_village
+waitchat dndclasses:
+/locate structure dndclasses:dragon_lair
+waitchat dndclasses:
+quit

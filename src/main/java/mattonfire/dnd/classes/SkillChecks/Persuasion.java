@@ -50,6 +50,15 @@ public final class Persuasion {
     }
 
     /**
+     * Whether {@code villager} can be persuaded at all: an adult with a trade (not jobless, not a nitwit).
+     * Insight's read of a villager checks the same thing.
+     */
+    public static boolean hasTrade(VillagerEntity villager) {
+        VillagerProfession profession = villager.getVillagerData().getProfession();
+        return !villager.isBaby() && profession != VillagerProfession.NONE && profession != VillagerProfession.NITWIT;
+    }
+
+    /**
      * The DC to persuade {@code target}: {@link #DC} shifted by the player's standing with its faction
      * (Hostile +5, Unfriendly +3, Friendly -2, Honored -4, Exalted -6). Dialogue checks use the same shift.
      */
@@ -70,9 +79,7 @@ public final class Persuasion {
                     || D20.classOf(player) != DndCharacter.BARD) {
                 return ActionResult.PASS;
             }
-            VillagerProfession profession = villager.getVillagerData().getProfession();
-            if (villager.isBaby() || villager.isSleeping() || villager.hasCustomer()
-                    || profession == VillagerProfession.NONE || profession == VillagerProfession.NITWIT) {
+            if (!hasTrade(villager) || villager.isSleeping() || villager.hasCustomer()) {
                 return ActionResult.PASS;
             }
 

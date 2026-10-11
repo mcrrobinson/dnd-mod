@@ -160,7 +160,8 @@ public final class Study {
             List<Text> lines = new ArrayList<>();
             lines.add(Text.translatable("study.dndclasses.insight.reputation",
                     Text.translatable("study.dndclasses.insight.mood." + mood), reputation));
-            lines.add(Text.translatable(Persuasion.triedToday(player, villager)
+            lines.add(Text.translatable(!Persuasion.hasTrade(villager) ? "study.dndclasses.insight.unpersuadable"
+                    : Persuasion.triedToday(player, villager)
                     ? "study.dndclasses.insight.persuaded" : "study.dndclasses.insight.persuadable"));
             return lines;
         });

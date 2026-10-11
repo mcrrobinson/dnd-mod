@@ -6,6 +6,9 @@
     "mixins": [
         "BowItemMixin",
         "ElvenChainVibrationMixin",
+        "ElvenChainBreakMixin",
+        "ElvenChainDropsMixin",
+        "ElvenChainItemVibrationMixin",
         "CrossbowItemMixin",
         "ItemStackNameMixin",
         "PlayerEntityMixin",
@@ -87,6 +90,8 @@
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
         "MouseAccessor",
+        "InGameHudAccessor",
+        "MerchantScreenAccessor",
         "DoubleJumpMixin",
         "InGameHudMixin",
         "EntityRenderDispatcherMixin",
@@ -99,7 +104,8 @@
         "RestMovementLockMixin",
         "RemoveCurseUseMixin",
         "PerceivedOutlineMixin",
-        "PerceivedTeamColorMixin"
+        "PerceivedTeamColorMixin",
+        "BossBarHudAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -10,7 +10,7 @@ A holy tank that protects the players around it and calls down judgment on its f
 
 Picking the class sets your health to 25.
 
-**Unaffected by potions.** Potion effects from drinking, splash, lingering clouds and tipped arrows never apply to you, good or bad. You can't drink or throw potions either. Effects from abilities, beacons, food and so on still work, so golden apples and a beacon are your buffs.
+**Unaffected by potions.** Potion effects from drinking, splash, lingering clouds and tipped arrows never apply to you, good or bad. You can't drink potions either, though you can still throw splash and lingering ones (at a [Holy Ward](../systems/obstacles.md), say). Effects from abilities, beacons, food and so on still work, so golden apples and a beacon are your buffs.
 
 **Can't craft.** You can't take results out of the crafting grid, crafting table, stonecutter, loom or smithing table ("Paladins cannot craft items!"). Furnaces still work.
 

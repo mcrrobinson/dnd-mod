@@ -109,7 +109,7 @@ Everything hides with F1.
 - **Party members** within 64 blocks are drawn with a **red outline through walls** while Downed (gold once stable), so you can find them in a cave or behind a wall.
 - **Everyone else** sees red damage particles rise from a Downed player every second.
 - **Name tag:** a Downed player's name tag reads "Steve (Downed)".
-- **Party HUD:** a Downed member's entry shows `DOWNED ●●○ ✕○○` in red (green dots for passes, red crosses for fails) in place of their HP, or `STABLE` in yellow, over a pulsing red (or yellow) bar. See [Party](party.md).
+- **Party HUD:** a Downed member's entry shows `DOWNED` in red in place of their HP and their saves `●●○ ✕○○` (green dots for passes, red crosses for fails) on a pulsing red bar, or `STABLE` in yellow over a pulsing yellow bar. See [Party](party.md).
 
 ### Last Stand
 With nobody to help you, you get one roll against **DC 15** instead (it shows as "Last Stand"):

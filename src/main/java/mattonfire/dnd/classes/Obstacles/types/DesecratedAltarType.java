@@ -185,4 +185,9 @@ public final class DesecratedAltarType extends ObstacleType {
             world.playSound(null, pos, SoundEvents.PARTICLE_SOUL_ESCAPE, SoundCategory.BLOCKS, 1.5f, 0.5f);
         }
     }
+
+    @Override
+    public List<String> progressKeys() {
+        return List.of(CONSECRATED_KEY);
+    }
 }

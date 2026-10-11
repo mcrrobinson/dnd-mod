@@ -12,11 +12,15 @@ closescreen
 wait 10
 closescreen
 /kill @e[tag=qc]
+# A dying NPC can still be clicked for 20 ticks: let NPCs left by an earlier chain script finish dying
+wait 25
 /fill -6 149 -6 6 149 6 minecraft:glass
 /tp @s 0.5 150 0.5 0 25
 /clear @s
 /quest admin @s reset dndclasses:eye_below/1
 /quest admin @s reset dndclasses:ice_and_storm/1
+# The Warlord's Trail also unlocks The Eye Below (finished by quest-chain-goblin-menace.txt with the same -PdevUser)
+/quest admin @s reset dndclasses:goblin_menace/2
 /rep @s dndclasses:mountain_dwarves set 450
 # Not offered yet: no earlier chain finished
 /summon dndclasses:mountain_dwarf 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["qc","dndclasses.role.dwarf_king"]}
@@ -25,8 +29,13 @@ use
 wait 10
 screenshot qc-d-1-not-offered
 closescreen
+# Starting Ice and Storm looks for a frost lair for its map, which holds up the server for a while
 /quest admin @s start dndclasses:ice_and_storm/1
+waitserver 2
 /quest admin @s complete dndclasses:ice_and_storm/1
+waitserver 2
+# NPCs other than the innkeeper only talk to an empty hand
+/clear @s
 use
 wait 10
 screenshot qc-d-2-offer

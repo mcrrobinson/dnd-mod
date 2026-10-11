@@ -8,6 +8,8 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Config.SaveRollsMode;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.mixin.InGameHudAccessor;
+import mattonfire.dnd.classes.mixin.MerchantScreenAccessor;
 import mattonfire.dnd.classes.mixin.MouseAccessor;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -50,12 +52,22 @@ import net.minecraft.util.Identifier;
  * <li>{@code wait <ticks>} pauses the script (20 ticks = 1 second)</li>
  * <li>{@code waitchat <text>} pauses until a chat or game message containing {@code text} arrives (at most 5
  *     minutes), to keep two clients in step: one sends {@code /say step2} or {@code /me step2}, the other waits
- *     for {@code step2}</li>
+ *     for {@code step2}. Also a barrier after a long command: {@code /say done} right after it only arrives
+ *     once the server is free again</li>
+ * <li>{@code waitserver <ticks>} pauses until the integrated server has run that many more ticks. {@code wait}
+ *     counts client ticks, which keep going while the server is busy (e.g. a long {@code /dndhome ...survey});
+ *     {@code waitserver 2} after such a command waits for it to finish. A client joined to another game
+ *     ({@code -PdevServer}) has no integrated server, so it falls back to {@code wait}</li>
  * <li>{@code screenshot <name>} saves {@code run/screenshots/<name>.png}</li>
  * <li>{@code hitboxes on|off} toggles hitbox rendering (F3+B)</li>
  * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
  *     {@code serverhitboxes measure} logs how far they are from the client's</li>
  * <li>{@code hud on|off} toggles the HUD (F1)</li>
+ * <li>{@code debug on|off} shows or hides the debug screen (F3)</li>
+ * <li>{@code guiscale <n>} sets the GUI scale (0 = auto) and logs the scale in use. The window size caps it
+ *     (854x480 allows 2 at most); start the client with {@code -PdevWidth=1920 -PdevHeight=1080} for 3 or 4</li>
+ * <li>{@code actionbar} logs the action bar text now on screen ({@code actionbar: none} if there's none).
+ *     Every new action bar message is also logged as it arrives ({@code [DevScript] actionbar: ...})</li>
  * <li>{@code clearchat} clears the chat (F3+D), so it doesn't cover the HUD in a screenshot</li>
  * <li>{@code closescreen} closes any open screen (e.g. the class picker shown on join); a container screen is
  *     closed on the server too, like pressing Esc</li>
@@ -65,7 +77,9 @@ import net.minecraft.util.Identifier;
  * Input steps act inside the game, so they work while the window is hidden or unfocused:
  * <ul>
  * <li>{@code look <yaw> <pitch>} turns the player (yaw 0 = south)</li>
- * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair</li>
+ * <li>{@code use} / {@code attack} press the use (right) / attack (left) button once, at the crosshair, and log
+ *     what the crosshair is on ({@code use -> entity minecraft:spider}, {@code -> block ...} or {@code -> miss}).
+ *     {@code attack} ignores the attack cooldown a missed click or an open screen leaves</li>
  * <li>{@code hotbar <0-8>} selects a hotbar slot</li>
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
  * <li>{@code walk on|off} (or {@code forward on|off}) holds or releases the walk forward key, e.g. to crawl
@@ -103,6 +117,15 @@ import net.minecraft.util.Identifier;
  * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
  *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
  * <li>{@code escape} sends the open screen an Escape key press, e.g. to check a picker ignores it</li>
+ * <li>{@code key <name>} presses a keyboard key, by GLFW name ({@code j}, {@code tab}, {@code escape},
+ *     {@code enter}, {@code f3}, ...): sent to the open screen (e.g. J or Tab in the Journal), or with no screen
+ *     open, to the key binding it's bound to (like {@code press}). Logs the screen open afterwards</li>
+ * <li>{@code scroll <amount> [dx dy]} scrolls the mouse wheel over the open screen (positive = up), at GUI
+ *     coordinates measured from its centre (default: the centre), e.g. the Character tab's skill list</li>
+ * <li>{@code trade <index>} picks a trade (from 0, as {@code slots} lists them) on an open merchant screen, like
+ *     clicking it on the left; the result slot (2) then holds it, so {@code slot 2 quick_move} buys it</li>
+ * <li>{@code target <selector>} logs each matching mob's attack target, as the integrated server sees it
+ *     ({@code target <type> <name> at x y z -> <target>|none}), e.g. {@code target @e[type=dndclasses:orc_archer]}</li>
  * <li>{@code racepicker on|off}: while a script runs the race picker stays shut (the dev-world player has a class
  *     but no race, so it would block every script). {@code on} lets it open, straight away if the player has no
  *     race</li>
@@ -111,6 +134,10 @@ import net.minecraft.util.Identifier;
  * <li>{@code saverolls full|compact|off|config} overrides the {@code saveRolls} client option for the rest of the
  *     run ({@code config} goes back to the config file), to check each save-lane mode in one run</li>
  * </ul>
+ * Runs started with {@code -PdevScript} get a fixed player name unless {@code -PdevUser} sets one: {@code Dev}, or
+ * {@code DevGuest} for {@code -PdevServer}, plus {@code _<run dir>} outside {@code run/} (e.g. {@code DevGuest_run_2}),
+ * so per-player state (quests, reputation, ...) carries over between runs.
+ * <p>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
  */
@@ -128,6 +155,12 @@ public final class DevScript {
     /** Messages received since the last {@code waitchat} step finished (so one sent early still counts). */
     private static final List<String> RECEIVED = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
     private boolean mining;
+    /** Server tick a {@code waitserver} step waits for, or -1. */
+    private int waitServerUntil = -1;
+    /** The last action bar message logged, so each one is logged once. */
+    private String lastActionBar;
+    /** The key a {@code key} step pressed last tick, whose resulting screen is logged this tick. */
+    private String keyLogged;
 
     private DevScript(List<String> lines) {
         this.lines = lines;
@@ -220,9 +253,23 @@ public final class DevScript {
             client.interactionManager.updateBlockBreakingProgress(hit.getBlockPos(), hit.getSide());
             client.player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
         }
+        logActionBarChange(client);
+        if (this.keyLogged != null) {
+            DnDClasses.LOGGER.info("[DevScript] screen after key {}: {}", this.keyLogged,
+                    client.currentScreen == null ? "none" : client.currentScreen.getClass().getSimpleName());
+            this.keyLogged = null;
+        }
         if (this.waitTicks > 0) {
             this.waitTicks--;
             return;
+        }
+        if (this.waitServerUntil >= 0) {
+            if (client.getServer() != null && client.getServer().getTicks() < this.waitServerUntil) {
+                return;
+            }
+            DnDClasses.LOGGER.info("[DevScript] waitserver done at server tick {}",
+                    client.getServer() == null ? "?" : client.getServer().getTicks());
+            this.waitServerUntil = -1;
         }
         if (this.waitChat != null) {
             boolean seen;
@@ -252,6 +299,14 @@ public final class DevScript {
         String argument = words.length > 1 ? words[1] : "";
         switch (words[0]) {
             case "wait" -> this.waitTicks = Integer.parseInt(argument);
+            case "waitserver" -> {
+                if (client.getServer() != null) {
+                    this.waitServerUntil = client.getServer().getTicks() + Integer.parseInt(argument);
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no integrated server; waitserver waits client ticks", lineNumber);
+                    this.waitTicks = Integer.parseInt(argument);
+                }
+            }
             case "waitchat" -> {
                 this.waitChat = argument;
                 this.waitChatTicks = 0;
@@ -267,6 +322,18 @@ public final class DevScript {
                 }
             }
             case "hud" -> client.options.hudHidden = argument.equals("off");
+            case "debug" -> client.options.debugEnabled = argument.equals("on");
+            case "guiscale" -> {
+                client.options.getGuiScale().setValue(Integer.parseInt(argument));
+                client.onResolutionChanged();
+                DnDClasses.LOGGER.info("[DevScript] gui scale {} (window {}x{})", client.getWindow().getScaleFactor(),
+                        client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
+            }
+            case "actionbar" -> {
+                InGameHudAccessor hud = (InGameHudAccessor) client.inGameHud;
+                DnDClasses.LOGGER.info("[DevScript] actionbar: {}", hud.getOverlayMessage() == null
+                        || hud.getOverlayRemaining() <= 0 ? "none" : hud.getOverlayMessage().getString());
+            }
             case "clearchat" -> client.inGameHud.getChatHud().clear(false);
             case "closescreen" -> {
                 // setScreen(null) alone leaves a container open on the server (brewing stand, chest, ...)
@@ -288,8 +355,16 @@ public final class DevScript {
                 client.player.setYaw(Float.parseFloat(angles[0]));
                 client.player.setPitch(Float.parseFloat(angles[1]));
             }
-            case "use" -> ((MinecraftClientInvoker) client).invokeDoItemUse();
-            case "attack" -> ((MinecraftClientInvoker) client).invokeDoAttack();
+            case "use" -> {
+                logCrosshair(client, "use");
+                ((MinecraftClientInvoker) client).invokeDoItemUse();
+            }
+            case "attack" -> {
+                logCrosshair(client, "attack");
+                // A missed click or an open screen leaves a cooldown that would swallow this click
+                client.attackCooldown = 0;
+                ((MinecraftClientInvoker) client).invokeDoAttack();
+            }
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
             case "walk", "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
             case "sizes" -> logSizes(client);
@@ -387,11 +462,133 @@ public final class DevScript {
                 DnDClasses.LOGGER.info("[DevScript] screen after escape: {}", client.currentScreen == null ? "none"
                         : client.currentScreen.getClass().getSimpleName());
             }
+            case "key" -> key(client, argument, lineNumber);
+            case "scroll" -> {
+                String[] args = argument.split("\\s+");
+                if (client.currentScreen != null) {
+                    double x = client.currentScreen.width / 2.0 + (args.length > 2 ? Double.parseDouble(args[1]) : 0);
+                    double y = client.currentScreen.height / 2.0 + (args.length > 2 ? Double.parseDouble(args[2]) : 0);
+                    client.currentScreen.mouseScrolled(x, y, Double.parseDouble(args[0]));
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: scroll needs an open screen", lineNumber);
+                }
+            }
+            case "trade" -> {
+                int index = Integer.parseInt(argument);
+                if (client.player.currentScreenHandler instanceof net.minecraft.screen.MerchantScreenHandler merchant
+                        && index >= 0 && index < merchant.getRecipes().size()) {
+                    if (client.currentScreen instanceof net.minecraft.client.gui.screen.ingame.MerchantScreen screen) {
+                        ((MerchantScreenAccessor) screen).setSelectedIndex(index);
+                    }
+                    merchant.setRecipeIndex(index);
+                    merchant.switchTo(index);
+                    client.player.networkHandler.sendPacket(
+                            new net.minecraft.network.packet.c2s.play.SelectMerchantTradeC2SPacket(index));
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: trade needs an open merchant screen with a trade {}",
+                            lineNumber, index);
+                }
+            }
+            case "target" -> logTargets(client, argument, lineNumber);
             case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
             case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
             case "saverolls" -> SaveRollsMode.setOverride(SaveRollsMode.byId(argument)); // else: the config file
             default -> DnDClasses.LOGGER.warn("[DevScript] {}: unknown step '{}'", lineNumber, line);
         }
+    }
+
+    private void logActionBarChange(MinecraftClient client) {
+        InGameHudAccessor hud = (InGameHudAccessor) client.inGameHud;
+        String message = hud.getOverlayRemaining() > 0 && hud.getOverlayMessage() != null
+                ? hud.getOverlayMessage().getString() : null;
+        // Logged once while it shows (some HUDs resend the same text every tick); again once it has faded
+        if (message != null && !message.equals(this.lastActionBar)) {
+            DnDClasses.LOGGER.info("[DevScript] actionbar: {}", message);
+        }
+        this.lastActionBar = message;
+    }
+
+    private static void logCrosshair(MinecraftClient client, String step) {
+        net.minecraft.util.hit.HitResult hit = client.crosshairTarget;
+        String what;
+        if (hit instanceof net.minecraft.util.hit.EntityHitResult entityHit) {
+            what = "entity " + net.minecraft.registry.Registries.ENTITY_TYPE.getId(entityHit.getEntity().getType());
+        } else if (hit instanceof net.minecraft.util.hit.BlockHitResult blockHit
+                && hit.getType() == net.minecraft.util.hit.HitResult.Type.BLOCK) {
+            what = "block " + net.minecraft.registry.Registries.BLOCK.getId(
+                    client.world.getBlockState(blockHit.getBlockPos()).getBlock()) + " at "
+                    + blockHit.getBlockPos().toShortString();
+        } else {
+            what = "miss";
+        }
+        DnDClasses.LOGGER.info("[DevScript] {} -> {}", step, what);
+    }
+
+    private void key(MinecraftClient client, String name, int lineNumber) {
+        net.minecraft.client.util.InputUtil.Key key;
+        try {
+            key = net.minecraft.client.util.InputUtil.fromTranslationKey("key.keyboard." + name.toLowerCase());
+        } catch (IllegalArgumentException e) {
+            key = net.minecraft.client.util.InputUtil.UNKNOWN_KEY;
+        }
+        if (key == net.minecraft.client.util.InputUtil.UNKNOWN_KEY) {
+            DnDClasses.LOGGER.warn("[DevScript] {}: unknown key '{}'", lineNumber, name);
+            return;
+        }
+        net.minecraft.client.gui.screen.Screen screen = client.currentScreen;
+        if (screen != null) {
+            // The key may close the screen, so release it on the screen it was pressed on
+            screen.keyPressed(key.getCode(), 0, 0);
+            screen.keyReleased(key.getCode(), 0, 0);
+        } else {
+            KeyBinding.onKeyPressed(key);
+        }
+        // A key binding acts during the next tick's input handling, so log the screen then
+        this.keyLogged = name;
+    }
+
+    /** Logs the attack target of each mob the selector matches, read on the integrated server's thread. */
+    private static void logTargets(MinecraftClient client, String selector, int lineNumber) {
+        net.minecraft.server.MinecraftServer server = client.getServer();
+        if (server == null) {
+            DnDClasses.LOGGER.warn("[DevScript] {}: target needs the integrated server (singleplayer or the LAN host)",
+                    lineNumber);
+            return;
+        }
+        java.util.UUID self = client.player.getUuid();
+        server.execute(() -> {
+            net.minecraft.server.network.ServerPlayerEntity player = server.getPlayerManager().getPlayer(self);
+            if (player == null) {
+                return;
+            }
+            try {
+                net.minecraft.command.EntitySelector parsed = net.minecraft.command.argument.EntityArgumentType.entities()
+                        .parse(new com.mojang.brigadier.StringReader(selector));
+                java.util.List<? extends net.minecraft.entity.Entity> found = parsed.getEntities(player.getCommandSource());
+                if (found.isEmpty()) {
+                    DnDClasses.LOGGER.info("[DevScript] target {}: no entities", selector);
+                }
+                for (net.minecraft.entity.Entity entity : found) {
+                    net.minecraft.entity.Entity target = null;
+                    if (entity instanceof net.minecraft.entity.mob.MobEntity mob) {
+                        target = mob.getTarget();
+                        // Brain-driven mobs (piglins, ...) keep their target in a memory instead
+                        if (target == null && mob.getBrain().hasMemoryModule(
+                                net.minecraft.entity.ai.brain.MemoryModuleType.ATTACK_TARGET)) {
+                            target = mob.getBrain().getOptionalMemory(
+                                    net.minecraft.entity.ai.brain.MemoryModuleType.ATTACK_TARGET).orElse(null);
+                        }
+                    }
+                    DnDClasses.LOGGER.info("[DevScript] target {} {} at {} -> {}",
+                            net.minecraft.registry.Registries.ENTITY_TYPE.getId(entity.getType()), entity.getName().getString(),
+                            entity.getBlockPos().toShortString(), target == null ? "none"
+                                    : net.minecraft.registry.Registries.ENTITY_TYPE.getId(target.getType()) + " "
+                                    + target.getName().getString() + " at " + target.getBlockPos().toShortString());
+                }
+            } catch (com.mojang.brigadier.exceptions.CommandSyntaxException e) {
+                DnDClasses.LOGGER.warn("[DevScript] {}: bad selector '{}': {}", lineNumber, selector, e.getMessage());
+            }
+        });
     }
 
     private static void skill(String[] args, int lineNumber) {

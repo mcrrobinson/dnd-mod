@@ -8,6 +8,7 @@
         "ElvenChainVibrationMixin",
         "ElvenChainBreakMixin",
         "ElvenChainDropsMixin",
+        "ElvenChainItemVibrationMixin",
         "CrossbowItemMixin",
         "ItemStackNameMixin",
         "PlayerEntityMixin",

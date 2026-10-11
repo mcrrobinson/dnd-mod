@@ -6,4 +6,7 @@ package mattonfire.dnd.classes.Items.racial;
  */
 public interface SilencedVibrations {
     void dnd$silenceVibrationsUntil(long gameTime);
+
+    /** Whether {@link #dnd$silenceVibrationsUntil} still holds. */
+    boolean dnd$vibrationsSilenced();
 }

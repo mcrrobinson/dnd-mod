@@ -159,6 +159,8 @@ public final class DevScript {
     private int waitServerUntil = -1;
     /** The last action bar message logged, so each one is logged once. */
     private String lastActionBar;
+    /** The key a {@code key} step pressed last tick, whose resulting screen is logged this tick. */
+    private String keyLogged;
 
     private DevScript(List<String> lines) {
         this.lines = lines;
@@ -252,6 +254,11 @@ public final class DevScript {
             client.player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
         }
         logActionBarChange(client);
+        if (this.keyLogged != null) {
+            DnDClasses.LOGGER.info("[DevScript] screen after key {}: {}", this.keyLogged,
+                    client.currentScreen == null ? "none" : client.currentScreen.getClass().getSimpleName());
+            this.keyLogged = null;
+        }
         if (this.waitTicks > 0) {
             this.waitTicks--;
             return;
@@ -517,7 +524,7 @@ public final class DevScript {
         DnDClasses.LOGGER.info("[DevScript] {} -> {}", step, what);
     }
 
-    private static void key(MinecraftClient client, String name, int lineNumber) {
+    private void key(MinecraftClient client, String name, int lineNumber) {
         net.minecraft.client.util.InputUtil.Key key;
         try {
             key = net.minecraft.client.util.InputUtil.fromTranslationKey("key.keyboard." + name.toLowerCase());
@@ -528,14 +535,16 @@ public final class DevScript {
             DnDClasses.LOGGER.warn("[DevScript] {}: unknown key '{}'", lineNumber, name);
             return;
         }
-        if (client.currentScreen != null) {
-            client.currentScreen.keyPressed(key.getCode(), 0, 0);
-            client.currentScreen.keyReleased(key.getCode(), 0, 0);
+        net.minecraft.client.gui.screen.Screen screen = client.currentScreen;
+        if (screen != null) {
+            // The key may close the screen, so release it on the screen it was pressed on
+            screen.keyPressed(key.getCode(), 0, 0);
+            screen.keyReleased(key.getCode(), 0, 0);
         } else {
             KeyBinding.onKeyPressed(key);
         }
-        DnDClasses.LOGGER.info("[DevScript] screen after key {}: {}", name, client.currentScreen == null ? "none"
-                : client.currentScreen.getClass().getSimpleName());
+        // A key binding acts during the next tick's input handling, so log the screen then
+        this.keyLogged = name;
     }
 
     /** Logs the attack target of each mob the selector matches, read on the integrated server's thread. */

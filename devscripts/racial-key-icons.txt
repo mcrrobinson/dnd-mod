@@ -1,0 +1,82 @@
+# PR #177 checks: racial key on B (not R, which Identity's ability key owns), the R->B options migration,
+# the Mob Repel / Frozen / Invulnerable effect icons, and Rogue poison / Wizard freeze immunity from mobs.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/racial-key-icons.txt
+# For the migration check, start with run/options.txt holding key_key.dnd-classes.racial:key.keyboard.r:
+# latest.log then says "Racial power key moved from R to key.keyboard.b" and options.txt has it on b.
+wait 40
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/time set noon
+/fill -8 149 -8 16 149 16 minecraft:stone
+/fill -8 150 -8 16 154 16 minecraft:air
+/fill -8 150 -8 16 152 -8 minecraft:glass
+/fill -8 150 16 16 152 16 minecraft:glass
+/fill -8 150 -8 -8 152 16 minecraft:glass
+/fill 16 150 -8 16 152 16 minecraft:glass
+/kill @e[type=!player,distance=..40]
+# --- Breath Weapon on the racial key ---
+/dndrace set @s dragonborn ember
+/dndclass rest @s short
+/summon zombie 3.5 150 6.5 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["breath"]}
+/tp @s 3.5 150 2.5 0 10
+clearchat
+wait 10
+press key.dnd-classes.racial
+wait 4
+screenshot rk-breath
+wait 20
+/data get entity @e[type=zombie,tag=breath,limit=1] Health
+press key.dnd-classes.racial
+wait 2
+screenshot rk-breath-cooldown
+/dndrace cooldowns @s
+/kill @e[type=zombie,tag=breath]
+# --- Effect icons (as a Cleric, so Freeze isn't blocked) ---
+/dndclass set @s cleric
+/effect give @s dndclasses:mob_repel 60
+/effect give @s dndclasses:freeze 60
+/effect give @s dndclasses:invulnerability 60
+wait 10
+screenshot rk-icons-hud
+press key.inventory
+wait 10
+screenshot rk-icons-inventory
+closescreen
+/effect clear @s
+# --- Rogue: no poison from a cave spider (control first: a Fighter does get poisoned) ---
+/dndclass set @s fighter
+/effect give @s minecraft:resistance 600 2 true
+/tp @s 3.5 150 2.5 0 10
+/data get entity @s Health
+/summon cave_spider 3.5 150 3.8
+wait 200
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/kill @e[type=cave_spider]
+/effect clear @s minecraft:poison
+/dndclass set @s rogue
+/effect give @s minecraft:resistance 600 2 true
+/tp @s 3.5 150 2.5 0 10
+/data get entity @s Health
+/summon cave_spider 3.5 150 3.8 {Tags:["bite"]}
+/damage @e[type=cave_spider,tag=bite,limit=1] 0.5 minecraft:player_attack by @s
+wait 40
+screenshot rk-rogue-spider
+wait 160
+/data get entity @s Pos
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/kill @e[type=cave_spider]
+# A Poison potion thrown by a witch-like source: an effect with a mob as its source
+/summon zombie 3.5 150 6.5 {NoAI:1b,NoGravity:1b,Tags:["src"]}
+/execute as @e[type=zombie,tag=src,limit=1] run effect give @p minecraft:poison 10
+/data get entity @s ActiveEffects
+# --- Wizard: no Freeze from a mob ---
+/dndclass set @s wizard
+/execute as @e[type=zombie,tag=src,limit=1] run effect give @p dndclasses:freeze 10
+/data get entity @s ActiveEffects
+/kill @e[type=zombie,tag=src]
+/effect clear @s
+quit

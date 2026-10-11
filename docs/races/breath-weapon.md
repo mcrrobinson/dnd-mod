@@ -1,8 +1,8 @@
 # Dragonborn Breath Weapon
-Dragonborn breathe their ancestry's element in a short cone on the **racial key (R)**: fire (Ember), frost (Frost) or lightning (Storm). It recharges in 60 seconds, or straight away on a rest.
+Dragonborn breathe their ancestry's element in a short cone on the **racial key (B)**: fire (Ember), frost (Frost) or lightning (Storm). It recharges in 60 seconds, or straight away on a rest.
 
 ## How it works
-- **Key**: R, listed as "Racial Power (Breath Weapon)" under D&D Classes in Controls. The key is generic: it fires your race's active power. Only Dragonborn have one so far; anyone else gets "Your race has no racial power".
+- **Key**: B, listed as "Racial Power (Breath Weapon)" under D&D Classes in Controls. It used to be R, which clashed with Identity's ability key (a key drives only one binding in 1.19.4); saved options that still have R while something else is on R are moved to B on startup. The key is generic: it fires your race's active power. Only Dragonborn have one so far; anyone else gets "Your race has no racial power".
 - **Cone**: 6 blocks from your eyes, 60° wide (30° either side of where you look). You need a clear line from your eyes to each target's eyes; walls and blocks stop it.
 - **Damage**: 6 + ⌊class level / 2⌋, so 6 at level 0-1 up to 11 at level 10. Classless players breathe for 6.
 - **Who it hits**: every living thing in the cone except you, your party members and your own pets. Other players are hit only if PvP is on.
@@ -14,7 +14,7 @@ Dragonborn breathe their ancestry's element in a short cone on the **racial key 
 | **Frost** | freezing (`dndclasses:frost_breath`, tagged `is_freezing`) | Freeze for 3 s. Water sources in the cone with air above turn into frosted ice, so you can freeze a bridge. | No Freeze |
 | **Storm** | lightning (`dndclasses:dragonborn_lightning`, tagged `is_lightning`) | Glowing for 2 s. The bolt arcs from the nearest target to one more creature within 4 blocks of it, for half damage (that creature saves too). | Half damage |
 
-- **Cooldown**: 60 s. Pressing R early shows "Breath Weapon recharges in N s" on the action bar. A short or long rest recharges it at once. Creative players ignore the cooldown.
+- **Cooldown**: 60 s. Pressing B early shows "Breath Weapon recharges in N s" on the action bar. A short or long rest recharges it at once. Creative players ignore the cooldown.
 - **Survives death and rejoining**: the cooldown is stored with your character, so dying or logging out doesn't reset it.
 - **HUD**: a small icon (flame, snowflake or bolt) sits just right of the mana bar. While recharging it greys out from the top and clears as the cooldown runs down. It's only shown to Dragonborn, and only while `dndRaces` is on.
 - **Visuals**: everyone nearby sees the cone: dragon flame puffs (Ember), frost puffs and snowflakes (Frost, the Frost Drake's particles) or a crackle of electric sparks (Storm), plus sparks along the arc.

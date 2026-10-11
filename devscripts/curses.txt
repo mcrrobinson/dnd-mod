@@ -1,9 +1,9 @@
 # Checks identification, curses and Remove Curse (docs/systems/magic-items.md). Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/curses.txt
 # Expect in latest.log ([CHAT] lines), in order:
 #  1. Fighter: an unidentified cursed (Frailty) iron helmet put on: "A curse takes hold", /dndmagic bonds lists it "cursed",
-#     max health 20 -> 16, and the helmet can't be taken off (slots still lists it in slot 5)
+#     max health 4 lower (26 -> 22 for the dev world Fighter), and the helmet can't be taken off (slots still lists it in slot 5)
 #  2. Cleric self Remove Curse, forced 2: "[D20] ... Remove Curse 2 +5 = 7 vs DC 10 -> FAILURE", the bond stays
-#  3. 60 s later, forced 15: "-> SUCCESS", "you're no longer bound", 0 bonds, max health 20, the helmet off the head
+#  3. 60 s later, forced 15: "-> SUCCESS", "you're no longer bound", 0 bonds, max health 20 (a Cleric), the helmet off the head
 #  4. Wizard picks up an unidentified cursed +2 sword: "Your arcane training reveals: [+2 Diamond Sword] (Rare, cursed: Bloodthirst)"
 #  5. Fighter reads a Scroll of Identify with an unidentified +1 sword in the offhand: "The scroll reveals"
 #  6. The table's Identify button spends a scroll: "The scroll reveals"; with none: "uses a Scroll of Identify. You have none."

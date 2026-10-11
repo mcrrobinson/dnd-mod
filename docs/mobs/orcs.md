@@ -5,7 +5,7 @@ The Bloodtusk Horde of the [Orc Strongholds](../structures/orc-strongholds.md): 
 | Orc | Health | Armour | Damage | Speed | Carries | Behaviour |
 |-|-|-|-|-|-|-|
 | Warrior | 30 | 4 | 7 + weapon | 0.28 | a stone or iron axe; an iron helmet 40% of the time | Roams within 18 blocks of the pit |
-| Archer | 22 | 2 | crossbow | 0.27 | a crossbow | Keeps its post on a gate tower; loads, holds for 1-2 s and shoots anything it fights within 16 blocks it can see |
+| Archer | 22 | 2 | crossbow | 0.27 | a crossbow | Keeps its post on a gate tower, stepping to the platform's edge to see down; loads, holds for 1-2 s and shoots anything it fights within 16 blocks it can see |
 | Quartermaster | 30 | 4 | 7 | 0.25 | an iron ingot | Merchant and quest giver (role `orc_quartermaster`); keeps within 4 blocks of the smithy. Never attacks on sight. |
 | Champion | 40 | 6 | 8 (an iron axe) | 0.3 | an iron axe and helmet | Only appears for the Trial of Strength and fights only its duellist |
 | War Chief | 90 | 8 | 12 | 0.3 | an Orcish Greataxe, a gold helmet | The boss, see [Orc War Chief](../bosses/orc-war-chief.md) |

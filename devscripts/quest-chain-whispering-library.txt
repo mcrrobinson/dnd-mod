@@ -13,6 +13,8 @@ closescreen
 wait 10
 closescreen
 /kill @e[tag=qc]
+# A dying NPC can still be clicked for 20 ticks: let NPCs left by an earlier chain script finish dying
+wait 25
 /fill -4 149 -4 4 149 4 minecraft:glass
 /tp @s 0.5 150 0.5 0 25
 /clear @s
@@ -25,6 +27,8 @@ use
 wait 10
 screenshot qc-b-1-neutral
 closescreen
+# The Neutral hobbit shares food instead of talking; NPCs other than the innkeeper only talk to an empty hand
+/clear @s
 /rep @s dndclasses:hobbits set 150
 use
 wait 10
@@ -63,6 +67,7 @@ screenshot qc-b-3-bones
 /execute if entity @s[nbt={Inventory:[{id:"dndclasses:cursed_bone"}]}]
 # Stage 2: the Arcana topic (check rolls on the HUD; either way the story moves on)
 /quest admin @s stage dndclasses:whispering_library/1 2
+/clear @s
 use
 wait 10
 screenshot qc-b-4-read
@@ -72,7 +77,8 @@ screenshot qc-b-5-read-result
 closescreen
 /execute if entity @s[nbt={Inventory:[{id:"minecraft:ender_eye",Count:2b}]}]
 /quest info dndclasses:whispering_library/1
-# Stage 3: stronghold + phylactery (shortcut: stage 4); Stage 4: the Lich
+# Stage 3: stronghold + phylactery (shortcut: stage 4); Stage 4: the Lich. A NoAI Lich never places its
+# phylactery (that happens in its AI tick), so this kill is its final death.
 /quest admin @s stage dndclasses:whispering_library/1 4
 /summon dndclasses:lich 0.5 150 -2.5 {NoAI:1b,NoGravity:1b,Tags:["qc"]}
 wait 10

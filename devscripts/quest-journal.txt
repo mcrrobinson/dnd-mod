@@ -23,7 +23,10 @@ wait 10
 screenshot journal-toast-started
 /summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qj"]}
 /summon dndclasses:goblin_warrior 0.5 150 2.5 {NoAI:1b,NoGravity:1b,Tags:["qj"]}
-/kill @e[tag=qj]
+wait 5
+# Quests count player kills only (/kill doesn't count)
+/damage @e[tag=qj,limit=1] 1000 minecraft:player_attack by @s
+/damage @e[tag=qj,limit=1] 1000 minecraft:player_attack by @s
 wait 40
 # Tracker: "Trouble on the Road" / "- Slay goblins 2/6"
 screenshot journal-tracker
@@ -31,9 +34,24 @@ hud off
 wait 5
 screenshot journal-tracker-hud-off
 hud on
+# F3 hides the tracker too
+debug on
+wait 5
+screenshot journal-tracker-f3
+debug off
 press key.dnd-classes.journal
 wait 10
 screenshot journal-quests
+# Tab switches tabs, J closes the Journal (expect "screen after key j: none")
+key tab
+wait 5
+screenshot journal-tab-key
+key tab
+wait 5
+key j
+wait 5
+press key.dnd-classes.journal
+wait 10
 widget Factions
 wait 5
 screenshot journal-factions

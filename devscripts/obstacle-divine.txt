@@ -1,4 +1,4 @@
-# Divine and death obstacles (Cleric, Paladin, Necromancer, Blood Hunter). Not run by the agent that wrote it.
+# Divine and death obstacles (Cleric, Paladin, Necromancer, Blood Hunter).
 # Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-divine.txt
 # Expect (screenshots + log):
 #  Cleric: a rigged 18 opens the Holy Ward ("Test passed"); a rigged 18 consecrates the altar, whose spawner stops
@@ -11,6 +11,7 @@
 #  Blood Hunter: right-clicking a Blood Seal takes 4 health and opens it. A Fighter alone pays 16 health.
 wait 40
 closescreen
+respawn
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false
@@ -58,12 +59,17 @@ wait 5
 /tp @s 4.5 150 9.5 0 20
 wait 10
 screenshot divine-fighter-ward-hint
-/give @s minecraft:splash_potion{Potion:"minecraft:healing"} 3
+# Splash potions don't stack: one per hotbar slot, thrown one by one
+/item replace entity @s hotbar.0 with minecraft:splash_potion{Potion:"minecraft:healing"}
+/item replace entity @s hotbar.1 with minecraft:splash_potion{Potion:"minecraft:healing"}
+/item replace entity @s hotbar.2 with minecraft:splash_potion{Potion:"minecraft:healing"}
 hotbar 0
 use
 wait 30
+hotbar 1
 use
 wait 30
+hotbar 2
 use
 wait 30
 /execute if block 4 150 12 dndclasses:holy_ward[state=open]
@@ -72,8 +78,8 @@ screenshot divine-fighter-ward-doused
 # Fighter: smash a second altar (4 undead rise)
 /kill @e[type=!minecraft:player]
 /setblock 9 150 12 dndclasses:desecrated_altar
-/give @s minecraft:diamond_pickaxe
-hotbar 1
+/item replace entity @s hotbar.3 with minecraft:diamond_pickaxe
+hotbar 3
 /tp @s 9.5 150 10.5 0 40
 mine on
 wait 80
@@ -101,7 +107,7 @@ screenshot divine-dread-paladin
 /dndclass set @s fighter
 /dndobstacle place 3 150 24 5 151 24 dndclasses:ossuary_gate medium
 /tp @s 4.5 150 22.5 0 30
-hotbar 1
+hotbar 3
 mine on
 wait 40
 mine off
@@ -144,6 +150,8 @@ wait 5
 /data get entity @s Health
 /execute if block 4 150 36 dndclasses:blood_seal[state=open]
 /dndclass set @s fighter
+# /dndclass set hands out the Class Guidebook, which use would open instead of touching the seal
+/clear @s dndclasses:class_guidebook
 /effect give @s minecraft:instant_health 1 5
 /tp @s 10.5 150 34.5 0 20
 wait 10

@@ -51,6 +51,8 @@ public final class PartyHud {
     private static final int BOSS_BAR_HALF_WIDTH = 91;
     /** Narrowest the rows get when making room for a boss bar. */
     private static final int MIN_WIDTH = 50;
+    /** Space kept between the rows and a boss bar. */
+    private static final int BOSS_BAR_GAP = 8;
 
     private static volatile List<Member> members = List.of();
     private static volatile Set<UUID> memberIds = Set.of();
@@ -104,7 +106,7 @@ public final class PartyHud {
         // Stop short of the boss bars (top centre); names that don't fit are cut below
         if (!((BossBarHudAccessor) client.inGameHud.getBossBarHud()).dndclasses$getBossBars().isEmpty()) {
             int bossLeft = client.getWindow().getScaledWidth() / 2 - BOSS_BAR_HALF_WIDTH;
-            width = Math.max(MIN_WIDTH, Math.min(width, bossLeft - 4 - X));
+            width = Math.max(MIN_WIDTH, Math.min(width, bossLeft - BOSS_BAR_GAP - X));
         }
 
         int y = Y;
@@ -130,15 +132,22 @@ public final class PartyHud {
                 float fraction = Math.min(1, Math.max(0, member.health() / member.maxHealth()));
                 int filled = Math.round(width * fraction);
                 if (member.isDowned()) {
-                    // A Downed member's bar is a dim red strip that pulses (yellow once stable)
+                    // A Downed member's bar is a dim red strip that pulses (yellow once stable). The saves sit
+                    // at its left end on a dark backing, so the name line stays as narrow as a health row and
+                    // the red crosses don't vanish into the red strip.
+                    int barStart = X;
+                    if (!member.isStable()) {
+                        Text saves = savesOf(member);
+                        int savesWidth = text.getWidth(saves);
+                        DrawableHelper.fill(matrices, X - 1, barY - 2, X + savesWidth + 1, barY + BAR_HEIGHT + 2,
+                                0xE0000000);
+                        text.drawWithShadow(matrices, saves, X, barY - 1, 0xFFFFFF);
+                        barStart = X + savesWidth + 3;
+                    }
                     float pulse = 0.5f + 0.5f * MathHelper.sin((client.player.age + client.getTickDelta()) * 0.3f);
                     int alpha = 0x60 + (int) (0x9F * pulse);
-                    DrawableHelper.fill(matrices, X, barY, X + width, barY + BAR_HEIGHT,
+                    DrawableHelper.fill(matrices, barStart, barY, X + width, barY + BAR_HEIGHT,
                             alpha << 24 | (member.isStable() ? 0xE0C030 : 0xC02020));
-                    if (!member.isStable()) {
-                        // The saves sit on the bar line, so the name line stays as narrow as a health row
-                        text.drawWithShadow(matrices, savesOf(member), X + 1, barY - 2, 0xFFFFFF);
-                    }
                     y += ROW_HEIGHT;
                     continue;
                 }

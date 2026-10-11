@@ -87,6 +87,8 @@
         "HiddenWindowMixin",
         "MinecraftClientInvoker",
         "MouseAccessor",
+        "InGameHudAccessor",
+        "MerchantScreenAccessor",
         "DoubleJumpMixin",
         "InGameHudMixin",
         "EntityRenderDispatcherMixin",

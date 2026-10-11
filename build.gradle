@@ -44,9 +44,25 @@ loom {
             if (project.hasProperty('devServer')) {
                 vmArg "-Ddnd.autoconnect=${project.property('devServer')}"
             }
-            // -PdevUser=<name> fixes the offline player name (and so its UUID), e.g. for a LAN guest that rejoins
+            // -PdevUser=<name> fixes the offline player name (and so its UUID), e.g. for a LAN guest that rejoins.
+            // Scripted runs get a fixed name anyway, so per-player state carries over between runs:
+            // Dev (DevGuest with -PdevServer), plus _<run dir> outside run/ (e.g. DevGuest_run_2).
             if (project.hasProperty('devUser')) {
                 programArgs "--username", project.property('devUser')
+            } else if (project.hasProperty('devScript')) {
+                def runDirName = project.findProperty('devRunDir') ?: 'run'
+                def user = project.hasProperty('devServer') ? 'DevGuest' : 'Dev'
+                if (runDirName != 'run') {
+                    user += '_' + file(runDirName).name.replaceAll('[^A-Za-z0-9_]', '_')
+                }
+                programArgs "--username", user.take(16)
+            }
+            // -PdevWidth=1920 -PdevHeight=1080 sets the window size (default 854x480, which caps the GUI scale at 2)
+            if (project.hasProperty('devWidth')) {
+                programArgs "--width", project.property('devWidth')
+            }
+            if (project.hasProperty('devHeight')) {
+                programArgs "--height", project.property('devHeight')
             }
             if (project.hasProperty('devScript')) {
                 vmArg "-Ddnd.devscript=${file(project.property('devScript')).absolutePath}"

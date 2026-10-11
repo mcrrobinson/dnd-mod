@@ -36,7 +36,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8
-- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
+- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair, STR/DEX saves against grabs with jump-to-struggle escapes, and `/dm save|check`
 - [Data-driven saves](systems/data-driven-saves.md): datapack JSON saves against effects and damage types: CON vs mob poison and wither (Lich Wither Bolt DC 15), Warden sonic boom and Ender Dragon breath; half duration or damage
 - [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
@@ -67,9 +67,9 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Dragonborn](mobs/dragonborn.md): breath-weapon Templars and the Elder merchant of the dragon temples
 - [Orcs](mobs/orcs.md): the Bloodtusk Horde's Warriors, crossbow Archers, the Quartermaster merchant and the Trial's Champion; hostile except to Half-Orcs, allied with goblins
 - [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves
-- [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
-- [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
-- [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items
+- [Mimic](mobs/mimic.md): a chest that bites and grabs (STR save, jump to struggle free); hides in dungeons, dragon lairs and dwarven fortresses
+- [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs (STR saves, jump to struggle free); Druids can take its form
+- [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes

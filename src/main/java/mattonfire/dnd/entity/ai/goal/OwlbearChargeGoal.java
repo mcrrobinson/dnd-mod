@@ -1,6 +1,8 @@
 package mattonfire.dnd.entity.ai.goal;
 
 import java.util.EnumSet;
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.entity.GrabSaves;
 import mattonfire.dnd.entity.OwlbearEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -142,11 +144,20 @@ public class OwlbearChargeGoal extends Goal {
     private void ram(LivingEntity hit) {
         float damage = (float) this.owlbear.getAttributeValue(
                 net.minecraft.entity.attribute.EntityAttributes.GENERIC_ATTACK_DAMAGE) * DAMAGE_MULTIPLIER;
+        Vec3d before = hit.getVelocity();
         if (hit.damage(this.owlbear.getDamageSources().mobAttack(this.owlbear), damage)) {
             this.owlbear.applyDamageEffects(this.owlbear, hit);
-            hit.takeKnockback(KNOCKBACK, -this.direction.x, -this.direction.z);
-            hit.addVelocity(0.0D, 0.4D, 0.0D);
-            hit.velocityModified = true;
+            if (GrabSaves.roll(hit, this.owlbear, GrabSaves.OWLBEAR_CHARGE).succeeded()) {
+                // Stands their ground: full damage, but not thrown (undo the hurt's own knockback too)
+                hit.setVelocity(before);
+                hit.velocityModified = true;
+                DnDClasses.LOGGER.info("[Grapple] {} stands firm against the owlbear's charge",
+                        hit.getName().getString());
+            } else {
+                hit.takeKnockback(KNOCKBACK, -this.direction.x, -this.direction.z);
+                hit.addVelocity(0.0D, 0.4D, 0.0D);
+                hit.velocityModified = true;
+            }
         }
         this.owlbear.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.5F, 0.8F);
         this.owlbear.triggerAnim("attack_controller", "swipe");

@@ -28,10 +28,10 @@ import net.minecraft.util.math.BlockPos;
  * (Barbarian, Fighter, Paladin) are its primaries and hold it longer:
  * <ul>
  * <li>Success raises the portcullis for {@value #RAISE_TICKS} ticks ({@value #TANK_RAISE_TICKS} for a Tank),
- * then it drops again. Only the first raise earns class XP (until the winch is reset).</li>
+ * then it drops again. The winch earns class XP once until it's reset: the first raise (or wedge).</li>
  * <li><b>Wedge</b> (Fighter only): a second success while the gate is up jams the winch, and the gate stays
- * up for good. The winch shows as wedged ({@code state=open}) until the obstacle is reset. Only the first
- * wedge earns class XP (until the winch is reset).</li>
+ * up for good. The winch shows as wedged ({@code state=open}) until the obstacle is reset. It earns no
+ * XP beyond the raise's.</li>
  * <li>Failure: the gate stays down. Natural 1: the handle whips back for {@value #FUMBLE_DAMAGE} damage.</li>
  * </ul>
  * Resetting a wedged winch drops its portcullis.
@@ -42,8 +42,8 @@ public final class PortcullisWinchType extends WinchType {
     public static final float FUMBLE_DAMAGE = 2.0f;
     /** The portcullis must be within this many blocks of a hand-placed winch. */
     public static final int LINK_RADIUS = 6;
+    /** Set once the winch has earned its XP (first raise or wedge); cleared by a reset. */
     private static final String RAISED_KEY = "Raised";
-    private static final String WEDGED_KEY = "Wedged";
 
     public PortcullisWinchType(Identifier id, PortcullisType portcullis) {
         super(id, portcullis);
@@ -94,8 +94,8 @@ public final class PortcullisWinchType extends WinchType {
             solver.sendMessage(Text.translatable(translationKey() + ".wedged"), true);
             DnDClasses.LOGGER.info("[Obstacle] {} wedged the portcullis at {} open", solver.getEntityName(),
                     gate.toShortString());
-            // XP for the first wedge only: resealing the gate and wedging it again isn't a way to level
-            return firstTime(world, pos, WEDGED_KEY);
+            // The winch earns its XP once per reset, so a wedge after the raise earns nothing more
+            return firstTime(world, pos, RAISED_KEY);
         }
         int ticks = isTank(dndClass) ? TANK_RAISE_TICKS : RAISE_TICKS;
         ObstacleGroups.openFor(world, gate, ticks);
@@ -139,6 +139,6 @@ public final class PortcullisWinchType extends WinchType {
 
     @Override
     public List<String> progressKeys() {
-        return List.of(RAISED_KEY, WEDGED_KEY);
+        return List.of(RAISED_KEY);
     }
 }

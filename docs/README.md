@@ -66,7 +66,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Mountain Dwarves](mobs/mountain-dwarves.md): neutral fortress guards that barter for gold
 - [Dragonborn](mobs/dragonborn.md): breath-weapon Templars and the Elder merchant of the dragon temples
 - [Orcs](mobs/orcs.md): the Bloodtusk Horde's Warriors, crossbow Archers, the Quartermaster merchant and the Trial's Champion; hostile except to Half-Orcs, allied with goblins
-- [Tieflings](mobs/tieflings.md): fire-immune Exiles with Hellish Rebuke and fireballs, and the Pactbroker merchant with Tiefling, Warlock and Alchemist stock, of the Brimstone Sanctums (PR #TBD)
+- [Tieflings](mobs/tieflings.md): fire-immune Exiles with Hellish Rebuke and fireballs, and the Pactbroker merchant with Tiefling, Warlock and Alchemist stock, of the Brimstone Sanctums (PR #188)
 - [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves
 - [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
@@ -88,7 +88,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home
 - [Orc Strongholds](structures/orc-strongholds.md): palisaded badlands warcamps with a gatehouse, Great Longhouse, Fighting Pit, smithy and yurts; hostile except to Half-Orcs; the Trial of Strength makes you Blood-Sworn; the Half-Orc home
-- [Brimstone Sanctums](structures/brimstone-sanctums.md): walled Nether platforms on pillars in crimson forests and soul sand valleys, never over the lava sea; Pact Hall, Brass Market, Alchemist's den and the Refuge's respawn anchors; the Tiefling home (PR #TBD)
+- [Brimstone Sanctums](structures/brimstone-sanctums.md): walled Nether platforms on pillars in crimson forests and soul sand valleys, never over the lava sea; Pact Hall, Brass Market, Alchemist's den and the Refuge's respawn anchors; the Tiefling home (PR #188)
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested)

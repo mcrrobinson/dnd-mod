@@ -507,7 +507,12 @@ public final class DungeonPlanner {
             return this.context.chunkGenerator().getHeight(x, z, type, this.context.world(), this.context.noiseConfig()) - 1;
         }
 
-        Optional<Site> findSite(DungeonTheme theme) {
+        /**
+         * The site for a dungeon at this chunk, or empty if the ground here is unsuitable. With
+         * {@code anywhere} (a /place structure command), the dry-land and biome checks are skipped, so
+         * the dungeon goes where it was asked for (its entrance can then sit on water).
+         */
+        Optional<Site> findSite(DungeonTheme theme, boolean anywhere) {
             ChunkPos chunk = this.context.chunkPos();
             int gridMinX = chunk.getStartX() - MIDDLE * CELL;
             int gridMinZ = chunk.getStartZ() - MIDDLE * CELL;
@@ -516,12 +521,12 @@ public final class DungeonPlanner {
             int seaLevel = this.context.chunkGenerator().getSeaLevel();
             // The entrance: dry land in an allowed biome
             int top = this.height(ex, ez, Heightmap.Type.WORLD_SURFACE_WG);
-            if (top != this.height(ex, ez, Heightmap.Type.OCEAN_FLOOR_WG) || top < seaLevel) {
+            if (!anywhere && (top != this.height(ex, ez, Heightmap.Type.OCEAN_FLOOR_WG) || top < seaLevel)) {
                 return Optional.empty();
             }
             RegistryEntry<Biome> biome = this.context.biomeSource().getBiome(BiomeCoords.fromBlock(ex), BiomeCoords.fromBlock(top),
                     BiomeCoords.fromBlock(ez), this.context.noiseConfig().getMultiNoiseSampler());
-            if (!this.context.biomePredicate().test(biome)) {
+            if (!anywhere && !this.context.biomePredicate().test(biome)) {
                 return Optional.empty();
             }
             // The whole footprint has to be well under dry ground
@@ -540,7 +545,7 @@ public final class DungeonPlanner {
                     lowest = Math.min(lowest, floor);
                 }
             }
-            if (wet > MAX_WET) {
+            if (!anywhere && wet > MAX_WET) {
                 return Optional.empty();
             }
             int floorY = Math.min(lowest, seaLevel) - DEPTH;

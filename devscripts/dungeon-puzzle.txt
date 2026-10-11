@@ -1,4 +1,4 @@
-# Rune-pillar puzzle and class-check gates, in a crypt made with /place structure at 1200, 1200 (made fresh,
+# Rune-pillar puzzle and class-check gates, in a crypt made with /place structure at 1088, 1216 (made fresh,
 # so it has this ticket's rooms; the dev world's natural crypt was generated before them).
 # Covers: /dungeon info's puzzle and gate lines, a wrong answer (vents burn, pillars shuffle), solving it with
 # `use` on each pillar (exit seal opens, room CLEARED), and /dungeon reset (unsolved, resealed, gate rebuilt).
@@ -11,9 +11,9 @@ closescreen
 /gamerule doMobSpawning false
 /difficulty peaceful
 /gamemode spectator
-/tp @s 1200 150 1200
+/tp @s 1095 150 1223
 wait 200
-/place structure dndclasses:crypt 1200 64 1200
+/place structure dndclasses:crypt 1088 64 1216
 wait 100
 /effect give @s minecraft:night_vision 9999 0 true
 /dungeon info

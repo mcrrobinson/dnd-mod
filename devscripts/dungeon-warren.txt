@@ -1,6 +1,6 @@
 # A fresh Goblin Warren made with /place structure in new chunks. Shoots the cave mouth (knoll, timber
 # frame, palisade, totems) from outside, then cuts it away and shoots the layout from overhead.
-# 2400, -2400 is about 3400 blocks out: Challenge III (usually).
+# 2448, -2416 is about 3400 blocks out: Challenge III (usually).
 # Destructive (/dungeon cutaway): use a scratch copy of the run dir.
 # Run: timeout 500 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-warren.txt
 # If /place says "Failed to place structure", the ground there failed the site check (or the biome isn't a
@@ -12,13 +12,13 @@ closescreen
 /weather clear
 /gamerule doDaylightCycle false
 /gamemode creative
-/tp @s 2407 200 -2393
+/tp @s 2455 200 -2409
 wait 200
-/place structure dndclasses:goblin_warren 2400 64 -2400
+/place structure dndclasses:goblin_warren 2448 64 -2416
 wait 100
 /dungeon info
 # The mouth: stand on the ground by the entrance, then back off and look at the knoll
-/spreadplayers 2407 -2393 0 1 false @s
+/spreadplayers 2455 -2409 0 1 false @s
 wait 40
 /tp @s ~-16 ~6 ~-16 -45 20
 wait 60
@@ -34,7 +34,7 @@ hud on
 /gamemode spectator
 /dungeon cutaway
 wait 60
-/tp @s 2407 140 -2393
+/tp @s 2455 140 -2409
 look 0 90
 wait 200
 hud off

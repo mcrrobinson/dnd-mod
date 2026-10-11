@@ -1,10 +1,11 @@
 # The finished Crypt: a fresh crypt made with /place structure in new chunks (the dev world's natural
 # crypt was generated before the barrow, the dressing and the reliquary). Shoots the barrow from outside,
 # then cuts it away and shoots the layout from overhead, so the reliquary off the boss room shows.
-# -2400, 2400 is about 3400 blocks out: Challenge III (usually), where the coffer can roll a Staff of Ice.
+# 2448, -2400 is about 3400 blocks out: Challenge III (usually), where the coffer can roll a Staff of Ice.
 # Destructive (/dungeon cutaway): use a scratch copy of the run dir.
 # Run: timeout 500 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/dungeon-crypt.txt
-# If /place says "Failed to place structure", the ground there failed the site check: try another spot.
+# /place skips the dungeon's site checks (wet ground, clearance from other structures), so it works anywhere;
+# this spot is dry land the natural site check also accepts, so the barrow sits on solid ground.
 # Check: screenshots/dungeon-crypt-*.png; the "/dungeon info" [CHAT] lines (a "Reliquary" room next to
 # the boss room) in logs/latest.log.
 wait 40
@@ -13,13 +14,13 @@ closescreen
 /weather clear
 /gamerule doDaylightCycle false
 /gamemode creative
-/tp @s -2393 200 2393
+/tp @s 2455 200 -2393
 wait 200
-/place structure dndclasses:crypt -2400 64 2400
+/place structure dndclasses:crypt 2448 64 -2400
 wait 100
 /dungeon info
 # The barrow: stand on the ground by the entrance, then back off and look at the mound
-/spreadplayers -2393 2393 0 1 false @s
+/spreadplayers 2455 -2393 0 1 false @s
 wait 40
 /tp @s ~-16 ~6 ~-16 -45 20
 wait 60
@@ -35,7 +36,7 @@ hud on
 /gamemode spectator
 /dungeon cutaway
 wait 60
-/tp @s -2393 140 2393
+/tp @s 2455 140 -2393
 look 0 90
 wait 200
 hud off

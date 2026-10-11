@@ -34,7 +34,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 /**
- * DM roll calls ({@code /dm roll}): each target gets a prompt on the d20 HUD and rolls with the roll key (R), or
+ * DM roll calls ({@code /dm roll}): each target gets a prompt on the d20 HUD and rolls with the roll key (Y), or
  * the server rolls for them after {@link #TIMEOUT_TICKS}. The client only says "now" ({@link #C2S_ANSWER} has no
  * payload): the server rolls, so results can't be forged. Each result goes to the DM as it comes in, then a
  * summary with [Passed] / [Failed] buttons that fill in {@code /dm apply}.

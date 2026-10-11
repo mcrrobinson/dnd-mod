@@ -1,5 +1,7 @@
 # DM roll calls on the d20 HUD. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-roll-calls.txt
-# Expect in latest.log: "[DevScript] press key.dnd-classes.roll", "[CHAT] #N Player ... PASS|FAIL" lines and a
+# Keys go through the real key path (DevScript "key", like a physical press), with Identity's ability key left on R.
+# Expect in latest.log: "[CHAT] marker-after-r" BEFORE "[CHAT] #1 Dev ..." (R doesn't roll: it's Identity's key),
+# then "[DevScript] ...: key y" rolls it; "[CHAT] #N Player ... PASS|FAIL" lines and a
 # "Dexterity Save DC 14: ... failed [Passed] [Failed]" summary per call; the auto call reports at once; the flat call
 # reports "(timed out)" about 20 s later; /dm apply tags the passing player (Test passed).
 # Screenshots: dm-roll-prompt (prompt, DC shown), dm-roll-result, dm-roll-adv-prompt / dm-roll-adv-result (two dice),
@@ -23,7 +25,11 @@ wait 20
 wait 10
 clearchat
 screenshot dm-roll-prompt
-press key.dnd-classes.roll
+# R is Identity's ability key: must not answer the prompt
+key r
+wait 20
+/say marker-after-r
+key y
 wait 30
 clearchat
 screenshot dm-roll-result
@@ -38,7 +44,7 @@ wait 30
 wait 10
 clearchat
 screenshot dm-roll-adv-prompt
-press key.dnd-classes.roll
+key y
 wait 30
 clearchat
 screenshot dm-roll-adv-result
@@ -49,7 +55,7 @@ wait 60
 wait 10
 clearchat
 screenshot dm-roll-secret-prompt
-press key.dnd-classes.roll
+key y
 wait 30
 clearchat
 screenshot dm-roll-secret-result

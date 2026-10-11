@@ -1,6 +1,6 @@
 # DM roll calls over LAN, guest side, with dm-roll-calls-lan-host.txt. Run (after the host says "Started serving on"):
 #   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25636 -PdevScript=devscripts/dm-roll-calls-lan-guest.txt
-# Expect: dm-roll-lan-guest-prompt shows "Dev calls for: Dexterity Save (DC 14)" and [R] Roll; dm-roll-lan-guest-result
+# Expect: dm-roll-lan-guest-prompt shows "Dev calls for: Dexterity Save (DC 14)" and [Y] Roll; dm-roll-lan-guest-result
 # the rolled save; dm-roll-lan-guest-secret shows the secret prompt without a DC; the secret call times out (no press).
 wait 40
 closescreen
@@ -11,7 +11,7 @@ waitchat call-1
 wait 10
 clearchat
 screenshot dm-roll-lan-guest-prompt
-press key.dnd-classes.roll
+key y
 wait 25
 screenshot dm-roll-lan-guest-result
 waitchat call-2

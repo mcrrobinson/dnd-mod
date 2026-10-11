@@ -53,7 +53,7 @@ The launch set:
 ### Roll calls
 `/dm roll <players> <check> <dc> [advantage] [disadvantage] [secret] [auto]` asks each player for a roll on their [d20 HUD](d20-skill-checks.md#dm-roll-calls):
 - `<check>` is `str`, `dex`, `con`, `int`, `wis` or `cha` for a saving throw, any skill id (`perception`, `stealth`, `athletics`, `thieves_tools`, ...) for a skill check, or `flat` for a plain d20. Modifiers come from the player's character sheet (ability modifier, proficiency, Jack of All Trades and so on); saves go through the saving-throw rules, so Indomitable still works.
-- Each player sees a prompt with the check, the DC and "[R] Roll", and has 20 seconds to press R. After that the server rolls for them. The client only says "roll now": the server rolls, so nobody can send a result.
+- Each player sees a prompt with the check, the DC and "[Y] Roll", and has 20 seconds to press Y (the roll key, rebindable). After that the server rolls for them. The client only says "roll now": the server rolls, so nobody can send a result.
 - `auto` rolls for everyone at once with no prompt. `secret` hides the DC and the outcome from the players (they see their total); you still see everything. `advantage` / `disadvantage` (or `adv` / `dis`) roll two dice and keep the higher / lower, and the HUD shows both.
 - Natural 20 and natural 1 pass and fail automatically, for saves too (as everywhere in the mod).
 - Players in DM mode are left out of a call, unless they're the only one picked (so `/dm roll @s dex 14` works for testing).
@@ -88,7 +88,7 @@ Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets 
 | `/dm unfreeze <targets>\|radius [r]\|all` | Let them go |
 | `/dm check <players> <skill> <dc> [adv\|dis] [silent]` | A skill check on each player's big d20 panel, reported to you |
 | `/dm save <targets> <ability> <dc> [adv\|dis] [silent]` | A saving throw on the save lane; mobs roll +1 silently. See [Saving throws](saving-throws.md) |
-| `/dm roll <players> <check> <dc> [advantage\|disadvantage] [secret] [auto]` | A roll call: a prompt on each player's d20 HUD, R to roll, 20 s timeout, results and a summary to you |
+| `/dm roll <players> <check> <dc> [advantage\|disadvantage] [secret] [auto]` | A roll call: a prompt on each player's d20 HUD, Y to roll, 20 s timeout, results and a summary to you |
 | `/dm apply pass\|fail\|all <command>` | (op only) Run a command as and at each player of the last roll call who passed / failed / all |
 
 Encounter ids tab-complete. Ids from this mod can be written without the namespace (`goblin_patrol`); others need it (`mypack:bandits`).
@@ -149,4 +149,4 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Roll calls: `dm-roll-calls.txt` (single player: prompt, R, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`).
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`).

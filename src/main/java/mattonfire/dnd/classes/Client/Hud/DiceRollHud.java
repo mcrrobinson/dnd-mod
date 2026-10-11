@@ -43,7 +43,7 @@ import org.lwjgl.glfw.GLFW;
  * {@code saveRolls: full} they use this panel, but only when it isn't showing a check).
  *
  * A DM roll call ({@link DmRollCalls}) shows a prompt here first: the idle die, "DM calls for a Dexterity Save
- * (DC 14)" and "[R] Roll" with a countdown. The roll key sends the answer; the server rolls and the result
+ * (DC 14)" and "[Y] Roll" with a countdown (the roll key defaults to Y: R is Identity's ability key, and only one binding fires per key). The roll key sends the answer; the server rolls and the result
  * replaces the prompt. While a prompt is up it takes the panel over any other roll.
  */
 public final class DiceRollHud {
@@ -56,7 +56,7 @@ public final class DiceRollHud {
     private static final int SMALL_DIE_SIZE = 22;
 
     public static final KeyBinding ROLL_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-            "key.dnd-classes.roll", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_R, "category.dnd-classes.dnd-classes"));
+            "key.dnd-classes.roll", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_Y, "category.dnd-classes.dnd-classes"));
 
     /** A DM roll call waiting for the roll key: what to roll, who called it, DC (0 hidden), mode. */
     private record Prompt(Text label, Text caller, int dc, Advantage mode) {
@@ -326,7 +326,7 @@ public final class DiceRollHud {
         RenderSystem.disableBlend();
     }
 
-    /** The roll call prompt: the idle die, who calls for what, and "[R] Roll" with the seconds left. */
+    /** The roll call prompt: the idle die, who calls for what, and "[Y] Roll" with the seconds left. */
     private static void renderPrompt(MinecraftClient client, MatrixStack matrices, float tickDelta) {
         TextRenderer text = client.textRenderer;
         float life = promptAge + tickDelta;

@@ -27,6 +27,8 @@ import net.minecraft.world.World;
 /**
  * Picks the mod's music for game events, in priority order: boss fight, low health, dungeon,
  * Nether Fortress, travelling, night.
+ * In one of the mod's dungeons the "Dungeon" slot plays the dungeon theme's loop (the server sends the
+ * theme, see DungeonMusic); anywhere else that counts as a dungeon it plays the generic Silent Footsteps.
  * Hooked into MinecraftClient.getMusicType() by MinecraftClientMusicMixin.
  */
 public class EventMusic {
@@ -68,6 +70,17 @@ public class EventMusic {
     private static final int LOW_HEALTH_OUT_OF_COMBAT_TICKS = 600;
     // Quiet gap after the low health music ends before other music can start
     private static final int AFTER_LOW_HEALTH_SILENCE_TICKS = 100;
+    // Quiet gap after leaving a themed dungeon (its ambient loop stops at the door)
+    private static final int AFTER_DUNGEON_SILENCE_TICKS = 200;
+
+    // Theme loops by DungeonMusic theme byte (index 0, generic, is Event.DUNGEON's track). They replace
+    // whatever is playing when you walk in and come back 5-20 s after each pass of the loop.
+    private static final MusicSound[] DUNGEON_THEMES = {
+            null,
+            new MusicSound(entry(ModSounds.MUSIC_DUNGEON_CRYPT), 100, 400, true),
+            new MusicSound(entry(ModSounds.MUSIC_DUNGEON_WARREN), 100, 400, true),
+            new MusicSound(entry(ModSounds.MUSIC_DUNGEON_RUIN), 100, 400, true),
+    };
 
     private static final Vec3d[] positions = new Vec3d[TRAVEL_WINDOW_SECONDS + 1];
     private static int positionCount = 0;
@@ -75,6 +88,10 @@ public class EventMusic {
     private static World lastWorld = null;
 
     private static boolean inDungeon = false;
+    private static byte dungeonTheme = DungeonMusic.GENERIC;
+    // Last track this tick's event asked for, and whether we've logged it starting (for devscripts)
+    private static MusicSound wanted = null;
+    private static boolean wantedPlaying = false;
     private static boolean nearFortress = false;
     private static boolean travelling = false;
     private static boolean lowHealth = false;
@@ -97,6 +114,14 @@ public class EventMusic {
                     boolean value = buf.readBoolean();
                     client.execute(() -> inDungeon = value);
                 });
+        ClientPlayNetworking.registerGlobalReceiver(DungeonMusic.S2C_DUNGEON_THEME,
+                (client, handler, buf, sender) -> {
+                    byte value = buf.readByte();
+                    client.execute(() -> {
+                        dungeonTheme = value;
+                        DnDClasses.LOGGER.info("[EventMusic] dungeon theme {} ({})", value, dungeonTrack().getSound().value().getId());
+                    });
+                });
         ClientPlayNetworking.registerGlobalReceiver(DungeonMusic.S2C_NEAR_FORTRESS,
                 (client, handler, buf, sender) -> {
                     boolean value = buf.readBoolean();
@@ -116,6 +141,7 @@ public class EventMusic {
                 });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             inDungeon = false;
+            dungeonTheme = DungeonMusic.GENERIC;
             nearFortress = false;
             bossTracks.clear();
             // Otherwise the boss fight track keeps replacing the main menu music
@@ -144,10 +170,32 @@ public class EventMusic {
 
         Event previous = current;
         MusicSound previousBossMusic = bossMusic;
+        MusicSound previousWanted = wanted;
         current = pick(client);
         bossMusic = current == Event.BOSS_FIGHT ? bossTracks.values().iterator().next() : null;
+        wanted = track(current);
+        if (wanted != previousWanted) {
+            wantedPlaying = false;
+            // A theme loop doesn't belong outside its dungeon (or in another theme's)
+            if (previousWanted != null && isDungeonTheme(previousWanted)
+                    && client.getMusicTracker().isPlayingType(previousWanted)) {
+                DnDClasses.LOGGER.info("[EventMusic] stopped {}", previousWanted.getSound().value().getId());
+                client.getMusicTracker().stop();
+                ((MusicTrackerAccessor) client.getMusicTracker()).setTimeUntilNextSong(
+                        current == Event.DUNGEON ? 0 : AFTER_DUNGEON_SILENCE_TICKS);
+            }
+            // Walking into a themed dungeon starts its loop within a second, not after the usual gap
+            if (wanted != null && isDungeonTheme(wanted) && !client.getMusicTracker().isPlayingType(wanted)) {
+                ((MusicTrackerAccessor) client.getMusicTracker()).setTimeUntilNextSong(20);
+            }
+        }
+        if (wanted != null && !wantedPlaying && client.getMusicTracker().isPlayingType(wanted)) {
+            wantedPlaying = true;
+            DnDClasses.LOGGER.info("[EventMusic] playing {} for {}", wanted.getSound().value().getId(), current);
+        }
         if (current != previous) {
-            DnDClasses.LOGGER.info("[EventMusic] {} -> {}", previous, current);
+            DnDClasses.LOGGER.info("[EventMusic] {} -> {}{}", previous, current,
+                    current == Event.DUNGEON ? " (" + wanted.getSound().value().getId() + ")" : "");
             // Fight music would otherwise play to the end of the track after the fight
             if (previous == Event.BOSS_FIGHT && client.getMusicTracker().isPlayingType(previousBossMusic)) {
                 client.getMusicTracker().stop();
@@ -199,7 +247,30 @@ public class EventMusic {
         if (vanillaSpecial && current != Event.BOSS_FIGHT) {
             return null;
         }
-        return current == Event.BOSS_FIGHT ? bossMusic : current.music;
+        return track(current);
+    }
+
+    /** The track for an event: the boss's own, the dungeon theme's, or the event's fixed one. */
+    private static MusicSound track(Event event) {
+        return switch (event) {
+            case BOSS_FIGHT -> bossMusic;
+            case DUNGEON -> dungeonTrack();
+            default -> event.music;
+        };
+    }
+
+    /** The current dungeon theme's loop, or the generic dungeon track. */
+    private static MusicSound dungeonTrack() {
+        return dungeonTheme > 0 && dungeonTheme < DUNGEON_THEMES.length ? DUNGEON_THEMES[dungeonTheme] : Event.DUNGEON.music;
+    }
+
+    private static boolean isDungeonTheme(MusicSound music) {
+        for (MusicSound theme : DUNGEON_THEMES) {
+            if (theme == music) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void updateLowHealth(ClientPlayerEntity player) {

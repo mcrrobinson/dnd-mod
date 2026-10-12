@@ -24,5 +24,10 @@ How the features work:
 - **Power Armor** (Armorer): Arcane Armor lasts 45 s instead of 30 s. While it's on (Mechanical Titan's included) you have +0.5 knockback resistance.
 - **Battle Ready** (Battle Smith): +2 damage on your melee hits with a magic weapon whose magic is working for you (a weapon with a [magic tier](../systems/magic-items.md), +N gear included, that's identified, and attuned if it needs attunement). Unidentified weapons and mundane ones get nothing.
 
+## Where to find it
+- Pick the Artificer in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> artificer`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- The mod's enchantments come from an ordinary enchanting table, used as an Artificer. See [Enchantments](../enchantments/README.md).
+
 ## For developers
 - `Misc/ArtificerDamage`, `Misc/ArtificerCrafting` (+ `mixin/CraftingResultSlotMixin`, `CraftingQuickMoveMixin`), `mixin/EnchantingTableMixin`, `Effects/ArmorBuffEffect`.

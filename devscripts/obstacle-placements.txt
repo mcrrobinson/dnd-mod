@@ -17,7 +17,7 @@
 #   mineshafts: Collapsed Passage (Easy) 18 in some corridors
 wait 40
 closescreen
-respawn
+include _reset.txt
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false
 /time set noon

@@ -4,6 +4,7 @@
 # the husk (20 health) loses 7 to each hit.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /effect give @s minecraft:resistance 99999 255 true
 /gamerule doDaylightCycle false

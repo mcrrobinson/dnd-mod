@@ -1,0 +1,95 @@
+# DM panel (K): spawn, roll call, narrate, freeze-all and veil from the panel, then the same as commands to compare.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-panel.txt
+# Expect in latest.log:
+#   "[DmPanel] Dev opened the panel", then for each button "[DmPanel] Dev runs /dm ..." followed by the command's own
+#   lines: "[Dev: Encounter #N "Goblin Patrol": ...]", "[D20] ..." roll lines and the "Dexterity Save DC 14: ..." summary,
+#   "[DM] narrate to Dev: The torches *gutter*.", "[Dev: Froze N creatures]", "[Dev: You draw the veil ...]";
+#   then the same lines again from the typed commands (marker-commands).
+# Screenshots: dm-panel (panel open), dm-panel-after (feedback line, toggles on), dm-panel-spawned (encounter in world).
+wait 40
+closescreen
+respawn
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/dm off
+/dm unfreeze all
+/dm encounter clear all
+/fill 20 149 20 36 149 36 minecraft:stone
+/fill 20 150 20 36 156 36 minecraft:air
+/tp @s 28.5 150 22.5 0 40
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 20
+press key.dnd-classes.dm-panel
+wait 5
+waitserver 2
+wait 5
+waitserver 2
+wait 5
+screenshot dm-panel
+# Encounter: spawn at crosshair
+dmselect goblin_patrol
+widget Spawn at crosshair
+wait 5
+waitserver 2
+wait 5
+# Roll call: Dexterity save DC 14 with advantage
+cycle Check Dexterity Save
+field 0 14
+cycle Mode Advantage
+widget Call roll
+wait 5
+waitserver 2
+wait 5
+# Narrate
+field 1 The torches *gutter*.
+widget Narrate
+wait 5
+waitserver 2
+wait 5
+# Toggles
+widget Freeze all (24)
+wait 5
+waitserver 2
+wait 5
+widget DM mode: OFF
+wait 5
+waitserver 2
+wait 5
+screenshot dm-panel-after
+widget Veil: OFF
+wait 5
+waitserver 2
+wait 5
+widget Unfreeze all
+wait 5
+waitserver 2
+wait 5
+closescreen
+wait 5
+key y
+wait 40
+screenshot dm-panel-spawned
+# The same as typed commands, for comparison
+/say marker-commands
+/dm veil off
+/dm off
+/dm encounter spawn goblin_patrol
+/dm roll @a dex 14 advantage
+wait 5
+waitserver 2
+wait 5
+key y
+wait 40
+/dm narrate The torches *gutter*.
+/dm freeze radius
+/dm unfreeze all
+/dm encounter clear all
+wait 5
+waitserver 2
+wait 5
+/say done
+quit

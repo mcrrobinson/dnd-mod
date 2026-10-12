@@ -5,7 +5,7 @@
 # Expect: one "[CHAT] The nearest ... is at [x, ~, z]" line per structure.
 wait 40
 closescreen
-respawn
+include _reset.txt
 /gamemode spectator
 /tp @s 100000 200 100000
 wait 40

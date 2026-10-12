@@ -11,6 +11,10 @@ import mattonfire.dnd.classes.Abilities.Proficiency;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Obstacles.ObstacleCodex;
+import mattonfire.dnd.classes.Obstacles.ObstacleType;
+import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.classes.Race.RaceInfo;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
@@ -25,6 +29,7 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.StringVisitable;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Builds the class guidebook's pages from {@link ClassInfo} and shows them in
@@ -76,6 +81,7 @@ public final class ClassGuidebookScreen {
         if (race != null) {
             heritagePage(pages, race, ancestry);
         }
+        codexPages(pages, info == null ? null : info.id());
         return pages.finish();
     }
 
@@ -202,6 +208,11 @@ public final class ClassGuidebookScreen {
         }
         role.add(Text.literal(""));
         role.add(Text.translatable(info.role().translationKey() + ".description").formatted(Formatting.GRAY));
+        // "In a party": the role's synergy (Party/PartySynergies), flowing onto the next page if needed
+        role.add(Text.literal(""));
+        role.add(Text.translatable("book.dndclasses.class_guidebook.role.party").formatted(Formatting.BOLD,
+                Formatting.DARK_AQUA));
+        role.add(Text.translatable(info.role().translationKey() + ".synergy"));
         pages.section(role.toArray(Text[]::new));
 
         if (!info.obstacles().isEmpty()) {
@@ -211,6 +222,64 @@ public final class ClassGuidebookScreen {
             obstacles.add(Text.translatable("book.dndclasses.class_guidebook.obstacles.note").formatted(Formatting.GRAY));
             pages.section(obstacles.toArray(Text[]::new));
         }
+    }
+
+    /**
+     * The Obstacle Codex: every obstacle type in the registry ({@link ObstacleCodex#entries()}), who can roll for
+     * it and the fallback for everyone else. {@code yours} (if any) is picked out in green.
+     */
+    private static void codexPages(Pages pages, @Nullable DndCharacter yours) {
+        pages.section(Text.translatable("book.dndclasses.class_guidebook.codex").formatted(Formatting.BOLD,
+                Formatting.DARK_AQUA), Text.literal(""),
+                Text.translatable("book.dndclasses.class_guidebook.codex.intro"), Text.literal(""),
+                Text.translatable("book.dndclasses.class_guidebook.codex.key").formatted(Formatting.GRAY));
+        for (ObstacleType type : ObstacleCodex.entries()) {
+            List<Text> lines = new ArrayList<>();
+            lines.add(Text.translatable(type.translationKey()).formatted(Formatting.BOLD, Formatting.DARK_PURPLE));
+            List<ObstacleType> variants = ObstacleCodex.variants(type);
+            if (!variants.isEmpty()) {
+                MutableText also = Text.empty();
+                for (int i = 0; i < variants.size(); i++) {
+                    also.append(i == 0 ? "" : ", ").append(Text.translatable(variants.get(i).translationKey()));
+                }
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.codex.variants", also)
+                        .formatted(Formatting.GRAY, Formatting.ITALIC));
+            }
+            DndCharacter only = ObstacleCodex.exclusiveSolver(type);
+            List<DndCharacter> primary = ObstacleCodex.classes(type, Eligibility.PRIMARY);
+            List<DndCharacter> secondary = ObstacleCodex.classes(type, Eligibility.SECONDARY);
+            if (only != null) {
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.codex.only", classNames(primary, yours)));
+            } else if (!primary.isEmpty()) {
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.codex.primary", classNames(primary, yours)));
+            }
+            if (!secondary.isEmpty()) {
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.codex.secondary",
+                        classNames(secondary, yours)));
+            }
+            if (primary.isEmpty() && secondary.isEmpty() && type.ownWhoText()) {
+                lines.add(Text.translatable(type.translationKey() + ".who"));
+            }
+            if (ObstacleCodex.anyoneMayTry(type)) {
+                lines.add(Text.translatable("book.dndclasses.class_guidebook.codex.anyone"));
+            }
+            lines.add(Text.translatable("book.dndclasses.class_guidebook.codex.fallback",
+                    ObstacleCodex.fallbackSentence(Text.translatable(type.translationKey() + ".fallback").getString()))
+                    .formatted(Formatting.DARK_GRAY));
+            pages.block(lines.toArray(Text[]::new));
+        }
+    }
+
+    /** "Wizard, Warlock", with {@code yours} bold and green. */
+    private static Text classNames(List<DndCharacter> classes, @Nullable DndCharacter yours) {
+        MutableText out = Text.empty();
+        for (int i = 0; i < classes.size(); i++) {
+            DndCharacter c = classes.get(i);
+            MutableText name = Text.literal(Progression.name(c));
+            out.append(i == 0 ? "" : ", ").append(c == yours ? name.formatted(Formatting.BOLD, Formatting.DARK_GREEN)
+                    : name.formatted(Formatting.BOLD));
+        }
+        return out;
     }
 
     private static Text[] bulletList(String headerKey, Formatting color, List<String> points) {
@@ -258,6 +327,31 @@ public final class ClassGuidebookScreen {
                 }
                 current.append(paragraph);
                 lines += height;
+            }
+        }
+
+        /**
+         * Paragraphs kept together on one page (moving to a fresh page if they don't fit), after a blank line
+         * when the page already has something on it. For short entries packed several to a page.
+         */
+        void block(Text... paragraphs) {
+            int height = 0;
+            for (Text paragraph : paragraphs) {
+                height += Math.max(1, textRenderer.wrapLines(paragraph, PAGE_WIDTH).size());
+            }
+            if (lines > 0 && lines + 1 + height > PAGE_LINES) {
+                newPage();
+            }
+            if (lines > 0) {
+                current.append("\n");
+                lines++;
+            }
+            for (Text paragraph : paragraphs) {
+                if (lines > 0) {
+                    current.append("\n");
+                }
+                current.append(paragraph);
+                lines += Math.max(1, textRenderer.wrapLines(paragraph, PAGE_WIDTH).size());
             }
         }
 

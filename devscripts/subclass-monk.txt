@@ -6,6 +6,7 @@
 #     none of 20 with one; Ale logs "drank Ale, mana now N" (+2)
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

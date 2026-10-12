@@ -12,6 +12,7 @@
 #  wild-shape-horse-r3, wild-shape-bestiary-r4 (owlbear unlocked), wild-shape-owlbear-r4
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

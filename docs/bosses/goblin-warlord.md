@@ -1,5 +1,5 @@
 # Goblin Warlord
-The boss of every Nether Fortress: a big, crowned Goblin Warrior that guards the fortress's central crossing and bellows for reinforcements.
+The goblins' war leader: a big, crowned Goblin Warrior that bellows for reinforcements. One guards every Nether Fortress's central crossing, about 1 in 3 goblin camps has one, it leads the last wave of every goblin raid, and it's the boss of the Goblin Warren dungeon.
 
 ![The Goblin Warlord, crowned, between two Goblin Warriors](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/goblin-warlord.png)
 
@@ -13,8 +13,12 @@ The boss of every Nether Fortress: a big, crowned Goblin Warrior that guards the
 
 ![The Goblin Warlord enraged: its boss bar has turned red](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/goblin-warlord-enraged.png)
 
-## Where to find it / How to get it
-- One stands in the middle of the bridge crossing that every Nether Fortress grows from. It's placed when the fortress generates, so only newly generated fortresses have one. A fortress generated on Peaceful gets an invisible marker instead, which raises the Warlord the first time it's loaded on a higher difficulty. There's also a spawn egg.
+## Where to find it
+- **Nether Fortresses:** one stands in the middle of the bridge crossing that every Nether Fortress grows from. It's placed when the fortress generates, so only newly generated fortresses have one. A fortress generated on Peaceful gets an invisible marker instead, which raises the Warlord the first time it's loaded on a higher difficulty.
+- **[Goblin camps](../structures/goblin-camps.md):** 30% of camps are led by a Warlord, which guards the camp's centre.
+- **[Goblin raids](../systems/goblin-raids.md):** the final wave of every raid brings a Warlord with its warriors. It marches on the settlement's rally point and holds it.
+- **[Goblin Warrens](../structures/dungeons.md):** the dungeon's boss, in its war hall.
+- There's also a spawn egg.
 
 ## Rewards
 - 4-9 gold ingots (+0-2 per Looting level).
@@ -25,5 +29,5 @@ The boss of every Nether Fortress: a big, crowned Goblin Warrior that guards the
 - `/summon dndclasses:goblin_warlord`
 
 ## For developers
-- `entity/GoblinWarlordEntity`, placement in `mixin/NetherFortressStartMixin` through `entity/boss/StructureBosses` (Peaceful markers), loot `loot_tables/entities/goblin_warlord.json`.
+- `entity/GoblinWarlordEntity`, placement in `mixin/NetherFortressStartMixin` through `entity/boss/StructureBosses` (Peaceful markers), in camps by `world/gen/camp/GoblinCampPiece` (`WARLORD_CHANCE` 0.3) and in raids by `entity/raid/GoblinRaid` (final wave), loot `loot_tables/entities/goblin_warlord.json`.
 - Devscripts: `goblin-warlord.txt`, `goblin-warlord-fortress.txt`.

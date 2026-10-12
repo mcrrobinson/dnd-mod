@@ -6,6 +6,7 @@
 #  3. Valor: [D20] persuasion roll without the +2
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

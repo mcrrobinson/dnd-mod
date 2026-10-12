@@ -107,6 +107,13 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code widget <label>} presses the open screen's button with that label (e.g. {@code Yes} in a confirm
  *     dialog)</li>
+ * <li>{@code field <n> <text>} types {@code text} into the open screen's n-th text box (from 0), replacing what's
+ *     there</li>
+ * <li>{@code cycle <label> <value>} presses the cycling button whose label starts with {@code label} until it shows
+ *     {@code value} (e.g. {@code cycle Check Dexterity Save} in the DM panel)</li>
+ * <li>{@code dmselect <encounter>} selects an encounter in the open DM panel</li>
+ * <li>{@code dmpanel <action> [args...]} sends a DM panel action packet straight to the server, as a forged packet
+ *     would (e.g. {@code dmpanel narrate Hello} from a non-DM, to check it's refused)</li>
  * <li>{@code page <n|last>} turns an open book to page n (from 0) or the last page</li>
  * <li>{@code hover <dx> <dy>} moves the cursor to GUI coordinates measured from the screen's centre, so the open
  *     screen draws the tooltip there (take a screenshot after it)</li>
@@ -137,6 +144,11 @@ import net.minecraft.util.Identifier;
  * Runs started with {@code -PdevScript} get a fixed player name unless {@code -PdevUser} sets one: {@code Dev}, or
  * {@code DevGuest} for {@code -PdevServer}, plus {@code _<run dir>} outside {@code run/} (e.g. {@code DevGuest_run_2}),
  * so per-player state (quests, reputation, ...) carries over between runs.
+ * <p>
+ * {@code include <file>} pastes another script's lines in place when the script is loaded (the path is relative to
+ * the including script's folder), e.g. {@code include _reset.txt}, the standard reset header that puts the player
+ * back to a living, raceless, classless state, so a script doesn't depend on what the previous run left behind.
+ * Line numbers in the log count the included lines.
  * <p>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
@@ -227,7 +239,7 @@ public final class DevScript {
         }
         List<String> lines;
         try {
-            lines = Files.readAllLines(Path.of(path));
+            lines = readWithIncludes(Path.of(path), 0);
         } catch (IOException e) {
             DnDClasses.LOGGER.error("[DevScript] Couldn't read {}", path, e);
             return;
@@ -240,6 +252,33 @@ public final class DevScript {
                 .register((message, overlay) -> RECEIVED.add(message.getString()));
         net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.CHAT
                 .register((message, signed, sender, params, timestamp) -> RECEIVED.add(message.getString()));
+    }
+
+    /** Most nested {@code include}s, so a script that includes itself fails instead of looping. */
+    private static final int MAX_INCLUDE_DEPTH = 8;
+
+    /**
+     * The script's lines, with each {@code include <file>} line replaced by that file's lines (its path relative
+     * to the including script's folder), between a comment line naming it.
+     */
+    private static List<String> readWithIncludes(Path path, int depth) throws IOException {
+        if (depth > MAX_INCLUDE_DEPTH) {
+            throw new IOException("includes nested more than " + MAX_INCLUDE_DEPTH + " deep at " + path);
+        }
+        List<String> lines = new java.util.ArrayList<>();
+        for (String line : Files.readAllLines(path)) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("include ")) {
+                String name = trimmed.substring("include ".length()).trim();
+                Path included = path.toAbsolutePath().getParent().resolve(name);
+                lines.add("# include " + name + " {");
+                lines.addAll(readWithIncludes(included, depth + 1));
+                lines.add("# } end of " + name);
+            } else {
+                lines.add(line);
+            }
+        }
+        return lines;
     }
 
     private void tick(MinecraftClient client) {
@@ -429,6 +468,59 @@ public final class DevScript {
                 if (!found) {
                     DnDClasses.LOGGER.warn("[DevScript] {}: no button '{}' on the open screen", lineNumber, argument);
                 }
+            }
+            case "field" -> {
+                String[] args = argument.split("\\s+", 2);
+                int wanted = Integer.parseInt(args[0]);
+                int index = 0;
+                boolean found = false;
+                if (client.currentScreen != null) {
+                    for (var child : client.currentScreen.children()) {
+                        if (child instanceof net.minecraft.client.gui.widget.TextFieldWidget field && index++ == wanted) {
+                            field.setText(args.length > 1 ? args[1] : "");
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no text box {} on the open screen", lineNumber, wanted);
+                }
+            }
+            case "cycle" -> {
+                String[] args = argument.split("\\s+", 2);
+                boolean found = false;
+                if (client.currentScreen != null && args.length == 2) {
+                    for (var child : client.currentScreen.children()) {
+                        if (child instanceof net.minecraft.client.gui.widget.CyclingButtonWidget<?> cycling
+                                && cycling.getMessage().getString().startsWith(args[0])) {
+                            for (int i = 0; i < 200 && !cycling.getMessage().getString().endsWith(args[1]); i++) {
+                                cycling.onPress();
+                            }
+                            found = cycling.getMessage().getString().endsWith(args[1]);
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no cycling button '{}' reaching '{}'", lineNumber,
+                            args[0], args.length > 1 ? args[1] : "");
+                }
+            }
+            case "dmselect" -> {
+                if (!(client.currentScreen instanceof mattonfire.dnd.classes.Client.Hud.DmPanelScreen panel)
+                        || !panel.select(argument)) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no DM panel open, or no encounter '{}'", lineNumber,
+                            argument);
+                }
+            }
+            case "dmpanel" -> {
+                String[] args = argument.split("\\s+", 2);
+                String action = args[0];
+                java.util.List<String> rest = args.length < 2 ? java.util.List.of()
+                        : action.equals("narrate") ? java.util.List.of(args[1])
+                        : java.util.List.of(args[1].split("\\s+"));
+                mattonfire.dnd.classes.Client.Hud.DmPanelScreen.send(action, rest);
             }
             case "page" -> {
                 if (client.currentScreen instanceof BookScreen book) {

@@ -111,6 +111,12 @@ public final class ProgressionEvents {
             }
             amount = MagicEffects.modifyDealtDamage(player, target, source, amount);
             amount = mattonfire.dnd.classes.Items.racial.RacialGear.modifyDealtDamage(player, target, source, amount);
+            amount = mattonfire.dnd.classes.Party.PartySynergies.opportunist(player, target, amount);
+        }
+
+        if (target instanceof net.minecraft.server.network.ServerPlayerEntity victim && amount > 0
+                && source.getAttacker() instanceof net.minecraft.entity.mob.MobEntity mob) {
+            mattonfire.dnd.classes.Party.PartySynergies.bodyguard(victim, mob);
         }
 
         if (target instanceof PlayerEntity player) {

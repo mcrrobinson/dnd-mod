@@ -201,6 +201,7 @@ public final class ObstacleTypes {
         CryptSleepers.register();
         HiddenSearch.register();
         ObstacleAuras.register();
+        ObstacleBlock.registerBreakEvents();
         VanillaTraps.register();
         ObstacleTierProcessor.register();
         for (ObstacleType type : TYPES.values()) {

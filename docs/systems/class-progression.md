@@ -18,8 +18,8 @@ Each class's two skill-tree branches are its two D&D subclasses: Path of the Ber
 | After choosing | Your branch opens fully. The other branch's first node can still be unlocked (a "dabble" node), but its upper nodes are sealed with a padlock and say "Path of the Berserker only" |
 | Capstone | Unchanged: it needs a top branch node, so only your subclass reaches it |
 | Shared nodes | The Paladin's Circle of Healing, between the branches, is open to either oath ("Any oath") once you've chosen one |
-| Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it; each class page has the numbers. A feature that isn't in the game yet says so on its banner |
-| Points | A subclass branch costs 3, the capstone 2, the other first node 1 and a special's ranks II-IV 3: 9 of the 10 points at level 10 |
+| Subclass feature | Each subclass has a free feature that's always on and doesn't use a passive slot. Hover the banner to read it; each class page has the numbers. All 30 features are in the game |
+| Points | A subclass branch costs 3, the capstone 2, the other first node 1 and a special's ranks II-IV 3: 9 of the 10 points at level 10 for most classes. See [the point budget](#the-point-budget) for the exceptions |
 | Per class | Kept per class like the rest of the tree, so switching class and back keeps the choice |
 | Changing it | A [Tome of Clear Thought](../items/magic-items.md#tome-of-clear-thought) (Very Rare) read near an Attunement Table, or an operator (`/dndclass subclass <player> none`). Clearing refunds the subclass's upper nodes, the capstone and their ranks |
 
@@ -39,10 +39,10 @@ All 30 subclasses ("Right" is the branch listed first in the code, column 2):
 | Class | Subclass | Id | Branch | Feature |
 |-|-|-|-|-|
 | Barbarian | Path of the Berserker | `barbarian.berserker` | Right | **Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage) |
-| Barbarian | Path of the Totem Warrior | `barbarian.totem_warrior` | Left | **Bear Totem Spirit**: while Rage is active you take 15% less damage |
+| Barbarian | Path of the Totem Warrior | `barbarian.totem_warrior` | Left | **Bear Totem Spirit**: while Rage is active you take 15% less damage (not from the void, /kill or starving) |
 | Bard | College of Valor | `bard.valor` | Right | **Combat Inspiration**: players who get your instrument buff also get +2 armor for its 30 seconds |
 | Bard | College of Lore | `bard.lore` | Left | **Bardic Lore**: +2 to Persuasion checks |
-| Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Life Domain healing is 25% stronger |
+| Cleric | Life Domain | `cleric.life` | Right | **Disciple of Life**: Cure Wounds heals 25% more, Preserve Life's and Sanctuary's party Regeneration last 25% longer, and Divine Intervention also gives Absorption I for 10 seconds |
 | Cleric | Forge Domain | `cleric.forge` | Left | **Blessing of the Forge**: once per long rest (once per in-game day with the `dndRests` gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab ([details](magic-items.md#blessing-of-the-forge)) |
 | Druid | Circle of the Moon | `druid.moon` | Right | **Primal Strike**: your attacks deal +2 damage in animal form |
 | Druid | Circle of the Land | `druid.land` | Left | **Natural Recovery**: +1 mana pip every 30 seconds while standing on grass, leaves or moss |
@@ -78,7 +78,7 @@ Some abilities have more than one rank. Each rank makes the ability stronger, fo
 |-|-|-|-|
 | Class level | 3 | 6 | 9 |
 
-Abilities with more than four ranks set their own levels. Ranks compete with unlocking new nodes: 10 points against 8 for the tree plus 3 for a special's ranks II-IV, so you can't have everything.
+Abilities with more than four ranks set their own levels: the Necromancer's Raise Dead has five, at levels 3, 5, 7 and 10.
 
 - **Where:** ranks are only bought at an Attunement Table. Right-click the table, then **right-click** an unlocked node with ranks left. Left-click still equips it. From the **O** screen the tooltip just says "Rank up at an Attunement Table".
 - **On the node:** a row of pips along the bottom of the icon shows the rank, lit up to the current one.
@@ -108,24 +108,60 @@ Abilities with ranks (values for ranks I / II / III / IV unless noted):
 | Warlock | Fire Breath | 8 / 12 / 16 / 20 s, reach 3 / 4 / 5 / 7 blocks, 1 / 2 / 2 / 3 damage, burn 2 / 2 / 4 / 4 s |
 | Wizard | Arcane Explosion | Radius 12 / 28 / 48 / 72 blocks, Resistance V for 2 / 3 / 4 / 5 s |
 
+The Artificer's Arcane Armor has no ranks.
+
+### The point budget
+You have 1 skill point per class level, so 10 at level 10. Ranks and nodes come out of the same pool. Once you've chosen a subclass, everything you can still buy costs:
+
+| Class | Subclass nodes | Capstone | Other first node | Ranks | Total |
+|-|-|-|-|-|-|
+| Most classes | 3 | 2 | 1 | 3 (special II-IV) | **9** |
+| Artificer | 3 | 2 | 1 | none | **6** |
+| Necromancer | 3 | 2 | 1 | 4 (Raise Dead II-V) | **10** |
+| Paladin | 3, plus 2 for the shared Circle of Healing | 2 | 1 | 3 | **11** |
+| Rogue (Assassin) | 3 | 2 | 1 | 3 (Vanish) | **9** |
+| Rogue (Thief) | 4 (with Danger Sense) | 2 | 1 | 6 (Vanish and Danger Sense) | **13** |
+
+So a Paladin or a Thief can't have everything by level 10 and has to choose; most classes have a point to spare.
+
+![A Thief Rogue at level 10 with 0 points left: Danger Sense is still rank I and says "Next rank needs 1 point"](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/class-progression-docs/progression-budget.png)
+
+### Class XP
+Levels, the XP table and the tree's shape are in [Class selection](class-selection.md#class-levels-and-the-skill-tree). Class XP comes from:
+- 1 XP a minute for playing (not in spectator), and 2 XP per hostile kill plus the class's own kill bonus. Kill XP is split with [party](party.md) members nearby.
+- Class actions: Cleric ore mining, Artificer crafting, enchanting and smithing, Alchemist brewing and more (each class page lists its own).
+- Adventuring: [bounties](../structures/hobbit-tavern.md) and [quests](quests.md) pay class XP as part of their rewards, solving or finding [obstacles](obstacles.md) and disarming [traps](dungeon-traps.md) give XP by tier, every [dungeon](dungeon-encounters.md) room or puzzle you clear gives 10 XP per dungeon tier (split with the party), and winning the [Trial of Strength](../structures/orc-strongholds.md) gives 100.
+
 ### Bestiary (Bard and Druid)
-- **Druid:** killing a creature **learns** it ("Learned Cow. Unlock it at an Attunement Table."): animals and wild beasts such as the Owlbear.
+- **Druid:** killing a creature **learns** it ("Learned Cow. Unlock it at an Attunement Table."): any animal, and the wild beasts in the `#dndclasses:druid_forms` tag such as the Owlbear.
 - **Bard:** playing an [instrument](../items/bard-instruments.md) **learns** every tiered animal within 8 blocks that isn't tamed or a companion ("Charmed a fox: unlock it at an Attunement Table."). Kills don't teach the Bard anything.
 - At an Attunement Table, open the **Bestiary** tab (top right of the skill tree) and click a learned creature to **unlock** it. Unlocking is free.
-- Each creature has a tier. Unlocking it needs the class's special (Wild Shape or Animal Friends) at that rank or higher. Every creature is tier I for now; the class's special card sets the tiers.
+- Each creature has a tier. Unlocking it needs the class's special (Wild Shape or Animal Friends) at that rank or higher:
+
+| Tier (rank) | Druid: Wild Shape forms | Bard: Animal Friends animals |
+|-|-|-|
+| I | every other vanilla animal (cow, pig, sheep, chicken, fox, rabbit...) | wolf, cat, fox, parrot, and the farm animals: cow, pig, sheep, chicken, rabbit, mooshroom, horse, donkey, mule (they follow but can't fight) |
+| II | wolf, goat, cat, ocelot, axolotl, bee, parrot, strider | goat, llama, trader llama, bee |
+| III | polar bear, horse, donkey, mule, skeleton horse, zombie horse, llama, trader llama, camel, panda, hoglin, sniffer | polar bear, panda |
+| IV | the mod's own creatures, such as the Owlbear (and any from other mods) | iron golem, hoglin |
+
+- A Bard can only learn the animals in that table. Every Bard has the wolf unlocked from the start.
+- Unlocked creatures are what the special uses: Wild Shape's forms (sneak + power-up key picks one, see [Druid](../classes/druid.md)) and the animals Animal Friends turns into companions (see [Bard](../classes/bard.md)).
 - Green entries are unlocked, gold ones can be unlocked now, and grey ones need a higher rank. Scroll with the mouse wheel when the list is long.
 
-![A Druid's Bestiary tab: Cow and Wolf unlocked (green), Pig and Fox ready to unlock (gold), Owlbear locked (grey)](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/attunement-bestiary.png)
+![A Druid's Bestiary tab with Wild Shape at rank II: Cow and Wolf unlocked (green), Pig ready to unlock (gold), Horse (tier III) and Owlbear (tier IV) locked (grey)](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/class-progression-docs/progression-bestiary.png)
 
 - A Druid's old kill list is turned into learned creatures the first time their progress loads.
 
 ## Where to find it
-Right-click an Attunement Table (D&D Classes creative tab, recipe in [Class selection](class-selection.md#class-levels-and-the-skill-tree)). Press **O** to look at ranks and the bestiary anywhere. Every class also has a **Character** tab (top right) with its character sheet, where ability points from levels 4 and 8 are spent at a table; see [Ability scores](ability-scores.md#where-to-find-it).
+Right-click an Attunement Table (D&D Classes creative tab, recipe in [Class selection](class-selection.md#class-levels-and-the-skill-tree)). Press **O** to look at ranks and the bestiary anywhere. The screen has tabs along the top: **Tree** and, at a table only, **Items** (attunement and Blessing of the Forge, see [Magic items](magic-items.md)) on the left; **Character** (the character sheet, where ability points from levels 4 and 8 are spent at a table, see [Ability scores](ability-scores.md#where-to-find-it)) and, for the Bard and Druid, **Bestiary** on the right.
 
 ## Commands
+- `/dndclass progress <player>` prints level, XP, points, the subclass, unlocks, the loadout, ranks, learned and unlocked creatures.
+- `/dndclass xp <player> add|set <amount>` changes class XP; `/dndclass resetprogress <player>` wipes the current class's progress and refunds everything.
+- `/dndclass unlock|equip <player> <skill>` unlocks or equips a node, skipping points and the table.
 - `/dndclass rank <player> <skill> <n>`: sets a rank, skipping points, level and the table.
 - `/dndclass bestiary <player> learn|unlock <entity>`.
-- `/dndclass progress <player>` prints the subclass, ranks, learned and unlocked creatures.
 - `/dndclass subclass <player> <id|none>`: sets the subclass of the player's current class, skipping the level and the table (replacing another one refunds it first); `none` clears it and refunds its nodes.
 
 See [Admin commands](admin-commands.md).
@@ -134,10 +170,8 @@ See [Admin commands](admin-commands.md).
 None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels are in `Ranks`.
 
 ## Known limitations
-- Bestiary tiers aren't set yet, and unlocked creatures don't change what Wild Shape or Animal Friends do until their class cards land.
-- Only the Fighter's special has ranks so far; the other classes' cards add theirs.
-- Subclass features are described but don't do anything yet.
 - `/dndclass unlock` ignores the subclass lock, like it ignores points.
+- Respec is per subclass only: a Tome of Clear Thought or an operator clears the subclass, but there's no way for a player to refund other nodes or ranks.
 
 ## For developers
 - **Storage:** `ClassProgress.ranks` (node id to rank, missing = 1), `learned` and `bestiary` (entity ids), all in `toNbt`/`fromNbt`, so saving, syncing and the death/End copy need nothing extra. `pointsSpent()` counts rank points.
@@ -157,4 +191,4 @@ None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels ar
 - **Feature hooks:** check `progress.hasSubclass("wizard.evocation")` in the `ClassSkills` hooks. An `AttributeBonus` whose `skill` is a subclass id is on whenever that subclass is chosen.
 - **More hooks for features:** `ClassSkills.manaCost` (a cheaper active, read on both sides), `ClassSkills.afterActivate` (after an active fires), `D20.registerReroll` (a second try at a failed roll) and `AttackRolls.registerAutoCrit` (a guaranteed critical).
 - **Screen:** `Client/Hud/SkillTreeScreen` (pips, rank tooltip, Tree/Bestiary tabs, subclass banners, padlocks, `ConfirmScreen`). Guidebook pages: `ClassGuidebookScreen`.
-- **Test:** `devscripts/ability-ranks.txt`, `devscripts/subclasses.txt` (the migration step needs a seeded save, see its header), `devscripts/subclasses-verify.txt` (the whole checklist with tooltip screenshots). DevScript's `hover <dx> <dy>` moves the cursor so screens draw tooltips, `widget <label>` presses a screen button such as a confirm dialog's Yes, and `page <n>` turns an open book. DevScript's `skill unlock|equip|rankup|bestiary|subclass <id>` sends the screen's packets, and `click <dx> <dy> [button]` clicks the open screen relative to its centre.
+- **Test:** `devscripts/docs-class-progression.txt` (the screenshots on this page: the table, rank pips, the tiered bestiary and the point budget), `devscripts/ability-ranks.txt`, `devscripts/subclasses.txt` (the migration step needs a seeded save, see its header), `devscripts/subclasses-verify.txt` (the whole checklist with tooltip screenshots). DevScript's `hover <dx> <dy>` moves the cursor so screens draw tooltips, `widget <label>` presses a screen button such as a confirm dialog's Yes, and `page <n>` turns an open book. DevScript's `skill unlock|equip|rankup|bestiary|subclass <id>` sends the screen's packets, and `click <dx> <dy> [button]` clicks the open screen relative to its centre.

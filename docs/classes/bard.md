@@ -84,6 +84,11 @@ How the features work:
 - **Combat Inspiration** (Valor): when you play an instrument, every player who gets its buff (within 16 blocks, you included) also gets +2 armor for 30 s. Playing again restarts the 30 s.
 - **Bardic Lore** (Lore): +2 to Persuasion on your character sheet, so the villager persuasion roll and any other Persuasion check include it (it shows as "Bardic Lore" in the roll's breakdown). A Lore Bard also identifies every [magic item](../systems/magic-items.md#identification) that enters their inventory, as a Wizard does.
 
+## Where to find it
+- Pick the Bard in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> bard`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- The Lute in your instrument slot is always there (**G**). The Lute, War Drum and Flute items are crafted; see [Bard instruments](../items/bard-instruments.md).
+
 ## Commands
 - `/dndclass set <player> bard` (see [Admin commands](../systems/admin-commands.md)).
 - `/dndclass rank <player> bard.animal_friends <1-4>` sets the rank; `/dndclass bestiary <player> learn|unlock <entity>` learns or unlocks an animal.

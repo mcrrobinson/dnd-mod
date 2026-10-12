@@ -112,7 +112,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 - 3 charges (tooltip and a green bar), 1 s between rays. One charge comes back at each dawn and on a long rest. Creative mode doesn't spend charges.
 - While it's active (identified, attuned, anywhere in your inventory) the Beholder's anti-magic cone can't touch you, so your class specials and other magic items keep working.
 
-## How to get it
+## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
 - The boss and monster items drop, unidentified, when a player kills their monster (Looting adds the bonus shown):
 

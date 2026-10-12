@@ -6,6 +6,7 @@
 #     with only the class's own on-hit wither. Bonecaller control: no heal
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

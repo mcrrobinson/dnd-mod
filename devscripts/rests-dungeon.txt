@@ -5,6 +5,7 @@
 # Check: "[Rest]" lines and the /dungeon info [CHAT] lines in logs/latest.log; screenshots dungeon-rest-*.png
 wait 40
 closescreen
+include _reset.txt
 /time set noon
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

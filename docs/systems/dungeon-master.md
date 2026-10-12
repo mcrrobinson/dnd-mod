@@ -1,5 +1,5 @@
 # Dungeon Master
-An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD, narrate, speak through NPCs, set the music, and hand out or plant treasure. The DM Wand puts the common actions on right-click. Later tickets add a DM panel on top of this.
+An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD, narrate, speak through NPCs, set the music, and hand out or plant treasure. The DM Wand puts the common actions on right-click, and the DM panel (key K) puts them on buttons.
 
 ## How it works
 ### DM mode
@@ -116,8 +116,30 @@ Inspect shows:
 
 The mode and the selected encounter are stored on the item, so two wands can be set up differently.
 
+### DM panel
+Press **K** (rebindable, "DM Panel" under D&D Classes) to open the DM panel, so you don't have to type commands mid-session. It opens only for players who can use `/dm` (ops, and players given `/dm grant`); anyone else gets "Only the Dungeon Master can use the DM panel." in chat. It doesn't pause the game.
+
+- **Toggles** along the top: DM mode, the veil, and Freeze all (24), which freezes everything within 24 blocks of you and then turns into Unfreeze all while anything is frozen. The title line shows how many encounters are live and how many creatures are frozen.
+- **Encounters** on the left: every encounter file, coloured by difficulty (medium pale yellow, hard orange, deadly red) with its mob count. Click one, then **Spawn at crosshair** spawns it at the block you're looking at (64 blocks), frozen if **Spawn frozen** is ticked. **Clear all** removes every live encounter.
+- **Roll call** on the right: pick the check (d20, the six saves, then the skills), type the DC (1-40), pick Normal, Advantage or Disadvantage, tick **Secret** if you like, then **Call roll**. Everyone not in DM mode gets the [roll prompt](#roll-calls).
+- **Narrate**: type a line (`*word*` for bold) and press Enter or **Narrate** to send it to everyone.
+
+The panel has no powers of its own. Each button asks the server, which checks you may use `/dm` and then runs the matching command as you:
+
+| Button | Runs |
+|-|-|
+| DM mode | `/dm on` / `/dm off` |
+| Veil | `/dm veil on` / `/dm veil off` |
+| Freeze all / Unfreeze all | `/dm freeze radius` / `/dm unfreeze all` |
+| Spawn at crosshair | `/dm encounter spawn <id> [frozen]` |
+| Clear all | `/dm encounter clear all` |
+| Call roll | `/dm roll @a <check> <dc> [advantage\|disadvantage] [secret]` |
+| Narrate | `/dm narrate <text>` |
+
+So the results, chat lines and server log are the same as typing the command, and the command's reply also shows at the bottom of the panel. The check, DC, mode and selected encounter are remembered until you quit the game.
+
 ## Where to find it
-Server-side commands, and the DM Wand (creative tab or `/give`); nothing to craft.
+Server-side commands, the DM Wand (creative tab or `/give`) and the DM panel (K); nothing to craft.
 
 ## Commands
 Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant`, `revoke`, `apply`, `mood` and `loot plant`; `/dm revoke <player>` takes it back (and ends their DM mode).
@@ -193,6 +215,7 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
 - A player in creative or spectator mode rolls a called save without seeing it (the saving-throw rules hide those); skill checks and flat rolls still show.
 - DMs gain and lose no [faction reputation](factions.md). The quest hook (no quest progress for DMs) arrives with quests.
 - Narration, titles and `say` lines are plain text (no colours or links beyond `*bold*`), and aren't translated.
+- The DM panel rolls for everyone (`@a`) and narrates to everyone; to pick players, type the command.
 - `/dm mood` only reaches players in range when you run it; someone who walks in later doesn't hear it, and a player who relogs loses it.
 
 ## For developers
@@ -205,7 +228,8 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `DmLoot`: `/dm loot give|plant`. The lock DC override is `LockDcHolder` (`DndLockDc` in NBT), added to every `LockableContainerBlockEntity` by `classes/mixin/LockableContainerLockDcMixin`; `Lockpicking.dcAt` reads it (both halves of a double chest) and `lockedTableAt` treats a chest with one as locked.
   - `DmFreeze`: freeze/unfreeze, Fabric attack/use/break callbacks, the player hold tick; the power-up packet in `DnDClasses` checks `DmFreeze.isFrozen`.
   - `DmWand`: the wand's modes and actions (`use(player, stack)`, `raycast`, `spawnEncounter`, `inspect`), mode and encounter in stack NBT (`DmWandMode`, `DmWandEncounter`), and `UseBlockCallback` / `UseEntityCallback` handlers that claim wand clicks on both sides (the client can't tell who is a DM). `classes/Items/DmWandItem` handles clicks on air and names the item after its mode. Logs `[DmWand] <player> mode <mode>`.
+  - `DmPanelPackets`: the DM panel's packets. C2S `dndclasses:dm_panel_open` (empty) and `dndclasses:dm_panel_action` (action name, then string arguments); both check `DungeonMaster.canUse` and log `[DmPanel] refused <action> from <player>` otherwise. `toCommand(action, args)` validates the arguments (known encounter, `Check.parse`, DC 1-40, one-line text of up to 256 characters) and builds the `/dm` command, run with `executeWithPrefix` as the player and logged as `[DmPanel] <player> runs /dm ...`. S2C `dndclasses:dm_panel_state`: open flag, DM mode, veiled, frozen count, encounter files, live encounters and the command's feedback. The output is wrapped in `Capture` to collect the feedback; `classes/mixin/DmPanelFeedbackMixin` unwraps it in `ServerCommandSource.sendToOps`, so the op broadcast and console log match a typed command. Client: `classes/Client/Hud/DmPanelScreen`, key in `DndClassesClient`.
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Wand: `dm-wand.txt` (single player) and `dm-wand-lan-host.txt` + `dm-wand-lan-guest.txt` (port 25644, guest with `-PdevUser=WandGuest`). Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`). Narration and loot: `dm-narration.txt` (single player) and `dm-narration-lan-host.txt` + `dm-narration-lan-guest.txt` (port 25643, guest with `-PdevUser=Guest`).
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Wand: `dm-wand.txt` (single player) and `dm-wand-lan-host.txt` + `dm-wand-lan-guest.txt` (port 25644, guest with `-PdevUser=WandGuest`). Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`). Narration and loot: `dm-narration.txt` (single player) and `dm-narration-lan-host.txt` + `dm-narration-lan-guest.txt` (port 25643, guest with `-PdevUser=Guest`). DM panel: `dm-panel.txt` (single player: every button, then the same commands typed, to compare the log) and `dm-panel-lan-host.txt` + `dm-panel-lan-guest.txt` (port 25652, guest with `-PdevUser=PanelGuest`: refused K and forged packet, then granted, then revoked). DevScript steps for screens like this: `field <n> <text>`, `cycle <label> <value>`, `dmselect <encounter>`, and `dmpanel <action> [args]` to send a raw action packet.

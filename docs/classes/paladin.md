@@ -67,6 +67,10 @@ How the features work:
 
 Circle of Healing sits between the branches and is open to either oath once you've chosen one.
 
+## Where to find it
+- Pick the Paladin in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> paladin`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> paladin` (see [Admin commands](../systems/admin-commands.md)).
 

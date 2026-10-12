@@ -8,6 +8,7 @@
 # Check: screenshots/dungeon-warren-*.png; the "/dungeon info" [CHAT] lines in logs/latest.log.
 wait 40
 closescreen
+include _reset.txt
 /time set noon
 /weather clear
 /gamerule doDaylightCycle false

@@ -6,7 +6,7 @@
 # (Medium) 8 and Alchemical Seal (Medium) 1 per mine and forge in the fortress.
 wait 40
 closescreen
-respawn
+include _reset.txt
 /gamemode spectator
 /tp @s 97824 140 99712
 wait 200

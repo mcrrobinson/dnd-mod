@@ -7,6 +7,7 @@
 #     (an extra ActiveEffects entry with Duration ~60)
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

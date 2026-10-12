@@ -14,7 +14,7 @@ The racial traits that are always on: Darkvision, the racial resistances, Elf Ke
 | Elf | **Trance** | You never need sleep, so phantoms never spawn for you. You can still sleep to skip the night. |
 | Dwarf | **Darkvision** | See below. |
 | Dwarf | **Dwarven Resilience** | Poison you get lasts half as long, and its ticks deal 0.5 damage instead of 1. Advantage on saving throws against poison (saves tagged `poison`, such as a needle trap's). |
-| Dwarf | **Stonecunning** | Mines stone, deepslate, tuff and ores 20% faster (`#dndclasses:stonecunning`). While you sneak in a dungeon, its bricked-up hidden doorways within 8 blocks are outlined in gold dust (stonework ones: cracked stone bricks or cracked deepslate bricks, `#dndclasses:secret_door`; the Goblin Warren's packed-earth tunnels don't count). Advantage on the camp watch underground. |
+| Dwarf | **Stonecunning** | Mines stone, deepslate, tuff and ores 20% faster (`#dndclasses:stonecunning`). While you sneak in a dungeon, its bricked-up hidden doorways within 8 blocks are outlined in gold dust (stonework ones: cracked stone bricks or cracked deepslate bricks, `#dndclasses:secret_door`; the Goblin Warren's packed-earth tunnels don't count). It also finds [Hidden Door obstacles](../systems/obstacles.md) within 8 blocks: once a second, while you sneak, each one still hidden from you is checked against your passive Perception or Investigation (the better one) + 5 for advantage, and if that meets its DC you find it as a Ranger would (it's revealed to your party and you earn its XP, once per reset). Advantage on the camp watch underground. |
 | Halfling | **Second Breakfast** | Each food you eat restores 1 extra hunger point (bread: 6 instead of 5). |
 | Gnome | **Darkvision** | See below. |
 | Gnome | **Gnome Cunning** | 30% less damage from magic (`#dndclasses:magic_damage`: vanilla magic and indirect magic, so poison ticks, harming and Evoker fangs, plus the Wizard's explosion and Hellish Rebuke). Advantage on INT, WIS and CHA saves against magic (saves tagged `magic`). |
@@ -41,6 +41,8 @@ Elves, Dwarves, Gnomes, Half-Orcs and Tieflings see in the dark. Your client dra
 
 The outline is drawn on both faces of the bricked-up wall every half second while you sneak, and only for you. It stops once the doorway is broken open.
 
+A [Hidden Door obstacle](../systems/obstacles.md) is found instead of outlined: "Your stonecunning picks out a seam in the stonework: a hidden door!", after which it gets the gold box every finder sees. A Dwarf with WIS 10 and no Perception proficiency has a passive 10 + 5 = 15, so they find Easy (DC 10), Medium (13) and Hard (15) doors, but not Very Hard (18) ones.
+
 ## Where to find it
 Pick the race. The traits are listed in the race picker's tooltips, in the chat summary when you pick, and on the "Your heritage" page of the Class Guidebook. `/dndclass sheet` lists Diplomat's bonuses and the advantages under the race's name.
 
@@ -60,7 +62,7 @@ Pick the race. The traits are listed in the race picker's tooltips, in the chat 
 ## For developers
 - `classes/Race/RacePassives` holds every passive trait and its numbers, and registers itself from `RaceLifecycle.register()`:
   - A character sheet contributor `dndclasses:race_passives`: Diplomat's `skillBonus`es, Dwarf advantage on `allSaves().and(tag("poison"))` and on `tag(CampWatch.TAG_WATCH).and(tag(CampWatch.TAG_UNDERGROUND))`, and Gnome advantage on INT/WIS/CHA saves tagged `magic` (`RacePassives.MAGIC_TAG`). Tag a spell's save with `magic` to give it to Gnomes.
-  - A server tick (every 10 ticks): Trance resets `Stats.TIME_SINCE_REST` for Elves each second; a sneaking Dwarf's nearby hidden doorways are outlined with dust sent only to them.
+  - A server tick (every 10 ticks): Trance resets `Stats.TIME_SINCE_REST` for Elves each second; a sneaking Dwarf's nearby hidden doorways are outlined with dust sent only to them. Every 20 ticks a sneaking Dwarf also checks the Hidden Door obstacles round them (`RacePassives.stonecunningDoors`, through `ObstacleIndex` and `HiddenDoorType.reveal` with `How.STONECUNNING`).
   - `raceOf(player)` reads the active race on the server and the synced body race on the client, so client-side traits (Darkvision, Keen Senses, break speed prediction) need no packets.
 - Mixins:
   - `RacePassivesLivingMixin`: `resist` on the `applyDamage` amount in `LivingEntity.damage`, and `shortenEffect` on the effect passed to `addStatusEffect(StatusEffectInstance, Entity)`.
@@ -71,4 +73,4 @@ Pick the race. The traits are listed in the race picker's tooltips, in the chat 
   - `Progression.addXp` calls `ambitiousXp`; the carried tenths are `ambitiousCarry` in the persistent `dndRace` compound.
 - Hidden doorways: `DungeonPiece.hiddenDoorways()` gives each hidden door's bricked-up blocks from the structure start. A dungeon made with `/place structure` has no start, so `RacePassives` falls back to the recorded rooms (`DungeonRegistry.find`) and finds the doorways by shape: inner-wall columns of `#dndclasses:secret_door` with air in the outer skin behind them.
 - Tags: `data/dndclasses/tags/damage_type/magic_damage.json`, `items/tinker_crafts.json`, `blocks/stonecunning.json`, `blocks/secret_door.json`.
-- Devscripts: `devscripts/race-passive-traits.txt` (every trait, with printed results and screenshots), `race-darkvision.txt`, and `stonecunning-secret-doors.txt` then `stonecunning-secret-doors-2.txt` (in a scratch run dir).
+- Devscripts: `devscripts/race-passive-traits.txt` (every trait, with printed results and screenshots), `race-darkvision.txt`, `stonecunning-secret-doors.txt` then `stonecunning-secret-doors-2.txt` (in a scratch run dir), and `stonecunning-hidden-door.txt` (Hidden Door obstacles).

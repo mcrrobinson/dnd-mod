@@ -5,6 +5,7 @@
 # the watching Warden's AngryAt (if the pick succeeded). ee:monster-pos: where any monsters near the enclave are.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /time set 6000
 /gamerule doDaylightCycle false

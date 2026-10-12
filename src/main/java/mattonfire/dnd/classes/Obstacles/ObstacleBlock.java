@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Obstacles;
 
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
 import net.minecraft.block.BlockState;
@@ -106,6 +107,23 @@ public class ObstacleBlock extends BlockWithEntity {
             return ActionResult.PASS;
         }
         return ObstacleInteractions.onUse(this, state, world, pos, player, hand);
+    }
+
+    /**
+     * Breaking a sealed block of a type that {@linkplain ObstacleType#opensWhenBroken opens when broken}: runs
+     * {@link ObstacleType#onBrokenByHand} (which opens the group) and cancels the break, so the block stays, open.
+     */
+    static void registerBreakEvents() {
+        PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
+            if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)
+                    || player.isCreative() || !(state.getBlock() instanceof ObstacleBlock block)
+                    || !block.type.opensWhenBroken() || state.get(STATE) != ObstacleState.SEALED) {
+                return true;
+            }
+            block.type.onBrokenByHand(serverWorld, pos, serverPlayer);
+            player.getMainHandStack().postMine(world, state, pos, player);
+            return false;
+        });
     }
 
     @Override

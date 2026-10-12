@@ -14,6 +14,7 @@
 #              character-tab-cap, character-tab-level10, character-tab-away
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

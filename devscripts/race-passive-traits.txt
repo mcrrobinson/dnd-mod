@@ -16,6 +16,7 @@
 #  darkvision-elf, darkvision-dwarf and darkvision-human (the same dark room).
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamerule dndRaces true
 /gamerule doDaylightCycle false

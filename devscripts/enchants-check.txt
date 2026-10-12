@@ -3,6 +3,7 @@
 # Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/enchants-check.txt
 wait 40
 closescreen
+include _reset.txt
 /dndclass set @s fighter
 /gamemode survival
 /effect clear @s

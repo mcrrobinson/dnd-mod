@@ -6,7 +6,7 @@ Fourteen class-themed armor sets and five racial sets. A full set gives a bonus 
 
 ## How it works
 - **Rarity:** every piece is an **Uncommon** [magic item](../systems/magic-items.md): its name is green and its tooltip says "Uncommon armor".
-- Every piece has the same stats: helmet 3, chestplate 8, leggings 6, boots 3 armor; 3 toughness and 10% knockback resistance each, plus small speed and attack speed bonuses (helmets also +1 luck).
+- **Class set stats:** every piece of the 14 class sets has the same stats: helmet 3, chestplate 8, leggings 6, boots 3 armor; 3 toughness and 10% knockback resistance each, plus movement speed (+5% helmet and chestplate, +10% leggings and boots) and attack speed (+10% each, +5% boots), and +1 luck on the helmet. The percentages multiply, so a full set is about **+33% movement speed** and **+40% attack speed**. The racial sets have their own stats (see the table below).
 - **Durability, enchanting and repair:** every set has netherite durability and enchantability 15. The GeckoLib sets repair with netherite ingots; the others with a themed item: Prismarine (prismarine shard), Holy Armor (gold ingot), Robe (wool), Steampunk (copper ingot), Warrior (iron ingot), Wither (netherite scrap), Wooden (logs).
 - **Full set (all four pieces):** gives its set bonus to anyone.
 - **Matching class:** if your class is one the set is made for, every set effect goes up one level and you also get the class effect.
@@ -53,7 +53,7 @@ Five sets made by and for one race each, sold as kin stock in that race's home s
 
 Kin prices (25% off) apply to these trades too. The racial weapons are on their own page: [Racial weapons](racial-weapons.md).
 
-## Where to find it / How to get it
+## Where to find it
 - The mod's creative tab. There are no crafting recipes yet.
 - The racial sets: see [Racial armor](#racial-armor), or `/give @s dndclasses:elven_chain_helmet` (also `dwarven_plate_*`, `orcish_warplate_*`, `draconic_scale_*`, `infernal_regalia_*`).
 

@@ -2,6 +2,7 @@
 # Guest: devscripts/obstacle-fixes-lan-guest.txt with -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25619
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 /gamemode survival

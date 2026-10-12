@@ -4,7 +4,7 @@ A miner and healer. You dig fast, see in the dark, and can make every mob around
 ![A Cleric in Sanctuary: the mobs around ignore them, and the particle ring marks the 16-block circle](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/cleric-sanctuary.png)
 
 ## How it works
-You always have **Haste III** and **Night Vision**. They're refreshed before they run low and show no particles, so you never see the Night Vision flicker.
+You always have **Haste III** and **Night Vision**. They're given for 20 s and topped up whenever they drop below 11 s, before Night Vision starts to flicker at 10 s, and they show no particles.
 
 | Stat | Cleric | Vanilla |
 |-|-|-|
@@ -52,12 +52,15 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Life Domain healing is 25% stronger |
+| Life Domain | Right | Preserve Life (first node, open to both), Cure Wounds, Smite Undead | **Disciple of Life**: Cure Wounds heals 25% more, Preserve Life's and Sanctuary's party Regeneration last 25% longer, and Divine Intervention also gives Absorption I for 10 seconds |
 | Forge Domain | Left | Prospector (first node, open to both), Radiance, Deep Delver | **Blessing of the Forge**: once per long rest (once per in-game day with the `dndRests` gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab ([details](../systems/magic-items.md#blessing-of-the-forge)) |
 
 How the features work:
 - **Disciple of Life** (Life): Cure Wounds heals 5 hearts instead of 4. Preserve Life's Regeneration II lasts 6.25 s instead of 5 s, and Sanctuary's party Regeneration lasts 25% longer (6.25 / 10 / 12.5 s at ranks II-IV). Divine Intervention already heals fully, so it also gives Absorption I (2 hearts) for 10 s.
 - **Blessing of the Forge** (Forge): at an Attunement Table, open the Items tab and press **Bless +1** next to a weapon in your hand (main or offhand) or an armor piece you wear. It becomes one better (+1, up to +3; see [Blessing of the Forge](../systems/magic-items.md#blessing-of-the-forge)) until your next long rest. Once per long rest; with the `dndRests` gamerule off, once per in-game day, lasting until the next day. The +1 comes off the item wherever it is once its Cleric has rested (checked once a second while the Cleric is online), or if the Cleric stops being a Forge Cleric. Unidentified items and +3 items can't be blessed.
+
+## Where to find it
+Pick the Cleric in the class picker (or on the character creation screen) when you first join. The skill tree is on **O**; change your loadout, rank up Sanctuary and choose a domain at an [Attunement Table](../systems/class-selection.md#class-levels-and-the-skill-tree).
 
 ## Commands
 - `/dndclass set <player> cleric` (see [Admin commands](../systems/admin-commands.md)).
@@ -65,4 +68,4 @@ How the features work:
 ## For developers
 - Passives and the repel circle: `Misc/ClericHandler`. Target blocking: `mixin/MobEntityMixin`. Effect: `ModEffects.MOB_REPEL`. Fog: `mixin/BackgroundRendererMixin`.
 - Sanctuary's ranks: `ClericSkills.SANCTUARY` (duration, plus the party text built from the `SANCTUARY_PARTY_*` arrays, read with `sanctuaryPartyReach` and `sanctuaryPartyRegen*`), fired in `Misc/PowerUpEffect` (case `CLERIC`). `ClericHandler` draws the ring at the party reach.
-- Skill tree: `Progression/Classes/ClericSkills.java`. Deep Delver is read by `ClericHandler` when it refreshes Haste.
+- Skill tree: `Progression/Classes/ClericSkills.java`. Deep Delver is read by `ClericHandler` when it refreshes Haste. The refresh runs every tick but only re-applies an effect below `REFRESH_BELOW` (220 ticks), for `EFFECT_DURATION` (400 ticks).

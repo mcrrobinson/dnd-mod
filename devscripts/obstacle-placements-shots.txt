@@ -5,7 +5,7 @@
 # along the library's open row.
 wait 40
 closescreen
-respawn
+include _reset.txt
 /gamemode spectator
 /time set noon
 /effect give @s minecraft:night_vision 900 0 true

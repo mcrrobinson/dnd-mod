@@ -5,6 +5,8 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +25,17 @@ public final class TierEffects {
     public static final double PARLEY_RANGE = 6.0D;
     /** How long after hitting a member a player still counts as having provoked its kin. */
     public static final int PROVOKED_TICKS = 20 * 10;
+
+    /** The factions whose higher-tier perks are built in (the perks name them; other factions get none). */
+    public static final Identifier HOBBITS = new Identifier("dndclasses", "hobbits");
+    public static final Identifier MOUNTAIN_DWARVES = new Identifier("dndclasses", "mountain_dwarves");
+
+    /** Friendly hobbits: the lookouts' horn sounds this many ticks earlier before a raid's first wave. */
+    public static final int EARLY_HORN_TICKS = 20 * 10;
+    /** Exalted dwarves join their friend's fight against a mob within this many blocks of the dwarf. */
+    public static final double DWARF_ALLY_RANGE = 16.0D;
+    /** How long after a hit (either way) a fight still counts as going on, for dwarves joining it. */
+    public static final int ALLY_FIGHT_TICKS = 20 * 5;
 
     private TierEffects() {
     }
@@ -104,7 +117,47 @@ public final class TierEffects {
         return tier == ReputationTier.HOSTILE;
     }
 
+    /** {@code player}'s tier with the faction {@code id} (Neutral if it isn't loaded, or for DMs). */
+    public static ReputationTier tierWith(PlayerEntity player, Identifier id) {
+        return tierWith(player, Factions.get(id));
+    }
+
+    /**
+     * Whether the settlement {@code settlement} (a structure id, e.g. {@code dndclasses:hobbit_village})
+     * belongs to the hobbits and {@code player} is at least {@code tier} with them: the raid perks.
+     */
+    private static boolean hobbitSettlement(PlayerEntity player, ServerWorld world, Identifier settlement,
+                                            ReputationTier tier) {
+        Faction hobbits = Factions.get(HOBBITS);
+        return hobbits != null && hobbits.ownsSettlement(world, settlement) && tierWith(player, hobbits).atLeast(tier);
+    }
+
+    /** Friendly with the hobbits: the lookouts warn you {@link #EARLY_HORN_TICKS} earlier of a raid on their village. */
+    public static boolean earlyRaidWarning(PlayerEntity player, ServerWorld world, Identifier settlement) {
+        return hobbitSettlement(player, world, settlement, ReputationTier.FRIENDLY);
+    }
+
+    /** Exalted with the hobbits: the victory loot for defending their village is rolled twice for you. */
+    public static int raidLootRolls(PlayerEntity player, ServerWorld world, Identifier settlement) {
+        return hobbitSettlement(player, world, settlement, ReputationTier.EXALTED) ? 2 : 1;
+    }
+
+    /** Honored with the hobbits: the innkeeper's extra trade (1 emerald: 3 ale and a cake) and a free room. */
+    public static boolean innkeeperFavours(ReputationTier tier) {
+        return tier.atLeast(ReputationTier.HONORED);
+    }
+
     // ---- Dwarves ----
+
+    /** Honored with the dwarves: opening a barrel in sight of a dwarf no longer counts as theft (chests still do). */
+    public static boolean trustedWithBarrels(ReputationTier tier) {
+        return tier.atLeast(ReputationTier.HONORED);
+    }
+
+    /** Exalted with the dwarves: dwarves fight at your side and identify magic items for free. */
+    public static boolean dwarfFriend(ReputationTier tier) {
+        return tier == ReputationTier.EXALTED;
+    }
 
     /** Every dwarf attacks a Hostile player on sight. */
     public static boolean attacksOnSight(ReputationTier tier) {
@@ -155,9 +208,12 @@ public final class TierEffects {
                 && (engaged || goblin.squaredDistanceTo(player) <= PARLEY_RANGE * PARLEY_RANGE);
     }
 
-    /** {@code player} hit {@code npc}, or another member of its faction in the last 10 s. */
+    /**
+     * {@code player} hit {@code npc}, or another member of its faction in the last 10 s, or {@code npc} holds
+     * a grudge for something else ({@link Provokable}: the goblin camp chief's chest).
+     */
     public static boolean provoked(LivingEntity npc, PlayerEntity player) {
-        if (npc.getAttacker() == player) {
+        if (npc.getAttacker() == player || npc instanceof Provokable provokable && provokable.provokedBy(player)) {
             return true;
         }
         LivingEntity struck = player.getAttacking();

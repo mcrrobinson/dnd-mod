@@ -149,6 +149,13 @@ public final class SettlementGrudges {
         if (witnesses.isEmpty()) {
             return;
         }
+        if (mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
+            // A DM is outside the game: mobs never target them, so no settlement holds a grudge either. Without
+            // this, guards were provoked, chased the DM and then dropped them as soon as they saw them.
+            mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Grudges] {} {} at {} by {}: DM mode, ignored",
+                    rules.id(), offence, pos.toShortString(), player.getEntityName());
+            return;
+        }
         Verdict verdict = player instanceof ServerPlayerEntity serverPlayer
                 ? rules.judge(serverPlayer, pos, offence) : Verdict.GRUDGE;
         mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Grudges] {} {} at {} by {}: {} witness(es), {}", rules.id(), offence,

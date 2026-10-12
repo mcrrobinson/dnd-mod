@@ -23,9 +23,25 @@ public final class DmVeil {
 
     public static void register() {
         ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, source, amount) -> !DungeonMaster.isVeiled(entity));
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> apply(handler.getPlayer()));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            apply(handler.getPlayer());
+            remind(handler.getPlayer());
+        });
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> apply(newPlayer));
         ServerTickEvents.END_SERVER_TICK.register(DmVeil::tick);
+    }
+
+    /**
+     * DM mode is saved with the world, so a DM who logs back in is told they're still in it: a forgotten
+     * {@code /dm on} otherwise looks like mobs (and grudges) silently not working.
+     */
+    private static void remind(ServerPlayerEntity player) {
+        if (DungeonMaster.isDm(player)) {
+            player.sendMessage(net.minecraft.text.Text.literal(DungeonMaster.isVeiled(player)
+                            ? "You are still the Dungeon Master (veiled): mobs ignore you. /dm off to play."
+                            : "You are still the Dungeon Master: mobs ignore you. /dm off to play.")
+                    .formatted(net.minecraft.util.Formatting.GOLD), false);
+        }
     }
 
     /** True if {@code viewer}'s client must not see {@code entity}: a veiled DM, seen by a non-DM. */

@@ -1,7 +1,10 @@
 package mattonfire.dnd.classes.Client;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.CharacterCreation;
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.Client.Hud.CharacterCreationHud;
+import mattonfire.dnd.classes.Client.Hud.CharacterCreationScreen;
 import mattonfire.dnd.classes.Client.Hud.ClassSelectionHud;
 import mattonfire.dnd.classes.Client.Hud.RaceSelectionHud;
 import mattonfire.dnd.classes.Client.Keybinds.ModKeybinds;
@@ -16,9 +19,10 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.network.PacketByteBuf;
 
 /**
- * Decides which character picker the client shows: the race picker first (when the server says the
- * player needs a race), then the class picker (when the class is NONE). The server's class and race
- * queries and approvals all come through here, so the two pickers never fight over the screen.
+ * Decides which character picker the client shows: the character-creation screen (race and class together)
+ * when the server says the player needs both, the race picker when they need only a race, and the class picker
+ * when they need only a class. The server's class and race queries and approvals all come through here, so the
+ * pickers never fight over the screen.
  * <p>
  * While a DevScript runs, the race picker stays shut unless the script says {@code racepicker on},
  * so existing scripts (whose dev-world player has a class but no race) don't stall on it.
@@ -31,6 +35,11 @@ public final class PickerFlow {
     private static boolean racePrompt;
     /** False while a DevScript runs, until it says {@code racepicker on}. */
     static boolean racePickerAllowed = true;
+    /**
+     * Race and class answers still to come for a sent character-creation pick. Until both arrive the screen
+     * stays as it is, so the first answer doesn't swap it for the other half's picker.
+     */
+    private static int awaitingAnswers;
 
     private PickerFlow() {
     }
@@ -42,6 +51,7 @@ public final class PickerFlow {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> client.execute(() -> {
             knownClass = null;
             racePrompt = false;
+            awaitingAnswers = 0;
         }));
     }
 
@@ -53,6 +63,7 @@ public final class PickerFlow {
         boolean prompt = buf.readBoolean();
         client.execute(() -> {
             racePrompt = prompt && race == DndRace.NONE.getValue();
+            answered();
             update(client);
         });
     }
@@ -60,7 +71,14 @@ public final class PickerFlow {
     /** The server sent the class (query on join, or approval of a pick). */
     public static void onClass(MinecraftClient client, DndCharacter dndClass) {
         knownClass = dndClass;
+        answered();
         update(client);
+    }
+
+    private static void answered() {
+        if (awaitingAnswers > 0) {
+            awaitingAnswers--;
+        }
     }
 
     /** DevScript {@code racepicker on|off}. */
@@ -73,20 +91,51 @@ public final class PickerFlow {
         if (client.player == null) {
             return;
         }
-        if (racePrompt && racePickerAllowed) {
-            if (!showing(client, RaceSelectionHud.class)) {
-                client.setScreen(new ModKeybinds(new RaceSelectionHud()));
+        if (awaitingAnswers > 0 && showing(client, CharacterCreationHud.class)) {
+            return;
+        }
+        boolean race = racePrompt && racePickerAllowed;
+        // Before the first class query the class is unknown; it follows the race query straight away on join.
+        boolean dndClass = knownClass == DndCharacter.NONE;
+        if (race && knownClass == null) {
+            return;
+        }
+        Class<?> wanted = race && dndClass ? CharacterCreationHud.class
+                : race ? RaceSelectionHud.class
+                        : dndClass ? ClassSelectionHud.class : null;
+        boolean ours = showing(client, CharacterCreationHud.class) || showing(client, RaceSelectionHud.class)
+                || showing(client, ClassSelectionHud.class);
+        if (wanted == null) {
+            if (ours) {
+                client.setScreen(null);
             }
             return;
         }
-        if (showing(client, RaceSelectionHud.class)) {
-            client.setScreen(null);
+        if (showing(client, wanted)) {
+            return;
         }
-        if (knownClass == DndCharacter.NONE) {
-            if (!showing(client, ClassSelectionHud.class)) {
-                client.setScreen(new ModKeybinds(new ClassSelectionHud()));
-            }
+        if (wanted == CharacterCreationHud.class) {
+            client.setScreen(new CharacterCreationScreen(new CharacterCreationHud()));
+        } else if (wanted == RaceSelectionHud.class) {
+            client.setScreen(new ModKeybinds(new RaceSelectionHud()));
+        } else {
+            client.setScreen(new ModKeybinds(new ClassSelectionHud()));
         }
+    }
+
+    /** Reopens the character-creation screen with the same picks, e.g. for the Dragonborn ancestry step. */
+    public static void showCharacterStep(CharacterCreationHud.Choice choice) {
+        MinecraftClient.getInstance().setScreen(new CharacterCreationScreen(new CharacterCreationHud(choice)));
+    }
+
+    /** What Confirm on the character-creation screen sends. The server answers with the race and the class. */
+    public static void sendCharacterPick(DndRace race, DragonAncestry ancestry, DndCharacter dndClass) {
+        awaitingAnswers = 2;
+        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+        buf.writeVarInt(race.getValue());
+        buf.writeVarInt(ancestry.getValue());
+        buf.writeVarInt(dndClass.getValue());
+        ClientPlayNetworking.send(CharacterCreation.C2S_CHARACTER_PICK, buf);
     }
 
     public static void showAncestryStep() {

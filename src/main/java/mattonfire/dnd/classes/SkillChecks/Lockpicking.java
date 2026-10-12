@@ -35,11 +35,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * Dungeon and lair loot chests start locked: any chest still holding an unrolled {@code chests/...}
  * loot table (except village, hobbit and bonus chests). Only a Rogue can open one, by picking the lock:
  * a Thieves' Tools check ({@link SkillCheck}: DEX modifier + expertise) against DC 10, or DC 15 for the
- * richest hoards. Anyone else, a Rogue included, can break
+ * richest hoards. A DM-planted chest ({@code /dm loot plant ... dc <n>}) carries its own DC
+ * ({@link LockDcHolder}) and is locked whatever its table. Anyone else, a Rogue included, can break
  * the chest open instead, but smashing the lock ruins some of the loot inside.
  *
  * A picked lock rolls the loot, so the chest is unlocked for good; it swings open a moment later, once
@@ -148,11 +151,31 @@ public final class Lockpicking {
         return HARD_TABLES.contains(table.toString()) ? HARD_DC : DC;
     }
 
-    /** The locked loot table of the chest at pos (null if it isn't a locked chest). */
+    /**
+     * The lock DC override on the chest at pos ({@link LockDcHolder}, set by {@code /dm loot plant ... dc <n>}),
+     * or 0 for none.
+     */
+    public static int dcOverrideAt(World world, BlockPos pos) {
+        return world.getBlockEntity(pos) instanceof LockDcHolder holder ? holder.dndclasses$getLockDc() : 0;
+    }
+
+    /** The lock DC of the chest at pos (and its other half): the override if set, else {@link #dcFor}. */
+    public static int dcAt(World world, BlockPos pos, @Nullable BlockPos other, Identifier table) {
+        int dc = dcOverrideAt(world, pos);
+        if (dc <= 0 && other != null) {
+            dc = dcOverrideAt(world, other);
+        }
+        return dc > 0 ? dc : dcFor(table);
+    }
+
+    /**
+     * The locked loot table of the chest at pos (null if it isn't a locked chest). A chest with a DC override is
+     * locked whatever its table, as long as the loot hasn't been rolled.
+     */
     private static Identifier lockedTableAt(World world, BlockPos pos) {
         if (world.getBlockEntity(pos) instanceof ChestBlockEntity chest) {
             Identifier table = ((LootableContainerBlockEntityAccessor) chest).dndclasses$getLootTableId();
-            if (table != null && isLockedTable(table)) {
+            if (table != null && (isLockedTable(table) || dcOverrideAt(world, pos) > 0)) {
                 return table;
             }
         }
@@ -211,7 +234,7 @@ public final class Lockpicking {
             return ActionResult.FAIL;
         }
 
-        D20.Roll roll = SkillCheck.builder(player, Skill.THIEVES_TOOLS, dcFor(table), "lock")
+        D20.Roll roll = SkillCheck.builder(player, Skill.THIEVES_TOOLS, dcAt(world, pos, other, table), "lock")
                 .label(D20.LOCKPICKING).roll();
         if (roll.outcome().succeeded()) {
             RETRY_AT.remove(player.getUuid());

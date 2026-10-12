@@ -1,0 +1,85 @@
+# Screenshots for docs/systems/death-saves.md (host side). Two clients on LAN port 25647:
+#   timeout 400 ./gradlew runClient -PdevWidth=1280 -PdevHeight=720 -PdevScript=devscripts/death-saves-docs-host.txt
+#   then (run-2 is a copy of run/ without logs):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25647 -PdevWidth=1280 -PdevHeight=720 -PdevScript=devscripts/death-saves-docs-guest.txt
+# Host shots: ds-host-downed (red vignette, passes/fails, next-save countdown), ds-host-save (a death save on the
+#   d20 HUD), ds-host-stable (Stable, standing up in N s), ds-host-being-stabilised (the stabilise progress bar).
+# Guest shots: ds-guest-downed-wall (the Downed host outlined through a wall, party HUD row "Downed"),
+#   ds-guest-stable-wall (party HUD row "Stable"), ds-guest-stabilising (holding right-click on the Downed host).
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule keepInventory true
+/gamerule naturalRegeneration false
+/gamerule dndDeathSaves 1
+/gamerule dndRests false
+/time set noon
+/weather clear
+/kill @e[type=!player]
+/party leave
+/fill 0 149 0 20 149 20 minecraft:stone
+/fill 0 150 0 20 155 20 minecraft:air
+/setworldspawn 10 150 10
+/spawnpoint @s 10 150 10
+/tp @s 10.5 150 10.5 0 10
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s
+/attribute @s minecraft:generic.max_health base set 20
+/publish false survival 25647
+waitchat guest-ready
+wait 20
+/dndclass set Guest fighter
+/attribute Guest minecraft:generic.max_health base set 20
+/spawnpoint @a 10 150 10
+/clear @a
+/party create
+/party invite Guest
+waitchat Guest joined the party
+/effect give @a minecraft:instant_health 1 3
+# 1: Downed behind a wall; the guest sees the outline and the party row
+/fill 4 150 14 16 153 14 minecraft:stone
+/tp Guest 10.5 150 18.5 180 10
+/tp @s 10.5 150 10.5 0 10
+/dndclass forceroll @s 15 15 15
+/dndclass down @s
+/me host-downed
+wait 30
+clearchat
+screenshot ds-host-downed
+wait 100
+clearchat
+screenshot ds-host-save
+/me host-save
+wait 40
+/dndclass stabilise @s
+wait 20
+clearchat
+screenshot ds-host-stable
+/me host-stable
+wait 40
+/fill 4 150 14 16 153 14 minecraft:air
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+wait 40
+# 2: the guest holds right-click to stabilise
+/tp @s 10.5 150 10.5 0 10
+/tp Guest 10.5 150 12.3 180 40
+/dndclass forceroll @s 12 12 12
+/dndclass down @s
+/me need-help
+wait 50
+clearchat
+screenshot ds-host-being-stabilised
+waitchat guest-done
+/dndclass downed @s
+/dndclass revive @s 20
+/dndclass forceroll @s clear
+/party leave
+wait 20
+quit

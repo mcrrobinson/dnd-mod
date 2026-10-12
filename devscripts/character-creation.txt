@@ -1,0 +1,86 @@
+# Combined race + class picker (character creation). Run with a big window so GUI scales 2 and 3 both fit:
+#   timeout 400 ./gradlew runClient -PdevWidth=1920 -PdevHeight=1080 -PdevScript=devscripts/character-creation.txt
+# Expect: screenshots cc-*.png; "screen after escape: CharacterCreationScreen"; one combined intro
+# "The Dragonborn (Frost) Barbarian" in [CHAT]; dndrace get = dragonborn frost and dndclass get = Barbarian;
+# then only the class picker (race kept) and only the race picker (class kept); a second pick is ignored.
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+guiscale 3
+/dndclass set @s none
+/dndrace set @s none
+racepicker on
+wait 20
+screenshot cc-empty-gui3
+escape
+wait 5
+# Wide layout at GUI 3 (640x360): Dwarf, Barbarian
+click -58 -62
+click -158 -2
+hover 199 -40
+wait 5
+screenshot cc-dwarf-barbarian-gui3
+hover -58 -62
+wait 5
+screenshot cc-tooltip-dwarf-gui3
+hover -158 -2
+wait 5
+screenshot cc-tooltip-barbarian-gui3
+# GUI 2 (960x540): same picks, rebuilt
+guiscale 2
+wait 10
+hover 300 200
+wait 5
+screenshot cc-dwarf-barbarian-gui2
+# Compact layout at GUI 4 (480x270): icon-only buttons
+guiscale 4
+wait 10
+hover 200 100
+wait 5
+screenshot cc-dwarf-barbarian-gui4
+guiscale 3
+wait 10
+# Dragonborn: ancestry step, Back, then Frost
+click 42 -40
+wait 10
+screenshot cc-ancestry-gui3
+click -258 -40
+wait 10
+screenshot cc-back-gui3
+click 42 -40
+wait 10
+click -109 -62
+wait 5
+hover 199 -40
+wait 5
+screenshot cc-frost-barbarian-gui3
+hover 300 200
+wait 5
+# Confirm
+click 203 88
+wait 20
+screenshot cc-confirmed
+/dndrace get @s
+/dndclass get @s
+/attribute @s minecraft:generic.max_health get
+# A second pick packet is ignored
+racepick elf
+wait 10
+/dndrace get @s
+# Only the class missing: just the class picker
+/dndclass set @s none
+wait 20
+screenshot cc-class-only
+/dndclass set @s barbarian
+wait 10
+# Only the race missing: just the race picker
+/dndrace set @s none
+wait 20
+screenshot cc-race-only
+racepick dwarf
+wait 20
+/dndrace get @s
+/dndclass get @s
+guiscale 0
+quit

@@ -22,11 +22,15 @@ public class ClassSelectionHud extends LightweightGuiDescription {
         ClientPlayNetworking.send(DnDClasses.C2S_CLASS_PICK_PACKET_ID, passedData);
     }
 
-    private record ClassOption(String name, int classID, String icon) {
+    record ClassOption(String name, int classID, String icon) {
+        /** The lang key suffix, e.g. "blood_hunter". */
+        String key() {
+            return name.toLowerCase(java.util.Locale.ROOT).replace(" ", "_");
+        }
     }
 
     // Shown in this order, left to right then top to bottom.
-    private static final ClassOption[] CLASSES = {
+    static final ClassOption[] CLASSES = {
             // Buff: Elemental staffs scattered; Fireball, Lightning, Ice (freeze enemies)
             // Nerf: Half health. Max Iron armor.
             // Special: Nuclear bomb + blast resistance.
@@ -107,7 +111,7 @@ public class ClassSelectionHud extends LightweightGuiDescription {
         for (int i = 0; i < CLASSES.length; i++) {
             ClassOption option = CLASSES[i];
             WButton button = new RoleButton(new TextureIcon(new Identifier(option.icon())), Text.translatable(
-                    "class.dndclasses." + option.name().toLowerCase(java.util.Locale.ROOT).replace(" ", "_")),
+                    "class.dndclasses." + option.key()),
                     ClassInfo.get(DndCharacter.fromValue(option.classID())));
             button.setOnClick(() -> packetConstructor(option.classID()));
             root.add(button, (i % COLUMNS) * BUTTON_CELLS, 1 + i / COLUMNS, BUTTON_CELLS, 1);

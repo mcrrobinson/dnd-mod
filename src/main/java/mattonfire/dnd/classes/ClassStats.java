@@ -101,6 +101,16 @@ public final class ClassStats {
         return STATS.getOrDefault(dndClass, DEFAULT).pickHealth();
     }
 
+    /** The class's base max health in health points (20 for vanilla), e.g. for the character-creation summary. */
+    public static double maxHealth(DndCharacter dndClass) {
+        return STATS.getOrDefault(dndClass == null ? DndCharacter.NONE : dndClass, DEFAULT).maxHealth();
+    }
+
+    /** The class's base movement speed (vanilla 0.1). */
+    public static double movementSpeed(DndCharacter dndClass) {
+        return STATS.getOrDefault(dndClass == null ? DndCharacter.NONE : dndClass, DEFAULT).movementSpeed();
+    }
+
     /** A lower max health doesn't lower current health on its own. */
     public static void capHealth(PlayerEntity player) {
         if (player.getHealth() > player.getMaxHealth()) {

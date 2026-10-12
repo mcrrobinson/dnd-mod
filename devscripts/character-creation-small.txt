@@ -1,0 +1,40 @@
+# Combined race + class picker in the default 854x480 window (GUI scale 2 = 427x240, the compact icon-only layout).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/character-creation-small.txt
+# Expect: cc-small-*.png; [CHAT] "The Dragonborn (Storm) Wizard"; dragonborn storm and wizard at the end.
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+guiscale 2
+/dndclass set @s none
+/dndrace set @s none
+racepicker on
+wait 20
+screenshot cc-small-empty
+click -93 -62
+click -115 -2
+hover 150 100
+wait 5
+screenshot cc-small-dwarf-barbarian
+hover -115 -2
+wait 5
+screenshot cc-small-tooltip-barbarian
+hover 40 -20
+wait 5
+screenshot cc-small-tooltip-summary
+click -71 -40
+wait 10
+click -76 -62
+click -137 -2
+hover 150 100
+wait 5
+screenshot cc-small-storm-wizard
+click 47 88
+wait 20
+screenshot cc-small-confirmed
+/dndrace get @s
+/dndclass get @s
+/dndclass set @s barbarian
+/dndrace set @s dwarf
+guiscale 0
+quit

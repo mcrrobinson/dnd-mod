@@ -132,6 +132,7 @@ public class EventMusic {
                     UUID bar = buf.readUuid();
                     Identifier track = buf.readBoolean() ? buf.readIdentifier() : null;
                     client.execute(() -> {
+                        DnDClasses.LOGGER.info("[BossMusic] bar {} track {}", bar, track == null ? "off" : track);
                         if (track == null) {
                             bossTracks.remove(bar);
                         } else {

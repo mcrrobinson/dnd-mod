@@ -482,6 +482,7 @@ public class DnDClasses implements ModInitializer {
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.dm.DmCommand.register(dispatcher));
                 mattonfire.dnd.dm.DmVeil.register();
                 mattonfire.dnd.dm.DmFreeze.register();
+                mattonfire.dnd.dm.DmWand.register();
                 mattonfire.dnd.dm.DmRollCalls.register();
                 mattonfire.dnd.dm.encounter.Encounters.register();
                 CommandRegistrationCallback.EVENT.register(
@@ -498,6 +499,7 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Progression.register();
                 ClassLifecycle.register();
+                CharacterCreation.register();
                 mattonfire.dnd.classes.Race.RaceLifecycle.register();
                 mattonfire.dnd.classes.Rest.Rests.register();
                 mattonfire.dnd.classes.Downed.DownedEvents.register();

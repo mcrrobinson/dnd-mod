@@ -1,8 +1,9 @@
 # Divine and death obstacles (Cleric, Paladin, Necromancer, Blood Hunter).
 # Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-divine.txt
 # Expect (screenshots + log):
-#  Cleric: a rigged 18 opens the Holy Ward ("Test passed"); a rigged 18 consecrates the altar, whose spawner stops
-#   (no [Obstacle] spawns, the altar shows its consecrated top: state=open).
+#  Cleric: a rigged 18 opens the Holy Ward ("Test passed"). The altar's zombie spawner (daylight spawn rules) spawns
+#   zombies first ("Test passed"); a rigged 18 consecrates the altar (state=open, "Test passed"), and the spawner
+#   then stays quiet for 10 s ("Test failed" on the zombie check).
 #  Fighter (fallbacks): three thrown Potions of Healing open a second Holy Ward ("doused 1/3".."3/3" in the log);
 #   smashing the second altar raises 4 undead; smashing the Ossuary Gate raises 4 skeletons + a wither skeleton.
 #  Dread Ward: a Fighter standing in the zone gets Frightened, Slowness IV and Weakness II (ActiveEffects in the log);
@@ -36,13 +37,22 @@ wait 40
 /execute if block 4 150 5 dndclasses:holy_ward[state=open]
 screenshot divine-cleric-ward-open
 
-# Cleric: Desecrated Altar with a zombie spawner 4 blocks away
-/setblock 10 150 5 minecraft:spawner{SpawnData:{entity:{id:"minecraft:zombie"}},Delay:20}
+# Cleric: Desecrated Altar with a zombie spawner 4 blocks away.
+# custom_spawn_rules lets the spawner work in daylight; without them it never spawns at noon and the
+# "no zombies after consecrating" check below would pass even if the altar did nothing. Spawners placed
+# with /setblock also need SpawnCount (it defaults to 0).
+/setblock 10 150 5 minecraft:spawner{SpawnData:{entity:{id:"minecraft:zombie"},custom_spawn_rules:{block_light_limit:[0,15],sky_light_limit:[0,15]}},Delay:20,MinSpawnDelay:20,MaxSpawnDelay:40,SpawnCount:2,MaxNearbyEntities:20,RequiredPlayerRange:32,SpawnRange:3}
 /setblock 9 150 3 dndclasses:desecrated_altar
+/effect give @s minecraft:resistance 1000 4 true
 /tp @s 9.5 150 1.5 0 30
-wait 10
+# Control: before consecrating, the spawner works ("Test passed")
+wait 60
+/execute if entity @e[type=minecraft:zombie,distance=..20]
 screenshot divine-altar-hint
+# Kill them right before use: the spawner refills every 1-2 s, and a zombie in the crosshair takes the click
 /dndclass forceroll @s 18
+/kill @e[type=minecraft:zombie]
+wait 2
 use
 wait 40
 /execute if block 9 150 3 dndclasses:desecrated_altar[state=open]
@@ -89,6 +99,9 @@ screenshot divine-fighter-altar-smashed
 
 # Dread Ward: Fighter frightened, then shielded as a Paladin
 /kill @e[type=!minecraft:player]
+# The Resistance from the altar check kept the Fighter alive among the risen undead; it would muddle ActiveEffects here
+/effect clear @s minecraft:resistance
+/effect give @s minecraft:instant_health 1 5
 /dndobstacle place 2 150 18 2 152 18 dndclasses:dread_ward medium
 /dndobstacle place 6 150 18 6 152 18 dndclasses:dread_ward medium
 /tp @s 4.5 150 18.5 0 0

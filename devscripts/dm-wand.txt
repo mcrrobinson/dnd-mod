@@ -1,0 +1,140 @@
+# DM Wand, single player. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-wand.txt
+# Expect in latest.log:
+#  - "The wand is cold in your hand." is action-bar only: see screenshot dm-wand-cold
+#  - "[CHAT] Encounter #N "Goblin Patrol": ..." from a right-click on the floor 8 blocks away, then "Test passed"
+#  - mode lines "[DmWand] <name> mode Freeze/Inspect/Blink/Encounter" as sneak + use on the sky cycles
+#  - "Test passed" for the frozen husk (tag dndclasses.dm_frozen), "Test failed" after the second click thaws it
+#  - "[CHAT] == Husk (minecraft:husk) ==" and an "HP ..." line from Inspect
+#  - Pos about 1000.5, 151.0, 1018.5 after Blink, and "veiled: <name>" in /dm status after sneak + use in Blink mode
+wait 40
+closescreen
+respawn
+/gamemode creative
+/time set noon
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tp @s 1000 151 1000 0 0
+wait 100
+/fill 985 150 985 1015 150 1035 minecraft:stone
+/fill 985 151 985 1015 160 1035 minecraft:air
+# Frozen mobs take no damage, so thaw leftovers from an earlier run before /kill
+/dm unfreeze all
+/kill @e[type=!player,distance=..64]
+/dm encounter clear all
+/dm off
+/clear @s
+/give @s dndclasses:dm_wand
+hotbar 0
+wait 10
+# Not a DM: the wand does nothing
+/tp @s 1000 151 1000 0 45
+wait 5
+clearchat
+use
+wait 2
+screenshot dm-wand-cold
+/execute if entity @e[tag=dndclasses.dm_encounter]
+/dm on
+wait 10
+# Encounter mode (the default): the floor 8 blocks ahead, beyond normal reach
+/tp @s 1000 151 1000 0 13
+wait 5
+use
+wait 10
+/execute if entity @e[tag=dndclasses.dm_encounter]
+screenshot dm-wand-encounter
+# Sneak + right-click a block: next encounter
+clearchat
+sneak on
+wait 2
+use
+wait 4
+screenshot dm-wand-next-encounter
+sneak off
+/dm encounter clear all
+wait 5
+# Sneak + right-click air: Freeze mode
+/tp @s 1000 151 1000 0 -90
+wait 5
+sneak on
+wait 2
+use
+wait 4
+sneak off
+clearchat
+screenshot dm-wand-freeze-mode
+/summon minecraft:husk 1000 151 1004 {Tags:["wz"],PersistenceRequired:1b,Rotation:[180f,0f]}
+/tp @s 1000 151 1000 0 15
+wait 10
+clearchat
+use
+wait 5
+screenshot dm-wand-frozen
+/execute if entity @e[tag=wz,tag=dndclasses.dm_frozen]
+/data get entity @e[tag=wz,limit=1] NoAI
+use
+wait 5
+/execute if entity @e[tag=wz,tag=dndclasses.dm_frozen]
+# Freeze a block: every mob within 16 blocks
+/summon minecraft:husk 1006 151 1010 {Tags:["wz2"],PersistenceRequired:1b}
+/summon minecraft:vindicator 994 151 1010 {Tags:["wz2"],PersistenceRequired:1b}
+/tp @s 1000 151 1000 20 13
+wait 5
+use
+wait 5
+/execute if entity @e[tag=wz2,tag=!dndclasses.dm_frozen]
+/execute if entity @e[tag=wz,tag=dndclasses.dm_frozen]
+# Inspect mode
+/tp @s 1000 151 1000 0 -90
+wait 5
+sneak on
+wait 2
+use
+wait 4
+sneak off
+/tp @s 1000 151 1000 0 15
+wait 5
+clearchat
+use
+wait 5
+screenshot dm-wand-inspect
+# Blink mode: teleport to the floor 20 blocks ahead
+/tp @s 1000 151 1000 0 -90
+wait 5
+sneak on
+wait 2
+use
+wait 4
+sneak off
+/dm unfreeze all
+/kill @e[type=!player,distance=..64]
+wait 5
+/tp @s 1000 151 1000 0 5
+wait 5
+use
+wait 10
+/data get entity @s Pos
+screenshot dm-wand-blink
+# Sneak + right-click a block in Blink mode: veil on
+/tp @s 1000 151 1000 0 30
+wait 5
+sneak on
+wait 2
+use
+wait 4
+sneak off
+/dm status
+# Sneak + right-click air: back round to Encounter
+/tp @s 1000 151 1000 0 -90
+wait 5
+sneak on
+wait 2
+use
+wait 4
+sneak off
+screenshot dm-wand-cycle
+/dm veil off
+/dm off
+/clear @s
+wait 10
+quit

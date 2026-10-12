@@ -1,5 +1,5 @@
-# The race picker's hint line: a classed player is told their class stays; a classless one that the class picker comes next.
-# Expect: rv-hint-classed says "Your class stays the same."; rv-hint-new says "Your class comes next."
+# The race picker's hint line: a classed player is told their class stays; a player with neither gets the character-creation screen.
+# Expect: rv-hint-classed says "Your class stays the same."; rv-hint-new shows the combined race + class screen.
 wait 40
 racepicker on
 /dndrace set @s none

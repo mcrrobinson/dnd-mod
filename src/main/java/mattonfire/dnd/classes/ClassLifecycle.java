@@ -7,6 +7,7 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
 import mattonfire.dnd.classes.Race.RaceStats;
 import mattonfire.dnd.classes.Rest.Charges;
@@ -22,8 +23,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 /**
@@ -136,6 +135,11 @@ public final class ClassLifecycle {
      * values, so switching back and forth never stacks anything.
      */
     public static void change(ServerPlayerEntity player, DndCharacter dndClass) {
+        change(player, dndClass, true);
+    }
+
+    /** @param intro false when {@link CharacterCreation} prints one intro for the race and class together */
+    public static void change(ServerPlayerEntity player, DndCharacter dndClass, boolean intro) {
         for (ClassSkills skills : ClassTrees.all()) {
             skills.forget(player);
         }
@@ -155,8 +159,8 @@ public final class ClassLifecycle {
         ClassStats.capHealth(player);
 
         ClassInfo info = ClassInfo.get(dndClass);
-        if (info != null) {
-            sendIntro(player, info);
+        if (info != null && intro) {
+            CharacterCreation.sendIntro(player, null, DragonAncestry.NONE, info);
         }
 
         // Close the class picker.
@@ -191,23 +195,14 @@ public final class ClassLifecycle {
         PartyManager.get(server).forgetInvites(player.getUuid(), server.getTicks());
     }
 
+    /** Tells the client its class again (an ignored pick). */
+    public static void resend(ServerPlayerEntity player) {
+        sendClass(player, DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID, classOf(player));
+    }
+
     private static void sendClass(ServerPlayerEntity player, Identifier packet, DndCharacter dndClass) {
         PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
         buf.writeInt(dndClass.getValue());
         ServerPlayNetworking.send(player, packet, buf);
-    }
-
-    /** Tells the player what their new class does, from the same data as the guidebook and README. */
-    private static void sendIntro(PlayerEntity player, ClassInfo info) {
-        player.sendMessage(Text.literal("The " + info.name() + "\n").formatted(Formatting.UNDERLINE, Formatting.GOLD),
-                false);
-        player.sendMessage(Text.literal("Pros: " + ClassInfo.joinForGame(info.pros())).formatted(Formatting.GREEN),
-                false);
-        player.sendMessage(Text.literal("Cons: " + ClassInfo.joinForGame(info.cons())).formatted(Formatting.RED),
-                false);
-        player.sendMessage(Text.literal("Special: " + ClassInfo.joinForGame(info.special()))
-                .formatted(Formatting.DARK_PURPLE), false);
-        player.sendMessage(Text.literal("Read your Class Guidebook for the details.").formatted(Formatting.GRAY,
-                Formatting.ITALIC), false);
     }
 }

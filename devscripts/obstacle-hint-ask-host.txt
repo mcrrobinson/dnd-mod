@@ -1,0 +1,56 @@
+# Two-player check of the obstacle hint's "Ask <name> (<class>)" line over LAN.
+# Host (a Wizard, "Dev"): timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-hint-ask-host.txt
+# Once its log says "Started serving on", start the guest (made a Rogue by the host):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevScript=devscripts/obstacle-hint-ask-guest.txt
+# Both stand by a Clockwork Door (Artificer, or a Rogue as a secondary). The host can't work it.
+# Expect the host's screenshots:
+#  hint-ask-solo: the hint names who can repair it and the fallback, but no "Ask" line (not in a party yet);
+#  hint-ask-party: the same plus "Ask DevGuest_run_2 (Rogue)" in yellow, once they're in a party;
+#  hint-ask-left: no "Ask" line again after the guest leaves the party.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set noon
+/kill @e[type=!minecraft:player,distance=..64]
+/fill 0 149 0 14 149 20 minecraft:stone
+/fill 0 150 0 14 156 20 minecraft:air
+/dndobstacle place 3 150 5 4 151 5 dndclasses:clockwork_door medium
+/dndclass set @s wizard
+wait 5
+closescreen
+/clear @s
+/tp @s 3.5 150 3.5 0 20
+/party leave
+/publish false survival 25617
+# About 90 s for the guest to start and join
+wait 1800
+/list
+/execute as DevGuest_run_2 run party leave
+/dndclass set DevGuest_run_2 rogue
+/clear DevGuest_run_2 dndclasses:class_guidebook
+/gamemode survival DevGuest_run_2
+/tp DevGuest_run_2 6.5 150 3.5 0 20
+/tp @s 3.5 150 3.5 0 20
+wait 40
+screenshot hint-ask-solo
+/party create
+/party invite DevGuest_run_2
+/execute as DevGuest_run_2 run party accept
+/party list
+wait 40
+/tp @s 3.5 150 3.5 0 20
+wait 5
+screenshot hint-ask-party
+/execute as DevGuest_run_2 run party leave
+wait 40
+/tp @s 3.5 150 3.5 0 20
+wait 5
+screenshot hint-ask-left
+/say hint-ask-done
+wait 20
+/party leave
+quit

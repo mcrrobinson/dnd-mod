@@ -1,0 +1,6 @@
+# Guest half of obstacle-hint-ask-host.txt. See that script for how to run both.
+# The host makes this player a Rogue, moves them and takes the screenshots; this client just waits for it to finish.
+wait 40
+closescreen
+waitchat hint-ask-done
+quit

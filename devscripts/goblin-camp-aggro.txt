@@ -1,0 +1,169 @@
+# Goblin camp aggro: a natural camp's garrison goes for a Hostile player on sight and for anyone who opens the
+# chief's chest, but leaves a player in DM mode alone (no on-sight attack, no theft grudge).
+# Uses the camp nearest 4000, 4000 in the dev world: fire at 4200 92 4104, gate south, the chief's chest north at
+# 4200 93 4097 (find another with /locate structure dndclasses:goblin_camp and adjust the coordinates).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/goblin-camp-aggro.txt
+# Check in <run dir>/logs/latest.log: the "[DevScript] target" lines after each "caseN" chat line, and "[Grudges]".
+#   case1/case2 (Hostile Barbarian / Rogue by the fire): goblins that can see you target Dev (at least the
+#   summoned stand-in, tagged goblin_aggro_test, in case the camp's own goblins are in their tents or wandered off).
+#   case3 (Hostile, DM mode): no goblin targets Dev.
+#   case4 (DM opens the chest): "[Grudges] ... by Dev: DM mode, ignored", and no goblin targets Dev.
+#   case5 (Neutral, not a DM, opens the chest): "[Grudges] ... GRUDGE", and the witnesses target Dev.
+#   case6 (DM opens a chest in sight of a mountain dwarf, on a platform at 40 150 0): "DM mode, ignored", no target.
+#   case7 (Neutral, not a DM, same chest): "[Grudges] dndclasses:mountain_dwarves ... GRUDGE", the dwarf targets Dev.
+wait 40
+closescreen
+include _reset.txt
+# Clearing race and class reopens the pickers, which pause the game: close them again.
+wait 40
+closescreen
+/dm off
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/gamemode spectator
+/tp @s 4200 130 4104
+wait 200
+/effect give @s resistance 600 4 true
+/effect give @s regeneration 600 4 true
+/kill @e[type=dndclasses:goblin_warrior,tag=goblin_aggro_test]
+/summon dndclasses:goblin_warrior 4206 93 4111 {Tags:["goblin_aggro_test"]}
+
+# Case 1: a Hostile Barbarian by the fire.
+/dndclass set @s barbarian
+/clear @s dndclasses:class_guidebook
+respawn
+/dndclass revive @s
+/effect give @s resistance 600 4 true
+/effect give @s instant_health 1 4 true
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/tp @s 4202 93 4107 180 10
+wait 100
+/say case1-hostile-barbarian
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+
+# Calm them: back to Neutral (they stand down) and away.
+/rep @s dndclasses:goblins set 0
+/gamemode spectator
+/tp @s 4200 130 4104
+wait 60
+
+# Case 2: a Hostile Rogue.
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+respawn
+/dndclass revive @s
+/effect give @s resistance 600 4 true
+/effect give @s instant_health 1 4 true
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/tp @s 4202 93 4107 180 10
+wait 100
+/say case2-hostile-rogue
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+/rep @s dndclasses:goblins set 0
+/gamemode spectator
+/tp @s 4200 130 4104
+wait 60
+
+# Case 3: the same Hostile Rogue in DM mode: mobs ignore DMs.
+/dm on
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/tp @s 4202 93 4107 180 10
+wait 100
+/say case3-hostile-dm
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+
+# Case 4: the DM opens the chief's chest, then waits by it.
+/tp @s 4200 93 4098.7 180 40
+wait 20
+use
+wait 5
+closescreen
+waitserver 2
+wait 40
+/say case4-dm-opens-chest
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+wait 100
+/say case4-dm-opens-chest-5s
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+wait 200
+/say case4-dm-opens-chest-15s
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+
+# Case 5: not a DM, Neutral, opens the chest: a grudge whatever the standing.
+/dm off
+/rep @s dndclasses:goblins set 0
+/gamemode spectator
+/tp @s 4200 130 4104
+wait 60
+/kill @e[type=dndclasses:goblin_warrior,tag=goblin_aggro_test]
+/effect give @s resistance 600 4 true
+/effect give @s instant_health 1 4 true
+/gamemode survival
+# Goblins left standing in front of the chest (from case 4) would take the click: move them back by the fire.
+/tp @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4098,distance=..3] 4204 93 4106
+/tp @s 4200 93 4098.7 180 40
+wait 20
+use
+wait 5
+closescreen
+waitserver 2
+wait 40
+/say case5-neutral-player-opens-chest
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+wait 100
+/say case5-neutral-player-opens-chest-5s
+target @e[type=dndclasses:goblin_warrior,x=4200,y=93,z=4104,distance=..40]
+
+/rep @s dndclasses:goblins set 0
+/kill @e[type=dndclasses:goblin_warrior,tag=goblin_aggro_test]
+
+# Dwarves use the same grudge path (any chest in a dwarf's sight). A walled pen high up near spawn.
+/gamemode spectator
+/tp @s 46 152 0
+wait 60
+/kill @e[type=dndclasses:mountain_dwarf,tag=goblin_aggro_test]
+/fill 40 149 -6 52 149 6 minecraft:polished_deepslate
+/fill 40 150 -6 52 154 6 minecraft:air
+/fill 39 150 -7 53 152 -7 minecraft:polished_deepslate
+/fill 39 150 7 53 152 7 minecraft:polished_deepslate
+/fill 39 150 -7 39 152 7 minecraft:polished_deepslate
+/fill 53 150 -7 53 152 7 minecraft:polished_deepslate
+/setblock 46 150 2 minecraft:chest[facing=north]
+/summon dndclasses:mountain_dwarf 49 150 4 {Tags:["goblin_aggro_test"]}
+/rep @s dndclasses:mountain_dwarves set 34
+/effect give @s resistance 600 4 true
+/effect give @s instant_health 1 4 true
+
+# Case 6: a DM opens the chest in the dwarf's sight.
+/dm on
+/gamemode survival
+/tp @s 46 150 0 0 30
+wait 20
+use
+wait 5
+closescreen
+waitserver 2
+wait 100
+/say case6-dm-opens-dwarf-chest-5s
+target @e[type=dndclasses:mountain_dwarf,tag=goblin_aggro_test]
+
+# Case 7: the same, not a DM.
+/dm off
+/tp @s 46 150 0 0 30
+wait 20
+use
+wait 5
+closescreen
+waitserver 2
+wait 100
+/say case7-neutral-player-opens-dwarf-chest-5s
+target @e[type=dndclasses:mountain_dwarf,tag=goblin_aggro_test]
+
+/gamemode creative
+/kill @e[type=dndclasses:mountain_dwarf,tag=goblin_aggro_test]
+/rep @s dndclasses:mountain_dwarves set 34
+quit

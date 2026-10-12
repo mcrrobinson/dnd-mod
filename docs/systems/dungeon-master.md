@@ -5,13 +5,14 @@ An op can run a session as the party's Dungeon Master: step outside the game, hi
 ### DM mode
 `/dm on` makes you a DM; `/dm off` ends it (and lifts the veil). While in DM mode you are outside the game:
 - Mobs never target you (`ActiveTargetGoal` drops DMs as targets).
+- Settlement grudges ignore you: opening or breaking what a goblin camp, dwarven fortress, elven enclave or other guarded settlement protects provokes nobody (the server logs `[Grudges] ... DM mode, ignored`).
 - You take no share of party XP, and don't show on your party members' HUD.
 - You never count as a [goblin raid](goblin-raids.md) participant (no reward or advancement), raids don't start because of you, and raiders don't go for you.
 - [Boss fights](../bosses/boss-fights.md) don't start or keep going because of you: a boss only counts as fighting when a non-DM player is its target or attacker.
 - Your kills earn no [bounty](../structures/hobbit-tavern.md) progress.
 - You can't be frozen.
 
-DM mode is saved with the world, so it survives restarts and relogs.
+DM mode is saved with the world, so it survives restarts and relogs. Joining while still in DM mode says so in chat ("You are still the Dungeon Master: mobs ignore you. /dm off to play."), so a forgotten `/dm on` doesn't look like mobs ignoring you for no reason.
 
 ### Veil
 `/dm veil [on|off]` (no argument toggles; veiling also turns DM mode on). A veiled DM:

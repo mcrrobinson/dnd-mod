@@ -51,7 +51,10 @@ Only crits and fumbles show on the HUD. Every other roll is silent and hits as n
 When a party makes camp at night, the camper with the best Perception bonus rolls d20 + Perception against DC 12 (disadvantage when camping alone). A failure brings an ambush; a natural 1 a bigger one. See [Rests: party camps](rests.md#party-camps).
 
 ### Advantage, disadvantage and the HUD
-A roll with advantage rolls two dice and keeps the higher; disadvantage keeps the lower. The HUD shows the kept die, then the dropped one in grey with "adv" or "dis". Named bonuses (such as "+2 assist" from a later party feature) are listed beside the title. Nothing in the game grants advantage yet; the sheet and the roll API support it for features to come.
+A roll with advantage rolls two dice and keeps the higher; disadvantage keeps the lower. The HUD draws both dice: the kept one, then a smaller greyed die with the dropped number, and the sum line shows the dropped one in grey with "adv" or "dis". Named bonuses (such as "+2 assist" from a later party feature) are listed beside the title. Nothing in the game grants advantage yet; the sheet and the roll API support it for features to come.
+
+### DM roll calls
+When the [Dungeon Master](dungeon-master.md#roll-calls) calls for a roll (`/dm roll`), the panel shows a prompt first: an idle die (two for advantage or disadvantage), "Dev calls for: Dexterity Save (DC 14)" and "[Y] Roll" with a 20-second countdown. Press **Y** (key `key.dnd-classes.roll`, rebindable under Controls; not R, which Identity uses for its ability key) and the server rolls; the result replaces the prompt as usual. If you don't press it in time the server rolls for you ("rolled for you"). A secret call leaves the DC out of the prompt and shows only your total, not the outcome. While a prompt is up, other rolls (attacks, lockpicks) don't show over it.
 
 Every roll is logged on the server as a `[D20]` line, for example `[D20] Steve Lockpicking 10 +6 = 16 vs DC 10 -> SUCCESS`, with `(4 adv)` after the natural when a second die was rolled.
 
@@ -71,6 +74,7 @@ Locked chests are the loot chests in structures: dungeons, mineshafts, temples, 
   - `D20.Builder.take(n)` uses a fixed natural instead of rolling (obstacles' take your time): no die, no advantage, never a crit or a fumble.
 - `Lockpicking.java`, `Persuasion.java` and `AttackRolls.java` hold one check each. Obstacle checks live in `classes/Obstacles/` and roll through `SkillCheck` like the rest. `D20.register()` is called before `SettlementGrudges` so that a failed pick never reaches the dwarves.
 - Mixins: `mixin/LootableContainerBlockEntityAccessor` reads the chest's loot table, and `mixin/PlayerAttackRollMixin` applies crit damage and plays the crit effects.
-- `Client/Hud/DiceRollHud.java` draws the HUD panel with `textures/gui/d20.png` (made by `tools/d20_texture.py`).
+- `Client/Hud/DiceRollHud.java` draws the HUD panel with `textures/gui/d20.png` (made by `tools/d20_texture.py`), including the two-dice layout and the DM roll-call prompt (`dndclasses:roll_prompt` S2C; the roll key sends `dndclasses:roll_answer`, see `dm/DmRollCalls`).
+- `SavingThrow.Builder.mainPanel()` shows a save on the big panel instead of the save lane (prompted DM saves).
 - Sounds are `dndclasses:dice.roll`, `.success`, `.failure`, `.critical` and `.fumble`, made by `tools/music-gen/music_gen.py dice_*`.
 - `devscripts/d20-skill-checks.txt` tests a locked chest as a Fighter and as a Rogue, then Bard persuasion. `devscripts/ability-scores.txt` checks the sheet modifiers with rigged rolls.

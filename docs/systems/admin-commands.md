@@ -82,7 +82,7 @@ See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
 See [Goblin raids](goblin-raids.md) for the details.
 
 ### Dungeon Master
-`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save` and `/dm roll|apply` let an op run a session: hide from the players, drop premade encounters, pause the scene and call for rolls on the players' d20 HUD. `/dm grant <player>` opens them to a non-op. The DM Wand (`dndclasses:dm_wand`) puts encounters, freeze, inspect and blink on right-click. See [Dungeon Master](dungeon-master.md).
+`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save`, `/dm roll|apply`, `/dm narrate|title|say|mood` and `/dm loot give|plant` let an op run a session: hide from the players, drop premade encounters, pause the scene, call for rolls on the players' d20 HUD, tell the story and hand out or plant treasure. `/dm grant <player>` opens them to a non-op. The DM Wand (`dndclasses:dm_wand`) puts encounters, freeze, inspect and blink on right-click. See [Dungeon Master](dungeon-master.md).
 
 ### Useful vanilla commands
 - `/locate structure dndclasses:dragon_lair`, `dndclasses:hobbit_village`, `dndclasses:dwarven_fortress`, `dndclasses:goblin_camp`, `dndclasses:beholder_lair`

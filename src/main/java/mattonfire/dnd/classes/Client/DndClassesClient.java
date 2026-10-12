@@ -375,6 +375,9 @@ public class DndClassesClient implements ClientModInitializer {
         ParticleFactoryRegistry.getInstance().register(
                 ModParticles.DRAGON_FROST,
                 mattonfire.dnd.particle.DragonFlameParticle.FrostFactory::new);
+        ParticleFactoryRegistry.getInstance().register(
+                ModParticles.SPEECH_BUBBLE,
+                mattonfire.dnd.particle.SpeechBubbleParticle.Factory::new);
 
         ModelPredicateProviderRegistry.register(Items.BOW, new Identifier("pull"),
                 (stack, world, entity, seed) -> {

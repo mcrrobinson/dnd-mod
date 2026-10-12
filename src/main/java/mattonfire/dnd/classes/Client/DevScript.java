@@ -128,7 +128,7 @@ import net.minecraft.util.Identifier;
  *     ({@code target <type> <name> at x y z -> <target>|none}), e.g. {@code target @e[type=dndclasses:orc_archer]}</li>
  * <li>{@code racepicker on|off}: while a script runs the race picker stays shut (the dev-world player has a class
  *     but no race, so it would block every script). {@code on} lets it open, straight away if the player has no
- *     race</li>
+ *     race; with no class either, the combined character-creation screen opens instead</li>
  * <li>{@code racepick <race> [ancestry]} sends what clicking a race (or a Dragonborn ancestry) in the picker
  *     would, e.g. {@code racepick elf}, {@code racepick dragonborn frost}; the server's one-pick check applies</li>
  * <li>{@code saverolls full|compact|off|config} overrides the {@code saveRolls} client option for the rest of the

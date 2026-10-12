@@ -36,7 +36,7 @@ import net.minecraft.util.math.Box;
 
 /**
  * The Dungeon Master commands. Ops (permission level 2) can run all of them; players given {@code /dm grant} can
- * run everything except {@code grant}, {@code revoke} and {@code apply}.
+ * run everything except {@code grant}, {@code revoke}, {@code apply}, {@code mood} and {@code loot plant}.
  *
  * <pre>
  * /dm on | off                                   DM mode for yourself (off also lifts the veil)
@@ -52,6 +52,8 @@ import net.minecraft.util.math.Box;
  * /dm save &lt;targets&gt; &lt;ability&gt; &lt;dc&gt; [adv|dis] [silent]  saving throw on the save lane ({@link DmRolls})
  * /dm roll &lt;players&gt; &lt;check&gt; &lt;dc&gt; [advantage|disadvantage] [secret] [auto]  prompted roll call ({@link DmRollCalls})
  * /dm apply pass|fail|all &lt;command&gt;            (op only) run a command as each player of the last roll call
+ * /dm narrate | title | say | mood ...           storytelling ({@link DmNarration}; mood is op only)
+ * /dm loot give | plant ...                      treasure ({@link DmLoot}; plant is op only)
  * </pre>
  */
 public final class DmCommand {
@@ -111,6 +113,11 @@ public final class DmCommand {
                 .then(DmRolls.save())
                 .then(DmRolls.roll())
                 .then(DmRolls.apply())
+                .then(DmNarration.narrate())
+                .then(DmNarration.title())
+                .then(DmNarration.say())
+                .then(DmNarration.mood())
+                .then(DmLoot.loot())
                 .then(CommandManager.literal("freeze")
                         .then(CommandManager.literal("radius")
                                 .executes(context -> freezeRadius(context, DEFAULT_RADIUS, true))

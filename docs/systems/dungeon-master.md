@@ -1,5 +1,5 @@
 # Dungeon Master
-An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD. The DM Wand puts the common actions on right-click. Later tickets add narration, loot planting and a DM panel on top of this.
+An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD, narrate, speak through NPCs, set the music, and hand out or plant treasure. The DM Wand puts the common actions on right-click. Later tickets add a DM panel on top of this.
 
 ## How it works
 ### DM mode
@@ -62,6 +62,33 @@ The launch set:
 
 `/dm apply <pass|fail|all> <command>` (op only) runs a command as and at each player of the last roll call who passed, failed, or all of them, like `execute as <player> at <player> run <command>`. For example `/dm apply fail effect give @s minecraft:slowness 10`.
 
+### Narration and NPC voice
+- `/dm narrate <text>` sends a narration line to every player: gold italics, starting with `✦`, with a soft page-turn sound. Wrap a word in asterisks for bold: `/dm narrate The door groans *open*.`
+- `/dm title <title> [| <subtitle>]` shows a title (and subtitle) on every player's screen for about 5 seconds (fade in 10, stay 70, fade out 20 ticks), with a low drum hit. `/dm title Chapter One | The Sunken Crypt`.
+- Both go to everyone, unless the text starts with a target selector: `/dm narrate @a[distance=..20] Only you hear it.` Pick a player by name with `@a[name=Alice]` (a bare name would read as the first word of the line).
+- `/dm say <entity> <text>` speaks as an NPC: `<Gimli Stonebeard> Mind your step.` in chat for every player, the name in the colour of the NPC's [faction](factions.md) (yellow for anyone outside a faction), and a speech bubble pops up over its head for 3 seconds. Any entity works, including role NPCs and mobs with a custom name.
+
+### Mood music
+`/dm mood combat|tavern|dungeon|boss|off` (op only) forces a music track for every player within 96 blocks of you, through the same path as [boss fight music](../music.md): it starts straight away, loops, and plays over anything else.
+
+| Mood | Track |
+|-|-|
+| `combat` | The goblin raid track (`music.goblin_raid`) |
+| `tavern` | The Bard's lute song (`instrument.lute`) |
+| `dungeon` | The dungeon pool (`music.dungeon`) |
+| `boss` | The dragon fight track (`music.dragon_fight`) |
+| `off` | Back to normal music, for every player online |
+
+Setting a new mood replaces the old one for the players in range. A real boss fight that starts during a mood keeps the mood track until `off` (the first track a player got wins).
+
+### Loot
+- `/dm loot give <players> <loot table>` rolls a loot table (any table, as a chest would) straight into each player's inventory; what doesn't fit drops at their feet. You see what each player got.
+- `/dm loot give <players> magic <rarity>` gives one roll on the [magic item](../items/magic-items.md) table of that rarity: `uncommon`, `rare`, `very_rare` or `legendary` (unidentified, like found loot).
+- `/dm loot plant <loot table> [<pos>] [dc <n>]` (op only) places a chest at the block you're looking at (64 blocks), or at `pos`, facing you, with the loot not rolled yet. A `chests/...` table makes it locked for [Lockpicking](d20-skill-checks.md) like any dungeon chest (DC 10, 15 for the hard hoards). `dc <n>` (1-30) sets the lock DC instead, and locks the chest whatever its table: the "we need a Rogue" chest. Only a Rogue can pick it; anyone can still smash it open and ruin part of the loot.
+- `/dm loot plant mimic [<loot table>] [<pos>]` (op only) places a dormant [Mimic](../mobs/mimic.md) instead, holding that loot (default `minecraft:chests/simple_dungeon`).
+
+The DC is saved on the chest as `DndLockDc` (`/data get block <pos>` shows it, and `/data merge block <pos> {DndLockDc:18}` sets it on any chest).
+
 ### Freeze
 `/dm freeze <targets>`, `/dm freeze radius [r]` (mobs and players within `r` blocks, default 24), `/dm unfreeze <targets>`, `/dm unfreeze radius [r]` and `/dm unfreeze all`.
 - **Mobs** stop thinking (`NoAI`) and moving, glow, and hang in place if they were in the air (`NoGravity`). Their old `NoAI`, `NoGravity` and glowing are kept and put back on unfreeze.
@@ -93,7 +120,7 @@ The mode and the selected encounter are stored on the item, so two wands can be 
 Server-side commands, and the DM Wand (creative tab or `/give`); nothing to craft.
 
 ## Commands
-Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant`, `revoke` and `apply`; `/dm revoke <player>` takes it back (and ends their DM mode).
+Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant`, `revoke`, `apply`, `mood` and `loot plant`; `/dm revoke <player>` takes it back (and ends their DM mode).
 
 | Command | What it does |
 |-|-|
@@ -110,8 +137,15 @@ Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets 
 | `/dm save <targets> <ability> <dc> [adv\|dis] [silent]` | A saving throw on the save lane; mobs roll +1 silently. See [Saving throws](saving-throws.md) |
 | `/dm roll <players> <check> <dc> [advantage\|disadvantage] [secret] [auto]` | A roll call: a prompt on each player's d20 HUD, Y to roll, 20 s timeout, results and a summary to you |
 | `/dm apply pass\|fail\|all <command>` | (op only) Run a command as and at each player of the last roll call who passed / failed / all |
+| `/dm narrate [@selector] <text>` | Narration line in chat, `*bold*`, page-turn sound |
+| `/dm title [@selector] <title> [\| <subtitle>]` | Title and subtitle on screen, drum hit |
+| `/dm say <entity> <text>` | Speak as an NPC, in its faction's colour, with a speech bubble |
+| `/dm mood combat\|tavern\|dungeon\|boss\|off` | (op only) Force a music track within 96 blocks |
+| `/dm loot give <players> <loot table>\|magic <rarity>` | Roll a loot table, or a magic item of that rarity, into their inventories |
+| `/dm loot plant <loot table> [<pos>] [dc <n>]` | (op only) Plant an unrolled, locked chest; `dc` sets the lock DC |
+| `/dm loot plant mimic [<loot table>] [<pos>]` | (op only) Plant a dormant Mimic |
 
-Encounter ids tab-complete. Ids from this mod can be written without the namespace (`goblin_patrol`); others need it (`mypack:bandits`).
+Encounter ids and loot tables tab-complete. Ids from this mod can be written without the namespace (`goblin_patrol`); others need it (`mypack:bandits`).
 
 ## Configuration
 ### Encounter files
@@ -158,6 +192,8 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
 - The last roll call (for `/dm apply`) and open prompts are kept in memory, so a server restart forgets them.
 - A player in creative or spectator mode rolls a called save without seeing it (the saving-throw rules hide those); skill checks and flat rolls still show.
 - DMs gain and lose no [faction reputation](factions.md). The quest hook (no quest progress for DMs) arrives with quests.
+- Narration, titles and `say` lines are plain text (no colours or links beyond `*bold*`), and aren't translated.
+- `/dm mood` only reaches players in range when you run it; someone who walks in later doesn't hear it, and a player who relogs loses it.
 
 ## For developers
 - Package `mattonfire.dnd.dm`:
@@ -165,9 +201,11 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `DmCommand`: `/dm`, registered in `DnDClasses`.
   - `DmVeil`: veil abilities, damage cancel and `refreshTracking`. `classes/mixin/DmEntityTrackerMixin` stops `ThreadedAnvilChunkStorage.EntityTracker` tracking a veiled DM for non-DM viewers; `ThreadedAnvilChunkStorageAccessor` + `DmTracked` re-run tracking when the veil changes.
   - `DmRolls`: the `/dm check`, `/dm save`, `/dm roll` and `/dm apply` command trees. `DmRollCalls`: pending calls (one per player), the `dndclasses:roll_prompt` S2C packet (label, caller, DC or 0 when secret, `Advantage`, ticks left, 0 clears it) and the empty `dndclasses:roll_answer` C2S packet, the 400-tick timeout on `END_SERVER_TICK`, the result and summary lines, and `last()` for `/dm apply`. Logs `[DmRolls] call #n ...` lines.
+  - `DmNarration`: `/dm narrate`, `title`, `say` and `mood`. Mood tracks go out through `BossMusic.send` under a fixed fake bar UUID (`MOOD_BAR`); the client logs every boss-music packet as `[BossMusic] bar <uuid> track <id>|off`. Lines are logged as `[DM] narrate|title|say|mood ...`. The speech bubble is the `dndclasses:speech_bubble` particle (`SpeechBubbleParticle`, texture from `tools/speech_bubble_texture.py`).
+  - `DmLoot`: `/dm loot give|plant`. The lock DC override is `LockDcHolder` (`DndLockDc` in NBT), added to every `LockableContainerBlockEntity` by `classes/mixin/LockableContainerLockDcMixin`; `Lockpicking.dcAt` reads it (both halves of a double chest) and `lockedTableAt` treats a chest with one as locked.
   - `DmFreeze`: freeze/unfreeze, Fabric attack/use/break callbacks, the player hold tick; the power-up packet in `DnDClasses` checks `DmFreeze.isFrozen`.
   - `DmWand`: the wand's modes and actions (`use(player, stack)`, `raycast`, `spawnEncounter`, `inspect`), mode and encounter in stack NBT (`DmWandMode`, `DmWandEncounter`), and `UseBlockCallback` / `UseEntityCallback` handlers that claim wand clicks on both sides (the client can't tell who is a DM). `classes/Items/DmWandItem` handles clicks on air and names the item after its mode. Logs `[DmWand] <player> mode <mode>`.
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Wand: `dm-wand.txt` (single player) and `dm-wand-lan-host.txt` + `dm-wand-lan-guest.txt` (port 25644, guest with `-PdevUser=WandGuest`). Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`).
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Wand: `dm-wand.txt` (single player) and `dm-wand-lan-host.txt` + `dm-wand-lan-guest.txt` (port 25644, guest with `-PdevUser=WandGuest`). Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`). Narration and loot: `dm-narration.txt` (single player) and `dm-narration-lan-host.txt` + `dm-narration-lan-guest.txt` (port 25643, guest with `-PdevUser=Guest`).

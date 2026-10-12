@@ -1,0 +1,37 @@
+# DM narration and loot planting over LAN, guest side, with dm-narration-lan-host.txt. Run (after the host says
+# "Started serving on"):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25643 -PdevScript=devscripts/dm-narration-lan-guest.txt
+# Expect in run-2's latest.log: both "[CHAT] ✦ ..." narration lines, "[CHAT] <Gimli Stonebeard> Who goes there? ...",
+# "[BossMusic] bar ... track dndclasses:music.dragon_fight", "[EventMusic] ... -> BOSS_FIGHT", then "track off".
+# Screenshots: dm-lan-guest-narrate, dm-lan-guest-title, dm-lan-guest-say, dm-lan-guest-locked (Fighter: "Locked"),
+# dm-lan-guest-pick (the Rogue's roll vs DC 18).
+wait 40
+closescreen
+respawn
+wait 40
+clearchat
+/me guest-ready
+waitchat Something glints
+wait 10
+screenshot dm-lan-guest-narrate
+# The title (not a chat line) comes 30 ticks after the narration
+wait 30
+screenshot dm-lan-guest-title
+waitchat Who goes there
+wait 10
+screenshot dm-lan-guest-say
+waitchat try-chest
+wait 10
+use
+wait 3
+screenshot dm-lan-guest-locked
+/me fighter-tried
+waitchat pick-chest
+wait 5
+use
+wait 20
+screenshot dm-lan-guest-pick
+/me rogue-tried
+waitchat host-done
+wait 20
+quit

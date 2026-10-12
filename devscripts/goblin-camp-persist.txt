@@ -1,0 +1,41 @@
+# Checks that goblin camp garrisons persist. Run: timeout 500 ./gradlew runClient -PdevScript=devscripts/goblin-camp-persist.txt
+# Uses the dev world's camp at -408 1100 and a camp far out at 11280 11376 (/locate from 12000 12000; same seed,
+# so it's the same camp in any copy of the dev world, generated fresh the first time).
+# Expect "[CHAT] Test passed, count: N" with the same warrior/warlord counts before and after waiting nearby and
+# after leaving for 3 in-game days, and every warrior with PersistenceRequired. Camps don't repopulate by design
+# (docs/structures/goblin-camps.md), so goblins killed by other scripts' /kill stay dead in the dev world.
+wait 40
+closescreen
+/gamemode spectator
+/gamerule doDaylightCycle true
+/tp @s -408 90 1096 0 90
+wait 300
+/say devcamp
+/execute if entity @e[type=dndclasses:goblin_warrior,x=-408,y=71,z=1100,distance=..40,nbt={PersistenceRequired:1b}]
+/tp @s 11280 120 11376 0 90
+wait 400
+/say fresh before
+/execute if entity @e[type=dndclasses:goblin_warrior,x=11280,y=80,z=11376,distance=..60]
+/execute if entity @e[type=dndclasses:goblin_warlord,x=11280,y=80,z=11376,distance=..60]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=11280,y=80,z=11376,distance=..60,nbt={PersistenceRequired:1b}]
+screenshot campfresh-before
+/tp @s 11280 200 11456
+wait 1200
+/say fresh after-near-wait
+/execute if entity @e[type=dndclasses:goblin_warrior,x=11280,y=80,z=11376,distance=..60]
+/tp @s 14000 200 14000
+wait 200
+/time add 72000
+wait 600
+/tp @s 11280 120 11376 0 90
+wait 400
+/say fresh after-away
+/execute if entity @e[type=dndclasses:goblin_warrior,x=11280,y=80,z=11376,distance=..60]
+/execute if entity @e[type=dndclasses:goblin_warlord,x=11280,y=80,z=11376,distance=..60]
+screenshot campfresh-after
+/gamerule doDaylightCycle false
+/time set 6000
+/tp @s 0.5 150 0.5
+/gamemode creative
+wait 20
+quit

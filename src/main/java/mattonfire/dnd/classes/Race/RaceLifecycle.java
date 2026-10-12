@@ -1,8 +1,6 @@
 package mattonfire.dnd.classes.Race;
 
-import java.util.List;
-
-import mattonfire.dnd.classes.ClassInfo;
+import mattonfire.dnd.classes.CharacterCreation;
 import mattonfire.dnd.classes.ClassLifecycle;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
@@ -109,7 +107,8 @@ public final class RaceLifecycle {
 
     // --- picking ---
 
-    private static boolean needsPick(ServerPlayerEntity player) {
+    /** The player should pick a race: races are on and theirs is NONE. */
+    public static boolean needsPick(ServerPlayerEntity player) {
         return enabled(player) && raceOf(player) == DndRace.NONE;
     }
 
@@ -125,7 +124,7 @@ public final class RaceLifecycle {
                     ancestryId);
             return;
         }
-        if (race == DndRace.NONE || !needsPick(player) || race.hasAncestry() != (ancestry != DragonAncestry.NONE)) {
+        if (!needsPick(player) || !validPick(race, ancestry)) {
             DnDClasses.LOGGER.info("Ignored race pick {} {} from {} (race {})", race.id(), ancestry.id(),
                     player.getEntityName(), raceOf(player).id());
             // Tell the client its real race again so it stops showing the picker.
@@ -135,11 +134,26 @@ public final class RaceLifecycle {
         change(player, race, ancestry);
     }
 
+    /** A race (not NONE) with an ancestry exactly when it needs one. */
+    public static boolean validPick(DndRace race, DragonAncestry ancestry) {
+        return race != DndRace.NONE && race.hasAncestry() == (ancestry != DragonAncestry.NONE);
+    }
+
+    /** Tells the client its race again (an ignored pick). */
+    public static void resend(ServerPlayerEntity player) {
+        send(player, S2C_APPROVE_RACE_PICK);
+    }
+
     /**
      * Sets a player's race (first pick or admin change): swaps the race modifiers, prints the intro and
      * tells the client. NONE clears the race, and the client reopens the race picker.
      */
     public static void change(ServerPlayerEntity player, DndRace race, DragonAncestry ancestry) {
+        change(player, race, ancestry, true);
+    }
+
+    /** @param intro false when {@link CharacterCreation} prints one intro for the race and class together */
+    public static void change(ServerPlayerEntity player, DndRace race, DragonAncestry ancestry, boolean intro) {
         if (!race.hasAncestry()) {
             ancestry = DragonAncestry.NONE;
         }
@@ -149,8 +163,8 @@ public final class RaceLifecycle {
         RaceStats.apply(player);
         RaceAbilityBonuses.onChange.accept(player);
         RaceInfo info = RaceInfo.get(race);
-        if (info != null) {
-            sendIntro(player, info, ancestry);
+        if (info != null && intro) {
+            CharacterCreation.sendIntro(player, info, ancestry, null);
         }
         DnDClasses.LOGGER.info("{} is now race {} {}", player.getEntityName(), race.id(), ancestry.id());
         send(player, S2C_APPROVE_RACE_PICK);
@@ -177,22 +191,5 @@ public final class RaceLifecycle {
     /** The race name with its ancestry, e.g. "Dragonborn (Frost)". */
     public static String displayName(RaceInfo info, DragonAncestry ancestry) {
         return ancestry == DragonAncestry.NONE ? info.name() : info.name() + " (" + ancestry.displayName() + ")";
-    }
-
-    private static void sendIntro(PlayerEntity player, RaceInfo info, DragonAncestry ancestry) {
-        player.sendMessage(Text.literal("The " + displayName(info, ancestry) + "\n")
-                .formatted(Formatting.UNDERLINE, Formatting.GOLD), false);
-        player.sendMessage(Text.literal(info.summary() + ".").formatted(Formatting.YELLOW), false);
-        List<String> stats = info.stats().describe();
-        if (!stats.isEmpty()) {
-            player.sendMessage(Text.literal("Body: " + String.join(", ", stats) + ".").formatted(Formatting.GREEN),
-                    false);
-        }
-        player.sendMessage(Text.literal("Ability scores: " + info.abilityText() + ".")
-                .formatted(Formatting.AQUA), false);
-        player.sendMessage(Text.literal("Traits: " + ClassInfo.joinForGame(info.traits()))
-                .formatted(Formatting.DARK_PURPLE), false);
-        player.sendMessage(Text.literal("Your heritage is in your Class Guidebook.").formatted(Formatting.GRAY,
-                Formatting.ITALIC), false);
     }
 }

@@ -11,7 +11,9 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 
 /**
@@ -59,9 +61,15 @@ public final class RepCommand {
 
     private static Text line(ServerPlayerEntity player, Faction faction) {
         int value = Reputation.get(player, faction);
-        return Text.literal("  ").append(faction.displayName())
+        MutableText line = Text.literal("  ").append(faction.displayName())
                 .append(Text.literal(" [" + faction.id() + "]: " + value + " "))
                 .append(Text.literal("(").append(ReputationTier.of(value).displayName()).append(")"));
+        if (Reputation.ignored.test(player) && ReputationTier.of(value) != ReputationTier.NEUTRAL) {
+            // A DM's standing is kept, but NPCs treat them as Neutral (TierEffects.tierWith) until /dm off.
+            line.append(Text.literal(" - DM mode: NPCs treat ").append(player.getDisplayName())
+                    .append(" as Neutral").formatted(Formatting.GOLD));
+        }
+        return line;
     }
 
     private static int change(CommandContext<ServerCommandSource> context, boolean set) throws CommandSyntaxException {

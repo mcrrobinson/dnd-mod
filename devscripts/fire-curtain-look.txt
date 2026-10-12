@@ -1,0 +1,85 @@
+# The Fire Curtain's look: each curtain should read as one connected sheet of soul fire, not a grid of fires.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/fire-curtain-look.txt
+# Places, west to east along z=210: a 3x1 along X, a 1x3 column, a 3x3 along X, a 3x2 along Z and a 2x2x2
+# (like the Nether fortress vault's). Screenshots (run/screenshots/curtain-look-*.png):
+#  day-front, day-angle, day-close (the 3x3), day-side (the Z curtain), day-thick (the 2x2x2), then front,
+#  angle and close at night;
+#  warlock-before / warlock-opened: a Warlock douses the 3x3's brazier and the 3x3 vanishes, the rest stay.
+# Expect in latest.log: Test passed for the 3x3 open and the others still sealed.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+# Go there first, so the area is loaded
+/effect give @s minecraft:slow_falling 30 0 true
+/effect give @s minecraft:resistance 600 4 true
+/tp @s 211.5 152 199.5 0 8
+wait 40
+/fill 194 151 190 228 160 220 minecraft:air
+/fill 194 150 190 228 150 220 minecraft:stone
+/kill @e[type=!minecraft:player,x=194,y=150,z=190,dx=34,dy=10,dz=30]
+/dndobstacle place 200 151 210 202 151 210 dndclasses:fire_curtain easy
+/dndobstacle place 206 151 210 206 153 210 dndclasses:fire_curtain easy
+/dndobstacle place 210 151 210 212 153 210 dndclasses:fire_curtain easy
+/dndobstacle place 216 151 208 216 152 210 dndclasses:fire_curtain easy
+/dndobstacle place 220 151 209 221 152 210 dndclasses:fire_curtain hard
+/setblock 211 151 213 dndclasses:fire_curtain_brazier
+/dndobstacle link 211 151 213 211 151 210
+/clear @s
+hud off
+
+# ---- Day
+/tp @s 211.5 152 199.5 0 8
+wait 60
+screenshot curtain-look-day-front
+/tp @s 197.5 154 202.5 -63 8
+wait 30
+screenshot curtain-look-day-angle
+/tp @s 211.5 152 205.5 0 5
+wait 30
+screenshot curtain-look-day-close
+/tp @s 212.5 152 206.5 -53 5
+wait 30
+screenshot curtain-look-day-side
+/tp @s 224.5 153 206.5 49 15
+wait 30
+screenshot curtain-look-day-thick
+
+# ---- Night
+/time set midnight
+/tp @s 211.5 152 199.5 0 8
+wait 30
+screenshot curtain-look-night-front
+/tp @s 197.5 154 202.5 -63 8
+wait 30
+screenshot curtain-look-night-angle
+/tp @s 211.5 152 205.5 0 5
+wait 30
+screenshot curtain-look-night-close
+
+# ---- A Warlock walks round to the brazier and douses it: the 3x3 goes out, the others stay lit
+/time set noon
+/dndclass set @s warlock
+wait 5
+closescreen
+/clear @s
+/tp @s 208.5 152 204.5 -20 8
+wait 30
+screenshot curtain-look-warlock-before
+/tp @s 211.5 151 211.5 0 40
+wait 10
+use
+wait 10
+/execute if block 211 151 210 dndclasses:fire_curtain[state=open]
+/execute if block 212 153 210 dndclasses:fire_curtain[state=open]
+/execute if block 201 151 210 dndclasses:fire_curtain[state=sealed]
+/execute if block 216 151 209 dndclasses:fire_curtain[state=sealed]
+/tp @s 208.5 152 204.5 -20 8
+wait 30
+screenshot curtain-look-warlock-opened
+hud on
+wait 5
+quit

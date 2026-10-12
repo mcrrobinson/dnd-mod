@@ -119,7 +119,8 @@ public class DruidSkills extends ClassSkills {
             }
             case "druid.regrowth" -> {
                 for (LivingEntity ally : alliesNear(player, 8)) {
-                    ally.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 160, 1), player);
+                    ally.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,
+                            mattonfire.dnd.classes.Party.PartySynergies.triageTicks(player, ally, 160), 1), player);
                     world.spawnParticles(ParticleTypes.HEART, ally.getX(), ally.getY() + 1, ally.getZ(), 3, 0.4,
                             0.4, 0.4, 0);
                 }

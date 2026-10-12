@@ -1,0 +1,196 @@
+# Party role synergies and assisted obstacle checks (host side, "Dev"), with party-synergies-guest.txt ("DevGuest").
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/party-synergies-host.txt
+# then, once the log says "Started serving on":
+#   timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25647 -PdevUser=DevGuest -PdevScript=devscripts/party-synergies-guest.txt
+# Expect in the host's latest.log ([Party] lines) and the guest's screenshots:
+#  0 solo (no party): the guest Wizard rolls a Hard Arcane Seal next to a Bard: one die, no assist
+#  1 Inspire (Bard host + Wizard guest, party): "[Party] Inspire", "[D20] DevGuest ... 18 (4 adv) +4 = 22"
+#  2 Assist (Warlock host + Wizard guest): "+2 assist", 10 +6 = 16 vs DC 15 -> SUCCESS; the host gets half the XP (7)
+#  3 Triage (Cleric host + Fighter guest): Cure Wounds heals the guest 10 instead of 8; stabilising takes 20 ticks
+#  4 Bodyguard: 12 husks hit the host; ~30% switch to the guest Fighter ("retarget"), target readout agrees
+#  5 Opportunist (Wizard host): +15% on the husks that are on the guest Tank only
+#  6 Balanced party: 2 roles -> x1.0
+#  7 Scout: the guest sees a seal's hint from 9.5 blocks only once the host is an Artificer (Utility)
+wait 40
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doWeatherCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/time set 1000
+/weather clear
+/kill @e[type=!player]
+/fill -2 149 -6 22 149 14 minecraft:stone
+/fill -2 150 -6 22 156 14 minecraft:air
+/fill 0 150 10 20 153 10 minecraft:stone_bricks
+/dndobstacle place 2 150 10 3 151 10 dndclasses:lesser_arcane_seal hard
+/dndobstacle place 7 150 10 8 151 10 dndclasses:lesser_arcane_seal hard
+/dndobstacle place 12 150 10 13 151 10 dndclasses:lesser_arcane_seal hard
+/dndobstacle place 17 150 10 18 151 10 dndclasses:lesser_arcane_seal hard
+/party leave
+/tp @s 5.5 150 8.5 0 20
+/publish false survival 25647
+waitchat DevGuest joined the game
+wait 100
+/gamemode survival DevGuest
+/effect give @a minecraft:resistance 1000 4 true
+# The husks' hits would knock the host off the platform
+/attribute Dev minecraft:generic.knockback_resistance base set 1
+# ---- 0: solo, no party ----
+/dndclass set Dev bard
+/dndclass set DevGuest wizard
+wait 10
+/clear Dev
+/clear DevGuest
+/tp DevGuest 3.0 150 8.5 0 20
+/tp Dev 5.5 150 8.5 0 20
+/dndclass forceroll DevGuest 18
+/say roll-solo
+waitchat done-solo
+# ---- party up ----
+/party invite DevGuest
+/say invite-sent
+waitchat in-party
+/party list
+wait 20
+# ---- 1: Inspire (Bard host, Wizard guest) ----
+/tp DevGuest 8.0 150 8.5 0 20
+/tp Dev 10.5 150 8.5 0 20
+/dndclass forceroll DevGuest 4 18
+/say roll-inspire
+waitchat done-inspire
+# ---- 2: Assist (Warlock host, Wizard guest) ----
+/dndclass set Dev warlock
+wait 10
+/clear Dev
+/tp DevGuest 13.0 150 8.5 0 20
+/tp Dev 15.5 150 8.5 0 20
+/dndclass progress Dev
+/dndclass forceroll DevGuest 10
+/say roll-assist
+waitchat done-assist
+wait 40
+/dndclass progress Dev
+/execute if block 12 150 10 dndclasses:lesser_arcane_seal[state=open]
+# ---- 3: Triage (Cleric host, Fighter guest) ----
+/dndclass set Dev cleric
+/dndclass set DevGuest fighter
+wait 10
+/clear Dev
+/clear DevGuest
+/dndclass xp Dev set 20000
+/dndclass unlock Dev cleric.cure_wounds
+/dndclass equip Dev cleric.cure_wounds
+/dndclass mana Dev 9
+/tp Dev 4.5 150 0.5 0 35
+/tp DevGuest 4.5 150 2.5 180 0
+/effect clear DevGuest
+/effect give DevGuest minecraft:resistance 1000 4 true
+wait 10
+/effect clear DevGuest minecraft:resistance
+/damage DevGuest 12 minecraft:generic
+wait 5
+/data get entity DevGuest Health
+hotbar 8
+press key.dnd-classes.power-up
+wait 10
+/data get entity DevGuest Health
+# Triage stabilise: hold use on the downed Fighter
+/effect give DevGuest minecraft:resistance 1000 4 true
+/dndclass down DevGuest
+wait 10
+/tp Dev 4.5 150 0.7 0 40
+wait 5
+holduse on
+wait 30
+holduse off
+/dndclass downed DevGuest
+/dndclass revive DevGuest 20
+wait 20
+# ---- 4: Bodyguard (Cleric host hit, Fighter guest is the Tank) ----
+/effect give Dev minecraft:resistance 1000 4 true
+/tp Dev 4.5 150 0.5 0 0
+/tp DevGuest 10.5 150 2.5 180 0
+/summon minecraft:husk 6 150 -3 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg1"]}
+/summon minecraft:husk 7 150 -3 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg2"]}
+/summon minecraft:husk 8 150 -3 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg3"]}
+/summon minecraft:husk 9 150 -3 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg4"]}
+/summon minecraft:husk 10 150 -3 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg5"]}
+/summon minecraft:husk 11 150 -3 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg6"]}
+/summon minecraft:husk 6 150 -5 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg7"]}
+/summon minecraft:husk 7 150 -5 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg8"]}
+/summon minecraft:husk 8 150 -5 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg9"]}
+/summon minecraft:husk 9 150 -5 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg10"]}
+/summon minecraft:husk 10 150 -5 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg11"]}
+/summon minecraft:husk 11 150 -5 {NoAI:1b,Silent:1b,PersistenceRequired:1b,Tags:["bg","bg12"]}
+wait 5
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg1,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg2,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg3,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg4,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg5,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg6,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg7,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg8,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg9,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg10,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg11,limit=1]
+wait 12
+/damage Dev 1 minecraft:mob_attack by @e[tag=bg12,limit=1]
+wait 12
+target @e[tag=bg]
+# ---- 5: Opportunist (Wizard host hits the husks; only those on the Fighter take +15%) ----
+/dndclass set Dev wizard
+wait 10
+/clear Dev
+/damage @e[tag=bg1,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg2,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg3,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg4,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg5,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg6,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg7,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg8,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg9,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg10,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg11,limit=1] 2 minecraft:player_attack by Dev
+/damage @e[tag=bg12,limit=1] 2 minecraft:player_attack by Dev
+wait 5
+# ---- 6: Balanced party: Wizard + Fighter = 2 roles -> x1.0 ----
+/damage @e[tag=bg1,limit=1] 1000 minecraft:player_attack by Dev
+wait 5
+/kill @e[tag=bg]
+# ---- 7: Scout ----
+/dndclass set Dev warlock
+wait 10
+/clear Dev
+/tp DevGuest 17.5 150 0.5 0 0
+/tp Dev 20.5 150 0.5 0 0
+wait 20
+/say scout-off
+waitchat done-scout-off
+/dndclass set Dev artificer
+wait 10
+/clear Dev
+/tp Dev 20.5 150 0.5 0 0
+wait 40
+/say scout-on
+waitchat done-scout-on
+/say all-done
+wait 60
+/attribute Dev minecraft:generic.knockback_resistance base set 0
+/party leave
+wait 20
+quit

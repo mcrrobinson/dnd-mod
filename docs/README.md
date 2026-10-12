@@ -46,6 +46,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Admin commands](systems/admin-commands.md): `/dndclass` (class, progress, XP, ranks, subclass, rests, sheet, Downed), `/dndrace`, `/dndhome`, `/goblinraid`, and pointers to `/dungeon`, `/dndobstacle`, `/dm`, `/party`, `/quest` and `/rep`
 - [Party](systems/party.md): `/party` groups of up to 8: shared XP within 48 blocks, no friendly fire, the party HUD, and what else checks the party
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
+- [Party synergies](systems/party-synergies.md): Bodyguard, Triage, Opportunist, Inspire and Scout between party roles, Balanced party XP and +2 assists on obstacle checks (PR #200)
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8
 - [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair, STR/DEX saves against grabs with jump-to-struggle escapes, and `/dm save|check`
 - [Data-driven saves](systems/data-driven-saves.md): datapack JSON saves against effects and damage types: CON vs mob poison and wither (Lich Wither Bolt DC 15), Warden sonic boom and Ender Dragon breath; half duration or damage

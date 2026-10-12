@@ -83,6 +83,25 @@ public final class PartyHud {
         HudRenderCallback.EVENT.register((matrices, tickDelta) -> render(matrices));
     }
 
+    /** Whether the client is in a party with anyone else (the server sends an empty list otherwise). */
+    public static boolean inParty() {
+        return !memberIds.isEmpty();
+    }
+
+    /**
+     * Primary role of another party member, from the class id in the party HUD packet (other players' classes
+     * aren't otherwise synced to this client), or null if they aren't in the party or have no class.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static PartyRole memberRole(UUID uuid) {
+        for (Member member : members) {
+            if (member.uuid().equals(uuid)) {
+                return roleOf(member.classId());
+            }
+        }
+        return null;
+    }
+
     /** Whether this player is in the local player's party (not counting the local player). */
     public static boolean isMember(UUID uuid) {
         return memberIds.contains(uuid);

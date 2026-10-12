@@ -10,13 +10,15 @@ Type `/party invite <player>` to invite someone. If you aren't in a party yet, t
 The player who creates the party leads it. If the leader leaves, the member who joined next takes over. The party disbands when its last member leaves. Parties are saved with the world, so they survive restarts. Pending invites aren't saved.
 
 ### What being in a party does
-**Shared XP.** XP from orbs, and class XP from kills, is split evenly between you and every party member who is alive, not spectating, in the same dimension and within 48 blocks. Mending takes its share before the split. Leftover fractions carry over per player, so 1-XP orbs aren't lost. If nobody is nearby you keep it all.
+**Shared XP.** XP from orbs, and class XP from kills, is split evenly between you and every party member who is alive, not spectating, in the same dimension and within 48 blocks. Mending takes its share before the split. Leftover fractions carry over per player, so 1-XP orbs aren't lost. If nobody is nearby you keep it all. Class XP grows by 10-20% first when the members sharing it have three or more different roles ([Balanced party](party-synergies.md)).
 
 **No friendly fire.** Party members can't damage each other. That covers melee, arrows, fireballs, thrown potions and explosions, and attacks by a member's tamed pets (wolves, cats and so on). You can still hurt yourself.
 
 **Downed instead of dead.** At 0 HP with a party member within 64 blocks you go [Downed](death-saves.md) instead of dying. Members bring you back by holding right-click on you for 3 seconds (stabilise, then again to help you up), by healing you (Cure Wounds, Circle of Healing, a splash Healing potion), or by feeding you a Potion of Healing, a golden apple or a Mug of Ale.
 
 **Party HUD.** The top-left corner lists the other members, updated every half second. Each entry shows the member's [party role](party-roles.md) icon, the name (with a ★ for the leader), HP as text, and a health bar that is green above 50%, yellow above 25% and red below that. A gold strip shows absorption. A grey name means that member is out of XP range, and dark grey means they're offline. A [Downed](death-saves.md) member shows `DOWNED` in red in place of their HP, with their death saves (`●●○ ✕○○`, passes and fails) at the left end of a pulsing red bar, or `STABLE` in yellow over a pulsing yellow bar; they're also outlined in red through walls within 64 blocks. While a boss bar is showing, the entries stop 8 pixels short of it (at least 50 pixels wide) and cut long names with "...". The HUD hides with F1 and the F3 debug screen.
+
+**Role synergies.** Each member's [party role](party-roles.md) helps the others: Bodyguard, Triage, Opportunist, Inspire, Scout and assisted obstacle checks. See [Party synergies](party-synergies.md).
 
 **Party heals and wards.** Two class skills reach party members further than other players:
 

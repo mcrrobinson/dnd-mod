@@ -193,7 +193,8 @@ public class ClericSkills extends ClassSkills {
         switch (node.id()) {
             case "cleric.cure_wounds" -> {
                 for (LivingEntity ally : alliesNear(player, 8)) {
-                    ally.heal(discipleOfLife(player, CURE_WOUNDS_HEAL));
+                    ally.heal(mattonfire.dnd.classes.Party.PartySynergies.triage(player, ally,
+                            discipleOfLife(player, CURE_WOUNDS_HEAL)));
                     world.spawnParticles(ParticleTypes.HEART, ally.getX(), ally.getY() + 1.5, ally.getZ(), 4, 0.4,
                             0.3, 0.4, 0);
                 }

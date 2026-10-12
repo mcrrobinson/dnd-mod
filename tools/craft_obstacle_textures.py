@@ -4,8 +4,8 @@
 
 16x16: a brass Clockwork Door with a gear and rivets, translucent amber Alchemical Seal resin with bubbles,
 a Miasma Vent grate (glowing green while it vents, dark once neutralised) and its iron sides, and the Fire
-Curtain's brazier (dark iron bowl, soul-fire coals, and cold ash once doused). The Fire Curtain itself uses
-vanilla soul fire.
+Curtain's brazier (dark iron bowl, soul-fire coals, and cold ash once doused). The Fire Curtain's own sheets
+come from fire_curtain_textures.py.
 """
 import math
 import os

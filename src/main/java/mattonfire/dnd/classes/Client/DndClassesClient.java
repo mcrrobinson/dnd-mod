@@ -257,6 +257,8 @@ public class DndClassesClient implements ClientModInitializer {
                 mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.FIRE_CURTAIN_BLOCK,
                 mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.FIRE_CURTAIN_BRAZIER_BLOCK,
                 mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.MIASMA_VENT_BLOCK);
+        // Each Fire Curtain joins its neighbours into one sheet of flame
+        mattonfire.dnd.classes.Client.Render.FireCurtainModel.register();
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();

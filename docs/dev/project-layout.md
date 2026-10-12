@@ -58,6 +58,7 @@ What each `build.gradle` dependency is for. Jars in `libs/` resolve through the 
 | `tools/boss_item_textures.py` | the boss and monster magic item textures |
 | `tools/breath_icons.py` | the Dragonborn Breath Weapon cooldown icons |
 | `tools/craft_obstacle_textures.py` | the craft and element obstacle textures (Artificer, Alchemist, Warlock) |
+| `tools/fire_curtain_textures.py` | the Fire Curtain's connected soul-fire sheets (`--preview <dir>` for mock-ups) |
 | `tools/d20_texture.py` | `textures/gui/d20.png`, the skill-check HUD die |
 | `tools/death_save_textures.py` | the death save pips on the Downed HUD |
 | `tools/divine_obstacle_textures.py` | the divine and death obstacle textures (Cleric, Paladin, Necromancer, Blood Hunter) |

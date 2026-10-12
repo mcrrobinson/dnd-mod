@@ -1,19 +1,22 @@
 package mattonfire.dnd.entity.ai.goal;
 
-import mattonfire.dnd.entity.LairDragonEntity;
+import mattonfire.dnd.entity.FlyingDragonEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import java.util.EnumSet;
 
-/** The Lightning Chaser's and Frost Drake's attacks: a bite up close, and at range their breath and storm in turn. */
-public class LairDragonAttackGoal extends Goal {
-    private final LairDragonEntity entity;
+/**
+ * A flying dragon's attacks: a bite up close and its breath at range. A dragon with a storm (the Lightning
+ * Chaser's and Frost Drake's) calls it down in turn with the breath, and instead of it out of the breath's reach.
+ */
+public class DragonAttackGoal extends Goal {
+    private final FlyingDragonEntity entity;
     private int cooldown;
     private int seeTime;
     private int repathTicks;
     private boolean breatheNext = true;
 
-    public LairDragonAttackGoal(LairDragonEntity entity) {
+    public DragonAttackGoal(FlyingDragonEntity entity) {
         this.entity = entity;
         this.setControls(EnumSet.of(Control.MOVE, Control.LOOK));
     }
@@ -78,27 +81,30 @@ public class LairDragonAttackGoal extends Goal {
         }
 
         if (this.cooldown <= 0 && this.seeTime >= 10 && distanceSq <= this.maxAttackDistance()) {
-             if (distanceSq > 25.0) { // Range attack (> 5 blocks): breath and the dragon's storm (lightning or hail) in turn
+             double biteRange = this.entity.getBiteRange();
+             if (distanceSq > biteRange * biteRange) { // Range attack (> 5 blocks): breath, and the storm in turn
                  // Starts a bit inside the flame's reach, since the target keeps moving
                  double breathRange = this.entity.getFireBreath().range - 2.0;
                  if (this.breatheNext && distanceSq <= breathRange * breathRange) {
                      this.entity.getFireBreath().start(target);
-                     this.breatheNext = false;
-                 } else {
+                     // With a storm, it comes down next; without one, the breath again
+                     this.breatheNext = !this.entity.hasStorm();
+                     // For a breath the cooldown starts once it's over (ticking pauses while breathing)
+                     this.cooldown = this.entity.getBreathCooldown();
+                 } else if (this.entity.hasStorm()) {
                      // Out of the breath's reach the storm comes down instead, and the breath waits its turn
                      this.entity.shoot(target);
                      this.breatheNext = true;
+                     this.cooldown = this.entity.getBreathCooldown();
                  }
-                 // For a breath the cooldown starts once it's over (ticking pauses while breathing)
-                 this.cooldown = 60;
              } else { // Melee
                  this.entity.tryAttack(target);
-                 this.cooldown = 20;
+                 this.cooldown = this.entity.getMeleeCooldown();
              }
         }
     }
     
     private double maxAttackDistance() {
-        return 512.0; 
+        return 512.0; // 22 blocks
     }
 }

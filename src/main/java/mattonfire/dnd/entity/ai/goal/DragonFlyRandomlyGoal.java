@@ -1,6 +1,6 @@
 package mattonfire.dnd.entity.ai.goal;
 
-import mattonfire.dnd.entity.LairDragonEntity;
+import mattonfire.dnd.entity.FlyingDragonEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
@@ -8,13 +8,14 @@ import net.minecraft.util.math.random.Random;
 
 import java.util.EnumSet;
 
-public class LairDragonFlyRandomlyGoal extends Goal {
+/** A flying dragon's wandering: takes off now and then, flies about, sometimes lands, and keeps near its lair if it has one. */
+public class DragonFlyRandomlyGoal extends Goal {
     /** How far it wanders from its lair before turning back. */
     private static final double LAIR_RANGE = 24.0;
 
-    private final LairDragonEntity entity;
+    private final FlyingDragonEntity entity;
 
-    public LairDragonFlyRandomlyGoal(LairDragonEntity entity) {
+    public DragonFlyRandomlyGoal(FlyingDragonEntity entity) {
         this.entity = entity;
         this.setControls(EnumSet.of(Control.MOVE));
     }

@@ -1,7 +1,7 @@
 package mattonfire.dnd.entity;
 
-import mattonfire.dnd.entity.ai.goal.LairDragonAttackGoal;
-import mattonfire.dnd.entity.ai.goal.LairDragonFlyRandomlyGoal;
+import mattonfire.dnd.entity.ai.goal.DragonAttackGoal;
+import mattonfire.dnd.entity.ai.goal.DragonFlyRandomlyGoal;
 import mattonfire.dnd.entity.boss.BossFight;
 import mattonfire.dnd.world.gen.lair.LairPiece;
 import mattonfire.dnd.world.gen.lair.LairRespawns;
@@ -165,8 +165,8 @@ public abstract class LairDragonEntity extends FlyingDragonEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new LairDragonAttackGoal(this));
-        this.goalSelector.add(3, new LairDragonFlyRandomlyGoal(this));
+        this.goalSelector.add(2, new DragonAttackGoal(this));
+        this.goalSelector.add(3, new DragonFlyRandomlyGoal(this));
         this.goalSelector.add(4, new WanderAroundGoal(this, 1.0D));
         this.goalSelector.add(5, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));

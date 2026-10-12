@@ -1,13 +1,9 @@
 package mattonfire.dnd.entity;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModSounds;
-import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.entity.ai.goal.BeholderAttackGoal;
 import mattonfire.dnd.entity.ai.goal.BeholderDriftGoal;
 import mattonfire.dnd.entity.boss.Boss;
@@ -34,35 +30,26 @@ import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
 import net.minecraft.entity.data.TrackedDataHandlerRegistry;
 import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.DustParticleEffect;
-import net.minecraft.predicate.entity.EntityPredicates;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructureStart;
-import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LocalDifficulty;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
@@ -100,7 +87,7 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
         FEAR("fear", 0xF0DC3C);
 
         public final String id;
-        private final DustParticleEffect dust;
+        final DustParticleEffect dust;
 
         Ray(String id, int color) {
             this.id = id;
@@ -135,10 +122,6 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     private static final int RAYS_TICKS = 160;
     private static final int ENRAGED_GAZE_TICKS = 80;
     private static final int ENRAGED_RAYS_TICKS = 200;
-    private static final int CHARGE_TICKS = 16;
-    private static final int RAY_COOLDOWN = 30;
-    private static final int ENRAGED_RAY_COOLDOWN = 18;
-    private static final double RAY_RANGE = 32.0;
     /** A hit this strong on an eyestalk shuts that eye for EYE_SHUT_TICKS. */
     private static final float EYE_SHUT_DAMAGE = 3.0F;
     private static final int EYE_SHUT_TICKS = 200;
@@ -150,15 +133,11 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final DragonPart[] parts;
     private final BossFight bossFight;
+    private final BeholderRays rays = new BeholderRays(this);
 
     private final int[] eyeReopenAt = new int[STALKS];
-    private final List<Charge> charges = new ArrayList<>();
     private boolean gazing = true;
     private int modeTicks = GAZE_TICKS;
-    private int rayCooldown = RAY_COOLDOWN;
-    @Nullable
-    private Ray lastRay;
-
     /** Where it lurks and drifts back to: its lair's cavern, or wherever it first appeared. */
     @Nullable
     private BlockPos home;
@@ -168,18 +147,6 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
      * edge rather than chasing players out through the doorways.
      */
     private double homeRadius;
-
-    private static final class Charge {
-        final int stalk;
-        final Vec3d aim;
-        int ticks;
-
-        Charge(int stalk, Vec3d aim, int ticks) {
-            this.stalk = stalk;
-            this.aim = aim;
-            this.ticks = ticks;
-        }
-    }
 
     public BeholderEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
@@ -324,7 +291,7 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     }
 
     /** Where eyestalk {@code stalk}'s eye is, from its hit shape (rest pose on the server). */
-    private Vec3d stalkEye(int stalk) {
+    Vec3d stalkEye(int stalk) {
         Box box = this.parts[stalk].getBoundingBox();
         if (box.minY < this.getY() - 100.0) {
             // Not placed yet
@@ -363,8 +330,7 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
                 if (this.parts[i] == part && !this.isEyeClosed(i)) {
                     this.setEyeClosed(i, true);
                     this.eyeReopenAt[i] = this.age + EYE_SHUT_TICKS;
-                    final int stalk = i;
-                    this.charges.removeIf(charge -> charge.stalk == stalk);
+                    this.rays.cancel(i);
                     this.playSound(SoundEvents.ENTITY_GUARDIAN_HURT_LAND, 1.5F, 0.6F);
                 }
             }
@@ -415,21 +381,20 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
             this.gazing = !this.gazing;
             boolean enraged = this.isEnraged();
             this.modeTicks = this.gazing ? (enraged ? ENRAGED_GAZE_TICKS : GAZE_TICKS) : (enraged ? ENRAGED_RAYS_TICKS : RAYS_TICKS);
-            this.charges.clear();
-            this.rayCooldown = 10;
+            this.rays.restart();
             this.playSound(this.gazing ? SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE : SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK, 1.5F, 0.7F);
         } else if (!fighting && !this.gazing) {
             // Out of a fight its great eye stays open
             this.gazing = true;
             this.modeTicks = GAZE_TICKS;
-            this.charges.clear();
+            this.rays.clear();
         }
         this.dataTracker.set(CENTRAL_EYE_SHUT, !this.gazing);
 
         if (this.gazing) {
             this.tickCone();
         } else if (fighting) {
-            this.tickRays(target);
+            this.rays.tick(target);
         }
         if (this.age % 10 == 0) {
             this.driveBackFrightened();
@@ -462,142 +427,6 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
             double r = t * tan * Math.sqrt(this.random.nextDouble());
             Vec3d p = eye.add(dir.multiply(t)).add(side.multiply(Math.cos(angle) * r)).add(up.multiply(Math.sin(angle) * r));
             world.spawnParticles(CONE_DUST, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
-        }
-    }
-
-    private void tickRays(LivingEntity target) {
-        ServerWorld world = (ServerWorld) this.world;
-        Iterator<Charge> it = this.charges.iterator();
-        while (it.hasNext()) {
-            Charge charge = it.next();
-            Vec3d eye = this.stalkEye(charge.stalk);
-            world.spawnParticles(rayOf(charge.stalk).dust, eye.x, eye.y, eye.z, 3, 0.15, 0.15, 0.15, 0.0);
-            if (--charge.ticks <= 0) {
-                it.remove();
-                this.fireRay(world, charge);
-            }
-        }
-
-        if (this.charges.isEmpty() && --this.rayCooldown <= 0 && this.canSee(target)) {
-            int volley = this.isEnraged() ? 2 : 1;
-            for (int i = 0; i < volley; i++) {
-                int stalk = this.pickStalk();
-                if (stalk < 0) {
-                    break;
-                }
-                // Aimed where the target is now: it has CHARGE_TICKS to get out of the way.
-                this.charges.add(new Charge(stalk, target.getBoundingBox().getCenter(), CHARGE_TICKS));
-                this.lastRay = rayOf(stalk);
-            }
-            if (!this.charges.isEmpty()) {
-                this.playSound(SoundEvents.BLOCK_BEACON_POWER_SELECT, 1.0F, 1.6F);
-            }
-            this.rayCooldown = this.isEnraged() ? ENRAGED_RAY_COOLDOWN : RAY_COOLDOWN;
-        }
-    }
-
-    private static Ray rayOf(int stalk) {
-        return Ray.values()[stalk / 2];
-    }
-
-    /** A random open eye, preferring a different ray from the last one; -1 if every eye is shut. */
-    private int pickStalk() {
-        List<Integer> open = new ArrayList<>();
-        List<Integer> fresh = new ArrayList<>();
-        for (int i = 0; i < STALKS; i++) {
-            final int stalk = i;
-            if (this.isEyeClosed(i) || this.charges.stream().anyMatch(c -> rayOf(c.stalk) == rayOf(stalk))) {
-                continue;
-            }
-            open.add(i);
-            if (rayOf(i) != this.lastRay) {
-                fresh.add(i);
-            }
-        }
-        List<Integer> pool = fresh.isEmpty() ? open : fresh;
-        return pool.isEmpty() ? -1 : pool.get(this.random.nextInt(pool.size()));
-    }
-
-    private void fireRay(ServerWorld world, Charge charge) {
-        Ray ray = rayOf(charge.stalk);
-        MobActions.log(this, "ray " + ray, this.getTarget());
-        Vec3d from = this.stalkEye(charge.stalk);
-        Vec3d dir = charge.aim.subtract(from);
-        if (dir.lengthSquared() < 1.0E-4) {
-            return;
-        }
-        Vec3d to = from.add(dir.normalize().multiply(RAY_RANGE));
-        BlockHitResult block = world.raycast(new RaycastContext(from, to, RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE, this));
-        if (block.getType() != HitResult.Type.MISS) {
-            to = block.getPos();
-        }
-        EntityHitResult hit = ProjectileUtil.getEntityCollision(world, this, from, to, new Box(from, to).expand(1.0),
-                EntityPredicates.EXCEPT_CREATIVE_OR_SPECTATOR.and(e -> e instanceof LivingEntity && e.isAlive()
-                        && !(e instanceof DragonPart) && e != this));
-        if (hit != null) {
-            to = hit.getPos();
-        }
-
-        double length = from.distanceTo(to);
-        Vec3d step = to.subtract(from).normalize().multiply(0.35);
-        Vec3d p = from;
-        for (double d = 0; d < length; d += 0.35) {
-            world.spawnParticles(ray.dust, p.x, p.y, p.z, 1, 0.0, 0.0, 0.0, 0.0);
-            p = p.add(step);
-        }
-        world.playSound(null, from.x, from.y, from.z, SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.HOSTILE, 1.5F, 1.4F);
-
-        if (hit != null && hit.getEntity() instanceof LivingEntity victim) {
-            this.applyRay(ray, victim);
-        }
-    }
-
-    /**
-     * A ray's effect, after the victim's save against it ({@link BossSaves}, DC 15, 16 enraged; one roll per
-     * ray): DEX against slowing (the sting still lands), STR against levitation, CON against enervation (half
-     * damage) and WIS against fear (just a moment's darkness).
-     */
-    private void applyRay(Ray ray, LivingEntity victim) {
-        boolean enraged = this.isEnraged();
-        String tag = "ray:" + ray.id;
-        switch (ray) {
-            case SLOW -> {
-                SaveResult save = BossSaves.save(victim, this, BossSaves.SLOWING_RAY, enraged, tag, BossSaves.RAY_WINDOW)
-                        .onFailure(Text.translatable("save.dndclasses.effect.slowing_ray.failure")).roll();
-                victim.damage(this.world.getDamageSources().indirectMagic(this, this), 2.0F);
-                if (save.failed()) {
-                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 2), this);
-                }
-            }
-            case LEVITATION -> {
-                SaveResult save = BossSaves.save(victim, this, BossSaves.TELEKINETIC_RAY, enraged, tag, BossSaves.RAY_WINDOW)
-                        .onFailure(Text.translatable("save.dndclasses.effect.telekinetic_ray.failure")).roll();
-                if (save.failed()) {
-                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.LEVITATION, 50, 1), this);
-                }
-            }
-            case DAMAGE -> {
-                DamageSource source = this.world.getDamageSources().indirectMagic(this, this);
-                float full = enraged ? 10.0F : 8.0F;
-                if (DragonSaves.isUnaffected(victim, source)) {
-                    victim.damage(source, full); // Nothing to save against
-                } else {
-                    victim.damage(source, BossSaves.roll(victim, this, BossSaves.ENERVATION_RAY, enraged, tag,
-                            BossSaves.RAY_WINDOW).damage(full));
-                }
-            }
-            case FEAR -> {
-                SaveResult save = BossSaves.save(victim, this, BossSaves.FEAR_RAY, enraged, tag, BossSaves.RAY_WINDOW)
-                        .tags("fear")
-                        .onFailure(Text.translatable("save.dndclasses.effect.fear_ray.failure")).roll();
-                if (save.failed()) {
-                    victim.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, 160, 0), this);
-                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 80, 0), this);
-                } else {
-                    victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 20, 0), this);
-                }
-            }
         }
     }
 

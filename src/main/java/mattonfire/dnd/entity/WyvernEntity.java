@@ -1,46 +1,21 @@
 package mattonfire.dnd.entity;
 
-import java.util.UUID;
-import mattonfire.dnd.entity.ai.goal.WyvernAttackGoal;
-import mattonfire.dnd.entity.ai.goal.WyvernFlyRandomlyGoal;
-import net.minecraft.entity.Entity;
+import mattonfire.dnd.entity.ai.goal.DragonAttackGoal;
+import mattonfire.dnd.entity.ai.goal.DragonFlyRandomlyGoal;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.control.FlightMoveControl;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.ai.pathing.BirdNavigation;
-import net.minecraft.entity.ai.pathing.EntityNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.classes.Registry.ModSounds;
-import mattonfire.dnd.entity.boss.Boss;
-import mattonfire.dnd.entity.boss.BossFight;
 import net.minecraft.entity.boss.BossBar;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.data.DataTracker;
 import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.passive.PassiveEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.joml.Vector3f;
-import software.bernie.geckolib.animatable.GeoEntity;
-import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
-import software.bernie.geckolib.core.animation.AnimatableManager;
-import software.bernie.geckolib.core.animation.AnimationController;
-import software.bernie.geckolib.core.animation.RawAnimation;
-import software.bernie.geckolib.util.GeckoLibUtil;
 
-public class WyvernEntity extends TameableEntity implements GeoEntity, MultipartDragon, FireBreather, Boss {
-    private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private int ticksSinceLastGround = 0;
-
+public class WyvernEntity extends FlyingDragonEntity {
     // The model is ~12 blocks wide but the entity hitbox is only 1.5, so wings, neck, head and tail
     // get their own hittable parts (like the ender dragon), each wrapping a group of model bones.
     // Root bone sits 11px lower on the ground and 34.5px lower in flight (wyvern.animation.json).
@@ -62,83 +37,32 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
                     "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left")
             // Server-side parts follow these, in step with the client (see DragonFlightAnimation)
             .animations(DragonFlightAnimation.NAMES);
-    private final DragonPart[] parts;
     /** DEX save DC against the breath (Wyvern, Ember Wyvern and Bone Wyvern). */
     public static final int BREATH_SAVE_DC = 12;
-    private static final TrackedData<Integer> BREATH_TICKS = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.INTEGER);
-    private static final TrackedData<Vector3f> BREATH_AIM = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.VECTOR3F);
-    private static final TrackedData<Byte> BODY_ANIMATION = DataTracker.registerData(WyvernEntity.class, TrackedDataHandlerRegistry.BYTE);
-    private final DragonFlightAnimation bodyAnimation = new DragonFlightAnimation(this, BODY_ANIMATION);
-    private final FireBreath fireBreath;
-
-    // Boss bar and fight music for players near a wild wyvern that is fighting a player.
-    private final BossFight bossFight;
 
     public WyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
-        this(entityType, world, 12.0, 4.0F);
-    }
-
-    /** A variant with its own flame reach and damage. */
-    protected WyvernEntity(EntityType<? extends TameableEntity> entityType, World world, double breathRange,
-            float breathDamage) {
-        super(entityType, world);
-        this.moveControl = new FlightMoveControl(this, 10, false);
-        this.parts = PART_LAYOUT.createParts(this);
-        this.fireBreath = new FireBreath(this, PART_LAYOUT.part(this.parts, "head"), BREATH_TICKS, BREATH_AIM, breathRange, breathDamage);
-        this.setId(DragonPartLayout.reserveIds(this.parts));
-        this.bossFight = new BossFight(this, BossBar.Color.RED, BossBar.Style.PROGRESS)
-                .range(64.0)
-                .activeWhen(() -> this.hasBossFight() && !this.isTamed())
-                .music(ModSounds.MUSIC_DRAGON_FIGHT);
+        super(entityType, world, PART_LAYOUT, BossBar.Color.RED);
         // Dragon Slayer comes from the advancement's player_killed_entity criterion (#dndclasses:dragons).
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        FireBreath.track(this.dataTracker, BREATH_TICKS, BREATH_AIM);
-        DragonFlightAnimation.track(this.dataTracker, BODY_ANIMATION);
+    protected FireBreath createBreath(DragonPart head, TrackedData<Integer> ticksKey, TrackedData<Vector3f> aimKey) {
+        return new FireBreath(this, head, ticksKey, aimKey, this.getBreathRange(), this.getBreathDamage());
+    }
+
+    /** How far the flame reaches. Read from the constructor, so variants return a constant. */
+    protected double getBreathRange() {
+        return 12.0;
+    }
+
+    /** The flame's damage. Read from the constructor, so variants return a constant. */
+    protected float getBreathDamage() {
+        return 4.0F;
     }
 
     @Override
-    public DragonPart[] getParts() {
-        return this.parts;
-    }
-
-    @Override
-    public DragonPartLayout getPartLayout() {
-        return PART_LAYOUT;
-    }
-
-    @Override
-    public void setId(int id) {
-        super.setId(id);
-        DragonPartLayout.assignIds(this.parts, id);
-    }
-
-    private boolean isFlying() {
-        return !this.isOnGround() && this.ticksSinceLastGround > 5;
-    }
-
-    @Override
-    public void tick() {
-        super.tick();
-        this.bodyAnimation.tick(this.isFlying());
-        this.getPartLayout().update(this, this.parts, this.bodyAnimation.current(), this.isFlying());
-        // One BirdNavigation and FlightMoveControl for both ground and air (like the parrot), so the
-        // current path survives every landing and take-off.
-        if (this.isOnGround()) {
-            this.ticksSinceLastGround = 0;
-        } else {
-            this.ticksSinceLastGround++;
-        }
-
-        if (!this.world.isClient && !this.isOnGround() && this.getVelocity().y < 0.0D) {
-            this.setVelocity(this.getVelocity().multiply(1.0D, 0.6D, 1.0D));
-        }
-
-        this.bossFight.tick();
-        this.fireBreath.tick();
+    protected boolean isBossFightActive() {
+        return this.hasBossFight() && !this.isTamed();
     }
 
     /** Whether a fight shows the boss bar and plays the fight music (not for the common Ember Wyvern). */
@@ -151,80 +75,17 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
         return new Identifier(DnDClasses.MOD_ID, "textures/entity/wyvern/green.png");
     }
 
-    /** Ticks between bites. */
-    public int getMeleeCooldown() {
-        return 20;
-    }
-
-    /** Bites inside this many blocks, breathes fire further out. */
-    public double getBiteRange() {
-        return 5.0;
-    }
-
-    /** Ticks after a fire breath ends before the next attack. */
-    public int getBreathCooldown() {
-        return 60;
-    }
-
     @Override
     public int getBreathSaveDc() {
         return BREATH_SAVE_DC;
     }
 
     @Override
-    public FireBreath getFireBreath() {
-        return this.fireBreath;
-    }
-
-    @Override
-    public BossFight getBossFight() {
-        return this.bossFight;
-    }
-
-    @Override
-    public void onStoppedTrackingBy(ServerPlayerEntity player) {
-        super.onStoppedTrackingBy(player);
-        this.bossFight.onStoppedTrackingBy(player);
-    }
-
-    @Override
-    public void remove(Entity.RemovalReason reason) {
-        super.remove(reason);
-        this.bossFight.onRemoved();
-    }
-
-    @Override
-    public void onDeath(DamageSource source) {
-        this.bossFight.onDeath();
-        super.onDeath(source);
-    }
-
-    // Flying creature: landing after a flight (or a dive) shouldn't hurt it
-    @Override
-    public boolean handleFallDamage(float fallDistance, float damageMultiplier, net.minecraft.entity.damage.DamageSource damageSource) {
-        return false;
-    }
-
-    @Override
-    protected EntityNavigation createNavigation(World world) {
-        BirdNavigation birdNavigation = new BirdNavigation(this, world);
-        birdNavigation.setCanPathThroughDoors(false);
-        birdNavigation.setCanSwim(true);
-        return birdNavigation;
-    }
-
-    @Override
-    public LivingEntity getOwner() {
-        UUID uuid = this.getOwnerUuid();
-        return uuid == null ? null : this.world.getPlayerByUuid(uuid);
-    }
-
-    @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        this.goalSelector.add(2, new WyvernAttackGoal(this));
+        this.goalSelector.add(2, new DragonAttackGoal(this));
         this.goalSelector.add(3, new FollowOwnerGoal(this, 1.0D, 10.0F, 2.0F, false));
-        this.goalSelector.add(4, new WyvernFlyRandomlyGoal(this));
+        this.goalSelector.add(4, new DragonFlyRandomlyGoal(this));
         this.goalSelector.add(5, new WanderAroundGoal(this, 1.0D));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -245,55 +106,9 @@ public class WyvernEntity extends TameableEntity implements GeoEntity, Multipart
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
     }
 
-    @Override
-    public boolean canTarget(LivingEntity target) {
-        return !TamedDragons.isFriend(this, target) && super.canTarget(target);
-    }
-
-    @Override
-    public boolean canAttackWithOwner(LivingEntity target, LivingEntity owner) {
-        return TamedDragons.canAttackWithOwner(target, owner);
-    }
-
-    // Wild ones leave in peaceful, like monsters (they'd still start boss fights there)
-    @Override
-    protected boolean isDisallowedInPeaceful() {
-        return !this.isTamed();
-    }
-
-    // Can't breed, so wheat shouldn't put it in love mode (and use the wheat up)
-    @Override
-    public boolean isBreedingItem(ItemStack stack) {
-        return false;
-    }
-
     // AnimalEntity gives 1-3 XP whatever experiencePoints says
     @Override
     public int getXpToDrop() {
         return 20;
-    }
-
-    @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return null;
-    }
-
-    @Override
-    public net.minecraft.world.EntityView method_48926() {
-        return this.world;
-    }
-
-    @Override
-    public void registerControllers(AnimatableManager.ControllerRegistrar controllerRegistrar) {
-        AnimationController<WyvernEntity> controller = this.bodyAnimation.createController(this);
-        controller.setSoundKeyframeHandler(event -> {
-        });
-        controllerRegistrar.add(controller);
-        controllerRegistrar.add(this.fireBreath.createAnimationController(this));
-    }
-
-    @Override
-    public AnimatableInstanceCache getAnimatableInstanceCache() {
-        return this.cache;
     }
 }

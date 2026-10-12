@@ -62,6 +62,6 @@ How the features work:
 - `/dndclass set <player> fighter` (see [Admin commands](../systems/admin-commands.md)).
 
 ## For developers
-- Mob attraction: `Goals/PriorityPlayerTargetGoal` (attached on entity load). Bow and potion refusal: the `UseItemCallback` in `DnDClasses`. Potion immunity: `PotionImmunity` plus the `Potion*Mixin`, `AreaEffectCloudEntityMixin` and `ArrowEntityMixin`.
+- Mob attraction: `Goals/PriorityPlayerTargetGoal` (attached on entity load). Bow and potion refusal: the `UseItemCallback` in `ClassEvents`. Potion immunity: `PotionImmunity` plus the `Potion*Mixin`, `AreaEffectCloudEntityMixin` and `ArrowEntityMixin`.
 - Skill tree: `Progression/Classes/FighterSkills.java`. Riposte reflects as thorns damage, so two riposting Fighters don't bounce it back and forth.
 - Devscript: `devscripts/brewing-use-fighter.txt`.

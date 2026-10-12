@@ -93,7 +93,7 @@ No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its
 - The restock rate is a rough guess.
 
 ## For developers
-- **Entity:** `entity/BeholderEntity.java`.
+- **Entity:** `entity/BeholderEntity.java`; its eye rays (charging, aiming, firing, effects) are in `entity/BeholderRays.java`.
   - The gaze and ray cycle, ray charges and the `Ray` enum.
   - A synced closed-eye bitmask and central-eye-shut flag.
   - A body control that does nothing, plus a vex-style `FloatMoveControl`.
@@ -101,9 +101,9 @@ No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its
 - **Boss framework:** `BossFight` with `.phase(0.5F, RED, enrage)`, `.xp(120)` and `.advancement(dndclasses:beholder_slayer)`.
 - **Hit shapes:** `MultipartDragon` with a `DragonPartLayout` of 4 `pair(...)` eyestalk groups.
   - `MultipartDragon.damagePart(part, source, amount)` is the hook `DragonPart.damage` calls; by default it just damages the owner. The Beholder overrides it to shut the stalk that was hit.
-- **Saves:** `entity/BossSaves.java` holds the four ray entries (`MobSaveInfo`), `BOSS_DC` 15 / `LAST_PHASE_DC` 16 and `RAY_WINDOW` (10 ticks). `BeholderEntity.applyRay` rolls one per ray with exposure tag `ray:<id>`; the Enervation ray skips the roll for a victim the damage can't hurt (`DragonSaves.isUnaffected`).
+- **Saves:** `entity/BossSaves.java` holds the four ray entries (`MobSaveInfo`), `BOSS_DC` 15 / `LAST_PHASE_DC` 16 and `RAY_WINDOW` (10 ticks). `BeholderRays.applyRay` rolls one per ray with exposure tag `ray:<id>`; the Enervation ray skips the roll for a victim the damage can't hurt (`DragonSaves.isUnaffected`).
 - **Effects:** `classes/Effects/AntiMagicEffect.java` (`isSuppressed` / `blocks` helpers) and `FrightenedEffect.java`, registered in `ModEffects`.
-  - The checks are in `DnDClasses.sendPowerupPacket`, `Warlock.throwFireball` and `DoubleJumpMixin.canJump`.
+  - The checks are in `PowerUpRequests.handle`, `Warlock.throwFireball` and `DoubleJumpMixin.canJump`.
 - **Client:** `client/model/BeholderModel.java` (body pitch, eyelids) and `client/renderer/BeholderRenderer.java` (a `DragonRenderer`).
   - Assets: `geo/beholder.geo.json`, `animations/beholder.animation.json` and `textures/entity/beholder/beholder.png`.
 - **Lair:** `world/gen/beholder/`, with `BeholderLairStructure`, `BeholderLairStructures`, `BeholderCavernPiece` and `BeholderShaftPiece`.

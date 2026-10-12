@@ -30,8 +30,6 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import software.bernie.geckolib.animatable.GeoEntity;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -223,24 +221,8 @@ public class MagmamuncherAlphaEntity extends HostileEntity implements GeoEntity,
 
     /** Finds standing room for a minion a few blocks around the alpha. */
     private boolean placeMinion(MagmamuncherEntity minion) {
-        for (int attempt = 0; attempt < 12; attempt++) {
-            float angle = this.random.nextFloat() * MathHelper.TAU;
-            double distance = 3.0D + this.random.nextDouble() * 2.5D;
-            BlockPos column = BlockPos.ofFloored(this.getX() + MathHelper.cos(angle) * distance, this.getY(),
-                    this.getZ() + MathHelper.sin(angle) * distance);
-            for (int dy = 1; dy >= -2; dy--) {
-                BlockPos pos = column.up(dy);
-                if (!this.world.getBlockState(pos.down()).isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
-                    continue;
-                }
-                minion.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-                        this.random.nextFloat() * 360.0F, 0.0F);
-                if (this.world.isSpaceEmpty(minion)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return StandingRoom.around(this.world, minion, this.random, this.getX(), this.getY(), this.getZ(),
+                3.0D, 5.5D, 12, 1, 2, false);
     }
 
     @Override

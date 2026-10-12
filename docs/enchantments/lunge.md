@@ -14,4 +14,4 @@ Right-click a weapon to dash forward.
 - `/enchant @s dndclasses:lunge 2`
 
 ## For developers
-- The second `UseItemCallback` in `DnDClasses` (`LUNGE_ENCHANTMENT`).
+- The second `UseItemCallback` in `ClassEvents` (`LUNGE_ENCHANTMENT`).

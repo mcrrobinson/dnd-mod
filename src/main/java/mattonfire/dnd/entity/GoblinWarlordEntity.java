@@ -25,8 +25,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
@@ -203,24 +201,8 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
 
     /** Finds standing room for a minion a few blocks around the warlord. */
     private boolean placeMinion(GoblinWarriorEntity minion) {
-        for (int attempt = 0; attempt < 12; attempt++) {
-            float angle = this.random.nextFloat() * MathHelper.TAU;
-            double distance = 2.5D + this.random.nextDouble() * 2.0D;
-            BlockPos column = BlockPos.ofFloored(this.getX() + MathHelper.cos(angle) * distance, this.getY(),
-                    this.getZ() + MathHelper.sin(angle) * distance);
-            for (int dy = 1; dy >= -2; dy--) {
-                BlockPos pos = column.up(dy);
-                if (!this.world.getBlockState(pos.down()).isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
-                    continue;
-                }
-                minion.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-                        this.random.nextFloat() * 360.0F, 0.0F);
-                if (this.world.isSpaceEmpty(minion)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return StandingRoom.around(this.world, minion, this.random, this.getX(), this.getY(), this.getZ(),
+                2.5D, 4.5D, 12, 1, 2, false);
     }
 
     @Override

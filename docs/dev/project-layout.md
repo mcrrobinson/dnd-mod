@@ -4,7 +4,8 @@ Where things live in the code.
 ## For developers
 | Area | Location (`src/main/java/mattonfire/dnd/`) |
 |-|-|
-| Mod entry point, class switching, specials' packets, mana regen | `classes/DnDClasses.java`, `classes/ManaManager.java` |
+| Mod entry point (registration order) | `classes/DnDClasses.java` |
+| Class rules and mana regen (item bans, Necromancer wither, Blood Hunter fire, Lunge), the power-up key, packet ids | `classes/ClassEvents.java`, `classes/PowerUpRequests.java`, `classes/ClassPackets.java`, `classes/ManaManager.java` |
 | Class stats and picking | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java`, `classes/CharacterCreation.java`, `classes/ClassInfo.java` (reads `data/dndclasses/class_info.json`) |
 | Class passives | `classes/` (`Druid`, `Warlock`, `MonkHandler`, `PotionImmunity`) and `classes/Misc/` |
 | Class specials | `classes/Misc/PowerUpEffect.java`, `classes/Effects/` |

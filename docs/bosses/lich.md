@@ -68,8 +68,9 @@ No config options. `doMobLoot` controls loot as usual. On Peaceful, Liches and p
 - The library spawn spots come from vanilla's library layout.
 
 ## For developers
-- `entity/LichEntity.java`: spells, the caster movement goal, phases (`BossFight`), the phylactery link, rivalry, dialogue, and `registerEvents()` (no friendly fire, via `ALLOW_DAMAGE`).
-- `entity/BossSaves.java`: the Frost Nova and Dread Presence `MobSaveInfo` entries, `BOSS_DC` / `LAST_PHASE_DC`, `DREAD_RADIUS` (24) and `DREAD_FRIGHTENED_TICKS` (160). `LichEntity.castFrostNova` rolls one save per nova (exposure tag `nova`); `LichEntity.dreadPresence()` runs from both phase callbacks and from `PhylacteryEntity.reformLich`, at most once per tick, with exposure tag `dread`, the `fear` tag and Necromancer advantage. `isLastPhase()` is phase 2 (below 30%).
+- `entity/LichEntity.java`: phases (`BossFight`), blinking, the phylactery link, the lair leash, rivalry, dialogue, and `registerEvents()` (no friendly fire, via `ALLOW_DAMAGE`).
+- `entity/LichSpells.java`: the spells (choice, wind-up, cooldowns, Wither Bolt, Ray of Frost, Frost Nova, Raise Dead). `entity/LichBoltEntity.java`: the block-safe wither skull. `entity/ai/goal/CasterMovementGoal.java`: keeping a caster's distance.
+- `entity/BossSaves.java`: the Frost Nova and Dread Presence `MobSaveInfo` entries, `BOSS_DC` / `LAST_PHASE_DC`, `DREAD_RADIUS` (24) and `DREAD_FRIGHTENED_TICKS` (160). `LichSpells.castFrostNova` rolls one save per nova (exposure tag `nova`); `LichEntity.dreadPresence()` runs from both phase callbacks and from `PhylacteryEntity.reformLich`, at most once per tick, with exposure tag `dread`, the `fear` tag and Necromancer advantage. `isLastPhase()` is phase 2 (below 30%).
 - `entity/PhylacteryEntity.java`: the reform timer, defending, and final-death rewards. Uses `BossFight.grantAdvancement`.
 - `classes/mixin/StrongholdLibraryMixin.java`: library placement. `ActiveTargetGoalMixin`: the minion exemption from the Necromancer truce (`LichEntity.defiesNecromancers`).
 - Assets: `tools/lich_models.py` generates `geo/entity/{lich,phylactery}.geo.json` and the textures and glow masks. Animations are in `animations/entity/`. The music is `loop_lich_fight` in `tools/music-gen/music_gen.py` (sound event `music.lich_fight`).

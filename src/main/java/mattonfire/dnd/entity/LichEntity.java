@@ -1,8 +1,6 @@
 package mattonfire.dnd.entity;
 
-import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
@@ -11,19 +9,15 @@ import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
+import mattonfire.dnd.entity.ai.goal.CasterMovementGoal;
 import mattonfire.dnd.entity.boss.Boss;
 import mattonfire.dnd.entity.boss.BossFight;
-import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
-import mattonfire.dnd.entity.boss.BossMinions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityGroup;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.NoPenaltyTargeting;
 import net.minecraft.entity.ai.goal.ActiveTargetGoal;
-import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.RevengeGoal;
@@ -41,7 +35,6 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.WitherSkullEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
@@ -53,11 +46,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -102,41 +91,19 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     private static final RawAnimation NOVA = RawAnimation.begin().thenPlay("nova");
 
     private static final double SPEECH_RANGE = 48.0D;
-    private static final double MINION_RANGE = 32.0D;
-    private static final double NOVA_RADIUS = 5.0D;
-    private static final double FROST_RANGE = 20.0D;
     /** The Lich blinks back to its phylactery when lured further away than this. */
     private static final double LEASH_RANGE = 28.0D;
     private static final int HOME_RADIUS = 12;
 
     private static final UUID DESPERATE_SPEED_ID = UUID.fromString("0f6c3a5e-2b7d-4e1a-9c84-5d1e7a3b9f20");
 
-    private enum Spell {
-        WITHER_BOLT(8, 50, "cast"),
-        RAY_OF_FROST(12, 90, "cast"),
-        FROST_NOVA(10, 140, "nova"),
-        RAISE_DEAD(24, 400, "summon");
-
-        final int windUp;
-        final int cooldown;
-        final String animation;
-
-        Spell(int windUp, int cooldown, String animation) {
-            this.windUp = windUp;
-            this.cooldown = cooldown;
-            this.animation = animation;
-        }
-    }
-
     private enum PhylacteryState { NONE, LINKED, DESTROYED }
 
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private final BossFight bossFight;
+    private final LichSpells spells = new LichSpells(this);
 
-    private final long[] nextCast = new long[Spell.values().length];
     @Nullable
-    private Spell casting;
-    private long castTime;
     private long nextBlink;
     private long nextDefend;
 
@@ -282,266 +249,22 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         }
         this.tickLairLeash(now);
 
-        LivingEntity target = this.getTarget();
-        if (this.casting != null) {
-            this.getNavigation().stop();
-            if (target != null) {
-                this.getLookControl().lookAt(target, 30.0F, 30.0F);
-            }
-            world.spawnParticles(this.casting == Spell.WITHER_BOLT || this.casting == Spell.RAISE_DEAD
-                            ? ParticleTypes.SOUL_FIRE_FLAME : ParticleTypes.SNOWFLAKE,
-                    this.getX(), this.getBodyY(0.9D), this.getZ(), 2, 0.4D, 0.4D, 0.4D, 0.02D);
-            if (now >= this.castTime) {
-                Spell spell = this.casting;
-                this.casting = null;
-                this.cast(world, spell, target);
-            }
-            return;
-        }
-        if (target == null || !target.isAlive()) {
-            return;
-        }
-        Spell spell = this.chooseSpell(world, target, now);
-        if (spell != null) {
-            this.casting = spell;
-            this.castTime = now + spell.windUp;
-            this.nextCast[spell.ordinal()] = now + this.cooldown(spell);
-            this.triggerAnim("action", spell.animation);
-            this.playSound(spell == Spell.RAISE_DEAD ? SoundEvents.ENTITY_EVOKER_PREPARE_SUMMON
-                    : SoundEvents.ENTITY_EVOKER_PREPARE_ATTACK, 2.0F, 0.7F);
-        }
-    }
-
-    private int cooldown(Spell spell) {
-        int cooldown = spell.cooldown;
-        if (spell == Spell.RAISE_DEAD && this.bossFight.getPhase() >= 1) {
-            cooldown = 300;
-        }
-        return this.isDesperate() ? cooldown * 3 / 5 : cooldown;
-    }
-
-    /** Ticks between the entity scans behind the nova and Raise Dead. */
-    private static final int SCAN_INTERVAL = 10;
-    private long nextScanTime;
-
-    @Nullable
-    private Spell chooseSpell(ServerWorld world, LivingEntity target, long now) {
-        double distance = this.distanceTo(target);
-        boolean canSee = this.getVisibilityCache().canSee(target);
-        // The nova and Raise Dead need entity scans: only look every SCAN_INTERVAL ticks
-        boolean scan = now >= this.nextScanTime;
-        if (scan) {
-            this.nextScanTime = now + SCAN_INTERVAL;
-        }
-        if (scan && this.ready(Spell.FROST_NOVA, now) && !this.enemiesWithin(NOVA_RADIUS - 1.0D).isEmpty()) {
-            return Spell.FROST_NOVA;
-        }
-        if (scan && this.ready(Spell.RAISE_DEAD, now) && this.minions(world).size() < this.maxMinions()) {
-            return Spell.RAISE_DEAD;
-        }
-        if (canSee && this.ready(Spell.RAY_OF_FROST, now) && distance <= FROST_RANGE) {
-            return Spell.RAY_OF_FROST;
-        }
-        if (canSee && this.ready(Spell.WITHER_BOLT, now) && distance <= 32.0D) {
-            return Spell.WITHER_BOLT;
-        }
-        return null;
-    }
-
-    private boolean ready(Spell spell, long now) {
-        return now >= this.nextCast[spell.ordinal()];
-    }
-
-    public boolean isCasting() {
-        return this.casting != null;
-    }
-
-    private boolean isDesperate() {
-        return this.bossFight.getPhase() >= 2;
-    }
-
-    // ---------------------------------------------------------------- spells
-
-    private void cast(ServerWorld world, Spell spell, @Nullable LivingEntity target) {
-        MobActions.log(this, "cast " + spell, target);
-        switch (spell) {
-            case WITHER_BOLT -> this.castWitherBolt(world, target);
-            case RAY_OF_FROST -> this.castRayOfFrost(world, target);
-            case FROST_NOVA -> this.castFrostNova(world);
-            case RAISE_DEAD -> this.castRaiseDead(world, target);
-        }
-    }
-
-    private Vec3d staffTip() {
-        float yaw = this.bodyYaw * MathHelper.RADIANS_PER_DEGREE;
-        // The staff is held to the Lich's right, a little forward.
-        double side = -0.4D;
-        double forward = 0.3D;
-        return new Vec3d(this.getX() - MathHelper.sin(yaw) * forward + MathHelper.cos(yaw) * side,
-                this.getY() + 2.2D,
-                this.getZ() + MathHelper.cos(yaw) * forward + MathHelper.sin(yaw) * side);
-    }
-
-    private void castWitherBolt(ServerWorld world, @Nullable LivingEntity target) {
-        if (target == null || !target.isAlive()) {
-            return;
-        }
-        Vec3d tip = this.staffTip();
-        int bolts = this.isDesperate() ? 3 : 1;
-        for (int i = 0; i < bolts; i++) {
-            double spread = (i - (bolts - 1) / 2.0D) * 1.5D;
-            double dx = target.getX() - tip.x + spread * MathHelper.cos(this.bodyYaw * MathHelper.RADIANS_PER_DEGREE);
-            double dy = target.getBodyY(0.5D) - tip.y;
-            double dz = target.getZ() - tip.z + spread * MathHelper.sin(this.bodyYaw * MathHelper.RADIANS_PER_DEGREE);
-            WitherSkullEntity skull = new LichBoltEntity(world, this, dx, dy, dz);
-            skull.setOwner(this);
-            skull.setPos(tip.x, tip.y, tip.z);
-            if (this.isDesperate() && i == 1) {
-                skull.setCharged(true);
-            }
-            world.spawnEntity(skull);
-        }
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_WITHER_SHOOT,
-                SoundCategory.HOSTILE, 1.0F, 0.8F);
-    }
-
-    private void castRayOfFrost(ServerWorld world, @Nullable LivingEntity target) {
-        if (target == null || !target.isAlive() || !this.getVisibilityCache().canSee(target)) {
-            return;
-        }
-        Vec3d tip = this.staffTip();
-        Vec3d end = new Vec3d(target.getX(), target.getBodyY(0.5D), target.getZ());
-        Vec3d step = end.subtract(tip);
-        int points = Math.max(4, (int) (step.length() * 3));
-        for (int i = 0; i <= points; i++) {
-            Vec3d p = tip.add(step.multiply(i / (double) points));
-            world.spawnParticles(ParticleTypes.SNOWFLAKE, p.x, p.y, p.z, 2, 0.05D, 0.05D, 0.05D, 0.0D);
-        }
-        world.spawnParticles(ParticleTypes.ITEM_SNOWBALL, end.x, end.y, end.z, 12, 0.3D, 0.4D, 0.3D, 0.05D);
-        world.playSound(null, target.getX(), target.getY(), target.getZ(), SoundEvents.ENTITY_PLAYER_HURT_FREEZE,
-                SoundCategory.HOSTILE, 1.5F, 0.8F);
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.BLOCK_GLASS_BREAK,
-                SoundCategory.HOSTILE, 0.8F, 1.6F);
-        this.chill(target, 7.0F, 100, 2);
-    }
-
-    private void castFrostNova(ServerWorld world) {
-        for (int i = 0; i < 48; i++) {
-            float angle = i / 48.0F * MathHelper.TAU;
-            world.spawnParticles(ParticleTypes.SNOWFLAKE, this.getX(), this.getY() + 0.3D, this.getZ(), 0,
-                    MathHelper.cos(angle), 0.05D, MathHelper.sin(angle), 0.5D);
-        }
-        world.spawnParticles(ParticleTypes.ITEM_SNOWBALL, this.getX(), this.getBodyY(0.5D), this.getZ(),
-                40, 1.5D, 0.6D, 1.5D, 0.1D);
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.BLOCK_POWDER_SNOW_BREAK,
-                SoundCategory.HOSTILE, 2.0F, 0.5F);
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL,
-                SoundCategory.HOSTILE, 1.5F, 0.6F);
-        boolean lastPhase = this.isLastPhase();
-        for (LivingEntity victim : this.enemiesWithin(NOVA_RADIUS)) {
-            // CON save (one per nova): half damage and half the slow, but the shove lands either way
-            SaveResult save = BossSaves.roll(victim, this, BossSaves.FROST_NOVA, lastPhase, "nova", BossSaves.NOVA_WINDOW);
-            this.chill(victim, save.damage(8.0F), save.duration(120), 3);
-            victim.takeKnockback(1.6D, this.getX() - victim.getX(), this.getZ() - victim.getZ());
-            victim.velocityModified = true;
-        }
-    }
-
-    /** Frost damage plus slowness and freezing (the powder snow frost overlay and its chip damage). */
-    private void chill(LivingEntity victim, float damage, int slowTicks, int slowAmplifier) {
-        victim.damage(this.getDamageSources().indirectMagic(this, this), damage);
-        victim.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, slowTicks, slowAmplifier), this);
-        if (victim.canFreeze()) {
-            victim.setFrozenTicks(Math.max(victim.getFrozenTicks(), victim.getMinFreezeDamageTicks() + slowTicks * 2));
-        }
-    }
-
-    private List<LivingEntity> enemiesWithin(double radius) {
-        return this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(radius),
-                e -> e.isAlive() && !isLichSide(e) && this.squaredDistanceTo(e) <= radius * radius
-                        && (e instanceof PlayerEntity player ? !player.isCreative() && !player.isSpectator()
-                        : e == this.getTarget() || e instanceof IronGolemEntity));
-    }
-
-    private int maxMinions() {
-        return switch (this.bossFight.getPhase()) {
-            case 0 -> 4;
-            case 1 -> 6;
-            default -> 8;
-        };
-    }
-
-    private List<MobEntity> minions(ServerWorld world) {
-        return world.getEntitiesByClass(MobEntity.class, this.getBoundingBox().expand(MINION_RANGE),
-                e -> e.isAlive() && e.getCommandTags().contains(MINION_TAG));
-    }
-
-    private void castRaiseDead(ServerWorld world, @Nullable LivingEntity target) {
-        int wave = 2 + this.bossFight.getPhase();
-        // A Cleric consecrated the library's Desecrated Altar: the dead answer weakly
-        boolean consecrated = ObstacleTypes.DESECRATED_ALTAR.consecratedNear(world, this.getBlockPos(), CONSECRATED_RADIUS);
-        if (consecrated) {
-            DnDClasses.LOGGER.info("[Obstacle] Lich at {} raises {} dead at half health (consecrated altar)",
-                    this.getBlockPos().toShortString(), wave);
-        }
-        for (int i = 0; i < wave; i++) {
-            EntityType<? extends MobEntity> type = this.pickMinionType(i);
-            MobEntity minion = type.create(world);
-            if (minion == null || !this.placeNear(minion, this.getBlockPos(), 2.0D, 4.0D)) {
-                continue;
-            }
-            minion.initialize(world, world.getLocalDifficulty(minion.getBlockPos()), SpawnReason.MOB_SUMMONED, null, null);
-            minion.addCommandTag(MINION_TAG);
-            BossMinions.mark(minion);
-            if (consecrated) {
-                minion.setHealth(minion.getMaxHealth() * CONSECRATED_MINION_HEALTH);
-            }
-            if (target != null && target.isAlive()) {
-                minion.setTarget(target);
-            }
-            world.spawnEntityAndPassengers(minion);
-            world.spawnParticles(ParticleTypes.SOUL, minion.getX(), minion.getY() + 0.2D, minion.getZ(),
-                    15, 0.4D, 0.2D, 0.4D, 0.03D);
-            world.spawnParticles(ParticleTypes.LARGE_SMOKE, minion.getX(), minion.getBodyY(0.5D), minion.getZ(),
-                    10, 0.3D, 0.6D, 0.3D, 0.01D);
-        }
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_EVOKER_CAST_SPELL,
-                SoundCategory.HOSTILE, 2.0F, 0.5F);
-        world.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ENTITY_ZOMBIE_VILLAGER_CURE,
-                SoundCategory.HOSTILE, 0.6F, 0.5F);
-    }
-
-    private EntityType<? extends MobEntity> pickMinionType(int index) {
-        if (this.bossFight.getPhase() >= 1 && this.random.nextInt(3) == 0) {
-            return EntityType.WITHER_SKELETON;
-        }
-        boolean archer = index % 2 == 1;
-        if (archer) {
-            return this.bossFight.getPhase() >= 1 && this.random.nextBoolean() ? EntityType.STRAY : EntityType.SKELETON;
-        }
-        return this.random.nextInt(4) == 0 ? EntityType.HUSK : EntityType.ZOMBIE;
+        this.spells.tick(world, this.getTarget(), now);
     }
 
     /** Finds standing room for {@code entity} between {@code min} and {@code max} blocks around {@code center}. */
-    private boolean placeNear(Entity entity, BlockPos center, double min, double max) {
-        for (int attempt = 0; attempt < 16; attempt++) {
-            float angle = this.random.nextFloat() * MathHelper.TAU;
-            double distance = min + this.random.nextDouble() * (max - min);
-            BlockPos column = BlockPos.ofFloored(center.getX() + 0.5D + MathHelper.cos(angle) * distance, center.getY(),
-                    center.getZ() + 0.5D + MathHelper.sin(angle) * distance);
-            for (int dy = 2; dy >= -3; dy--) {
-                BlockPos pos = column.up(dy);
-                if (!this.world.getBlockState(pos.down()).isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
-                    continue;
-                }
-                entity.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-                        this.random.nextFloat() * 360.0F, 0.0F);
-                if (this.world.isSpaceEmpty(entity) && !this.world.containsFluid(entity.getBoundingBox())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    boolean placeNear(Entity entity, BlockPos center, double min, double max) {
+        return StandingRoom.around(this.world, entity, this.random, center.getX() + 0.5D, center.getY(),
+                center.getZ() + 0.5D, min, max, 16, 2, 3, true);
+    }
+
+    /** True while it's winding up a spell. */
+    public boolean isCasting() {
+        return this.spells.isCasting();
+    }
+
+    boolean isDesperate() {
+        return this.bossFight.getPhase() >= 2;
     }
 
     // ---------------------------------------------------------------- phases
@@ -550,7 +273,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         this.speak("phase_raise");
         this.dreadPresence();
         // Answer the wound with a wave straight away.
-        this.nextCast[Spell.RAISE_DEAD.ordinal()] = this.world.getTime();
+        this.spells.readyNow(LichSpells.Spell.RAISE_DEAD, this.world.getTime());
         ((ServerWorld) this.world).spawnParticles(ParticleTypes.SCULK_SOUL, this.getX(), this.getBodyY(0.6D),
                 this.getZ(), 20, 0.8D, 1.0D, 0.8D, 0.02D);
     }
@@ -606,7 +329,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
             speed.addPersistentModifier(modifier);
         }
         this.playSound(SoundEvents.ENTITY_WITHER_AMBIENT, 2.0F, 0.6F);
-        this.nextCast[Spell.FROST_NOVA.ordinal()] = this.world.getTime();
+        this.spells.readyNow(LichSpells.Spell.FROST_NOVA, this.world.getTime());
         this.dreadPresence();
     }
 
@@ -671,7 +394,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     /** The lair's leash: lured further than its reach from the lair, the Lich blinks home. */
     private void tickLairLeash(long now) {
-        if (this.lair != null && this.age % 20 == 0 && this.casting == null && now >= this.nextBlink
+        if (this.lair != null && this.age % 20 == 0 && !this.spells.isCasting() && now >= this.nextBlink
                 && Math.sqrt(this.getBlockPos().getSquaredDistance(this.lair)) > this.lairLeash) {
             this.nextBlink = now + 100;
             this.blink(this.lair, 2.0D, 5.0D);
@@ -734,7 +457,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
             Vec3d p = from.lerp(to, t);
             world.spawnParticles(ParticleTypes.SOUL_FIRE_FLAME, p.x, p.y, p.z, 1, 0.02D, 0.02D, 0.02D, 0.0D);
         }
-        if (this.lair == null && this.age % 20 == 0 && distance > LEASH_RANGE && this.casting == null && now >= this.nextBlink) {
+        if (this.lair == null && this.age % 20 == 0 && distance > LEASH_RANGE && !this.spells.isCasting() && now >= this.nextBlink) {
             this.nextBlink = now + 100;
             this.blink(this.phylacteryPos, 2.0D, 5.0D);
         }
@@ -785,7 +508,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
                 && this.random.nextFloat() < 0.4F) {
             // Cornered and desperate: blink away from melee.
             this.nextBlink = now + 60;
-            this.casting = null;
+            this.spells.interrupt();
             this.blink(this.getBlockPos(), 6.0D, 10.0D);
         }
         return damaged;
@@ -815,7 +538,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     /** The raised dead crumble with their master. */
     private void removeMinions(ServerWorld world) {
-        for (MobEntity minion : this.minions(world)) {
+        for (MobEntity minion : this.spells.minions(world)) {
             world.spawnParticles(ParticleTypes.SOUL, minion.getX(), minion.getBodyY(0.5D), minion.getZ(),
                     8, 0.3D, 0.5D, 0.3D, 0.02D);
             minion.kill();
@@ -965,94 +688,5 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     @Override
     public AnimatableInstanceCache getAnimatableInstanceCache() {
         return this.cache;
-    }
-
-    /**
-     * A wither skull whose blast hurts but never breaks blocks (the Lich lives in libraries). It has
-     * no entity type of its own, so it isn't saved: it would come back as a vanilla wither skull.
-     */
-    private static class LichBoltEntity extends WitherSkullEntity {
-        LichBoltEntity(World world, LivingEntity owner, double dx, double dy, double dz) {
-            super(world, owner, dx, dy, dz);
-        }
-
-        @Override
-        public boolean shouldSave() {
-            return false;
-        }
-
-        @Override
-        protected void onCollision(HitResult hitResult) {
-            if (hitResult.getType() == HitResult.Type.ENTITY) {
-                this.onEntityHit((EntityHitResult) hitResult);
-            } else if (hitResult.getType() == HitResult.Type.BLOCK) {
-                this.onBlockHit((BlockHitResult) hitResult);
-            }
-            if (!this.world.isClient) {
-                this.world.createExplosion(this, this.getX(), this.getY(), this.getZ(), 1.0F, false,
-                        World.ExplosionSourceType.NONE);
-                this.discard();
-            }
-        }
-    }
-
-    /**
-     * Keeps a caster's distance: backs off when the target gets within 6 blocks, closes in when it's
-     * beyond 14 or out of sight, and otherwise stands its ground to cast.
-     */
-    private static class CasterMovementGoal extends Goal {
-        private final LichEntity lich;
-        private int repath;
-
-        CasterMovementGoal(LichEntity lich) {
-            this.lich = lich;
-            this.setControls(EnumSet.of(Goal.Control.MOVE, Goal.Control.LOOK));
-        }
-
-        @Override
-        public boolean canStart() {
-            LivingEntity target = this.lich.getTarget();
-            return target != null && target.isAlive();
-        }
-
-        @Override
-        public void start() {
-            this.repath = 0;
-        }
-
-        @Override
-        public void stop() {
-            this.lich.getNavigation().stop();
-        }
-
-        @Override
-        public boolean shouldRunEveryTick() {
-            return true;
-        }
-
-        @Override
-        public void tick() {
-            LivingEntity target = this.lich.getTarget();
-            if (target == null) {
-                return;
-            }
-            this.lich.getLookControl().lookAt(target, 30.0F, 30.0F);
-            if (this.lich.isCasting() || --this.repath > 0) {
-                return;
-            }
-            this.repath = 10;
-            double distance = this.lich.squaredDistanceTo(target);
-            boolean canSee = this.lich.getVisibilityCache().canSee(target);
-            if (distance < 6.0D * 6.0D) {
-                Vec3d away = NoPenaltyTargeting.findFrom(this.lich, 10, 4, target.getPos());
-                if (away != null) {
-                    this.lich.getNavigation().startMovingTo(away.x, away.y, away.z, 1.2D);
-                }
-            } else if (distance > 14.0D * 14.0D || !canSee) {
-                this.lich.getNavigation().startMovingTo(target, 1.0D);
-            } else {
-                this.lich.getNavigation().stop();
-            }
-        }
     }
 }

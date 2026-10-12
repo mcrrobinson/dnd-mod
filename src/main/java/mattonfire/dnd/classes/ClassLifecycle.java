@@ -42,7 +42,7 @@ public final class ClassLifecycle {
     }
 
     public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(DnDClasses.C2S_CLASS_PICK_PACKET_ID,
+        ServerPlayNetworking.registerGlobalReceiver(ClassPackets.C2S_CLASS_PICK_PACKET_ID,
                 (server, player, handler, buf, sender) -> {
                     int id = buf.readInt();
                     server.execute(() -> onPick(player, id));
@@ -57,7 +57,7 @@ public final class ClassLifecycle {
             // Race first: the client opens the race picker before the class picker.
             RaceLifecycle.onJoin(player);
             // NONE makes the client open the class picker.
-            sendClass(player, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, dndClass);
+            sendClass(player, ClassPackets.S2C_CLASS_QUERY_PACKET_ID, dndClass);
         });
 
         // Death and leaving the End make a new player entity; vanilla doesn't know about the mod's data.
@@ -93,7 +93,7 @@ public final class ClassLifecycle {
             }
             // The client has a new player entity too. A classless player who died gets the picker.
             if (dndClass != DndCharacter.NONE || !alive) {
-                sendClass(newPlayer, DnDClasses.S2C_CLASS_QUERY_PACKET_ID, dndClass);
+                sendClass(newPlayer, ClassPackets.S2C_CLASS_QUERY_PACKET_ID, dndClass);
             }
             ManaManager.sync(newPlayer);
         });
@@ -122,7 +122,7 @@ public final class ClassLifecycle {
         if (picked == DndCharacter.NONE || current != DndCharacter.NONE) {
             // Tell the client its real class again so it stops showing the picker.
             player.closeHandledScreen();
-            sendClass(player, DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID, current);
+            sendClass(player, ClassPackets.S2C_APPROVE_CLASS_PICK_PACKET_ID, current);
             return;
         }
         change(player, picked);
@@ -165,7 +165,7 @@ public final class ClassLifecycle {
 
         // Close the class picker.
         player.closeHandledScreen();
-        sendClass(player, DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID, dndClass);
+        sendClass(player, ClassPackets.S2C_APPROVE_CLASS_PICK_PACKET_ID, dndClass);
 
         // Every class change hands out the guidebook if the player has lost theirs.
         if (dndClass != DndCharacter.NONE) {
@@ -197,7 +197,7 @@ public final class ClassLifecycle {
 
     /** Tells the client its class again (an ignored pick). */
     public static void resend(ServerPlayerEntity player) {
-        sendClass(player, DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID, classOf(player));
+        sendClass(player, ClassPackets.S2C_APPROVE_CLASS_PICK_PACKET_ID, classOf(player));
     }
 
     private static void sendClass(ServerPlayerEntity player, Identifier packet, DndCharacter dndClass) {

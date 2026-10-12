@@ -10,15 +10,15 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.entity.SettlementGrudges;
+import mattonfire.dnd.entity.StandingRoom;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
+import mattonfire.dnd.entity.boss.BossFight;
 import mattonfire.dnd.entity.boss.BossMusic;
 import mattonfire.dnd.faction.TierEffects;
-import net.minecraft.advancement.Advancement;
-import net.minecraft.advancement.AdvancementProgress;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.ExperienceOrbEntity;
 import net.minecraft.entity.LivingEntity;
@@ -421,16 +421,8 @@ public class GoblinRaid {
         for (int attempt = 0; attempt < 12; attempt++) {
             int dx = attempt == 0 ? 0 : world.random.nextInt(7) - 3;
             int dz = attempt == 0 ? 0 : world.random.nextInt(7) - 3;
-            for (int dy = 2; dy >= -3; dy--) {
-                BlockPos pos = spawn.add(dx, dy, dz);
-                if (!world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos.down(), Direction.UP)) {
-                    continue;
-                }
-                goblin.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-                        world.random.nextFloat() * 360.0F, 0.0F);
-                if (world.isSpaceEmpty(goblin)) {
-                    return;
-                }
+            if (StandingRoom.inColumn(world, goblin, world.random, spawn.add(dx, 0, dz), 2, 3, false)) {
+                return;
             }
         }
         goblin.refreshPositionAndAngles(spawn.getX() + 0.5D, spawn.getY(), spawn.getZ() + 0.5D, 0.0F, 0.0F);
@@ -653,7 +645,6 @@ public class GoblinRaid {
 
         Identifier lootId = new Identifier(DnDClasses.MOD_ID, "gameplay/goblin_raid_" + this.kind.id);
         LootTable loot = world.getServer().getLootManager().getTable(lootId);
-        Advancement advancement = world.getServer().getAdvancementLoader().get(ADVANCEMENT);
         List<ServerPlayerEntity> defenders = new java.util.ArrayList<>();
         for (UUID uuid : this.participants) {
             if (!(world.getEntity(uuid) instanceof ServerPlayerEntity player) || !player.isAlive()) {
@@ -689,12 +680,7 @@ public class GoblinRaid {
                     || this.kind == Settlement.Kind.TEMPLE) {
                 SettlementGrudges.forgive(player, this.rally, RADIUS);
             }
-            if (advancement != null) {
-                AdvancementProgress progress = player.getAdvancementTracker().getProgress(advancement);
-                for (String criterion : progress.getUnobtainedCriteria()) {
-                    player.getAdvancementTracker().grantCriterion(advancement, criterion);
-                }
-            }
+            BossFight.grantAdvancement(player, ADVANCEMENT);
         }
         mattonfire.dnd.quest.QuestEvents.onRaidWon(world.getServer(), defenders, this.kind.id);
         world.playSound(null, this.rally, SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.NEUTRAL, 1.0F, 1.0F);

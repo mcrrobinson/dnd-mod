@@ -54,7 +54,7 @@ The bar shows for everyone with a class. Fire your active with **Z**; swap which
 - Mana lives on the server and is synced to your client, so the bar can look out of date for a moment after you join.
 
 ## For developers
-- Constants: `DnDClasses.MANA_ICONS` (9) and `MANA_FULL_SECONDS` (18). Regeneration runs in the `END_WORLD_TICK` handler in `DnDClasses`.
+- Constants: `DnDClasses.MANA_ICONS` (9) and `MANA_FULL_SECONDS` (18). Regeneration runs in the `END_WORLD_TICK` handler in `ClassEvents`.
 - Storage: `ManaManager` (player persistent NBT `manorMana`). HUD: `Client/Hud/PowerupOverlay`.
-- `DnDClasses.sendPowerupPacket` reads the equipped active (`ClassProgress.activeNode`), checks its mana cost, its charge cost (`Rest.Charges.canAfford`) and the anti-magic cone, then calls `PowerUpEffect.play` for a root or `Abilities.activate` for anything else. Either returns false to keep the mana and charges; on success `Charges.spend` pays the charges.
+- `PowerUpRequests.handle` reads the equipped active (`ClassProgress.activeNode`), checks its mana cost, its charge cost (`Rest.Charges.canAfford`) and the anti-magic cone, then calls `PowerUpEffect.play` for a root or `Abilities.activate` for anything else. Either returns false to keep the mana and charges; on success `Charges.spend` pays the charges.
 - Devscripts: `mana-hud.txt`, `powerup-no-class.txt`, `rests-charges.txt`.

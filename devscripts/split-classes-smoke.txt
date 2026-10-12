@@ -1,0 +1,120 @@
+# Smoke check for the class-split refactor: the class rules moved out of DnDClasses, the flying dragons on
+# their shared base, and the merged armor base. Run it on main and on the branch and compare.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/split-classes-smoke.txt
+# Expect in latest.log: the action-bar refusals (bows for a Fighter, drinking for a Paladin and an Artificer),
+#  Motion after the lunge, WITHER on the Necromancer's zombie, each dragon targeting Dev and Dev's
+#  health dropping, and the armor attribute lines. Screenshots: split-dragons-*.png (wyverns, chaser, drake).
+/time set day
+/weather clear
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/tp @s 0 150 0 0 0
+/fill -12 149 -12 12 149 12 minecraft:stone
+/fill -12 150 -12 12 160 12 minecraft:air
+/kill @e[tag=splitsmoke]
+/kill @e[type=item,distance=..30]
+/clear @s
+/effect give @s minecraft:resistance 120 4 true
+/effect give @s minecraft:regeneration 120 4 true
+# Fighter: no bows
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+/item replace entity @s hotbar.0 with minecraft:bow
+/item replace entity @s hotbar.1 with minecraft:arrow 16
+hotbar 0
+wait 5
+use
+wait 10
+actionbar
+# Paladin: no drinking
+/dndclass set @s paladin
+/clear @s dndclasses:class_guidebook
+/item replace entity @s hotbar.0 with minecraft:potion{Potion:"minecraft:healing"}
+wait 5
+use
+wait 10
+actionbar
+# Artificer: potions do nothing
+/dndclass set @s artificer
+/clear @s dndclasses:class_guidebook
+use
+wait 10
+actionbar
+# Lunge
+/dndclass set @s none
+# No class opens the class picker, which pauses the game
+wait 20
+closescreen
+/item replace entity @s hotbar.0 with minecraft:iron_sword{Enchantments:[{id:"dndclasses:lunge",lvl:2}]}
+wait 5
+use
+wait 1
+/data get entity @s Motion
+wait 30
+# Necromancer melee: wither
+/tp @s 0 150 0 0 0
+/dndclass set @s necromancer
+/clear @s dndclasses:class_guidebook
+/item replace entity @s hotbar.0 with minecraft:stick
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,Tags:["splitsmoke"],Rotation:[180f,0f],PersistenceRequired:1b}
+wait 10
+look 0 20
+attack
+wait 2
+/data get entity @e[tag=splitsmoke,type=minecraft:zombie,limit=1] ActiveEffects
+/kill @e[tag=splitsmoke]
+# Armor: GeckoLib (Knight) and plain (Warrior) sets both add their modifiers
+/dndclass set @s none
+# No class opens the class picker, which pauses the game
+wait 20
+closescreen
+/item replace entity @s armor.chest with dndclasses:knight_chestplate
+wait 2
+/attribute @s minecraft:generic.armor get
+/item replace entity @s armor.chest with dndclasses:warrior_chestplate
+wait 2
+/attribute @s minecraft:generic.armor get
+/item replace entity @s armor.chest with minecraft:air
+# Flying dragons: each one picks Dev as its target and attacks
+/gamemode survival
+/effect give @s minecraft:health_boost 120 20 true
+/effect give @s minecraft:instant_health 1 10 true
+/data get entity @s Health
+/summon dndclasses:wyvern 8 151 0 {Tags:["splitsmoke"]}
+/summon dndclasses:ember_wyvern -8 151 0 {Tags:["splitsmoke"]}
+/summon dndclasses:bone_wyvern 0 151 8 {Tags:["splitsmoke"]}
+wait 200
+target @e[tag=splitsmoke]
+/data get entity @s Health
+/tp @s 0 150 0 90 10
+screenshot split-dragons-wyverns
+/kill @e[tag=splitsmoke]
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/summon dndclasses:lightning_chaser 10 151 0 {Tags:["splitsmoke"]}
+wait 200
+target @e[tag=splitsmoke]
+/data get entity @s Health
+/execute as @e[tag=splitsmoke] run data get entity @s Health
+screenshot split-dragons-chaser
+/kill @e[tag=splitsmoke]
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/summon dndclasses:frost_drake -10 151 0 {Tags:["splitsmoke"]}
+wait 200
+target @e[tag=splitsmoke]
+/data get entity @s Health
+/execute as @e[tag=splitsmoke] run data get entity @s Health
+screenshot split-dragons-drake
+/kill @e[tag=splitsmoke]
+/dndclass set @s none
+# No class opens the class picker, which pauses the game
+wait 20
+closescreen
+/clear @s
+quit

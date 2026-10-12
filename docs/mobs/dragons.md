@@ -1,5 +1,5 @@
 # Dragons
-Five dragons: the common Wyvern of the plains and peaks, the Ember Wyvern of the Nether, the Lightning Chaser that nests on mountain summits, its icy cousin the Frost Drake on Frozen Peaks, and the small River Pikehorn, which you can tame.
+Five dragons: the Wyvern, a rare sight on mountain meadows and peaks, the Ember Wyvern of the Nether, the Lightning Chaser that nests on mountain summits, its icy cousin the Frost Drake on Frozen Peaks, and the small River Pikehorn, which you can tame.
 
 ![A Wyvern](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/wyvern.png)
 
@@ -105,13 +105,15 @@ Kill a Wyvern, Ember Wyvern, Lightning Chaser or Frost Drake to earn **Dragon Sl
 
 | Dragon | Where | Spawn rules |
 |-|-|-|
-| Wyvern | plains, meadows, stony peaks, jagged peaks | creature, weight 10, groups of 1-3; on grass, stone, snow, packed ice or gravel in daylight, like goats; not in peaceful |
+| Wyvern | meadows, stony peaks, jagged peaks | creature, weight 2, alone (groups of 1); on grass, stone, snow, packed ice or gravel in daylight, like goats; not in peaceful; wild ones despawn far from players |
 | Ember Wyvern | Nether Wastes, Crimson Forest, Basalt Deltas, Soul Sand Valley | monster, weight 4, groups of 1-2; any solid ground in any light, never on the bedrock roof; not in peaceful |
 | Lightning Chaser | only its [Dragon Lair](../structures/dragon-lairs.md) on a mountain summit | never within 64 blocks of another; after one dies, its lair waits 3 in-game days before sending another; not in peaceful |
 | Frost Drake | only its [Frost Lair](../structures/frost-lairs.md) on a Frozen Peaks summit | never within 64 blocks of another; after one dies, its lair waits 3 in-game days before sending another; not in peaceful |
 | River Pikehorn | rivers, swamps, mangrove swamps | creature, weight 15, groups of 2-4; on grass in daylight, like other animals |
 
 Wild Wyverns, Ember Wyverns, Lightning Chasers and Frost Drakes leave when the game is set to peaceful. Every dragon has a spawn egg in the mod's creative tab.
+
+A wild Wyvern despawns like a monster: at once when no player is within 128 blocks, and now and then when none is within 32. Tamed, named (name tag or `CustomName`), leashed or ridden Wyverns never despawn. This also clears out Wyverns that piled up in older worlds, where they were persistent animals spawned in the plains too.
 
 ## Commands
 - `/summon dndclasses:wyvern`
@@ -133,7 +135,7 @@ Wild Wyverns, Ember Wyverns, Lightning Chasers and Frost Drakes leave when the g
 - DEX saves: `entity/DragonSaves` (labels, `BREATH_WINDOW` 60 and `STORM_WINDOW` 40 exposure windows, `STORM_DC` 14, `isUnaffected`, the `MobSaveInfo` entries). Breath DCs come from `FireBreather.getBreathSaveDc()`: `WyvernEntity.BREATH_SAVE_DC` 12, `LairDragonEntity.BREATH_SAVE_DC` 14, `RiverPikehornEntity.BREATH_SAVE_DC` 10. `FireBreath.hit` / `FrostBreath.hit` roll through `FireBreath.save` (exposure tag `breath`); the Lightning Chaser's `strike` and the Frost Drake's `hail` roll with tag `storm`. Damage always goes through `SaveResult.damage`, so features that change half-damage saves (Evasion) cover every dragon.
 - Hit shapes: see [Multipart mobs](../dev/multipart-mobs.md).
 - Wyvern and Lightning Chaser keep one `BirdNavigation` and `FlightMoveControl` on the ground and in the air, so a path survives every landing and take-off.
-- Spawns: `world/gen/ModSpawns`. Lair respawn timer: `world/gen/lair/LairRespawns` (`RESPAWN_COOLDOWN`).
+- Spawns: `world/gen/ModSpawns`. Wild Wyvern despawning: `WyvernEntity.canImmediatelyDespawn` (the Ember and Bone Wyverns override it). Lair respawn timer: `world/gen/lair/LairRespawns` (`RESPAWN_COOLDOWN`).
 - Tags: `data/dndclasses/tags/entity_types/dragons.json` (Smite Dragons) and `dragon_slayer_targets.json` (Dragon Slayer). Add a new dragon to both.
 - The Ember Wyvern textures are recoloured from the green Wyvern texture by `tools/ember_wyvern_texture.py`, and the Frost Drake's (`textures/entity/frost_drake/`, with a glowmask for the eyes) from the Lightning Chaser's by `tools/frost_drake_texture.py`; edit the scripts and rerun them rather than hand-editing the textures.
 - Devscripts: `dragon-hitboxes.txt`, `dragon-fire-breath-all.txt`, `dragon-fall-damage.txt`, `dragon-slayer-all.txt`, `nether-dragon.txt`, `tameable-pikehorn.txt`, `frost-drake.txt`, `frost-lair.txt`, `dragon-dex-saves.txt` (every save at a natural 1 and a natural 20).

@@ -1,0 +1,101 @@
+# Wild Wyvern spawn density: visits 8 far-out, unexplored plains/meadow/peak spots (fixed coordinates from
+# /locate biome on the dev world seed), lets the chunks generate and the mob spawner run, and counts the wild
+# Wyverns within 128 blocks (the despawn range) plus a sheep/cow/goat count to show chunk-gen animals did spawn.
+# Run on main and on a branch with fresh copies of the same world and compare the counts:
+#   timeout 900 ./gradlew runClient -PdevScript=devscripts/wyvern-spawns.txt
+#   grep -a 'CHAT.*count' run/logs/latest.log
+# Each spot logs '/say count-<spot>' and then 'counts: wyverns near N, wyverns loaded N, sheep N, cows N, goats N'
+# (near = within 128 blocks of you; loaded = every Wyvern still loaded anywhere).
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning true
+/time set noon
+/difficulty normal
+/gamemode creative
+/scoreboard objectives add wyvcount dummy
+/spreadplayers 38752 40320 0 16 false @s
+waitserver 400
+/say count-plains-a
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers 44064 -40032 0 16 false @s
+waitserver 400
+/say count-plains-b
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers -40096 43840 0 16 false @s
+waitserver 400
+/say count-plains-c
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers 39424 40960 0 16 false @s
+waitserver 400
+/say count-meadow-d
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers 43328 -40096 0 16 false @s
+waitserver 400
+/say count-meadow-e
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers -43200 -43680 0 16 false @s
+waitserver 400
+/say count-meadow-g
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers -42944 -43008 0 16 false @s
+waitserver 400
+/say count-jagged-h
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+/spreadplayers 36576 37760 0 16 false @s
+waitserver 400
+/say count-stony-i
+/execute at @s store result score wyverns_near wyvcount if entity @e[type=dndclasses:wyvern,distance=..128]
+/execute store result score wyverns_loaded wyvcount if entity @e[type=dndclasses:wyvern]
+/execute at @s store result score sheep wyvcount if entity @e[type=minecraft:sheep,distance=..128]
+/execute at @s store result score cows wyvcount if entity @e[type=minecraft:cow,distance=..128]
+/execute at @s store result score goats wyvcount if entity @e[type=minecraft:goat,distance=..128]
+/tellraw @s ["counts: wyverns near ",{"score":{"name":"wyverns_near","objective":"wyvcount"}},", wyverns loaded ",{"score":{"name":"wyverns_loaded","objective":"wyvcount"}},", sheep ",{"score":{"name":"sheep","objective":"wyvcount"}},", cows ",{"score":{"name":"cows","objective":"wyvcount"}},", goats ",{"score":{"name":"goats","objective":"wyvcount"}}]
+waitserver 2
+wait 20
+quit

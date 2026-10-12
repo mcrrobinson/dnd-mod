@@ -106,6 +106,14 @@ public class WyvernEntity extends FlyingDragonEntity {
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 6.0);
     }
 
+    // Wild ones despawn far from players like monsters, so they don't pile up over the world
+    // (an animal never despawns). Tamed, named, leashed or ridden ones stay; a name tag also
+    // makes a mob persistent on its own.
+    @Override
+    public boolean canImmediatelyDespawn(double distanceSquared) {
+        return !this.isTamed() && !this.hasCustomName() && !this.isLeashed() && !this.hasPassengers();
+    }
+
     // AnimalEntity gives 1-3 XP whatever experiencePoints says
     @Override
     public int getXpToDrop() {

@@ -1,0 +1,35 @@
+# Wild Wyverns despawn far from players; tamed, named, leashed or ridden ones don't.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/wyvern-despawn.txt
+# Summons four tagged Wyverns next to you, then moves you 200 blocks away (outside the 128-block despawn range, inside the simulation distance)
+# and then counts them: grep -a 'CHAT.*left' run/logs/latest.log
+#   wild should be 0; named, tamed and the ridden one's mount 1 each.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/difficulty normal
+/gamemode creative
+/time set noon
+/scoreboard objectives add wyvcount dummy
+/forceload add 140 140 170 170
+/fill 140 149 140 170 149 170 minecraft:stone
+/tp @s 150 150 140
+/kill @e[tag=wyvtest]
+/summon dndclasses:wyvern 150 150 150 {Tags:["wyvtest","wild"],NoAI:1b}
+/summon dndclasses:wyvern 155 150 150 {Tags:["wyvtest","named"],NoAI:1b,CustomName:'"Ash"'}
+/summon dndclasses:wyvern 160 150 150 {Tags:["wyvtest","tamed"],NoAI:1b}
+/summon dndclasses:wyvern 165 150 150 {Tags:["wyvtest","ridden"],NoAI:1b,Passengers:[{id:"minecraft:armor_stand",Tags:["wyvtest"]}]}
+/data modify entity @e[tag=tamed,limit=1] Owner set from entity @s UUID
+waitserver 2
+/tp @s 0 150 0
+waitserver 60
+/execute store result score wild wyvcount if entity @e[type=dndclasses:wyvern,tag=wild]
+/execute store result score named wyvcount if entity @e[type=dndclasses:wyvern,tag=named]
+/execute store result score tamed wyvcount if entity @e[type=dndclasses:wyvern,tag=tamed]
+/execute store result score ridden wyvcount if entity @e[type=dndclasses:wyvern,tag=ridden]
+/tellraw @s ["left: wild ",{"score":{"name":"wild","objective":"wyvcount"}},", named ",{"score":{"name":"named","objective":"wyvcount"}},", tamed ",{"score":{"name":"tamed","objective":"wyvcount"}},", ridden ",{"score":{"name":"ridden","objective":"wyvcount"}}]
+/kill @e[tag=wyvtest]
+/forceload remove 140 140 170 170
+wait 20
+quit

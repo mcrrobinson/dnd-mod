@@ -109,10 +109,10 @@ public class DndClassesClient implements ClientModInitializer {
 
         client.execute(() -> { // Ensure this runs on the main client thread
             if (client.player != null) {
-                System.out.println("Setting mana to " + amount);
+                DnDClasses.LOGGER.debug("Setting mana to {}", amount);
                 ((IEntityDataSaver) client.player).getPersistentData().putInt("mana", amount);
             } else {
-                System.out.println("Player is not yet initialized, deferring mana update...");
+                DnDClasses.LOGGER.debug("No client player yet, dropping mana update {}", amount);
             }
         });
     }

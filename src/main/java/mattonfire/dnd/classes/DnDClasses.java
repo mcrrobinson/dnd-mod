@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.Config.FAConfig;
@@ -102,7 +102,7 @@ public class DnDClasses implements ModInitializer {
                                                                                                       // second;
 
         public static final String MOD_ID = "dndclasses";
-        public static final Logger LOGGER = LogManager.getLogger("dndclasses");
+        public static final Logger LOGGER = LoggerFactory.getLogger("dndclasses");
 
         public static final Identifier S2C_WARLOCK_FIREBREATH = Identifier.of(MOD_ID, "warlock_firebreath");
         public static final Identifier S2C_WIZARD_EFFECTS_PACKET_ID = Identifier.of(MOD_ID, "wizard_powerup");
@@ -485,10 +485,10 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Downed.DownedHudSync.register();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
-                        System.out.println("Identity Mod is loaded!");
+                        LOGGER.info("Identity mod is loaded");
                         // Safely use Identity's API here
                 } else {
-                        System.out.println("Identity Mod is NOT loaded!");
+                        LOGGER.info("Identity mod is not loaded");
                 }
 
                 ServerEntityEvents.ENTITY_LOAD.register((entity, serverWorld) -> {
@@ -507,7 +507,7 @@ public class DnDClasses implements ModInitializer {
                         int mana = ManaManager.getMana(player);
                         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                         passedData.writeInt(mana);
-                        System.out.println("sending packet update" + Integer.toString(mana));
+                        LOGGER.debug("Sending mana {} to {}", mana, player.getName().getString());
                         ServerPlayNetworking.send((ServerPlayerEntity) player,
                                         DnDClasses.S2C_SYNC_MANA,
                                         passedData);

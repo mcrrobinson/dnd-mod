@@ -1,0 +1,21 @@
+# Smoke check for the System.out -> logger cleanup: our lines go through DnDClasses.LOGGER (slf4j), none to stdout.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/logger-smoke.txt
+# Expect in latest.log (INFO): "Identity mod is loaded", "[Factions] Loaded", the [DevScript] steps, and no
+#  "[STDOUT]" lines from our code.
+# Expect in debug.log (DEBUG): "Sending mana N to Dev" and "Setting mana to N" on join, and
+#  "Starting power-up BARBARIAN for Dev" after the power-up key.
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s barbarian
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+/dndclass mana @s 9
+wait 10
+press key.dnd-classes.power-up
+wait 20
+/data get entity @s ActiveEffects
+/dndclass set @s none
+wait 10
+quit

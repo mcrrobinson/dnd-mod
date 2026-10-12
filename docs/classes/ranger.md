@@ -58,6 +58,10 @@ How the features work:
 - **Colossus Slayer** (Hunter): the first arrow each second that hits a target already below full health deals +3 damage (before Hunter's Mark's bonus).
 - **Planar Warrior** (Horizon Walker): in the Nether and the End all your damage is multiplied by 1.2, and you have Speed I there.
 
+## Where to find it
+- Pick the Ranger in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> ranger`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> ranger` (see [Admin commands](../systems/admin-commands.md)).
 

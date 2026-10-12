@@ -11,9 +11,9 @@ An Artificer weapon enchantment: every melee hit heals the wielder for a share o
 - Melee only: the wielder must hit directly with a normal player or mob attack. Arrows, tridents, thorns and other indirect damage don't heal. Sweeping hits do count.
 - Only works from the main hand. A mob holding a Vampiric weapon heals too.
 
-## How to get it
+## Where to find it
 
-- Applies to swords and axes. Rarity: rare.
+- Applies to swords (its target is `WEAPON`, and unlike Smite Dragons it doesn't add axes). Rarity: rare.
 - Only an Artificer can roll it at the enchanting table, like the other custom enchantments. Other classes never get it there.
 - Test copy: `/give @s minecraft:netherite_sword{Enchantments:[{id:"dndclasses:vampiric",lvl:3s}]}`
 

@@ -12,7 +12,7 @@ Where [magic items](magic-items.md) turn up in the world. Every source rolls on 
 | Very Rare | +3 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Frostbrand 2, Tome of Clear Thought 2, Phylactery Locket 1, The Burglar's Ring 1 | 6 in 46 (13%) |
 | Legendary | +3 netherite gear (6/4), bow 4, crossbow 3, trident 3 | Eye of the Tyrant 6 | 6 in 44 (14%) |
 
-Cloak of Protection and Ring of Protection only come from these tables. The other named items also have their own sources (below and in the [boss drops](../items/magic-items.md#how-to-get-it)).
+Cloak of Protection and Ring of Protection only come from these tables. The other named items also have their own sources (below and in the [boss drops](../items/magic-items.md#where-to-find-it)).
 
 ### Extra pools
 Each pool is one roll with the chance shown; "1 roll" means it always rolls. Where a pool lists several tables, the weights pick one.

@@ -64,6 +64,11 @@ How the features work:
 - **Sculpt Spells** (Evocation): your staff blasts, Arcane Explosion and Meteor Swarm meteors treat your party members, your pets and theirs (tamed wolves, cats, horses...) as immune: no damage and no knockback. The Ice staff doesn't freeze them, and the Lightning staff's bolts don't land within 3 blocks of them. Party members already couldn't hurt each other; this also spares pets and stops the knockback. You still get blasted yourself unless you have Spell Mastery.
 - **Arcane Ward** (Abjuration): every active you fire (Arcane Explosion included) adds 2 absorption hearts, up to 4 from the ward. Hits take it first. Whatever is left fades 60 s after the last active, or when you log off or change class.
 
+## Where to find it
+- Pick the Wizard in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> wizard`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- The elemental staffs drop from dragons and the Magmamuncher Alpha and turn up in rare loot; see [Staffs](../items/staffs.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> wizard` (see [Admin commands](../systems/admin-commands.md)).
 

@@ -10,7 +10,7 @@ The home of a [Lightning Chaser](../mobs/dragons.md), on the very summit of a mo
 - Each lair starts with one Lightning Chaser (sometimes two). It never strays more than about 24 blocks before circling back.
 - Once it's killed, the lair waits **3 in-game days** and then sends a new one (structure spawn override; never in peaceful or with another Lightning Chaser within 64 blocks). A chaser that left without dying (e.g. in peaceful) is replaced as soon as possible.
 
-## Where to find it / How to get it
+## Where to find it
 - Jagged Peaks, Frozen Peaks, Stony Peaks. Structure set spacing 12 chunks, separation 4, and at least 6 chunks from dwarven fortresses (which share the peaks).
 - Frozen Peaks also have [frost lairs](frost-lairs.md), the Frost Drake's version in snow and ice, which keep at least 6 chunks from dragon lairs.
 

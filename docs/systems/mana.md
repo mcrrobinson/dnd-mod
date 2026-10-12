@@ -6,9 +6,11 @@ Every class has an active ability that you fire with the power-up key. It costs 
 ## How it works
 Your mana bar is 9 pips drawn above the hotbar, in the row above the food bar. It moves up out of the way when your air bubbles show underwater, or when you ride a mount with more than 20 health. Like the health and food bars, it's hidden in creative and spectator.
 
-Mana comes back at 1 pip every 2 seconds, so an empty bar fills in 18 seconds.
+Mana comes back at 1 pip every 2 seconds, so an empty bar fills in 18 seconds. [Downed](death-saves.md) players don't regain mana.
 
 Press the **power-up key (Z by default)** to fire your equipped active. Each active has a mana cost, shown as a line under the pips it uses. The line is grey while you can't afford it and turns gold when you can. Your class's original special, the root of its [skill tree](class-selection.md#class-levels-and-the-skill-tree), costs all 9 pips. Most actives you unlock further up the tree cost less. Major actives (the root special, the capstone, and anything costing 7+ mana) also cost **charges**, the gems above the mana bar, which only come back with rests; see [Rests and charges](rests.md). The gold line needs both the mana and the charges. Firing spends only that skill's cost, plays a short music sting for your class and dips the background music under it (see [Music](../music.md)).
+
+The key does nothing while you're Downed or held by a Dungeon Master's freeze. Firing a power gets you up from a short rest. As a Druid, sneak + the key picks your Wild Shape form instead, for free.
 
 If the special can't do anything, you keep your mana (and charges). That happens with no class picked, as a Druid with no animal forms, as a Blood Hunter with nothing in your sights, and inside a [Beholder's](../bosses/beholder.md) anti-magic cone.
 
@@ -38,9 +40,15 @@ These are the roots of each tree, all 9 mana and 1 charge:
 Press O to see the rest of your tree.
 
 ### Tips
-- Rebind the key under Options > Controls > Key Binds > D&D Classes. It is listed as "Power Up Abililty."
+- Rebind the key under Options > Controls > Key Binds > D&D Classes. It is listed as "Power Up Ability".
 - The Wizard explosion hits everything around you, tamed pets and players outside your party included.
 - A cheap active from your tree lets you fire more often than the 9-pip root, and costs no charges. Swap actives at an Attunement Table.
+
+## Where to find it
+The bar shows for everyone with a class. Fire your active with **Z**; swap which active is on the key at an [Attunement Table](class-progression.md#where-to-find-it).
+
+## Commands
+`/dndclass mana <player> <pips>` sets a player's mana (0-9), for testing. See [Admin commands](admin-commands.md).
 
 ## Known limitations
 - Mana lives on the server and is synced to your client, so the bar can look out of date for a moment after you join.

@@ -1,5 +1,5 @@
 # Admin commands
-Commands for operators (permission level 2) to manage classes, class progress, races, goblin raids and Dungeon Master sessions.
+Commands for operators (permission level 2) to manage classes, class progress, races, racial homes, goblin raids, dungeons, obstacles and Dungeon Master sessions, with links to the player commands (`/party`, `/quest`, `/rep`).
 
 ![Chat after /dndclass set, get, xp add and progress, and /goblinraid list](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/admin-commands-chat.png)
 
@@ -22,13 +22,13 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass progress <player>` | Prints level, XP, unspent points, the subclass, unlocked skills, the equipped active, the passives, skill ranks and, for the Bard and Druid, the learned and unlocked bestiary |
 | `/dndclass xp <player> add <amount>` | Adds class XP, announcing any level-up as normal |
 | `/dndclass xp <player> set <amount>` | Sets class XP. If it drops below what their skills cost, they have 0 points until later levels cover it |
-| `/dndclass unlock <player> <skill>` | Unlocks a skill without needing points or the node below it. Its cost still counts, so later levels pay it off before giving new points |
+| `/dndclass unlock <player> <skill>` | Unlocks a skill without needing points, the node below it or the right subclass. Its cost still counts, so later levels pay it off before giving new points |
 | `/dndclass equip <player> <skill>` | Equips an unlocked skill without an Attunement Table. Run it again on an equipped passive to unequip it |
 | `/dndclass rank <player> <skill> <n>` | Sets an unlocked skill's rank without points, level or an Attunement Table. `n` is from 1 to the skill's max rank. Ranks still count toward points spent, as with `unlock` |
 | `/dndclass bestiary <player> learn <entity>` | Adds a creature to the class's bestiary as if they'd killed it (Bard and Druid only) |
 | `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
 | `/dndclass subclass <player> <id\|none>` | Sets the subclass of the player's current class (e.g. `barbarian.berserker`), skipping the level and the Attunement Table; replacing another subclass refunds it first. `none` clears it and refunds the subclass's upper nodes, the capstone and their ranks |
-| `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks and the bestiary for the current class, refunding every point |
+| `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks, the subclass and the bestiary for the current class, refunding every point |
 | `/dndclass mana <player> <pips>` | Sets a player's mana (0-9 pips), for testing actives without waiting for it to regenerate |
 | `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
 | `/dndclass rest <player> allow` | Forgets the player's last long rest, so they can take another today (in a bed, say) |
@@ -55,6 +55,11 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndrace cooldowns <player> [reset]` | Prints the racial cooldowns left (Relentless Endurance, Hellish Rebuke, Breath Weapon); `reset` readies them all |
 | `/dndrace traits <player>` | Prints what the passive traits come to now: the break speed on deepslate (1.20 for a Dwarf) and the hidden stone doorways of the dungeon within 128 blocks |
 
+Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).
+
+### Racial homes
+| Command | What it does |
+|-|-|
 | `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
 | `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |
 | `/dndhome temple [ember\|frost\|storm]` | Teleports you into the nearest [Dragon Temple](../structures/dragon-temples.md)'s sanctum, in front of that breath altar |
@@ -65,8 +70,6 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndhome sanctum [hall\|offering\|anchor\|market\|den\|gate\|top\|side]` | Teleports you to that spot of the nearest [Brimstone Sanctum](../structures/brimstone-sanctums.md) (run it in the Nether) |
 | `/dndhome sanctumsurvey [grid] [spacing]` | Checks the nearest sanctum from each point of a grid round you is in a sanctum biome with all its pieces, with no lava under it and no cut ceiling (`[SanctumSurvey]` lines; run it in the Nether) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
-
-Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).
 
 ### Magic items
 See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
@@ -79,7 +82,14 @@ See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
 | `/goblinraid stop` | Calls off the raid nearest to you |
 | `/goblinraid list` | Lists running raids |
 
-See [Goblin raids](goblin-raids.md) for the details.
+`/gamerule dndGoblinRaids false` stops raids starting on their own. See [Goblin raids](goblin-raids.md) for the details.
+
+### Dungeons and obstacles
+- `/dungeon info|clear|reset|tier|trigger|...` inspects and resets the [dungeon](../structures/dungeons.md#commands) you're in; the room, loot, gate and trap tools are on [Dungeon encounters](dungeon-encounters.md#commands), [Dungeon loot](dungeon-loot.md#commands), [Dungeon puzzles and gates](dungeon-puzzles-and-gates.md#commands) and [Dungeon traps](dungeon-traps.md#commands).
+- `/dndobstacle place|info|open|reset|settier|reseal|link|traps|list` places and manages [class-gated obstacles](obstacles.md#commands).
+
+### Player commands
+These need no op: `/party` ([Party](party.md#commands)), `/quest` ([Quests](quests.md#commands), with op-only subcommands) and `/rep` ([Factions](factions.md#commands), with op-only subcommands).
 
 ### Dungeon Master
 `/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save`, `/dm roll|apply`, `/dm narrate|title|say|mood` and `/dm loot give|plant` let an op run a session: hide from the players, drop premade encounters, pause the scene, call for rolls on the players' d20 HUD, tell the story and hand out or plant treasure. `/dm grant <player>` opens them to a non-op. The DM Wand (`dndclasses:dm_wand`) puts encounters, freeze, inspect and blink on right-click. See [Dungeon Master](dungeon-master.md).

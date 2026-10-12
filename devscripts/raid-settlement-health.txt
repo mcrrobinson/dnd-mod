@@ -1,0 +1,77 @@
+# Goblin raid settlement health at the dev world's hobbit village (rally 200, 69, 1352).
+# Run: timeout 600 ./gradlew runClient --offline -PdevScript=devscripts/raid-settlement-health.txt
+# Expect in run/logs/latest.log ("[GoblinRaid]" lines and /goblinraid list feedback):
+# - raid A: "watching N building block(s)"; a hobbit killed -> health 90; logs cleared -> "building block(s) lost";
+#   raiders frozen on the green -> "raiders hold the rally point" and health dropping; /goblinraid health 0 ->
+#   "It has fallen", "raid N lost", hobbit standing 40 lower, no raiders left (Test failed)
+# - raid B: won at health 30 -> "won by 1 players with settlement health 30 (rewards x0.30, loot chance 0.60)"
+#   and the "took a beating" chat line
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/difficulty easy
+/gamemode survival
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/rep @s dndclasses:goblins set 0
+/rep @s dndclasses:hobbits set 100
+/tp @s 200 100 1352 0 60
+wait 10
+/fill 199 99 1351 201 99 1353 minecraft:glass
+/tp @s 200 100 1352 0 60
+wait 100
+# What's about the village before the raid: dragons (wyverns breathe fire) and fire blocks.
+/kill @e[type=#dndclasses:dragons,distance=..160]
+/fill 180 62 1332 219 81 1371 air replace minecraft:fire
+/goblinraid stop
+wait 20
+/say [health] raid A: the village falls
+/goblinraid start
+waitchat (wave 1/2)
+wait 40
+/goblinraid list
+screenshot raid-health-bar
+/damage @e[type=dndclasses:hobbit,limit=1,sort=nearest] 1000 minecraft:generic
+wait 5
+/goblinraid list
+/fill 180 62 1332 219 81 1371 air replace #minecraft:logs
+wait 30
+/goblinraid list
+/execute as @e[tag=dndclasses.goblin_raider] run data merge entity @s {NoAI:1b}
+/tp @e[tag=dndclasses.goblin_raider] 200 69 1352
+wait 5
+/execute positioned 200 69 1352 if entity @e[tag=dndclasses.goblin_raider,distance=..6]
+/execute positioned 200 69 1352 if entity @e[type=dndclasses:hobbit,distance=..8]
+wait 220
+/goblinraid list
+screenshot raid-health-damaged
+/rep @s
+/goblinraid health 0
+waitchat has fallen
+wait 10
+screenshot raid-fallen
+/rep @s
+/execute if entity @e[tag=dndclasses.goblin_raider]
+/goblinraid list
+wait 140
+/say [health] raid B: a battered win
+/goblinraid start
+waitchat (wave 1/2)
+wait 40
+/goblinraid health 30
+/kill @e[type=dndclasses:goblin_warrior]
+waitchat final assault
+wait 40
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+waitchat share their stores
+wait 20
+screenshot raid-battered-win
+/rep @s
+/goblinraid list
+/goblinraid stop
+wait 20
+quit

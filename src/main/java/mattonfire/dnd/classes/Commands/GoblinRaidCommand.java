@@ -3,11 +3,14 @@ package mattonfire.dnd.classes.Commands;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
+import com.mojang.brigadier.arguments.FloatArgumentType;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import mattonfire.dnd.entity.raid.GoblinRaid;
 import mattonfire.dnd.entity.raid.GoblinRaids;
 import mattonfire.dnd.entity.raid.Settlement;
+import mattonfire.dnd.entity.raid.SettlementHealth;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.world.ServerWorld;
@@ -20,6 +23,7 @@ import net.minecraft.util.math.BlockPos;
  * /goblinraid start here   raid the spot you're standing on
  * /goblinraid stop         call off the raid nearest you
  * /goblinraid list         list the raids in this world, and the quiet zones round cleared goblin warrens
+ * /goblinraid health <n>   set the settlement health of the raid nearest you (0 makes the settlement fall)
  *
  * Ignores the dndGoblinRaids gamerule and the per-settlement cooldown, for testing.
  */
@@ -37,7 +41,10 @@ public class GoblinRaidCommand {
                         .executes(context -> start(context, false))
                         .then(CommandManager.literal("here").executes(context -> start(context, true))))
                 .then(CommandManager.literal("stop").executes(GoblinRaidCommand::stop))
-                .then(CommandManager.literal("list").executes(GoblinRaidCommand::list)));
+                .then(CommandManager.literal("list").executes(GoblinRaidCommand::list))
+                .then(CommandManager.literal("health")
+                        .then(CommandManager.argument("value", FloatArgumentType.floatArg(0.0F, SettlementHealth.MAX))
+                                .executes(GoblinRaidCommand::health))));
     }
 
     private static int start(CommandContext<ServerCommandSource> context, boolean here) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
@@ -67,6 +74,20 @@ public class GoblinRaidCommand {
         return 1;
     }
 
+    private static int health(CommandContext<ServerCommandSource> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        BlockPos pos = BlockPos.ofFloored(source.getPosition());
+        GoblinRaid raid = GoblinRaids.get(source.getWorld()).getRaids().stream()
+                .filter(r -> !r.isOver())
+                .min(Comparator.comparingDouble(r -> r.getRally().getSquaredDistance(pos)))
+                .orElseThrow(NONE::create);
+        float value = FloatArgumentType.getFloat(context, "value");
+        raid.setHealth(value);
+        source.sendFeedback(Text.literal("Set the settlement health of goblin raid #" + raid.getId() + " to "
+                + raid.getHealth().shown() + "/" + (int) SettlementHealth.MAX), true);
+        return raid.getHealth().shown();
+    }
+
     private static int list(CommandContext<ServerCommandSource> context) {
         ServerCommandSource source = context.getSource();
         List<GoblinRaid> raids = GoblinRaids.get(source.getWorld()).getRaids();
@@ -85,7 +106,10 @@ public class GoblinRaidCommand {
                     .append(Text.translatable(raid.getKind().nameKey()))
                     .append(" at " + raid.getRally().toShortString() + ": " + raid.getState()
                             + ", wave " + raid.getWave() + "/" + raid.getTotalWaves()
-                            + ", " + raid.getRaidersLeft() + " raiders left"), false);
+                            + ", " + raid.getRaidersLeft() + " raiders left, settlement health "
+                            + raid.getHealth().shown() + "/" + (int) SettlementHealth.MAX
+                            + " (" + raid.getHealth().folkKilled() + " folk killed, " + raid.getHealth().buildingsLost()
+                            + "/" + raid.getHealth().sampleSize() + " building blocks lost)"), false);
         }
         return raids.size();
     }

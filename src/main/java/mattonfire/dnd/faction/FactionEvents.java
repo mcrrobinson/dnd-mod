@@ -130,13 +130,39 @@ public final class FactionEvents {
      * factions {@code raid_defeated}.
      */
     public static void raidWon(ServerPlayerEntity player, ServerWorld world, Identifier settlement, EntityType<?> raider) {
+        raidWon(player, world, settlement, raider, 1.0F);
+    }
+
+    /**
+     * {@link #raidWon} with the settlement's gain scaled by {@code scale} (0-1): the share of the settlement
+     * left standing (see {@code SettlementHealth}). The raiders' {@code raid_defeated} isn't scaled.
+     */
+    public static void raidWon(ServerPlayerEntity player, ServerWorld world, Identifier settlement, EntityType<?> raider,
+            float scale) {
         Reputation.Change change = Reputation.change(player, Reputation.Source.RAID);
         for (Faction faction : Factions.all()) {
             if (faction.raidWon() != 0 && faction.ownsSettlement(world, settlement)) {
-                change.add(faction, faction.raidWon());
+                int gain = Math.round(faction.raidWon() * scale);
+                if (gain != 0) {
+                    change.add(faction, gain);
+                }
             }
             if (faction.raidDefeated() != 0 && faction.members().matchesType(raider)) {
                 change.add(faction, faction.raidDefeated());
+            }
+        }
+        change.apply();
+    }
+
+    /**
+     * A goblin raid on {@code settlement} (a structure id) was lost with {@code player} taking part: the
+     * settlement fell. Its factions change by {@code raid_lost}.
+     */
+    public static void raidLost(ServerPlayerEntity player, ServerWorld world, Identifier settlement) {
+        Reputation.Change change = Reputation.change(player, Reputation.Source.RAID);
+        for (Faction faction : Factions.all()) {
+            if (faction.raidLost() != 0 && faction.ownsSettlement(world, settlement)) {
+                change.add(faction, faction.raidLost());
             }
         }
         change.apply();

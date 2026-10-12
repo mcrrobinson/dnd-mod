@@ -113,7 +113,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - Beholder Lairs: sealed domed caverns deep in the deepslate, reached by a spiral stair (`dndclasses:beholder_lair`). See [Beholder](docs/bosses/beholder.md).
 
 ### Goblin Raids
-At night, goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and hear raid music, and defenders who win are rewarded. Start one by hand with `/goblinraid start`. See [Goblin raids](docs/systems/goblin-raids.md).
+At night, goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and the settlement's health and hear raid music. Defenders who win are rewarded; if the settlement's health runs out, it falls and the raid is lost. Start one by hand with `/goblinraid start`. See [Goblin raids](docs/systems/goblin-raids.md).
 
 ### Admin Commands
 `/dndclass get <player>` and `/dndclass set <player> <class>` change a class without dying, and `/dndrace get|set|list` manages races. See [Admin commands](docs/systems/admin-commands.md).

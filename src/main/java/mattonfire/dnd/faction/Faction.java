@@ -52,6 +52,7 @@ public record Faction(
         int killCap,
         int raidWon,
         int raidDefeated,
+        int raidLost,
         int bountyMinor,
         int bountyMajor,
         int trade,
@@ -60,7 +61,7 @@ public record Faction(
 
     private static final Set<String> FIELDS = Set.of("name", "color", "members", "settlements", "start",
             "start_by_race", "rivals", "decay_per_day", "hit_member", "kill_member", "kill_member_overrides",
-            "betrayal", "enemy_kills", "enemy_kill_overrides", "kill_cap", "raid_won", "raid_defeated",
+            "betrayal", "enemy_kills", "enemy_kill_overrides", "kill_cap", "raid_won", "raid_defeated", "raid_lost",
             "bounties", "trade", "trade_cap", "theft_witnessed");
 
     public Text displayName() {
@@ -153,6 +154,7 @@ public record Faction(
                 nonNegative(json, "kill_cap", 0),
                 integer(json, "raid_won", 0),
                 integer(json, "raid_defeated", 0),
+                integer(json, "raid_lost", 0),
                 bounties[0], bounties[1],
                 integer(json, "trade", 0),
                 nonNegative(json, "trade_cap", 0),

@@ -83,6 +83,21 @@ public class GoblinRaids extends PersistentState {
         ServerWorldEvents.UNLOAD.register((server, world) -> get(world).raids.forEach(GoblinRaid::clearBar));
         ServerEntityEvents.ENTITY_LOAD.register(GoblinRaids::onEntityLoad);
         DungeonEvents.CLEARED.register(GoblinRaids::onDungeonCleared);
+        // Settlement health: folk killed and blocks broken by hand.
+        net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
+            if (entity.world instanceof ServerWorld world) {
+                for (GoblinRaid raid : get(world).raids) {
+                    raid.onDeath(world, entity);
+                }
+            }
+        });
+        net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
+            if (world instanceof ServerWorld serverWorld) {
+                for (GoblinRaid raid : get(serverWorld).raids) {
+                    raid.onPlayerBreak(pos);
+                }
+            }
+        });
     }
 
     /**

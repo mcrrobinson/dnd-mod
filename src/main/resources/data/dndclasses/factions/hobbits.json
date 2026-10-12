@@ -14,6 +14,7 @@
   "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
   "kill_cap": 30,
   "raid_won": 60,
+  "raid_lost": -40,
   "bounties": {"minor": 8, "major": 20},
   "trade": 1,
   "trade_cap": 15

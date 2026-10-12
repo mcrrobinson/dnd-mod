@@ -12,10 +12,14 @@ Right click the book to open it. It reads your **current** class each time you o
 | 2 | Cons |
 | 3 | Special ability, and the key Power Up is bound to (`Z` by default) with where to rebind it (Options > Controls > Key Binds > D&D Classes) |
 | 4 | Your role: primary and secondary [party role](party-roles.md), what your class does in a party and what the role is for |
-| 5 | Obstacles you handle. Bold ones only your class can get past |
+| 5 | Obstacles you handle. Bold ones are your class's speciality (the obstacles it's the only primary solver of) |
 | 6-7 | Your abilities: your class's starting scores (with modifiers), saving throws and skills (◆ expertise), then how ability points work at levels 4 and 8 ([Ability scores](ability-scores.md#ability-score-improvements)) |
 
 If you have a [race](../races/races.md), two "Your heritage" pages follow at the back: the race (and Dragonborn ancestry), its summary, ability bonuses and stat modifiers, then its traits.
+
+The **Obstacle Codex** chapter closes the book: an intro page, then every [class-gated obstacle](obstacles.md#catalogue), a few to a page. Each entry gives its name (and its look-alike variants), its **Specialist** (the one class it's built for) or **Best** classes, the classes that can **Also** try, whether anyone else can work it, and **Otherwise**: the fallback for everyone else. Your class is picked out in green. It's built from the obstacle registry, so a new obstacle shows up in it without editing the book.
+
+![The Obstacle Codex in a Fighter's guidebook](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/obstacle-codex/codex-portcullis.png)
 
 Long entries carry over onto the next page instead of being cut off. If you haven't picked a class yet, the book describes every class.
 
@@ -38,7 +42,7 @@ To make another, craft a book and a lapis lazuli together in any shape. It's als
   - `ClassInfo.java` loads the JSON.
   - `Items/ClassGuidebookItem.java` is the item. It opens the book through a client hook.
   - `Items/ClassGuidebook.java` gives the book on join and on class change. It's called from `ClassLifecycle.change`, respawn and the JOIN event.
-  - `Client/Hud/ClassGuidebookScreen.java` builds the pages and splits them to the vanilla page size of 114x128 px.
+  - `Client/Hud/ClassGuidebookScreen.java` builds the pages and splits them to the vanilla page size of 114x128 px. `codexPages` builds the Obstacle Codex from `Obstacles/ObstacleCodex.entries()`; `Pages.block` keeps one entry on one page.
   - `ClassLifecycle.sendIntro` prints the chat summary.
 - Recipe: `data/dndclasses/recipes/class_guidebook.json`.
 - Devscript: `devscripts/class-guidebook.txt` checks that a class change gives the book, a second change doesn't add another, and right click opens it.

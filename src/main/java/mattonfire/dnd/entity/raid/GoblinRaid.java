@@ -124,6 +124,10 @@ public class GoblinRaid {
     private final Set<UUID> participants = new HashSet<>();
     @Nullable
     private BlockPos waveSpawn;
+    /** The countdown to the first wave: longer when hobbit lookouts spotted the war party early. */
+    private int firstWaveDelay = FIRST_WAVE_DELAY;
+    /** Whether the lookouts have had their chance to warn the defenders (once, on the first tick with any). */
+    private boolean lookoutsChecked;
 
     private final ServerBossBar bar = new ServerBossBar(Text.empty(), BossBar.Color.RED, BossBar.Style.NOTCHED_10);
 
@@ -162,6 +166,11 @@ public class GoblinRaid {
         if (nbt.contains("WaveSpawn")) {
             this.waveSpawn = NbtHelper.toBlockPos(nbt.getCompound("WaveSpawn"));
         }
+        if (nbt.contains("FirstWaveDelay")) {
+            this.firstWaveDelay = nbt.getInt("FirstWaveDelay");
+        }
+        // Raids saved before the lookouts existed are already under way.
+        this.lookoutsChecked = !nbt.contains("LookoutsChecked") || nbt.getBoolean("LookoutsChecked");
     }
 
     static GoblinRaid fromNbt(NbtCompound nbt) {
@@ -197,6 +206,8 @@ public class GoblinRaid {
         if (this.waveSpawn != null) {
             nbt.put("WaveSpawn", NbtHelper.fromBlockPos(this.waveSpawn));
         }
+        nbt.putInt("FirstWaveDelay", this.firstWaveDelay);
+        nbt.putBoolean("LookoutsChecked", this.lookoutsChecked);
         return nbt;
     }
 
@@ -274,8 +285,12 @@ public class GoblinRaid {
         this.absentTicks = 0;
 
         if (this.state == State.APPROACHING) {
+            if (this.wave == 0 && !this.lookoutsChecked) {
+                this.lookoutsChecked = true;
+                this.lookouts(world, defenders);
+            }
             this.bar.setName(Text.translatable("raid.dndclasses.goblin.approaching", this.wave + 1, this.totalWaves));
-            int delay = this.wave == 0 ? FIRST_WAVE_DELAY : WAVE_DELAY;
+            int delay = this.wave == 0 ? this.firstWaveDelay : WAVE_DELAY;
             this.bar.setPercent(1.0F - MathHelper.clamp((float) this.stateTicks / delay, 0.0F, 1.0F));
             if (--this.stateTicks <= 0) {
                 this.spawnWave(world);
@@ -449,11 +464,46 @@ public class GoblinRaid {
         return this.rally;
     }
 
+    private Identifier settlementId() {
+        return new Identifier(DnDClasses.MOD_ID, this.kind.id);
+    }
+
+    /**
+     * Friendly with the hobbits: their lookouts spot the war party {@link TierEffects#EARLY_HORN_TICKS} early.
+     * If any defender of a hobbit village is a friend, the first wave comes that much later, and the friends
+     * hear the horn and get a warning now (everyone else gets the usual horn when the wave arrives).
+     */
+    private void lookouts(ServerWorld world, List<ServerPlayerEntity> defenders) {
+        Identifier settlement = this.settlementId();
+        List<ServerPlayerEntity> friends = new ArrayList<>();
+        for (ServerPlayerEntity player : defenders) {
+            if (TierEffects.earlyRaidWarning(player, world, settlement)) {
+                friends.add(player);
+            }
+        }
+        if (friends.isEmpty()) {
+            return;
+        }
+        this.firstWaveDelay = FIRST_WAVE_DELAY + TierEffects.EARLY_HORN_TICKS;
+        this.stateTicks += TierEffects.EARLY_HORN_TICKS;
+        this.blowHorn(world, friends);
+        for (ServerPlayerEntity player : friends) {
+            player.sendMessage(Text.translatable("raid.dndclasses.goblin.lookouts", this.placeName(),
+                    this.stateTicks / 20).formatted(Formatting.GOLD), false);
+        }
+        DnDClasses.LOGGER.info("[GoblinRaid] raid {} lookouts warn {} player(s): first wave in {} s", this.id,
+                friends.size(), this.stateTicks / 20);
+    }
+
     /** The raid horn, heard from the direction the war party is coming from. */
     private void blowHorn(ServerWorld world) {
+        this.blowHorn(world, world.getPlayers(this::inRange));
+    }
+
+    private void blowHorn(ServerWorld world, List<ServerPlayerEntity> listeners) {
         BlockPos from = this.waveSpawn != null ? this.waveSpawn : this.rally;
         long seed = world.random.nextLong();
-        for (ServerPlayerEntity player : world.getPlayers(this::inRange)) {
+        for (ServerPlayerEntity player : listeners) {
             Vec3d toward = Vec3d.ofCenter(from).subtract(player.getPos());
             Vec3d dir = toward.lengthSquared() < 1.0E-4D ? Vec3d.ZERO : toward.normalize().multiply(13.0D);
             player.networkHandler.sendPacket(new PlaySoundS2CPacket(SoundEvents.EVENT_RAID_HORN, SoundCategory.NEUTRAL,
@@ -612,17 +662,28 @@ public class GoblinRaid {
             defenders.add(player);
             player.sendMessage(Text.translatable("raid.dndclasses.goblin.reward", this.placeName()).formatted(Formatting.GOLD), false);
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, 20 * 60 * 40, 0, false, false, true));
-            for (ItemStack stack : loot.generateLoot(new LootContext.Builder(world)
-                    .parameter(LootContextParameters.THIS_ENTITY, player)
-                    .parameter(LootContextParameters.ORIGIN, player.getPos())
-                    .random(world.random)
-                    .build(LootContextTypes.GIFT))) {
-                if (!player.giveItemStack(stack)) {
-                    player.dropItem(stack, false);
+            // Exalted with the hobbits: their stores are opened twice as wide for you.
+            int rolls = TierEffects.raidLootRolls(player, world, this.settlementId());
+            if (rolls > 1) {
+                player.sendMessage(Text.translatable("raid.dndclasses.goblin.reward_exalted").formatted(Formatting.GOLD), false);
+            }
+            int given = 0;
+            for (int roll = 0; roll < rolls; roll++) {
+                for (ItemStack stack : loot.generateLoot(new LootContext.Builder(world)
+                        .parameter(LootContextParameters.THIS_ENTITY, player)
+                        .parameter(LootContextParameters.ORIGIN, player.getPos())
+                        .random(world.random)
+                        .build(LootContextTypes.GIFT))) {
+                    given++;
+                    if (!player.giveItemStack(stack)) {
+                        player.dropItem(stack, false);
+                    }
                 }
             }
+            DnDClasses.LOGGER.info("[GoblinRaid] raid {} reward for {}: {} loot roll(s), {} stack(s)", this.id,
+                    player.getEntityName(), rolls, given);
             ExperienceOrbEntity.spawn(world, player.getPos(), 40 + 20 * this.totalWaves);
-            mattonfire.dnd.faction.FactionEvents.raidWon(player, world, new Identifier(DnDClasses.MOD_ID, this.kind.id),
+            mattonfire.dnd.faction.FactionEvents.raidWon(player, world, this.settlementId(),
                     mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
             if (this.kind == Settlement.Kind.FORTRESS || this.kind == Settlement.Kind.ENCLAVE
                     || this.kind == Settlement.Kind.TEMPLE) {

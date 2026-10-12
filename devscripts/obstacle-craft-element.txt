@@ -263,6 +263,7 @@ closescreen
 /effect clear @s
 /tp @s 4.5 150 26.5 0 90
 /item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:fire_resistance"}
+/dndclass charges @s 3
 wait 220
 press key.dnd-classes.power-up
 wait 15

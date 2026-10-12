@@ -25,7 +25,13 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 /** A tough Nether Fortress goblin: lots of health, heavy hits, but a slow two-second swing. */
-public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
+public class GoblinWarriorEntity extends HostileEntity implements GeoEntity, mattonfire.dnd.faction.Provokable {
+    /** How long a camp grudge lasts after the goblin last had the thief as its target (30 s). */
+    public static final int CAMP_GRUDGE_TICKS = 20 * 30;
+    @Nullable
+    private java.util.UUID grudge;
+    private int grudgeUntil;
+
     /** Ticks between swings; vanilla melee mobs use 20. */
     private static final int ATTACK_INTERVAL = 40;
     /** Ticks from raising the club to the hit landing; matches the "attack" animation. */
@@ -87,6 +93,22 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
         super.setTarget(target);
     }
 
+    /**
+     * This goblin saw (or heard) {@code player} open the camp chief's chest: it goes for them whatever their
+     * standing, for {@link #CAMP_GRUDGE_TICKS} after it last had them as its target.
+     */
+    public void provokeByTheft(PlayerEntity player) {
+        this.grudge = player.getUuid();
+        this.grudgeUntil = this.age + CAMP_GRUDGE_TICKS;
+        this.getLookControl().lookAt(player);
+        super.setTarget(player);
+    }
+
+    @Override
+    public boolean provokedBy(PlayerEntity player) {
+        return this.grudge != null && this.grudge.equals(player.getUuid()) && this.age < this.grudgeUntil;
+    }
+
     /** Joins a fight someone else started with the horde (the Warlord calling for help): no standing check. */
     void rallyAgainst(LivingEntity attacker) {
         super.setTarget(attacker);
@@ -95,6 +117,10 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity {
     @Override
     protected void mobTick() {
         super.mobTick();
+        // A camp grudge lasts while the fight does, and fades a while after the thief gets away.
+        if (this.grudge != null && this.getTarget() instanceof PlayerEntity target && this.provokedBy(target)) {
+            this.grudgeUntil = this.age + CAMP_GRUDGE_TICKS;
+        }
         // Stand down if the player's standing changed mid-fight (e.g. a quest or /rep made peace).
         if (this.age % 20 == 0 && this.getTarget() instanceof PlayerEntity player
                 && !TierEffects.goblinMayTarget(this, player, true)) {

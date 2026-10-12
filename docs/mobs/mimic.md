@@ -19,7 +19,11 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 
 **Waking.** Right-click it as if to open it, or hit it. It creaks open with a growl, bites straight away and starts hunting you.
 
-**The grab.** A bite that lands holds you for 1.5 seconds. You're pulled to its mouth, slowed (Slowness IV) and can't jump out. Once it lets go it can't grab again for 3 seconds. The grab also ends if you get more than 4 blocks away, for example from knockback.
+**The grab.** A bite that lands tries to grab you: a **STR saving throw, DC 12** (on the [save lane](../systems/saving-throws.md)).
+- **Success:** you're bitten (6) but pull free of the jaws. It can't try to grab again for 3 seconds.
+- **Failure:** it holds you for 1.5 seconds. You're pulled to its mouth, slowed (Slowness IV) and can't jump out. Once it lets go it can't grab again for 3 seconds. The grab also ends if you get more than 4 blocks away, for example from knockback.
+
+**Struggling free.** While it holds you, the action bar says "You're held! Press jump to struggle free". Each jump press is an escape check: the better of your Athletics (STR) or Acrobatics (DEX) against DC 12, shown on the main d20 panel. A success breaks the grab at once. You can struggle at most once every half second (10 ticks). Mobs and pets it grabs save silently with +1 and can't struggle.
 
 **Going back to sleep.** After 10 seconds with no target, it closes its lid, shuffles back to the middle of its block, squares up and is a chest again.
 
@@ -30,6 +34,7 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 ### Tips
 - Be suspicious of a chest in a dungeon, a dragon lair or a dwarven fortress. Left-click it before you open it. A real chest starts to break; a mimic takes the hit and wakes up.
 - Don't fight one with your back to a wall. Being held at its mouth for 1.5 seconds hurts less if you can step away right after.
+- Caught? Tap jump straight away. The grab is short, so you get two or three tries at most; a nimble character (good Acrobatics) or a strong one (Athletics) usually gets out on the first.
 - A mimic you run from goes back to sleep after 10 seconds, still holding its loot. You can come back for it.
 
 ## Where to find it
@@ -47,9 +52,10 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 - Mimics only appear in newly generated chunks. A fortress or lair whose generation started before mimics were added may lay out slightly differently in its remaining chunks, because the mimic roll uses extra random numbers.
 
 ## For developers
-- `entity/MimicEntity.java`: sleep state, waking, bite and grab (`GRAB_TICKS` 30, `GRAB_COOLDOWN` 60), going back to sleep (`SETTLE_DELAY` 200) and the loot override. NBT: `Dormant`, `RestYaw`, `MimicLoot`. Worldgen uses `MimicEntity.disguised(...)`.
+- `entity/MimicEntity.java`: sleep state, waking, bite and grab (`GRAB_TICKS` 30, `GRAB_COOLDOWN` 60), going back to sleep (`SETTLE_DELAY` 200) and the loot override. It's a `Grapple.Holder`: the grab registers with `Grapple.hold` and ends with `Grapple.release` / `breakFree`.
+- The grab save is `GrabSaves.MIMIC_GRAB` (`entity/GrabSaves.java`, STR `MIMIC_GRAB_DC` 12, registered with `MobSaveInfo` so creature study lists it). The jump escape is `classes/SkillChecks/Grapple.java`, see [Saving throws](../systems/saving-throws.md#grabs-and-escapes). NBT: `Dormant`, `RestYaw`, `MimicLoot`. Worldgen uses `MimicEntity.disguised(...)`.
 - `client/MimicTexture.java` builds the texture at runtime from the vanilla chest texture plus `textures/entity/mimic/mouth.png`, and rebuilds it on every resource reload. `client/model/MimicModel.java` and `client/renderer/MimicRenderer.java` do the model and rendering (no shadow while asleep).
 - `geo/mimic.geo.json` uses the vanilla chest UV layout. The teeth and tongue sit inside the closed chest, so they only show when the lid opens. `animations/mimic.animation.json`: dormant, awake, walk, wake, bite.
 - Worldgen: `classes/mixin/DungeonFeatureMixin.java` (redirects the chest's `setLootTable` call), `world/gen/lair/LairPiece.java` and `world/gen/fortress/FortressPiece.java` (`Builder.chest` / `mimic`), each with its own `MIMIC_CHANCE`.
 - Mountain Dwarves skip sleeping mimics: see the target check in `MountainDwarfEntity`.
-- Devscript: `devscripts/mimic.txt` (disguise, wake, bite, kill).
+- Devscripts: `devscripts/mimic.txt` (disguise, wake, bite, kill); `devscripts/grab-saves.txt` (grab save with `forceroll`, struggle free).

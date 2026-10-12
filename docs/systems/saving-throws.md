@@ -36,7 +36,17 @@ A save is rolled once per *exposure* (one breath, one ray, one grab), not on eve
 ![Ten saves in one tick: one row, ×10](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/saving-throws/saves-merge.png)
 
 ## Where to find it
-Monsters and traps call saves as their attacks get them. So far: [dragon breath and storms](../mobs/dragons.md#saving-throws) (DEX), [Beholder rays](../bosses/beholder.md#saving-throws) (DEX, STR, CON or WIS by eye) and the [Lich's](../bosses/lich.md) Frost Nova (CON) and Dread Presence (WIS). Generic saves against mob poison and wither, the Warden's sonic boom and the Ender Dragon's breath come from [data-driven rules](data-driven-saves.md). Grabs are planned. A DM can call one at any time with `/dm save`.
+Monsters and traps call saves as their attacks get them. So far: [dragon breath and storms](../mobs/dragons.md#saving-throws) (DEX), [Beholder rays](../bosses/beholder.md#saving-throws) (DEX, STR, CON or WIS by eye) and the [Lich's](../bosses/lich.md) Frost Nova (CON) and Dread Presence (WIS), and grabs (below). Generic saves against mob poison and wither, the Warden's sonic boom and the Ender Dragon's breath come from [data-driven rules](data-driven-saves.md). A DM can call one at any time with `/dm save`.
+
+### Grabs and escapes
+| Source | Save / DC | Success | Failure |
+|-|-|-|-|
+| [Mimic](../mobs/mimic.md) bite | STR 12 | Bitten, not grabbed | Grabbed 1.5 s |
+| [Owlbear](../mobs/owlbear.md) bear hug (35% of landed swipes) | STR 13 | Just the swipe | Hugged 3 s, 3 damage per half second |
+| Owlbear charge hit | STR 13 | Full 12 damage, not thrown | 12 and thrown |
+| [Gelatinous Cube](../mobs/gelatinous-cube.md) first contact | DEX 12 | Shoved out, can't be engulfed for 1 s | Engulfed |
+
+While a Mimic or an Owlbear holds you, the action bar says "You're held! Press jump to struggle free". Each jump press makes an escape check, the better of Athletics (STR) or Acrobatics (DEX) against the grab's DC, on the main d20 panel, at most once every 10 ticks. A success ends the hold. Grab saves and escape checks carry the `grapple` tag for advantage filters on the sheet.
 
 ## Commands
 | Command | What it does |
@@ -63,7 +73,8 @@ See [Dungeon Master](dungeon-master.md) for who can use `/dm`.
 | `off` | Nothing is drawn. Natural 20s and 1s still play their sound |
 
 ## Known limitations
-- Only dragons, the Beholder, the Lich, traps and the [data-driven rules](data-driven-saves.md) call the API so far. Grabs are a separate ticket.
+- Only dragons, the Beholder, the Lich, grabs, traps and the [data-driven rules](data-driven-saves.md) call the API so far.
+- The cube engulf has no struggle: you walk out of it as before.
 - The server's 10-tick throttle and merge only combine saves with the same name and outcome. Different saves arriving together go out one per 10 ticks.
 - In `full` mode a DM-called save with no effect text shows a trailing dash after the outcome on the big panel.
 
@@ -90,5 +101,6 @@ See [Dungeon Master](dungeon-master.md) for who can use `/dm`.
 - Every `SAVE_LANE` roll sent with `D20.show` goes through `SavingThrow.send`: the 10-tick throttle and the merge by label + ability + outcome. The `dndclasses:d20_roll` packet has a trailing VarInt count after the detail text (1 for ordinary rolls).
 - Logs: each roll is a `[D20] <name> <label> <natural> <+mod> = <total> vs DC <dc> -> <outcome>` line; each save packet is a `[D20] save lane -> <player>: <label> <outcome> x<count>` line.
 - Client: `Client/Hud/SaveLaneHud.java` draws the rows; `DiceRollHud` routes SAVE_LANE packets to it (or to its own panel in `full` mode). `Config/SaveRollsMode` reads `saveRolls`; the DevScript step `saverolls full|compact|off|config` overrides it for a run.
+- Grabs: `entity/GrabSaves.java` holds the four `MobSaveInfo` entries and `roll(victim, attacker, entry)` (tagged `grapple`, lane text from `<effectKey>` / `<effectKey>.failure`). `classes/SkillChecks/Grapple.java` tracks who holds whom: a mob implements `Grapple.Holder` (`isHolding`, `breakFree`) and calls `Grapple.hold(victim, holder, dc, nameKey)` / `Grapple.release(victim, holder)`. Holds are checked every tick against `isHolding`, so a dead or removed holder frees its victim. S2C `dndclasses:held` (boolean) tells the client; `Client/GrappleClient.java` drains the jump key's presses and sends C2S `dndclasses:struggle` while held. The server enforces `STRUGGLE_COOLDOWN` (10 ticks) and rolls `SkillCheck.builder(player, Grapple.escapeSkill(player), dc, "grapple")`. Logs: `[Grapple] ...` lines. Test script: `devscripts/grab-saves.txt`.
 - Commands: `dm/DmRolls.java`.
 - Test script: `devscripts/saving-throws.txt`.

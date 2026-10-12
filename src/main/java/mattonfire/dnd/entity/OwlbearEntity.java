@@ -1,6 +1,8 @@
 package mattonfire.dnd.entity;
 
 import java.util.EnumSet;
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.SkillChecks.Grapple;
 import mattonfire.dnd.entity.ai.goal.OwlbearChargeGoal;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -58,7 +60,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * </ul>
  * Druids that kill one can take its form (it's in {@code #dndclasses:druid_forms}).
  */
-public class OwlbearEntity extends HostileEntity implements GeoEntity {
+public class OwlbearEntity extends HostileEntity implements GeoEntity, Grapple.Holder {
     private static final TrackedData<Boolean> CHARGING = DataTracker.registerData(OwlbearEntity.class,
             TrackedDataHandlerRegistry.BOOLEAN);
     private static final TrackedData<Boolean> HUGGING = DataTracker.registerData(OwlbearEntity.class,
@@ -97,6 +99,8 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
     private int hugTicks;
     private float hugDamageTaken;
     private long nextHugTime;
+    /** Chance a claw hit becomes a hug; {@code HugChance} in NBT (1.0 forces hugs for tests). */
+    private float hugChance = HUG_CHANCE;
     private int stunTicks;
 
     public OwlbearEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -184,8 +188,14 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
         if (hit) {
             this.triggerAnim("attack_controller", SWIPES[this.random.nextInt(SWIPES.length)]);
             if (target instanceof LivingEntity living && living.isAlive() && this.canHug(living)
-                    && this.random.nextFloat() < HUG_CHANCE) {
-                this.startHug(living);
+                    && this.random.nextFloat() < this.hugChance) {
+                if (GrabSaves.roll(living, this, GrabSaves.OWLBEAR_HUG).succeeded()) {
+                    // Shrugs off the arms: just the swipe. Wait out the cooldown before the next try.
+                    DnDClasses.LOGGER.info("[Grapple] {} resists the owlbear's hug", living.getName().getString());
+                    this.nextHugTime = this.world.getTime() + HUG_COOLDOWN;
+                } else {
+                    this.startHug(living);
+                }
             }
         }
         return hit;
@@ -202,6 +212,8 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
         this.hugDamageTaken = 0.0F;
         this.dataTracker.set(HUGGING, true);
         this.getNavigation().stop();
+        DnDClasses.LOGGER.info("[Grapple] the owlbear hugs {}", target.getName().getString());
+        Grapple.hold(target, this, GrabSaves.OWLBEAR_HUG_DC, "grapple.dndclasses.owlbear");
         this.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 1.5F, 0.8F);
     }
 
@@ -209,6 +221,9 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
         LivingEntity target = this.hugged;
         this.hugged = null;
         this.hugTicks = 0;
+        if (target != null) {
+            Grapple.release(target, this);
+        }
         this.dataTracker.set(HUGGING, false);
         this.nextHugTime = this.world.getTime() + HUG_COOLDOWN;
         if (target != null && target.isAlive()) {
@@ -249,6 +264,19 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
                 ((ServerWorld) this.world).spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(),
                         target.getBodyY(0.5D), target.getZ(), 3, 0.2D, 0.2D, 0.2D, 0.1D);
             }
+        }
+    }
+
+    @Override
+    public boolean isHolding(LivingEntity victim) {
+        return this.hugged == victim && this.isAlive() && !this.isRemoved();
+    }
+
+    /** The victim struggled free (Athletics or Acrobatics against the hug DC). */
+    @Override
+    public void breakFree(LivingEntity victim) {
+        if (this.hugged == victim) {
+            this.endHug();
         }
     }
 
@@ -378,11 +406,15 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity {
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
         nbt.putInt("StunTicks", this.stunTicks);
+        nbt.putFloat("HugChance", this.hugChance);
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.stunTicks = nbt.getInt("StunTicks");
+        if (nbt.contains("HugChance")) {
+            this.hugChance = nbt.getFloat("HugChance");
+        }
     }
 }

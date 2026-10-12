@@ -98,7 +98,10 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     /** Entity id of everything currently engulfed -> ticks it has been inside. */
     private final Int2IntMap engulfed = new Int2IntOpenHashMap();
-    /** Entity id of each Downed player it spat out -> the age until which it won't engulf them again. */
+    /**
+     * Entity id of each Downed player it spat out, or anyone who slipped out with a DEX save, -> the age until
+     * which it won't engulf them again.
+     */
     private final Int2IntMap spatOut = new Int2IntOpenHashMap();
 
     public GelatinousCubeEntity(EntityType<? extends HostileEntity> entityType, World world) {
@@ -191,6 +194,13 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
                 this.spitOut(player);
                 continue;
             }
+            if (ticksInside == 0 && GrabSaves.roll(victim, this, GrabSaves.CUBE_ENGULF).succeeded()) {
+                // Slips aside as it closes in: shoved out, and it won't try again for a moment
+                this.shoveOut(victim, GrabSaves.CUBE_SPURN_TICKS, 0.3D);
+                mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Grapple] {} slips out of the gelatinous cube",
+                        victim.getName().getString());
+                continue;
+            }
             if (ticksInside == 0) {
                 this.triggerAnim("engulf_controller", "engulf");
                 this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, 0.5F);
@@ -207,19 +217,24 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
 
     /** Throws a Downed player out of the jelly, away from the middle, so allies can reach them. */
     private void spitOut(PlayerEntity player) {
-        Vec3d away = new Vec3d(player.getX() - this.getX(), 0.0D, player.getZ() - this.getZ());
+        this.shoveOut(player, SPIT_IMMUNITY, 0.45D);
+        this.playSound(SoundEvents.ENTITY_SLIME_JUMP, 1.0F, 0.5F);
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Downed] {} spat out Downed {}", this.getName().getString(),
+                player.getEntityName());
+    }
+
+    /** Pushes {@code victim} out of the jelly, away from the middle, and won't engulf it for {@code immunity} ticks. */
+    private void shoveOut(LivingEntity victim, int immunity, double lift) {
+        Vec3d away = new Vec3d(victim.getX() - this.getX(), 0.0D, victim.getZ() - this.getZ());
         if (away.lengthSquared() < 0.01D) {
             float yaw = this.random.nextFloat() * 6.2831855F;
             away = new Vec3d(Math.cos(yaw), 0.0D, Math.sin(yaw));
         }
         // Enough to clear the cube from its middle (its half width plus a bit).
         Vec3d push = away.normalize().multiply(0.25D + this.getWidth() * 0.35D);
-        player.setVelocity(push.x, 0.45D, push.z);
-        player.velocityModified = true;
-        this.spatOut.put(player.getId(), this.age + SPIT_IMMUNITY);
-        this.playSound(SoundEvents.ENTITY_SLIME_JUMP, 1.0F, 0.5F);
-        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Downed] {} spat out Downed {}", this.getName().getString(),
-                player.getEntityName());
+        victim.setVelocity(push.x, lift, push.z);
+        victim.velocityModified = true;
+        this.spatOut.put(victim.getId(), this.age + immunity);
     }
 
     /** Slows and gently drags the victim towards the middle, so walking out is a struggle. */

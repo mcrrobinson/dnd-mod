@@ -57,7 +57,6 @@ import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
@@ -524,24 +523,8 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     /** Finds standing room for {@code entity} between {@code min} and {@code max} blocks around {@code center}. */
     private boolean placeNear(Entity entity, BlockPos center, double min, double max) {
-        for (int attempt = 0; attempt < 16; attempt++) {
-            float angle = this.random.nextFloat() * MathHelper.TAU;
-            double distance = min + this.random.nextDouble() * (max - min);
-            BlockPos column = BlockPos.ofFloored(center.getX() + 0.5D + MathHelper.cos(angle) * distance, center.getY(),
-                    center.getZ() + 0.5D + MathHelper.sin(angle) * distance);
-            for (int dy = 2; dy >= -3; dy--) {
-                BlockPos pos = column.up(dy);
-                if (!this.world.getBlockState(pos.down()).isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
-                    continue;
-                }
-                entity.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-                        this.random.nextFloat() * 360.0F, 0.0F);
-                if (this.world.isSpaceEmpty(entity) && !this.world.containsFluid(entity.getBoundingBox())) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return StandingRoom.around(this.world, entity, this.random, center.getX() + 0.5D, center.getY(),
+                center.getZ() + 0.5D, min, max, 16, 2, 3, true);
     }
 
     // ---------------------------------------------------------------- phases

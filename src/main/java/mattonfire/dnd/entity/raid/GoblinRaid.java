@@ -10,6 +10,7 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.entity.SettlementGrudges;
+import mattonfire.dnd.entity.StandingRoom;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.HobbitEntity;
@@ -421,16 +422,8 @@ public class GoblinRaid {
         for (int attempt = 0; attempt < 12; attempt++) {
             int dx = attempt == 0 ? 0 : world.random.nextInt(7) - 3;
             int dz = attempt == 0 ? 0 : world.random.nextInt(7) - 3;
-            for (int dy = 2; dy >= -3; dy--) {
-                BlockPos pos = spawn.add(dx, dy, dz);
-                if (!world.getBlockState(pos.down()).isSideSolidFullSquare(world, pos.down(), Direction.UP)) {
-                    continue;
-                }
-                goblin.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D,
-                        world.random.nextFloat() * 360.0F, 0.0F);
-                if (world.isSpaceEmpty(goblin)) {
-                    return;
-                }
+            if (StandingRoom.inColumn(world, goblin, world.random, spawn.add(dx, 0, dz), 2, 3, false)) {
+                return;
             }
         }
         goblin.refreshPositionAndAngles(spawn.getX() + 0.5D, spawn.getY(), spawn.getZ() + 0.5D, 0.0F, 0.0F);

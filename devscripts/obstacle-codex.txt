@@ -10,6 +10,7 @@
 #    Page numbers shift as classes and obstacles change.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /clear @s
 /effect give @s minecraft:slow_falling 600 0 true

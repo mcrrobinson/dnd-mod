@@ -112,7 +112,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
 
 ## Music
-- [Music](music.md): event music, class stings and music discs
+- [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs (PR #184)
 
 ## Developers
 - [Testing in the dev client](dev/testing.md): DevScript and scripted, hidden test clients

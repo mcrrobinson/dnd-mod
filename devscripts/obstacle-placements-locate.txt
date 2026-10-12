@@ -1,0 +1,30 @@
+# Finds fresh mod structures for obstacle-placements-tour.txt: /place structure fails for the mod's
+# terrain-checked structures, so this locates natural ones round unexplored points (100000, 100000, and
+# -100000, -100000 for a second dragon lair).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/obstacle-placements-locate.txt
+# Expect: one "[CHAT] The nearest ... is at [x, ~, z]" line per structure.
+wait 40
+closescreen
+respawn
+/gamemode spectator
+/tp @s 100000 200 100000
+wait 40
+/locate structure dndclasses:goblin_camp
+waitserver 2
+/locate structure dndclasses:dragon_lair
+waitserver 2
+/locate structure dndclasses:frost_lair
+waitserver 2
+/locate structure dndclasses:beholder_lair
+waitserver 2
+/locate structure dndclasses:dwarven_fortress
+waitserver 2
+/locate structure minecraft:stronghold
+waitserver 2
+/tp @s -100000 200 -100000
+wait 40
+/locate structure dndclasses:dragon_lair
+waitserver 2
+/tp @s 0 151 0
+wait 20
+quit

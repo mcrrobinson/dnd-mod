@@ -1,6 +1,10 @@
 package mattonfire.dnd.world.gen.beholder;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
+import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
+import mattonfire.dnd.classes.Obstacles.StructureObstacles;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
@@ -39,7 +43,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
  * The Beholder's cavern: a rough dome hollowed out of the deepslate round its centre (the middle of
  * the floor). The floor is a great eye laid in stone, with a glowing froglight iris; petrified
  * adventurers stand where its gaze caught them, a hoard is heaped against the far wall, and the
- * Beholder floats over it all. A tunnel leads east to the stair (BeholderShaftPiece).
+ * Beholder floats over it all. A tunnel leads east to the stair (BeholderShaftPiece). Off the tunnel's
+ * north side, a Greater Arcane Seal (Very Hard, Wizards only) closes a small side vault.
  *
  * <p>The walls are a two-block shell, so caves, water and lava around it can't break in. Built once
  * per chunk it overlaps: per-block choices come from a position hash and the rest from its own seed.
@@ -56,6 +61,10 @@ public class BeholderCavernPiece extends StructurePiece {
     private static final int DRIPSTONES = 24;
     /** The Beholder hovers this far above the floor. */
     private static final int HOVER = 5;
+    /** The side vault's inside runs from this far east of the centre... */
+    private static final int VAULT_X1 = 16;
+    /** ...to this far, beside the shaft. */
+    private static final int VAULT_X2 = 18;
 
     private final BlockPos center;
     private final long seed;
@@ -134,6 +143,7 @@ public class BeholderCavernPiece extends StructurePiece {
         }
 
         this.tunnel(world, chunkBox, cx, y0, cz);
+        this.sideVault(world, chunkBox, cx, y0, cz);
 
         // Everything below draws from the seed in the same order in every chunk.
         Random random = Random.create(this.seed);
@@ -254,6 +264,40 @@ public class BeholderCavernPiece extends StructurePiece {
             set(world, chunkBox, new BlockPos(to, y0 + 3, cz + dz),
                     Blocks.SOUL_LANTERN.getDefaultState().with(LanternBlock.HANGING, true));
         }
+    }
+
+    /**
+     * The side vault off the tunnel's north wall: a deepslate-brick room ({@value #VAULT_X1} to {@value #VAULT_X2}
+     * east of the centre, 3 to 5 north) with a hoard chest and a lectern, behind a 2x2 Greater Arcane Seal in the
+     * tunnel wall. The Beholder's Anti-Magic stops anyone dispelling it, so it's for after the fight. Its random is
+     * its own (seeded from the cavern's), so caverns generated before it was added keep their layout.
+     */
+    private void sideVault(StructureWorldAccess world, BlockBox chunkBox, int cx, int y0, int cz) {
+        Random random = Random.create(this.seed ^ 0x5EA1EDL);
+        long lootSeed = random.nextLong();
+        for (int x = cx + VAULT_X1 - 1; x <= cx + VAULT_X2 + 1; x++) {
+            for (int z = cz - 6; z <= cz - 2; z++) {
+                for (int y = y0; y <= y0 + 4; y++) {
+                    boolean inside = x >= cx + VAULT_X1 && x <= cx + VAULT_X2 && z >= cz - 5 && z <= cz - 3
+                            && y > y0 && y < y0 + 4;
+                    BlockState state = inside ? Blocks.AIR.getDefaultState()
+                            : y == y0 ? Blocks.DEEPSLATE_TILES.getDefaultState()
+                            : Blocks.DEEPSLATE_BRICKS.getDefaultState();
+                    set(world, chunkBox, new BlockPos(x, y, z), state);
+                }
+            }
+        }
+        BlockPos chest = new BlockPos(cx + VAULT_X1 + 1, y0 + 1, cz - 5);
+        set(world, chunkBox, chest, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, Direction.SOUTH));
+        if (chunkBox.contains(chest) && world.getBlockEntity(chest) instanceof LootableContainerBlockEntity container) {
+            container.setLootTable(HOARD, lootSeed);
+        }
+        set(world, chunkBox, new BlockPos(cx + VAULT_X2, y0 + 1, cz - 5), Blocks.LECTERN.getDefaultState());
+        set(world, chunkBox, new BlockPos(cx + VAULT_X1, y0 + 3, cz - 4),
+                Blocks.SOUL_LANTERN.getDefaultState().with(LanternBlock.HANGING, true));
+        BlockPos from = new BlockPos(cx + VAULT_X1, y0 + 1, cz - 2);
+        ObstaclePlacer.box(world, chunkBox, from, from.add(1, 1, 0), ObstacleTypes.GREATER_ARCANE_SEAL,
+                Tier.VERY_HARD, false, StructureObstacles.seedAt(from));
     }
 
     /** Hangs a dripstone of {@code length} from the dome's ceiling over (x, z). */

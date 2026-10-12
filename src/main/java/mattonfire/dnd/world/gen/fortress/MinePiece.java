@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -14,7 +16,8 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * A working mine: a rough cavern hacked out of the deepslate, its walls studded with ore and
- * amethyst, shored up with timber, with a rail line and an ore cart down the middle.
+ * amethyst, shored up with timber, with a rail line and an ore cart down the middle. In the back left
+ * corner a Collapsed Passage (Medium) blocks an ore pocket with a chest in it.
  */
 public class MinePiece extends FortressPiece {
     private static final int WIDTH = 13;
@@ -112,5 +115,27 @@ public class MinePiece extends FortressPiece {
             b.dwarf(MID + (i == 0 ? -2 : 2), 1, 6, dwarf -> dwarf.equipStack(net.minecraft.entity.EquipmentSlot.MAINHAND,
                     new ItemStack(Items.IRON_PICKAXE)));
         }
+
+        this.orePocket(b);
+    }
+
+    /**
+     * The ore pocket in the back left corner: a 2x2x2 hollow studded with ore round a chest, walled off from the
+     * cavern and choked by a 2x2x2 Collapsed Passage. Last in {@link #build}, so the randoms above match mines
+     * generated before it was added.
+     */
+    private void orePocket(Builder b) {
+        // Seal it in first: a solid box round the pocket and the plug, whatever shape the cavern took.
+        b.fill(1, 1, 9, 4, 3, 9, Blocks.DEEPSLATE);
+        b.fill(1, 3, 10, 4, 3, 11, Blocks.DEEPSLATE);
+        b.air(1, 1, 10, 2, 2, 11);
+        // and a way up to the plug from the cavern, whatever the wobble left there
+        b.air(5, 1, 10, 5, 2, 11);
+        for (int[] p : new int[][]{{0, 1, 10}, {0, 2, 11}, {1, 3, 11}, {2, 3, 10}, {1, 2, 12}, {2, 1, 12}, {1, 1, 9}}) {
+            b.set(p[0], p[1], p[2], b.pick(ORES));
+        }
+        b.set(2, 3, 11, Blocks.AMETHYST_BLOCK);
+        b.chest(1, 1, 11, Direction.EAST, MINE);
+        b.obstacle(3, 1, 10, 4, 2, 11, ObstacleTypes.COLLAPSED_PASSAGE, Tier.MEDIUM, false);
     }
 }

@@ -13,6 +13,7 @@ import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.entity.boss.Boss;
 import mattonfire.dnd.entity.boss.BossFight;
+import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.entity.boss.BossMinions;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
@@ -84,6 +85,10 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  */
 public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     public static final String MINION_TAG = "dndclasses.lich_minion";
+    /** A consecrated Desecrated Altar within this many blocks of the Lich weakens its raised dead... */
+    public static final int CONSECRATED_RADIUS = 24;
+    /** ...to this share of their health. */
+    public static final float CONSECRATED_MINION_HEALTH = 0.5F;
     public static final Identifier LOOT_TABLE = new Identifier(DnDClasses.MOD_ID, "entities/lich");
     public static final Identifier ADVANCEMENT = new Identifier(DnDClasses.MOD_ID, "lichbane");
     public static final int XP = 150;
@@ -473,6 +478,12 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     private void castRaiseDead(ServerWorld world, @Nullable LivingEntity target) {
         int wave = 2 + this.bossFight.getPhase();
+        // A Cleric consecrated the library's Desecrated Altar: the dead answer weakly
+        boolean consecrated = ObstacleTypes.DESECRATED_ALTAR.consecratedNear(world, this.getBlockPos(), CONSECRATED_RADIUS);
+        if (consecrated) {
+            DnDClasses.LOGGER.info("[Obstacle] Lich at {} raises {} dead at half health (consecrated altar)",
+                    this.getBlockPos().toShortString(), wave);
+        }
         for (int i = 0; i < wave; i++) {
             EntityType<? extends MobEntity> type = this.pickMinionType(i);
             MobEntity minion = type.create(world);
@@ -482,6 +493,9 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
             minion.initialize(world, world.getLocalDifficulty(minion.getBlockPos()), SpawnReason.MOB_SUMMONED, null, null);
             minion.addCommandTag(MINION_TAG);
             BossMinions.mark(minion);
+            if (consecrated) {
+                minion.setHealth(minion.getMaxHealth() * CONSECRATED_MINION_HEALTH);
+            }
             if (target != null && target.isAlive()) {
                 minion.setTarget(target);
             }

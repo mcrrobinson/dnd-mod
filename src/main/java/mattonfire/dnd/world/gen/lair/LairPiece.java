@@ -1,6 +1,10 @@
 package mattonfire.dnd.world.gen.lair;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
+import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
+import mattonfire.dnd.classes.Obstacles.StructureObstacles;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.LairDragonEntity;
 import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -37,6 +41,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
  * A {@link Kind#FROST} lair (the Frost Drake's, on Frozen Peaks) has the same shape in snow and
  * ice: a snowy floor with a ring of blue ice, a rim of packed ice and snow, ice spires instead of
  * the standing stones, and a snow-filled nest heaped with gold and diamond blocks.
+ * <p>
+ * Against the rim, north or south of the nest (the dragons stand east and west), a deepslate cairn holds a
+ * second hoard chest behind a 2x2x2 Heavy Boulder (Hard): only a Barbarian heaves it aside, anyone else
+ * blows it up with TNT.
  *
  * Built once per chunk it overlaps, so all of its randomness comes from its own seed.
  */
@@ -72,6 +80,10 @@ public class LairPiece extends StructurePiece {
     private static final int STONES = 8;
     /** Chance of a mimic lying in wait beside the hoard chest. */
     private static final float MIMIC_CHANCE = 0.5F;
+    /** The side cache's cairn runs from this far out from the nest... */
+    private static final int CAIRN_OUT = 5;
+    /** ...to this far, against the rim. */
+    private static final int CAIRN_BACK = 9;
 
     private final BlockPos center;
     private final long seed;
@@ -241,6 +253,43 @@ public class LairPiece extends StructurePiece {
                 }
             }
         }
+
+        this.sideCache(world, chunkBox, frost);
+    }
+
+    /**
+     * The side cache: a cairn {@value #CAIRN_OUT} to {@value #CAIRN_BACK} blocks out from the nest, its 2x2x2
+     * doorway plugged by a Heavy Boulder, a chest from the lair's hoard table inside. It draws from its own random
+     * (seeded from the lair's), so lairs generated before it was added keep their layout.
+     */
+    private void sideCache(StructureWorldAccess world, BlockBox chunkBox, boolean frost) {
+        Random random = Random.create(this.seed ^ 0x5ADECA11L);
+        Direction side = random.nextBoolean() ? Direction.NORTH : Direction.SOUTH;
+        long lootSeed = random.nextLong();
+        Direction right = side.rotateYClockwise();
+        // Dark deepslate (like the rune ring) or ice, so the grey boulder stands out against it
+        BlockState wall = (frost ? Blocks.PACKED_ICE : Blocks.DEEPSLATE_BRICKS).getDefaultState();
+        BlockState trim = (frost ? Blocks.BLUE_ICE : Blocks.CHISELED_DEEPSLATE).getDefaultState();
+        BlockPos base = this.center.offset(side, CAIRN_OUT);
+        // Two thick at the front (the boulder's depth), one thick elsewhere, roofed, across -2..1.
+        for (int out = 0; out <= CAIRN_BACK - CAIRN_OUT; out++) {
+            for (int across = -2; across <= 1; across++) {
+                for (int up = 1; up <= 4; up++) {
+                    BlockPos pos = base.offset(side, out).offset(right, across).up(up);
+                    boolean inside = out >= 2 && out < CAIRN_BACK - CAIRN_OUT && across >= -1 && across <= 0 && up <= 3;
+                    set(world, chunkBox, pos, inside ? Blocks.AIR.getDefaultState() : up == 4 ? trim : wall);
+                }
+                set(world, chunkBox, base.offset(side, out).offset(right, across), wall);
+            }
+        }
+        BlockPos chest = base.offset(side, CAIRN_BACK - CAIRN_OUT - 1).up();
+        set(world, chunkBox, chest, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, side.getOpposite()));
+        if (chunkBox.contains(chest) && world.getBlockEntity(chest) instanceof LootableContainerBlockEntity container) {
+            container.setLootTable(this.kind.hoard, lootSeed);
+        }
+        BlockPos from = base.offset(right, -1).up();
+        ObstaclePlacer.box(world, chunkBox, from, base.offset(side, 1).up(2), ObstacleTypes.HEAVY_BOULDER, Tier.HARD,
+                false, StructureObstacles.seedAt(from));
     }
 
     private void spawnDragon(StructureWorldAccess world, BlockPos at, float yaw) {

@@ -202,6 +202,7 @@ public final class ObstacleTypes {
         HiddenSearch.register();
         ObstacleAuras.register();
         VanillaTraps.register();
+        ObstacleTierProcessor.register();
         for (ObstacleType type : TYPES.values()) {
             type.registerEvents();
         }

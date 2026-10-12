@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
@@ -12,7 +14,8 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * A forge: a lava channel behind an iron grate along the back wall, a row of blast furnaces, a
- * great hearth in the middle, anvils and smithing tables, tools hung on the walls.
+ * great hearth in the middle, anvils and smithing tables, tools hung on the walls. In the back left
+ * corner, a barrel of reagents lies under an Alchemical Seal (Medium).
  */
 public class ForgePiece extends FortressPiece {
     static final int WIDTH = 13;
@@ -92,5 +95,10 @@ public class ForgePiece extends FortressPiece {
 
         b.dwarf(MID - 2, 1, 3);
         b.dwarf(MID + 2, 1, 8);
+
+        // The reagent cache: a barrel in the corner by the lava channel, its lid under amber resin. Last, so the
+        // randoms above match forges generated before it was added.
+        b.container(1, 1, back - 1, facing(Blocks.BARREL, Direction.UP), REAGENTS);
+        b.obstacle(1, 2, back - 1, 1, 2, back - 1, CraftElementObstacles.ALCHEMICAL_SEAL, Tier.MEDIUM, false);
     }
 }

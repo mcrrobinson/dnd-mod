@@ -11,6 +11,7 @@ The home of a [Frost Drake](../mobs/dragons.md), on the summit of a Frozen Peaks
 - Where the floor overhangs the slopes it's held up by stone capped with snow.
 - **Hoard chest (`chests/frost_lair`):** 5-8 rolls of gold, emeralds, blue ice, diamonds, golden apples, bottles o' enchanting, bones, and enchanted diamond swords and boots. One more roll has a 1 in 8 chance each of an enchanted golden apple or a trident, and a 1 in 4 chance of a [Staff of Ice](../items/staffs.md). Every hoard chest also holds one magic item, Rare (70%) or Very Rare (30%), and 8% of them Frostbrand (see [Magic loot](../systems/magic-loot.md)). It counts as a hard lock for [lockpicking](../systems/d20-skill-checks.md).
 - Half of all frost lairs have a [mimic](../mobs/mimic.md) beside the hoard, holding hoard loot.
+- **Side cache**: like a dragon lair, a cairn (packed ice, topped with blue ice) against the rim north or south of the nest holds a second hoard chest behind a 2x2x2 **Heavy Boulder** (Hard). A Barbarian heaves it aside; anyone else uses TNT.
 - Each lair starts with one Frost Drake (30% of lairs have two). It never strays more than about 24 blocks before circling back.
 - Once it's killed, the lair waits **3 in-game days** and then sends a new one (structure spawn override; never in peaceful or with another Frost Drake within 64 blocks). A drake that left without dying (e.g. in peaceful) is replaced as soon as possible.
 

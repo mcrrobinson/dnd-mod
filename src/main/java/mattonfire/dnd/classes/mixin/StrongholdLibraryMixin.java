@@ -1,5 +1,9 @@
 package mattonfire.dnd.classes.mixin;
 
+import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
+import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
+import mattonfire.dnd.classes.Obstacles.StructureObstacles;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.boss.StructureBosses;
 import net.minecraft.structure.StrongholdGenerator;
 import net.minecraft.structure.StructurePiece;
@@ -21,6 +25,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Every stronghold library is haunted by a Lich. It stands in the open row at the back of the
  * library, and its phylactery goes in the open row across the middle (placed when the Lich first
  * ticks, since that spot may be in a chunk that isn't generated yet).
+ * <p>
+ * A Desecrated Altar (Hard) stands in the same row as the phylactery. A Cleric who consecrates it quiets
+ * the stronghold's spawners nearby, and while it stays consecrated the Lich's raised dead rise at half
+ * health ({@code LichEntity}).
  */
 @Mixin(StrongholdGenerator.Library.class)
 public abstract class StrongholdLibraryMixin extends StructurePiece {
@@ -40,5 +48,15 @@ public abstract class StrongholdLibraryMixin extends StructurePiece {
         // Facing the entrance (at z = 0). On Peaceful this leaves a marker that raises it later.
         Direction facing = this.getFacing() == null ? Direction.NORTH : this.getFacing();
         StructureBosses.placeLich(world, pos, facing.getOpposite().asRotation(), this.offsetPos(7, 1, 8));
+    }
+
+    @Inject(method = "generate", at = @At("TAIL"))
+    private void dnd$placeAltar(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator,
+                                Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot, CallbackInfo ci) {
+        // Shelf blocks run x = 3..4, 6..7 and 9..10 in the rows z = 3, 5, ... 11; the altar fills the open
+        // z = 8 row at x = 4, between two shelf ends, three blocks from the phylactery at x = 7.
+        BlockPos altar = this.offsetPos(4, 1, 8).toImmutable();
+        ObstaclePlacer.place(world, chunkBox, altar, ObstacleTypes.DESECRATED_ALTAR, Tier.HARD, false,
+                StructureObstacles.seedAt(altar));
     }
 }

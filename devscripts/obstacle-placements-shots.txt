@@ -1,0 +1,221 @@
+# Screenshots of the obstacles obstacle-placements-tour.txt generated (coordinates from its log and the dev world's
+# seed; the dragon lair is the one nearest -100000, -100000). Run after the tour, so the chunks exist:
+#   timeout 900 ./gradlew runClient -PdevScript=devscripts/obstacle-placements-shots.txt
+# The camera finds the open side itself: opposite the chest an obstacle guards, over the camp's campfire, or
+# along the library's open row.
+wait 40
+closescreen
+respawn
+/gamemode spectator
+/time set noon
+/effect give @s minecraft:night_vision 900 0 true
+hud off
+# ---- goblin-post
+/execute in minecraft:overworld run tp @s 97829 73 99722 facing 97829 63 99722
+wait 200
+/execute in minecraft:overworld if block 97831 63 99725 minecraft:campfire run tp @s 97831.5 67 99725.5 facing 97829.5 63.5 99722.5
+/execute in minecraft:overworld if block 97827 63 99719 minecraft:campfire run tp @s 97827.5 67 99719.5 facing 97829.5 63.5 99722.5
+/execute in minecraft:overworld if block 97826 63 99724 minecraft:campfire run tp @s 97826.5 67 99724.5 facing 97829.5 63.5 99722.5
+/execute in minecraft:overworld if block 97832 63 99720 minecraft:campfire run tp @s 97832.5 67 99720.5 facing 97829.5 63.5 99722.5
+wait 40
+screenshot placements-goblin-post
+# ---- dragon-lair-boulder
+/execute in minecraft:overworld run tp @s -99200 145 -101875 facing -99200 142 -101875
+wait 200
+/execute in minecraft:overworld if block -99198 142 -101876 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99198 141 -101876 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99198 142 -101875 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99198 141 -101875 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99198 142 -101874 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99198 141 -101874 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99197 142 -101876 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99197 141 -101876 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99197 142 -101875 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99197 141 -101875 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99197 142 -101874 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99197 141 -101874 minecraft:chest run tp @s -99205.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99202 142 -101876 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99202 141 -101876 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99202 142 -101875 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99202 141 -101875 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99202 142 -101874 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99202 141 -101874 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99203 142 -101876 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99203 141 -101876 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99203 142 -101875 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99203 141 -101875 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99203 142 -101874 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99203 141 -101874 minecraft:chest run tp @s -99195.5 143 -101875.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 142 -101873 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 141 -101873 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 142 -101873 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 141 -101873 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 142 -101873 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 141 -101873 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 142 -101872 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 141 -101872 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 142 -101872 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 141 -101872 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 142 -101872 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 141 -101872 minecraft:chest run tp @s -99200.5 143 -101880.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 142 -101877 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 141 -101877 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 142 -101877 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 141 -101877 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 142 -101877 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 141 -101877 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 142 -101878 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99201 141 -101878 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 142 -101878 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99200 141 -101878 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 142 -101878 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+/execute in minecraft:overworld if block -99199 141 -101878 minecraft:chest run tp @s -99200.5 143 -101870.5 facing -99200.5 142.5 -101875.5
+wait 40
+screenshot placements-dragon-lair-boulder
+# ---- frost-lair-boulder
+/execute in minecraft:overworld run tp @s 98159 193 101575 facing 98159 190 101575
+wait 200
+/execute in minecraft:overworld if block 98161 190 101574 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98161 189 101574 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98161 190 101575 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98161 189 101575 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98161 190 101576 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98161 189 101576 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98162 190 101574 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98162 189 101574 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98162 190 101575 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98162 189 101575 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98162 190 101576 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98162 189 101576 minecraft:chest run tp @s 98155.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98157 190 101574 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98157 189 101574 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98157 190 101575 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98157 189 101575 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98157 190 101576 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98157 189 101576 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98156 190 101574 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98156 189 101574 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98156 190 101575 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98156 189 101575 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98156 190 101576 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98156 189 101576 minecraft:chest run tp @s 98163.5 191 101575.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 190 101577 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 189 101577 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 190 101577 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 189 101577 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 190 101577 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 189 101577 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 190 101578 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 189 101578 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 190 101578 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 189 101578 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 190 101578 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 189 101578 minecraft:chest run tp @s 98159.5 191 101571.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 190 101573 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 189 101573 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 190 101573 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 189 101573 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 190 101573 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 189 101573 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 190 101572 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98158 189 101572 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 190 101572 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98159 189 101572 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 190 101572 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+/execute in minecraft:overworld if block 98160 189 101572 minecraft:chest run tp @s 98159.5 191 101579.5 facing 98159.5 190.5 101575.5
+wait 40
+screenshot placements-frost-lair-boulder
+# ---- fortress-mine
+/execute in minecraft:overworld run tp @s 101416 89 100141 facing 101416 86 100141
+wait 200
+/execute in minecraft:overworld if block 101418 86 100140 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101418 85 100140 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101418 86 100141 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101418 85 100141 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101418 86 100142 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101418 85 100142 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101419 86 100140 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101419 85 100140 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101419 86 100141 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101419 85 100141 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101419 86 100142 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101419 85 100142 minecraft:chest run tp @s 101413.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101414 86 100140 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101414 85 100140 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101414 86 100141 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101414 85 100141 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101414 86 100142 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101414 85 100142 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101413 86 100140 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101413 85 100140 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101413 86 100141 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101413 85 100141 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101413 86 100142 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101413 85 100142 minecraft:chest run tp @s 101419.5 87 100141.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 86 100143 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 85 100143 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 86 100143 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 85 100143 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 86 100143 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 85 100143 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 86 100144 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 85 100144 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 86 100144 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 85 100144 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 86 100144 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 85 100144 minecraft:chest run tp @s 101416.5 87 100138.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 86 100139 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 85 100139 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 86 100139 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 85 100139 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 86 100139 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 85 100139 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 86 100138 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101415 85 100138 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 86 100138 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101416 85 100138 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 86 100138 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+/execute in minecraft:overworld if block 101417 85 100138 minecraft:chest run tp @s 101416.5 87 100144.5 facing 101416.5 86.5 100141.5
+wait 40
+screenshot placements-fortress-mine
+# ---- beholder-seal (in the tunnel's north wall)
+/execute in minecraft:overworld run tp @s 99304.5 -24 100201.5 facing 99304.5 -23.5 100198.5
+wait 200
+screenshot placements-beholder-seal
+# ---- fortress-door, from inside the treasury, and the forge's sealed barrel
+/execute in minecraft:overworld run tp @s 101439.5 88 100118.5 facing 101439.5 88.5 100118.5
+wait 200
+/execute in minecraft:overworld if block 101441 89 100118 minecraft:air run tp @s 101434.5 89 100118.5 facing 101439.5 88.5 100118.5
+/execute in minecraft:overworld if block 101437 89 100118 minecraft:air run tp @s 101444.5 89 100118.5 facing 101439.5 88.5 100118.5
+/execute in minecraft:overworld if block 101439 89 100120 minecraft:air run tp @s 101439.5 89 100113.5 facing 101439.5 88.5 100118.5
+/execute in minecraft:overworld if block 101439 89 100116 minecraft:air run tp @s 101439.5 89 100123.5 facing 101439.5 88.5 100118.5
+wait 40
+screenshot placements-fortress-door
+/execute in minecraft:overworld run tp @s 101465.5 87 100152.5 facing 101465.5 86.5 100152.5
+/execute in minecraft:overworld if block 101468 88 100152 minecraft:air run tp @s 101468.5 88 100152.5 facing 101465.5 86.5 100152.5
+/execute in minecraft:overworld if block 101462 88 100152 minecraft:air run tp @s 101462.5 88 100152.5 facing 101465.5 86.5 100152.5
+/execute in minecraft:overworld if block 101465 88 100155 minecraft:air run tp @s 101465.5 88 100155.5 facing 101465.5 86.5 100152.5
+/execute in minecraft:overworld if block 101465 88 100149 minecraft:air run tp @s 101465.5 88 100149.5 facing 101465.5 86.5 100152.5
+wait 40
+screenshot placements-fortress-forge
+# ---- library-altar (shelves flank it across its row)
+/execute in minecraft:overworld if block 80018 -17 69950 minecraft:bookshelf run tp @s 80017.5 -16 69953.5 facing 80017.5 -17.5 69950.5
+/execute in minecraft:overworld if block 80017 -17 69951 minecraft:bookshelf run tp @s 80020.5 -16 69950.5 facing 80017.5 -17.5 69950.5
+wait 200
+screenshot placements-library-altar
+# ---- stronghold-hidden-door (the corridor is on its +z side), shut and opened
+/execute in minecraft:overworld run tp @s 80031.5 -16.5 69970.3 facing 80031.5 -16.2 69967.5
+wait 120
+screenshot placements-stronghold-hidden-door
+/dndobstacle open 80031 -16 69967
+wait 30
+screenshot placements-stronghold-hidden-door-open
+/dndobstacle reset 80031 -16 69967
+# ---- nether-curtain (the brazier is inside, at -z)
+/execute in minecraft:the_nether run tp @s 52016.5 61 52012.5 facing 52016.5 60.5 52007.5
+wait 200
+screenshot placements-nether-curtain
+/execute in minecraft:overworld run tp @s 0 151 0
+hud on
+wait 20
+quit

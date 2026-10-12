@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Obstacles.StructureObstacles;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -15,6 +17,7 @@ import net.minecraft.block.ChestBlock;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.nbt.NbtCompound;
@@ -36,7 +39,8 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
  * campfire in a stone fire pit ringed by log seats, three hide tents (one on each side but the
  * gate's; the chief's, opposite the gate, holds the loot chest), junk heaps and trophy poles in
  * the corners, and a crude, gappy palisade with a skull-topped gate. The clearing is levelled and
- * any trees in it cut down.
+ * any trees in it cut down. Two wolves are chained to a Guardian Beast post in front of the chief's
+ * tent: a Druid or a Bard calms them, anyone else fights them (the camp's one critical obstacle).
  *
  * Built once per chunk it overlaps, so all of its randomness comes from its own seed, and every
  * random is drawn whether or not the block it's for is in this chunk.
@@ -62,6 +66,8 @@ public class GoblinCampPiece extends StructurePiece {
     private static final float WARLORD_CHANCE = 0.3F;
     /** Goblins keep within this distance of the fire when they aren't fighting. */
     private static final int ROAM = 10;
+    /** Wolves chained to the Guardian Beast post in front of the chief's tent. */
+    private static final int GUARD_WOLVES = 2;
 
     private static final Block[] HIDES = {Blocks.BROWN_WOOL, Blocks.GREEN_WOOL, Blocks.GRAY_WOOL, Blocks.LIME_WOOL, Blocks.BLACK_WOOL};
 
@@ -189,6 +195,13 @@ public class GoblinCampPiece extends StructurePiece {
             this.spawn(world, chunkBox, ModEntityTypes.GOBLIN_WARLORD.create(world.toServerWorld()),
                     this.at(chief, 2, 0, 1), gate.asRotation());
         }
+
+        // The chief's guard wolves, chained to a post beside the tent's ridge pole. Last, and drawing no randoms,
+        // so camps generated before it was added still match across chunk borders.
+        StructureObstacles.guardianPost(world, chunkBox, this.at(chief, TENT_FRONT - 1, 2, 1), EntityType.WOLF,
+                List.of(this.at(chief, TENT_FRONT - 2, 2, 1), this.at(chief, TENT_FRONT - 1, 3, 1),
+                        this.at(chief, TENT_FRONT - 2, 1, 1)),
+                GUARD_WOLVES, Tier.EASY, true);
     }
 
     /** A hide tent, open towards the fire, with its back {@link #TENT_BACK} blocks out on {@code side}. */

@@ -165,8 +165,25 @@ Obstacles can't be dug or built round. In survival, nobody can place a block in,
 Creative players open obstacles by right-clicking (no roll, no XP) and ignore the protected volume, so DMs can test. Spectators ignore obstacles.
 
 ## Where to find it
+Structures generated after this change have these (only the goblin camp's post is critical):
+
+| Structure | Obstacle | Tier | Behind it |
+|-|-|-|-|
+| [Goblin camp](../structures/goblin-camps.md) | Guardian Beast post in front of the chief's tent, 2 wolves bound to it | Easy, **critical** | The chief's tent. Fallback: fight the wolves |
+| [Dwarven fortress](../structures/dwarven-fortresses.md) treasury | Clockwork Door filling the 3x3 doorway | Hard | The treasury. Smashing it angers the dwarves who see it |
+| Dwarven fortress mine | 2x2x2 Collapsed Passage in a back corner | Medium | An ore pocket with a mine chest |
+| Dwarven fortress forge | Alchemical Seal on a barrel in a back corner | Medium | Reagents (`chests/dwarven_fortress_reagents`) |
+| [Dragon lair](../structures/dragon-lairs.md) and [frost lair](../structures/frost-lairs.md) | 2x2x2 Heavy Boulder in a cairn against the rim, north or south of the nest | Hard | A second hoard chest |
+| [Beholder lair](../bosses/beholder.md) | 2x2 Greater Arcane Seal in the tunnel's north wall | Very Hard | A side vault with a hoard chest. The Beholder's Anti-Magic stops the dispel, so clear it first |
+| Stronghold library ([Lich](../bosses/lich.md)) | Desecrated Altar in the middle row, 3 blocks from the phylactery spot | Hard | Consecrated, it quiets spawners within 12 blocks and the Lich's raised dead rise at half health |
+| [Nether fortress](../structures/nether-fortresses.md) start crossing | 2x2x2 Fire Curtain into a nether-brick vault in one corner, with its brazier inside | Hard | Blaze rods (`chests/nether_fortress_cache`) |
+| Vanilla mineshaft corridors (10% of those 2+ segments long) | 3x3x2 Collapsed Passage between two support frames | Easy | The rest of the corridor |
+| Vanilla stronghold corridors (15% of the 5x5x7 ones) | 1x2 Hidden Door in a side wall without an exit | Hard | A 5x5 closet with a stronghold corridor chest |
+
+Hobbit villages and the tavern get none.
+
 - [Dungeon gates](dungeon-puzzles-and-gates.md): a dungeon's main-path gate can be a Collapsed Passage, a Holy Ward or an Ossuary Gate, and its side vault can be sealed by a Heavy Boulder or a Blood Seal (dungeons generated after each change).
-- Other structure placements come in a later ticket. Operators can place obstacles with `/dndobstacle place`, and creative players can take the blocks from the DnD Classes creative tab (hand-placed obstacles are Medium). The Chasm Bridge item places the invisible retracted bridge.
+- Operators can place obstacles with `/dndobstacle place`, and creative players can take the blocks from the DnD Classes creative tab (hand-placed obstacles are Medium). The Chasm Bridge item places the invisible retracted bridge.
 
 ## Commands
 Operators (permission level 2):
@@ -183,6 +200,7 @@ Operators (permission level 2):
 | `/dndobstacle traps` | Lists the vanilla temple traps within 256 blocks (trigger position, armed or disarmed) |
 | `/dndobstacle traps tp` | Teleports you to a safe spot beside the nearest temple trap trigger |
 | `/dndobstacle list [radius]` | Lists obstacle groups near you (default 64 blocks) |
+| `/dndobstacle template <template> <pos> [<tier> \| depth <n>]` | Places a structure template through the `dndclasses:obstacle_tier` processor, retiering its obstacles (see [Obstacles in structures and templates](../dev/obstacle-templates.md)) |
 | `/dndobstacle sleep [radius]` | Lays every undead mob within the radius (default 8) down as a Crypt Sleeper |
 | `/dndobstacle wake [radius]` | Wakes the Crypt Sleepers within the radius (default 8) |
 
@@ -210,7 +228,11 @@ None.
 - A Singing Door's phrase progress is kept in memory and shared by everyone at the door, so two players playing at once interleave their notes.
 - A calmed Guardian Beast ignores players even if one of them hits it; it fights back again once the post reseals.
 - An Owlbear won at a post follows the Bard as an Animal Friends companion, outside the companion cap. When its day is up it goes wild again (it's still an Owlbear).
-- Guardian Beast posts, Thornwalls and Singing Doors aren't placed in any structure yet (that's the structure placements ticket); place them with `/dndobstacle place`.
+- Thornwalls, Singing Doors, Holy Wards, Dread Wards, Ossuary Gates, Blood Seals, Miasma Vents, Portcullises and Chasms aren't placed in any existing structure; dungeons and `/dndobstacle place` use them.
+- Structures generated before this change keep their old layout. One that was half generated gets its obstacles only in the chunks generated since.
+- A stronghold corridor's hidden closet is only built where it fits: clear of the stronghold's other rooms and in chunks the corridor itself generates in. Corridors near a chunk corner rarely get one.
+- A goblin camp's guard wolves only keep to their post while a player is within 48 blocks of it, so they can wander off in between.
+- The walls round a side vault or cache are ordinary blocks: you can dig round an obstacle from further out than its 1-block protected shell.
 - Burrow (a crawl tunnel for a Druid in a small Wild Shape form) isn't built: it needs the Identity mod's small forms.
 - A smashed Clockwork Door loses the block you broke (the rest of the door opens), so `/dndobstacle reset` can't bring that block back.
 - An Alchemical Seal over a locked loot chest still leaves the chest locked: a Rogue picks it once the resin is gone (or it's smashed open with the usual ruin). Breaking the resin rolls and ruins the cache straight away, so its chest is no longer locked.
@@ -227,6 +249,8 @@ None.
   - `ObstacleIndex` (`PersistentState`, per dimension): every obstacle block by chunk, filled as block entities load and emptied when the block is removed.
   - `ObstacleEvents.SOLVED` (quests) and `ObstacleEvents.ALARM` (dungeons).
   - `ObstaclePlacer`: the worldgen API. `place`, `doorway` and `box` only write blocks inside the `chunkBox` you pass, like chest loot in `LairPiece`.
+  - `StructureObstacles` (position-only group seeds, pre-bound Guardian Beast posts) and `ObstacleTierProcessor` (`dndclasses:obstacle_tier`, for NBT templates and jigsaw pieces). See [Obstacles in structures and templates](../dev/obstacle-templates.md).
+  - Placements: `FortressPiece.Builder.obstacle` (`TreasuryPiece`, `MinePiece`, `ForgePiece`), `GoblinCampPiece`, `LairPiece.sideCache`, `BeholderCavernPiece.sideVault`, and the mixins `StrongholdLibraryMixin` (altar), `NetherFortressStartMixin` (curtain vault), `MineshaftCollapseMixin` and `StrongholdHiddenClosetMixin`. `LichEntity.castRaiseDead` asks `DesecratedAltarType.consecratedNear(world, pos, 24)`.
 - `ObstacleType.skill()` returns an `Abilities.Skill` (`ARCANA` for the seals). `ObstacleInteractions` rolls `SkillCheck.builder(player, type.skill(), tier.dc, "obstacle")`, and take your time rolls the same builder with `.take(20)` (a fixed natural that is never a crit or a fumble).
 - `ObstacleType.eligibility(DndCharacter)` returns `SkillChecks/Eligibility` (`PRIMARY`, `SECONDARY`, `UNTRAINED`, `NONE`). It only decides who may try and the order classes are named in hints; it doesn't change the modifier.
 - Anything that should change obstacle rolls (races, subclasses, magic items) adds an `AbilityContributor` with `AbilityScores.register(id, contributor)`; a contributor can grant advantage on rolls tagged `obstacle`.

@@ -9,7 +9,7 @@ Fell a whole tree by breaking one log.
 - Each log is broken as if you mined it: Fortune applies, each log costs durability (it stops when the axe breaks), creative mode drops nothing, and protection/claim mods can refuse logs.
 - Works on oak, spruce, birch, jungle, acacia, dark oak, mangrove and cherry logs, and crimson and warped stems.
 
-## Where to find it / How to get it
+## Where to find it
 - Enchanting table, as an [Artificer](../classes/artificer.md), on an axe (or a book).
 - Anvil: a Tree Feller book goes on any axe. Other tools refuse it.
 

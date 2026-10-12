@@ -11,7 +11,7 @@ A quick martial artist with the fastest attacks in the mod and a triple jump. Yo
 
 **Triple jump.** Press jump in mid-air while falling for up to two extra jumps. They reset when you land or climb. Each extra jump resets your fall distance, so fall damage counts from the top of the last jump. You can't air-jump while wearing a usable elytra, gliding, riding, in water or levitating. This is always on and doesn't use mana.
 
-**Staff or fists only.** Attacking with anything other than the [Monk Staff](../items/staffs.md#monk-staff) or an empty hand is cancelled, with "Monks can only fight with a staff or bare fists!". Craft the staff from 3 sticks in a diagonal line.
+**Staff or fists only.** Attacking with anything other than the [Monk Staff](../items/staffs.md#monks-staff) or an empty hand is cancelled, with "Monks can only fight with a staff or bare fists!". Craft the staff from 3 sticks in a diagonal line.
 
 **Armor penalty.** Your damage is multiplied by `0.75 / (1 + armor / 10)`:
 
@@ -74,6 +74,11 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 How the features work:
 - **Open Hand Technique** (Open Hand): every hit of Flurry Rush gives its target Slowness II for 2 s and knocks it back (strength 0.4) away from you.
 - **Tipsy Sway** (Drunken Master): with no chestplate on, each melee hit has a 15% chance to miss you completely (no damage or knockback; the action bar says so). Arrows, other projectiles and the void aren't affected. Drinking [Ale](../structures/hobbit-tavern.md) gives 2 mana pips.
+
+## Where to find it
+- Pick the Monk in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> monk`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- Craft the [Monk Staff](../items/staffs.md#monks-staff) from 3 sticks in a diagonal line.
 
 ## Commands
 - `/dndclass set <player> monk` (see [Admin commands](../systems/admin-commands.md)).

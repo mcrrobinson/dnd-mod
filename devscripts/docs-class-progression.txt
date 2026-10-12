@@ -1,6 +1,10 @@
 # Docs screenshots for docs/systems/class-progression.md. Run: timeout 300 ./gradlew runClient -PdevRunDir=run-classes -PdevScript=devscripts/docs-class-progression.txt
 # Screenshots: progression-table (the Attunement Table block), progression-tree (Necromancer tree with rank pips),
-# progression-bestiary (Druid bestiary tab with learned and unlocked creatures)
+# progression-bestiary (Druid bestiary tab: Wild Shape rank II, cow and wolf unlocked (green), pig ready (gold),
+# horse (tier III) and owlbear (tier IV) locked (grey)), progression-budget (Thief Rogue at level 10 with every
+# reachable node and Vanish IV: 0 points left, Danger Sense's tooltip says "Next rank needs 1 point").
+# Expect in latest.log: the Druid's progress line (bestiary [minecraft:cow, minecraft:wolf]) and the Rogue's
+# (subclass rogue.thief, 0 points).
 wait 40
 closescreen
 /gamemode creative
@@ -49,8 +53,9 @@ closescreen
 /dndclass bestiary @s learn minecraft:cow
 /dndclass bestiary @s learn minecraft:pig
 /dndclass bestiary @s learn minecraft:wolf
-/dndclass bestiary @s learn minecraft:fox
+/dndclass bestiary @s learn minecraft:horse
 /dndclass bestiary @s learn dndclasses:owlbear
+skill bestiary minecraft:cow
 /dndclass bestiary @s unlock minecraft:cow
 /dndclass bestiary @s unlock minecraft:wolf
 /tp @s 4.5 150 2.5 0 40
@@ -62,5 +67,30 @@ wait 10
 screenshot progression-bestiary
 closescreen
 /dndclass progress @s
+/dndclass resetprogress @s
+# Point budget: a Thief Rogue can't have everything at level 10
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass subclass @s rogue.thief
+/dndclass unlock @s rogue.light_feet
+/dndclass unlock @s rogue.smoke_bomb
+/dndclass unlock @s rogue.danger_sense
+/dndclass unlock @s rogue.fleet
+/dndclass unlock @s rogue.backstab
+/dndclass unlock @s rogue.death_mark
+/dndclass rank @s rogue.vanish 4
+/dndclass progress @s
+/tp @s 4.5 150 2.5 0 40
+wait 10
+use
+wait 20
+hover 0 14
+wait 10
+screenshot progression-budget
+closescreen
 /dndclass resetprogress @s
 quit

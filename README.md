@@ -68,7 +68,7 @@ Every class has a special ability. Fill the 9-pip mana bar (18 seconds) and pres
 At 0 HP with a party member nearby you go **Downed** and roll death saves instead of dying; alone, you get one Last Stand roll. See [Downed and death saves](docs/systems/death-saves.md).
 
 ### Class Progression
-Classes level up to 10 with class XP. Each level gives a skill point to spend on the class skill tree or on ranking up abilities at an Attunement Table. At level 3 you choose a subclass, one of the tree's two branches. Bards and Druids keep a bestiary of the creatures they have killed. See [Class progression](docs/systems/class-progression.md).
+Classes level up to 10 with class XP. Each level gives a skill point to spend on the class skill tree or on ranking up abilities at an Attunement Table. At level 3 you choose a subclass, one of the tree's two branches. Druids keep a bestiary of the creatures they have killed, and Bards of the animals they have charmed with music. See [Class progression](docs/systems/class-progression.md).
 
 ### Parties
 `/party` lets players group up: shared XP, no friendly fire, a party health HUD and a party-aware Cleric special. See [Party](docs/systems/party.md).
@@ -108,7 +108,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Dwarven Fortresses](docs/structures/dwarven-fortresses.md) carved into mountainsides (`dndclasses:dwarven_fortress`).
 - [Orc Strongholds](docs/structures/orc-strongholds.md): palisaded warcamps in the badlands, hostile except to Half-Orcs, with a War Chief boss and the Trial of Strength (`dndclasses:orc_stronghold`).
 - [Brimstone Sanctums](docs/structures/brimstone-sanctums.md): walled Tiefling chapel-towns on pillared platforms in the Nether's crimson forests and soul sand valleys (`dndclasses:brimstone_sanctum`).
-- [Dungeons](docs/structures/dungeons.md): underground Crypts with a stair down to a planned route of rooms, a boss room and a vault (`/locate structure #dndclasses:dungeons`). Rooms seal and fill with monsters scaled to your party, up to a Lich; see [Dungeon encounters](docs/systems/dungeon-encounters.md).
+- [Dungeons](docs/structures/dungeons.md): underground Crypts, Goblin Warrens and Dwarven Ruins with a planned route of rooms, a boss room and a vault (`/locate structure #dndclasses:dungeons`). Rooms seal and fill with monsters scaled to your party, up to a Lich, the Goblin Warlord or the Beholder; see [Dungeon encounters](docs/systems/dungeon-encounters.md).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.
 - Beholder Lairs: sealed domed caverns deep in the deepslate, reached by a spiral stair (`dndclasses:beholder_lair`). See [Beholder](docs/bosses/beholder.md).
 

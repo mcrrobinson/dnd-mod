@@ -16,7 +16,7 @@ The home of a [Frost Drake](../mobs/dragons.md), on the summit of a Frozen Peaks
 
 ![The frost lair from above](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-frost-drake/frost_lair-top.png)
 
-## Where to find it / How to get it
+## Where to find it
 - Frozen Peaks only. Structure set spacing 12 chunks, separation 4.
 - It's never within 6 chunks of a dragon lair or a dwarven fortress that actually generates (both can also be on Frozen Peaks). Dragon lairs still generate on Frozen Peaks too.
 

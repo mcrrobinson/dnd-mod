@@ -17,7 +17,7 @@ Featherfall is an Artificer-only boots enchantment (I-III). It's a stronger repl
 - Slow falling doesn't kick in while you're gliding with an elytra, flying, swimming, in lava, climbing, riding or in spectator.
 - A Slow Falling potion you already have is never shortened.
 
-## How to get it
+## Where to find it
 - Enchant boots at an enchanting table as an **Artificer**. Other classes never roll it. It's Uncommon, with the same enchanting-level range as Feather Falling.
 - Commands: `/give @s diamond_boots{Enchantments:[{id:"dndclasses:featherfall",lvl:3s}]}` or `/enchant @s dndclasses:featherfall 3`.
 

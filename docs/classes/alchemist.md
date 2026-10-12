@@ -29,6 +29,11 @@ How the features work:
 - **Mutagen** (Mutagenist): drinking any potion with an effect also gives you Strength I for 10 s (not lengthened by Potent Brews). Water and other effectless bottles don't count, and nor do splash or lingering potions.
 - **Transmuter's Eye** (Transmuter): Instant Health from a potion you drink heals 50% more (Healing: 3 hearts instead of 2; Healing II: 6 instead of 4). A Transmuter also identifies every unidentified [potion](../systems/magic-items.md#identification) that enters their inventory.
 
+## Where to find it
+- Pick the Alchemist in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> alchemist`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- The Fast Brewing Stand is crafted from a row of blaze rod, brewing stand, blaze rod, or taken from the D&D Classes creative tab. See [Potions and brewing](../items/potions-and-brewing.md).
+
 ## Known limitations
 - The class blurb mentions random potion backfires. They aren't implemented.
 

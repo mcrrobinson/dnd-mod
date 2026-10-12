@@ -64,8 +64,6 @@ public class GoblinCampPiece extends StructurePiece {
     private static final int TENT_HALF_WIDTH = 3;
     /** Chance of a Goblin Warlord leading the camp. */
     private static final float WARLORD_CHANCE = 0.3F;
-    /** Goblins keep within this distance of the fire when they aren't fighting. */
-    private static final int ROAM = 10;
     /** Wolves chained to the Guardian Beast post in front of the chief's tent. */
     private static final int GUARD_WOLVES = 2;
 
@@ -85,6 +83,11 @@ public class GoblinCampPiece extends StructurePiece {
         super(GoblinCampStructures.CAMP, nbt);
         this.center = NbtHelper.toBlockPos(nbt.getCompound("Center"));
         this.seed = nbt.getLong("Seed");
+    }
+
+    /** The camp's middle, at ground level; the fire is one block up. */
+    public BlockPos getCenter() {
+        return this.center;
     }
 
     @Override
@@ -302,8 +305,8 @@ public class GoblinCampPiece extends StructurePiece {
         goblin.initialize(world, world.getLocalDifficulty(at), SpawnReason.STRUCTURE, null, null);
         if (goblin instanceof GoblinWarlordEntity warlord) {
             warlord.setGuardPos(this.center.up());
-        } else if (goblin instanceof GoblinWarriorEntity) {
-            goblin.setPositionTarget(this.center.up(), ROAM);
+        } else if (goblin instanceof GoblinWarriorEntity warrior) {
+            warrior.setCampCenter(this.center.up());
         }
         goblin.setPersistent();
         world.spawnEntityAndPassengers(goblin);

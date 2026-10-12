@@ -1,0 +1,58 @@
+# Goblin camp leash survives a chunk reload: a fresh camp's warriors stay within about 10 blocks of the fire
+# (CampCenter in their NBT) after the player leaves, the camp unloads, and the player comes back.
+# Uses the camp nearest 40000, 40000 in the dev world (/locate from there says 38304 39024; the fire, which the
+# goblins save as CampCenter, is at 38312 77 39032), generated fresh the first time. Run on a copy of the world
+# that has never been there to see it fresh; a second run on an old-build copy tests the old-camp fallback.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/goblin-camp-leash.txt
+# Check in <run dir>/logs/latest.log: after each "leash-<step>" chat line, one "has the following entity data"
+# line per warrior with its Pos, and CampCenter at the start and end. Horizontal distance from 38312 39032 should
+# stay within about 12 (10 roam plus overshoot) at every step. After "leash-strayed", "Test failed" means no
+# warrior is more than 16 blocks (on x or z) from the fire; "Test passed, count: N" means N strayed.
+wait 40
+closescreen
+include _reset.txt
+# Clearing race and class reopens the pickers, which pause the game: close them again.
+wait 40
+closescreen
+/gamemode spectator
+/gamerule doDaylightCycle true
+/tp @s 38312 160 39032 0 90
+wait 300
+waitserver 2
+/say leash-fresh
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160,limit=1] run data get entity @s CampCenter
+wait 1200
+/say leash-fresh-1min
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+# Leave so the camp's chunks unload, then come back.
+/tp @s 45000 200 45000
+wait 600
+waitserver 2
+/tp @s 38312 160 39032 0 90
+wait 200
+waitserver 2
+/say leash-reloaded
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+wait 1200
+/say leash-reloaded-1min
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+wait 1200
+/say leash-reloaded-2min
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+wait 1200
+/say leash-reloaded-3min
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s CampCenter
+/say leash-strayed
+/tag @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] add leash_stray
+/tag @e[type=dndclasses:goblin_warrior,x=38296,y=-64,z=39016,dx=32,dy=400,dz=32] remove leash_stray
+/execute if entity @e[tag=leash_stray]
+/tag @e[tag=leash_stray] remove leash_stray
+screenshot goblin-camp-leash
+/gamerule doDaylightCycle false
+/time set 6000
+/tp @s 0.5 150 0.5
+/gamemode creative
+wait 20
+quit

@@ -42,7 +42,7 @@ Goblins are allied with the Bloodtusk Horde of the [Orc Strongholds](../structur
 - `/summon dndclasses:goblin_warrior`
 
 ## For developers
-- `entity/GoblinWarriorEntity`: stats and the slow swing (`SlowMeleeAttackGoal`, `ATTACK_INTERVAL` 40 ticks, `WIND_UP` 10 ticks). GeckoLib, with an `attack_controller` for one-shot animations that the Warlord reuses.
+- `entity/GoblinWarriorEntity`: stats and the slow swing (`SlowMeleeAttackGoal`, `ATTACK_INTERVAL` 40 ticks, `WIND_UP` 10 ticks). GeckoLib, with an `attack_controller` for one-shot animations that the Warlord reuses. Camp goblins get `setCampCenter` (position target, `CAMP_ROAM` 10, saved as `CampCenter`; `GoToWalkTargetGoal` walks them back); goblins from camps that predate it find their camp once per load (`GoblinCampLaw.campCenterNear`, 64 blocks).
 - Fortress spawns: `classes/mixin/SpawnHelperMixin`.
 - Loot: `loot_tables/entities/goblin_warrior.json`.
 - Reputation: the player target goal's predicate and a `setTarget` filter use `TierEffects.goblinMayTarget`; `mobTick` drops a player target that's no longer allowed. `rallyAgainst` lets the Warlord call its kin onto whoever hit it; `provokeByTheft` (the camp chief's chest, `GoblinCampLaw`) gives a grudge that ignores standing and lasts while the fight does and 30 s after.

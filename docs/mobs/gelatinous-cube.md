@@ -99,5 +99,5 @@ So you'll meet it in caves and dungeons, never on the surface. It needs a 2 x 2 
 - Assets: `geo/entity/gelatinous_cube.geo.json`, `animations/entity/gelatinous_cube.animation.json` (`idle`, `walk`, `engulf`), `textures/entity/gelatinous_cube.png`.
 - The engulf save is `GrabSaves.CUBE_ENGULF` (`entity/GrabSaves.java`, DEX `CUBE_ENGULF_DC` 12, `CUBE_SPURN_TICKS` 20), rolled in `engulfTouching` for anything not already inside. A success uses the same `spatOut` immunity map as spitting out a Downed player.
 - `devscripts/grab-saves.txt` checks the save with `forceroll` (20: pushed out; 2: engulfed and slowed).
-- Devscript: `devscripts/gelatinous-cube.txt` takes screenshots and checks absorbing a diamond, engulfing a pig and the drops on death (the pig now saves too, so it slips out about half the time):
+- Devscript: `devscripts/gelatinous-cube.txt` takes screenshots and checks absorbing a diamond, engulfing a pig and the drops on death (the pig's DEX save is rigged to fail with `/dndclass forceroll`, which takes a mob too):
   `timeout 300 ./gradlew runClient -PdevScript=devscripts/gelatinous-cube.txt`

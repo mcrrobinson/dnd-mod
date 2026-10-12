@@ -3,6 +3,7 @@
 # The last check also finds 1 snowball: the returned enchanted one, while the plain snowball is used up (see `slots`).
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /time set noon

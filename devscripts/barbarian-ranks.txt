@@ -7,6 +7,7 @@
 # Screenshot: barbarian-rage-tree (Rage tooltip with Now/Next lines at the table)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

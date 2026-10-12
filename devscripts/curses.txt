@@ -17,6 +17,7 @@
 # 14. Loot: 34 rolls of dndclasses:magic/uncommon, some with a curse (grep the Inventory dump for curse:)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /difficulty easy
 /gamerule doDaylightCycle false

@@ -6,6 +6,7 @@
 #     at most once every 5 s; none as a Champion
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

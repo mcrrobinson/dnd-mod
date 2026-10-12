@@ -3,6 +3,7 @@
 # Screenshots: bone-wyvern-front, -front2, -side, -back (third person), bone-wyvern-close
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

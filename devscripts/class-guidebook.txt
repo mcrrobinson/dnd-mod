@@ -4,6 +4,7 @@
 # dndclasses:class_guidebook in the Inventory; screenshot class-guidebook shows the Warlock page.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /clear @s
 /dndclass set @s warlock

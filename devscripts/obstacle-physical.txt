@@ -9,6 +9,7 @@
 #  Wizard (solo fallbacks): mines through the rubble, a TNT clears the whole boulder, and two portcullis bars mine out.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

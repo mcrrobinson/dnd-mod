@@ -8,6 +8,7 @@
 #  - Pos about 1000.5, 151.0, 1018.5 after Blink, and "veiled: <name>" in /dm status after sneak + use in Blink mode
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode creative
 /time set noon

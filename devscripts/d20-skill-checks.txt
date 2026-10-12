@@ -4,6 +4,7 @@
 # a Bard's sneak + right-click on a librarian rolls Persuasion (d20-persuade-*) and adds minor_positive Gossips.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

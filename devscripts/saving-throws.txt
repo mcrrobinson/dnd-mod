@@ -14,6 +14,7 @@
 # - /dm check stealth: "Stealth 10 +6 = 16 vs DC 15 -> SUCCESS" on the big panel (saves-check)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

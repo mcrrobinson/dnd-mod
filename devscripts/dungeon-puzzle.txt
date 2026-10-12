@@ -6,6 +6,7 @@
 # Check: [Puzzle], [Gate] and [CHAT] lines in logs/latest.log ("Test passed"), screenshots/dungeon-puzzle-*.png.
 wait 40
 closescreen
+include _reset.txt
 /time set midnight
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

@@ -6,6 +6,7 @@
 #  4. Lycan: Hybrid Transformation's Strength Duration ~400 (20 s)
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

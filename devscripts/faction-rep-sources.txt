@@ -5,6 +5,7 @@
 # Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/faction-rep-sources.txt
 wait 40
 closescreen
+include _reset.txt
 /difficulty normal
 /gamemode survival
 /effect give @s minecraft:resistance 900 4 true

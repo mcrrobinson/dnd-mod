@@ -3,6 +3,7 @@
 # Output: <run dir>/screenshots/cls-*.png. Grass stage at y=200; each class waits ~19 s after the switch so the mana bar is full.
 wait 40
 closescreen
+include _reset.txt
 hud off
 /gamerule doDaylightCycle false
 /gamerule doWeatherCycle false

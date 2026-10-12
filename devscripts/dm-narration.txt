@@ -1,0 +1,91 @@
+# DM narration, NPC voice, mood music and loot planting.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-narration.txt
+# Expect in latest.log:
+#   [CHAT] lines for the narration ("✦ The door groans open..."), "<Gimli Stonebeard> ..." and the loot feedback;
+#   "[BossMusic] bar ... track dndclasses:music.dragon_fight" and "[EventMusic] ... -> BOSS_FIGHT" after /dm mood boss,
+#   then "track off" after /dm mood off;
+#   "Unknown rarity common"; "Planted a chest of minecraft:chests/simple_dungeon at 1, 150, 4 (locked, DC 18)";
+#   a "[D20] Dev Lockpicking 8 +6 = 14 vs DC 18 -> FAILURE (a pass at the default DC 10)" line; /data get block shows DndLockDc: 18 and the LootTable;
+#   the mimic test passes.
+# Screenshots: dm-narrate (chat), dm-title, dm-say (bubble over the dwarf), dm-loot-locked (Fighter: "Locked"),
+#   dm-loot-pick (Rogue's roll vs DC 18), dm-loot-mimic.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 6 149 7 minecraft:stone
+/fill 0 150 0 6 153 7 minecraft:air
+/clear @s
+/dndclass set @s fighter
+/tp @s 3.5 150 1.5 0 10
+wait 20
+clearchat
+# Narration: everyone, then a selector; *word* is bold
+/dm narrate The door groans *open*, and cold air spills from the crypt below.
+/dm narrate @a[distance=..50] Only you hear the whisper: *turn back*.
+wait 10
+screenshot dm-narrate
+# Title with a subtitle
+/dm title Chapter One | The Sunken Crypt
+wait 25
+screenshot dm-title
+wait 80
+# NPC voice, in the Mountain Dwarves' colour, with a speech bubble
+clearchat
+/summon dndclasses:mountain_dwarf 3.5 150 5.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],CustomName:'"Gimli Stonebeard"'}
+wait 10
+/dm say @e[type=dndclasses:mountain_dwarf,limit=1,sort=nearest] Mind your step, the stones here remember.
+wait 12
+screenshot dm-say
+# Mood music
+/dm mood boss
+wait 40
+/dm mood off
+wait 20
+# Loot straight to the player
+clearchat
+/dm loot give @s minecraft:chests/simple_dungeon
+/dm loot give @s magic rare
+/dm loot give @s magic common
+wait 10
+screenshot dm-loot-give
+# Plant: at the looked-at block (default DC) and at a position with a DC override
+/kill @e[type=dndclasses:mountain_dwarf]
+/tp @s 3.5 150 1.5 0 35
+wait 5
+/dm loot plant minecraft:chests/simple_dungeon
+/dm loot plant minecraft:chests/simple_dungeon 1 150 4 dc 18
+/dm loot plant minecraft:chests/village/village_weaponsmith 5 150 4
+/data get block 1 150 4
+/execute if block 3 150 3 minecraft:chest
+/tp @s 1.5 150 2.5 0 35
+wait 20
+clearchat
+use
+wait 3
+screenshot dm-loot-locked
+/dndclass set @s rogue
+wait 10
+/dndclass forceroll @s 8
+use
+wait 20
+screenshot dm-loot-pick
+closescreen
+/data get block 1 150 4
+/execute if data block 1 150 4 LootTable
+# A dormant mimic
+/setblock 5 150 4 minecraft:air
+/dm loot plant mimic minecraft:chests/simple_dungeon 5 150 4
+wait 10
+/execute if entity @e[type=dndclasses:mimic,x=5,y=150,z=4,distance=..1.5]
+/tp @s 3.5 150 1.5 -35 20
+wait 10
+screenshot dm-loot-mimic
+/kill @e[type=dndclasses:mimic]
+/setblock 3 150 3 minecraft:air
+/setblock 1 150 4 minecraft:air
+quit

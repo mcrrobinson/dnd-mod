@@ -21,7 +21,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant; subclass features
 
 ## Races
-- [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Races](races/races.md): the race picker, 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Dragonborn Breath Weapon](races/breath-weapon.md): B breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [d20 and combat racial traits](races/combat-traits.md): Halfling Lucky rerolls natural 1s (clover on the HUD), Half-Orc Savage Attacks (x2.5 crits) and Relentless Endurance (1 HP instead of dying, 10 min), Tiefling Hellish Rebuke (melee attackers burn, 20 s)
 - [Passive racial traits](races/passive-traits.md): Darkvision, half damage from fire (Tiefling) or your breath element (Dragonborn), Gnome -30% magic, Dwarf half poison and +20% mining with hidden doorways outlined, Elf Keen Senses and Trance, Halfling Second Breakfast, Gnome Tinker, Human +10% XP and +2 social checks
@@ -29,6 +29,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
+- [Character creation](systems/character-creation.md): new players pick race and class on one screen with a combined summary (health, speed, ability scores, traits) and one chat intro
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up; a downed HUD, party status and red ally outlines show who's down
@@ -43,7 +44,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
 - [Creature study](systems/creature-study.md): V on a creature rolls Religion, Nature, Arcana or Insight (DC 10/13/15) for a card of its health, armour, save-calling attacks and immunities; a natural 20 adds its weakness; Insight reads villagers and dwarves
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking (chests and doors, with a lock glint for Rogues and Rangers), searching walls, persuasion, Arcana, crits and fumbles
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, and divine and death obstacles (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers, Blood Seals) for Clerics, Paladins, Necromancers and Blood Hunters, Hidden Doors, Locked Doors and temple traps for Rangers and Rogues, and craft and element obstacles (Clockwork Doors, Alchemical Seals, Miasma Vents, Fire Curtains) for Artificers, Alchemists and Warlocks, with a crosshair hint and `/dndobstacle`, rolled from the character sheet (PR #196)
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, and divine and death obstacles (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers, Blood Seals) for Clerics, Paladins, Necromancers and Blood Hunters, Hidden Doors, Locked Doors and temple traps for Rangers and Rogues, Guardian Beasts, Thornwalls and Singing Doors for Druids and Bards, and craft and element obstacles (Clockwork Doors, Alchemical Seals, Miasma Vents, Fire Curtains) for Artificers, Alchemists and Warlocks (PR #196), with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
@@ -52,7 +53,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
-- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters, freeze and roll calls on the d20 HUD for running a session
+- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters, freeze, roll calls on the d20 HUD, narration, NPC voice, mood music, loot planting and the DM Wand for running a session
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion (splits at half health) and the Lich boss leashed to its reliquary
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault

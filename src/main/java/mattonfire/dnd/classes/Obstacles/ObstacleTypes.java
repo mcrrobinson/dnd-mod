@@ -115,9 +115,11 @@ public final class ObstacleTypes {
     public static final ObstacleBlock LOCKED_DOOR_BLOCK = register(LOCKED_DOOR,
             solidSettings(Material.METAL, BlockSoundGroup.METAL));
 
-    // Craft and element obstacles: Artificers, Alchemists and Warlocks. They register from their own file, and
-    // must do so here, before the shared block entity type is built from every obstacle block.
+    // Nature and song (Druids and Bards) and craft and element (Artificers, Alchemists and Warlocks) obstacles.
+    // They register from their own files, and must do so here, before the shared block entity type is built
+    // from every obstacle block.
     static {
+        NatureSongObstacles.init();
         CraftElementObstacles.init();
     }
 

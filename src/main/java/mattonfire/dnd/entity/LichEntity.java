@@ -358,6 +358,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
     // ---------------------------------------------------------------- spells
 
     private void cast(ServerWorld world, Spell spell, @Nullable LivingEntity target) {
+        MobActions.log(this, "cast " + spell, target);
         switch (spell) {
             case WITHER_BOLT -> this.castWitherBolt(world, target);
             case RAY_OF_FROST -> this.castRayOfFrost(world, target);

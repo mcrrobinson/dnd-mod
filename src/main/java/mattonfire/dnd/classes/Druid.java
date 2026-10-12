@@ -24,6 +24,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Language;
 import net.minecraft.util.TypeFilter;
 
 /**
@@ -242,9 +243,20 @@ public class Druid {
 
         data.putLong(FORM_EXPIRY_KEY,
                 player.getWorld().getTime() + DruidSkills.WILD_SHAPE.ticks(progress, "Duration"));
-        player.sendMessage(Text.literal("You take the form of a ").append(form.getName()).append(".")
+        player.sendMessage(Text.literal("You take the form of " + article(type) + " ").append(form.getName()).append(".")
                 .formatted(Formatting.DARK_GREEN), true);
         return true;
+    }
+
+    /**
+     * "a" or "an" for the form's English name. A dedicated server has no mod lang file, so it falls back to the
+     * registry path ({@code owlbear}) rather than the untranslated key.
+     */
+    private static String article(EntityType<?> type) {
+        Language language = Language.getInstance();
+        String key = type.getTranslationKey();
+        String name = language.hasTranslation(key) ? language.get(key) : Registries.ENTITY_TYPE.getId(type).getPath();
+        return !name.isEmpty() && "aeiou".indexOf(Character.toLowerCase(name.charAt(0))) >= 0 ? "an" : "a";
     }
 
     private static void revertForm(ServerPlayerEntity player) {

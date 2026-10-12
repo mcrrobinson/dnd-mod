@@ -237,6 +237,8 @@ public final class BossItems {
     }
 
     private static void registerHooks() {
+        WarlordsWarhornItem.registerCooldownMessage();
+
         // Phylactery Locket: before the Downed rules (which would down or kill you), like a totem
         Identifier locketPhase = new Identifier(DnDClasses.MOD_ID, "phylactery_locket");
         ServerLivingEntityEvents.ALLOW_DEATH.addPhaseOrdering(locketPhase, Event.DEFAULT_PHASE);

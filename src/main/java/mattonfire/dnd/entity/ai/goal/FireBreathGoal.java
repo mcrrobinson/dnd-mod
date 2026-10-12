@@ -47,6 +47,7 @@ public class FireBreathGoal<T extends MobEntity & FireBreather> extends Goal {
     @Override
     public void start() {
         this.dragon.getNavigation().stop();
+        mattonfire.dnd.entity.MobActions.log(this.dragon, "breath", this.dragon.getTarget());
         this.breath().start(this.dragon.getTarget());
     }
 

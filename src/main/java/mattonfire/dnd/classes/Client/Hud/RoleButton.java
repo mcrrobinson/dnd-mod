@@ -31,16 +31,29 @@ public class RoleButton extends WButton {
 
     @Nullable
     private final ClassInfo info;
+    private final boolean roleIcon;
 
     public RoleButton(Icon icon, Text label, @Nullable ClassInfo info) {
-        super(icon, label);
+        this(icon, label, info, true);
+    }
+
+    /**
+     * @param label    null for an icon-only button (the tooltip starts with the class name)
+     * @param roleIcon false to leave out the role icon (no room on an icon-only button)
+     */
+    public RoleButton(Icon icon, @Nullable Text label, @Nullable ClassInfo info, boolean roleIcon) {
+        super(icon);
+        if (label != null) {
+            setLabel(label);
+        }
         this.info = info;
+        this.roleIcon = roleIcon;
     }
 
     @Override
     public void paint(MatrixStack matrices, int x, int y, int mouseX, int mouseY) {
         super.paint(matrices, x, y, mouseX, mouseY);
-        if (info != null) {
+        if (info != null && roleIcon) {
             RoleIcon.draw(matrices, x + getWidth() - PartyRole.ICON_SIZE - 3,
                     y + (getHeight() - PartyRole.ICON_SIZE) / 2, info.role());
         }

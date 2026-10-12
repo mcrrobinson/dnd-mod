@@ -17,6 +17,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -74,7 +75,7 @@ public final class AlchemicalSealType extends ObstacleType {
 
     /** An empty hand, or the potion it takes. */
     @Override
-    public boolean accepts(ItemStack held) {
+    public boolean accepts(PlayerEntity player, ItemStack held) {
         return held.isEmpty() || Reagents.isPotion(held);
     }
 

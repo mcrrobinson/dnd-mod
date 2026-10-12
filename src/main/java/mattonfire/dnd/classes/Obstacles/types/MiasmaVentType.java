@@ -84,7 +84,7 @@ public final class MiasmaVentType extends ObstacleType {
     }
 
     @Override
-    public boolean accepts(ItemStack held) {
+    public boolean accepts(PlayerEntity player, ItemStack held) {
         return held.isEmpty() || Reagents.isPotion(held);
     }
 

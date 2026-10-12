@@ -5,6 +5,7 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -47,6 +48,15 @@ public abstract class ObstacleType {
      */
     @Nullable
     public abstract Skill skill();
+
+    /**
+     * The check {@code player} rolls (a Guardian Beast: Animal Handling for a Druid, Performance for a Bard).
+     * Defaults to {@link #skill()}. Used by the server roll and the client hint alike.
+     */
+    @Nullable
+    public Skill skillFor(PlayerEntity player) {
+        return skill();
+    }
 
     /** Who may attempt it. The modifier always comes from the sheet; this only gates and orders solvers. */
     public abstract Eligibility eligibility(DndCharacter dndClass);
@@ -150,7 +160,7 @@ public abstract class ObstacleType {
      * Whether right-clicking with {@code held} in the main hand works it: by default an empty hand, or the
      * {@link #requiredItem()}. A type that uses items up per attempt also takes them in hand.
      */
-    public boolean accepts(ItemStack held) {
+    public boolean accepts(PlayerEntity player, ItemStack held) {
         ItemStack required = requiredItem();
         return required == null ? held.isEmpty() : ItemStack.areItemsEqual(held, required);
     }
@@ -171,6 +181,35 @@ public abstract class ObstacleType {
      */
     public boolean collides(ObstacleState state, ShapeContext context) {
         return solid(state);
+    }
+
+    /**
+     * Server side, after {@link #accepts}: handles the click itself instead of a roll (a Singing Door plays its
+     * tune to an empty hand). Returns true when it did.
+     */
+    public boolean intercept(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {
+        return false;
+    }
+
+    /** Per-roll extras, such as an instrument bonus. Returns the builder. */
+    public D20.Builder rollExtras(D20.Builder builder, ServerPlayerEntity player) {
+        return builder;
+    }
+
+    /** A check on this obstacle has just been rolled, before its result plays out. */
+    public void onRolled(ServerWorld world, BlockPos pos, ServerPlayerEntity player, D20.Roll roll) {
+    }
+
+    /**
+     * How fast {@code player} breaks a sealed block of it, per tick ({@code vanilla}: the usual speed, or 0 if it
+     * isn't {@link #breakable()}). A Thornwall is cut at a fixed speed with shears or an axe.
+     */
+    public float breakingDelta(PlayerEntity player, float vanilla) {
+        return vanilla;
+    }
+
+    /** A block next to one of its blocks changed (fire was lit beside a Thornwall). Server side. */
+    public void neighborChanged(ServerWorld world, BlockPos pos, BlockPos from) {
     }
 
     public int xp(Tier tier) {

@@ -72,13 +72,17 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
   - Grep the log for `[DevScript] actionbar:` instead of screenshotting action-bar messages.
   - `sneak on` needs a few ticks to reach the server: `wait 3` before the `use`.
   - Hitbox rendering also draws dragon part shapes as green boxes.
+  - Structure mobs (goblin camp garrisons, settlement guards, ...) are persistent and don't respawn, so a `/kill @e[...]` near one removes them from that world for good. Clean up with a tag (`/kill @e[tag=mytest]`) or a small `distance=..N` round your own test area, and summon tagged stand-ins rather than relying on a structure's own mobs.
 - Script gotchas:
   - `/dndclass set` puts the Class Guidebook in the first empty slot, often the hand, and a later `use` opens it (pausing the game). Run `/clear @s dndclasses:class_guidebook` after it.
   - NPCs only open dialogue for an empty hand (the innkeeper also with most items in hand). The innkeeper's trades open on sneak + right-click with an empty hand.
   - Quests and bounties count player kills only. `/kill` doesn't count; use `/damage <mob> 1000 minecraft:player_attack by @s`.
   - `/summon` with NBT skips the mob's spawn setup (`initialize`), so e.g. orc archers have no crossbow. Summon without NBT, then `/data merge`.
   - `NoAI:1b` stops more than movement: a NoAI mountain dwarf barters once and then never again (its cooldown counts down in its AI tick), and a NoAI Lich never places its phylactery, so its first death is final.
-  - `/party invite`, `/dndclass set` and `/dndrace set` take one player: add `limit=1` to a selector. Only ops can use selectors, so a LAN guest can't. An invite also needs `/party accept` from the guest.
+  - `/party invite`, `/dndclass set` and `/dndrace set` take one player: add `limit=1` to a selector. Only ops can use selectors, so a LAN guest can't. An invite also needs `/party accept` from the guest. A party left over from an earlier LAN run blocks `/party invite` until the guest runs `/party leave`.
+  - Obstacle rolls (`use` on an obstacle) resolve about 2 s later: `wait 40` or more before checking the block.
+  - A spawner set with `/setblock` needs `SpawnCount` (it defaults to 0) and, in daylight, `custom_spawn_rules`: `minecraft:spawner{SpawnData:{entity:{id:"minecraft:zombie"},custom_spawn_rules:{block_light_limit:[0,15],sky_light_limit:[0,15]}},Delay:20,MinSpawnDelay:20,MaxSpawnDelay:40,SpawnCount:2,MaxNearbyEntities:20,RequiredPlayerRange:32,SpawnRange:3}`. Check it spawns before testing something that stops it.
+- Mob special actions (Owlbear charge and bear hug, breath weapons, Lich spells, Beholder rays, warlord/alpha summons and enrages) log `[MobAction] <name> <action> -> <target> (<hp>/<max> HP, t=<world time>)` at DEBUG level, so they're in `<run dir>/logs/debug.log`, not `latest.log`. See `devscripts/owlbear-fury.txt`.
 - Stopping a client:
   - End scripts with `quit`. To stop one early, find its PID with `ps -eo pid,args | grep "[j]ava.*<worktree>"` and `kill` it.
   - Don't `pkill -f <pattern>`: the pattern matches your own shell, which then dies (exit 144).

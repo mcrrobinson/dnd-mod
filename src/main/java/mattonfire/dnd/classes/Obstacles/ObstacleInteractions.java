@@ -109,24 +109,36 @@ public final class ObstacleInteractions {
             // Just a wall, as far as this player knows
             return ActionResult.PASS;
         }
-        if (!type.accepts(player.getMainHandStack())) {
+        if (!type.accepts(player, player.getMainHandStack())) {
             return ActionResult.PASS;
         }
         if (!(world instanceof ServerWorld serverWorld) || !(player instanceof ServerPlayerEntity serverPlayer)) {
             return ActionResult.SUCCESS;
         }
-        if (player.isCreative()) {
-            type.solve(serverWorld, pos, serverPlayer);
-            return ActionResult.SUCCESS;
-        }
-        attempt(serverPlayer, serverWorld, pos, type);
+        use(serverWorld, pos, type, serverPlayer);
         return ActionResult.SUCCESS;
+    }
+
+    /**
+     * Works the sealed obstacle at {@code pos} for {@code player}, as a right-click on it would (after the hand
+     * check): an intercept, a creative open or an attempt. Also used for obstacles worked through something else,
+     * such as right-clicking a Guardian Beast.
+     */
+    public static void use(ServerWorld world, BlockPos pos, ObstacleType type, ServerPlayerEntity player) {
+        if (type.intercept(world, pos, player)) {
+            return;
+        }
+        if (player.isCreative()) {
+            type.solve(world, pos, player);
+            return;
+        }
+        attempt(player, world, pos, type);
     }
 
     private static void attempt(ServerPlayerEntity player, ServerWorld world, BlockPos pos, ObstacleType type) {
         Tier tier = world.getBlockEntity(pos) instanceof ObstacleBlockEntity be ? be.tier() : Tier.MEDIUM;
         Eligibility eligibility = type.eligibility(D20.classOf(player));
-        Skill skill = type.skill();
+        Skill skill = type.skillFor(player);
         if (eligibility.canTry() && skill == null) {
             // Nothing to roll (a bridge winch): whoever got here just works it
             solve(world, pos, type, tier, player);
@@ -173,7 +185,7 @@ public final class ObstacleInteractions {
 
     /** The obstacle roll: the type's skill against the tier's DC, under the type's HUD label if it has one. */
     private static D20.Builder builder(ServerPlayerEntity player, ObstacleType type, Skill skill, Tier tier) {
-        D20.Builder builder = SkillCheck.builder(player, skill, tier.dc, CHECK_TAG);
+        D20.Builder builder = type.rollExtras(SkillCheck.builder(player, skill, tier.dc, CHECK_TAG), player);
         return type.rollLabel() == null ? builder : builder.label(type.rollLabel());
     }
 
@@ -187,8 +199,9 @@ public final class ObstacleInteractions {
         String key = type.translationKey();
         long now = world.getTime();
         DnDClasses.LOGGER.info("[Obstacle] {} rolled {} {} + {} = {} vs DC {} on {} at {} -> {}",
-                player.getEntityName(), type.skill(), roll.natural(), roll.modifier(), roll.total(), roll.dc(),
+                player.getEntityName(), type.skillFor(player), roll.natural(), roll.modifier(), roll.total(), roll.dc(),
                 type.id(), pos.toShortString(), roll.outcome());
+        type.onRolled(world, pos, player, roll);
         if (roll.outcome().succeeded()) {
             RETRY_AT.remove(player.getUuid());
             D20.show(player, roll, Text.translatable(key

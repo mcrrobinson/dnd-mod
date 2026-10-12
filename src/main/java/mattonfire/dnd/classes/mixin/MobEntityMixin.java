@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 
 import mattonfire.dnd.classes.Misc.BardCompanions;
 import mattonfire.dnd.classes.Misc.ClericHandler;
+import mattonfire.dnd.classes.Obstacles.types.GuardianBeastType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 
@@ -22,6 +23,10 @@ public class MobEntityMixin {
         }
         // A Bard's companions never turn on the Bard, their party or their other companions.
         if (BardCompanions.blocksTarget((MobEntity) (Object) this, target)) {
+            return null;
+        }
+        // A calmed guardian beast leaves players alone.
+        if (GuardianBeastType.blocksTarget((MobEntity) (Object) this, target)) {
             return null;
         }
         return target;

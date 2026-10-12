@@ -4,7 +4,7 @@ Every player picks one of 15 classes. Your class sets your base stats and gives 
 ![The class picker](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/class-picker.png)
 
 ## How it works
-The class picker opens a couple of seconds after you join a world without a class. If you don't have a [race](../races/races.md) yet either, the race picker comes first and the class picker opens as soon as you've picked one. It's a grid of 15 buttons, three across and five down, and Escape doesn't close it: you have to pick. Each button shows the class's [party role](party-roles.md) icon, and hovering it shows both roles, the first pro, the special and the obstacles only that class can handle. You get one pick. After that the server ignores any further picks from you, and only an operator can change your class with [`/dndclass set`](admin-commands.md).
+The class picker opens a couple of seconds after you join a world without a class. If you don't have a [race](../races/races.md) yet either, you get the [character creation](character-creation.md) screen instead, which has the race and class grids side by side and a Confirm button. The class picker on its own is a grid of 15 buttons, three across and five down, and Escape doesn't close it: you have to pick. Each button shows the class's [party role](party-roles.md) icon, and hovering it shows both roles, the first pro, the special and the obstacles only that class can handle. You get one pick. After that the server ignores any further picks from you, and only an operator can change your class with [`/dndclass set`](admin-commands.md).
 
 When you pick, the mod resets you to vanilla stats, clears all your status effects, then applies the class. Chat prints the class's pros, cons and special, and you get a [Class Guidebook](class-guidebook.md) if you don't already carry one.
 
@@ -69,9 +69,9 @@ The picker appears on its own. The skill tree is on **O** (rebind it under Optio
 - You can only change your loadout while you stay within 8 blocks of the Attunement Table you opened.
 
 ## For developers
-- Picker GUI: `Client/Hud/ClassSelectionHud` (LibGui). `DndClassesClient.handleClassQuery` hands the class to `Client/PickerFlow`, which opens the class picker for class 0 once no race pick is pending (race first; see [Races](../races/races.md)). The client never applies stats itself.
+- Picker GUI: `Client/Hud/ClassSelectionHud` (LibGui). `DndClassesClient.handleClassQuery` hands the class to `Client/PickerFlow`, which opens the class picker for class 0 when no race pick is pending, or the combined `CharacterCreationHud` when one is (see [Character creation](character-creation.md)). The client never applies stats itself.
 - Server side, all in `ClassLifecycle`:
-  - `change` is the only path that picks or switches a class (picker packet, `/dndclass set`). It calls every `ClassSkills.forget`, clears effects, applies the stats, sets the starting health, and sends the chat summary and the guidebook.
+  - `change` is the only path that picks or switches a class (picker packet, `/dndclass set`). It calls every `ClassSkills.forget`, clears effects, applies the stats, sets the starting health, and sends the chat summary (`CharacterCreation.sendIntro`) and the guidebook. `change(player, class, false)` skips the summary, for the combined pick.
   - The pick packet runs on the server thread and is rejected unless the player's class is NONE. Bad ids are ignored.
   - The `JOIN`, `COPY_FROM` and `AFTER_RESPAWN` Fabric events also call the `RaceLifecycle` hooks (race query before the class query, race copy, race modifiers before the respawn health). They re-apply stats only, copy the class and the whole `mattonfire.dnd.classes` persistent compound, and re-sync the class and mana to the client.
   - `DISCONNECT` drops per-player server state (`ClassSkills.forget`, attack-roll crits, Featherfall, party invites, finished cooldowns).

@@ -10,6 +10,7 @@ import mattonfire.dnd.classes.Obstacles.ObstacleGroups;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import mattonfire.dnd.entity.MountainDwarfEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
@@ -62,7 +63,7 @@ public final class ClockworkDoorType extends ObstacleType {
 
     /** An empty hand, or the parts it takes. */
     @Override
-    public boolean accepts(ItemStack held) {
+    public boolean accepts(PlayerEntity player, ItemStack held) {
         return held.isEmpty() || held.isOf(Items.IRON_INGOT) || held.isOf(Items.REDSTONE);
     }
 

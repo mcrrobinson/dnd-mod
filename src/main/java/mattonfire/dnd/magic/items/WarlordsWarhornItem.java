@@ -10,6 +10,7 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.magic.MagicData;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -52,10 +53,8 @@ public class WarlordsWarhornItem extends Item {
         if (!MagicItemUse.ready(player, stack))
             return TypedActionResult.fail(stack);
         long now = world.getTime();
-        long readyAt = MagicData.getOrCreate(stack).getLong(READY_KEY);
-        if (now < readyAt && !player.getAbilities().creativeMode) {
-            player.sendMessage(Text.translatable("item.dndclasses.warlords_warhorn.cooldown",
-                    (readyAt - now + 19) / 20).formatted(Formatting.GRAY), true);
+        if (now < MagicData.getOrCreate(stack).getLong(READY_KEY) && !player.getAbilities().creativeMode) {
+            sendCooldown(player, stack);
             return TypedActionResult.fail(stack);
         }
         MagicData.getOrCreate(stack).putLong(READY_KEY, now + COOLDOWN_SECONDS * 20L);
@@ -88,6 +87,31 @@ public class WarlordsWarhornItem extends Item {
         DnDClasses.LOGGER.info("[Magic] {} sounded the Warlord's Warhorn: {} allies rallied, {} goblins frightened",
                 player.getEntityName(), allies.size(), frightened);
         return TypedActionResult.success(stack, false);
+    }
+
+    /**
+     * Vanilla skips {@code Item.use} while the item cooldown sweep is showing, so a second use inside the
+     * cooldown never reached {@link #use}. This callback runs first (server side) and says how long is left.
+     */
+    public static void registerCooldownMessage() {
+        UseItemCallback.EVENT.register((player, world, hand) -> {
+            ItemStack stack = player.getStackInHand(hand);
+            if (world.isClient || !(stack.getItem() instanceof WarlordsWarhornItem horn)
+                    || !player.getItemCooldownManager().isCoolingDown(horn) || player.isSpectator())
+                return TypedActionResult.pass(stack);
+            sendCooldown(player, stack);
+            return TypedActionResult.fail(stack);
+        });
+    }
+
+    /** "Your lungs need a rest (N s)" on the action bar, N from {@value #READY_KEY} on the item. */
+    private static void sendCooldown(PlayerEntity player, ItemStack stack) {
+        long left = MagicData.getOrCreate(stack).getLong(READY_KEY) - player.getWorld().getTime();
+        if (left <= 0) // cooldown sweep without a stored time (e.g. /item replace): use the sweep instead
+            left = (long) (player.getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
+                    * COOLDOWN_SECONDS * 20);
+        player.sendMessage(Text.translatable("item.dndclasses.warlords_warhorn.cooldown",
+                Math.max(1, (left + 19) / 20)).formatted(Formatting.GRAY), true);
     }
 
     @Override

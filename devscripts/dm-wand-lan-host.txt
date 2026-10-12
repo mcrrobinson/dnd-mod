@@ -1,0 +1,75 @@
+# DM Wand over LAN, host side (the DM). Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dm-wand-lan-host.txt
+# then, once "Started serving on" is in the log, dm-wand-lan-guest.txt as WandGuest in run-2.
+# Expect in latest.log: Inspect on WandGuest prints "== WandGuest (minecraft:player) ==", a Class/HP line, a Rep line
+# and a Quests line; Freeze on WandGuest gives "Test passed" (tag dndclasses.dm_frozen), the second click "Test failed".
+# The guest's wand click is refused (guest screenshot dm-wand-lan-guest-cold).
+wait 40
+closescreen
+respawn
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/publish true survival 25644
+/tp @s 3000.5 150 3000.5 0 0
+wait 100
+/fill 2990 149 2990 3010 149 3010 minecraft:stone
+/fill 2990 150 2990 3010 154 3010 minecraft:air
+/tp @s 3000.5 150 3000.5 0 0
+/clear @s
+/give @s dndclasses:dm_wand
+hotbar 0
+/dm on
+waitchat guest-ready
+wait 20
+/tp @a[name=WandGuest] 3000.5 150 3004.5 180 0
+wait 20
+# Inspect mode: Encounter -> Freeze -> Inspect (sneak + right-click the sky)
+/tp @s 3000.5 150 3000.5 0 -90
+wait 5
+sneak on
+wait 2
+use
+wait 4
+use
+wait 4
+sneak off
+/tp @s 3000.5 150 3000.5 0 10
+wait 10
+clearchat
+use
+wait 10
+screenshot dm-wand-lan-inspect
+# Freeze mode (three more cycles: Blink, Encounter, Freeze)
+/tp @s 3000.5 150 3000.5 0 -90
+wait 5
+sneak on
+wait 2
+use
+wait 4
+use
+wait 4
+use
+wait 4
+sneak off
+/tp @s 3000.5 150 3000.5 0 10
+wait 10
+use
+wait 10
+/execute if entity @a[name=WandGuest,tag=dndclasses.dm_frozen]
+/tellraw @a "frozen"
+wait 60
+use
+wait 10
+/execute if entity @a[name=WandGuest,tag=dndclasses.dm_frozen]
+/item replace entity @a[name=WandGuest] hotbar.0 with dndclasses:dm_wand
+wait 10
+/tellraw @a "try-wand"
+waitchat guest-tried
+wait 10
+/clear @a[name=WandGuest] dndclasses:dm_wand
+/tellraw @a "host-done"
+wait 40
+/dm off
+/clear @s
+quit

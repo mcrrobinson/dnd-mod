@@ -129,7 +129,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs
 
 ## Developers
-- [Testing in the dev client](dev/testing.md): DevScript, scripted hidden test clients, and which log lines land in latest.log or debug.log (PR #206)
+- [Testing in the dev client](dev/testing.md): DevScript, scripted hidden test clients, and which log lines land in latest.log or debug.log
 - [Multipart mobs](dev/multipart-mobs.md): MultipartDragon, DragonPartLayout and DragonRenderer
 - [Boss framework](dev/boss-framework.md): adding a boss with BossFight
 - [Project layout](dev/project-layout.md): where things live in the code, and what each dependency is for

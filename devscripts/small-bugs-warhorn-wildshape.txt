@@ -1,0 +1,65 @@
+# Warhorn cooldown message and Wild Shape's a/an. Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/small-bugs-warhorn-wildshape.txt
+# Expect in latest.log:
+#  - [DevScript] action bar after warhorn-second: "Your lungs need a rest (118 s)." or so (not the "sounded" text)
+#  - [DevScript] action bar after owlbear form: "You take the form of an Owlbear."
+# Screenshots: small-bugs-warhorn-second, small-bugs-owlbear
+wait 40
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/tp @s 2.5 150 2.5 0 20
+/clear @s
+# ---- Warhorn: second use inside the 120 s cooldown
+/say ==== warhorn
+/dndmagic give @s dndclasses:warlords_warhorn
+hotbar 0
+use
+wait 5
+actionbar
+wait 40
+/say warhorn-second
+use
+wait 5
+actionbar
+screenshot small-bugs-warhorn-second
+wait 100
+use
+wait 5
+actionbar
+/clear @s
+/effect clear @s
+# ---- Wild Shape into an owlbear
+/say ==== owlbear
+/dndclass set @s druid
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 6000
+/dndclass bestiary @s learn dndclasses:owlbear
+/dndclass rank @s druid.wild_shape 4
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+wait 5
+use
+wait 10
+skill bestiary dndclasses:owlbear
+wait 5
+closescreen
+/dndclass progress @s
+/tp @s 2.5 150 2.5 0 20
+wait 400
+press key.dnd-classes.power-up
+wait 5
+actionbar
+/data get entity @s "mattonfire.dnd.classes".druidChosenForm
+perspective back
+wait 10
+screenshot small-bugs-owlbear
+perspective first
+/setblock 4 150 4 minecraft:air
+/dndclass resetprogress @s
+quit

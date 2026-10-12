@@ -47,9 +47,10 @@ public class ModSpawns {
     private static final double MAX_ALPHA_DISTANCE = 96.0D;
 
     public static void addSpawns() {
-        // Wyverns in plains/mountains
-        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.PLAINS, BiomeKeys.MEADOW, BiomeKeys.STONY_PEAKS, BiomeKeys.JAGGED_PEAKS),
-                SpawnGroup.CREATURE, ModEntityTypes.WYVERN, 10, 1, 3);
+        // Wyverns, rarely and alone, in the mountains (not the plains, where they piled up round
+        // hobbit villages). Wild ones despawn far from players (WyvernEntity.canImmediatelyDespawn).
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.MEADOW, BiomeKeys.STONY_PEAKS, BiomeKeys.JAGGED_PEAKS),
+                SpawnGroup.CREATURE, ModEntityTypes.WYVERN, 2, 1, 1);
         
         // Ember Wyverns (fire-immune glass cannons) across the open Nether biomes
         BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.NETHER_WASTES, BiomeKeys.CRIMSON_FOREST, BiomeKeys.BASALT_DELTAS, BiomeKeys.SOUL_SAND_VALLEY),

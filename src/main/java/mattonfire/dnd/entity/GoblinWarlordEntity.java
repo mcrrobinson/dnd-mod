@@ -142,6 +142,7 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
     }
 
     private void enrage() {
+        MobActions.log(this, "enrage", this.getTarget());
         addModifier(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED),
                 new EntityAttributeModifier(ENRAGE_SPEED_ID, "Warlord enrage speed", 0.25D,
                         EntityAttributeModifier.Operation.MULTIPLY_BASE));
@@ -178,6 +179,7 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
     }
 
     private void summonWave(LivingEntity target) {
+        MobActions.log(this, "summon " + this.pendingWave + " warriors", target);
         ServerWorld world = (ServerWorld) this.world;
         for (int i = 0; i < this.pendingWave; i++) {
             GoblinWarriorEntity minion = ModEntityTypes.GOBLIN_WARRIOR.create(world);

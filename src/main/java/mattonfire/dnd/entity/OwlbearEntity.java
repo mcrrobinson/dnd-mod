@@ -208,6 +208,7 @@ public class OwlbearEntity extends HostileEntity implements GeoEntity, Grapple.H
 
     private void startHug(LivingEntity target) {
         this.hugged = target;
+        MobActions.log(this, "bear hug", target);
         this.hugTicks = HUG_TICKS;
         this.hugDamageTaken = 0.0F;
         this.dataTracker.set(HUGGING, true);

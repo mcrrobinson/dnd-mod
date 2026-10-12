@@ -19,7 +19,7 @@ respawn
 /dm on
 waitchat guest-ready
 wait 20
-/dndclass set @a[name=Guest] fighter
+/dndclass set Guest fighter
 /tp @a[name=Guest] 4.5 150 2.5 0 10
 /summon dndclasses:mountain_dwarf 4.5 150 6.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],CustomName:'"Gimli Stonebeard"'}
 wait 20
@@ -36,8 +36,8 @@ wait 60
 /tp @a[name=Guest] 4.5 150 2.5 0 35
 /tellraw @a "try-chest"
 waitchat fighter-tried
-/dndclass set @a[name=Guest] rogue
-/dndclass forceroll @a[name=Guest] 8
+/dndclass set Guest rogue
+/dndclass forceroll Guest 8
 wait 10
 /tellraw @a "pick-chest"
 waitchat rogue-tried

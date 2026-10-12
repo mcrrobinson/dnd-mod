@@ -11,7 +11,11 @@ import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animation.AnimationState;
 import software.bernie.geckolib.model.GeoModel;
 
-public class ModelGeckoPlayerFirstPerson extends GeoModel<GeoAnimatable> {
+/**
+ * The class armour drawn over the player in third person (see GeoPlayerFeature): copies the vanilla
+ * model's pose onto the GeckoLib bones and swings the cape.
+ */
+public class ModelGeckoPlayer extends GeoModel<GeoAnimatable> {
     private PlayerEntityModel<?> vanillaModel;
 
     public void setVanillaModel(PlayerEntityModel<?> model) {
@@ -102,7 +106,9 @@ public class ModelGeckoPlayerFirstPerson extends GeoModel<GeoAnimatable> {
             float defaultZ = 0.0f;
 
             leftLeg.setPosX(vanillaModel.leftLeg.pivotX - defaultX);
-                 
+            leftLeg.setPosZ(vanillaModel.leftLeg.pivotZ - defaultZ);
+        }
+
         GeoBone cape = this.getBone("armorCapeEpicFight").orElse(null);
         if (cape != null && entity instanceof AbstractClientPlayerEntity player) {
             float partialTick = animationState.getPartialTick();
@@ -153,10 +159,10 @@ public class ModelGeckoPlayerFirstPerson extends GeoModel<GeoAnimatable> {
         GeoBone duplicateCape = this.getBone("armorCape").orElse(null);
         if (duplicateCape != null) {
             duplicateCape.setHidden(true);
-        }            leftLeg.setPosZ(vanillaModel.leftLeg.pivotZ - defaultZ);
         }
     }
 
+    /** Players have no GeckoLib animations, so GeckoLib never asks for one. */
     @Override
     public Identifier getAnimationResource(GeoAnimatable entity) {
         throw new UnsupportedOperationException("Animation resource not supported");

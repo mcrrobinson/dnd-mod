@@ -29,7 +29,7 @@ Classes are in one of two recharge groups:
 - Without a class you have no charges, and nothing costs any.
 
 ### The HUD
-The gems sit in the row above the mana pips, lined up with their right end, and move up with the pips when your air bubbles show or you ride a big mount. Blue gems are charges you have, dark gems are spent ones, and gold gems are temporary charges (spent first). The gold line under the mana pips your active costs only turns gold when you can pay both its mana and its charges.
+The gems sit in the row above the mana pips, lined up with their right end, and move up with the pips when your air bubbles show or you ride a big mount. Blue gems are charges you have, dark gems are spent ones, and gold gems, left of the others, are temporary charges (spent first). The gold line under the mana pips your active costs only turns gold when you can pay both its mana and its charges.
 
 The skill tree (O) shows the cost too: an active's tooltip says "Costs 2 charges, recharges on a long rest", and the footer reads "Active: Titan (9 mana, 2 charges)".
 

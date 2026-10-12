@@ -106,7 +106,7 @@ public final class PowerupOverlay {
 
     /**
      * The charge gems in the row above the mana pips, right-aligned with them:
-     * temporary charges (gold) on the right, then full, then empty.
+     * full on the right, then empty, then temporary charges (gold) on the left.
      */
     private static void renderCharges(MatrixStack matrices, RestSnapshot rest, int x, int y) {
         int max = Math.min(rest.max(), Charges.MAX_SHOWN);
@@ -115,7 +115,7 @@ public final class PowerupOverlay {
         int gemY = y - GEM - 1;
         int right = x + BAR_RIGHT;
         for (int i = 0; i < temp + max; i++) {
-            Identifier texture = i < temp ? CHARGE_TEMP : i < temp + full ? CHARGE_FULL : CHARGE_EMPTY;
+            Identifier texture = i < full ? CHARGE_FULL : i < max ? CHARGE_EMPTY : CHARGE_TEMP;
             RenderSystem.setShaderTexture(0, texture);
             DrawableHelper.drawTexture(matrices, right - (i + 1) * (GEM + 1) + 1, gemY, 0, 0, GEM, GEM, GEM, GEM);
         }

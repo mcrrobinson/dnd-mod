@@ -45,6 +45,7 @@ import net.minecraft.command.argument.IdentifierArgumentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.entity.Entity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
@@ -68,7 +69,7 @@ import net.minecraft.util.Identifier;
  * /dndclass hitdice <player> [n]
  * /dndclass sheet <player>                    (ability scores, saves, skills, passives)
  * /dndclass score <player> <ability> <value>|clear   (admin override of one score)
- * /dndclass forceroll <player> <n...>|clear   (rigs the player's next d20 naturals, for tests)
+ * /dndclass forceroll <entity> <n...>|clear   (rigs a player's or mob's next d20 naturals, for tests)
  * /dndclass down <player>                     (Downed, death saves, even with nobody near)
  * /dndclass stabilise <player>                (a Downed player stops rolling and stands up in 30 s)
  * /dndclass revive <player> [hp]              (a Downed player stands up, default 1 HP)
@@ -177,10 +178,10 @@ public class DndClassCommand {
                                                 .executes(context -> score(context,
                                                         IntegerArgumentType.getInteger(context, "value")))))))
                 .then(CommandManager.literal("forceroll")
-                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                        .then(CommandManager.argument("player", EntityArgumentType.entity())
                                 .then(CommandManager.literal("clear")
                                         .executes(context -> {
-                                            ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+                                            Entity player = EntityArgumentType.getEntity(context, "player");
                                             int dropped = D20.clearForced(player.getUuid());
                                             context.getSource().sendFeedback(Text.literal("Cleared " + dropped
                                                     + " rigged rolls for " + player.getEntityName()), false);
@@ -525,7 +526,7 @@ public class DndClassCommand {
     }
 
     private static int forceRoll(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        Entity player = EntityArgumentType.getEntity(context, "player");
         String text = StringArgumentType.getString(context, "naturals");
         List<Integer> naturals = new ArrayList<>();
         for (String part : text.trim().split("[\\s,]+")) {

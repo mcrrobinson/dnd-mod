@@ -28,8 +28,11 @@ wait 30
 /execute if entity @e[type=item,distance=..20]
 screenshot gcube-diamond
 
-# Engulfs a mob: a frozen pig placed inside gets slowed and damaged
-/summon pig 0.4 150 0.4 {NoAI:1b,Health:10f,Tags:["gcube_test"]}
+# Engulfs a mob: a frozen pig placed inside gets slowed and damaged. The pig makes a DEX save (DC 12) against
+# the engulf, so it's summoned outside, rigged to roll 2s (fails), then moved in.
+/summon pig 4 150 4 {NoAI:1b,Health:10f,Tags:["gcube_test"]}
+/dndclass forceroll @e[type=pig,tag=gcube_test,limit=1] 2 2
+/tp @e[type=pig,tag=gcube_test,limit=1] 0.4 150 0.4
 wait 25
 /data get entity @e[type=pig,tag=gcube_test,limit=1] ActiveEffects
 /data get entity @e[type=pig,tag=gcube_test,limit=1] Health

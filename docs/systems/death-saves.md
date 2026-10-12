@@ -3,7 +3,7 @@ At 0 HP you don't die straight away if someone could help you. You go **Downed**
 
 ![A Downed player crawling, seen by a party member](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-death-saves/downed-lan-guest-sees-host.png)
 
-![A death save on the d20 HUD](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/downed-death-saves/downed-save-1.png)
+![A death save on the d20 HUD under the downed panel: 15 vs DC 10, the first pass](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-shots-devscript-checks/ds-host-save.png)
 
 ## How it works
 ### When you go Downed
@@ -88,6 +88,8 @@ Three fails, giving up, or logging out while unstable kills you with whatever do
 ### The downed HUD
 What you see while you're Downed:
 
+![The downed HUD: red vignette, DOWNED panel with empty pass gems and fail skulls, "Next save in 5 s" and "Hold z to give up"](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-shots-devscript-checks/ds-host-downed.png)
+
 - **A red vignette** round the screen edge that pulses with a **heartbeat**. The heartbeat speeds up with each fail (every 1.7 s, 1.4 s, 1.1 s) and slows to every 2.5 s once you're stable, when the vignette also fades.
 - **A panel above the crosshair:**
   - `DOWNED` in red, then three green pass gems and three red fail skulls (empty ones are grey)
@@ -99,13 +101,21 @@ What you see while you're Downed:
 - **The d20 HUD** below the crosshair shows only your death saves (and Last Stand). Other main-panel roll popups are dropped while you're Downed, so they can't hide a save. Saving throws still show in the compact save lane right of the crosshair.
 - The obstacle hint panel doesn't show while you're Downed (it uses the same spot).
 
+![Stable: "Standing up in 29 s" and no pips](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-shots-devscript-checks/ds-host-stable.png)
+
 The helper sees a smaller panel above their crosshair: "Stabilising Steve" (or "Helping Steve up") with the same bar.
+
+![A party member holding right-click on a Downed player: "Stabilising Dev" with its progress bar, the red outline and the "(Downed)" name tag](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-shots-devscript-checks/ds-guest-stabilising.png)
 
 Everything hides with F1.
 
 **Sounds:** a thud and a falling chord when someone goes Downed, the heartbeat (only you hear it), and a rising chime when you get back up. Death save rolls use the d20 sounds.
 
 ### Seeing Downed players
+![A Downed party member behind a stone wall: red outline through the wall and a DOWNED row with empty save dots in the party HUD](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-shots-devscript-checks/ds-guest-downed-wall.png)
+
+![The same player once stable: gold outline and a STABLE row on a yellow bar](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-shots-devscript-checks/ds-guest-stable-wall.png)
+
 - **Party members** within 64 blocks are drawn with a **red outline through walls** while Downed (gold once stable), so you can find them in a cave or behind a wall.
 - **Everyone else** sees red damage particles rise from a Downed player every second.
 - **Name tag:** a Downed player's name tag reads "Steve (Downed)".
@@ -164,4 +174,4 @@ Permission level 2.
 - Sounds `dndclasses:player.downed`, `downed.heartbeat` and `player.revived` from `tools/music-gen` (`downed_thud`, `downed_heartbeat`, `revived`); pips from `tools/death_save_textures.py` (`textures/gui/death_saves.png`).
 - DevScript `holdkey <key> on|off` holds a key binding.
 - `BossFight.fightNear(player)`, `inAnyFight(player)`, `isFightingNear(player)` and `isPartyWiped()`; `GelatinousCubeEntity.SPIT_DOWNED_AFTER` (60 ticks).
-- Devscripts: `devscripts/downed-revive-lan-host.txt` + `downed-revive-lan-guest.txt` (stabilise with a failed and a successful Medicine roll, help up, interruption, golden apple, potion on a Rogue and a Paladin, ale, Cure Wounds, Paladin aura), `devscripts/downed-revive-solo.txt` (splash potion on a Rogue and a Paladin, natural regen and Second Wind blocked, Regeneration revives, Indomitable), `devscripts/downed-mobs-host.txt` + `downed-mobs-guest.txt` (zombie target switch with a Fighter, creeper, cube spit, rest refusals, Lich party wipe, PvP finisher), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout), `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest).
+- Devscripts: `devscripts/downed-revive-lan-host.txt` + `downed-revive-lan-guest.txt` (stabilise with a failed and a successful Medicine roll, help up, interruption, golden apple, potion on a Rogue and a Paladin, ale, Cure Wounds, Paladin aura), `devscripts/downed-revive-solo.txt` (splash potion on a Rogue and a Paladin, natural regen and Second Wind blocked, Regeneration revives, Indomitable), `devscripts/downed-mobs-host.txt` + `downed-mobs-guest.txt` (zombie target switch with a Fighter, creeper, cube spit, rest refusals, Lich party wipe, PvP finisher), `devscripts/downed-solo-laststand.txt` (solo, Last Stand, saves, hits, lava, void, give up), `devscripts/downed-lan-host.txt` + `downed-lan-guest.txt` (party, crawl seen by the guest, bleed out with the original message, logout), `devscripts/downed-interrupts-rest.txt` (going Downed interrupts a campfire short rest), `devscripts/death-saves-docs-host.txt` + `death-saves-docs-guest.txt` (the screenshots on this page, LAN port 25647).

@@ -1,0 +1,33 @@
+# Cloak of Protection: +1 to every saving throw, only while attuned; stacks with the Ring of Protection.
+# timeout 300 ./gradlew runClient --offline -PdevScript=devscripts/cloak-saves.txt
+# Check the log: the "Saves:" line of each /dndclass sheet, and the "Cloak of Protection" breakdown line.
+wait 40
+closescreen
+/gamemode survival
+/clear @s
+/dndmagic release @s all
+wait 25
+/say [cloak] baseline
+/dndclass sheet @s
+/dndmagic give @s dndclasses:cloak_of_protection
+hotbar 0
+wait 25
+/say [cloak] carried, not attuned
+/dndclass sheet @s
+/dndmagic attune @s
+wait 25
+/say [cloak] attuned
+/dndclass sheet @s
+screenshot cloak-saves-attuned
+/dndmagic give @s dndclasses:ring_of_protection
+hotbar 1
+/dndmagic attune @s
+wait 25
+/say [cloak] cloak and ring attuned
+/dndclass sheet @s
+/dndmagic release @s all
+wait 25
+/say [cloak] released
+/dndclass sheet @s
+/clear @s
+quit

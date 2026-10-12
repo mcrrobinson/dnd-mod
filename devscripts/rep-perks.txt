@@ -1,0 +1,179 @@
+# Higher-tier reputation perks (all but the raid ones, see rep-perks-raid.txt).
+# Run: timeout 400 ./gradlew runClient --offline -PdevScript=devscripts/rep-perks.txt
+# Expect in run/logs/latest.log ([DevScript], [CHAT], [Grudges], [Identify], [Reputation]) and screenshots rep-perks-*.png:
+# - innkeeper: Friendly shows 14 trades and no free key; Honored shows a 15th (1 emerald -> 3 ale), buying it
+#   gives a cake too, and the innkeeper hands over a free Room Key once a day ("Found 1" room key after two visits)
+# - dwarves: a barrel opened in sight is TRUSTED at Honored, a chest isn't; a barrel at Neutral is a GRUDGE
+# - dwarves: an unidentified item is refused at Honored and identified ("(dwarf)") at Exalted
+# - dwarves: a dwarf ignores a wolf fighting you at Honored, and joins in ("joins Dev against") at Exalted
+# - goblin camp (dev world, chief's chest at -408 71 1103): at goblin Neutral the camp goblins target you
+#   once you open the chest ("[Grudges] dndclasses:goblins OPEN ... GRUDGE")
+wait 40
+closescreen
+/difficulty normal
+/gamemode survival
+/dndclass set @s fighter
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+# A new day each run (no "/time set", which would go back to day 0), so the once-a-day free room is on offer again.
+/time add 24000
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/kill @e[type=!minecraft:player,distance=..60]
+/fill -12 149 -12 24 149 24 minecraft:stone
+/fill -12 150 -12 24 154 24 minecraft:air
+/clear @s
+/tp @s 0.5 150 0.5 0 35
+wait 40
+
+# ---- Innkeeper: Honored round and free room ----
+/summon dndclasses:innkeeper 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["rp"]}
+/give @s minecraft:emerald 16
+/rep @s dndclasses:hobbits set 200
+wait 5
+use
+wait 10
+# The innkeeper greets you first: "Let's trade." is the reply after the quest offer.
+button 1
+wait 10
+/say [perks] innkeeper friendly
+slots
+screenshot rep-perks-innkeeper-friendly
+closescreen
+wait 5
+/clear @s dndclasses:room_key 0
+/rep @s dndclasses:hobbits set 500
+wait 5
+use
+wait 10
+button 1
+wait 10
+/say [perks] innkeeper honored
+slots
+screenshot rep-perks-innkeeper-honored
+trade 14
+wait 5
+slot 2 quick_move
+wait 10
+closescreen
+wait 5
+/say [perks] bought the round
+/clear @s dndclasses:ale 0
+/clear @s minecraft:cake 0
+/clear @s dndclasses:room_key 0
+use
+wait 10
+button 1
+wait 10
+closescreen
+wait 5
+/say [perks] second visit
+/clear @s dndclasses:room_key 0
+/kill @e[tag=rp]
+/clear @s
+
+# ---- Dwarves: barrels at Honored ----
+/setblock 0 150 2 minecraft:barrel
+/summon dndclasses:mountain_dwarf 3.5 150 3.5 {NoAI:1b,Rotation:[90f,0f],Tags:["rd"]}
+/rep @s dndclasses:mountain_dwarves set 500
+look 0 30
+wait 10
+/say [perks] barrel honored
+use
+wait 5
+closescreen
+wait 5
+/setblock 0 150 2 minecraft:chest
+wait 5
+/say [perks] chest honored
+use
+wait 5
+closescreen
+/kill @e[tag=rd]
+/summon dndclasses:mountain_dwarf 3.5 150 3.5 {NoAI:1b,Rotation:[90f,0f],Tags:["rd"]}
+/setblock 0 150 2 minecraft:barrel
+/rep @s dndclasses:mountain_dwarves set 0
+wait 220
+/say [perks] barrel neutral
+use
+wait 5
+closescreen
+/kill @e[tag=rd]
+/setblock 0 150 2 minecraft:air
+
+# ---- Dwarves: identification at Exalted ----
+/summon dndclasses:mountain_dwarf 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["rd"]}
+/kill @e[type=minecraft:item]
+/clear @s
+/dndmagic give @s minecraft:iron_sword rare 1 unidentified
+hotbar 0
+/rep @s dndclasses:mountain_dwarves set 500
+look 0 20
+wait 10
+sneak on
+/say [perks] identify honored
+use
+wait 3
+screenshot rep-perks-identify-refused
+/rep @s dndclasses:mountain_dwarves set 800
+wait 10
+/say [perks] identify exalted
+use
+wait 3
+sneak off
+screenshot rep-perks-identify-exalted
+/data get entity @s SelectedItem.tag.dndclasses_magic.identified
+/kill @e[tag=rd]
+/clear @s
+
+# ---- Dwarves: joining your fight at Exalted ----
+/rep @s dndclasses:mountain_dwarves set 500
+# The dwarf stays frozen (out of the way) until the wolf has been hit.
+/summon dndclasses:mountain_dwarf 6.5 150 0.5 {NoAI:1b,Tags:["dw"]}
+/summon minecraft:wolf 0.5 150 2.5 {NoAI:1b,Tags:["wf"],Rotation:[180f,0f]}
+look 0 25
+wait 20
+attack
+wait 2
+/data merge entity @e[tag=wf,limit=1] {NoAI:0b}
+/data merge entity @e[tag=dw,limit=1] {NoAI:0b}
+wait 60
+/say [perks] fight honored
+target @e[tag=dw]
+target @e[tag=wf]
+/rep @s dndclasses:mountain_dwarves set 800
+wait 60
+/say [perks] fight exalted
+target @e[tag=dw]
+screenshot rep-perks-dwarf-joins
+/kill @e[tag=dw]
+/kill @e[tag=wf]
+
+# ---- Goblin camp: the chief's chest ----
+/rep @s dndclasses:goblins set 0
+/tp @s -407.5 71 1101.5 0 30
+wait 200
+# The chief's chest is locked (only a Rogue can pick it): swap in a plain chest so it simply opens.
+/setblock -408 71 1103 minecraft:air
+/setblock -408 71 1103 minecraft:chest[facing=north]
+# Two more goblins by the fire, in case the camp's own have wandered or died in this world.
+/summon dndclasses:goblin_warrior ~3 ~ ~-5 {Tags:["rg"]}
+/summon dndclasses:goblin_warrior ~-3 ~ ~-5 {Tags:["rg"]}
+wait 40
+/execute if entity @e[type=dndclasses:goblin_warrior,distance=..30]
+/say [perks] camp before
+target @e[type=dndclasses:goblin_warrior,x=-408,y=71,z=1101,distance=..30]
+use
+wait 5
+closescreen
+wait 40
+/say [perks] camp after
+target @e[type=dndclasses:goblin_warrior,x=-408,y=71,z=1101,distance=..30]
+perspective back
+screenshot rep-perks-camp-chest
+perspective first
+/kill @e[tag=rg]
+/rep @s dndclasses:goblins set -600
+/tp @s 0.5 150 0.5 0 35
+wait 20
+quit

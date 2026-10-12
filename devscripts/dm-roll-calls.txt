@@ -1,0 +1,83 @@
+# DM roll calls on the d20 HUD. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-roll-calls.txt
+# Keys go through the real key path (DevScript "key", like a physical press), with Identity's ability key left on R.
+# Expect in latest.log: "[CHAT] marker-after-r" BEFORE "[CHAT] #1 Dev ..." (R doesn't roll: it's Identity's key),
+# then "[DevScript] ...: key y" rolls it; "[CHAT] #N Player ... PASS|FAIL" lines and a
+# "Dexterity Save DC 14: ... failed [Passed] [Failed]" summary per call; the auto call reports at once; the flat call
+# reports "(timed out)" about 20 s later; /dm apply tags the passing player (Test passed).
+# Screenshots: dm-roll-prompt (prompt, DC shown), dm-roll-result, dm-roll-adv-prompt / dm-roll-adv-result (two dice),
+# dm-roll-secret-prompt / dm-roll-secret-result (no DC, no outcome).
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/fill 0 149 0 6 149 6 minecraft:stone
+/fill 0 150 0 6 153 6 minecraft:air
+/tp @s 3.5 150 3.5 0 0
+/dndclass set @s rogue
+/tag @s remove rolled
+wait 20
+# 1. Prompted save, answered with the roll key
+/dndclass forceroll @s 16
+/dm roll @s dex 14
+wait 10
+clearchat
+screenshot dm-roll-prompt
+# R is Identity's ability key: must not answer the prompt
+key r
+wait 20
+/say marker-after-r
+key y
+wait 30
+clearchat
+screenshot dm-roll-result
+wait 60
+# 2. auto: no prompt
+/dndclass forceroll @s 3
+/dm roll @s dex 14 auto
+wait 30
+# 3. Advantage: two dice
+/dndclass forceroll @s 7 18
+/dm roll @s perception 12 advantage
+wait 10
+clearchat
+screenshot dm-roll-adv-prompt
+key y
+wait 30
+clearchat
+screenshot dm-roll-adv-result
+wait 60
+# 4. Secret: no DC, no outcome for the player
+/dndclass forceroll @s 9
+/dm roll @s stealth 15 secret
+wait 10
+clearchat
+screenshot dm-roll-secret-prompt
+key y
+wait 30
+clearchat
+screenshot dm-roll-secret-result
+wait 60
+# 5. /dm apply on the last call (stealth: 9 + DEX + proficiency)
+/dm apply all tag @s add rolled
+/execute if entity @s[tag=rolled]
+/tag @s remove rolled
+/dm apply fail tag @s add rolled_fail
+/dm apply pass tag @s add rolled_pass
+/data get entity @s Tags
+# 6. Timeout: the server rolls after 20 s
+/dm roll @s flat 10
+wait 200
+clearchat
+screenshot dm-roll-timeout-countdown
+wait 240
+screenshot dm-roll-timeout-result
+# Bad input
+/dm roll @s sneezing 10
+/dm roll @s dex 10 sideways
+/tag @s remove rolled_fail
+/tag @s remove rolled_pass
+wait 20
+quit

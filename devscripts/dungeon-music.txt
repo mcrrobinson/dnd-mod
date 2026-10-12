@@ -1,0 +1,72 @@
+# Dungeon theme music and stings. Inside the dev world's natural crypt (The Crypt of Saint Corvin) the
+# Dungeon slot plays the Crypt loop; a room fight ending plays the room-cleared sting; /dungeon clear plays
+# the dungeon-cleared fanfare; a fresh Goblin Warren (made with /place) plays the Warren loop; and a plain
+# mob spawner far from any dungeon still plays the generic Silent Footsteps.
+# Places a structure: use a scratch copy of the run dir.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-music -PdevScript=devscripts/dungeon-music.txt
+# Check in logs/latest.log:
+#   "[EventMusic] dungeon theme 1 (dndclasses:music.dungeon_crypt)" and "playing dndclasses:music.dungeon_crypt"
+#   "[DungeonMusic] sting room_cleared" + "[EventMusic] sting dndclasses:sting.room_cleared"
+#   "[DungeonMusic] sting dungeon_cleared" + "[EventMusic] sting dndclasses:sting.dungeon_cleared"
+#   "dungeon theme 2 (dndclasses:music.dungeon_warren)" and "playing dndclasses:music.dungeon_warren"
+#   "dungeon theme 0 (dndclasses:music.dungeon)" and "playing dndclasses:music.dungeon" by the spawner
+wait 40
+closescreen
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/difficulty normal
+/gamemode spectator
+/tp @s 263 150 967
+wait 200
+/dungeon reset
+/effect give @s minecraft:night_vision 9999 0 true
+/effect give @s minecraft:resistance 9999 4 true
+/effect give @s minecraft:saturation 9999 0 true
+
+# 1. The crypt's loop: stand in the corridor by encounter room #2 (theme arrives within 2 s, the loop within ~3 s)
+/tp @s 247 43 967 90 0
+wait 160
+hud off
+screenshot dungeon-music-crypt
+hud on
+
+# 2. Room cleared: walk into room #2 (its fight starts and seals the doors), then kill the encounter
+/gamemode survival
+/tp @s 262 43 967 90 10
+wait 100
+screenshot dungeon-music-room-fight
+/kill @e[tag=dndclasses.dungeon]
+wait 40
+screenshot dungeon-music-room-cleared
+wait 60
+
+# 3. Dungeon cleared: the fanfare (and the title)
+/dungeon clear
+wait 10
+screenshot dungeon-music-dungeon-cleared
+wait 140
+/dungeon reset
+/gamemode spectator
+
+# 4. A fresh Goblin Warren far away: its loop replaces the crypt's
+/tp @s 2455 200 -2409
+wait 200
+/place structure dndclasses:goblin_warren 2448 64 -2416
+wait 100
+/dungeon info
+/dungeon puzzle goto 0
+wait 200
+hud off
+screenshot dungeon-music-warren
+hud on
+
+# 5. A vanilla-style spawner, nowhere near a dungeon: the generic track
+/setblock 0 147 0 minecraft:spawner
+/tp @s 12 150 0 90 10
+wait 200
+/setblock 0 147 0 minecraft:air
+wait 60
+quit

@@ -178,6 +178,7 @@ public final class ClassLifecycle {
         }
         AttackRolls.forget(player.getUuid());
         SavingThrow.forget(player.getUuid());
+        mattonfire.dnd.classes.SkillChecks.Grapple.forget(player.getUuid());
         mattonfire.dnd.classes.SkillChecks.Perception.forget(player.getUuid());
         mattonfire.dnd.classes.SkillChecks.Study.forget(player.getUuid());
         AbilityScores.forget(player.getUuid());

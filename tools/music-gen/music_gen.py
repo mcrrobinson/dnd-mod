@@ -754,6 +754,170 @@ def loop_lich_fight(rng):
     return normalize(out, -1.0, -16.0)
 
 
+# ---------------------------------------------------------------- dungeon themes
+
+def echo(x, delay, feedback=0.4, repeats=4, damp=1200):
+    """Discrete echoes, each one darker and quieter (for stone halls)."""
+    out = list(x) + [0.0] * ns(delay * repeats)
+    tap = list(x)
+    for k in range(1, repeats + 1):
+        tap = svf(tap, damp, 0.7)
+        mix(out, tap, delay * k, feedback ** k)
+    return out
+
+
+def organ(sec, freq, attack=1.5, release=1.5):
+    """Pipe organ: drawbar-style sine partials with a slow swell and a touch of wind."""
+    x = partials(sec, freq, [(1, 1.0, 999), (2, 0.55, 999), (3, 0.3, 999), (4, 0.22, 999),
+                             (6, 0.1, 999), (8, 0.06, 999)], attack=0.01, vibrato=(0.3, 0.0008))
+    env = env_points(len(x), [(0, 0), (attack, 1), (sec - release, 0.9), (sec, 0)])
+    return apply(x, env)
+
+
+def loop_dungeon_crypt(rng):
+    # Crypt: a slow organ drone in D minor walking Dm - Bb - Gm - A, a faint wordless choir on top,
+    # a funeral bell now and then and water dripping somewhere in the dark.
+    loop = 40.0
+    xf = 3.0
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    pedal = organ(sec, hz(26), attack=3.0, release=0.5)  # low D under everything
+    mix(out, pedal, 0, 0.35)
+    chords = [(50, 53, 57), (46, 50, 53), (43, 50, 55), (45, 49, 52)]
+    step = loop / len(chords)
+    for c, notes in enumerate(chords + chords[:1]):
+        at = c * step
+        if at >= sec:
+            break
+        length = step + 2.0
+        for m in notes:
+            mix(out, svf(organ(length, hz(m), attack=2.0, release=2.0), 1400, 0.7), at, 0.16)
+        top = notes[-1] + 12
+        v = formant(saw(length, hz(top), detune=0.005, voices=3, vibrato=(4.5, 0.004), rng=rng),
+                    freqs=(650, 1080, 2650), gains=(1, 0.5, 0.15))
+        mix(out, apply(v, env_points(len(v), [(0, 0), (3.0, 1), (length - 2.0, 0.8), (length, 0)])), at, 0.05)
+    for at in (6.0, 26.0):
+        mix(out, bell(6.0, hz(38), decay=3.0, bright=0.6, ratios=(1, 2.0, 2.4, 3.0, 4.2, 5.4)), at, 0.22)
+    for _ in range(9):
+        at = rng.uniform(0, loop)
+        f = rng.uniform(1400, 2600)
+        drip = partials(0.25, f, [(1, 1.0, 0.04)], attack=0.0005, glide=(0.6, 0.01))
+        mix(out, drip, at, 0.06)
+    out = reverb(out, wet=0.5, room=0.92, damp=0.45)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -20.0)
+
+
+def loop_dungeon_warren(rng):
+    # Goblin Warren: low hand drums in a lopsided 7/8 groove at ~100 bpm, a rattling shaker, a grunting
+    # bass drone on E and a crude bone flute that comes and goes.
+    eighth = 0.3
+    bar = eighth * 7  # 2.1 s
+    loop = bar * 16  # 33.6 s
+    xf = 1.0
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    pattern = [(0, 1.0, 85), (2, 0.6, 140), (4, 0.85, 95), (5, 0.45, 150), (6, 0.55, 130)]
+    b = 0
+    t = 0.0
+    while t < sec:
+        for pos, g, f in pattern:
+            at = t + pos * eighth + rng.uniform(-0.01, 0.01)
+            mix(out, drum(0.5, f * 1.6, f, 0.03, 0.16 if f < 100 else 0.09, click=0.2, rng=rng), at, g * 0.8)
+        if b % 4 == 3:  # a fill on the last bar of each phrase
+            for k in range(4):
+                mix(out, drum(0.3, 220, 150, 0.02, 0.07, click=0.25, rng=rng), t + (3 + k) * eighth + eighth / 2, 0.35)
+        for k in range(7):
+            sh = svf(noise(0.08, rng), 6000, 0.8, "high")
+            mix(out, apply(sh, env_ar(len(sh), 0.003, 0.02)), t + k * eighth, 0.08 if k % 2 == 0 else 0.05)
+        t += bar
+        b += 1
+    drone = svf(saw(sec, hz(28), detune=0.006, voices=3, rng=rng), 160, 1.5)
+    grunt = [0.6 + 0.4 * math.sin(TAU * i / SR / bar) for i in range(n)]
+    mix(out, apply(drone, grunt), 0, 0.28)
+    mix(out, svf(saw(sec, hz(35), detune=0.006, voices=2, rng=rng), 200, 1.0), 0, 0.1)
+    # Bone flute: a few breathy phrases on E minor pentatonic
+    phrase = [(64, 0.6), (67, 0.3), (69, 0.9), (67, 0.3), (64, 1.2)]
+    for start in (bar * 4, bar * 11):
+        at = start
+        for m, d in phrase:
+            note = partials(d + 0.1, hz(m), [(1, 1.0, 999), (2, 0.3, 999), (3, 0.12, 999)],
+                            attack=0.04, vibrato=(5.0, 0.008))
+            breath = svf(noise(d + 0.1, rng), hz(m) * 2, 3, "band")
+            mix(note, breath, 0, 0.25)
+            mix(out, apply(note, env_points(len(note), [(0, 0), (0.05, 1), (d, 0.7), (d + 0.1, 0)])), at, 0.07)
+            at += d
+    out = reverb(out, wet=0.3, room=0.82, damp=0.5)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -19.0)
+
+
+def loop_dungeon_ruin(rng):
+    # Dwarven Ruin: low brass swelling on C minor chords in a huge empty hall, far-off anvil strikes
+    # that echo back off the stone, and a deep rumble of the mountain above.
+    loop = 36.0
+    xf = 3.0
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    chords = [(36, 43, 51), (32, 39, 48), (34, 41, 50), (31, 38, 47)]  # Cm, Ab, Bb, G
+    step = loop / len(chords)
+    for c, notes in enumerate(chords + chords[:1]):
+        at = c * step
+        if at >= sec:
+            break
+        length = step + 1.5
+        for m in notes:
+            x = brass(length, hz(m), rng, attack=2.5, bright=500, base=250, voices=3, release=1.5, vib=(4.0, 0.003))
+            mix(out, x, at, 0.2)
+    anvil = (1, 2.32, 3.86, 5.1, 6.9, 8.6)
+    for at, f in ((2.0, 880), (2.6, 880), (13.5, 784), (22.0, 880), (22.6, 880), (23.2, 988), (31.0, 698)):
+        clang = bell(2.5, f, decay=0.9, bright=0.9, ratios=anvil)
+        mix(out, svf(clang, 3000, 0.7), at, 0.06)
+    out = echo(out, 0.45, feedback=0.45, repeats=4, damp=1800)[:n]
+    rumble = svf(svf(noise(sec, rng), 70, 0.7), 70, 0.7)
+    swell = [0.6 + 0.4 * math.sin(TAU * i / SR / loop * 2) for i in range(n)]
+    mix(out, apply(rumble, swell), 0, 2.0)
+    out = reverb(out, wet=0.45, room=0.9, damp=0.4)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -20.0)
+
+
+def sting_room_cleared(rng):
+    # A room's fight is over: a soft rising fourth on bells over a warm low chord, under 2 s
+    out = buf(2.0)
+    for m in (50, 57, 62):
+        mix(out, brass(1.4, hz(m), rng, attack=0.05, bright=900, base=350, voices=2, release=0.6), 0.0, 0.12)
+    mix(out, bell(1.4, hz(74), decay=0.6, bright=0.9), 0.0, 0.35)
+    mix(out, bell(1.6, hz(79), decay=0.8, bright=0.9), 0.14, 0.4)
+    return finish_sting(out, 1.8, wet=0.35, room=0.84)
+
+
+def sting_dungeon_cleared(rng):
+    # The dungeon is beaten: a timpani roll, a brass fanfare climbing D - F# - A - D, a full D major
+    # chord with bells and a cymbal swell, ringing out under 6 s.
+    out = buf(6.0)
+    t = 0.0
+    g = 0.25
+    while t < 0.8:
+        mix(out, drum(0.4, 110, 70, 0.03, 0.2, click=0.05, rng=rng), t, g)
+        t += 0.06
+        g = min(0.6, g + 0.03)
+    mix(out, drum(1.5, 120, 55, 0.05, 0.5, click=0.2, rng=rng), 0.85, 1.0)
+    for k, m in enumerate((62, 66, 69)):
+        mix(out, brass(0.28, hz(m), rng, attack=0.01, bright=2500, base=600), 0.85 + k * 0.2, 0.3)
+    for m in (38, 50, 57, 62, 66, 69, 74):
+        mix(out, brass(3.6, hz(m), rng, attack=0.03, bright=3200, base=700, release=1.5), 1.45, 0.16)
+    for k, m in enumerate((74, 78, 81, 86)):
+        mix(out, bell(3.0, hz(m), decay=1.4, bright=1.2), 1.45 + k * 0.08, 0.3)
+    shimmer = svf(noise(2.5, rng), 6500, 0.7, "high")
+    mix(out, apply(shimmer, env_points(len(shimmer), [(0, 0), (0.6, 1), (2.5, 0)])), 0.85, 0.18)
+    mix(out, drum(1.5, 120, 55, 0.05, 0.5, click=0.2, rng=rng), 1.45, 0.9)
+    return finish_sting(out, 5.8, wet=0.38, room=0.88)
+
+
 # ---------------------------------------------------------------- d20 skill checks
 
 def dice_click(rng, bright=1.0):
@@ -882,7 +1046,14 @@ SOUNDS = {
     "downed_thud": downed_thud,
     "downed_heartbeat": downed_heartbeat,
     "revived": revived,
+    "dungeon_crypt": loop_dungeon_crypt,
+    "dungeon_warren": loop_dungeon_warren,
+    "dungeon_ruin": loop_dungeon_ruin,
+    "sting_room_cleared": sting_room_cleared,
+    "sting_dungeon_cleared": sting_dungeon_cleared,
 }
+
+LOOPS = ("low_health", "nether_fortress", "lich_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin")
 
 
 def main(argv):
@@ -892,7 +1063,7 @@ def main(argv):
         if key not in SOUNDS:
             sys.exit(f"unknown sound {name}; choose from {', '.join(SOUNDS)}")
         rng = random.Random(key)
-        quality = 2 if key in ("low_health", "nether_fortress", "lich_fight") else 3
+        quality = 2 if key in LOOPS else 3
         write_ogg(key, SOUNDS[key](rng), quality)
 
 

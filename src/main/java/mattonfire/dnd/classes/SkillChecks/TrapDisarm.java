@@ -9,6 +9,10 @@ import mattonfire.dnd.classes.Blocks.TrapBlocks;
 import mattonfire.dnd.classes.Blocks.TrapKind;
 import mattonfire.dnd.classes.Blocks.TrapTriggerBlockEntity;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
+import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Progression.Progression;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.damage.DamageTypes;
@@ -25,12 +29,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 /**
- * Disarming dungeon traps, the way {@link Lockpicking} picks locks: a Rogue sneak-uses a trap's tile (the
+ * Disarming dungeon traps, the way {@link Lockpicking} picks locks: a Rogue (or an Artificer) sneak-uses a trap's tile (the
  * trigger, a flame vent or a crumbling floor tile) with an empty hand and rolls Thieves' Tools against the
  * trap's DC ({@link TrapKind#dc}: 12/13/15/17 by tier), shown on the HUD as "Disarm".
  *
  * <ul>
- * <li>Success: the trap is disarmed (safe until the dungeon resets).</li>
+ * <li>Success: the trap is disarmed (safe until the dungeon resets). It gives up its parts ({@value #DART_DROPS}
+ * arrows from a dart trap, a redstone dust from the others) and class XP by tier, once per dungeon reset.</li>
  * <li>Failure: it goes off on the Rogue.</li>
  * <li>Natural 1: it goes off, and the nearest spent or disarmed trap down the corridor arms itself again.</li>
  * </ul>
@@ -40,6 +45,8 @@ import net.minecraft.world.World;
  * Also the poison needles of trapped chests: a failed lockpick or a smashed lock sets the needle off.
  */
 public final class TrapDisarm {
+    /** Arrows a disarmed dart trap gives up. */
+    public static final int DART_DROPS = 2;
     private TrapDisarm() {
     }
 
@@ -63,6 +70,18 @@ public final class TrapDisarm {
         });
     }
 
+    /** Rogues disarm traps; Artificers can too, as a secondary (the sheet decides how well). */
+    public static Eligibility eligibility(DndCharacter dndClass) {
+        return dndClass == DndCharacter.ROGUE ? Eligibility.PRIMARY
+                : dndClass == DndCharacter.ARTIFICER ? Eligibility.SECONDARY : Eligibility.NONE;
+    }
+
+    /** Class XP for disarming a trap of this dungeon tier (1-4): the obstacle tiers' 5 / 10 / 15 / 25. */
+    public static int xp(int tier) {
+        Tier[] tiers = Tier.values();
+        return tiers[Math.max(0, Math.min(tiers.length - 1, tier - 1))].xp;
+    }
+
     /** Sneak-use with an empty hand on any of a trap's floor tiles. */
     public static ActionResult onUse(World world, BlockPos pos, PlayerEntity player, Hand hand) {
         if (world.isClient || hand != Hand.MAIN_HAND || player.isSpectator() || !player.isSneaking()
@@ -73,8 +92,7 @@ public final class TrapDisarm {
         if (trap == null || trap.kind() == TrapKind.NEEDLE || !(player instanceof ServerPlayerEntity serverPlayer)) {
             return ActionResult.PASS;
         }
-        boolean rogue = D20.classOf(player) == DndCharacter.ROGUE;
-        if (!rogue) {
+        if (!eligibility(D20.classOf(player)).canTry()) {
             if (trap.isArmed() && trap.spottedBy(serverPlayer)) {
                 player.sendMessage(Text.translatable("trap.dndclasses.rogue_only"), true);
                 return ActionResult.CONSUME;
@@ -100,6 +118,15 @@ public final class TrapDisarm {
                     ? "skill.dndclasses.disarm.critical" : "skill.dndclasses.disarm.success", trapName));
             trap.disarm();
             world.playSound(null, trap.getPos(), SoundEvents.BLOCK_TRIPWIRE_DETACH, SoundCategory.BLOCKS, 1.0F, 1.2F);
+            // The parts: a dart trap's darts, the mechanism's redstone
+            player.getInventory().offerOrDrop(trap.kind() == TrapKind.DART ? new ItemStack(Items.ARROW, DART_DROPS)
+                    : new ItemStack(Items.REDSTONE));
+            int xp = !player.isCreative() && trap.claimDisarmReward() ? xp(trap.tier()) : 0;
+            if (xp > 0) {
+                Progression.addXp(player, xp);
+            }
+            DnDClasses.LOGGER.info("[Trap] {} disarmed the {} trap at {}: +{} class XP", player.getEntityName(),
+                    trap.kind().id(), trap.getPos().toShortString(), xp);
             return roll;
         }
         boolean fumble = roll.outcome() == D20.Outcome.FUMBLE;

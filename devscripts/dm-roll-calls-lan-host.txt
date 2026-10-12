@@ -1,0 +1,41 @@
+# DM roll calls over LAN, host side (the DM). Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dm-roll-calls-lan-host.txt
+# then, once "Started serving on" is in the log, dm-roll-calls-lan-guest.txt as Guest in run-2.
+# Expect in latest.log: call #1 (Dexterity Save, @a) skips the DM and reports "#N Guest ..." then the summary with
+# [Passed] [Failed]; call #2 (secret Constitution Save) times out after 20 s ("(timed out)"); /dm apply all tags Guest
+# (Test passed).
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/publish true survival 25636
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 153 8 minecraft:air
+/tp @s 2.5 150 2.5 0 0
+/dm on
+waitchat guest-ready
+wait 20
+/tp @a[name=Guest] 4.5 150 6.5 180 0
+/dndclass forceroll @p[name=Guest] 15
+/tellraw @a "call-1"
+/dm roll @a dex 14
+waitchat Dexterity Save DC 14:
+wait 5
+clearchat
+/dm status
+screenshot dm-roll-lan-host-call1
+wait 20
+/tellraw @a "call-2"
+/dm roll @a con 12 secret
+waitchat Constitution Save DC 12:
+wait 5
+screenshot dm-roll-lan-host-call2
+/dm apply all tag @s add rolled
+/execute if entity @a[name=Guest,tag=rolled]
+/tag @a remove rolled
+/tellraw @a "host-done"
+wait 60
+/dm off
+quit

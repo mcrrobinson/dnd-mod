@@ -45,6 +45,7 @@
         "SpawnHelperMixin",
         "NetherFortressStartMixin",
         "StrongholdLibraryMixin",
+        "TempleTrapsMixin",
         "BossMinionDropMixin",
         "PotionItemMixin",
         "AlchemistPotionMixin",

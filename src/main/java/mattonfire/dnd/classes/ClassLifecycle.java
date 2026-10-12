@@ -178,12 +178,15 @@ public final class ClassLifecycle {
         }
         AttackRolls.forget(player.getUuid());
         SavingThrow.forget(player.getUuid());
+        mattonfire.dnd.classes.SkillChecks.Grapple.forget(player.getUuid());
         mattonfire.dnd.classes.SkillChecks.Perception.forget(player.getUuid());
         mattonfire.dnd.classes.SkillChecks.Study.forget(player.getUuid());
         AbilityScores.forget(player.getUuid());
         Featherfall.forget(player.getUuid());
         Lockpicking.pruneRetries(player.getWorld().getTime());
         mattonfire.dnd.classes.Obstacles.ObstacleInteractions.forget(player.getUuid(), player.getWorld().getTime());
+        mattonfire.dnd.classes.Obstacles.HiddenSearch.forget(player.getUuid());
+        mattonfire.dnd.classes.Obstacles.VanillaTraps.forget(player.getUuid());
         Persuasion.pruneOldDays(server.getOverworld().getTimeOfDay() / 24000L);
         PartyManager.get(server).forgetInvites(player.getUuid(), server.getTicks());
     }

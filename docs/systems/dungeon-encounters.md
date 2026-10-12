@@ -149,7 +149,7 @@ A tier with no list uses the nearest lower tier. `boss` is `lich`, `goblin_warlo
 - The Ossuary Cube's stacks still come from the vanilla dungeon chest table, not the tier's elite table.
 - Saving throws against the Lich's spells, and its Dread Presence, come in a later ticket.
 - Seals block the way out of a fight too, so a party can only leave a sealed room by winning, dying or teleporting.
-- Arrival sounds, the champion bar and the clear fanfare are vanilla sounds until the dungeon music ticket.
+- Arrival sounds and the champion bar are vanilla sounds. The room-cleared sting and clear fanfare are the mod's (see [Music](../music.md)).
 
 ## For developers
 - `dungeon/EncounterBuilder`: budget (`budget`, `roomBase`, `partyMult`, `levelMult`, `difficultyMult`), `plan` (weighted fill and Veterans), `partyFor`, `spawn` (through the DM toolkit's `EncounterSpawner`, one mob per spawn point), `makeVeteran`, `rouse` (an `Angerable` pool mob, such as a wolf, is made angry at the nearest player). Tags: `dndclasses.dungeon` and `dndclasses.dungeon=<startKey>/<roomId>` on every mob, `dndclasses.dungeon_elite` on Veterans.
@@ -159,7 +159,7 @@ A tier with no list uses the nearest lower tier. `boss` is `lich`, `goblin_warlo
 - Beholder: `StructureBosses.BossType.BEHOLDER` (spawned with `SpawnReason.STRUCTURE`); the ward calls `BeholderEntity.setHome(BossRoomPiece.domeCentre(box, floorY), BEHOLDER_HOME_RADIUS)` (10). `BeholderEntity.keepNearHome` clamps the attack goal's hover spot and the drift goal's spots (NBT `HomeRadius`; 0, the default, is no limit, as in the Beholder lair).
 - Boss area: the boss room's ward treats the dungeon's `RELIQUARY` rooms (from the plan) as part of its room for players, mob tracking and minion clean-up, and doesn't seal a doorway that leads into one (`area`, `leadsToAnnex`). `DungeonWardBlockEntity.reliquarySpot(dungeon)` and `lairLeash(lair, phylactery)`; `DungeonCombat.playersInBossArea`.
 - `LichEntity.setLair(centre, leash)` / `getLair()` (NBT `Lair`, `LairLeash`): home and leash round a lair instead of the phylactery. The phylactery hands the lair on to a Lich that reforms from it (NBT `LichLair`, `LichLairLeash`).
-- `dungeon/DungeonCombat`: the `AFTER_DEATH` listener (tells the room's ward a mob died; a boss's true death fires `DungeonEvents.BOSS_DEFEATED` and clears the dungeon) and the `CLEARED` listener (title, sound, `dndclasses:delver`). Boss tag: `dndclasses.dungeon_boss`.
+- `dungeon/DungeonCombat`: the `AFTER_DEATH` listener (tells the room's ward a mob died; a boss's true death fires `DungeonEvents.BOSS_DEFEATED` and clears the dungeon) and the `CLEARED` listener (title, `dndclasses:delver`; the fanfare is `Music/DungeonMusic`'s). Boss tag: `dndclasses.dungeon_boss`.
 - `classes/Blocks/DungeonWardBlockEntity`: the state machine. NBT adds `Engaged`, `Mobs` (UUIDs), `Seals` (doorway blocks, found at the start of each fight: blocks of the inner wall ring open right through the outer ring, up to doorway height), `LastSeen` and `PartySize`.
 - `classes/Blocks/ArcaneSealBlock` (`dndclasses:arcane_seal`, in `ModBlocks`). Not the class-gate obstacles `lesser_arcane_seal`/`greater_arcane_seal`, which a Wizard can dispel.
 - `entity/boss/StructureBosses.spawnBoss(world, pos, yaw, BossType, healthMult, phylacterySpot, extras)` and `scaleHealth` (persistent `generic.max_health` modifier, safe to call again). `LichEntity.hasFledToPhylactery()`; a reformed Lich copies its phylactery's `dndclasses.dungeon*` tags.

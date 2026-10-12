@@ -150,6 +150,7 @@ public final class SavingThrow {
         private Text onFailure;
         private boolean silent;
         private boolean secret;
+        private D20.Display display = D20.Display.SAVE_LANE;
 
         private Builder(LivingEntity target, Ability ability, int dc) {
             this.target = target;
@@ -261,6 +262,12 @@ public final class SavingThrow {
             return this;
         }
 
+        /** Show it on the big d20 panel instead of the save lane (prompted DM saves). */
+        public Builder mainPanel() {
+            this.display = D20.Display.MAIN;
+            return this;
+        }
+
         /** Show the total but not the DC or outcome (DM secret rolls). */
         public Builder secret() {
             this.secret = true;
@@ -344,7 +351,7 @@ public final class SavingThrow {
             if (secret) {
                 b.secret();
             }
-            return b.display(hidden ? D20.Display.SILENT : D20.Display.SAVE_LANE).roll();
+            return b.display(hidden ? D20.Display.SILENT : display).roll();
         }
 
         private Text detail(SaveResult result) {

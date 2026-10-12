@@ -18,7 +18,11 @@ A slow, 2-block cube of see-through green jelly that oozes through dark caves. A
 It hunts players and iron golems and oozes straight into them. It has no swing; all its damage comes from engulfing. It fights back against whatever hurts it. It can't swim, so in water it sinks and crawls along the bottom.
 
 ### Engulfing
-Anything living whose hitbox overlaps the cube sinks into it instead of being pushed aside. That covers players and mobs, but not creative or spectator players, armor stands or other cubes. While you're inside:
+Anything living whose hitbox overlaps the cube sinks into it instead of being pushed aside. That covers players and mobs, but not creative or spectator players, armor stands or other cubes.
+
+On first contact you make a **DEX saving throw, DC 12**. On a success you slip aside as it closes in: you're shoved about a block out of the jelly, and it can't engulf you again for 1 second (20 ticks). If you're still touching it after that, you save again. On a failure you're engulfed. Mobs save silently with +1. There's no struggle check here: once you're in, walk out.
+
+While you're inside:
 
 - you have Slowness III, which lasts 1.5 seconds after you get out;
 - you're pulled gently towards the middle;
@@ -55,6 +59,7 @@ It drops everything it absorbed, plus 1-3 slime balls (up to 1 more per Looting 
 
 ### Tips
 - It's slow. Back off and hit it with a bow, or hit and step away so you never stay inside it.
+- Agile characters (DEX saves) often slip out before it closes. Use that second of grace to step back, not to stand and swing.
 - If you get caught, walk out at once. Every second inside is another 3 damage, and a shield won't help.
 - Look at what's floating inside before you decide whether the fight is worth it.
 - Don't drop items to distract it: it will just eat them.
@@ -86,11 +91,13 @@ So you'll meet it in caves and dungeons, never on the surface. It needs a 2 x 2 
 - Enchantment glint on absorbed items may be hidden behind the jelly.
 
 ## For developers
-- `entity/GelatinousCubeEntity.java`: AI, engulfing (`engulfTouching`, `holdInside`, `digest`), item absorption, `AbsorbedItems` NBT and the spawn rule (`canSpawn`). Absorbed stacks are synced through 6 tracked `ItemStack` data slots.
+- `entity/GelatinousCubeEntity.java`: AI, engulfing (`engulfTouching`, `holdInside`, `digest`, `shoveOut`), item absorption, `AbsorbedItems` NBT and the spawn rule (`canSpawn`). Absorbed stacks are synced through 6 tracked `ItemStack` data slots.
 - `client/model/GelatinousCubeModel.java`: the custom render layer: entity-translucent, no culling, colour-only write mask (no depth write).
 - `client/renderer/GelatinousCubeRenderer.java`: draws the absorbed items, then flushes the item buffers so they're drawn before the jelly.
 - Registration: `ModEntityTypes.GELATINOUS_CUBE`, renderer in `DndClassesClient`, spawns in `ModSpawns`, `ModDamageTypes.GELATINOUS_CUBE_DAMAGE_SOURCE`.
 - Data: `data/dndclasses/damage_type/gelatinous_cube.json` (in `minecraft:bypasses_shield`), `loot_tables/entities/gelatinous_cube.json`, `loot_tables/gameplay/gelatinous_cube_contents.json`.
 - Assets: `geo/entity/gelatinous_cube.geo.json`, `animations/entity/gelatinous_cube.animation.json` (`idle`, `walk`, `engulf`), `textures/entity/gelatinous_cube.png`.
-- Devscript: `devscripts/gelatinous-cube.txt` takes screenshots and checks absorbing a diamond, engulfing a pig and the drops on death:
+- The engulf save is `GrabSaves.CUBE_ENGULF` (`entity/GrabSaves.java`, DEX `CUBE_ENGULF_DC` 12, `CUBE_SPURN_TICKS` 20), rolled in `engulfTouching` for anything not already inside. A success uses the same `spatOut` immunity map as spitting out a Downed player.
+- `devscripts/grab-saves.txt` checks the save with `forceroll` (20: pushed out; 2: engulfed and slowed).
+- Devscript: `devscripts/gelatinous-cube.txt` takes screenshots and checks absorbing a diamond, engulfing a pig and the drops on death (the pig now saves too, so it slips out about half the time):
   `timeout 300 ./gradlew runClient -PdevScript=devscripts/gelatinous-cube.txt`

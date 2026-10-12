@@ -18,8 +18,6 @@ import net.minecraft.network.packet.s2c.play.TitleFadeS2CPacket;
 import net.minecraft.network.packet.s2c.play.TitleS2CPacket;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundCategory;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
@@ -103,7 +101,7 @@ public final class DungeonCombat {
             player.networkHandler.sendPacket(new SubtitleS2CPacket(dungeon.name()));
             player.networkHandler.sendPacket(new TitleS2CPacket(
                     Text.translatable("dungeon.dndclasses.cleared").formatted(Formatting.GOLD)));
-            player.playSound(SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.MASTER, 1.0F, 1.0F);
+            // The fanfare is DungeonMusic's (a dungeon-cleared sting with the music ducked under it)
             BossFight.grantAdvancement(player, DELVER);
         }
     }

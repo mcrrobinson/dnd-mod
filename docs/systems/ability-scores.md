@@ -86,8 +86,8 @@ The class guidebook has a **Your abilities** page with your class's starting sco
 | `/dndclass sheet <player>` | Prints proficiency bonus, crit range, attack bonus, the six scores and modifiers, saves (● proficient), every skill (● proficient, ◆ expertise) and passive Perception, Insight and Stealth, then any non-class sources. Returns the proficiency bonus |
 | `/dndclass score <player> <ability> <1-30>` | Admin override: sets one score outright (for testing race-like bonuses). Saved with the player and kept through death. Returns the new score |
 | `/dndclass score <player> <ability> clear` | Removes the override |
-| `/dndclass forceroll <player> <n...>` | Rigs the player's next d20 naturals, in order (for example `20 1 15`). With advantage both dice use the queue |
-| `/dndclass forceroll <player> clear` | Drops any rigged rolls left |
+| `/dndclass forceroll <entity> <n...>` | Rigs the next d20 naturals of a player or a mob (a mob's saves), in order (for example `20 1 15`). With advantage both dice use the queue |
+| `/dndclass forceroll <entity> clear` | Drops any rigged rolls left |
 
 Abilities are `STR`, `DEX`, `CON`, `INT`, `WIS`, `CHA` (any case).
 

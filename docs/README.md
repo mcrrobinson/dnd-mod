@@ -53,7 +53,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
-- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters, freeze, roll calls on the d20 HUD, narration, NPC voice, mood music and loot planting for running a session
+- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters, freeze, roll calls on the d20 HUD, narration, NPC voice, mood music, loot planting and the DM Wand for running a session (PR #194)
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion (splits at half health) and the Lich boss leashed to its reliquary
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault

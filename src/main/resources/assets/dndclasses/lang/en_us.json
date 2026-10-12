@@ -1316,6 +1316,7 @@
     "magic.dndclasses.use.wrong_class": "This item's magic isn't for your class.",
     "magic.dndclasses.use.attune": "Attune to it at an Attunement Table to wake its magic.",
     "block.dndclasses.immovable_rod": "Immovable Rod",
+    "item.dndclasses.dm_wand": "DM Wand",
     "item.dndclasses.wand_of_magic_missiles": "Wand of Magic Missiles",
     "item.dndclasses.wand_of_magic_missiles.charges": "Charges: %s/%s",
     "item.dndclasses.wand_of_magic_missiles.tooltip": "Right-click: 3 darts at the nearest hostile you face (2 magic damage each). Regains 1d6+1 charges at dawn or on a long rest.",

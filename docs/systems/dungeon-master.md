@@ -1,5 +1,5 @@
 # Dungeon Master
-An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD, narrate, speak through NPCs, set the music, and hand out or plant treasure. Later tickets add a DM Wand and a DM panel on top of this.
+An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD, narrate, speak through NPCs, set the music, and hand out or plant treasure. The DM Wand puts the common actions on right-click. Later tickets add a DM panel on top of this.
 
 ## How it works
 ### DM mode
@@ -96,8 +96,28 @@ The DC is saved on the chest as `DndLockDc` (`/data get block <pos>` shows it, a
 - Frozen mobs and players take no damage, so nobody gets free hits during a pause. Boss bars stay up.
 - Frozen entities have the tag `dndclasses.dm_frozen`.
 
+### DM Wand
+The DM Wand (`dndclasses:dm_wand`, in the D&D Classes creative tab or `/give @s dndclasses:dm_wand`) puts the common DM actions on right-click. It only works in DM mode: anyone else gets "The wand is cold in your hand." on the action bar and nothing happens.
+
+It reaches 64 blocks: the server casts a ray from your eye and takes the first mob or player along it, else the first block. Clicks on blocks and mobs don't open chests or start trades while you hold it.
+
+**Sneak + right-click air** (nothing within 64 blocks) switches mode: Encounter, Freeze, Inspect, Blink, then back. The action bar shows the new mode, and the item's name shows the current one (`DM Wand (Freeze)`). Right-click air without sneaking just shows the mode again.
+
+| Mode | Right-click | Sneak + right-click |
+|-|-|-|
+| Encounter | Spawns the selected encounter at the block you hit, like `/dm encounter spawn <id> <pos>` (numbered, tagged, listed in `/dm encounter list`) | Selects the next encounter (in id order). The wand remembers it |
+| Freeze | A mob or player: freezes it, or unfreezes it if frozen. A block: freezes every mob within 16 blocks of it, or unfreezes them if all were already frozen | Same |
+| Inspect | A mob or player: prints its details to you only (see below) | Same |
+| Blink | Teleports you onto the block you hit (the first spot with room to stand, up to 8 blocks up) | Toggles the veil, like `/dm veil` |
+
+Inspect shows:
+- **Mobs:** HP, current target, frozen or not, encounter number, faction, and all command tags.
+- **Players:** class and level, party role, race, HP, frozen or not, reputation tier and value with every faction, and active quests with their stage.
+
+The mode and the selected encounter are stored on the item, so two wands can be set up differently.
+
 ## Where to find it
-Server-side commands only; nothing to craft.
+Server-side commands, and the DM Wand (creative tab or `/give`); nothing to craft.
 
 ## Commands
 Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant`, `revoke`, `apply`, `mood` and `loot plant`; `/dm revoke <player>` takes it back (and ends their DM mode).
@@ -184,7 +204,8 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `DmNarration`: `/dm narrate`, `title`, `say` and `mood`. Mood tracks go out through `BossMusic.send` under a fixed fake bar UUID (`MOOD_BAR`); the client logs every boss-music packet as `[BossMusic] bar <uuid> track <id>|off`. Lines are logged as `[DM] narrate|title|say|mood ...`. The speech bubble is the `dndclasses:speech_bubble` particle (`SpeechBubbleParticle`, texture from `tools/speech_bubble_texture.py`).
   - `DmLoot`: `/dm loot give|plant`. The lock DC override is `LockDcHolder` (`DndLockDc` in NBT), added to every `LockableContainerBlockEntity` by `classes/mixin/LockableContainerLockDcMixin`; `Lockpicking.dcAt` reads it (both halves of a double chest) and `lockedTableAt` treats a chest with one as locked.
   - `DmFreeze`: freeze/unfreeze, Fabric attack/use/break callbacks, the player hold tick; the power-up packet in `DnDClasses` checks `DmFreeze.isFrozen`.
+  - `DmWand`: the wand's modes and actions (`use(player, stack)`, `raycast`, `spawnEncounter`, `inspect`), mode and encounter in stack NBT (`DmWandMode`, `DmWandEncounter`), and `UseBlockCallback` / `UseEntityCallback` handlers that claim wand clicks on both sides (the client can't tell who is a DM). `classes/Items/DmWandItem` handles clicks on air and names the item after its mode. Logs `[DmWand] <player> mode <mode>`.
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`). Narration and loot: `dm-narration.txt` (single player) and `dm-narration-lan-host.txt` + `dm-narration-lan-guest.txt` (port 25643, guest with `-PdevUser=Guest`).
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Wand: `dm-wand.txt` (single player) and `dm-wand-lan-host.txt` + `dm-wand-lan-guest.txt` (port 25644, guest with `-PdevUser=WandGuest`). Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`). Narration and loot: `dm-narration.txt` (single player) and `dm-narration-lan-host.txt` + `dm-narration-lan-guest.txt` (port 25643, guest with `-PdevUser=Guest`).

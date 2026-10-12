@@ -1,0 +1,26 @@
+# DM Wand over LAN, guest side, with dm-wand-lan-host.txt. Run (after the host says "Started serving on"):
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=WandGuest -PdevServer=localhost:25644 -PdevScript=devscripts/dm-wand-lan-guest.txt
+# Expect: dm-wand-lan-guest-frozen shows "The Dungeon Master holds the scene."; dm-wand-lan-guest-cold shows
+# "The wand is cold in your hand." when the guest (not a DM) uses a wand.
+wait 40
+closescreen
+respawn
+wait 40
+/me guest-ready
+waitchat frozen
+wait 5
+clearchat
+screenshot dm-wand-lan-guest-frozen
+waitchat try-wand
+wait 5
+hotbar 0
+wait 10
+look 180 30
+clearchat
+use
+wait 2
+screenshot dm-wand-lan-guest-cold
+/me guest-tried
+waitchat host-done
+wait 20
+quit

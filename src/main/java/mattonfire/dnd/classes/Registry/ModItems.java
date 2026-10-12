@@ -799,6 +799,10 @@ public class ModItems {
         public static final Item ORC_WAR_CHIEF_SPAWN_EGG = registerItem("orc_war_chief_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ORC_WAR_CHIEF, 0x3E5228, 0xE0A82E, new FabricItemSettings()));
 
+        /** The Dungeon Master's wand: encounters, freeze, inspect and blink on right-click (DmWand). */
+        public static final Item DM_WAND = registerItem("dm_wand",
+                new mattonfire.dnd.classes.Items.DmWandItem(new FabricItemSettings().maxCount(1).rarity(net.minecraft.util.Rarity.EPIC)));
+
         private static Item registerItem(String name, Item item) {
                 return Registry.register(Registries.ITEM, new Identifier(DnDClasses.MOD_ID, name), item);
         }

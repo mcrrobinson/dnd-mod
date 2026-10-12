@@ -348,7 +348,11 @@ public class CharacterCreationHud extends LightweightGuiDescription {
         ClassInfo dndClass = ClassInfo.get(choice.dndClass);
         String raceName = race == null ? "?" : RaceLifecycle.displayName(race, choice.ancestry);
         String className = dndClass == null ? "?" : dndClass.name();
-        lines.add(Text.literal(raceName + " " + className).formatted(Formatting.GOLD, Formatting.BOLD));
+        if (race == null && dndClass == null) {
+            lines.add(Text.translatable("gui.dndclasses.character_picker.empty").formatted(Formatting.GRAY));
+        } else {
+            lines.add(Text.literal(raceName + " " + className).formatted(Formatting.GOLD, Formatting.BOLD));
+        }
         if (dndClass != null) {
             lines.add(Text.translatable("gui.dndclasses.class_picker.role", dndClass.role().text(),
                     dndClass.secondaryRole().text()).formatted(Formatting.GRAY));

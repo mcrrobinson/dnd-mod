@@ -1143,6 +1143,7 @@
     "gui.dndclasses.character_picker.class": "Class",
     "gui.dndclasses.character_picker.ancestry": "Ancestry",
     "gui.dndclasses.character_picker.confirm": "Confirm",
+    "gui.dndclasses.character_picker.empty": "Your character appears here as you pick.",
     "gui.dndclasses.character_picker.hint": "Pick a race and a class. Hover for details.",
     "gui.dndclasses.character_picker.body": "Health %s hearts, speed %s%%",
     "gui.dndclasses.character_picker.abilities": "Ability scores",

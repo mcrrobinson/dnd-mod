@@ -8,7 +8,7 @@ A new player picks their race and class together on one screen: the race grid an
 - **Race** (top left): the 8 races, four across. Hover one for its summary, ability bonuses, stat modifiers and traits. Clicking **Dragonborn** swaps the race grid for the three draconic ancestries (Ember, Frost, Storm) and a Back button; your class choice stays.
 - **Class** (bottom left): the 15 classes, four across, with their [party role](party-roles.md) icons and the class picker's tooltips.
 - **Summary** (right): the combined result, updated as you click:
-  - "Dwarf Barbarian" (a "?" for the half you haven't picked) and the class's roles.
+  - "Dwarf Barbarian" (a "?" for the half you haven't picked yet) and the class's roles.
   - Health in hearts and speed against vanilla: the class's base values with the race's modifiers on top (e.g. Dwarf Barbarian: 21 hearts, speed -26%), plus any other race stat (knockback resistance, reach).
   - The six [ability scores](ability-scores.md) with modifiers: the class's array plus the racial bonuses, in aqua where the race adds.
   - The race's traits and the class's special. When the full text doesn't fit, it shows the trait names only.

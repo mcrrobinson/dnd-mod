@@ -1,0 +1,73 @@
+# The innkeeper's Honored round (1 emerald -> 3 ale) at the bottom of the trade list, with and without DM mode.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/innkeeper-honored-dm.txt
+# Expect in logs/latest.log ([DevScript] trade lines after each "/say [honored] ..." marker, [CHAT] lines):
+# - first visit at Honored: "gave Dev a free room", 15 trades, trade 13 the Room Key held sold out, trade 14 the round
+# - second visit (rented today, "Your room's already paid for."): still 15 trades, trade 14 the round
+# - /dm on: /rep set and /rep both add "DM mode: NPCs treat Dev as Neutral" to the Honored line; the innkeeper
+#   shows 14 trades (no round), as the factions docs say for a DM
+# - /dm off: the round is back (15 trades)
+wait 40
+closescreen
+include _reset.txt
+/dm off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+# A new day each run, so the once-a-day free room is on offer again.
+/time add 24000
+/effect give @s minecraft:resistance 900 4 true
+/kill @e[tag=ih]
+/fill -12 149 -12 12 149 12 minecraft:stone
+/fill -12 150 -12 12 154 12 minecraft:air
+/clear @s
+/tp @s 0.5 150 0.5 0 35
+wait 40
+/summon dndclasses:innkeeper 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["ih"]}
+/give @s minecraft:emerald 16
+/rep @s dndclasses:hobbits set 500
+wait 5
+# ---- First visit: the free room, then the list.
+use
+wait 10
+button 1
+wait 10
+/say [honored] first visit
+slots
+closescreen
+wait 5
+# ---- Second visit, rented today.
+use
+wait 10
+button 1
+wait 10
+/say [honored] second visit
+slots
+screenshot innkeeper-honored-rented
+closescreen
+wait 5
+# ---- DM mode: counts as Neutral with every faction.
+/dm on
+/rep @s dndclasses:hobbits set 500
+/rep
+use
+wait 10
+button 1
+wait 10
+/say [honored] dm visit
+slots
+screenshot innkeeper-honored-dm
+closescreen
+wait 5
+/dm off
+use
+wait 10
+button 1
+wait 10
+/say [honored] dm off visit
+slots
+closescreen
+wait 5
+/kill @e[tag=ih]
+/clear @s
+/gamerule doDaylightCycle true
+quit

@@ -213,7 +213,7 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
 - A veiled DM is still listed in the tab list, and mobs still bump into them on the server.
 - The last roll call (for `/dm apply`) and open prompts are kept in memory, so a server restart forgets them.
 - A player in creative or spectator mode rolls a called save without seeing it (the saving-throw rules hide those); skill checks and flat rolls still show.
-- DMs gain and lose no [faction reputation](factions.md). The quest hook (no quest progress for DMs) arrives with quests.
+- DMs gain and lose no [faction reputation](factions.md), and NPCs treat them as Neutral: no tier prices, perks or refusals (the innkeeper's Honored round, for one) until `/dm off`. `/rep` says so on each non-Neutral line. The quest hook (no quest progress for DMs) arrives with quests.
 - Narration, titles and `say` lines are plain text (no colours or links beyond `*bold*`), and aren't translated.
 - The DM panel rolls for everyone (`@a`) and narrates to everyone; to pick players, type the command.
 - `/dm mood` only reaches players in range when you run it; someone who walks in later doesn't hear it, and a player who relogs loses it.

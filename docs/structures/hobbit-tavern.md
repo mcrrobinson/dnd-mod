@@ -20,7 +20,7 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
 ### Rooms for the night
 - **The loft:** a ladder up the east wall, just inside the door, leads to a sleeping loft under the thatch with **4 green beds**, two nightstands and a lantern.
 - **Room Key:** 3 emeralds from the innkeeper (reputation and kin prices apply as to the other trades). It's named "Green Dragon Room Key", doesn't stack, and is **good until the next dawn**; after that its tooltip says "Expired" and it does nothing.
-- **Honored with the hobbits:** the innkeeper adds a round of 3 ale for 1 emerald, with a cake on the house, at the end of the trades, and the first time you open the trades each day hands you that night's Room Key free (it counts as your one room that day).
+- **Honored with the hobbits:** the innkeeper adds a round of 3 ale for 1 emerald, with a cake on the house, at the end of the trades, and the first time you open the trades each day hands you that night's Room Key free (it counts as your one room that day). Not in [DM mode](../systems/dungeon-master.md), where you count as Neutral.
   - **One a day:** after you've bought one, the trade shows as sold out to you until the next day, and the innkeeper says "Your room's already paid for."
 - **Sleeping:** with a valid key anywhere in your inventory, any bed inside the inn lets you sleep **at any time of day**, even with monsters nearby.
   - After **10 seconds** asleep you get a **long rest** (full health, mana and charges, Hit Dice back; see [Rests](../systems/rests.md#long-rests-in-beds)). The key is used up.

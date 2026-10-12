@@ -1,5 +1,7 @@
 package mattonfire.dnd.entity.raid;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
@@ -29,8 +31,10 @@ import org.jetbrains.annotations.Nullable;
  * @param key     identifies the settlement for raid cooldowns (its structure start chunk)
  * @param rally   where the war party marches to: the village green, or the fortress's gate terrace
  * @param outward direction the war party comes from (out of the fortress gate), or null for any
+ * @param pieces  the boxes of its structure pieces (its buildings), where {@link SettlementHealth} samples blocks
  */
-public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Direction outward, BlockBox bounds) {
+public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Direction outward, BlockBox bounds,
+        List<BlockBox> pieces) {
     public enum Kind {
         VILLAGE("hobbit_village"),
         FORTRESS("dwarven_fortress"),
@@ -66,8 +70,8 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
 
     /** A raid on open ground round {@code pos}. */
     public static Settlement wilds(BlockPos pos) {
-        return new Settlement(Kind.WILDS, new ChunkPos(pos).toLong(), pos.toImmutable(), null,
-                new BlockBox(pos).expand(16));
+        BlockBox bounds = new BlockBox(pos).expand(16);
+        return new Settlement(Kind.WILDS, new ChunkPos(pos).toLong(), pos.toImmutable(), null, bounds, List.of(bounds));
     }
 
     /**
@@ -123,7 +127,9 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
         BlockBox bounds = start.getBoundingBox();
         BlockPos rally = null;
         Direction outward = null;
+        List<BlockBox> pieces = new ArrayList<>();
         for (StructurePiece piece : start.getChildren()) {
+            pieces.add(piece.getBoundingBox());
             if (kind == Kind.VILLAGE && piece instanceof VillageGreenPiece) {
                 // The lawn is the box's bottom layer; stand on it.
                 BlockBox box = piece.getBoundingBox();
@@ -147,6 +153,6 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
             BlockPos c = bounds.getCenter();
             rally = new BlockPos(c.getX(), bounds.getMinY() + 1, c.getZ());
         }
-        return new Settlement(kind, start.getPos().toLong(), rally, outward, bounds);
+        return new Settlement(kind, start.getPos().toLong(), rally, outward, bounds, List.copyOf(pieces));
     }
 }

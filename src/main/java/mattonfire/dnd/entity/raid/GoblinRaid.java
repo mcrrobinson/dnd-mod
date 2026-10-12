@@ -63,8 +63,10 @@ import org.jetbrains.annotations.Nullable;
  * One goblin war party attacking a settlement. It comes in waves of Goblin Warriors, the last one
  * led by a Goblin Warlord; between waves there is a short lull with a horn call. Players near the
  * settlement see the raid's bar (counting down to the next wave, then the war party's remaining
- * health) and hear the raid music. Clearing every wave wins the raid and rewards everyone who took
- * part; if no one stays to defend it, the war party withdraws with its plunder.
+ * health) and hear the raid music. A second bar shows the settlement's {@link SettlementHealth}, which
+ * the raid wears down; at 0 the settlement has fallen and the raid is lost. Clearing every wave wins the
+ * raid and rewards everyone who took part, scaled by the health left; if no one stays to defend it, the
+ * war party withdraws with its plunder.
  */
 public class GoblinRaid {
     /** Players within this many blocks (horizontally) of the rally point are in the raid. */
@@ -94,7 +96,9 @@ public class GoblinRaid {
         FIGHTING,
         VICTORY,
         /** Over; the manager drops it. */
-        DONE
+        DONE,
+        /** The settlement's health ran out: the raid is lost (shown for a few seconds, then DONE). */
+        FALLEN
     }
 
     private static final class Raider {
@@ -130,6 +134,12 @@ public class GoblinRaid {
     private boolean lookoutsChecked;
 
     private final ServerBossBar bar = new ServerBossBar(Text.empty(), BossBar.Color.RED, BossBar.Style.NOTCHED_10);
+    /** The settlement's health, shown under the raid bar. */
+    private final ServerBossBar healthBar = new ServerBossBar(Text.empty(), BossBar.Color.GREEN, BossBar.Style.PROGRESS);
+    private SettlementHealth health = new SettlementHealth();
+    /** The settlement's structure pieces, for sampling its buildings; null for a raid loaded from the save. */
+    @Nullable
+    private List<net.minecraft.util.math.BlockBox> pieces;
 
     GoblinRaid(int id, Settlement settlement, Difficulty difficulty) {
         this.id = id;
@@ -137,6 +147,7 @@ public class GoblinRaid {
         this.settlementKey = settlement.key();
         this.rally = settlement.rally();
         this.outward = settlement.outward();
+        this.pieces = settlement.pieces();
         this.totalWaves = switch (difficulty) {
             case PEACEFUL, EASY -> 2;
             case NORMAL -> 3;
@@ -171,6 +182,8 @@ public class GoblinRaid {
         }
         // Raids saved before the lookouts existed are already under way.
         this.lookoutsChecked = !nbt.contains("LookoutsChecked") || nbt.getBoolean("LookoutsChecked");
+        // Raids saved before settlement health start at full health and sample the buildings on their next tick.
+        this.health = SettlementHealth.fromNbt(nbt.getCompound("SettlementHealth"));
     }
 
     static GoblinRaid fromNbt(NbtCompound nbt) {
@@ -208,6 +221,9 @@ public class GoblinRaid {
         }
         nbt.putInt("FirstWaveDelay", this.firstWaveDelay);
         nbt.putBoolean("LookoutsChecked", this.lookoutsChecked);
+        NbtCompound health = new NbtCompound();
+        this.health.writeNbt(health);
+        nbt.put("SettlementHealth", health);
         return nbt;
     }
 
@@ -248,6 +264,15 @@ public class GoblinRaid {
         return this.raiders.containsKey(uuid);
     }
 
+    public SettlementHealth getHealth() {
+        return this.health;
+    }
+
+    /** Sets the settlement's health (for /goblinraid health); at 0 the settlement falls on the next tick. */
+    public void setHealth(float value) {
+        this.health.set(value);
+    }
+
     public boolean isOver() {
         return this.state == State.DONE;
     }
@@ -263,13 +288,13 @@ public class GoblinRaid {
             return;
         }
         // Peaceful sweeps the goblins away; that mustn't count as beating them.
-        if (world.getDifficulty() == Difficulty.PEACEFUL && this.state != State.VICTORY) {
+        if (world.getDifficulty() == Difficulty.PEACEFUL && this.state != State.VICTORY && this.state != State.FALLEN) {
             this.withdraw(world);
             return;
         }
         List<ServerPlayerEntity> defenders = world.getPlayers(this::isDefender);
         this.updateBarPlayers(world, defenders);
-        if (this.state == State.VICTORY) {
+        if (this.state == State.VICTORY || this.state == State.FALLEN) {
             if (--this.stateTicks <= 0) {
                 this.end();
             }
@@ -283,6 +308,23 @@ public class GoblinRaid {
             return;
         }
         this.absentTicks = 0;
+
+        // The buildings are sampled once, while defenders keep the settlement loaded.
+        if (!this.health.isSampled()) {
+            this.sampleBuildings(world);
+        }
+        if (this.wave > 0 && world.getTime() % SettlementHealth.CHECK_INTERVAL == 0) {
+            int gone = this.health.checkBuildings(world);
+            if (gone > 0) {
+                DnDClasses.LOGGER.info("[GoblinRaid] raid {} settlement health {} ({} building block(s) lost, {} of {} so far)",
+                        this.id, this.health.shown(), gone, this.health.buildingsLost(), this.health.sampleSize());
+            }
+        }
+        this.updateHealthBar();
+        if (this.health.hasFallen()) {
+            this.fall(world);
+            return;
+        }
 
         if (this.state == State.APPROACHING) {
             if (this.wave == 0 && !this.lookoutsChecked) {
@@ -319,7 +361,8 @@ public class GoblinRaid {
                 this.blowHorn(world);
             }
         } else if (this.stateTicks % 20 == 0) {
-            this.steer(world, defenders);
+            List<MobEntity> goblins = this.steer(world, defenders);
+            this.checkHold(world, goblins, defenders);
         }
     }
 
@@ -342,6 +385,7 @@ public class GoblinRaid {
         for (ServerPlayerEntity player : defenders) {
             if (!this.bar.getPlayers().contains(player)) {
                 this.bar.addPlayer(player);
+                this.healthBar.addPlayer(player);
                 if (this.state != State.VICTORY) {
                     BossMusic.send(player, this.bar.getUuid(), ModSounds.MUSIC_GOBLIN_RAID);
                 }
@@ -354,6 +398,7 @@ public class GoblinRaid {
 
     private void removeBarPlayer(ServerPlayerEntity player) {
         this.bar.removePlayer(player);
+        this.healthBar.removePlayer(player);
         BossMusic.send(player, this.bar.getUuid(), null);
     }
 
@@ -537,7 +582,7 @@ public class GoblinRaid {
      * Raiders without a fight pick on the nearest defender (hobbit, dwarf, villager, golem or
      * player), or else march on the rally point. Dwarves turn on the nearest raider.
      */
-    private void steer(ServerWorld world, List<ServerPlayerEntity> players) {
+    private List<MobEntity> steer(ServerWorld world, List<ServerPlayerEntity> players) {
         List<MobEntity> goblins = new ArrayList<>();
         for (UUID uuid : this.raiders.keySet()) {
             if (world.getEntity(uuid) instanceof MobEntity mob && mob.isAlive()) {
@@ -563,11 +608,8 @@ public class GoblinRaid {
                 goblin.getNavigation().startMovingTo(to.x, to.y, to.z, 1.0D);
             }
         }
-        // Dwarves rush out to meet the raiders.
-        // (and Elf Wardens).
-        Class<? extends MobEntity> defenders = this.kind == Settlement.Kind.FORTRESS ? MountainDwarfEntity.class
-                : this.kind == Settlement.Kind.ENCLAVE ? mattonfire.dnd.entity.ElfWardenEntity.class
-                : this.kind == Settlement.Kind.TEMPLE ? mattonfire.dnd.entity.DragonbornTemplarEntity.class : null;
+        // Dwarves (and Elf Wardens, Templars) rush out to meet the raiders.
+        Class<? extends MobEntity> defenders = this.fighters();
         if (defenders != null && !goblins.isEmpty()) {
             Box area = new Box(this.rally).expand(48.0D, 24.0D, 48.0D);
             for (MobEntity dwarf : world.getEntitiesByClass(defenders, area,
@@ -586,6 +628,15 @@ public class GoblinRaid {
                 }
             }
         }
+        return goblins;
+    }
+
+    /** The settlement's fighting folk, who are sent at the raiders: null at a hobbit village or in the wilds. */
+    @Nullable
+    private Class<? extends MobEntity> fighters() {
+        return this.kind == Settlement.Kind.FORTRESS ? MountainDwarfEntity.class
+                : this.kind == Settlement.Kind.ENCLAVE ? mattonfire.dnd.entity.ElfWardenEntity.class
+                : this.kind == Settlement.Kind.TEMPLE ? mattonfire.dnd.entity.DragonbornTemplarEntity.class : null;
     }
 
     @Nullable
@@ -617,6 +668,142 @@ public class GoblinRaid {
         return nearest;
     }
 
+    // ---- Settlement health ----
+
+    /** Whether the raid has begun wearing the settlement down: from the first wave until it's won or lost. */
+    private boolean isUnderway() {
+        return this.wave > 0 && (this.state == State.FIGHTING || this.state == State.APPROACHING);
+    }
+
+    private void sampleBuildings(ServerWorld world) {
+        List<net.minecraft.util.math.BlockBox> boxes = this.pieces;
+        if (boxes == null) {
+            // Loaded from the save: find the settlement again.
+            boxes = Settlement.find(world, this.rally, 8, 0)
+                    .filter(settlement -> settlement.key() == this.settlementKey)
+                    .map(Settlement::pieces)
+                    .orElseGet(() -> List.of(new net.minecraft.util.math.BlockBox(this.rally).expand(16)));
+        }
+        this.health.takeSample(world, boxes, world.random);
+        this.pieces = null;
+        DnDClasses.LOGGER.info("[GoblinRaid] raid {} watching {} building block(s) of {} ({} piece box(es))", this.id,
+                this.health.sampleSize(), this.kind.id, boxes.size());
+    }
+
+    private void updateHealthBar() {
+        float fraction = this.health.get() / SettlementHealth.MAX;
+        this.healthBar.setName(Text.translatable("raid.dndclasses.goblin.health",
+                Text.translatable("raid.dndclasses.goblin.short." + this.kind.id), this.health.shown(),
+                (int) SettlementHealth.MAX));
+        this.healthBar.setPercent(MathHelper.clamp(fraction, 0.0F, 1.0F));
+        this.healthBar.setColor(fraction > 0.6F ? BossBar.Color.GREEN : fraction > 0.3F ? BossBar.Color.YELLOW : BossBar.Color.RED);
+    }
+
+    /** The factions whose settlement this is (the hobbits for a hobbit village, ...). */
+    private List<mattonfire.dnd.faction.Faction> settlementFactions(ServerWorld world) {
+        List<mattonfire.dnd.faction.Faction> factions = new ArrayList<>();
+        if (this.kind == Settlement.Kind.WILDS) {
+            return factions;
+        }
+        Identifier settlement = this.settlementId();
+        for (mattonfire.dnd.faction.Faction faction : mattonfire.dnd.faction.Factions.all()) {
+            if (faction.ownsSettlement(world, settlement)) {
+                factions.add(faction);
+            }
+        }
+        return factions;
+    }
+
+    private boolean isFolk(LivingEntity entity, List<mattonfire.dnd.faction.Faction> factions) {
+        for (mattonfire.dnd.faction.Faction faction : factions) {
+            if (faction.isMember(entity)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean nearRally(Entity entity, double radius, double height) {
+        double dx = entity.getX() - (this.rally.getX() + 0.5D);
+        double dz = entity.getZ() - (this.rally.getZ() + 0.5D);
+        return dx * dx + dz * dz < radius * radius && Math.abs(entity.getY() - this.rally.getY()) < height;
+    }
+
+    /** Someone died in this raid's world: a member of the settlement's faction costs it {@link SettlementHealth#FOLK_KILLED}. */
+    void onDeath(ServerWorld world, LivingEntity entity) {
+        if (!this.isUnderway() || !this.nearRally(entity, SettlementHealth.FOLK_RADIUS, RADIUS)
+                || !this.isFolk(entity, this.settlementFactions(world))) {
+            return;
+        }
+        this.health.folkKilled(1);
+        DnDClasses.LOGGER.info("[GoblinRaid] raid {} settlement health {} ({} killed, {} folk lost so far)", this.id,
+                this.health.shown(), entity.getName().getString(), this.health.folkKilled());
+    }
+
+    /** A player broke a block by hand: it no longer counts as a building lost to the raid. */
+    void onPlayerBreak(BlockPos pos) {
+        if (!this.isOver()) {
+            this.health.playerBroke(pos);
+        }
+    }
+
+    /**
+     * Raiders standing on the rally point with no defender (player or folk) there to contest it wear the
+     * settlement down by {@link SettlementHealth#HOLD_PER_SECOND}. Called once a second while fighting.
+     */
+    private void checkHold(ServerWorld world, List<MobEntity> goblins, List<ServerPlayerEntity> players) {
+        boolean held = goblins.stream().anyMatch(goblin -> this.nearRally(goblin, SettlementHealth.HOLD_RADIUS, 4.0D));
+        if (!held) {
+            return;
+        }
+        for (ServerPlayerEntity player : players) {
+            if (!player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)
+                    && this.nearRally(player, SettlementHealth.HOLD_RADIUS, 4.0D)) {
+                return;
+            }
+        }
+        // Fighting folk (dwarves, Elf Wardens, Templars) contest it too; hobbits and Wood Elves only flee.
+        Class<? extends MobEntity> fighters = this.fighters();
+        if (fighters != null && !world.getEntitiesByClass(fighters,
+                new Box(this.rally).expand(SettlementHealth.HOLD_RADIUS, 4.0D, SettlementHealth.HOLD_RADIUS),
+                entity -> entity.isAlive() && this.nearRally(entity, SettlementHealth.HOLD_RADIUS, 4.0D)).isEmpty()) {
+            return;
+        }
+        this.health.damage(SettlementHealth.HOLD_PER_SECOND);
+        if (this.stateTicks % 200 == 0) {
+            DnDClasses.LOGGER.info("[GoblinRaid] raid {} settlement health {} (raiders hold the rally point)", this.id,
+                    this.health.shown());
+        }
+    }
+
+    /**
+     * The settlement's health ran out: the raid is lost. No rewards; everyone who took part loses standing
+     * with the settlement's faction ({@code raid_lost}), and the war party withdraws with its plunder.
+     */
+    private void fall(ServerWorld world) {
+        this.state = State.FALLEN;
+        this.stateTicks = VICTORY_TICKS;
+        this.bar.setName(Text.translatable("raid.dndclasses.goblin.defeat", this.placeName()));
+        this.bar.setColor(BossBar.Color.RED);
+        this.bar.setPercent(0.0F);
+        this.updateHealthBar();
+        for (ServerPlayerEntity player : List.copyOf(this.bar.getPlayers())) {
+            BossMusic.send(player, this.bar.getUuid(), null);
+        }
+        this.message(world, Text.translatable("raid.dndclasses.goblin.fallen", this.placeName()).formatted(Formatting.DARK_RED));
+        int penalised = 0;
+        for (UUID uuid : this.participants) {
+            if (world.getEntity(uuid) instanceof ServerPlayerEntity player) {
+                mattonfire.dnd.faction.FactionEvents.raidLost(player, world, this.settlementId());
+                penalised++;
+            }
+        }
+        this.sendRaidersAway(world);
+        this.blowHorn(world);
+        DnDClasses.LOGGER.info("[GoblinRaid] raid {} lost: {} has fallen ({} folk killed, {} of {} building block(s) lost); {} player(s) lose standing",
+                this.id, this.kind.id, this.health.folkKilled(), this.health.buildingsLost(), this.health.sampleSize(), penalised);
+    }
+
     // ---- Outcome ----
 
     private void win(ServerWorld world) {
@@ -628,7 +815,11 @@ public class GoblinRaid {
         for (ServerPlayerEntity player : List.copyOf(this.bar.getPlayers())) {
             BossMusic.send(player, this.bar.getUuid(), null);
         }
-        DnDClasses.LOGGER.info("[GoblinRaid] raid {} won by {} players", this.id, this.participants.size());
+        this.updateHealthBar();
+        float scale = this.health.rewardScale();
+        float lootChance = this.health.lootChance();
+        DnDClasses.LOGGER.info("[GoblinRaid] raid {} won by {} players with settlement health {} (rewards x{}, loot chance {})",
+                this.id, this.participants.size(), this.health.shown(), String.format("%.2f", scale), String.format("%.2f", lootChance));
 
         // The settlement cheers.
         Box area = new Box(this.rally).expand(64.0D, 32.0D, 64.0D);
@@ -652,6 +843,10 @@ public class GoblinRaid {
             }
             defenders.add(player);
             player.sendMessage(Text.translatable("raid.dndclasses.goblin.reward", this.placeName()).formatted(Formatting.GOLD), false);
+            if (this.health.shown() < (int) SettlementHealth.MAX) {
+                player.sendMessage(Text.translatable("raid.dndclasses.goblin.reward_scaled", this.placeName(),
+                        this.health.shown(), (int) SettlementHealth.MAX).formatted(Formatting.YELLOW), false);
+            }
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.HERO_OF_THE_VILLAGE, 20 * 60 * 40, 0, false, false, true));
             // Exalted with the hobbits: their stores are opened twice as wide for you.
             int rolls = TierEffects.raidLootRolls(player, world, this.settlementId());
@@ -660,6 +855,10 @@ public class GoblinRaid {
             }
             int given = 0;
             for (int roll = 0; roll < rolls; roll++) {
+                // A battered settlement has less to share.
+                if (world.random.nextFloat() >= lootChance) {
+                    continue;
+                }
                 for (ItemStack stack : loot.generateLoot(new LootContext.Builder(world)
                         .parameter(LootContextParameters.THIS_ENTITY, player)
                         .parameter(LootContextParameters.ORIGIN, player.getPos())
@@ -673,9 +872,9 @@ public class GoblinRaid {
             }
             DnDClasses.LOGGER.info("[GoblinRaid] raid {} reward for {}: {} loot roll(s), {} stack(s)", this.id,
                     player.getEntityName(), rolls, given);
-            ExperienceOrbEntity.spawn(world, player.getPos(), 40 + 20 * this.totalWaves);
+            ExperienceOrbEntity.spawn(world, player.getPos(), Math.max(1, Math.round((40 + 20 * this.totalWaves) * scale)));
             mattonfire.dnd.faction.FactionEvents.raidWon(player, world, this.settlementId(),
-                    mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR);
+                    mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR, scale);
             if (this.kind == Settlement.Kind.FORTRESS || this.kind == Settlement.Kind.ENCLAVE
                     || this.kind == Settlement.Kind.TEMPLE) {
                 SettlementGrudges.forgive(player, this.rally, RADIUS);
@@ -696,6 +895,18 @@ public class GoblinRaid {
 
     /** Sends the raiders away (the raid is called off), telling its players {@code messageKey} with the place's name. */
     void withdraw(ServerWorld world, String messageKey) {
+        this.sendRaidersAway(world);
+        for (UUID uuid : this.participants) {
+            if (world.getEntity(uuid) instanceof ServerPlayerEntity player) {
+                player.sendMessage(Text.translatable(messageKey, this.placeName()), false);
+            }
+        }
+        DnDClasses.LOGGER.info("[GoblinRaid] raid {} withdrew", this.id);
+        this.end();
+    }
+
+    /** The raiders vanish in a puff of smoke; unloaded ones are sent away when they load (see {@link GoblinRaids}). */
+    private void sendRaidersAway(ServerWorld world) {
         for (UUID uuid : this.raiders.keySet()) {
             Entity entity = world.getEntity(uuid);
             if (entity != null && entity.isAlive()) {
@@ -705,12 +916,5 @@ public class GoblinRaid {
             }
         }
         this.raiders.clear();
-        for (UUID uuid : this.participants) {
-            if (world.getEntity(uuid) instanceof ServerPlayerEntity player) {
-                player.sendMessage(Text.translatable(messageKey, this.placeName()), false);
-            }
-        }
-        DnDClasses.LOGGER.info("[GoblinRaid] raid {} withdrew", this.id);
-        this.end();
     }
 }

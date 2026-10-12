@@ -34,7 +34,8 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | Kill a goblin (not a boss minion) | +1 | +1 | -3 | hobbits and dwarves +30 a day from kills |
 | Kill a Goblin Warlord | +25 | +25 | -50 | none |
 | Kill a goblin while goblins are Neutral or better (betrayal) | +1 | +1 | -40 | |
-| Win a goblin raid (taking part) | +60 at a village | +60 at a fortress | -40 | none |
+| Win a goblin raid (taking part) | +60 at a village, scaled by its health left | +60 at a fortress, scaled | -40 | none |
+| Lose a goblin raid: the settlement falls (taking part) | -40 at a village | -40 at a fortress | | none |
 | Claim a minor / major bounty | +8 / +20 | | -4 / -10 (rival) | none |
 | Trade with an innkeeper | +1 a trade | | | +15 a day |
 | Barter a gold ingot with a dwarf | | +1 | | +15 a day |
@@ -119,6 +120,7 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
   "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
   "kill_cap": 30,
   "raid_won": 60,
+  "raid_lost": -40,
   "bounties": {"minor": 8, "major": 20},
   "trade": 1,
   "trade_cap": 15
@@ -141,7 +143,8 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
 | `enemy_kills` | `{"<faction>": n}`: gain for killing a member of that faction (capped by `kill_cap`) |
 | `enemy_kill_overrides` | `{"<matcher>": n}`: uncapped gain for particular enemies (bosses) |
 | `kill_cap` | Daily cap on `enemy_kills` gains (0 = none) |
-| `raid_won` | Gain when a goblin raid on one of `settlements` is won |
+| `raid_won` | Gain when a goblin raid on one of `settlements` is won, scaled by the settlement's health left (see [Goblin raids](goblin-raids.md)) |
+| `raid_lost` | Change when a goblin raid on one of `settlements` is lost: the settlement's health ran out |
 | `raid_defeated` | Change when a raid by this faction's members is beaten |
 | `bounties` | `{"minor": n, "major": n}`: gain for a bounty handed in in one of `settlements`; if it's handed in in none, every faction with `bounties` gains |
 | `trade` / `trade_cap` | Gain per trade or barter with a member, and its daily cap |

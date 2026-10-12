@@ -1,0 +1,282 @@
+# Craft and element obstacles (Artificer, Rogue, Alchemist, Warlock, and a Fighter's fallbacks).
+# Run: timeout 500 ./gradlew runClient -PdevScript=devscripts/obstacle-craft-element.txt
+# Expect (log: [DevScript] actionbar lines, [CHAT] command feedback, [Obstacle]/[Grudges] lines; screenshots):
+#  Clockwork Door: an Artificer with no parts is refused ("You need an iron ingot..."); with them, a rigged 18 opens
+#   it and uses up one iron ingot and one redstone dust (1 of each left). A rigged 1 jams it: the next try says
+#   "jammed" and spends nothing. A Rogue (secondary) opens another one.
+#  Smashed Clockwork Door: a Fighter mines it open; the watching Mountain Dwarf reacts ([Grudges] ... BREAK).
+#  Alchemical Seal: its chest is glued shut; an Alchemist with no potion is refused; a rigged 18 dissolves it and
+#   uses up the potion; a rigged 1 splashes acid (health down, Poison). A Fighter breaks a second seal: its chest
+#   rolls its loot and some stacks are ruined ([Obstacle] ... stack(s) ruined).
+#  Miasma Vent: a Fighter by it gets Poison II (Amplifier 1) and Nausea; a Rogue gets nothing; an Alchemist's
+#   rigged 18 stops it, and the Fighter then gets nothing.
+#  Fire Curtain: a Fighter walking in is stopped before it (Pos z < 30) and scorched; a drunk Potion of Fire
+#   Resistance doesn't take (no ActiveEffects) and he's still stopped. A Warlock walks through (z > 32) unhurt and
+#   douses the brazier: the curtain opens. After a reset, an Alchemist's Transmute of Fire Resistance covers the
+#   Fighter (ActiveEffects has id 12) and he walks through.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 14 149 44 minecraft:stone
+/fill 0 150 0 14 156 44 minecraft:air
+
+# ---- Artificer: Clockwork Door (Medium)
+/dndobstacle place 3 150 5 4 151 5 dndclasses:clockwork_door medium
+/dndclass set @s artificer
+wait 5
+closescreen
+/clear @s
+/effect clear @s
+/tp @s 3.5 150 3.5 0 20
+wait 10
+screenshot craft-clockwork-hint
+use
+wait 2
+actionbar
+/execute if block 3 150 5 dndclasses:clockwork_door[state=sealed]
+/give @s minecraft:iron_ingot 2
+/give @s minecraft:redstone 2
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 3 150 5 dndclasses:clockwork_door[state=open]
+/clear @s minecraft:iron_ingot 0
+/clear @s minecraft:redstone 0
+screenshot craft-clockwork-open
+# A natural 1 jams it; the next try is refused and spends nothing
+/dndobstacle reset 3 150 5
+/dndclass forceroll @s 1
+use
+wait 110
+/dndclass forceroll @s 18
+use
+wait 2
+actionbar
+/execute if block 3 150 5 dndclasses:clockwork_door[state=sealed]
+/clear @s minecraft:iron_ingot 0
+/dndclass forceroll @s clear
+
+# ---- Rogue (secondary): a second Clockwork Door
+/dndobstacle place 8 150 5 8 151 5 dndclasses:clockwork_door medium
+/dndclass set @s rogue
+wait 5
+closescreen
+/clear @s
+/give @s minecraft:iron_ingot 1
+/give @s minecraft:redstone 1
+/tp @s 8.5 150 3.5 0 20
+wait 10
+/dndclass forceroll @s 19
+use
+wait 40
+/execute if block 8 150 5 dndclasses:clockwork_door[state=open]
+
+# ---- Fighter: smash a Clockwork Door in front of a Mountain Dwarf
+/dndobstacle place 3 150 10 4 151 10 dndclasses:clockwork_door medium
+/summon dndclasses:mountain_dwarf 8.5 150 8.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[90f,0f]}
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:netherite_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+/tp @s 3.5 150 8.5 0 20
+wait 10
+screenshot craft-clockwork-fighter-hint
+mine on
+wait 120
+mine off
+/execute if block 4 150 10 dndclasses:clockwork_door[state=open]
+/data get entity @e[type=dndclasses:mountain_dwarf,limit=1] AngryAt
+screenshot craft-clockwork-smashed
+/kill @e[type=dndclasses:mountain_dwarf]
+
+# ---- Alchemist: Alchemical Seal over a loot chest
+/setblock 10 150 6 minecraft:chest[facing=north]{LootTable:"minecraft:chests/simple_dungeon"}
+/dndobstacle place 10 150 5 10 150 5 dndclasses:alchemical_seal medium
+/dndclass set @s alchemist
+wait 5
+closescreen
+/clear @s
+/effect clear @s
+# The chest is glued shut from above
+/tp @s 10.5 152 6.5 0 90
+wait 5
+use
+wait 2
+actionbar
+/tp @s 10.5 150 3.5 0 30
+wait 10
+screenshot craft-seal-hint
+use
+wait 2
+actionbar
+/item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:awkward"}
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 10 150 5 dndclasses:alchemical_seal[state=open]
+/clear @s minecraft:potion 0
+screenshot craft-seal-open
+# A natural 1: acid
+/dndobstacle reset 10 150 5
+/item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:awkward"}
+/dndclass forceroll @s 1
+use
+wait 5
+/data get entity @s Health
+/data get entity @s ActiveEffects
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+
+# ---- Fighter: break a second seal; its cache is forced and partly ruined
+/setblock 13 150 6 minecraft:chest[facing=north]{LootTable:"minecraft:chests/simple_dungeon"}
+/dndobstacle place 13 150 5 13 150 5 dndclasses:alchemical_seal medium
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:netherite_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+/tp @s 13.5 150 3.5 0 30
+wait 10
+screenshot craft-seal-fighter-hint
+mine on
+wait 40
+mine off
+wait 2
+actionbar
+/execute if block 13 150 5 minecraft:air
+/data get block 13 150 6 Items
+
+# ---- Miasma Vent in the floor
+/setblock 4 149 21 minecraft:air
+/dndobstacle place 4 149 21 4 149 21 dndclasses:miasma_vent medium
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 22.5 180 60
+wait 30
+/data get entity @s ActiveEffects
+actionbar
+screenshot craft-vent-fighter
+/effect clear @s
+/dndclass set @s rogue
+wait 5
+closescreen
+/effect clear @s
+/tp @s 4.5 150 22.5 180 60
+wait 30
+/data get entity @s ActiveEffects
+/dndclass set @s alchemist
+wait 5
+closescreen
+/effect clear @s
+/item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:awkward"}
+/tp @s 4.5 150 22.5 180 60
+wait 5
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 4 149 21 dndclasses:miasma_vent[state=open]
+/dndclass set @s fighter
+wait 5
+closescreen
+/effect clear @s
+/tp @s 4.5 150 22.5 180 60
+wait 30
+/data get entity @s ActiveEffects
+
+# ---- Fire Curtain (2 thick, in a stone frame) with its brazier beyond
+/fill 2 150 30 2 153 31 minecraft:stone
+/fill 6 150 30 6 153 31 minecraft:stone
+/fill 2 153 30 6 153 31 minecraft:stone
+/dndobstacle place 3 150 30 5 152 31 dndclasses:fire_curtain medium
+/setblock 4 150 34 dndclasses:fire_curtain_brazier
+/dndobstacle link 4 150 34 4 150 31
+/clear @s
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+/tp @s 4.5 150 27.5 0 10
+wait 10
+screenshot craft-curtain-fighter-hint
+walk on
+wait 40
+walk off
+/data get entity @s Pos
+/data get entity @s Health
+actionbar
+screenshot craft-curtain-fighter-blocked
+# A Fighter can't drink Fire Resistance
+/tp @s 4.5 150 27.5 0 10
+/effect clear @s
+/item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:fire_resistance"}
+holduse on
+wait 45
+holduse off
+/data get entity @s ActiveEffects
+walk on
+wait 30
+walk off
+/data get entity @s Pos
+
+# Warlock walks through and douses the brazier
+/dndclass set @s warlock
+wait 5
+closescreen
+/clear @s
+/effect clear @s
+/effect give @s minecraft:instant_health 1 5
+/tp @s 4.5 150 27.5 0 10
+wait 10
+screenshot craft-curtain-warlock-hint
+walk on
+wait 14
+screenshot craft-curtain-warlock-inside
+wait 30
+walk off
+/data get entity @s Pos
+/data get entity @s Health
+/tp @s 4.5 150 32.5 0 40
+wait 5
+screenshot craft-brazier-warlock-hint
+use
+wait 5
+/execute if block 4 150 30 dndclasses:fire_curtain[state=open]
+/execute if block 4 150 34 dndclasses:fire_curtain_brazier[state=open]
+/tp @s 4.5 151 26.5 0 10
+wait 10
+screenshot craft-curtain-doused
+
+# Reset relights the brazier and its curtain
+/dndobstacle reset 4 150 34
+/execute if block 4 150 30 dndclasses:fire_curtain[state=sealed]
+
+# Alchemist throws Transmute with Fire Resistance at their feet, then (as a Fighter) stands in the cloud
+/dndclass set @s alchemist
+wait 5
+closescreen
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 26.5 0 90
+/item replace entity @s weapon.mainhand with minecraft:potion{Potion:"minecraft:fire_resistance"}
+/dndclass charges @s 3
+wait 220
+press key.dnd-classes.power-up
+wait 15
+/dndclass set @s fighter
+wait 5
+closescreen
+/effect clear @s
+wait 30
+/data get entity @s ActiveEffects
+/tp @s 4.5 150 27.5 0 10
+walk on
+wait 40
+walk off
+/data get entity @s Pos
+screenshot craft-curtain-transmute-through
+quit

@@ -1,0 +1,113 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "state": "sealed"
+      },
+      "apply": [
+        {
+          "model": "minecraft:block/soul_fire_floor0"
+        },
+        {
+          "model": "minecraft:block/soul_fire_floor1"
+        }
+      ]
+    },
+    {
+      "when": {
+        "state": "sealed"
+      },
+      "apply": [
+        {
+          "model": "minecraft:block/soul_fire_side0"
+        },
+        {
+          "model": "minecraft:block/soul_fire_side1"
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt0"
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt1"
+        }
+      ]
+    },
+    {
+      "when": {
+        "state": "sealed"
+      },
+      "apply": [
+        {
+          "model": "minecraft:block/soul_fire_side0",
+          "y": 90
+        },
+        {
+          "model": "minecraft:block/soul_fire_side1",
+          "y": 90
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt0",
+          "y": 90
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt1",
+          "y": 90
+        }
+      ]
+    },
+    {
+      "when": {
+        "state": "sealed"
+      },
+      "apply": [
+        {
+          "model": "minecraft:block/soul_fire_side0",
+          "y": 180
+        },
+        {
+          "model": "minecraft:block/soul_fire_side1",
+          "y": 180
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt0",
+          "y": 180
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt1",
+          "y": 180
+        }
+      ]
+    },
+    {
+      "when": {
+        "state": "sealed"
+      },
+      "apply": [
+        {
+          "model": "minecraft:block/soul_fire_side0",
+          "y": 270
+        },
+        {
+          "model": "minecraft:block/soul_fire_side1",
+          "y": 270
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt0",
+          "y": 270
+        },
+        {
+          "model": "minecraft:block/soul_fire_side_alt1",
+          "y": 270
+        }
+      ]
+    },
+    {
+      "when": {
+        "state": "open"
+      },
+      "apply": {
+        "model": "dndclasses:block/obstacle_empty"
+      }
+    }
+  ]
+}

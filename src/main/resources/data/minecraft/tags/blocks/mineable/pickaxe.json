@@ -6,6 +6,8 @@
     "dndclasses:collapsed_passage",
     "dndclasses:portcullis",
     "dndclasses:desecrated_altar",
-    "dndclasses:ossuary_gate"
+    "dndclasses:ossuary_gate",
+    "dndclasses:clockwork_door",
+    "dndclasses:alchemical_seal"
   ]
 }

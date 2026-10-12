@@ -8,6 +8,7 @@ import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -156,12 +157,30 @@ public abstract class ObstacleType {
     }
 
     /**
-     * Whether right-clicking with {@code held} in the main hand works the obstacle. Defaults to an empty hand,
-     * or the {@link #requiredItem()} if there is one.
+     * Whether right-clicking with {@code held} in the main hand works it: by default an empty hand, or the
+     * {@link #requiredItem()}. A type that uses items up per attempt also takes them in hand.
      */
     public boolean accepts(PlayerEntity player, ItemStack held) {
         ItemStack required = requiredItem();
         return required == null ? held.isEmpty() : ItemStack.areItemsEqual(held, required);
+    }
+
+    /**
+     * Server side, just before a roll (or a take-your-time focus) starts: pays what the attempt costs, such as
+     * the items it uses up, and returns true; or tells the player why not and returns false. Never called for
+     * creative players or for obstacles with no roll.
+     */
+    public boolean payForAttempt(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {
+        return true;
+    }
+
+    /**
+     * Whether a block in this state stops the entity in {@code context} (its collision shape). By default
+     * {@link #solid}; a Fire Curtain lets fire-proof players through. It's asked on both sides, so it must
+     * only use state the client knows too.
+     */
+    public boolean collides(ObstacleState state, ShapeContext context) {
+        return solid(state);
     }
 
     /**

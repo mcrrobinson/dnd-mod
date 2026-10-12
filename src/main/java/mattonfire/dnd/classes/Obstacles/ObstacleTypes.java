@@ -13,6 +13,7 @@ import mattonfire.dnd.classes.Obstacles.types.DreadWardType;
 import mattonfire.dnd.classes.Obstacles.types.HolyWardType;
 import mattonfire.dnd.classes.Obstacles.types.OssuaryGateType;
 import mattonfire.dnd.classes.Obstacles.types.ChasmType;
+import mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles;
 import mattonfire.dnd.classes.Obstacles.types.CollapsedPassageType;
 import mattonfire.dnd.classes.Obstacles.types.CrumblingLedgeType;
 import mattonfire.dnd.classes.Obstacles.types.HeavyBoulderType;
@@ -114,9 +115,12 @@ public final class ObstacleTypes {
     public static final ObstacleBlock LOCKED_DOOR_BLOCK = register(LOCKED_DOOR,
             solidSettings(Material.METAL, BlockSoundGroup.METAL));
 
-    // Nature and song: Druids and Bards (registered in their own class, before the block entity type)
+    // Nature and song (Druids and Bards) and craft and element (Artificers, Alchemists and Warlocks) obstacles.
+    // They register from their own files, and must do so here, before the shared block entity type is built
+    // from every obstacle block.
     static {
         NatureSongObstacles.init();
+        CraftElementObstacles.init();
     }
 
     public static final BlockEntityType<ObstacleBlockEntity> BLOCK_ENTITY = Registry.register(
@@ -144,7 +148,7 @@ public final class ObstacleTypes {
     }
 
     /** Rubble, boulders, gates and machinery: no glow. Still non-opaque, as open blocks may be see-through. */
-    static FabricBlockSettings solidSettings(Material material, BlockSoundGroup sounds) {
+    public static FabricBlockSettings solidSettings(Material material, BlockSoundGroup sounds) {
         return FabricBlockSettings.of(material)
                 .sounds(sounds)
                 .nonOpaque()
@@ -156,13 +160,16 @@ public final class ObstacleTypes {
     }
 
     /** Like {@link #solidSettings}, glowing at {@code light} while sealed (wards and sigils). */
-    static FabricBlockSettings glowSettings(Material material, BlockSoundGroup sounds, int light) {
+    public static FabricBlockSettings glowSettings(Material material, BlockSoundGroup sounds, int light) {
         return solidSettings(material, sounds)
                 .luminance(state -> state.get(ObstacleBlock.STATE) == ObstacleState.SEALED ? light : 0);
     }
 
-    /** Registers a type with its block and block item, under the type's id. */
-    static ObstacleBlock register(ObstacleType type, FabricBlockSettings settings) {
+    /**
+     * Registers a type with its block and block item, under the type's id. Only during this class's static
+     * initialisation (before {@link #BLOCK_ENTITY}), as families in their own files do from a static block above.
+     */
+    public static ObstacleBlock register(ObstacleType type, FabricBlockSettings settings) {
         settings.strength(type.hardness(), type.blastResistance());
         ObstacleBlock block = Registry.register(Registries.BLOCK, type.id(), new ObstacleBlock(type, settings));
         Registry.register(Registries.ITEM, type.id(), new BlockItem(block, new FabricItemSettings()));

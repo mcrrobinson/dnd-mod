@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "dndclasses:block/miasma_vent_top_open",
+    "side": "dndclasses:block/miasma_vent_side",
+    "bottom": "dndclasses:block/miasma_vent_side"
+  }
+}

@@ -20,7 +20,6 @@ import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.block.enums.ChestType;
 import net.minecraft.entity.mob.PiglinBrain;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.screen.NamedScreenHandlerFactory;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
@@ -53,8 +52,8 @@ public final class Lockpicking {
     public static final int HARD_DC = 15;
     /** For vault chests (offered to dungeons; no table uses it yet). */
     public static final int VAULT_DC = 20;
-    /** Chance that each stack in a locked chest is ruined when it's broken open. */
-    public static final float RUIN_CHANCE = 0.4f;
+    /** Chance that each stack in a locked chest is ruined when it's broken open ({@link LootRuin}). */
+    public static final float RUIN_CHANCE = LootRuin.RUIN_CHANCE;
     private static final int FAIL_COOLDOWN_TICKS = 30;
     private static final int FUMBLE_COOLDOWN_TICKS = 100;
     /** Long enough for the HUD's die to land and the result to be read. */
@@ -277,15 +276,7 @@ public final class Lockpicking {
             return true;
         }
         TrapDisarm.lockForced(world, pos, player);
-        chest.checkLootInteraction(player);
-        int ruined = 0;
-        for (int i = 0; i < chest.size(); i++) {
-            ItemStack stack = chest.getStack(i);
-            if (!stack.isEmpty() && world.random.nextFloat() < RUIN_CHANCE) {
-                chest.setStack(i, ItemStack.EMPTY);
-                ruined++;
-            }
-        }
+        int ruined = LootRuin.forceOpen(chest, player);
         player.sendMessage(Text.translatable("skill.dndclasses.lockpicking.smashed", ruined), true);
         world.playSound(null, pos, SoundEvents.ENTITY_ITEM_BREAK, SoundCategory.BLOCKS, 1.0f, 0.8f);
         return true;

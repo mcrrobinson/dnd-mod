@@ -40,7 +40,7 @@ import net.minecraft.world.World;
 /**
  * Right-clicking obstacles, following the lockpicking pattern:
  * <ul>
- * <li>Empty main hand (or the type's {@link ObstacleType#requiredItem}). A class that can't attempt
+ * <li>Empty main hand (or what the type {@linkplain ObstacleType#accepts accepts}). A class that can't attempt
  * it gets a hint on the action bar.</li>
  * <li>The roll is a {@link SkillCheck} (d20 + the solver's character-sheet bonus for the type's skill,
  * tagged {@value #CHECK_TAG}) against the tier's DC. On a success the group opens
@@ -167,7 +167,7 @@ public final class ObstacleInteractions {
                 player.sendMessage(Text.translatable("obstacle.dndclasses.focus.too_hard"), true);
             } else if (hostileNearby(world, player)) {
                 player.sendMessage(Text.translatable("obstacle.dndclasses.focus.not_safe"), true);
-            } else {
+            } else if (type.payForAttempt(world, pos, player)) {
                 CHANNELS.put(id, new Channel(player, pos.toImmutable(), type, tier, skill, player.getPos(),
                         player.getHealth(), now));
                 player.sendMessage(Text.translatable("obstacle.dndclasses.focus.start",
@@ -177,6 +177,9 @@ public final class ObstacleInteractions {
             return;
         }
 
+        if (!type.payForAttempt(world, pos, player)) {
+            return;
+        }
         resolve(player, world, pos, type, tier, builder(player, type, skill, tier).roll());
     }
 

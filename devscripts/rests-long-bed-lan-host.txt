@@ -10,6 +10,7 @@
 #   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25614 -PdevScript=devscripts/rests-long-bed-lan-guest.txt
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /difficulty easy

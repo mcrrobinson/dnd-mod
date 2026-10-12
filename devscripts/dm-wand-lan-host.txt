@@ -5,6 +5,7 @@
 # The guest's wand click is refused (guest screenshot dm-wand-lan-guest-cold).
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode creative
 /gamerule doDaylightCycle false

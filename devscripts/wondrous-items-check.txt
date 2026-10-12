@@ -3,6 +3,7 @@
 # timeout 400 ./gradlew runClient -PdevScript=devscripts/wondrous-items-check.txt
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /clear @s
 /time set day

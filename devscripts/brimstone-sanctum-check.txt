@@ -12,6 +12,7 @@
 #   then "[BrimstoneSanctum] Exile ... threw a fireball at Dev" from the Exile 10 blocks off
 wait 40
 closescreen
+include _reset.txt
 /gamemode spectator
 /clear @s
 /dndrace set @s tiefling

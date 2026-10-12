@@ -7,6 +7,7 @@
 # (subclass rogue.thief, 0 points).
 wait 40
 closescreen
+include _reset.txt
 /gamemode creative
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

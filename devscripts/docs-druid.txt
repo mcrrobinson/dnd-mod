@@ -3,6 +3,7 @@
 # Output: <run dir>/screenshots/doc-druid-*.png
 wait 40
 closescreen
+include _reset.txt
 hud off
 /gamemode survival
 /gamerule doDaylightCycle false

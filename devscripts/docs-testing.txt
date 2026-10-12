@@ -3,6 +3,7 @@
 # Output: screenshots/docs-testing-*.png. Based on headless-input-check.txt.
 wait 40
 closescreen
+include _reset.txt
 /gamerule sendCommandFeedback false
 /gamemode survival
 /gamerule doDaylightCycle false

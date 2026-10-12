@@ -6,6 +6,7 @@
 # (18 at Challenge II, 21 at III). Screenshots: dungeon-bounty-*.png.
 wait 40
 closescreen
+include _reset.txt
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false
 /gamerule sendCommandFeedback true

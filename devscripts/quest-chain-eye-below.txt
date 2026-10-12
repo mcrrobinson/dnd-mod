@@ -5,6 +5,7 @@
 # Run: timeout 400 ./gradlew runClient -PdevUser=QuestDev -PdevScript=devscripts/quest-chain-eye-below.txt
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doMobSpawning false
 /time set noon

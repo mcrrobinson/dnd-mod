@@ -2,6 +2,7 @@
 # Expect in latest.log: slot 0 (the result) holds dndclasses:monk_staff after the sticks go in.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /fill 0 149 0 6 149 6 minecraft:stone
 /fill 0 150 0 6 153 6 minecraft:air

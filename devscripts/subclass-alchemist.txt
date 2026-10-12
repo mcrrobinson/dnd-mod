@@ -5,6 +5,7 @@
 #  2. Transmuter: no Strength from the Swiftness potion; a Healing potion at Health 10 heals to 16
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

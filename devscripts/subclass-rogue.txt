@@ -6,6 +6,7 @@
 #     Thief control: no auto-critical after Vanish, a normal hit
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

@@ -3,6 +3,7 @@
 # Output: run/screenshots/pikehorn-*.png. In latest.log: the Owner line after taming, Sitting 1b/0b/1b/0b
 # from the sit toggles, the zombie's Health dropping from 19 (one punch) as the Pikehorn bites and burns it,
 # and the last zombie's Health below 20 (a wild Pikehorn fighting back).
+include _reset.txt
 /time set day
 /weather clear
 /gamemode survival

@@ -15,6 +15,7 @@
 # - ee:raid: "Started goblin raid ... on the elven enclave".
 wait 40
 closescreen
+include _reset.txt
 /gamemode spectator
 /time set 6000
 /gamerule doDaylightCycle false

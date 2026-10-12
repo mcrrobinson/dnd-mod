@@ -10,6 +10,7 @@
 #  Greater seal: Warlocks are refused, a Fighter can't mine it, a Wizard can't take their time on Very Hard.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

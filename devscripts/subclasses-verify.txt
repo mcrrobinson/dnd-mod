@@ -3,6 +3,7 @@
 # Node centres from the screen centre: columns -80 / 0 / 80, rows 0-3 at dy -50 / -18 / 14 / 46; banners at (+-80, -49).
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

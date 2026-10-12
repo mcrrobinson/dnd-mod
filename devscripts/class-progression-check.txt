@@ -3,6 +3,7 @@
 # Screenshots: progression-tree (O screen), progression-attune (attunement table), progression-warcry (mana underline).
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

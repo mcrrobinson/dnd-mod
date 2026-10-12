@@ -9,6 +9,7 @@
 # Check: [DungeonLoot], [Dungeon] and [CHAT] lines in logs/latest.log; screenshots/dungeon-loot-*.png.
 wait 40
 closescreen
+include _reset.txt
 /time set midnight
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

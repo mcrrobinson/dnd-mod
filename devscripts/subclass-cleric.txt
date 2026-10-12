@@ -10,6 +10,7 @@
 #  5. Forge control: Cure Wounds heals 8
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

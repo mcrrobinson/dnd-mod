@@ -138,6 +138,11 @@ import net.minecraft.util.Identifier;
  * {@code DevGuest} for {@code -PdevServer}, plus {@code _<run dir>} outside {@code run/} (e.g. {@code DevGuest_run_2}),
  * so per-player state (quests, reputation, ...) carries over between runs.
  * <p>
+ * {@code include <file>} pastes another script's lines in place when the script is loaded (the path is relative to
+ * the including script's folder), e.g. {@code include _reset.txt}, the standard reset header that puts the player
+ * back to a living, raceless, classless state, so a script doesn't depend on what the previous run left behind.
+ * Line numbers in the log count the included lines.
+ * <p>
  * Blank lines and lines starting with {@code #} are skipped. Progress is logged with a [DevScript]
  * prefix, and command feedback appears as [CHAT] lines in run/logs/latest.log.
  */
@@ -227,7 +232,7 @@ public final class DevScript {
         }
         List<String> lines;
         try {
-            lines = Files.readAllLines(Path.of(path));
+            lines = readWithIncludes(Path.of(path), 0);
         } catch (IOException e) {
             DnDClasses.LOGGER.error("[DevScript] Couldn't read {}", path, e);
             return;
@@ -240,6 +245,33 @@ public final class DevScript {
                 .register((message, overlay) -> RECEIVED.add(message.getString()));
         net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.CHAT
                 .register((message, signed, sender, params, timestamp) -> RECEIVED.add(message.getString()));
+    }
+
+    /** Most nested {@code include}s, so a script that includes itself fails instead of looping. */
+    private static final int MAX_INCLUDE_DEPTH = 8;
+
+    /**
+     * The script's lines, with each {@code include <file>} line replaced by that file's lines (its path relative
+     * to the including script's folder), between a comment line naming it.
+     */
+    private static List<String> readWithIncludes(Path path, int depth) throws IOException {
+        if (depth > MAX_INCLUDE_DEPTH) {
+            throw new IOException("includes nested more than " + MAX_INCLUDE_DEPTH + " deep at " + path);
+        }
+        List<String> lines = new java.util.ArrayList<>();
+        for (String line : Files.readAllLines(path)) {
+            String trimmed = line.trim();
+            if (trimmed.startsWith("include ")) {
+                String name = trimmed.substring("include ".length()).trim();
+                Path included = path.toAbsolutePath().getParent().resolve(name);
+                lines.add("# include " + name + " {");
+                lines.addAll(readWithIncludes(included, depth + 1));
+                lines.add("# } end of " + name);
+            } else {
+                lines.add(line);
+            }
+        }
+        return lines;
     }
 
     private void tick(MinecraftClient client) {

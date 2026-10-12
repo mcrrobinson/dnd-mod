@@ -257,6 +257,14 @@ public abstract class ObstacleType {
     }
 
     /**
+     * Whether breaking a sealed block by hand opens the whole group in place instead: the block isn't removed,
+     * {@link #onBrokenByHand} opens the group, so a reset puts it back whole (a smashed Clockwork Door).
+     */
+    public boolean opensWhenBroken() {
+        return false;
+    }
+
+    /**
      * Keys in a block's {@code Data} that hold progress towards the obstacle (potions thrown, health paid,
      * "already earned XP" flags). {@link ObstacleGroups#reset} clears them on every block of the group,
      * sealed or not; a reseal on a timer keeps them.

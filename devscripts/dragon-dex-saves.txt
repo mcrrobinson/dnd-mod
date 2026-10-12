@@ -18,6 +18,7 @@
 respawn
 wait 40
 closescreen
+include _reset.txt
 /fill -20 149 -20 20 149 26 stone
 /fill -20 150 -20 20 164 26 air
 /gamemode survival

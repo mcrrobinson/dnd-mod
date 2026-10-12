@@ -7,6 +7,7 @@
 # in the guest's: the Song of Rest [CHAT] line. Screenshots party-rest-host, party-rest-guest.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false

@@ -4,6 +4,7 @@
 # party-roles-guidebook-role (Your role: Tank, secondary Damage) and party-roles-guidebook-obstacles.
 wait 40
 closescreen
+include _reset.txt
 /gamemode creative
 /dndclass set @s none
 wait 30

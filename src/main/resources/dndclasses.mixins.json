@@ -116,7 +116,8 @@
         "KeenSensesOutlineMixin",
         "DarkvisionLightmapMixin",
         "PerceivedTeamColorMixin",
-        "BossBarHudAccessor"
+        "BossBarHudAccessor",
+        "ChatHudAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -45,6 +45,9 @@ wait 10
 actionbar
 # Lunge
 /dndclass set @s none
+# No class opens the class picker, which pauses the game
+wait 20
+closescreen
 /item replace entity @s hotbar.0 with minecraft:iron_sword{Enchantments:[{id:"dndclasses:lunge",lvl:2}]}
 wait 5
 use
@@ -56,7 +59,7 @@ wait 30
 /dndclass set @s necromancer
 /clear @s dndclasses:class_guidebook
 /item replace entity @s hotbar.0 with minecraft:stick
-/summon minecraft:zombie 0 150 2 {NoAI:1b,Tags:["splitsmoke"],Rotation:[180f,0f],PersistenceRequired:1b}
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,Tags:["splitsmoke"],Rotation:[180f,0f],PersistenceRequired:1b}
 wait 10
 look 0 20
 attack
@@ -65,9 +68,14 @@ wait 2
 /kill @e[tag=splitsmoke]
 # Armor: GeckoLib (Knight) and plain (Warrior) sets both add their modifiers
 /dndclass set @s none
+# No class opens the class picker, which pauses the game
+wait 20
+closescreen
 /item replace entity @s armor.chest with dndclasses:knight_chestplate
+wait 2
 /attribute @s minecraft:generic.armor get
 /item replace entity @s armor.chest with dndclasses:warrior_chestplate
+wait 2
 /attribute @s minecraft:generic.armor get
 /item replace entity @s armor.chest with minecraft:air
 # Flying dragons: each one picks Dev as its target and attacks
@@ -105,5 +113,8 @@ target @e[tag=splitsmoke]
 screenshot split-dragons-drake
 /kill @e[tag=splitsmoke]
 /dndclass set @s none
+# No class opens the class picker, which pauses the game
+wait 20
+closescreen
 /clear @s
 quit

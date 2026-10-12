@@ -256,20 +256,70 @@ public final class Reputation {
 
     // ---- Feedback and sync ----
 
+    /**
+     * One short action-bar line. One or two factions are listed by name; with three or more, only the
+     * biggest change is named (largest amount, a loss before a gain, then batch order) and the rest
+     * fold into a count: "-2 The Goblin Horde, +1 with 4 others". {@code /rep} has the full detail.
+     */
     private static void actionBar(ServerPlayerEntity player, Map<Faction, Integer> deltas) {
         MutableText line = Text.empty();
-        boolean first = true;
-        for (Map.Entry<Faction, Integer> entry : deltas.entrySet()) {
-            if (!first) {
-                line.append(Text.literal(", ").formatted(Formatting.GRAY));
+        if (deltas.size() <= 2) {
+            boolean first = true;
+            for (Map.Entry<Faction, Integer> entry : deltas.entrySet()) {
+                if (!first) {
+                    line.append(Text.literal(", ").formatted(Formatting.GRAY));
+                }
+                first = false;
+                appendDelta(line, entry.getKey(), entry.getValue());
             }
-            first = false;
-            int delta = entry.getValue();
-            line.append(Text.literal((delta > 0 ? "+" : "") + delta + " ")
-                    .formatted(delta > 0 ? Formatting.GREEN : Formatting.RED));
-            line.append(entry.getKey().displayName());
+        } else {
+            Map.Entry<Faction, Integer> top = null;
+            for (Map.Entry<Faction, Integer> entry : deltas.entrySet()) {
+                if (top == null || biggerChange(entry.getValue(), top.getValue())) {
+                    top = entry;
+                }
+            }
+            appendDelta(line, top.getKey(), top.getValue());
+            line.append(Text.literal(", ").formatted(Formatting.GRAY));
+            int others = deltas.size() - 1;
+            Integer shared = null;
+            boolean same = true;
+            for (Map.Entry<Faction, Integer> entry : deltas.entrySet()) {
+                if (entry == top) {
+                    continue;
+                }
+                if (shared == null) {
+                    shared = entry.getValue();
+                } else if (!shared.equals(entry.getValue())) {
+                    same = false;
+                }
+            }
+            if (same) {
+                line.append(Text.translatable("faction.dndclasses.actionbar.others_same", signed(shared), others)
+                        .formatted(shared > 0 ? Formatting.GREEN : Formatting.RED));
+            } else {
+                line.append(Text.translatable("faction.dndclasses.actionbar.others_mixed", others)
+                        .formatted(Formatting.GRAY));
+            }
         }
         player.sendMessage(line, true);
+    }
+
+    /** True when {@code a} should be named over {@code b}: bigger amount, then a loss before a gain. */
+    private static boolean biggerChange(int a, int b) {
+        if (Math.abs(a) != Math.abs(b)) {
+            return Math.abs(a) > Math.abs(b);
+        }
+        return a < 0 && b > 0;
+    }
+
+    private static String signed(int delta) {
+        return (delta > 0 ? "+" : "") + delta;
+    }
+
+    private static void appendDelta(MutableText line, Faction faction, int delta) {
+        line.append(Text.literal(signed(delta) + " ").formatted(delta > 0 ? Formatting.GREEN : Formatting.RED));
+        line.append(faction.displayName());
     }
 
     private static void announceTier(ServerPlayerEntity player, Faction faction, int before, int after) {

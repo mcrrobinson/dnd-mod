@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Party.PartySynergies;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.Abilities.Skill;
@@ -50,6 +51,8 @@ import net.minecraft.world.World;
  * <li><b>Take your time:</b> sneak + right-click with no hostile mob within {@value #HOSTILE_RADIUS}
  * blocks starts a {@value #TAKE_YOUR_TIME_TICKS}-tick focus. Moving or taking damage breaks it; it
  * resolves as a taken 20 + the sheet bonus, with no crit. Not allowed on Very Hard obstacles.</li>
+ * <li><b>Party:</b> a party Support within 8 blocks gives advantage (Inspire), and a party member within 6 blocks
+ * who could attempt it too adds +2 ("+2 assist") and earns half the XP ({@link PartySynergies}).</li>
  * <li><b>Protected volume:</b> in survival, nobody can place blocks in, or break non-obstacle blocks
  * in, the 1-block shell round a sealed obstacle, so you can't dig or build round it.</li>
  * </ul>
@@ -68,7 +71,8 @@ public final class ObstacleInteractions {
     /** Roll tag, so sheet advantage filters can pick out obstacle checks. */
     public static final String CHECK_TAG = "obstacle";
 
-    private record PendingOpen(ServerPlayerEntity player, BlockPos pos, ObstacleType type, Tier tier, long openAt) {
+    private record PendingOpen(ServerPlayerEntity player, BlockPos pos, ObstacleType type, Tier tier, long openAt,
+            List<ServerPlayerEntity> assisters) {
     }
 
     private record Channel(ServerPlayerEntity player, BlockPos pos, ObstacleType type, Tier tier, Skill skill,
@@ -186,6 +190,8 @@ public final class ObstacleInteractions {
     /** The obstacle roll: the type's skill against the tier's DC, under the type's HUD label if it has one. */
     private static D20.Builder builder(ServerPlayerEntity player, ObstacleType type, Skill skill, Tier tier) {
         D20.Builder builder = type.rollExtras(SkillCheck.builder(player, skill, tier.dc, CHECK_TAG), player);
+        // Party synergies: Inspire (advantage) and Assist (+2)
+        PartySynergies.obstacleRoll(builder, player, type);
         return type.rollLabel() == null ? builder : builder.label(type.rollLabel());
     }
 
@@ -207,7 +213,8 @@ public final class ObstacleInteractions {
             D20.show(player, roll, Text.translatable(key
                     + (roll.outcome() == D20.Outcome.CRITICAL ? ".critical" : ".success")));
             world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.0f, 1.2f);
-            PENDING.add(new PendingOpen(player, pos.toImmutable(), type, tier, now + OPEN_DELAY_TICKS));
+            PENDING.add(new PendingOpen(player, pos.toImmutable(), type, tier, now + OPEN_DELAY_TICKS,
+                    PartySynergies.assisters(player, type)));
             return;
         }
         boolean fumble = roll.outcome() == D20.Outcome.FUMBLE;
@@ -245,7 +252,7 @@ public final class ObstacleInteractions {
         if (!ObstacleBlock.isSealed(world.getBlockState(pending.pos()))) {
             return true;
         }
-        solve(world, pending.pos(), pending.type(), pending.tier(), player);
+        solve(world, pending.pos(), pending.type(), pending.tier(), player, pending.assisters());
         return true;
     }
 
@@ -254,6 +261,12 @@ public final class ObstacleInteractions {
      * (a group that reseals on a timer and is solved again earns nothing more).
      */
     public static void solve(ServerWorld world, BlockPos pos, ObstacleType type, Tier tier, ServerPlayerEntity solver) {
+        solve(world, pos, type, tier, solver, List.of());
+    }
+
+    /** As {@link #solve(ServerWorld, BlockPos, ObstacleType, Tier, ServerPlayerEntity)}; the assisters get half the XP. */
+    public static void solve(ServerWorld world, BlockPos pos, ObstacleType type, Tier tier, ServerPlayerEntity solver,
+            List<ServerPlayerEntity> assisters) {
         boolean rewarded = type.solve(world, pos, solver) && !solver.isCreative()
                 && ObstacleGroups.claimReward(world, pos);
         int xp = rewarded ? type.xp(tier) : 0;
@@ -261,6 +274,13 @@ public final class ObstacleInteractions {
                 solver.getEntityName(), type.id(), pos.toShortString(), xp);
         if (xp > 0) {
             Progression.addXp(solver, xp);
+            for (ServerPlayerEntity helper : assisters) {
+                if (!helper.isRemoved() && xp / 2 > 0) {
+                    DnDClasses.LOGGER.info("[Party] Assist: {} helped {} with {}: +{} class XP",
+                            helper.getEntityName(), solver.getEntityName(), type.id(), xp / 2);
+                    Progression.addXp(helper, xp / 2);
+                }
+            }
         }
         type.onSolved(world, pos, solver);
         // Only a rewarded solve counts: not a re-crank, a part payment or anything else that earns nothing

@@ -1,0 +1,58 @@
+# Party role synergies (guest side, "DevGuest"): joins party-synergies-host.txt's LAN game on port 25647, rolls the
+# Arcane Seals the host lines up and screenshots the d20 panel and the Scout hint.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25647 -PdevUser=DevGuest -PdevScript=devscripts/party-synergies-guest.txt
+# Screenshots: synergy-solo (one die), synergy-inspire (two dice, advantage), synergy-assist ("+2 assist"),
+# synergy-scout-off (no hint at 9.5 blocks), synergy-scout-on (hint, "Scouted from afar").
+wait 40
+closescreen
+/party leave
+# ---- 0: solo ----
+waitchat roll-solo
+closescreen
+hotbar 0
+clearchat
+wait 10
+use
+wait 30
+screenshot synergy-solo
+/me done-solo
+# ---- party up ----
+waitchat invite-sent
+/party accept
+wait 10
+/me in-party
+# ---- 1: Inspire ----
+waitchat roll-inspire
+closescreen
+clearchat
+wait 10
+use
+wait 30
+screenshot synergy-inspire
+/me done-inspire
+# ---- 2: Assist ----
+waitchat roll-assist
+closescreen
+clearchat
+wait 10
+use
+wait 30
+screenshot synergy-assist
+/me done-assist
+# ---- 7: Scout ----
+waitchat scout-off
+closescreen
+clearchat
+wait 10
+screenshot synergy-scout-off
+/me done-scout-off
+waitchat scout-on
+closescreen
+clearchat
+wait 10
+screenshot synergy-scout-on
+/me done-scout-on
+waitchat all-done
+/party leave
+wait 20
+quit

@@ -261,7 +261,8 @@ public class PowerUpEffect {
                         member.addStatusEffect(new StatusEffectInstance(ModEffects.MOB_REPEL, duration));
                         if (regen >= 0) {
                             member.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION,
-                                    ClericSkills.sanctuaryPartyRegenTicks(player), regen));
+                                    mattonfire.dnd.classes.Party.PartySynergies.triageTicks(cleric, member,
+                                            ClericSkills.sanctuaryPartyRegenTicks(player)), regen));
                         }
                     }
                 }

@@ -203,7 +203,7 @@ None.
 - Dread Wards apply their effects to players only; mobs in the zone aren't frightened.
 - Hidden Doors are unbreakable, so mining at a wall can still give one away if the blocks round it break normally. Who has found a door is kept on the door, so it survives restarts; who has spotted a temple trap is kept in memory and is found again on the next pass.
 - A Hidden Door found before you joined a party stays hidden from your new party members until one of them finds it too.
-- The wall search uses the character sheet's Investigation bonus, with no extra for Utility characters yet (that's the party-role synergies ticket).
+- The wall search uses the character sheet's Investigation bonus, with no extra for Utility characters. Party members do get Inspire and Assist on obstacle rolls ([Party synergies](party-synergies.md)).
 - Locked Doors have no key yet: the key item belongs to the dungeon and quest work.
 - Temple traps can't be found with the Search key (V), and a jungle temple's two tripwires count as one trap: disarming either disarms both.
 - The crosshair hint's Guardian Beast and Singing Door line shows the sheet bonus without the +2 instrument bonus; the roll itself adds it.

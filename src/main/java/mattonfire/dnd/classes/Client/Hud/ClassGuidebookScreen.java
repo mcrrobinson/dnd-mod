@@ -202,6 +202,11 @@ public final class ClassGuidebookScreen {
         }
         role.add(Text.literal(""));
         role.add(Text.translatable(info.role().translationKey() + ".description").formatted(Formatting.GRAY));
+        // "In a party": the role's synergy (Party/PartySynergies), flowing onto the next page if needed
+        role.add(Text.literal(""));
+        role.add(Text.translatable("book.dndclasses.class_guidebook.role.party").formatted(Formatting.BOLD,
+                Formatting.DARK_AQUA));
+        role.add(Text.translatable(info.role().translationKey() + ".synergy"));
         pages.section(role.toArray(Text[]::new));
 
         if (!info.obstacles().isEmpty()) {

@@ -24,6 +24,11 @@ Anyone else who tries to open a locked chest gets "Locked. A Rogue could pick it
 
 Creative and spectator players ignore locks.
 
+Rogues also pick **Locked Doors** (iron doors with a keyhole) the same way, against the door's tier DC (10 / 13 / 15 / 18), and disarm traps (Thieves' Tools, shown as "Disarm"). See [Class-gated obstacles](obstacles.md#hidden-and-locked-rangers-rogues-artificers).
+
+### Searching a wall (anyone)
+Sneak and right-click a plain full block with both hands empty to search it for Hidden Doors: an Investigation roll, shown as "Search the Wall", on a 5 second cooldown. It finds hidden doors within 3 blocks whose DC the total meets. See [Class-gated obstacles](obstacles.md).
+
 ### Persuasion (Bard)
 Sneak and right click a villager with an empty main hand. The villager must have a job (not a nitwit or unemployed) and must not be a baby, asleep or already trading. The roll is a Persuasion check: d20 + CHA modifier + expertise (+6 at level 1, +8 at level 5, +10 at level 9 for a Bard's CHA 15) against DC 12, shifted by your standing with the target's [faction](factions.md) (Unfriendly +3 ... Exalted -6; plain villagers have none). You get one try per villager, per player, per in-game day.
 
@@ -62,7 +67,7 @@ Every roll is logged on the server as a `[D20]` line, for example `[D20] Steve L
 Locked chests are the loot chests in structures: dungeons, mineshafts, temples, strongholds, dragon lairs, dwarven fortresses and so on. Bring a Rogue for the DC 15 hoards. Persuasion works on any villager with a job.
 
 ## Known limitations
-- A locked chest looks like any other chest. You only find out when you try to open it.
+- To anyone but a Rogue or a Ranger, a locked chest looks like any other chest. Rogues and Rangers see a glint of gold dust on locked chests within 6 blocks.
 - Hoppers can still pull loot out of a locked chest.
 - Persuasion cooldowns and lockpick retry timers are kept in memory, so they reset when the server restarts.
 - At small window sizes the roll panel can overlap the chat and the action bar.

@@ -7,11 +7,13 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.BlockView;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -106,6 +108,37 @@ public abstract class ObstacleType {
         return false;
     }
 
+    /**
+     * Whether the obstacle is still hidden from {@code player}: it looks like the blocks round it, gives no
+     * crosshair hint, and right-clicking it does nothing until it's found (a Hidden Door). Called on both
+     * sides, from the synced block entity. Creative players see everything.
+     */
+    public boolean hiddenFrom(BlockView world, BlockPos pos, PlayerEntity player) {
+        return false;
+    }
+
+    /**
+     * Whether it passes for an ordinary full block while sealed (shaded like one), so it doesn't stand out
+     * from the wall it hides in.
+     */
+    public boolean disguised() {
+        return false;
+    }
+
+    /**
+     * Whether the 1-block shell round it is protected (no building in, no digging out). Hidden obstacles
+     * turn it off, since a refused block would give them away.
+     */
+    public boolean protectsShell() {
+        return true;
+    }
+
+    /** The HUD label of its roll (null: the skill's name). */
+    @Nullable
+    public String rollLabel() {
+        return null;
+    }
+
     /** The item the obstacle wants in the main hand (null: an empty hand). */
     @Nullable
     public ItemStack requiredItem() {
@@ -127,6 +160,8 @@ public abstract class ObstacleType {
     /**
      * Gets {@code solver} past the obstacle at {@code pos} after a successful check (or a use, for
      * obstacles with no check). Returns whether it earns class XP. By default the whole group opens.
+     * Even when this returns true, a group pays out its XP only once until it's reset
+     * ({@link ObstacleGroups#claimReward}).
      */
     public boolean solve(ServerWorld world, BlockPos pos, ServerPlayerEntity solver) {
         return ObstacleGroups.open(world, pos) > 0;

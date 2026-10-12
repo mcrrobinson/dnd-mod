@@ -22,6 +22,7 @@ import mattonfire.dnd.classes.Obstacles.ObstacleText;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Obstacles.VanillaTraps;
 import mattonfire.dnd.classes.Obstacles.types.WinchType;
 import net.minecraft.block.BlockState;
 import net.minecraft.command.CommandSource;
@@ -110,6 +111,10 @@ public final class ObstacleCommand {
                         .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 64))
                                 .executes(context -> sleepers(context,
                                         IntegerArgumentType.getInteger(context, "radius"), false))))
+                .then(CommandManager.literal("traps")
+                        .executes(context -> traps(context, false))
+                        .then(CommandManager.literal("tp")
+                                .executes(context -> traps(context, true))))
                 .then(CommandManager.literal("list")
                         .executes(context -> list(context, 64))
                         .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 512))
@@ -247,6 +252,74 @@ public final class ObstacleCommand {
             source.sendFeedback(Text.literal("No obstacles within " + radius + " blocks"), false);
         }
         return groups;
+    }
+
+    /** How far {@code /dndobstacle traps} looks for vanilla temple traps. */
+    private static final int TRAPS_RADIUS = 256;
+
+    /**
+     * Lists the vanilla temple traps (desert pyramid plates, jungle temple tripwires) within
+     * {@value #TRAPS_RADIUS} blocks, or teleports the player to a safe spot beside the nearest trigger.
+     */
+    private static int traps(CommandContext<ServerCommandSource> context, boolean teleport)
+            throws CommandSyntaxException {
+        ServerCommandSource source = context.getSource();
+        ServerWorld world = source.getWorld();
+        net.minecraft.util.math.Vec3d at = source.getPosition();
+        BlockPos nearest = null;
+        double best = (double) TRAPS_RADIUS * TRAPS_RADIUS;
+        int count = 0;
+        for (VanillaTraps.Trap trap : VanillaTraps.get(world).all()) {
+            BlockPos closest = null;
+            double closestSq = Double.MAX_VALUE;
+            for (BlockPos trigger : trap.triggers()) {
+                double d = trigger.toCenterPos().squaredDistanceTo(at);
+                if (d < closestSq) {
+                    closestSq = d;
+                    closest = trigger;
+                }
+            }
+            if (closest == null || closestSq > (double) TRAPS_RADIUS * TRAPS_RADIUS) {
+                continue;
+            }
+            count++;
+            if (!teleport) {
+                source.sendFeedback(Text.translatable(trap.kind.translationKey()).append(" at "
+                        + closest.toShortString() + ": " + trap.triggers().size() + " trigger blocks, "
+                        + (trap.disarmed() ? "disarmed" : "armed")), false);
+            }
+            if (closestSq < best) {
+                best = closestSq;
+                nearest = closest;
+            }
+        }
+        if (nearest == null) {
+            source.sendFeedback(Text.literal("No temple traps within " + TRAPS_RADIUS + " blocks"), false);
+            return 0;
+        }
+        if (teleport) {
+            BlockPos spot = standingSpot(world, nearest);
+            source.getPlayerOrThrow().teleport(world, spot.getX() + 0.5, spot.getY(), spot.getZ() + 0.5,
+                    source.getPlayerOrThrow().getYaw(), source.getPlayerOrThrow().getPitch());
+            source.sendFeedback(Text.literal("Teleported beside the trap trigger at " + nearest.toShortString()
+                    + " (standing at " + spot.toShortString() + ")"), false);
+        }
+        return count;
+    }
+
+    /** An air spot with solid ground, beside but not on {@code trigger} (diagonals first). */
+    private static BlockPos standingSpot(ServerWorld world, BlockPos trigger) {
+        int[][] offsets = {{1, 1}, {-1, 1}, {1, -1}, {-1, -1}, {2, 0}, {-2, 0}, {0, 2}, {0, -2}, {2, 2}, {-2, -2}};
+        for (int dy = 0; dy <= 1; dy++) {
+            for (int[] o : offsets) {
+                BlockPos p = trigger.add(o[0], dy, o[1]);
+                if (world.getBlockState(p).isAir() && world.getBlockState(p.up()).isAir()
+                        && world.getBlockState(p.down()).isSolidBlock(world, p.down())) {
+                    return p;
+                }
+            }
+        }
+        return trigger.up();
     }
 
     /** Lays every undead mob within {@code radius} down as a crypt sleeper, or wakes the sleepers there. */

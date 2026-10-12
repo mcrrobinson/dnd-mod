@@ -1,0 +1,109 @@
+# Balanced party class XP (host). Three clients on LAN port 25692:
+#   host:    timeout 600 ./gradlew runClient -PdevScript=devscripts/balanced-party-host.txt
+#   guest 1: -PdevScript=devscripts/balanced-party-guest.txt -PdevRunDir=run-2 -PdevUser=Guest -PdevServer=localhost:25692
+#   guest 2: -PdevScript=devscripts/balanced-party-guest3.txt -PdevRunDir=run-3 -PdevUser=Guest3 -PdevServer=localhost:25692
+# Start the guests once the host logs "Started serving on". Expect "[Party] Balanced party: ... with N role(s): xM"
+# in the host's latest.log: round A (Fighter, Cleric, Fighter) 2 roles x1.0, round B (Fighter, Cleric, Rogue)
+# 3 roles x1.1, round C (Guest3 Downed) 2 roles x1.0. /dndclass progress before and after each round.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule dndDeathSaves 1
+/time set noon
+/kill @e[tag=bp]
+/party leave
+/fill 0 149 0 20 149 20 minecraft:stone
+/fill 0 150 0 20 155 20 minecraft:air
+/tp @s 10.5 150 10.5 0 10
+/publish false survival 25692
+waitchat g2-ready
+waitchat g3-ready
+wait 20
+/party create
+/party invite @a[name=Guest,limit=1]
+waitchat Guest joined the party
+/party invite @a[name=Guest3,limit=1]
+waitchat Guest3 joined the party
+/party list
+/tp @a 10.5 150 10.5 0 10
+/dndclass set @a[name=Dev,limit=1] fighter
+/dndclass set @a[name=Guest,limit=1] cleric
+/dndclass set @a[name=Guest3,limit=1] fighter
+/clear @a dndclasses:class_guidebook
+wait 40
+closescreen
+/say classes-set
+wait 40
+# Round A: Fighter (Tank), Cleric (Healer), Fighter (Tank) = 2 roles
+/say roundA-before
+/dndclass progress @a[name=Dev,limit=1]
+/dndclass progress @a[name=Guest,limit=1]
+/dndclass progress @a[name=Guest3,limit=1]
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/say roundA-after
+/dndclass progress @a[name=Dev,limit=1]
+/dndclass progress @a[name=Guest,limit=1]
+/dndclass progress @a[name=Guest3,limit=1]
+# Round B: Fighter (Tank), Cleric (Healer), Rogue (Damage) = 3 roles
+/dndclass set @a[name=Guest3,limit=1] rogue
+/clear @a dndclasses:class_guidebook
+wait 20
+/say roundB-before
+/dndclass progress @a[name=Dev,limit=1]
+/dndclass progress @a[name=Guest,limit=1]
+/dndclass progress @a[name=Guest3,limit=1]
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/say roundB-after
+/dndclass progress @a[name=Dev,limit=1]
+/dndclass progress @a[name=Guest,limit=1]
+/dndclass progress @a[name=Guest3,limit=1]
+# Round C: the Rogue is Downed, so only 2 active roles
+/dndclass down @a[name=Guest3,limit=1]
+wait 10
+/summon minecraft:zombie 10.5 150 14.5 {NoAI:1b,Tags:["bp"],PersistenceRequired:1b}
+/damage @e[tag=bp,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/say roundC-after
+/dndclass progress @a[name=Dev,limit=1]
+/dndclass progress @a[name=Guest,limit=1]
+/dndclass progress @a[name=Guest3,limit=1]
+/dndclass revive @a[name=Guest3,limit=1]
+/kill @e[tag=bp]
+/say bp-done
+wait 60
+/party leave
+wait 20
+quit

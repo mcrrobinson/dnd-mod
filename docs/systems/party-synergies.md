@@ -34,7 +34,7 @@ None. `/dndclass forceroll <player> <naturals>` rigs the dice for testing (with 
 None. The numbers are constants in `Party/PartySynergies.java`.
 
 ## Known limitations
-- Balanced party needs three players with different primary roles, so a two-player party never gets it.
+- Balanced party needs three players with different primary roles, so a two-player party never gets it. Each player has one primary role, so the +15% and +20% steps need four and five players. A Downed member still takes a share of the XP but their role doesn't count.
 - Only Cleric and Druid heals use Triage: Cure Wounds, Regrowth and the Sanctuary party Regeneration. Potions, Hit Dice and other healing don't.
 - Bodyguard only moves the mob's target. A mob whose AI picks a new target soon after (a creeper, a mob that loses sight) may switch back.
 - Inspire and Assist only apply to obstacle checks, not to lockpicking, trap disarming, searching or saving throws.
@@ -49,3 +49,4 @@ None. The numbers are constants in `Party/PartySynergies.java`.
 - Scout: `ObstacleHintHud.scouted` (client) uses the party HUD's member list (`PartyHud.inParty`) and the members' roles from it (`PartyHud.memberRole`).
 - Guidebook: `role.dndclasses.<role>.synergy` lang keys on the "Your role" page.
 - Devscripts: `party-synergies-host.txt` / `party-synergies-guest.txt` (LAN port 25647; start the guest once the host logs "Started serving on").
+- Balanced party: `balanced-party-host.txt` with `balanced-party-guest.txt` and `balanced-party-guest3.txt` (three clients, LAN port 25692; run lines in the host script). Five zombie kills each with 2 roles (x1.0), 3 roles (x1.1), then with the third role Downed (x1.0); `/dndclass progress` before and after each round.

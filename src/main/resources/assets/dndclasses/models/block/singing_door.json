@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "dndclasses:block/singing_door",
+    "end": "minecraft:block/stone_bricks"
+  }
+}

@@ -11,6 +11,7 @@ import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.entity.boss.Boss;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
@@ -50,6 +51,9 @@ import net.minecraft.util.math.BlockPos;
  */
 public final class BardCompanions {
     public static final String TAG_PREFIX = "dnd_bard_companion:";
+    /** A companion for a while only (an Owlbear won over at a Guardian Beast post): world time it leaves. */
+    public static final String UNTIL_PREFIX = "dnd_bard_companion_until:";
+    private static final int EXPIRY_CHECK_TICKS = 100;
 
     /** Starts following beyond this distance, and teleports to the Bard beyond {@link #TELEPORT_DISTANCE}. */
     private static final double FOLLOW_DISTANCE = 6;
@@ -61,6 +65,7 @@ public final class BardCompanions {
     }
 
     public static void register() {
+        ServerTickEvents.END_WORLD_TICK.register(BardCompanions::releaseExpired);
         ServerEntityEvents.ENTITY_LOAD.register((entity, world) -> {
             if (entity instanceof PathAwareEntity mob && ownerOf(mob) != null) {
                 addGoals(mob);
@@ -160,6 +165,39 @@ public final class BardCompanions {
         addGoals(mob);
     }
 
+    /** Makes the mob the player's companion for {@code ticks} ticks, after which it goes back to the wild. */
+    public static void adoptFor(PathAwareEntity mob, PlayerEntity player, long ticks) {
+        adopt(mob, player);
+        mob.addCommandTag(UNTIL_PREFIX + (mob.getWorld().getTime() + ticks));
+    }
+
+    private static void releaseExpired(ServerWorld world) {
+        long now = world.getTime();
+        if (now % EXPIRY_CHECK_TICKS != 0) {
+            return;
+        }
+        for (Entity entity : world.iterateEntities()) {
+            for (String tag : java.util.List.copyOf(entity.getCommandTags())) {
+                if (!tag.startsWith(UNTIL_PREFIX)) {
+                    continue;
+                }
+                long until;
+                try {
+                    until = Long.parseLong(tag.substring(UNTIL_PREFIX.length()));
+                } catch (NumberFormatException e) {
+                    until = 0;
+                }
+                if (now >= until) {
+                    entity.getCommandTags().remove(tag);
+                    entity.getCommandTags().removeIf(t -> t.startsWith(TAG_PREFIX));
+                    if (entity instanceof MobEntity mob) {
+                        mob.setTarget(null);
+                    }
+                }
+            }
+        }
+    }
+
     private static void addGoals(PathAwareEntity mob) {
         GoalSelector goals = ((MobEntityAccessor) mob).getGoalSelector();
         GoalSelector targets = ((MobEntityAccessor) mob).getTargetSelector();
@@ -224,7 +262,8 @@ public final class BardCompanions {
 
         @Override
         public boolean canStart() {
-            return fights && super.canStart();
+            // A released companion (its time is up) stops rallying
+            return fights && ownerOf(mob) != null && super.canStart();
         }
     }
 

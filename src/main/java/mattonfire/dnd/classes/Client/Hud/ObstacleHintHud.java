@@ -77,7 +77,7 @@ public final class ObstacleHintHud {
         List<Line> lines = new ArrayList<>();
         lines.add(new Line(ObstacleText.name(type, tier).formatted(Formatting.BOLD), 0xC89BFF));
         Eligibility eligibility = type.eligibility(D20.classOf(player));
-        Skill skill = type.skill();
+        Skill skill = type.skillFor(player);
         if (player.isCreative()) {
             lines.add(new Line(Text.translatable("obstacle.dndclasses.hint.creative"), 0xA0A0A0));
         } else if (eligibility.canTry() && skill == null && type.interactive()) {

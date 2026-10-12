@@ -37,7 +37,17 @@ public class BoneWyvernEntity extends WyvernEntity {
     private static final DragonPartLayout BONE_LAYOUT = PART_LAYOUT.scaled(SCALE);
 
     public BoneWyvernEntity(EntityType<? extends TameableEntity> entityType, World world) {
-        super(entityType, world, BREATH_RANGE, BREATH_DAMAGE);
+        super(entityType, world);
+    }
+
+    @Override
+    protected double getBreathRange() {
+        return BREATH_RANGE;
+    }
+
+    @Override
+    protected float getBreathDamage() {
+        return BREATH_DAMAGE;
     }
 
     public static DefaultAttributeContainer.Builder createBoneWyvernAttributes() {

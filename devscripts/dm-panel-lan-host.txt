@@ -1,0 +1,29 @@
+# DM panel permission check over LAN, host side (an op).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dm-panel-lan-host.txt
+# then, once "Started serving on" is in the log, dm-panel-lan-guest.txt as PanelGuest in run-2 (port 25652).
+# Expect in this latest.log: "[DmPanel] refused open from PanelGuest" (K as a non-DM), "[DmPanel] refused narrate
+# Forged ..." (a forged action packet), then after /dm grant "[DmPanel] PanelGuest opened the panel",
+# "[DmPanel] PanelGuest runs /dm narrate Hello from the panel" and "[DM] narrate to ...", and after /dm revoke another
+# "[DmPanel] refused narrate ...".
+wait 40
+closescreen
+respawn
+/gamemode creative
+/publish false survival 25652
+/fill 40 149 40 48 149 48 minecraft:stone
+/fill 40 150 40 48 153 48 minecraft:air
+/tp @s 41.5 150 41.5 0 0
+/dm revoke PanelGuest
+waitchat guest-ready
+/tp @a[name=PanelGuest,limit=1] 44.5 150 42.5 0 10
+waitchat forged-sent
+wait 20
+/dm grant PanelGuest
+/say granted
+waitchat guest-done
+wait 10
+/dm revoke PanelGuest
+/say revoked
+waitchat guest-quit
+wait 40
+quit

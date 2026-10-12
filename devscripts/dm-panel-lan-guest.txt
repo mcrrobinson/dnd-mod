@@ -1,0 +1,35 @@
+# DM panel permission check over LAN, guest side (not an op), with dm-panel-lan-host.txt. Run (after the host says
+# "Started serving on"):
+#   timeout 300 ./gradlew runClient -PdevRunDir=run-2 -PdevUser=PanelGuest -PdevServer=localhost:25652 -PdevScript=devscripts/dm-panel-lan-guest.txt
+# Expect in run-2's latest.log: "[CHAT] Only the Dungeon Master can use the DM panel." twice before the grant (K and
+# the forged packet), "screen after ...: none"; after the grant the panel opens (screenshot dm-panel-guest) and
+# "[CHAT] ✦ Hello from the panel"; after the revoke the refusal line again.
+wait 40
+closescreen
+respawn
+wait 20
+/me guest-ready
+wait 40
+press key.dnd-classes.dm-panel
+wait 40
+screenshot dm-panel-guest-refused
+dmpanel narrate Forged from a non-DM
+wait 20
+/me forged-sent
+waitchat granted
+wait 20
+press key.dnd-classes.dm-panel
+wait 40
+field 1 Hello from the panel
+widget Narrate
+wait 40
+screenshot dm-panel-guest
+closescreen
+/me guest-done
+waitchat revoked
+wait 20
+dmpanel narrate After the revoke
+wait 40
+/me guest-quit
+wait 20
+quit

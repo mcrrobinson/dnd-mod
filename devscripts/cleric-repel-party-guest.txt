@@ -1,0 +1,25 @@
+# Guest for cleric-repel-party-host.txt: joins the host's LAN game on 25695, accepts the party invite and stays until the host is done.
+wait 40
+closescreen
+wait 60
+closescreen
+/party accept
+wait 60
+/party accept
+wait 60
+/party accept
+wait 60
+/party accept
+wait 60
+/party accept
+wait 60
+/party accept
+wait 60
+/party accept
+wait 60
+/party accept
+wait 60
+waitchat repel-done
+/party leave
+wait 20
+quit

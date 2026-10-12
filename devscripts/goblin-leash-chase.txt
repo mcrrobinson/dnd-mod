@@ -1,0 +1,115 @@
+# Verify PR #214: does a leashed camp goblin chase a player past its 10-block camp leash?
+# On a stone platform at y=150 round 6000 6000: goblin "leashed" has CampCenter at 6000 151 6000 (set through NBT, as
+# a saved camp goblin), goblin "free" has none (not persistent, so no old-camp fallback). A Hostile Dev starts 4
+# blocks away and steps east 2 blocks a second out to 30 blocks, then vanishes.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/goblin-leash-chase.txt
+# Check latest.log: "[DevScript] target" and Pos lines after each "step-<x>" chat line.
+wait 40
+closescreen
+/spreadplayers 6000 6000 0 1 false @s
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode creative
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tp @s 6000 160 6000
+wait 60
+/kill @e[tag=lc]
+/fill 5980 149 5995 6040 149 6005 minecraft:stone
+/fill 5980 150 5995 6040 155 6005 minecraft:air
+/summon dndclasses:goblin_warrior 6000 150 5998 {Tags:["lc","leashed"],PersistenceRequired:1b,CampCenter:{X:6000,Y:151,Z:6000}}
+/summon dndclasses:goblin_warrior 6000 150 6002 {Tags:["lc","free"]}
+wait 20
+/data get entity @e[tag=leashed,limit=1] CampCenter
+/rep @s dndclasses:goblins set -717
+/effect give @s resistance 1000 4 true
+/effect give @s regeneration 1000 4 true
+/gamemode survival
+/tp @s 6004 150 6000 -90 0
+wait 60
+/say step-start
+target @e[tag=lc]
+/tp @s 6006 150 6000 -90 0
+wait 20
+/say step-6006
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6008 150 6000 -90 0
+wait 20
+/say step-6008
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6010 150 6000 -90 0
+wait 20
+/say step-6010
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6012 150 6000 -90 0
+wait 20
+/say step-6012
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6014 150 6000 -90 0
+wait 20
+/say step-6014
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6016 150 6000 -90 0
+wait 20
+/say step-6016
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6018 150 6000 -90 0
+wait 20
+/say step-6018
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6020 150 6000 -90 0
+wait 20
+/say step-6020
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6022 150 6000 -90 0
+wait 20
+/say step-6022
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6024 150 6000 -90 0
+wait 20
+/say step-6024
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6026 150 6000 -90 0
+wait 20
+/say step-6026
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6028 150 6000 -90 0
+wait 20
+/say step-6028
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/tp @s 6030 150 6000 -90 0
+wait 20
+/say step-6030
+target @e[tag=lc]
+/execute as @e[tag=lc] run data get entity @s Pos
+/gamemode spectator
+/tp @s 6030 170 6000
+/rep @s dndclasses:goblins set 0
+wait 200
+/say lost-10s
+/execute as @e[tag=lc] run data get entity @s Pos
+wait 400
+/say lost-30s
+/execute as @e[tag=lc] run data get entity @s Pos
+target @e[tag=lc]
+/kill @e[tag=lc]
+/fill 5980 149 5995 6040 155 6005 minecraft:air
+/spreadplayers 6000 6000 0 1 false @s
+/gamemode creative
+wait 20
+quit

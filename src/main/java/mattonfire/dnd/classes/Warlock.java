@@ -167,7 +167,7 @@ public class Warlock {
             buf.writeLong(endTick);
             buf.writeVarInt(reach);
         }
-        ServerPlayNetworking.send(player, DnDClasses.S2C_WARLOCK_FIREBREATH, buf);
+        ServerPlayNetworking.send(player, ClassPackets.S2C_WARLOCK_FIREBREATH, buf);
     }
 
     private static void breatheFire(ServerWorld world, ServerPlayerEntity player, int reach) {

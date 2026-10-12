@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Client;
 
+import mattonfire.dnd.classes.ClassPackets;
 import java.util.UUID;
 
 import org.lwjgl.glfw.GLFW;
@@ -303,14 +304,14 @@ public class DndClassesClient implements ClientModInitializer {
             }
         });
 
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_CLASS_QUERY_PACKET_ID,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_CLASS_QUERY_PACKET_ID,
                 DndClassesClient::handleClassQuery);
 
         // Once a class is requested and approved this will set the player class.
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_APPROVE_CLASS_PICK_PACKET_ID,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_APPROVE_CLASS_PICK_PACKET_ID,
                 DndClassesClient::handleClassQuery);
 
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WARLOCK_FIREBREATH, this::handleFireBreathPacket);
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_WARLOCK_FIREBREATH, this::handleFireBreathPacket);
         // Leaving a world mid-effect must not carry the flame particles or the sphere into the next one
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> client.execute(() -> {
             isBreathingFire = false;
@@ -320,7 +321,7 @@ public class DndClassesClient implements ClientModInitializer {
             // No rest carries over to the next world (it would lock movement).
             mattonfire.dnd.classes.Rest.RestSnapshot.client = mattonfire.dnd.classes.Rest.RestSnapshot.NONE;
         }));
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);
 
         KeyBinding keyBinding = POWER_UP_KEY = KeyBindingHelper.registerKeyBinding(new KeyBinding(
@@ -335,16 +336,16 @@ public class DndClassesClient implements ClientModInitializer {
                 // Power effect request
                 PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
                 passedData.writeUuid(client.player.getUuid());
-                ClientPlayNetworking.send(DnDClasses.C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID, passedData);
+                ClientPlayNetworking.send(ClassPackets.C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID, passedData);
             }
         });
 
         // The response from the server to make the special effects.
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID,
                 DndClassesClient::receiveDoubleJumpEffectsRequest);
 
         // The response from the server to make the special effects.
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_LUNGE_EFFECTS_PACKET_ID,
                 DndClassesClient::receiveLungeEffectsRequest);
 
         ClientPlayNetworking.registerGlobalReceiver(Progression.S2C_SYNC, (client, handler, buf, sender) -> {
@@ -366,10 +367,10 @@ public class DndClassesClient implements ClientModInitializer {
                     client.execute(() -> mattonfire.dnd.classes.Rest.RestSnapshot.client = rest);
                 });
 
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_SYNC_MANA,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_SYNC_MANA,
                 DndClassesClient::setMana);
 
-        ClientPlayNetworking.registerGlobalReceiver(DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
+        ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_POWERUP_EFFECTS_PACKET_ID,
                 DndClassesClient::removeManor);
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {

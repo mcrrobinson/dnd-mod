@@ -50,7 +50,7 @@ public class MonkHandler {
     private static final Map<UUID, Integer> AIR_JUMPS_USED = new HashMap<>();
 
     public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(DnDClasses.C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
+        ServerPlayNetworking.registerGlobalReceiver(ClassPackets.C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
                 (server, player, handler, buf, responseSender) -> server.execute(() -> onDoubleJump(player)));
         ServerPlayConnectionEvents.DISCONNECT
                 .register((handler, server) -> AIR_JUMPS_USED.remove(handler.getPlayer().getUuid()));
@@ -145,7 +145,7 @@ public class MonkHandler {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeUuid(player.getUuid());
         for (ServerPlayerEntity other : PlayerLookup.tracking(player)) {
-            ServerPlayNetworking.send(other, DnDClasses.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID, buf);
+            ServerPlayNetworking.send(other, ClassPackets.S2C_DOUBLEJUMP_EFFECTS_PACKET_ID, buf);
         }
     }
 }

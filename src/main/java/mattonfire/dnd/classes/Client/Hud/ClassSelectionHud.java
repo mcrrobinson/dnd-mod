@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Client.Hud;
 
+import mattonfire.dnd.classes.ClassPackets;
 import io.github.cottonmc.cotton.gui.client.LightweightGuiDescription;
 import io.github.cottonmc.cotton.gui.widget.WButton;
 import io.github.cottonmc.cotton.gui.widget.WGridPanel;
@@ -19,7 +20,7 @@ public class ClassSelectionHud extends LightweightGuiDescription {
     public void packetConstructor(int classID) {
         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
         passedData.writeInt(classID);
-        ClientPlayNetworking.send(DnDClasses.C2S_CLASS_PICK_PACKET_ID, passedData);
+        ClientPlayNetworking.send(ClassPackets.C2S_CLASS_PICK_PACKET_ID, passedData);
     }
 
     record ClassOption(String name, int classID, String icon) {

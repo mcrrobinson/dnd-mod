@@ -79,23 +79,6 @@ public class DnDClasses implements ModInitializer {
 
         public static final Map<UUID, Long> WARLOCK_FIREBREATH = new HashMap<>();
 
-        public static final Identifier C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("doublejump",
-                        "request_doublejump_effects");
-        public static final Identifier S2C_DOUBLEJUMP_EFFECTS_PACKET_ID = Identifier.of("doublejump",
-                        "play_doublejump_effects");
-
-        public static final Identifier C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID = Identifier.of("powerup",
-                        "request_powerup_effects");
-        public static final Identifier S2C_POWERUP_EFFECTS_PACKET_ID = Identifier.of("powerup",
-                        "play_powerup_effects");
-
-        public static final Identifier C2S_LUNGE_REQUEST_PACKET_ID = Identifier.of("lunge",
-                        "request_lunge_effects");
-        public static final Identifier S2C_LUNGE_EFFECTS_PACKET_ID = Identifier.of("lunge", "play_lunge_effects");
-
-        public static final Identifier S2C_SYNC_MANA = Identifier.of("mana",
-                        "sync_mana");
-
         public static int MANA_FULL_SECONDS = 18; // Should be 2 seconds per increment
         public static int MANA_ICONS = 9;
         public static int MANA_TICKS_PER_INCREMENT = Math.round(MANA_FULL_SECONDS / MANA_ICONS) * 20; // Ticks per
@@ -103,14 +86,6 @@ public class DnDClasses implements ModInitializer {
 
         public static final String MOD_ID = "dndclasses";
         public static final Logger LOGGER = LoggerFactory.getLogger("dndclasses");
-
-        public static final Identifier S2C_WARLOCK_FIREBREATH = Identifier.of(MOD_ID, "warlock_firebreath");
-        public static final Identifier S2C_WIZARD_EFFECTS_PACKET_ID = Identifier.of(MOD_ID, "wizard_powerup");
-
-        public static final Identifier C2S_CLASS_PICK_PACKET_ID = Identifier.of("classpick", "class_pick");
-        public static final Identifier S2C_CLASS_QUERY_PACKET_ID = Identifier.of("classpick", "class_query");
-        public static final Identifier S2C_APPROVE_CLASS_PICK_PACKET_ID = Identifier.of("classpick",
-                        "approve_class_pick");
 
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
 
@@ -165,7 +140,7 @@ public class DnDClasses implements ModInitializer {
                                         skills.afterActivate(player, progress, skill);
                                 }
                                 ServerPlayNetworking.send(player,
-                                                DnDClasses.S2C_POWERUP_EFFECTS_PACKET_ID,
+                                                ClassPackets.S2C_POWERUP_EFFECTS_PACKET_ID,
                                                 new PacketByteBuf(Unpooled.buffer()));
                         }
                 });
@@ -411,12 +386,12 @@ public class DnDClasses implements ModInitializer {
 
                                         // Send effects to the current player.
                                         ServerPlayNetworking.send((ServerPlayerEntity) player,
-                                                        DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
+                                                        ClassPackets.S2C_LUNGE_EFFECTS_PACKET_ID,
                                                         passedData);
 
                                         // Send effects to all players in vicinity
                                         PlayerLookup.tracking(player).forEach(p -> {
-                                                ServerPlayNetworking.send(p, DnDClasses.S2C_LUNGE_EFFECTS_PACKET_ID,
+                                                ServerPlayNetworking.send(p, ClassPackets.S2C_LUNGE_EFFECTS_PACKET_ID,
                                                                 passedData);
                                         });
 
@@ -435,7 +410,7 @@ public class DnDClasses implements ModInitializer {
                 // The double-jump packet is handled in MonkHandler.register().
 
                 // Register powerup registry.
-                ServerPlayNetworking.registerGlobalReceiver(C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID,
+                ServerPlayNetworking.registerGlobalReceiver(ClassPackets.C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID,
                                 DnDClasses::sendPowerupPacket);
 
                 // Register classpick registry.
@@ -509,7 +484,7 @@ public class DnDClasses implements ModInitializer {
                         passedData.writeInt(mana);
                         LOGGER.debug("Sending mana {} to {}", mana, player.getName().getString());
                         ServerPlayNetworking.send((ServerPlayerEntity) player,
-                                        DnDClasses.S2C_SYNC_MANA,
+                                        ClassPackets.S2C_SYNC_MANA,
                                         passedData);
                 });
 

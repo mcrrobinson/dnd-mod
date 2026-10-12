@@ -38,6 +38,6 @@ public class ManaManager {
     public static void sync(ServerPlayerEntity player) {
         PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
         passedData.writeInt(getMana(player));
-        ServerPlayNetworking.send(player, DnDClasses.S2C_SYNC_MANA, passedData);
+        ServerPlayNetworking.send(player, ClassPackets.S2C_SYNC_MANA, passedData);
     }
 }

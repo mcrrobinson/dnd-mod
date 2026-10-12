@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.mixin;
 
+import mattonfire.dnd.classes.ClassPackets;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
@@ -48,7 +49,7 @@ public abstract class DoubleJumpMixin {
                                 DoubleJumpEffect.play(player);
 
                                 // Empty: the server knows who sent it.
-                                ClientPlayNetworking.send(DnDClasses.C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
+                                ClientPlayNetworking.send(ClassPackets.C2S_DOUBLEJUMP_EFFECTS_REQUEST_PACKET_ID,
                                         new PacketByteBuf(Unpooled.buffer()));
                             }
                         }

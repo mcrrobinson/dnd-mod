@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Misc;
 
+import mattonfire.dnd.classes.ClassPackets;
 import java.util.Iterator;
 import java.util.List;
 
@@ -224,7 +225,7 @@ public class PowerUpEffect {
                         buf.writeDouble(playerY + player.getStandingEyeHeight() / 2.0);
                         buf.writeDouble(playerZ);
                         buf.writeFloat(reach);
-                        ServerPlayNetworking.send(serverPlayerEntity, DnDClasses.S2C_WIZARD_EFFECTS_PACKET_ID, buf);
+                        ServerPlayNetworking.send(serverPlayerEntity, ClassPackets.S2C_WIZARD_EFFECTS_PACKET_ID, buf);
                     }
                 }
 

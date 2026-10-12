@@ -244,6 +244,16 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.PORTCULLIS_BLOCK);
+        // Craft and element obstacles: amber resin is see-through; soul fire, the brazier's flames and the
+        // vent's grate are cut out
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getTranslucent(),
+                mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.ALCHEMICAL_SEAL_BLOCK);
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.FIRE_CURTAIN_BLOCK,
+                mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.FIRE_CURTAIN_BRAZIER_BLOCK,
+                mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles.MIASMA_VENT_BLOCK);
         mattonfire.dnd.classes.Client.Hud.InstrumentSlotHud.register();
         mattonfire.dnd.classes.Client.Music.EventMusic.register();
         mattonfire.dnd.classes.Client.Music.MusicStings.register();

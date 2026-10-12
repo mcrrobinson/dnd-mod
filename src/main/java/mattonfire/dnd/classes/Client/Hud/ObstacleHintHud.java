@@ -86,6 +86,10 @@ public final class ObstacleHintHud {
             if (type.ownWhoText()) {
                 lines.add(new Line(ObstacleText.who(type), 0xA0A0A0));
             }
+        } else if (eligibility.canTry() && skill == null) {
+            // Nothing to roll or click, and it's yours to get past (a Paladin at a Dread Ward, a Warlock at a
+            // Fire Curtain): its own text says how
+            lines.add(new Line(ObstacleText.who(type), 0x9CE89C));
         } else if (eligibility.canTry()) {
             // The synced character sheet: the same bonus the server rolls with
             int modifier = AbilityScores.sheet(player).check(skill);

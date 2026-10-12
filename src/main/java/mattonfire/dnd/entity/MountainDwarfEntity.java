@@ -223,6 +223,18 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         this.setTarget(player);
     }
 
+    /**
+     * Dwarves who can see {@code player} watched them break dwarven work at {@code pos} (a smashed Clockwork
+     * Door): it's judged like breaking a protected block of the fortress ({@link SettlementGrudges#witness}),
+     * so they turn on the player (a Dwarf gets one warning growl a day) and the player's standing drops.
+     */
+    public static void witness(PlayerEntity player, BlockPos pos) {
+        if (player.isCreative() || player.isSpectator()) {
+            return;
+        }
+        SettlementGrudges.witness(SettlementGrudges.MOUNTAIN_DWARVES, player, pos, SettlementGrudges.Offence.BREAK);
+    }
+
     // The mod gives every mob a player-targeting goal; dwarves only turn on players who wronged them.
     @Override
     public void setTarget(@Nullable LivingEntity target) {

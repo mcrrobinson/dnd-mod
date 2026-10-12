@@ -13,6 +13,11 @@
     "dndclasses:desecrated_altar",
     "dndclasses:dread_ward",
     "dndclasses:ossuary_gate",
-    "dndclasses:blood_seal"
+    "dndclasses:blood_seal",
+    "dndclasses:clockwork_door",
+    "dndclasses:alchemical_seal",
+    "dndclasses:miasma_vent",
+    "dndclasses:fire_curtain",
+    "dndclasses:fire_curtain_brazier"
   ]
 }

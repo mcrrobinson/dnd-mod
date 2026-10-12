@@ -1,7 +1,7 @@
 # Class-gated obstacles
 Some walls, doors and barriers can only be got past by the right class. Look at one and a hint above the crosshair says what it is, how hard it is and who can deal with it. The right class right-clicks it and rolls a d20 on the [skill check HUD](d20-skill-checks.md). Everyone else has a fallback that costs something, or has to bring the right adventurer.
 
-So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks) the **physical obstacles** for Barbarians, Fighters and Monks (Collapsed Passages, Heavy Boulders, Portcullises with their winches, Chasms and Crumbling Ledges), and the **divine and death obstacles** for Clerics, Paladins, Necromancers and Blood Hunters (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers and Blood Seals), and the **hidden and locked** obstacles for Rangers and Rogues (Hidden Doors, Locked Doors, and the vanilla temple traps as hidden traps). More kinds (thornwalls, singing doors and so on) are planned on the same framework.
+So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks) the **physical obstacles** for Barbarians, Fighters and Monks (Collapsed Passages, Heavy Boulders, Portcullises with their winches, Chasms and Crumbling Ledges), and the **divine and death obstacles** for Clerics, Paladins, Necromancers and Blood Hunters (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers and Blood Seals), the **hidden and locked** obstacles for Rangers and Rogues (Hidden Doors, Locked Doors, and the vanilla temple traps as hidden traps), and the **craft and element** obstacles for Artificers, Alchemists and Warlocks (Clockwork Doors, Alchemical Seals, Miasma Vents and Fire Curtains). More kinds (thornwalls, singing doors and so on) are planned on the same framework.
 
 ![A Wizard's Arcana roll shattering a Lesser Arcane Seal](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/obstacle-framework/obstacle-wizard-open.png)
 
@@ -92,10 +92,33 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 
 Only temples generated after this change are registered (a mixin on each temple piece's `generate` records their trap blocks as each chunk generates). `/place structure` counts.
 
+### Craft and element (Artificers, Alchemists, Warlocks)
+| | Clockwork Door | Alchemical Seal | Miasma Vent |
+|-|-|-|-|
+| Looks like | A brass plate with a gear and rivets | Translucent amber resin (light 3) over a cache | An iron grate glowing green, breathing gas (light 4) |
+| Check | Tinker's Tools | Alchemist's Supplies | Alchemist's Supplies |
+| Who | Artificer (primary), Rogue (secondary) | Alchemist only | Alchemist only |
+| Each try uses up | 1 iron ingot and 1 redstone dust, from anywhere in your inventory | 1 potion | 1 potion |
+| Success | The gears catch and the whole door opens | The resin dissolves | The vent stops for good (the grate stays, dark) |
+| Failed roll | Sparks: 1 damage | It fizzes (no harm) | It belches gas at you: Poison II and Nausea for 10 s |
+| Natural 1 | The gears jam: nobody can work it for 30 s (600 ticks), and an alarm | Acid: 3 magic damage and Poison I for 5 s; alarm | It bursts over everyone within 5 blocks (Poison II and Nausea for 10 s); alarm |
+| Fallback | Smash the mechanism with a pickaxe: hardness 50 (like obsidian). Breaking any block opens the whole door, but any Mountain Dwarf who can see you takes it as breaking their fortress's things: they turn on you and your standing with them drops (a Dwarf gets one warning a day) | Break it with a pickaxe: hardness 3. The whole seal shatters, and every chest, barrel or other loot container touching it (diagonals too) rolls its loot and loses each stack with a 40% chance, exactly like a smashed locked chest | Run it. Poison can't kill, and Rogues are immune to it |
+
+- **Holding the cost.** Right-click with an empty hand or with what it takes in hand (an iron ingot or redstone dust for the door, any potion for the seal and the vent). The cost is paid as the roll (or a take-your-time focus) starts, so a try that's refused (wait, jammed door, no potion) costs nothing. "Any potion" is any brewed potion, splash or lingering, Awkward Potions included, but not a water bottle. The one in your hands goes first, else the first in your inventory.
+- **Glued shut.** While an Alchemical Seal is sealed, a container with the resin on any side can't be opened in survival ("Amber resin glues it shut").
+- **The gas.** Once a second, a player whose body is within 5 blocks of a venting Miasma Vent gets Poison II for 3 seconds and Nausea for 7 seconds, so it wears off soon after they leave. Rogues breathe it without harm (no nausea either); an Alchemist with Iron Stomach shrugs off both too. Vents can't be broken.
+
+**Fire Curtain.** A doorway of eternal soul fire (light 10), with a **Fire Curtain Brazier** (light 12) on the far side. There's no roll and nothing to click on the curtain:
+- A **Warlock** walks straight through it, unburnt, and right-clicks the brazier with an empty hand: it gutters out, the whole curtain dies for everyone, and the first dousing earns the brazier's tier XP.
+- **Fire Resistance** lets anyone else through too (and they can douse the brazier). A Fighter, Paladin or Artificer can't drink or be splashed with the potion, but an Alchemist's **Transmute** cloud of Fire Resistance still covers them, because it's an ability. Creative and spectator players pass, and so do fire-immune mobs.
+- To everyone else it's a wall: it stops you, and every half second you're up against it you take 2 fire damage and catch fire for 3 seconds.
+- Water doesn't put it out (it isn't a fire block, and water can't flow into it), and it never burns out. It can't be broken or blown up. `/dndobstacle open` puts it out; resetting the brazier relights the brazier and its curtain.
+- A brazier works the nearest Fire Curtain within 8 blocks, unless a structure or `/dndobstacle link` tells it which one.
+
 ### The roll
 Right-click a sealed obstacle with an empty main hand. If your class can't attempt it, the action bar says who can ("Lesser Arcane Seal (Hard). A Wizard or Warlock could dispel it.").
 
-The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the physical obstacles, Religion for Holy Wards and Desecrated Altars, Intimidation for Ossuary Gates, Thieves' Tools for Locked Doors) against its DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
+The roll is a check of the obstacle's skill (Arcana for seals, Athletics for the physical obstacles, Religion for Holy Wards and Desecrated Altars, Intimidation for Ossuary Gates, Thieves' Tools for Locked Doors, Tinker's Tools for Clockwork Doors, Alchemist's Supplies for Alchemical Seals and Miasma Vents) against its DC: d20 + your [character sheet](ability-scores.md) Arcana bonus (INT modifier + proficiency + any flat bonuses), with any advantage the sheet gives obstacle checks:
 
 | Tier | DC | Class XP for the solver |
 |-|-|-|
@@ -131,13 +154,13 @@ Operators (permission level 2):
 
 | Command | What it does |
 |-|-|
-| `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`, `dndclasses:holy_ward`, `dndclasses:desecrated_altar`, `dndclasses:dread_ward`, `dndclasses:ossuary_gate`, `dndclasses:blood_seal`, `dndclasses:hidden_door`, `dndclasses:hidden_deepslate_door`, `dndclasses:hidden_blackstone_door`, `dndclasses:locked_door`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
+| `/dndobstacle place <from> <to> <type> <tier> [critical]` | Fills the box with one sealed obstacle group (at most 48 blocks). Types: `dndclasses:lesser_arcane_seal`, `dndclasses:greater_arcane_seal`, `dndclasses:collapsed_passage`, `dndclasses:heavy_boulder`, `dndclasses:portcullis`, `dndclasses:portcullis_winch`, `dndclasses:chasm`, `dndclasses:bridge_winch`, `dndclasses:crumbling_ledge`, `dndclasses:holy_ward`, `dndclasses:desecrated_altar`, `dndclasses:dread_ward`, `dndclasses:ossuary_gate`, `dndclasses:blood_seal`, `dndclasses:hidden_door`, `dndclasses:hidden_deepslate_door`, `dndclasses:hidden_blackstone_door`, `dndclasses:locked_door`, `dndclasses:clockwork_door`, `dndclasses:alchemical_seal`, `dndclasses:miasma_vent`, `dndclasses:fire_curtain`, `dndclasses:fire_curtain_brazier`. Tiers: `easy`, `medium`, `hard`, `very_hard` |
 | `/dndobstacle info <pos>` | Type, tier, DC, state, group size and who can attempt it |
 | `/dndobstacle open <pos>` | Opens the whole group (no XP) |
-| `/dndobstacle reset <pos>` | Reseals the whole group and clears its progress: a Holy Ward's potion count, a Blood Seal's payments, who has found a Hidden Door, and the "already earned XP" mark every group carries |
+| `/dndobstacle reset <pos>` | Reseals the whole group and clears its progress: a Holy Ward's potion count, a Blood Seal's payments, who has found a Hidden Door, a jammed Clockwork Door, and the "already earned XP" mark every group carries |
 | `/dndobstacle settier <pos> <tier>` | Retiers the whole group |
 | `/dndobstacle reseal <pos> <ticks>` | The group reseals itself this long after opening (0 = never, the default) |
-| `/dndobstacle link <winch> <target>` | Connects a portcullis winch to a portcullis block, or a bridge winch to a chasm block |
+| `/dndobstacle link <winch> <target>` | Connects a portcullis winch to a portcullis block, a bridge winch to a chasm block, or a fire curtain brazier to a fire curtain block |
 | `/dndobstacle traps` | Lists the vanilla temple traps within 256 blocks (trigger position, armed or disarmed) |
 | `/dndobstacle traps tp` | Teleports you to a safe spot beside the nearest temple trap trigger |
 | `/dndobstacle list [radius]` | Lists obstacle groups near you (default 64 blocks) |
@@ -164,6 +187,10 @@ None.
 - The wall search uses the character sheet's Investigation bonus, with no extra for Utility characters yet (that's the party-role synergies ticket).
 - Locked Doors have no key yet: the key item belongs to the dungeon and quest work.
 - Temple traps can't be found with the Search key (V), and a jungle temple's two tripwires count as one trap: disarming either disarms both.
+- A smashed Clockwork Door loses the block you broke (the rest of the door opens), so `/dndobstacle reset` can't bring that block back.
+- An Alchemical Seal over a locked loot chest still leaves the chest locked: a Rogue picks it once the resin is gone (or it's smashed open with the usual ruin). Breaking the resin rolls and ruins the cache straight away, so its chest is no longer locked.
+- If your Fire Resistance runs out while you stand inside a Fire Curtain, the curtain is solid round you and you may have to push your way out.
+- Fire Curtain collision for players is decided on each side from the class, Fire Resistance and game mode both sides know; a Fire Resistance that ends at the very moment you step in can make you rubber-band.
 - A wedged portcullis that an operator reseals directly (rather than through its winch) leaves the winch showing as wedged until the winch is reset too.
 
 ## For developers
@@ -188,6 +215,9 @@ None.
 - New `ObstacleType` hooks: `hiddenFrom(world, pos, player)` (no hint, right-click passes), `disguised()` (shaded like a full block while sealed), `protectsShell()` and `rollLabel()` (the HUD label, e.g. Lockpicking).
 - `ObstacleInteractions.solve` pays XP through `ObstacleGroups.claimReward`, which marks the group's `Data.XpEarned`; `ObstacleGroups.reset` clears it.
 - `ObstacleGroups.dataInt` / `setDataInt` keep a per-type number on every block of a group. `ObstacleEvents.SOLVED` fires only for a solve that earns XP (not re-cranking a winch, paying a Blood Seal's fallback price, or re-consecrating an altar).
+- Craft and element types: `ClockworkDoorType` (jam time in `Data.JammedUntil`), `AlchemicalSealType`, `MiasmaVentType` (per-second `END_WORLD_TICK` gas), `FireCurtainType` and `FireBrazierType` (a `WinchType` whose target is the curtain), registered in `types/CraftElementObstacles`, which `ObstacleTypes` loads from a static block before it builds the shared block entity type (each obstacle family can register from its own file this way, with the public `ObstacleTypes.register`, `solidSettings` and `glowSettings`). `types/Reagents` takes the iron, redstone and potions. `SkillChecks/LootRuin` is the shared 40% ruin of a forced container (`Lockpicking` uses it too). `MountainDwarfEntity.witness(player, pos)` has dwarves who can see it judge a broken piece of dwarven work.
+- More `ObstacleType` hooks: `accepts(held)` (what the main hand may hold to work it), `payForAttempt(world, pos, player)` (uses up the cost as a roll or focus starts, or refuses) and `collides(state, shapeContext)` (per-entity collision; the Fire Curtain uses it). The crosshair hint shows a click-free obstacle's own text to the class it's for (a Paladin at a Dread Ward, a Warlock at a Fire Curtain).
+- Textures are made by `tools/craft_obstacle_textures.py`; the Fire Curtain uses vanilla soul fire models. `devscripts/obstacle-craft-element.txt` covers an Artificer (no parts, a roll, a jam), a Rogue, a Fighter smashing a door in front of a dwarf, an Alchemist's seal (glued chest, no potion, a roll, acid), a Fighter breaking a seal over a loot chest, the Miasma Vent (Fighter, Rogue, Alchemist), and the Fire Curtain (a Fighter stopped and refused his potion, a Warlock walking through and dousing the brazier, and a Fighter under an Alchemist's Transmute walking through).
 - Textures are made by `tools/divine_obstacle_textures.py`. `devscripts/obstacle-divine.txt` covers a Cleric, a Fighter's fallbacks, the Dread Ward, a Necromancer, a crypt sleeper and the Blood Seal.
 - Textures are made by `tools/physical_obstacle_textures.py`. `devscripts/obstacle-physical.txt` covers a Barbarian, a Fighter, a Monk and a Wizard's solo fallbacks.
 - Textures are made by `tools/obstacle_textures.py`. The Locked Door's comes from `tools/locked_door_texture.py`; Hidden Doors use the vanilla brick models.

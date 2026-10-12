@@ -67,7 +67,7 @@ public class ObstacleBlock extends BlockWithEntity {
 
     @Override
     public VoxelShape getCollisionShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
-        return type.solid(state.get(STATE)) ? VoxelShapes.fullCube() : VoxelShapes.empty();
+        return type.collides(state.get(STATE), context) ? VoxelShapes.fullCube() : VoxelShapes.empty();
     }
 
     @Override

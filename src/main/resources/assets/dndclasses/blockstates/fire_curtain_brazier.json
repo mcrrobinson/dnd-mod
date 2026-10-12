@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/fire_curtain_brazier"
+    },
+    "state=open": {
+      "model": "dndclasses:block/fire_curtain_brazier_doused"
+    }
+  }
+}

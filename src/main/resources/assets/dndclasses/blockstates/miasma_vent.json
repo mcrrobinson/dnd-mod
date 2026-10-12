@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/miasma_vent"
+    },
+    "state=open": {
+      "model": "dndclasses:block/miasma_vent_open"
+    }
+  }
+}

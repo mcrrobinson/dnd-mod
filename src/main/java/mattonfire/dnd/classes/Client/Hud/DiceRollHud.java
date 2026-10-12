@@ -18,6 +18,12 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.gui.hud.ChatHud;
+import net.minecraft.client.gui.hud.ChatHudLine;
+import net.minecraft.client.option.ChatVisibility;
+import mattonfire.dnd.classes.mixin.ChatHudAccessor;
+import java.util.List;
+import net.minecraft.client.gui.screen.ChatScreen;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.network.PacketByteBuf;
@@ -263,7 +269,7 @@ public final class DiceRollHud {
         int diceWidth = twoDice ? DIE_SIZE + 2 + SMALL_DIE_SIZE : DIE_SIZE;
         int width = diceWidth + 6 + textWidth;
         int left = (client.getWindow().getScaledWidth() - width) / 2;
-        int top = client.getWindow().getScaledHeight() / 2 + 20;
+        int top = panelTop(client);
 
         // Translucent backing so the text reads against any scene
         DrawableHelper.fill(matrices, left - 4, top - 3, left + width + 4, top + DIE_SIZE + 3,
@@ -326,6 +332,35 @@ public final class DiceRollHud {
         RenderSystem.disableBlend();
     }
 
+    /**
+     * Top of the roll panel: just below the crosshair, or higher when the chat lines showing (all of them while
+     * chat is open, the ones that haven't faded yet otherwise) reach up that far, so the two don't overlap.
+     * Never above the top of the screen.
+     */
+    private static int panelTop(MinecraftClient client) {
+        int height = client.getWindow().getScaledHeight();
+        int top = height / 2 + 20;
+        ChatHud chat = client.inGameHud.getChatHud();
+        if (client.options.getChatVisibility().getValue() == ChatVisibility.HIDDEN) {
+            return top;
+        }
+        boolean open = client.currentScreen instanceof ChatScreen;
+        List<ChatHudLine.Visible> lines = ((ChatHudAccessor) chat).dndclasses$getVisibleMessages();
+        int shown = 0;
+        // Same rule as ChatHud.render: newest first, up to the box's line count, faded after 200 ticks unless open
+        for (int i = 0; i < Math.min(lines.size(), chat.getVisibleLineCount()); i++) {
+            if (open || client.inGameHud.getTicks() - lines.get(i).addedTime() < 200) {
+                shown = i + 1;
+            }
+        }
+        if (shown > 0) {
+            double lineHeight = 9.0 * (client.options.getChatLineSpacing().getValue() + 1.0);
+            int chatTop = height - 40 - MathHelper.ceil(shown * lineHeight * chat.getChatScale());
+            top = Math.max(4, Math.min(top, chatTop - DIE_SIZE - 6));
+        }
+        return top;
+    }
+
     /** The roll call prompt: the idle die, who calls for what, and "[Y] Roll" with the seconds left. */
     private static void renderPrompt(MinecraftClient client, MatrixStack matrices, float tickDelta) {
         TextRenderer text = client.textRenderer;
@@ -355,7 +390,7 @@ public final class DiceRollHud {
         int textWidth = Math.max(text.getWidth(title), Math.max(text.getWidth(second), text.getWidth(third)));
         int width = diceWidth + 6 + textWidth;
         int left = (client.getWindow().getScaledWidth() - width) / 2;
-        int top = client.getWindow().getScaledHeight() / 2 + 20;
+        int top = panelTop(client);
         DrawableHelper.fill(matrices, left - 4, top - 3, left + width + 4, top + DIE_SIZE + 3, 0x90000000);
         // A soft gold edge marks it as waiting on you
         int edge = promptAnswered ? 0x60FFFFFF : 0xC0FFD23F;

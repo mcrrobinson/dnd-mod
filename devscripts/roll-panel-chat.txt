@@ -1,0 +1,45 @@
+# The d20 roll panel moves above the open chat box instead of drawing over it.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/roll-panel-chat.txt
+# Screenshots: roll-chat-closed (prompt above the recent chat lines), roll-chat-open (prompt above the open chat box),
+# roll-chat-result / roll-chat-result-open (the rolled result, chat closed and open). Chat is filled with lines first so the box is tall.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/time set noon
+/tp @s 3.5 150 3.5 0 0
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+wait 20
+/say line 1
+/say line 2
+/say line 3
+/say line 4
+/say line 5
+/say line 6
+/say line 7
+/say line 8
+/say line 9
+/say line 10
+/say line 11
+/say line 12
+/dndclass forceroll @s 16
+/dm roll @s stealth 14
+wait 10
+screenshot roll-chat-closed
+press key.chat
+wait 10
+screenshot roll-chat-open
+closescreen
+wait 5
+key y
+wait 2
+screenshot roll-chat-rolling
+wait 18
+screenshot roll-chat-result
+press key.chat
+wait 3
+screenshot roll-chat-result-open
+closescreen
+wait 5
+quit

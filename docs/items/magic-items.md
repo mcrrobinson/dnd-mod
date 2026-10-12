@@ -67,7 +67,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 
 ### Warlord's Warhorn
 - Right-click to sound it (a raid horn, heard far away). You and every [party](../systems/party.md) member within 16 blocks get **Strength I** and **Speed I** for 15 s. Every goblin (Goblin Warriors, raid goblins, a Goblin Warlord) within 16 blocks gets **Frightened** for 6 s: it deals half damage, stops chasing whoever sounded it and runs from players (`FrightenedFleeGoal`).
-- The action bar says how many were rallied and frightened. 120 s cooldown, kept on the item (`hornReadyAt`), shown as the usual cooldown sweep. No attunement, but it has to be identified.
+- The action bar says how many were rallied and frightened. 120 s cooldown, kept on the item (`hornReadyAt`), shown as the usual cooldown sweep; using it again before then says "Your lungs need a rest (N s)" on the action bar. No attunement, but it has to be identified.
 
 ### Heart of the Furnace
 - Anywhere in your inventory, attuned: **Fire Resistance** (no particles, refreshed every second), and each melee hit sets the target alight for 3 s.

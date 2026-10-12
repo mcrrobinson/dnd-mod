@@ -18,9 +18,18 @@ How to check a change in a real Minecraft client without anyone at the keyboard.
 - `dragon-hitboxes.txt`: frozen mob plus hitbox screenshots.
 - `lan-host-check.txt` / `lan-guest-check.txt`: two clients.
 
+## Mob action log
+Mobs and bosses log each special action at DEBUG level, which the dev client writes to `run/logs/debug.log` (not `latest.log`):
+
+```
+[MobAction] Grimclaw charge (cooldown 80) -> Dev (60/150 HP, t=55731)
+```
+
+The name, the action, the target, the mob's health and the world time, so a script can check how often something happens. Logged: Owlbear charge (with the cooldown that follows it) and bear hug, breath weapons (`FireBreathGoal`), Lich spells, Beholder rays and enrage, Goblin Warlord waves and enrage, Magmamuncher Alpha fire spit and enrage (`entity/MobActions`). `devscripts/owlbear-fury.txt` uses it to check that a furious owlbear charges more often below half health.
+
 ## Known limitations
 - Minecraft 1.19.4 ignores `--quickPlaySingleplayer`; DevScript's auto-join does that job.
-- Script gotchas (Class Guidebook in hand after `/dndclass set`, `/kill` not counting for quests, NoAI side effects, one-player commands) are listed in CLAUDE.md.
+- Script gotchas (Class Guidebook in hand after `/dndclass set`, `/kill` not counting for quests, NoAI side effects, one-player commands, obstacle roll delay, test spawners) are listed in CLAUDE.md.
 - Looking straight down right after a teleport renders a dark frame. Use side views, or wait a few ticks before the screenshot.
 - Don't drive clients with xdotool or other OS input.
 

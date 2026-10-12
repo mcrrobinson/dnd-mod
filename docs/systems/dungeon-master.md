@@ -1,5 +1,5 @@
 # Dungeon Master
-An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD. Later tickets add narration, loot planting, a DM Wand and a DM panel on top of this.
+An op can run a session as the party's Dungeon Master: step outside the game, hide behind a veil, drop premade encounters where they're looking, and pause mobs and players. It can also call for rolls that pop up on the players' d20 HUD. The DM Wand puts the common actions on right-click. Later tickets add narration, loot planting and a DM panel on top of this.
 
 ## How it works
 ### DM mode
@@ -69,8 +69,28 @@ The launch set:
 - Frozen mobs and players take no damage, so nobody gets free hits during a pause. Boss bars stay up.
 - Frozen entities have the tag `dndclasses.dm_frozen`.
 
+### DM Wand
+The DM Wand (`dndclasses:dm_wand`, in the D&D Classes creative tab or `/give @s dndclasses:dm_wand`) puts the common DM actions on right-click. It only works in DM mode: anyone else gets "The wand is cold in your hand." on the action bar and nothing happens.
+
+It reaches 64 blocks: the server casts a ray from your eye and takes the first mob or player along it, else the first block. Clicks on blocks and mobs don't open chests or start trades while you hold it.
+
+**Sneak + right-click air** (nothing within 64 blocks) switches mode: Encounter, Freeze, Inspect, Blink, then back. The action bar shows the new mode, and the item's name shows the current one (`DM Wand (Freeze)`). Right-click air without sneaking just shows the mode again.
+
+| Mode | Right-click | Sneak + right-click |
+|-|-|-|
+| Encounter | Spawns the selected encounter at the block you hit, like `/dm encounter spawn <id> <pos>` (numbered, tagged, listed in `/dm encounter list`) | Selects the next encounter (in id order). The wand remembers it |
+| Freeze | A mob or player: freezes it, or unfreezes it if frozen. A block: freezes every mob within 16 blocks of it, or unfreezes them if all were already frozen | Same |
+| Inspect | A mob or player: prints its details to you only (see below) | Same |
+| Blink | Teleports you onto the block you hit (the first spot with room to stand, up to 8 blocks up) | Toggles the veil, like `/dm veil` |
+
+Inspect shows:
+- **Mobs:** HP, current target, frozen or not, encounter number, faction, and all command tags.
+- **Players:** class and level, party role, race, HP, frozen or not, reputation tier and value with every faction, and active quests with their stage.
+
+The mode and the selected encounter are stored on the item, so two wands can be set up differently.
+
 ## Where to find it
-Server-side commands only; nothing to craft.
+Server-side commands, and the DM Wand (creative tab or `/give`); nothing to craft.
 
 ## Commands
 Ops (permission level 2) can run every `/dm` command. `/dm grant <player>` lets a non-op run all of them except `grant`, `revoke` and `apply`; `/dm revoke <player>` takes it back (and ends their DM mode).
@@ -146,7 +166,8 @@ A file that fails to parse is skipped with an error in the server log (`[Encount
   - `DmVeil`: veil abilities, damage cancel and `refreshTracking`. `classes/mixin/DmEntityTrackerMixin` stops `ThreadedAnvilChunkStorage.EntityTracker` tracking a veiled DM for non-DM viewers; `ThreadedAnvilChunkStorageAccessor` + `DmTracked` re-run tracking when the veil changes.
   - `DmRolls`: the `/dm check`, `/dm save`, `/dm roll` and `/dm apply` command trees. `DmRollCalls`: pending calls (one per player), the `dndclasses:roll_prompt` S2C packet (label, caller, DC or 0 when secret, `Advantage`, ticks left, 0 clears it) and the empty `dndclasses:roll_answer` C2S packet, the 400-tick timeout on `END_SERVER_TICK`, the result and summary lines, and `last()` for `/dm apply`. Logs `[DmRolls] call #n ...` lines.
   - `DmFreeze`: freeze/unfreeze, Fabric attack/use/break callbacks, the player hold tick; the power-up packet in `DnDClasses` checks `DmFreeze.isFrozen`.
+  - `DmWand`: the wand's modes and actions (`use(player, stack)`, `raycast`, `spawnEncounter`, `inspect`), mode and encounter in stack NBT (`DmWandMode`, `DmWandEncounter`), and `UseBlockCallback` / `UseEntityCallback` handlers that claim wand clicks on both sides (the client can't tell who is a DM). `classes/Items/DmWandItem` handles clicks on air and names the item after its mode. Logs `[DmWand] <player> mode <mode>`.
   - `encounter/Encounter` (parsed file), `encounter/Encounters` (reload listener, `get(id)`, `all()`), `encounter/EncounterSpawner` (`spawn(world, encounter, center, tags)` returns the mobs and chests; `NO_LOOT_TAG`).
 - `"loot": false` mobs get `dndclasses.no_loot`; `BossMinions.givesNothing` covers them and boss minions, and is checked in `BossMinionDropMixin`, `BountyRewards` and `ProgressionEvents`.
 - DM exclusions: `ActiveTargetGoalMixin`, `PartyEvents.shareXp` and `syncHud`, `BossFight.isFightingPlayer`, `GoblinRaids.maybeStartRaids`, `GoblinRaid` participants and target picking, `BountyRewards.onKill`.
-- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`).
+- Devscripts: `devscripts/dm-toolkit-host.txt` + `dm-toolkit-guest.txt` (two-client LAN test on port 25617), then `devscripts/dm-freeze-rejoin.txt`. Full verification: `dm-verify-host.txt` with `dm-verify-guest.txt` and `dm-verify-guest-rejoin.txt` (port 25641, guest run with `-PdevUser=DmGuest`), and `dm-verify-encounters.txt` on its own. Wand: `dm-wand.txt` (single player) and `dm-wand-lan-host.txt` + `dm-wand-lan-guest.txt` (port 25644, guest with `-PdevUser=WandGuest`). Roll calls: `dm-roll-calls.txt` (single player: prompt, the Y key, auto, advantage, secret, apply, timeout) and `dm-roll-calls-lan-host.txt` + `dm-roll-calls-lan-guest.txt` (port 25636, guest with `-PdevUser=Guest`).

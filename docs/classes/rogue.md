@@ -54,6 +54,10 @@ How the features work:
 - **Assassinate** (Assassin): your melee hits on a mob that isn't targeting you deal double damage (on top of Backstab). After you cast Vanish, your next full-strength melee swing, while you're invisible or up to 5 s after Vanish ends, is a guaranteed critical hit (double damage again); the attack roll on the HUD says "critical hit, double damage (Assassinate)". A guaranteed critical can't fumble.
 - **Fast Hands** (Thief): +3 to Thieves' Tools on your character sheet, so a lockpick that would roll d20 + 6 rolls d20 + 9 (it shows as "Fast Hands" in the roll; the base depends on your DEX and level). Ignoring class restrictions when attuning comes with the attunement card.
 
+## Where to find it
+- Pick the Rogue in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> rogue`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> rogue` (see [Admin commands](../systems/admin-commands.md)).
 

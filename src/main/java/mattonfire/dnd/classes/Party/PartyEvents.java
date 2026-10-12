@@ -77,7 +77,8 @@ public class PartyEvents {
     /**
      * Splits {@code amount} XP evenly between the player and their party members
      * within {@link PartyManager#SHARE_RADIUS} blocks. With no party (or nobody
-     * nearby) the player gets it all.
+     * nearby) the player gets it all. Class XP ({@link #XP_PROGRESSION}) grows
+     * first with the Balanced party bonus ({@link PartySynergies#balancedMultiplier}).
      *
      * Vanilla XP orbs go through this with {@link #XP_VANILLA}, and class XP from
      * kills with {@link #XP_PROGRESSION} ({@code ProgressionEvents}). Other XP
@@ -94,7 +95,17 @@ public class PartyEvents {
         }
         nearby.add(0, collector);
 
-        double share = (double) amount / nearby.size();
+        double pool = amount;
+        if (XP_PROGRESSION.equals(channel)) {
+            // Balanced party: 3+ different primary roles among the sharers earn more class XP
+            int roles = PartySynergies.distinctRoles(nearby);
+            double multiplier = PartySynergies.balancedMultiplier(roles);
+            pool = amount * multiplier;
+            DnDClasses.LOGGER.info("[Party] Balanced party: {} class XP shared by {} with {} role(s): x{} = {}",
+                    amount, nearby.size(), roles, multiplier, pool);
+        }
+
+        double share = pool / nearby.size();
         Map<UUID, Double> remainders = XP_REMAINDER.computeIfAbsent(channel, k -> new HashMap<>());
         for (ServerPlayerEntity member : nearby) {
             double total = share + remainders.getOrDefault(member.getUuid(), 0.0);

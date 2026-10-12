@@ -6,6 +6,7 @@
 # short-rest-cooldown, bard-rest-done, short-rest-limit, short-rest-after-long
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doMobSpawning false
 /gamerule doDaylightCycle false

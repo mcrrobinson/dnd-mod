@@ -6,6 +6,7 @@
 #  with INT 20 the hint shows +7 (obstacle-verify-hint-int20) and 3 +7 = 10 -> SUCCESS.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

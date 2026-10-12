@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mattonfire.dnd.classes.DndCharacter;
+import mattonfire.dnd.classes.PartyRole;
+import mattonfire.dnd.classes.Party.PartySynergies;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlockEntity;
@@ -30,7 +32,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 
 /**
- * Looking at a sealed obstacle within {@value #RANGE} blocks shows what it is, how hard it looks and
+ * Looking at a sealed obstacle within {@value #RANGE} blocks (12 with a party Scout nearby, {@link #scouted})
+ * shows what it is, how hard it looks and
  * who can deal with it, just above the crosshair (the d20 panel goes below it). If you can't, it
  * names the classes that can, the fallback, and the nearest player whose class could.
  */
@@ -43,13 +46,13 @@ public final class ObstacleHintHud {
     }
 
     public static void register() {
-        HudRenderCallback.EVENT.register((matrices, tickDelta) -> render(matrices));
+        HudRenderCallback.EVENT.register((matrices, tickDelta) -> render(matrices, tickDelta));
     }
 
     private record Line(Text text, int color) {
     }
 
-    private static void render(MatrixStack matrices) {
+    private static void render(MatrixStack matrices, float tickDelta) {
         MinecraftClient client = MinecraftClient.getInstance();
         PlayerEntity player = client.player;
         // Downed: the downed panel sits here instead
@@ -58,10 +61,16 @@ public final class ObstacleHintHud {
             return;
         }
         HitResult hit = client.crosshairTarget;
+        double range = scouted(client, player) ? PartySynergies.SCOUT_HINT_RANGE : RANGE;
+        if (range > RANGE && (hit == null || hit.getType() != HitResult.Type.ENTITY)) {
+            // Scout: look further than the hand can reach
+            hit = player.raycast(range, tickDelta, false);
+        }
         if (!(hit instanceof BlockHitResult blockHit) || hit.getType() != HitResult.Type.BLOCK
-                || hit.getPos().squaredDistanceTo(player.getEyePos()) > RANGE * RANGE) {
+                || hit.getPos().squaredDistanceTo(player.getEyePos()) > range * range) {
             return;
         }
+        boolean far = hit.getPos().squaredDistanceTo(player.getEyePos()) > RANGE * RANGE;
         BlockPos pos = blockHit.getBlockPos();
         BlockState state = client.world.getBlockState(pos);
         if (!ObstacleBlock.isSealed(state)) {
@@ -107,6 +116,10 @@ public final class ObstacleHintHud {
             }
         }
 
+        if (far) {
+            lines.add(new Line(Text.translatable("obstacle.dndclasses.hint.scout"), PartyRole.UTILITY.color()));
+        }
+
         TextRenderer text = client.textRenderer;
         int width = 0;
         for (Line line : lines) {
@@ -122,6 +135,26 @@ public final class ObstacleHintHud {
             text.drawWithShadow(matrices, line.text(), left + (width - text.getWidth(line.text())) / 2.0f,
                     top + i * 11, line.color() | 0xFF000000);
         }
+    }
+
+    /**
+     * Scout: in a party, and a Utility-primary party member (or you) within {@link PartySynergies#SCOUT_RADIUS}
+     * blocks. The party HUD's member list says who is in your party and their classes.
+     */
+    public static boolean scouted(MinecraftClient client, PlayerEntity self) {
+        if (!PartyHud.inParty()) {
+            return false;
+        }
+        if (PartySynergies.roleOf(self) == PartyRole.UTILITY) {
+            return true;
+        }
+        for (PlayerEntity other : client.world.getPlayers()) {
+            if (other != self && !other.isSpectator() && PartyHud.memberRole(other.getUuid()) == PartyRole.UTILITY
+                    && other.squaredDistanceTo(self) <= PartySynergies.SCOUT_RADIUS * PartySynergies.SCOUT_RADIUS) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** The nearest other player whose class could attempt it, if any. */

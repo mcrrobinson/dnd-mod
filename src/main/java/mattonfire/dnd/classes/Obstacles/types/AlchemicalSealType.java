@@ -106,6 +106,12 @@ public final class AlchemicalSealType extends ObstacleType {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, ACID_POISON_TICKS, 0));
     }
 
+    /** The broken block stays in place, open with the rest of the seal, so a reset puts the seal back whole. */
+    @Override
+    public boolean opensWhenBroken() {
+        return true;
+    }
+
     /** The whole seal shatters, and the cache behind it is forced: some of it is ruined. */
     @Override
     public void onBrokenByHand(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {

@@ -4,6 +4,7 @@
 # Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/docs-enchantments.txt
 wait 40
 closescreen
+include _reset.txt
 /dndclass set @s artificer
 /gamemode survival
 /effect clear @s

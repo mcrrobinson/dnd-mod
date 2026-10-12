@@ -12,6 +12,7 @@
 #   plays a wrong key ("0/4"), then the tune [2,0,3,1] on its note blocks: the door opens.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false

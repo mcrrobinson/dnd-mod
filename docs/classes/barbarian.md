@@ -51,6 +51,10 @@ How the features work:
 - **Frenzy** (Berserker): a melee kill while Rage is on lengthens Rage's Strength by 2 s, up to +6 s per Rage. Kills by arrows or skills don't count. Rage ends early if the Strength is removed (milk).
 - **Bear Totem Spirit** (Totem Warrior): while Rage is on, damage you take is multiplied by 0.85. The void, `/kill` and starving aren't reduced.
 
+## Where to find it
+- Pick the Barbarian in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> barbarian`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> barbarian` switches a player to the class. `/dndclass xp`, `unlock` and `equip` handle the skill tree (see [Admin commands](../systems/admin-commands.md)).
 

@@ -126,6 +126,11 @@ public final class Stabilise {
         }
         HOLDS.put(helper.getUuid(), new Hold(target.getUuid()));
         DnDClasses.LOGGER.info("[Downed] {} starts helping {}", helper.getEntityName(), target.getEntityName());
+        int rate = mattonfire.dnd.classes.Party.PartySynergies.stabiliseRate(helper, target);
+        if (rate > 1) {
+            DnDClasses.LOGGER.info("[Party] Triage: {} helps {} {}x as fast ({} ticks)", helper.getEntityName(),
+                    target.getEntityName(), rate, (HOLD_TICKS + rate - 1) / rate);
+        }
     }
 
     /** Why the helper can't help the target right now, or null if they can. */
@@ -175,7 +180,8 @@ public final class Stabilise {
                 interrupt(helper, hold, refusal.isEmpty() ? null : "Interrupted. " + refusal);
                 continue;
             }
-            hold.ticks++;
+            // Triage: a party Healer stabilises three times as fast
+            hold.ticks = Math.min(HOLD_TICKS, hold.ticks + mattonfire.dnd.classes.Party.PartySynergies.stabiliseRate(helper, target));
             boolean stable = Downed.isStable(target);
             if (hold.ticks >= HOLD_TICKS) {
                 HOLDS.remove(entry.getKey());

@@ -3,6 +3,7 @@
 # Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/docs-potions.txt
 wait 40
 closescreen
+include _reset.txt
 /dndclass set @s alchemist
 wait 10
 closescreen

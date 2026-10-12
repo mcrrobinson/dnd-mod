@@ -1,0 +1,78 @@
+# Obstacle Codex: the guidebook's codex chapter, and the Fighter's portcullis (their exclusive).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/obstacle-codex.txt
+# Expect:
+#  - screenshot codex-portcullis-fighter: the portcullis hint in green for a Fighter ("Its winch raises it...").
+#  - right-clicking the portcullis does nothing: no "Portcullis" action-bar line after the use, and
+#    "Test passed" for the portcullis still sealed.
+#  - screenshot codex-portcullis-wizard: a Wizard's hint, white who line plus the fallback.
+#  - screenshots codex-intro (page 13), codex-entries (15: Fighter green under Collapsed Passage),
+#    codex-portcullis (16: "Specialist: Fighter" in green) and codex-later (22) from a Fighter's guidebook.
+#    Page numbers shift as classes and obstacles change.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/clear @s
+/effect give @s minecraft:slow_falling 600 0 true
+/dndclass set @s fighter
+wait 10
+/clear @s
+/fill 60 149 60 66 149 66 minecraft:glass
+/dndobstacle place 62 150 64 64 152 64 dndclasses:portcullis medium
+wait 5
+/tp @s 63 150 61.5 0 10
+wait 10
+screenshot codex-portcullis-fighter
+use
+wait 10
+actionbar
+/execute if block 63 150 64 dndclasses:portcullis[state=sealed]
+# A Wizard sees the who line and the fallback
+/dndclass set @s wizard
+wait 10
+/clear @s
+/tp @s 63 150 61.5 0 10
+wait 10
+screenshot codex-portcullis-wizard
+# Back to a Fighter and read the book from the back
+/dndclass set @s fighter
+wait 10
+/clear @s
+/give @s dndclasses:class_guidebook
+hotbar 0
+/tp @s 63 150 61.5 180 -60
+wait 10
+use
+wait 10
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+wait 5
+screenshot codex-intro
+key page.down
+key page.down
+wait 5
+screenshot codex-entries
+key page.down
+wait 5
+screenshot codex-portcullis
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+key page.down
+wait 5
+screenshot codex-later
+closescreen
+/fill 60 149 60 66 153 66 minecraft:air
+quit

@@ -8,6 +8,7 @@
 # room-asleep, room-rested, room-outside, room-expired, room-again.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /difficulty easy

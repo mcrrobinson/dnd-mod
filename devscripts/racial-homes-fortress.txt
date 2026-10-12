@@ -13,6 +13,7 @@
 # Every other dwarf within 64 blocks is killed first, so only the test dwarves witness anything.
 wait 40
 closescreen
+include _reset.txt
 /time set 6000
 /gamerule doDaylightCycle false
 /gamemode survival

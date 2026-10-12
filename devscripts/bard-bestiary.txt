@@ -18,6 +18,7 @@
 # Screenshots: bard-charm (10th slot, hearts), fighter-no-slot, bard-bestiary (Bestiary tab at the table), bard-companions (companions going for a zombie), bard-farm, bard-farm-follow (farm companions following)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

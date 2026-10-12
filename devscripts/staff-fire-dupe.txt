@@ -1,5 +1,6 @@
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /dndclass set @s wizard
 /gamemode creative

@@ -7,6 +7,7 @@
 #  4. Fiend control: the first arrow hurts
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

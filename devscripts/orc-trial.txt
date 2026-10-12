@@ -11,6 +11,7 @@
 #   face (aiming at its middle from the pit floor hit the hay bale under it)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /difficulty normal
 /time set 6000

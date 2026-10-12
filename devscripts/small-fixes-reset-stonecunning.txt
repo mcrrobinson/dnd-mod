@@ -1,0 +1,101 @@
+# Smashed Clockwork Door / Alchemical Seal reset, and Dwarf Stonecunning finding Hidden Door obstacles.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/small-fixes-reset-stonecunning.txt
+# Expect in latest.log:
+#  Clockwork Door: after mining the bottom block, both blocks are still clockwork_door[state=open] ("Test passed"
+#   for 4 150 10 and 4 151 10); after /dndobstacle reset both are [state=sealed] ("Resealed 2 obstacle blocks").
+#  Alchemical Seal: same, for a 2-block seal at 10 150 5 / 10 151 5.
+#  Stonecunning: a Human sneaking by a Medium Hidden Door finds nothing (no Revealed list). A Dwarf standing (not
+#   sneaking) finds nothing. A sneaking Dwarf finds the Medium one ("[Obstacle] Dev found ... (stonecunning, DC 13)",
+#   action bar "Your stonecunning picks out a seam ..."), and the Hard one (DC 15, passive 10 + 5), but not the
+#   Very Hard one (DC 18). Screenshot small-fixes-stonecunning shows the gold box round the found door.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRaces true
+/gamerule sendCommandFeedback true
+/time set noon
+/kill @e[type=!minecraft:player,distance=..64]
+/fill 0 149 0 24 149 30 minecraft:stone
+/fill 0 150 0 24 156 30 minecraft:air
+
+# ---- Clockwork Door: smash the bottom block, the door stays (open), a reset reseals it whole
+/dndobstacle place 4 150 10 4 151 10 dndclasses:clockwork_door medium
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s
+/item replace entity @s weapon.mainhand with minecraft:netherite_pickaxe{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+/tp @s 4.5 150 8.5 0 20
+wait 10
+mine on
+wait 120
+mine off
+wait 5
+/say ==== clockwork after smash
+/execute if block 4 150 10 dndclasses:clockwork_door[state=open]
+/execute if block 4 151 10 dndclasses:clockwork_door[state=open]
+screenshot small-fixes-clockwork-smashed
+/dndobstacle reset 4 150 10
+/say ==== clockwork after reset
+/execute if block 4 150 10 dndclasses:clockwork_door[state=sealed]
+/execute if block 4 151 10 dndclasses:clockwork_door[state=sealed]
+wait 5
+screenshot small-fixes-clockwork-reset
+
+# ---- Alchemical Seal: the same
+/dndobstacle place 10 150 10 10 151 10 dndclasses:alchemical_seal medium
+/tp @s 10.5 150 8.5 0 20
+wait 10
+mine on
+wait 60
+mine off
+wait 5
+/say ==== seal after break
+/execute if block 10 150 10 dndclasses:alchemical_seal[state=open]
+/execute if block 10 151 10 dndclasses:alchemical_seal[state=open]
+/dndobstacle reset 10 150 10
+/say ==== seal after reset
+/execute if block 10 150 10 dndclasses:alchemical_seal[state=sealed]
+/execute if block 10 151 10 dndclasses:alchemical_seal[state=sealed]
+
+# ---- Stonecunning: a stone-brick wall at z=20 with Medium, Hard and Very Hard hidden doors
+/clear @s
+/fill 0 150 20 24 153 20 minecraft:stone_bricks
+/dndobstacle place 4 150 20 4 151 20 dndclasses:hidden_door medium
+/dndobstacle place 9 150 20 9 151 20 dndclasses:hidden_door hard
+/dndobstacle place 14 150 20 14 151 20 dndclasses:hidden_door very_hard
+/dndclass set @s none
+/dndrace set @s human
+wait 5
+closescreen
+/say ==== human sneaking
+/tp @s 9.5 150 16.5 0 10
+sneak on
+wait 50
+sneak off
+/data get block 4 150 20 Data
+/data get block 9 150 20 Data
+/dndrace set @s dwarf
+wait 5
+closescreen
+/say ==== dwarf standing
+wait 50
+/data get block 4 150 20 Data
+/data get block 9 150 20 Data
+/say ==== dwarf sneaking
+sneak on
+wait 50
+/data get block 4 150 20 Data
+/data get block 9 150 20 Data
+/data get block 14 150 20 Data
+/dndobstacle info 14 150 20
+/tp @s 9.5 150 16.5 0 10
+wait 30
+screenshot small-fixes-stonecunning
+sneak off
+/say ==== done
+wait 10
+quit

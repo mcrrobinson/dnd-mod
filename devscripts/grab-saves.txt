@@ -22,6 +22,7 @@
 /difficulty normal
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 10
 /dndclass set @s wizard

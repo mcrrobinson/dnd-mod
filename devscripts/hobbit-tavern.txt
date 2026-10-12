@@ -4,6 +4,7 @@
 # right-click opens the innkeeper's dialogue when it has a quest to offer).
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false

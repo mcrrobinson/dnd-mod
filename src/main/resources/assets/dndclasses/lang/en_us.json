@@ -732,6 +732,8 @@
     "faction.dndclasses.tier.honored": "Honored",
     "faction.dndclasses.tier.exalted": "Exalted",
     "faction.dndclasses.tier_change": "Your standing with %s is now %s.",
+    "faction.dndclasses.actionbar.others_same": "%s with %s others",
+    "faction.dndclasses.actionbar.others_mixed": "and %s others",
     "quest.dndclasses.objective.kill": "Slay %s",
     "quest.dndclasses.objective.kill_within": "Slay %s in %s",
     "quest.dndclasses.objective.visit": "Find %s",

@@ -47,7 +47,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 - Kills by your tamed pets count as yours.
 - **Daily caps** reset when the in-game day changes (`timeOfDay / 24000`).
 - **Grudge decay**: each new in-game day, a negative standing with the hobbits or dwarves recovers 5 points, never past 0. Goblin standing doesn't decay.
-- **Feedback**: every change shows on the action bar ("+1 Hobbits of the Shire, +1 Mountain Dwarves, -3 The Goblin Horde"). Crossing into a new tier prints "Your standing with ... is now Friendly." in chat, in the tier's colour, with a sound.
+- **Feedback**: every change shows on the action bar. One or two factions are listed by name ("-3 The Goblin Horde, +1 Mountain Dwarves"). With three or more, only the biggest change is named (largest amount, a loss before a gain on a tie, then the order the event added them) and the rest fold into a count: "-3 The Goblin Horde, +1 with 4 others" for a goblin kill, when the others all moved by the same amount; "-50 The Goblin Horde, and 4 others" (the count in gray) when they differ. `/rep` shows every faction's standing. Crossing into a new tier prints "Your standing with ... is now Friendly." in chat, in the tier's colour, with a sound.
 - Reputation is saved with the player and kept on death.
 
 ### What the tiers do

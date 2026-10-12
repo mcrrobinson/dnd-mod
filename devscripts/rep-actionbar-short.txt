@@ -1,0 +1,82 @@
+# Reputation action bar stays short: one or two factions are listed by name, three or more name the
+# biggest change and fold the rest ("-2 The Goblin Horde, +1 with 4 others"). Check the
+# "[DevScript] actionbar:" lines in the log and the screenshots at 854x480.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/rep-actionbar-short.txt
+wait 40
+closescreen
+include _reset.txt
+/difficulty normal
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/time add 24000
+/effect give @s minecraft:slow_falling 30 0 true
+/tp @s 200 150 1352 0 20
+wait 100
+# The class picker reopens after the reset and pauses the game (and the chat fade): close it
+closescreen
+/fill 196 149 1348 204 149 1356 minecraft:glass
+/fill 196 150 1348 204 152 1356 minecraft:air
+/tp @s 200 150 1352 0 20
+/effect clear @s minecraft:slow_falling
+/kill @e[type=!player,distance=..12]
+/clear @s
+/rep @s dndclasses:hobbits set 0
+/rep @s dndclasses:mountain_dwarves set 0
+/rep @s dndclasses:sylvan_court set 0
+/rep @s dndclasses:dragonsworn set 0
+/rep @s dndclasses:goblins set -600
+# Let the chat lines fade so the screenshots show the action bar clearly; look at the sky
+/gamerule sendCommandFeedback false
+/tp @s 200 150 1352 180 -40
+closescreen
+wait 220
+closescreen
+# 1 faction: "+5 Hobbits of the Shire"
+/rep @s dndclasses:hobbits add 5
+wait 3
+actionbar
+closescreen
+screenshot rep-actionbar-one
+wait 60
+# Goblin kill, 5 factions: four +1 and the goblins down -> named biggest + "+1 with 4 others"
+/summon dndclasses:goblin_warrior 200 150 1356 {NoAI:1b,NoGravity:1b,Tags:["rab"]}
+wait 10
+/damage @e[tag=rab,limit=1] 1000 minecraft:player_attack by @s
+wait 3
+actionbar
+closescreen
+screenshot rep-actionbar-goblin
+wait 60
+# 2 factions: hobbits, sylvan court and dragonsworn maxed, so only the dwarves and goblins move
+/rep @s dndclasses:hobbits set 1000
+/rep @s dndclasses:sylvan_court set 1000
+/rep @s dndclasses:dragonsworn set 1000
+wait 220
+closescreen
+/summon dndclasses:goblin_warrior 200 150 1356 {NoAI:1b,NoGravity:1b,Tags:["rab"]}
+wait 10
+/damage @e[tag=rab,limit=1] 1000 minecraft:player_attack by @s
+wait 3
+actionbar
+closescreen
+screenshot rep-actionbar-two
+wait 60
+# Mixed: a warlord kill gives +25 each, but the dwarves sit 10 below the cap -> "and 4 others"
+/rep @s dndclasses:hobbits set 0
+/rep @s dndclasses:sylvan_court set 0
+/rep @s dndclasses:dragonsworn set 0
+/rep @s dndclasses:mountain_dwarves set 990
+wait 220
+closescreen
+/summon dndclasses:goblin_warlord 200 150 1356 {NoAI:1b,NoGravity:1b,Tags:["rab"]}
+wait 10
+/damage @e[tag=rab,limit=1] 1000 minecraft:player_attack by @s
+wait 3
+actionbar
+closescreen
+screenshot rep-actionbar-mixed
+/kill @e[tag=rab]
+/gamerule sendCommandFeedback true
+/rep
+wait 20
+quit

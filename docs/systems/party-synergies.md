@@ -46,6 +46,6 @@ None. The numbers are constants in `Party/PartySynergies.java`.
   - Triage: `triage(healer, target, amount)` and `triageTicks(...)` in `ClericSkills` (Cure Wounds), `DruidSkills` (Regrowth) and `PowerUpEffect` (Sanctuary); `stabiliseRate(helper, target)` in `Downed/Stabilise`.
   - Inspire and Assist: `obstacleRoll(builder, player, type)` from `ObstacleInteractions.builder`; the assisters' half XP goes through `ObstacleInteractions.solve(..., assisters)`. Uses `D20.Builder.advantage()` and `bonus("obstacle.dndclasses.assist", 2)`, which `DiceRollHud` already draws.
   - Balanced party: `distinctRoles` and `balancedMultiplier` in `PartyEvents.shareXp`, for the `XP_PROGRESSION` channel only.
-- Scout: `ObstacleHintHud.scouted` (client) uses the party HUD's member list (`PartyHud.inParty`, `isMember`) and the other players' synced classes.
+- Scout: `ObstacleHintHud.scouted` (client) uses the party HUD's member list (`PartyHud.inParty`) and the members' roles from it (`PartyHud.memberRole`).
 - Guidebook: `role.dndclasses.<role>.synergy` lang keys on the "Your role" page.
 - Devscripts: `party-synergies-host.txt` / `party-synergies-guest.txt` (LAN port 25647; start the guest once the host logs "Started serving on").

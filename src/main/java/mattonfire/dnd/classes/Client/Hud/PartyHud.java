@@ -102,6 +102,20 @@ public final class PartyHud {
         return null;
     }
 
+    /**
+     * Class of another party member, from the class id in the party HUD packet (other players' classes aren't
+     * otherwise synced to this client), or null if they aren't in the party or have no class.
+     */
+    @org.jetbrains.annotations.Nullable
+    public static DndCharacter memberClass(UUID uuid) {
+        for (Member member : members) {
+            if (member.uuid().equals(uuid)) {
+                return classOf(member.classId());
+            }
+        }
+        return null;
+    }
+
     /** Whether this player is in the local player's party (not counting the local player). */
     public static boolean isMember(UUID uuid) {
         return memberIds.contains(uuid);
@@ -218,12 +232,22 @@ public final class PartyHud {
 
     /** Primary role of a class id from the packet, or null for no class. */
     private static PartyRole roleOf(int classId) {
+        DndCharacter dndClass = classOf(classId);
+        if (dndClass == null) {
+            return null;
+        }
+        ClassInfo info = ClassInfo.get(dndClass);
+        return info == null ? null : info.role();
+    }
+
+    /** The class for a class id from the packet, or null for no class. */
+    private static DndCharacter classOf(int classId) {
         if (classId <= 0) {
             return null;
         }
         try {
-            ClassInfo info = ClassInfo.get(DndCharacter.fromValue(classId));
-            return info == null ? null : info.role();
+            DndCharacter dndClass = DndCharacter.fromValue(classId);
+            return dndClass == DndCharacter.NONE ? null : dndClass;
         } catch (IllegalArgumentException e) {
             return null;
         }

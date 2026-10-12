@@ -6,7 +6,6 @@ import java.util.List;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PartyRole;
 import mattonfire.dnd.classes.Party.PartySynergies;
-import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlockEntity;
 import mattonfire.dnd.classes.Obstacles.ObstacleText;
@@ -35,11 +34,11 @@ import net.minecraft.util.math.Vec3d;
  * Looking at a sealed obstacle within {@value #RANGE} blocks (12 with a party Scout nearby, {@link #scouted})
  * shows what it is, how hard it looks and
  * who can deal with it, just above the crosshair (the d20 panel goes below it). If you can't, it
- * names the classes that can, the fallback, and the nearest player whose class could.
+ * names the classes that can, the fallback, and the nearest party member whose class could.
  */
 public final class ObstacleHintHud {
     public static final double RANGE = 5.0;
-    /** How far away a player can be and still be suggested ("Ask Mira (Wizard)"). */
+    /** How far away a party member can be and still be suggested ("Ask Mira (Wizard)"). */
     public static final double ASK_RANGE = 32.0;
 
     private ObstacleHintHud() {
@@ -112,7 +111,7 @@ public final class ObstacleHintHud {
             PlayerEntity ask = nearbySolver(client, player, type);
             if (ask != null) {
                 lines.add(new Line(Text.translatable("obstacle.dndclasses.hint.ask", ask.getDisplayName(),
-                        Progression.name(((PlayerEntityExt) ask).getDndClass())), 0xFFD23F));
+                        Progression.name(PartyHud.memberClass(ask.getUuid()))), 0xFFD23F));
             }
         }
 
@@ -157,14 +156,21 @@ public final class ObstacleHintHud {
         return false;
     }
 
-    /** The nearest other player whose class could attempt it, if any. */
+    /**
+     * The nearest party member within {@link #ASK_RANGE} blocks whose class could attempt it, if any. Only party
+     * members count: their classes come with the party HUD data, and other players' classes aren't synced to
+     * this client.
+     */
     private static PlayerEntity nearbySolver(MinecraftClient client, PlayerEntity self, ObstacleType type) {
         PlayerEntity best = null;
         double bestDistance = ASK_RANGE * ASK_RANGE;
         Vec3d at = self.getPos();
         for (PlayerEntity other : client.world.getPlayers()) {
-            if (other == self || !(other instanceof PlayerEntityExt ext) || ext.getDndClass() == null
-                    || ext.getDndClass() == DndCharacter.NONE || !type.eligibility(ext.getDndClass()).canTry()) {
+            if (other == self || other.isSpectator()) {
+                continue;
+            }
+            DndCharacter dndClass = PartyHud.memberClass(other.getUuid());
+            if (dndClass == null || !type.eligibility(dndClass).canTry()) {
                 continue;
             }
             double distance = other.getPos().squaredDistanceTo(at);

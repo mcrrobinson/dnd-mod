@@ -51,6 +51,8 @@ Your standing with the dwarves changes bartering:
 | Honored | 30% second roll, from the honored table |
 | Exalted | 50% second roll, from the honored table |
 
+Friends of the mountain get more ([Factions](../systems/factions.md)): at Honored, opening a barrel in front of a dwarf isn't theft any more (chests and gold still are); at Exalted, dwarves within 16 blocks join your fights, and sneak + right-clicking a dwarf with an unidentified magic item in hand has it identified free.
+
 The honored table (`gameplay/dwarf_barter_honored`) is the table below with diamonds at weight 6, plus an iron chestplate enchanted at levels 10-25 (weight 3) and a common magic iron pickaxe (3) or iron helmet (2).
 
 | Item | Count | Weight |

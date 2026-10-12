@@ -59,6 +59,12 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
     private int roomKeyUsesHeld = -1;
     /** The Halfling Sling, for Halflings only. */
     private final KinStock kinStock = new KinStock(KinStockOffers::halflingInnkeeper);
+    /** Honored with the hobbits: the extra trade (1 emerald: 3 ale, and a cake on the house). */
+    @Nullable
+    private TradeOffer honoredOffer;
+    /** The offers plus {@link #honoredOffer}, while an Honored customer trades; null otherwise. */
+    @Nullable
+    private TradeOfferList shownWithFavours;
 
     public InnkeeperEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -137,6 +143,9 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
                 this.offers.forEach(TradeOffer::resetUses);
                 this.kinStock.restock();
             }
+            if (this.honoredOffer != null) {
+                this.honoredOffer.resetUses();
+            }
         }
     }
 
@@ -204,10 +213,38 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         offers.forEach(TradeOffer::clearSpecialPrice);
         this.applyReputationPrices(player, offers);
         KinPrices.apply(this, player, offers);
-        if (TavernRooms.rentedToday(player)) {
+        if (!TavernRooms.rentedToday(player) && player instanceof ServerPlayerEntity serverPlayer
+                && TierEffects.innkeeperFavours(TierEffects.tierWith(player, this))) {
+            this.giveFreeRoom(serverPlayer);
+        } else if (TavernRooms.rentedToday(player)) {
             this.holdRoomKeyOffer();
             player.sendMessage(Text.translatable("tavern.dndclasses.room.paid").formatted(Formatting.YELLOW), false);
         }
+    }
+
+    /**
+     * Honored with the hobbits: a night's room on the house. The innkeeper hands over a Room Key stamped for
+     * today (one a day, like a bought one), so the long rest at the inn costs nothing.
+     */
+    private void giveFreeRoom(ServerPlayerEntity player) {
+        ItemStack key = new ItemStack(Tavern.ROOM_KEY);
+        RoomKeyItem.stamp(key, this.innName(), this.innBox(), this.world.getTimeOfDay() / 24000L);
+        TavernRooms.markRented(player);
+        this.holdRoomKeyOffer();
+        if (!player.giveItemStack(key)) {
+            player.dropItem(key, false);
+        }
+        player.sendMessage(Text.translatable("tavern.dndclasses.room.free", this.getDisplayName())
+                .formatted(Formatting.GOLD), false);
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Reputation] {} gave {} a free room (Honored with the hobbits)",
+                this.getName().getString(), player.getEntityName());
+    }
+
+    private TradeOffer honoredOffer() {
+        if (this.honoredOffer == null) {
+            this.honoredOffer = InnkeeperTrades.honoredRound();
+        }
+        return this.honoredOffer;
     }
 
     @Nullable
@@ -249,8 +286,19 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
             this.offers.forEach(TradeOffer::clearSpecialPrice);
             this.releaseRoomKeyOffer();
         }
+        if (customer == null && this.honoredOffer != null) {
+            this.honoredOffer.clearSpecialPrice();
+        }
+        this.shownWithFavours = null;
         if (!this.world.isClient) {
             this.kinStock.setCustomer(this, customer, this.baseOffers());
+            // Honored with the hobbits: one more trade at the end of the list, for this customer only.
+            if (customer != null && TierEffects.innkeeperFavours(TierEffects.tierWith(customer, this))) {
+                TradeOfferList all = new TradeOfferList();
+                all.addAll(this.kinStock.view(this.baseOffers()));
+                all.add(this.honoredOffer());
+                this.shownWithFavours = all;
+            }
         }
         this.customer = customer;
     }
@@ -277,7 +325,7 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
     /** What the innkeeper shows the current customer: the normal offers, plus kin stock for Halflings. */
     @Override
     public TradeOfferList getOffers() {
-        return this.kinStock.view(this.baseOffers());
+        return this.shownWithFavours != null ? this.shownWithFavours : this.kinStock.view(this.baseOffers());
     }
 
     private TradeOfferList baseOffers() {
@@ -299,6 +347,14 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
         offer.use();
         if (this.getCustomer() instanceof net.minecraft.server.network.ServerPlayerEntity player) {
             mattonfire.dnd.faction.FactionEvents.traded(player, this);
+            if (offer == this.honoredOffer) {
+                // The round comes with a cake, on the house.
+                ItemStack cake = new ItemStack(Items.CAKE);
+                if (!player.giveItemStack(cake)) {
+                    player.dropItem(cake, false);
+                }
+                player.sendMessage(Text.translatable("entity.dndclasses.innkeeper.honored_round").formatted(Formatting.GOLD), true);
+            }
             if (InnkeeperTrades.isRoomKey(offer)) {
                 TavernRooms.markRented(player);
                 this.holdRoomKeyOffer();
@@ -359,6 +415,9 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
             }
         }
         this.kinStock.write(nbt);
+        if (this.honoredOffer != null) {
+            nbt.put("HonoredOffer", this.honoredOffer.toNbt());
+        }
         if (this.innBox != null) {
             nbt.putIntArray("InnBox", new int[]{this.innBox.getMinX(), this.innBox.getMinY(), this.innBox.getMinZ(),
                     this.innBox.getMaxX(), this.innBox.getMaxY(), this.innBox.getMaxZ()});
@@ -378,6 +437,9 @@ public class InnkeeperEntity extends HobbitEntity implements Merchant {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
         }
         this.kinStock.read(nbt);
+        if (nbt.contains("HonoredOffer")) {
+            this.honoredOffer = new TradeOffer(nbt.getCompound("HonoredOffer"));
+        }
         int[] box = nbt.getIntArray("InnBox");
         if (box.length == 6) {
             this.innBox = new BlockBox(box[0], box[1], box[2], box[3], box[4], box[5]);

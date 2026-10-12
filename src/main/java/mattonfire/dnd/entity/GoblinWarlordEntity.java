@@ -6,7 +6,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -78,13 +77,6 @@ public class GoblinWarlordEntity extends GoblinWarriorEntity implements Boss {
                 .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 15.0D)
                 .add(EntityAttributes.GENERIC_ATTACK_KNOCKBACK, 1.5D)
                 .add(EntityAttributes.GENERIC_FOLLOW_RANGE, 32.0D);
-    }
-
-    @Override
-    protected void initGoals() {
-        super.initGoals();
-        // Heads back to the spot it guards (see setGuardPos) once the fight is over.
-        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 1.0D));
     }
 
     /** Keeps the warlord near {@code pos} when it isn't chasing anything. */

@@ -66,6 +66,46 @@ final class GoblinCampLaw implements SettlementGrudges.Rules {
         return false;
     }
 
+    /**
+     * The fire of the goblin camp nearest {@code pos} (horizontally) within {@code range} blocks, looking only in
+     * loaded chunks; null if there's none.
+     */
+    @Nullable
+    static BlockPos campCenterNear(ServerWorld world, BlockPos pos, int range) {
+        Structure camp = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(CAMP);
+        if (camp == null) {
+            return null;
+        }
+        BlockPos best = null;
+        double bestSq = (double) range * range;
+        int chunks = (range >> 4) + 1;
+        int cx = pos.getX() >> 4;
+        int cz = pos.getZ() >> 4;
+        for (int dx = -chunks; dx <= chunks; dx++) {
+            for (int dz = -chunks; dz <= chunks; dz++) {
+                if (!world.isChunkLoaded(cx + dx, cz + dz)) {
+                    continue;
+                }
+                ChunkSectionPos section = ChunkSectionPos.from(cx + dx, 0, cz + dz);
+                for (StructureStart start : world.getStructureAccessor().getStructureStarts(section, camp)) {
+                    for (StructurePiece piece : start.getChildren()) {
+                        if (piece instanceof GoblinCampPiece campPiece) {
+                            BlockPos fire = campPiece.getCenter().up();
+                            double ex = fire.getX() + 0.5D - pos.getX();
+                            double ez = fire.getZ() + 0.5D - pos.getZ();
+                            double sq = ex * ex + ez * ez;
+                            if (sq <= bestSq) {
+                                best = fire;
+                                bestSq = sq;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return best;
+    }
+
     @Override
     public double witnessRange(PlayerEntity player) {
         return RANGE;

@@ -10,9 +10,13 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.IronGolemEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoEntity;
@@ -31,6 +35,15 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity, mat
     @Nullable
     private java.util.UUID grudge;
     private int grudgeUntil;
+
+    /** How far a camp goblin roams from its camp's fire when it isn't chasing anything. */
+    public static final int CAMP_ROAM = 10;
+    /** Old-camp fallback: a garrison goblin with no saved camp leashes to a camp whose fire is this close. */
+    private static final int CAMP_SEARCH = 64;
+    /** The fire of the camp this goblin garrisons (null for raiders, Warlord waves, spawn eggs, ...). Saved. */
+    @Nullable
+    private BlockPos campCenter;
+    private boolean campLookedUp;
 
     /** Ticks between swings; vanilla melee mobs use 20. */
     private static final int ATTACK_INTERVAL = 40;
@@ -65,6 +78,8 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity, mat
         // Frightened (the Warlord's Warhorn): runs from players instead of fighting
         this.goalSelector.add(1, new mattonfire.dnd.entity.ai.goal.FrightenedFleeGoal(this, 16.0F, 1.0D, 1.3D));
         this.goalSelector.add(2, new SlowMeleeAttackGoal(this, 1.0D));
+        // Walks back into range of its position target (a camp goblin's fire, a Warlord's guard spot) after a fight.
+        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 1.0D));
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8D));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -114,9 +129,62 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity, mat
         super.setTarget(attacker);
     }
 
+    /**
+     * Garrisons this goblin at a camp: it stays within {@link #CAMP_ROAM} blocks of {@code center} (the fire)
+     * unless it's chasing something. Saved as {@code CampCenter}, since a mob's position target isn't.
+     */
+    public void setCampCenter(BlockPos center) {
+        this.campCenter = center.toImmutable();
+        this.setPositionTarget(this.campCenter, CAMP_ROAM);
+    }
+
+    @Nullable
+    public BlockPos getCampCenter() {
+        return this.campCenter;
+    }
+
+    @Override
+    public void writeCustomDataToNbt(NbtCompound nbt) {
+        super.writeCustomDataToNbt(nbt);
+        if (this.campCenter != null) {
+            nbt.put("CampCenter", NbtHelper.fromBlockPos(this.campCenter));
+        }
+    }
+
+    @Override
+    public void readCustomDataFromNbt(NbtCompound nbt) {
+        super.readCustomDataFromNbt(nbt);
+        if (nbt.contains("CampCenter")) {
+            this.setCampCenter(NbtHelper.toBlockPos(nbt.getCompound("CampCenter")));
+        }
+    }
+
+    /**
+     * Camps generated before {@code CampCenter} was saved: their goblins lost the leash on the first reload.
+     * A persistent goblin with no leash, that isn't a raider, a Warlord or a boss's minion, joins the camp whose
+     * fire is within {@link #CAMP_SEARCH} blocks, if there is one. Checked once per load.
+     */
+    private void findOldCamp() {
+        this.campLookedUp = true;
+        if (this.campCenter != null || this.hasPositionTarget() || !this.isPersistent()
+                || this instanceof GoblinWarlordEntity
+                || this.getCommandTags().contains(mattonfire.dnd.entity.raid.GoblinRaid.RAIDER_TAG)
+                || mattonfire.dnd.entity.boss.BossMinions.isMinion(this)
+                || !(this.world instanceof ServerWorld serverWorld)) {
+            return;
+        }
+        BlockPos center = GoblinCampLaw.campCenterNear(serverWorld, this.getBlockPos(), CAMP_SEARCH);
+        if (center != null) {
+            this.setCampCenter(center);
+        }
+    }
+
     @Override
     protected void mobTick() {
         super.mobTick();
+        if (!this.campLookedUp) {
+            this.findOldCamp();
+        }
         // A camp grudge lasts while the fight does, and fades a while after the thief gets away.
         if (this.grudge != null && this.getTarget() instanceof PlayerEntity target && this.provokedBy(target)) {
             this.grudgeUntil = this.age + CAMP_GRUDGE_TICKS;

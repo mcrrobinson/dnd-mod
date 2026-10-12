@@ -21,7 +21,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Alchemist](classes/alchemist.md): safe and fast brewing, Transmute potion clouds; can't enchant; subclass features
 
 ## Races
-- [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
+- [Races](races/races.md): the race picker, 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Dragonborn Breath Weapon](races/breath-weapon.md): B breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [d20 and combat racial traits](races/combat-traits.md): Halfling Lucky rerolls natural 1s (clover on the HUD), Half-Orc Savage Attacks (x2.5 crits) and Relentless Endurance (1 HP instead of dying, 10 min), Tiefling Hellish Rebuke (melee attackers burn, 20 s)
 - [Passive racial traits](races/passive-traits.md): Darkvision, half damage from fire (Tiefling) or your breath element (Dragonborn), Gnome -30% magic, Dwarf half poison and +20% mining with hidden doorways outlined, Elf Keen Senses and Trance, Halfling Second Breakfast, Gnome Tinker, Human +10% XP and +2 social checks
@@ -29,6 +29,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
+- [Character creation](systems/character-creation.md): new players pick race and class on one screen with a combined summary (health, speed, ability scores, traits) and one chat intro (PR #191)
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up; a downed HUD, party status and red ally outlines show who's down

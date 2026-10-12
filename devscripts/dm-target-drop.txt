@@ -1,0 +1,150 @@
+# A DM (or a Bard) standing closer than a mob's real target must not make it drop that target.
+# A zombie chases a villager (NoAI, Resistance V so it takes no damage; not Invulnerable, which mobs never target); the player stands between them. Logs `target` readouts:
+# phase 0 is the control (a creative player, never a candidate in vanilla), phase 1 as a DM, phase 2 as a Bard (not a DM), phase 3 as a plain player (the zombie should then
+# switch to the player, so targeting still works). Grep latest.log for "[DevScript] target".
+wait 40
+closescreen
+# Land first: a run that stopped early can leave the player standing in the air over the test area.
+/spreadplayers 1010 1010 0 1 false @s
+include _reset.txt
+wait 40
+closescreen
+/gamemode survival
+/effect give @s minecraft:resistance 600 255 true
+/effect give @s minecraft:saturation 600 255 true
+/time set 18000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tp @s 1010 150 1010 90 0
+wait 40
+/kill @e[tag=dmt]
+/fill 990 149 1000 1030 149 1020 minecraft:barrier
+/fill 990 150 1000 1030 155 1020 minecraft:air
+/gamemode creative
+/tp @s 1010 150 1010 90 0
+/summon minecraft:villager 1004 150 1010 {Tags:["dmt"],NoAI:1b,PersistenceRequired:1b,ActiveEffects:[{Id:11,Amplifier:4b,Duration:100000,ShowParticles:0b}]}
+/summon minecraft:zombie 1013 150 1010 {Tags:["dmt"],PersistenceRequired:1b,CanPickUpLoot:0b,ActiveEffects:[{Id:12,Amplifier:0b,Duration:100000,ShowParticles:0b}]}
+wait 20
+/say phase0 control: creative player (never a candidate) between zombie and villager
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+/kill @e[tag=dmt,type=zombie]
+/gamemode survival
+/dm on
+/tp @s 1010 150 1010 90 0
+/summon minecraft:zombie 1013 150 1010 {Tags:["dmt"],PersistenceRequired:1b,CanPickUpLoot:0b,ActiveEffects:[{Id:12,Amplifier:0b,Duration:100000,ShowParticles:0b}]}
+wait 20
+/say phase1 DM between zombie and villager
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+/dm off
+/dndclass set @s bard
+/clear @s dndclasses:class_guidebook
+wait 20
+closescreen
+/kill @e[tag=dmt,type=zombie]
+/summon minecraft:zombie 1013 150 1010 {Tags:["dmt"],PersistenceRequired:1b,CanPickUpLoot:0b,ActiveEffects:[{Id:12,Amplifier:0b,Duration:100000,ShowParticles:0b}]}
+/tp @s 1010 150 1010 90 0
+wait 40
+/say phase2 Bard between zombie and villager
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+/dndclass set @s none
+wait 20
+closescreen
+/tp @s 1010 150 1010 90 0
+/say phase3 plain player
+wait 40
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+wait 20
+target @e[tag=dmt,type=zombie]
+/kill @e[tag=dmt]
+/fill 990 149 1000 1030 149 1020 minecraft:air
+/effect clear @s
+/spreadplayers 1010 1010 0 1 false @s
+quit

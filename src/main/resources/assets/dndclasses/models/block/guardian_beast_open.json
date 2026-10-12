@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "side": "dndclasses:block/guardian_post_open",
+    "end": "minecraft:block/stripped_spruce_log_top"
+  }
+}

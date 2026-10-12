@@ -95,7 +95,8 @@ public class ObstacleBlock extends BlockWithEntity {
     @Override
     public float calcBlockBreakingDelta(BlockState state, PlayerEntity player, BlockView world, BlockPos pos) {
         // Open blocks can't be targeted anyway; sealed ones break only if the type has a break fallback
-        return type.breakable() ? super.calcBlockBreakingDelta(state, player, world, pos) : 0.0f;
+        return type.breakingDelta(player,
+                type.breakable() ? super.calcBlockBreakingDelta(state, player, world, pos) : 0.0f);
     }
 
     @Override
@@ -119,6 +120,15 @@ public class ObstacleBlock extends BlockWithEntity {
     @Override
     public void scheduledTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         type.scheduledTick(world, pos, state);
+    }
+
+    @Override
+    public void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos,
+            boolean notify) {
+        if (world instanceof ServerWorld serverWorld) {
+            type.neighborChanged(serverWorld, pos, sourcePos);
+        }
+        super.neighborUpdate(state, world, pos, sourceBlock, sourcePos, notify);
     }
 
     @Override

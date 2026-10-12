@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "state=sealed": {
+      "model": "dndclasses:block/guardian_beast"
+    },
+    "state=open": {
+      "model": "dndclasses:block/guardian_beast_open"
+    }
+  }
+}

@@ -1,0 +1,225 @@
+# Nature and song obstacles (Druid, Bard): Guardian Beast, Thornwall, Singing Door.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-nature-song.txt
+# Expect (screenshots + log, grep "[Obstacle]" and "Test passed/failed"):
+#  Guardian Beast: two wolves bind to a post ("bound 2 beasts"); a Druid's rigged 18 calms them (post state=open);
+#   a Bard holding a lute rolls Performance with "+2 instrument" and calms a polar bear; a Bard's rigged natural 20
+#   on an Owlbear post makes the owlbear a companion (its Tags gain dnd_bard_companion:<uuid> and ..._until:<time>).
+#  A Fighter 3 blocks from a sealed post is attacked (wolf AngerTime > 0); killing its wolf opens the post.
+#  Thornwall: a Druid's rigged 18 parts it (open), and it regrows after 60 s (sealed again at the end).
+#   A Fighter sets a second wall alight with flint and steel; 20 s later it has burnt away (open).
+#   A Fighter cuts one block of a third wall with shears: that block is open, and the Fighter took 1 damage.
+#  Singing Door: a Bard holding a lute opens one with a rigged 18. A Fighter touches a second door (it sings 4 notes),
+#   plays a wrong key ("0/4"), then the tune [2,0,3,1] on its note blocks: the door opens.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule doFireTick true
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 30 149 30 minecraft:stone
+/fill 0 150 0 30 158 30 minecraft:air
+/effect give @s minecraft:resistance 600 4 true
+/effect give @s minecraft:saturation 600 0 true
+
+# ---- Guardian Beast: Druid calms two wolves ----
+/dndobstacle place 3 150 6 3 150 6 dndclasses:guardian_beast easy
+/summon minecraft:wolf 2 150 8 {PersistenceRequired:1b}
+/summon minecraft:wolf 4 150 8 {PersistenceRequired:1b}
+/dndclass set @s druid
+wait 5
+/clear @s
+/tp @s 3.5 150 2.5 0 15
+wait 30
+/execute if entity @e[type=minecraft:wolf,tag=dnd_guardian.3_150_6]
+clearchat
+screenshot nature-druid-beast-hint
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 3 150 6 dndclasses:guardian_beast[state=open]
+wait 40
+clearchat
+screenshot nature-druid-beast-calmed
+
+# ---- Guardian Beast: Bard with a lute calms a polar bear ----
+/dndobstacle place 12 150 6 12 150 6 dndclasses:guardian_beast easy
+/summon minecraft:polar_bear 12 150 8 {PersistenceRequired:1b}
+/dndclass set @s bard
+wait 5
+/clear @s
+/item replace entity @s weapon.mainhand with dndclasses:lute
+/tp @s 12.5 150 2.5 0 15
+wait 30
+/execute if entity @e[type=minecraft:polar_bear,tag=dnd_guardian.12_150_6]
+/dndclass forceroll @s 18
+use
+wait 10
+clearchat
+screenshot song-bard-beast-roll
+wait 30
+/execute if block 12 150 6 dndclasses:guardian_beast[state=open]
+
+# ---- Guardian Beast: Bard's natural 20 wins an Owlbear ----
+/dndobstacle place 21 150 6 21 150 6 dndclasses:guardian_beast medium
+/summon dndclasses:owlbear 21 150 9 {PersistenceRequired:1b,NoAI:1b}
+/tp @s 21.5 150 2.5 0 15
+wait 30
+/dndclass forceroll @s 20
+use
+wait 40
+/execute if block 21 150 6 dndclasses:guardian_beast[state=open]
+/data get entity @e[type=dndclasses:owlbear,limit=1] Tags
+clearchat
+screenshot song-bard-owlbear
+
+# ---- Guardian Beast: a Fighter who walks up is attacked; killing the beasts opens the post ----
+/dndobstacle place 27 150 6 27 150 6 dndclasses:guardian_beast easy
+/summon minecraft:wolf 27 150 8 {PersistenceRequired:1b}
+/dndclass set @s fighter
+wait 5
+/clear @s
+/tp @s 27.5 150 1.5 0 15
+wait 30
+/execute if entity @e[type=minecraft:wolf,tag=dnd_guardian.27_150_6,nbt={AngerTime:0}]
+/tp @s 27.5 150 4.5 0 15
+wait 30
+/execute if entity @e[type=minecraft:wolf,tag=dnd_guardian.27_150_6,nbt=!{AngerTime:0}]
+clearchat
+screenshot nature-beast-guarding
+/kill @e[type=minecraft:wolf,tag=dnd_guardian.27_150_6]
+wait 5
+/execute if block 27 150 6 dndclasses:guardian_beast[state=open]
+
+# ---- Thornwall: Druid parts it ----
+/dndobstacle place 2 150 16 4 152 16 dndclasses:thornwall medium
+/dndclass set @s druid
+wait 5
+/clear @s
+/tp @s 3.5 150 13.5 0 0
+wait 10
+clearchat
+screenshot nature-thornwall-hint
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 3 151 16 dndclasses:thornwall[state=open]
+clearchat
+screenshot nature-thornwall-parted
+
+# ---- Thornwall: Fighter burns one ----
+/dndobstacle place 10 150 16 12 152 16 dndclasses:thornwall medium
+/dndclass set @s fighter
+wait 5
+/clear @s
+/tp @s 11.5 150 13.5 0 0
+wait 10
+clearchat
+screenshot nature-thornwall-fighter-hint
+/item replace entity @s weapon.mainhand with minecraft:flint_and_steel
+use
+wait 60
+clearchat
+screenshot nature-thornwall-burning
+wait 380
+/execute if block 11 151 16 dndclasses:thornwall[state=open]
+clearchat
+screenshot nature-thornwall-burnt
+
+# ---- Thornwall: Fighter cuts a block with shears ----
+/dndobstacle place 18 150 16 20 152 16 dndclasses:thornwall medium
+/clear @s
+/effect clear @s minecraft:resistance
+/item replace entity @s weapon.mainhand with minecraft:shears
+/tp @s 19.5 150 14.5 0 25
+wait 10
+/data get entity @s Health
+mine on
+wait 50
+mine off
+wait 5
+/execute if block 19 150 16 dndclasses:thornwall[state=open]
+/execute if block 19 151 16 dndclasses:thornwall[state=sealed]
+/data get entity @s Health
+clearchat
+screenshot nature-thornwall-cut
+/effect give @s minecraft:resistance 600 4 true
+
+# ---- Singing Door: Bard sings it open ----
+/fill 0 149 24 30 149 24 minecraft:dirt
+/dndobstacle place 3 150 26 3 151 26 dndclasses:singing_door medium
+/setblock 1 150 24 minecraft:note_block[note=6]
+/setblock 2 150 24 minecraft:note_block[note=10]
+/setblock 4 150 24 minecraft:note_block[note=13]
+/setblock 5 150 24 minecraft:note_block[note=18]
+/dndclass set @s bard
+wait 5
+/clear @s
+/item replace entity @s weapon.mainhand with dndclasses:lute
+/tp @s 3.5 150 22.5 0 10
+wait 10
+clearchat
+screenshot song-door-bard-hint
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 3 150 26 dndclasses:singing_door[state=open]
+clearchat
+screenshot song-door-bard-open
+
+# ---- Singing Door: Fighter plays the tune back ----
+/dndobstacle place 13 150 26 13 151 26 dndclasses:singing_door medium
+/setblock 11 150 24 minecraft:note_block[note=6]
+/setblock 12 150 24 minecraft:note_block[note=10]
+/setblock 14 150 24 minecraft:note_block[note=13]
+/setblock 15 150 24 minecraft:note_block[note=18]
+/data merge block 13 150 26 {Data:{Tune:[I;2,0,3,1]}}
+/data merge block 13 151 26 {Data:{Tune:[I;2,0,3,1]}}
+/dndclass set @s fighter
+wait 5
+/clear @s
+/tp @s 13.5 150 22.5 0 10
+wait 10
+clearchat
+screenshot song-door-fighter-hint
+use
+wait 60
+# a wrong key first (key 1), then the phrase 2 0 3 1
+/tp @s 12.5 151 24.5 0 90
+wait 8
+use
+wait 5
+/tp @s 14.5 151 24.5 0 90
+wait 8
+use
+wait 5
+/tp @s 11.5 151 24.5 0 90
+wait 8
+use
+wait 5
+/tp @s 15.5 151 24.5 0 90
+wait 8
+use
+wait 5
+/tp @s 12.5 151 24.5 0 90
+wait 8
+use
+wait 40
+/execute if block 13 150 26 dndclasses:singing_door[state=open]
+/tp @s 13.5 150 22.5 0 10
+wait 10
+clearchat
+screenshot song-door-fighter-open
+/execute if block 12 150 24 minecraft:note_block[note=10]
+
+# ---- Thornwall regrows 60 s after the Druid parted it ----
+wait 400
+/execute if block 3 151 16 dndclasses:thornwall[state=sealed]
+/tp @s 3.5 150 13.5 0 0
+wait 10
+clearchat
+screenshot nature-thornwall-regrown
+quit

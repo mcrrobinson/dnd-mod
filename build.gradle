@@ -243,7 +243,7 @@ def racesPageWithTable = {
 		if (st.attackRange) out << "Attack reach ${signed(st.attackRange)} blocks"
 		out ? out.join('<br>') : 'none'
 	}
-	def rows = ['| Race | Ability bonuses | Size | Stat modifiers | Traits (planned) |', '|-|-|-|-|-|']
+	def rows = ['| Race | Ability bonuses | Size | Stat modifiers | Traits |', '|-|-|-|-|-|']
 	races.each { r ->
 		rows << "| **${r.name}** | ${abilities(r.abilityBonuses)} | ${r.size} (${r.scale}) | ${stats(r.stats ?: [:])} | ${r.traits.join('<br>')} |".toString()
 	}

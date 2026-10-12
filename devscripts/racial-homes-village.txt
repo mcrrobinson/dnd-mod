@@ -10,6 +10,7 @@
 # - /rep: Halfling starts Friendly (150) with the Hobbits of the Shire.
 wait 40
 closescreen
+include _reset.txt
 /time set 6000
 /gamerule doDaylightCycle false
 /gamemode survival

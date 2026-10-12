@@ -58,6 +58,10 @@ How the features work:
 - **Dark One's Own Luck** (Fiend): the first failed d20 roll of yours (a check or save that misses its DC, or a natural 1 on an attack roll) in any 2 minutes is rolled again at once, and the second roll stands. Chat says "Dark One's Own Luck: you roll again", and the log shows `[D20] <name> Dark One's Own Luck: rerolling ...`.
 - **Entropic Ward** (Great Old One): the first arrow, trident, fireball or other projectile that would hit you in any 60 s flies through you instead, like the Rogue's Danger Sense (you sidestep, and the action bar says so). It doesn't matter who fired it.
 
+## Where to find it
+- Pick the Warlock in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> warlock`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> warlock` (see [Admin commands](../systems/admin-commands.md)).
 

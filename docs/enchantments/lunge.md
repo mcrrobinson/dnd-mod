@@ -7,7 +7,7 @@ Right-click a weapon to dash forward.
 - Right click with a Lunge item to launch forward along your look direction at 1 block/tick per level (I = 1, II = 2), plus a small hop (0.3 up).
 - The item then has a 5-second cooldown. Nearby players see a puff of cloud.
 
-## Where to find it / How to get it
+## Where to find it
 - Enchanting table, as an [Artificer](../classes/artificer.md). Target: swords.
 
 ## Commands

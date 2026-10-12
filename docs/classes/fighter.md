@@ -54,6 +54,10 @@ How the features work:
 - **Superior Critical** (Champion): your melee attack roll crits on a natural 18-20 instead of 19-20. It's on your character sheet, so the D20 HUD shows it.
 - **Combat Superiority** (Battle Master): blocking a melee hit with a raised shield gives you 1 mana pip, at most once every 5 s. Arrows and other projectiles don't count.
 
+## Where to find it
+- Pick the Fighter in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> fighter`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+
 ## Commands
 - `/dndclass set <player> fighter` (see [Admin commands](../systems/admin-commands.md)).
 

@@ -8,6 +8,7 @@
 # Check: [Dialogue], [D20], [Quests] and [CHAT] lines in the log, and the nd-*.png screenshots.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doMobSpawning false
 /time set noon

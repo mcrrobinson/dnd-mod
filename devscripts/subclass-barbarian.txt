@@ -6,6 +6,7 @@
 #  3. Totem Warrior raging: /damage 10 takes 8.5 health; not raging: 10. Berserker raging: 10
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

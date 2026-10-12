@@ -3,6 +3,7 @@
 # Barbarian L1 attack +4; classless sheet all 10s, no proficiencies.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

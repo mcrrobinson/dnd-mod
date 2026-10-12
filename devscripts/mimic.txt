@@ -4,6 +4,7 @@
 # the mimic's Dormant goes 1b -> 0b, and killing it drops loot (item count > 0).
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /difficulty normal
 /gamerule doDaylightCycle false

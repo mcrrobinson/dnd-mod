@@ -8,6 +8,7 @@
 #     0.0f once 60 s have passed since the last
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 20
 closescreen

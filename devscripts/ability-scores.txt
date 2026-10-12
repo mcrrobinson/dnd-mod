@@ -8,6 +8,7 @@
 # - Fighter swing (rigged 19): "Attack Roll 19 +4 = 23 -> CRITICAL" (abilities-fighter-crit)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

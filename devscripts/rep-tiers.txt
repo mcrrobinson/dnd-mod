@@ -8,6 +8,7 @@
 # - Persuasion DC 12 +3 at Unfriendly (15) and -6 at Exalted (6), with the test datapack faction dndtest:villagers
 wait 40
 closescreen
+include _reset.txt
 /difficulty normal
 /gamemode survival
 # Not a Bard: hostile mobs ignore Bards, which would hide the goblin results.

@@ -64,6 +64,9 @@ How the features work:
 - **Undying Servants** (Bonecaller): Raise Dead's undead and Bone Wyvern, Skeletal Archers and Army of the Dead all stay 25% longer (Raise Dead rank I: 12.5 s instead of 10 s; the two skills: 75 s instead of 60 s).
 - **Grim Harvest** (Plaguebringer): whenever a mob you kill is withering (Wither Cloud, Death's Embrace, a Wither potion...), you heal 2 hearts. A hostile mob the wither finishes off after your hit counts too. The class's own quarter-second wither on every hit doesn't count.
 
+## Where to find it
+Pick the Necromancer in the class picker (or on the character creation screen) when you first join; you start on 5 health, so pick it somewhere safe. The skill tree is on **O**; change your loadout, rank up Raise Dead and choose a subclass at an [Attunement Table](../systems/class-selection.md#class-levels-and-the-skill-tree).
+
 ## Commands
 - `/dndclass set <player> necromancer` (see [Admin commands](../systems/admin-commands.md)).
 

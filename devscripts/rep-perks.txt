@@ -10,6 +10,7 @@
 #   once you open the chest ("[Grudges] dndclasses:goblins OPEN ... GRUDGE")
 wait 40
 closescreen
+include _reset.txt
 /difficulty normal
 /gamemode survival
 /dndclass set @s fighter

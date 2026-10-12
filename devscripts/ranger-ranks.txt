@@ -8,6 +8,7 @@
 # The 400-tick waits refill mana (18 s from empty).
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

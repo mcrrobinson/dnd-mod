@@ -2,6 +2,7 @@
 # Expect: screenshots wizard-limits-*, and the Inventory / ActiveEffects dumps in latest.log.
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamemode survival
 /tp @s 0 150 0 0 30

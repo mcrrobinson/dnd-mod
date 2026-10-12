@@ -14,6 +14,7 @@
 # 11 holding the power-up key 3 s -> "give in"; attack on a pig does nothing; jump does nothing
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

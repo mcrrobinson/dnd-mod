@@ -9,7 +9,7 @@ Mine out a whole area by breaking one block.
   - Level II: up to 48 extra blocks, at most 4 steps away.
 - Each extra block is mined as if you broke it yourself: Fortune and Silk Touch apply, each block costs durability (it stops when the tool breaks), creative mode drops nothing, and protection/claim mods can refuse blocks.
 
-## Where to find it / How to get it
+## Where to find it
 - Enchanting table, as an [Artificer](../classes/artificer.md). Only on pickaxes and shovels.
 
 ## Commands

@@ -12,6 +12,7 @@
 # Screenshots: subclass-choose (gold banners), subclass-confirm (confirm dialog), subclass-chosen (banner + padlocks)
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /gamerule doMobSpawning false

@@ -5,6 +5,7 @@
 # (the lead was used up).
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /time set noon

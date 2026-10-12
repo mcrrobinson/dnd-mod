@@ -37,7 +37,6 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
-import mattonfire.dnd.classes.Client.Render.Color;
 import mattonfire.dnd.classes.Client.Render.RenderUtils;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
@@ -46,7 +45,6 @@ public class DndClassesClient implements ClientModInitializer {
     public static final MinecraftClient MC = MinecraftClient.getInstance();
     /** The power-up key (Z); while Downed, holding it gives up. */
     public static KeyBinding POWER_UP_KEY;
-    public static Color chestESPColor = new Color(1, 1, 0, 1);
 
     private boolean isBreathingFire = false;
     private long fireBreathEndTick = 0;

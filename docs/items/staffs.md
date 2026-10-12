@@ -64,5 +64,5 @@ The elemental staffs can't be crafted.
 - `Items/ScheduledBlockRestore`: a per-world `PersistentState` (`data/dndclasses_staff_restores.dat`) that puts blocks back.
 - `Items/MonkStaff`, `Effects/FreezeEffect`. The melee Wizard check is an `AttackEntityCallback` in `Progression/Classes/WizardSkills`.
 - Recipe: `recipes/monk_staff.json`.
-- The unused one-staff tables `chests/staff_of_{fire,ice,lightning}.json` were removed: the elemental staffs are entries in `magic/rare.json` (`tools/magic_tier_tables.py`). `chests/monk_staff.json` still gives one Monk's Staff; nothing references it.
+- The unused one-staff tables `chests/staff_of_{fire,ice,lightning}.json` were removed: the elemental staffs are entries in `magic/rare.json` (`tools/magic_tier_tables.py`). `chests/monk_staff.json` went the same way: nothing referenced it.
 - Devscripts: `devscripts/staff-fire-dupe.txt`, `staff-restore-persist-a.txt` then `-b.txt`.

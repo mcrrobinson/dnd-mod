@@ -1,7 +1,6 @@
 package mattonfire.dnd.classes;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
@@ -203,8 +202,6 @@ public class DnDClasses implements ModInitializer {
                 }
         }
 
-        public static final Map<UUID, Long> effectTimestamps = new HashMap<>();
-
         @Override
         public void onInitialize() {
 
@@ -322,27 +319,6 @@ public class DnDClasses implements ModInitializer {
                                                         continue;
                                                 }
                                                 ManaManager.regenerateMana(player);
-                                        }
-                                }
-
-                                // Iterate and remove expired players
-                                Iterator<Map.Entry<UUID, Long>> iterator = DnDClasses.effectTimestamps.entrySet()
-                                                .iterator();
-                                while (iterator.hasNext()) {
-                                        Map.Entry<UUID, Long> entry = iterator.next();
-                                        UUID playerId = entry.getKey();
-                                        long startTick = entry.getValue();
-
-                                        // If 5 seconds (100 ticks) passed, remove effect
-                                        if (currentTick - startTick >= 100) {
-                                                iterator.remove();
-                                        } else {
-                                                // Player is still affected, show particles
-                                                ServerPlayerEntity player = serverWorld.getServer().getPlayerManager()
-                                                                .getPlayer(playerId);
-                                                if (player != null) {
-                                                        createParticleRing(serverWorld, player.getPos(), 16, 100);
-                                                }
                                         }
                                 }
                         }

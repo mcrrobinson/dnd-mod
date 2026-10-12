@@ -1,0 +1,60 @@
+# Smoke check for the dead-code cleanup: the paths the removed code sat next to still work.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dead-code-smoke.txt
+# Expect: no exceptions in latest.log, and screenshots
+#  dead-code-wizard-front / -rogue-front: the GeckoLib class armour over the player (ModelGeckoPlayer),
+#  dead-code-rogue-back / -cleric-sneak: the rogue and cleric capes hang behind the body (the cape block now sits outside the left-leg branch),
+#  dead-code-wizard-sphere: the Wizard power-up's sphere (RenderUtils.renderSolidSphere).
+#  [CHAT] "Gave 1 [Monk's Staff]" and a monk_staff in the slots dump. (The recipe is devscripts/monk-staff-recipe.txt.)
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/time set noon
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/fill -3 149 -3 3 149 3 minecraft:stone
+/fill -3 150 -3 3 154 3 minecraft:air
+/tp @s 0.5 150 0.5 0 0
+hud off
+/dndclass set @s wizard
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+perspective front
+wait 20
+screenshot dead-code-wizard-front
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+wait 20
+screenshot dead-code-rogue-front
+perspective back
+wait 10
+screenshot dead-code-rogue-back
+/dndclass set @s cleric
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+sneak on
+wait 10
+screenshot dead-code-cleric-sneak
+sneak off
+/dndclass set @s wizard
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+/gamemode survival
+perspective back
+wait 100
+press key.dnd-classes.power-up
+wait 6
+screenshot dead-code-wizard-sphere
+wait 40
+/gamemode creative
+/give @s dndclasses:monk_staff
+wait 5
+slots
+perspective first
+hud on
+quit

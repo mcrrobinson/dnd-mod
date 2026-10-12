@@ -1,6 +1,6 @@
 package mattonfire.dnd.classes.Client.Render;
 
-import mattonfire.dnd.classes.Client.Geo.ModelGeckoPlayerFirstPerson;
+import mattonfire.dnd.classes.Client.Geo.ModelGeckoPlayer;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -15,13 +15,13 @@ import software.bernie.geckolib.renderer.GeoEntityRenderer;
 
 public class GeoPlayerFeature extends FeatureRenderer<AbstractClientPlayerEntity, PlayerEntityModel<AbstractClientPlayerEntity>> {
     private final GeoEntityRenderer geoRenderer;
-    private final ModelGeckoPlayerFirstPerson geoModel;
+    private final ModelGeckoPlayer geoModel;
 
     @SuppressWarnings("unchecked")
     public GeoPlayerFeature(PlayerEntityRenderer renderer, EntityRendererFactory.Context context) {
         
        super(renderer);
-       this.geoModel = new ModelGeckoPlayerFirstPerson();
+       this.geoModel = new ModelGeckoPlayer();
        this.geoRenderer = new GeoEntityRenderer(context, geoModel);
     }
 

@@ -1,0 +1,28 @@
+# hobbit_ale chest loot gives Mugs of Ale, never a blank ("Uncraftable") potion.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hobbit-ale-loot.txt
+# Expect in latest.log: "[CHAT] Found N matching item(s)" with N > 0 for dndclasses:ale, and
+# "No items were found" for minecraft:potion.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamemode creative
+/clear @s
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+/loot give @s loot dndclasses:chests/hobbit_ale
+wait 5
+/clear @s dndclasses:ale 0
+/clear @s minecraft:potion 0
+/clear @s
+quit

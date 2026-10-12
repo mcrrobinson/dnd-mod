@@ -214,12 +214,6 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         }
     }
 
-    public void setMana(int amount) {
-        IEntityDataSaver player = (IEntityDataSaver) (Object) this;
-        NbtCompound nbt = player.getPersistentData();
-        nbt.putInt("mana", Math.min(amount, 100));
-    }
-
     private float getCustomPullProgress(int useTicks) {
         float f = (float) useTicks / 3.0F;
         f = (f * f + f * 2.0F) / 3.0F;

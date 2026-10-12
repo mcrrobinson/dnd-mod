@@ -1,0 +1,32 @@
+# Screenshots for docs/systems/death-saves.md (guest side of death-saves-docs-host.txt; see there for how to run)
+wait 40
+closescreen
+respawn
+wait 60
+/party leave
+/me guest-ready
+waitchat invited you to their party
+/party accept
+wait 40
+closescreen
+waitchat host-downed
+wait 30
+clearchat
+screenshot ds-guest-downed-wall
+waitchat host-stable
+wait 10
+clearchat
+screenshot ds-guest-stable-wall
+waitchat need-help
+hotbar 0
+wait 10
+closescreen
+holduse on
+wait 30
+clearchat
+screenshot ds-guest-stabilising
+wait 40
+holduse off
+/me guest-done
+wait 20
+quit

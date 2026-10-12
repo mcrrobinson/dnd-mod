@@ -498,6 +498,7 @@ public class DnDClasses implements ModInitializer {
                 Warlock.register();
                 Progression.register();
                 ClassLifecycle.register();
+                CharacterCreation.register();
                 mattonfire.dnd.classes.Race.RaceLifecycle.register();
                 mattonfire.dnd.classes.Rest.Rests.register();
                 mattonfire.dnd.classes.Downed.DownedEvents.register();

@@ -60,6 +60,11 @@ How the features work:
 - **Rite Focus** (Profane Soul): Crimson Rite's Wither lasts 4 s instead of 2 s, and Curse of Binding costs 2 mana instead of 3 (the tree, the footer and the mana bar's underline show 2).
 - **Stalker's Prowess** (Lycan): +10% movement speed at night (the same 13000-23000 window as the class's night damage), and Hybrid Transformation's Strength II, Speed and Jump Boost II last 20 s instead of 15 s.
 
+## Where to find it
+- Pick the Blood Hunter in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> bloodhunter`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- Blood Control needs the Identity mod, which the mod recommends but doesn't bundle.
+
 ## Commands
 - `/dndclass set <player> bloodhunter` (see [Admin commands](../systems/admin-commands.md)).
 

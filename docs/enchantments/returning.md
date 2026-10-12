@@ -11,7 +11,7 @@ An Artificer enchantment for thrown items. A Returning trident, snowball, egg or
 - Can't be combined with **Loyalty** (it does the same job) or **Riptide** (a Riptide trident can't be thrown).
 - In creative, a throw doesn't use up the item, so nothing is given back and you don't get a duplicate.
 
-## How to get it
+## Where to find it
 - **Enchanting table:** only an Artificer can roll it, and only on a trident.
 - **Anvil:** put a Returning enchanted book on a trident, snowballs, eggs or ender pearls.
 

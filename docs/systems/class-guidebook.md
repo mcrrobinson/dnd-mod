@@ -21,7 +21,7 @@ Long entries carry over onto the next page instead of being cut off. If you have
 
 Picking a class prints the same pros, cons and special in chat.
 
-## How to get it
+## Where to find it
 You get one on your first join, on every class change (the picker or `/dndclass set`), and when you respawn or leave the End with a class, unless you already carry one. Chat tells you when it arrives. If your inventory is full, it drops at your feet.
 
 To make another, craft a book and a lapis lazuli together in any shape. It's also in the D&D Classes creative tab. It stacks to 1.

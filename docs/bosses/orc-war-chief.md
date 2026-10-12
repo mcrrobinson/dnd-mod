@@ -9,7 +9,7 @@ The boss of every [Orc Stronghold](../structures/orc-strongholds.md): the hold's
 - **Boss bar**: red, notched, for players within 48 blocks while he fights a player, with the dragon fight music.
 - Keeps within 6 blocks of his seat when not fighting.
 
-## Where to find it / How to get it
+## Where to find it
 One in the Great Longhouse of every Orc Stronghold, placed when it generates. There's also a spawn egg.
 
 ## Rewards

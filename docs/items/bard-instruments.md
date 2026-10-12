@@ -24,7 +24,7 @@ The instruments are **Common** [magic items](../systems/magic-items.md) ("Common
 - The cooldown is shared, but it's shorter than the buff. Play the Lute, Drum and Flute one after another 10 seconds apart and your party keeps all three buffs running.
 - Keep all three in your hotbar so you can switch quickly.
 
-## How to get it
+## Where to find it
 Every Bard always has a Lute in their instrument slot, played with **G** (see [Bard](../classes/bard.md)); it shares the cooldown with these items. Craft them, or take them from the D&D Classes creative tab.
 
 **Lute:** two sticks, three planks and a string.

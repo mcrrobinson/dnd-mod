@@ -1,7 +1,16 @@
 # DnD Mod documentation
 The detailed reference for the mod, one page per feature, grouped by area. The [main README](../README.md) has the short overview.
 
-Each page follows the same template: summary, How it works, Where to find it, Commands, Configuration, Known limitations, For developers.
+Each feature page follows the same template, in this order:
+1. A short summary (no heading), then a screenshot if there is one.
+2. `## How it works`: the rules and numbers, taken from the code.
+3. `## Where to find it`: how a player gets or meets it (picker, recipe, loot, structure, key).
+4. `## Commands`: only if it has any.
+5. `## Configuration`: only if it has a gamerule or config option; most features have none.
+6. `## Known limitations`: only if there are any.
+7. `## For developers`: classes, constants, hooks and devscripts.
+
+Reference pages (this index, [Admin commands](systems/admin-commands.md), the [enchantments overview](enchantments/README.md) and the [Developers](#developers) pages) don't follow it.
 
 ## Classes
 - [Barbarian](classes/barbarian.md): 40 HP and huge damage, but slow and short-sighted; subclass features
@@ -30,12 +39,12 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Character creation](systems/character-creation.md): new players pick race and class on one screen with a combined summary (health, speed, ability scores, traits) and one chat intro
-- [Mana and class specials](systems/mana.md): the 9-pip mana bar and the power-up key (Z)
+- [Mana and class specials](systems/mana.md): the 9-pip mana bar (1 pip every 2 s), the power-up key (Z) and every class's 9-mana root special
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up; a downed HUD, party status and red ally outlines show who's down
-- [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
-- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list|cooldowns|traits`
-- [Party](systems/party.md): group up with other players
+- [Class progression](systems/class-progression.md): class XP sources, subclasses chosen at level 3, ability ranks at the Attunement Table (1 point each, levels 3/6/9), the per-class point budget and the tiered Bard/Druid bestiary
+- [Admin commands](systems/admin-commands.md): `/dndclass` (class, progress, XP, ranks, subclass, rests, sheet, Downed), `/dndrace`, `/dndhome`, `/goblinraid`, and pointers to `/dungeon`, `/dndobstacle`, `/dm`, `/party`, `/quest` and `/rep`
+- [Party](systems/party.md): `/party` groups of up to 8: shared XP within 48 blocks, no friendly fire, the party HUD, and what else checks the party
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8
 - [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair, STR/DEX saves against grabs with jump-to-struggle escapes, and `/dm save|check`
@@ -75,8 +84,8 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
 
 ## Bosses
-- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes
-- [Goblin Warlord](bosses/goblin-warlord.md): Nether Fortress boss that summons goblin waves
+- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, dragons)
+- [Goblin Warlord](bosses/goblin-warlord.md): goblin boss that summons waves; guards Nether Fortresses, leads 30% of goblin camps and every raid's last wave, and rules the Goblin Warren
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
 - [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health

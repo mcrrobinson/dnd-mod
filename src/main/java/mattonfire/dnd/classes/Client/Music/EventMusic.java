@@ -27,6 +27,8 @@ import net.minecraft.world.World;
 /**
  * Picks the mod's music for game events, in priority order: boss fight, low health, dungeon,
  * Nether Fortress, travelling, night.
+ * The boss fight slot also carries goblin raid music and the DM's mood track (/dm mood, BossMusic.MOOD_BAR).
+ * A real fight (boss or raid) plays over the mood; between fights the first one the player got wins.
  * In one of the mod's dungeons the "Dungeon" slot plays the dungeon theme's loop (the server sends the
  * theme, see DungeonMusic); anywhere else that counts as a dungeon it plays the generic Silent Footsteps.
  * Hooked into MinecraftClient.getMusicType() by MinecraftClientMusicMixin.
@@ -100,6 +102,7 @@ public class EventMusic {
     private static int ticksSinceCombat = Integer.MAX_VALUE;
     private static Event current = Event.NONE;
     // Fight track of each boss bar the server says this player can see, in the order they appeared
+    // (plus the DM's mood track under BossMusic.MOOD_BAR)
     private static final Map<UUID, MusicSound> bossTracks = new LinkedHashMap<>();
     // Track playing for the boss fight this tick
     private static MusicSound bossMusic = null;
@@ -173,7 +176,11 @@ public class EventMusic {
         MusicSound previousBossMusic = bossMusic;
         MusicSound previousWanted = wanted;
         current = pick(client);
-        bossMusic = current == Event.BOSS_FIGHT ? bossTracks.values().iterator().next() : null;
+        bossMusic = current == Event.BOSS_FIGHT ? barTrack() : null;
+        if (bossMusic != null && bossMusic != previousBossMusic) {
+            DnDClasses.LOGGER.info("[EventMusic] bar track {} ({})", bossMusic.getSound().value().getId(),
+                    bossMusic == bossTracks.get(BossMusic.MOOD_BAR) ? "mood" : "fight");
+        }
         wanted = track(current);
         if (wanted != previousWanted) {
             wantedPlaying = false;
@@ -208,6 +215,22 @@ public class EventMusic {
                 ((MusicTrackerAccessor) client.getMusicTracker()).setTimeUntilNextSong(AFTER_LOW_HEALTH_SILENCE_TICKS);
             }
         }
+    }
+
+    /**
+     * The track for the boss fight slot: the first real fight's (boss or raid) the player got, else the
+     * DM's mood track. The mood waits under a fight and comes back when it ends, if it's still set.
+     */
+    private static MusicSound barTrack() {
+        MusicSound mood = null;
+        for (Map.Entry<UUID, MusicSound> bar : bossTracks.entrySet()) {
+            if (bar.getKey().equals(BossMusic.MOOD_BAR)) {
+                mood = bar.getValue();
+            } else {
+                return bar.getValue();
+            }
+        }
+        return mood;
     }
 
     private static Event pick(MinecraftClient client) {

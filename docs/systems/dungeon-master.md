@@ -70,7 +70,7 @@ The launch set:
 - `/dm say <entity> <text>` speaks as an NPC: `<Gimli Stonebeard> Mind your step.` in chat for every player, the name in the colour of the NPC's [faction](factions.md) (yellow for anyone outside a faction), and a speech bubble pops up over its head for 3 seconds. Any entity works, including role NPCs and mobs with a custom name.
 
 ### Mood music
-`/dm mood combat|tavern|dungeon|boss|off` (op only) forces a music track for every player within 96 blocks of you, through the same path as [boss fight music](../music.md): it starts straight away, loops, and plays over anything else.
+`/dm mood combat|tavern|dungeon|boss|off` (op only) forces a music track for every player within 96 blocks of you, through the same path as [boss fight music](../music.md): it starts straight away, loops, and plays over anything else except a real fight (see below). You don't need to be in DM mode to set it.
 
 | Mood | Track |
 |-|-|
@@ -80,7 +80,11 @@ The launch set:
 | `boss` | The dragon fight track (`music.dragon_fight`) |
 | `off` | Back to normal music, for every player online |
 
-Setting a new mood replaces the old one for the players in range. A real boss fight that starts during a mood keeps the mood track until `off` (the first track a player got wins).
+Setting a new mood replaces the old one for the players in range.
+
+A real fight takes over from the mood: while a player can see a boss's bar (or is near a goblin raid), they hear that fight's track instead. When the fight ends (the boss dies, the fight stops or they leave range) the mood comes straight back, with no quiet gap. During a fight:
+- `/dm mood off` leaves the fight track playing; after the fight, normal music comes back after the usual 20 seconds of quiet.
+- A new mood doesn't interrupt the fight. It's remembered and plays when the fight ends.
 
 ### Loot
 - `/dm loot give <players> <loot table>` rolls a loot table (any table, as a chest would) straight into each player's inventory; what doesn't fit drops at their feet. You see what each player got.

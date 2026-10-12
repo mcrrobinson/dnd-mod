@@ -132,5 +132,5 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Testing in the dev client](dev/testing.md): DevScript and scripted, hidden test clients
 - [Multipart mobs](dev/multipart-mobs.md): MultipartDragon, DragonPartLayout and DragonRenderer
 - [Boss framework](dev/boss-framework.md): adding a boss with BossFight
-- [Project layout](dev/project-layout.md): where things live in the code, and what each dependency is for
+- [Project layout](dev/project-layout.md): where things live in the code, and what each dependency is for (PR #205)
 - [Obstacles in structures and templates](dev/obstacle-templates.md): placing obstacles from structure code, and the `dndclasses:obstacle_tier` processor for NBT templates and jigsaw pieces

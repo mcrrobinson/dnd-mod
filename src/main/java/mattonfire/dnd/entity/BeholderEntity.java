@@ -375,6 +375,7 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     // ------------------------------------------------------------------ fight
 
     private void enrage() {
+        MobActions.log(this, "enrage", this.getTarget());
         this.playSound(SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, 2.0F, 0.8F);
         // It opens every eye in its fury
         for (int i = 0; i < STALKS; i++) {
@@ -519,6 +520,7 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
 
     private void fireRay(ServerWorld world, Charge charge) {
         Ray ray = rayOf(charge.stalk);
+        MobActions.log(this, "ray " + ray, this.getTarget());
         Vec3d from = this.stalkEye(charge.stalk);
         Vec3d dir = charge.aim.subtract(from);
         if (dir.lengthSquared() < 1.0E-4) {

@@ -10,6 +10,7 @@
 # - "[DragonTemple] Templar ... breathed ... at Zombie" from the sky arena, screenshot dts-breath
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /effect give @s resistance 600 4 true
 /dndrace set @s dragonborn ember

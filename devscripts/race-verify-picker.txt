@@ -3,6 +3,7 @@
 # Expect: screenshots rv-*.png; "screen after escape: ModKeybinds" in the log; dwarf at the end.
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamerule dndRaces true
 /dndclass set @s barbarian

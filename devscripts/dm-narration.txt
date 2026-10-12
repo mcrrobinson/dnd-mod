@@ -11,6 +11,7 @@
 #   dm-loot-pick (Rogue's roll vs DC 18), dm-loot-mimic.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false

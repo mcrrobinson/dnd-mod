@@ -28,8 +28,8 @@ import net.minecraft.util.math.BlockPos;
  * <ul>
  * <li>Failure: sparks, {@value #SPARK_DAMAGE} damage. Natural 1: the gears jam and nobody can work it for
  * {@value #JAM_TICKS} ticks, and an alarm.</li>
- * <li>Fallback: smash the mechanism (hardness 50, like obsidian). Breaking any block opens the whole door,
- * but Mountain Dwarves who see it take it as an offence ({@link MountainDwarfEntity#witness}).</li>
+ * <li>Fallback: smash the mechanism (hardness 50, like obsidian). Breaking any block opens the whole door (the
+ * block stays, open, so a reset rebuilds it), but Mountain Dwarves who see it take it as an offence ({@link MountainDwarfEntity#witness}).</li>
  * </ul>
  */
 public final class ClockworkDoorType extends ObstacleType {
@@ -112,6 +112,12 @@ public final class ClockworkDoorType extends ObstacleType {
         world.playSound(null, pos, SoundEvents.BLOCK_ANVIL_LAND, SoundCategory.BLOCKS, 0.8f, 0.7f);
         DnDClasses.LOGGER.info("[Obstacle] {} jammed the clockwork door at {} until {}", player.getEntityName(),
                 pos.toShortString(), until);
+    }
+
+    /** The smashed block stays in place, open, so a reset rebuilds the whole door. */
+    @Override
+    public boolean opensWhenBroken() {
+        return true;
     }
 
     /** Smashing the mechanism opens the door, and any Mountain Dwarf who sees it takes offence. */

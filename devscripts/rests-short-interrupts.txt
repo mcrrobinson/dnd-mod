@@ -6,6 +6,7 @@
 # Output: screenshots int-*.png and wizard-rest-done.png; [CHAT] lines in logs/latest.log
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doMobSpawning false
 /gamerule doDaylightCycle false

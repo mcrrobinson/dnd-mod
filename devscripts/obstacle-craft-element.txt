@@ -16,6 +16,7 @@
 #   Fighter (ActiveEffects has id 12) and he walks through.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false

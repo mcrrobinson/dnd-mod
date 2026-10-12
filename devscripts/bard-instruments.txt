@@ -2,6 +2,7 @@
 # Expect in latest.log: Test passed for the Bard's lute and drum effects, Test failed for the Fighter's flute Speed (see docs/items/bard-instruments.md).
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamemode survival
 /tp @s 0 150 0 0 0

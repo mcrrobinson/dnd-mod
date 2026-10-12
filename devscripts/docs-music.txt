@@ -3,6 +3,7 @@
 # Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/docs-music.txt
 wait 40
 closescreen
+include _reset.txt
 /gamemode creative
 /gamerule doDaylightCycle false
 /gamerule doWeatherCycle false

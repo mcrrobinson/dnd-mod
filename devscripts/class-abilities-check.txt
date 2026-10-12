@@ -1,6 +1,7 @@
 # Warlock fireball (empty hand, off-hand torch, off-hand shield) and breath (only in the Warlock's world).
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamemode survival
 /effect clear @s

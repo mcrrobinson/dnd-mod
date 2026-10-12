@@ -2,6 +2,7 @@
 # Expect in latest.log: the sword in the enchanting slot gains Enchantments, and the zombie's Health drops below 20.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doDaylightCycle false
 /time set noon

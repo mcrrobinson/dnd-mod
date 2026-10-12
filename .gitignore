@@ -28,6 +28,8 @@ bin/
 
 run/
 run-*/
+# the unit tests (fabric-loader-junit) log to the project folder
+/logs/
 
 build/
 

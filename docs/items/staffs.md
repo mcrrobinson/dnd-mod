@@ -45,7 +45,7 @@ Anyone can craft it from 3 sticks in a diagonal line, either way round:
 S
 ```
 
-## How to get it
+## Where to find it
 The elemental staffs can't be crafted.
 
 - **Monk's Staff:** craft it from 3 sticks in a diagonal line (see [Monk's Staff](#monks-staff)).

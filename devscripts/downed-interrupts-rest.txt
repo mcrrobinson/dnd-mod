@@ -4,6 +4,7 @@
 # Output: screenshots downed-rest-*.png; [Rest] and [Downed] lines in logs/latest.log
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /gamerule doMobSpawning false
 /gamerule doDaylightCycle false

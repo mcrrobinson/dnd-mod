@@ -32,8 +32,8 @@ Every class has a job in a party: **Tank**, **Healer**, **Damage**, **Support** 
 | Blood Hunter | Damage | Utility |
 
 ### Where roles show
-- **Class picker**: each button has its primary role icon at the right edge. Hover a button for a tooltip with both roles, the class's first pro, its special and the obstacles only it can handle ("Only you: Heavy Boulders").
-- **Class Guidebook**: two pages after Special. "Your role" shows the primary and secondary role, a line about what the class does in a party and what the role is for. "Obstacles you handle" lists the class's obstacles; bold ones only your class can get past.
+- **Class picker**: each button has its primary role icon at the right edge. Hover a button for a tooltip with both roles, the class's first pro, its special and its speciality obstacles, the ones it's the only primary solver of ("Speciality: Heavy Boulders").
+- **Class Guidebook**: two pages after Special. "Your role" shows the primary and secondary role, a line about what the class does in a party and what the role is for. "Obstacles you handle" lists the class's obstacles; bold ones are its speciality. The book ends with the [Obstacle Codex](class-guidebook.md), every obstacle and who handles it.
 - **Party HUD**: a 7x7 role icon before each member's name. Offline members show no icon. The rows widen so long names don't run into the health text.
 - **README**: the Player Classes table has a Role column (primary in bold, secondary below).
 
@@ -49,11 +49,10 @@ None.
 None. Roles live in `class_info.json` (see below).
 
 ## Known limitations
-- The obstacles listed in the guidebook and the picker tooltip don't exist in the world yet. They arrive with the obstacle tickets, which may adjust the wording.
 - The picker shows only the primary role icon on the button; the secondary role is in the tooltip.
 
 ## For developers
-- Data: each class in `src/main/resources/data/dndclasses/class_info.json` has `role` and `secondaryRole` (`PartyRole` names), `roleBlurb` (one phrase, no full stop) and `obstacles` (`**bold**` marks the ones only that class can handle; the picker's "Only you" line lists the bold names).
+- Data: each class in `src/main/resources/data/dndclasses/class_info.json` has `role` and `secondaryRole` (`PartyRole` names), `roleBlurb` (one phrase, no full stop) and `obstacles` (`**bold**` marks the class's speciality obstacles, the ones it's the only primary solver of; the picker's "Speciality" line lists the bold names). `ObstacleCodexTest` checks each list against the obstacle registry ([obstacles](obstacles.md#for-developers)).
 - `PartyRole.java`: the enum with `color()`, `translationKey()` (`role.dndclasses.<role>`, plus `.description`), `text()` and `iconU()`.
 - `ClassInfo` record: `role()`, `secondaryRole()`, `roleBlurb()`, `obstacles()`.
 - Icons: `assets/dndclasses/textures/gui/roles.png`, 64x8, one 7x7 icon per role every 8 pixels in enum order. Drawn with `Client/Hud/RoleIcon.draw`.

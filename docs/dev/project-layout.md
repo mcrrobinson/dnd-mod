@@ -4,25 +4,36 @@ Where things live in the code.
 ## For developers
 | Area | Location (`src/main/java/mattonfire/dnd/`) |
 |-|-|
-| Mod entry point, class switching, specials' packets | `classes/DnDClasses.java` |
-| Class stats | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java` |
+| Mod entry point, class switching, specials' packets, mana regen | `classes/DnDClasses.java`, `classes/ManaManager.java` |
+| Class stats and picking | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java`, `classes/CharacterCreation.java`, `classes/ClassInfo.java` (reads `data/dndclasses/class_info.json`) |
 | Class passives | `classes/` (`Druid`, `Warlock`, `MonkHandler`, `PotionImmunity`) and `classes/Misc/` |
 | Class specials | `classes/Misc/PowerUpEffect.java`, `classes/Effects/` |
-| Class XP, skill trees, Attunement Table | `classes/Progression/` (one `Classes/<Class>Skills.java` per class), `classes/Blocks/AttunementTableBlock.java` |
-| d20 skill checks | `classes/SkillChecks/` |
-| Parties | `classes/Party/` |
-| Commands | `classes/Commands/` (`/dndclass`, `/goblinraid`); `/party` is in `classes/Party/PartyCommand.java` |
+| Class XP, skill trees, ranks, subclasses, bestiary, Attunement Table | `classes/Progression/` (`Progression`, `ClassProgress`, `ClassTrees`, `Ranks`, `Subclass`, and one `Classes/<Class>Skills.java` per class), `classes/Blocks/AttunementTableBlock.java` |
+| Ability scores, proficiency, skills, saves | `classes/Abilities/` (`AbilityScores`, `CharacterSheet`, `ClassSaveFeatures`) |
+| d20 rolls: checks, saves, attack rolls, lockpicking, stealth, perception, study, traps | `classes/SkillChecks/` (`D20`, `SavingThrow`, `AttackRolls`, `Lockpicking`, `Stealth`, `Perception`, `Study`, `TrapDisarm`) |
+| Rests, charges, Hit Dice, party camps | `classes/Rest/` |
+| Downed and death saves | `classes/Downed/` |
+| Class-gated obstacles | `classes/Obstacles/` (`types/` has one class per obstacle) |
+| Races, racial traits, Breath Weapon | `classes/Race/`; racial homes in `world/gen/RacialHomes.java` and `world/gen/HomeBonuses.java` |
+| Parties and party roles | `classes/Party/`, `classes/PartyRole.java` |
+| Commands | `classes/Commands/` (`/dndclass`, `/dndrace`, `/dndhome`, `/dndmagic`, `/dndobstacle`, `/dungeon`, `/goblinraid`); `/party` is `classes/Party/PartyCommand.java`, `/rep` `faction/RepCommand.java`, `/quest` `quest/QuestCommand.java`, `/dm` `dm/DmCommand.java` |
 | Mixins (most class rules, dragon hit detection, dev window) | `classes/mixin/` (listed in `dndclasses.mixins.json`) |
 | Items, armor, blocks | `classes/Items/`, `classes/Items/lib/`, `classes/Blocks/`, `classes/Registry/` |
-| Enchantments | `classes/Enchantments/`, `classes/TreeFeller.java`, `GridMiner.java`, `Invulnerability.java` |
-| Client: HUD, keybinds, music, DevScript | `classes/Client/` |
+| Magic items: rarity, attunement, identification, curses, loot | `magic/` (`items/` has the item classes) |
+| Enchantments | `classes/Enchantments/`, `classes/TreeFeller.java`, `GridMiner.java`, `Invulnerability.java`, `Featherfall.java` |
+| Music: Bard instrument slot, dungeon themes | `classes/Music/`, client side in `classes/Client/Music/` |
+| Client: HUD, keybinds, screens, DevScript | `classes/Client/` (`Hud/`, `Keybinds/`, `DevScript.java`) |
 | Mobs and bosses | `entity/`, `entity/boss/`, `entity/ai/goal/` |
 | Goblin raids | `entity/raid/` |
-| Hobbit Tavern (bounty board, ale) | `tavern/` |
-| Models and renderers | `client/model/`, `client/renderer/` |
-| Structures and spawns | `world/gen/` (`village/`, `fortress/`, `lair/`, `camp/`, `beholder/`, `ModSpawns.java`) |
-| Data (loot, tags, structures, advancements) | `src/main/resources/data/dndclasses/` |
-| Assets (geo models, textures, sounds, lang) | `src/main/resources/assets/dndclasses/` |
+| Factions and reputation | `faction/` |
+| Quests and NPC dialogue | `quest/`, `quest/dialogue/` |
+| Dungeons: rooms, encounters, gates, puzzles, loot | `dungeon/`; generation in `world/gen/dungeon/` |
+| Dungeon Master tools | `dm/` (`encounter/` has the data-driven encounters) |
+| Hobbit Tavern (bounty board, ale, rooms) | `tavern/` |
+| Models, renderers, particles | `client/model/`, `client/renderer/`, `particle/` |
+| Structures and spawns | `world/gen/` (`village/`, `fortress/`, `lair/`, `camp/`, `beholder/`, `dungeon/`, `enclave/`, `temple/`, `stronghold/`, `sanctum/`, `ModSpawns.java`) |
+| Data (loot, tags, structures, advancements, quests, dialogue, factions, saves, encounters) | `src/main/resources/data/dndclasses/` |
+| Assets (geo models, animations, textures, sounds, lang) | `src/main/resources/assets/dndclasses/` |
 
 - Minecraft sources aren't decompiled; see [CLAUDE.md](../../CLAUDE.md#reading-minecraft--library-code) for reading the jars.
 - `build/` is ignored by git (`.gitignore`), like the IDE files `.classpath` and `.project`.
@@ -32,9 +43,28 @@ Where things live in the code.
 
 | Script | Generates |
 |-|-|
+| `tools/boss_item_textures.py` | the boss and monster magic item textures |
+| `tools/breath_icons.py` | the Dragonborn Breath Weapon cooldown icons |
+| `tools/craft_obstacle_textures.py` | the craft and element obstacle textures (Artificer, Alchemist, Warlock) |
 | `tools/d20_texture.py` | `textures/gui/d20.png`, the skill-check HUD die |
+| `tools/death_save_textures.py` | the death save pips on the Downed HUD |
+| `tools/divine_obstacle_textures.py` | the divine and death obstacle textures (Cleric, Paladin, Necromancer, Blood Hunter) |
+| `tools/dragonborn_skins.py`, `elf_skins.py`, `tiefling_skins.py` | the Dragonborn, elf and Tiefling NPC skins |
+| `tools/dungeon_loot.py` | the dungeon loot tables |
 | `tools/ember_wyvern_texture.py` | the Ember Wyvern textures, recoloured from the green wyvern |
+| `tools/frost_drake_texture.py` | the Frost Drake textures, recoloured from the Lightning Chaser |
 | `tools/lich_models.py` | the Lich and Phylactery models and textures |
+| `tools/locked_door_texture.py` | the Locked Door obstacle texture |
+| `tools/magic_tier_tables.py` | the magic item tier loot tables |
+| `tools/nature_song_obstacle_textures.py` | the nature and song obstacle textures (Druid, Bard) |
+| `tools/obstacle_textures.py` | the Arcane Seal textures |
+| `tools/orc_stronghold_textures.py` | the Orc Stronghold textures |
 | `tools/owlbear_model.py` | the Owlbear model and texture |
+| `tools/physical_obstacle_textures.py` | the physical obstacle textures (Barbarian, Fighter, Monk) |
+| `tools/racial_gear_textures.py` | the racial armor and weapon textures |
+| `tools/rune_textures.py` | the six rune block faces of the puzzle room |
+| `tools/speech_bubble_texture.py` | the `/dm say` speech bubble particle |
+| `tools/tavern_room_textures.py` | the Room Key texture and the Well Rested icon |
+| `tools/wondrous_item_textures.py` | the wondrous and utility magic item textures |
 | `tools/pngio.py` | shared PNG reader/writer for the scripts above (no PIL needed) |
 | `tools/music-gen/` | class stings, dice sounds, music loops and Bard songs (see its README) |

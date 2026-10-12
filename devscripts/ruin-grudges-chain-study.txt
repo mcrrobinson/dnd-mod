@@ -4,6 +4,7 @@
 # Check the log for "====" markers, [CHAT] lines, [Study], [Grudges] and [Dungeon].
 wait 40
 closescreen
+include _reset.txt
 respawn
 wait 10
 /gamemode spectator

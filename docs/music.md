@@ -54,6 +54,10 @@ When your special fires, a short sting for your class plays (4 seconds at most) 
 
 All five play in a jukebox and give a comparator signal of 6.
 
+## Where to find it
+- Event music, dungeon loops and stings play on their own; there's nothing to set up.
+- Steel on Steel is in the reward for beating a goblin raid on a settlement (15%). It and the next three discs are also in the D&D Classes creative tab; Music Box is `/give` only (see the table above).
+
 ## Configuration
 Event music and stings follow the **Music** volume slider. Discs and instrument songs follow **Jukebox/Note Blocks**. Turn Music down to 0 to switch event music off.
 

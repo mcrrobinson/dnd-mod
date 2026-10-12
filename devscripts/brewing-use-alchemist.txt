@@ -1,6 +1,7 @@
 # An alchemist opens a brewing stand and adds the ingredient; the brew must finish without exploding.
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamemode creative
 /dndclass set @s alchemist

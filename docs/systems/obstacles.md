@@ -5,6 +5,59 @@ So far there are the **Lesser** and **Greater Arcane Seals** (Wizards, Warlocks)
 
 ![A Wizard's Arcana roll shattering a Lesser Arcane Seal](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/obstacle-framework/obstacle-wizard-open.png)
 
+## Catalogue
+Every obstacle type, who can roll for it and what anyone else can do. "(only)" marks a class's exclusive: the class is the obstacle's only primary solver. Every class has at least one, and `ObstacleCodexTest` fails the build if one doesn't (see [For developers](#for-developers)). The same list is the **Obstacle Codex** chapter at the back of the [Class Guidebook](class-guidebook.md).
+
+- **Primary**: the classes it's built for, named first in hints. **Secondary**: classes that can also try. **Anyone else**: "May try" means every other class can work it too (a Blood Seal's 8-heart price, searching for a Hidden Door); "Can't try" means they need the fallback.
+- **Check** "None" means there's no roll: getting past it is movement (a Monk's leap across a Chasm, a Paladin walking through a Dread Ward) or a plain right-click.
+
+<!-- obstacle-table:start - generated from the obstacle registry (ObstacleTypes) and en_us.json by ObstacleCodexTest. Run ./gradlew generateObstacleTable -->
+| Obstacle | Check | Primary | Secondary | Anyone else | Fallback |
+|-|-|-|-|-|-|
+| **Lesser Arcane Seal**<br>`dndclasses:lesser_arcane_seal` | Arcana | **Wizard** (only) | Warlock | Can't try | Anyone can mine it, but it lashes back |
+| **Greater Arcane Seal**<br>`dndclasses:greater_arcane_seal` | Arcana | **Wizard** (only) | - | Can't try | It can't be broken by hand |
+| **Collapsed Passage**<br>`dndclasses:collapsed_passage` | Athletics | Barbarian, Fighter | Paladin | Can't try | Anyone can dig through it, if the roof holds |
+| **Heavy Boulder**<br>`dndclasses:heavy_boulder` | Athletics | **Barbarian** (only) | - | Can't try | It can't be mined, but one TNT would shift it (loudly) |
+| **Portcullis**<br>`dndclasses:portcullis` | None | **Fighter** (only) | - | Can't try | Mine through two of its bars (slow) |
+| **Portcullis Winch**<br>`dndclasses:portcullis_winch` | Athletics | Barbarian, Fighter, Paladin | - | May try | Mine through two of the portcullis bars (slow) |
+| **Chasm**<br>`dndclasses:chasm` | None | **Monk** (only) | - | Can't try | An ender pearl, or climb down and out the hard way |
+| **Bridge Winch**<br>`dndclasses:bridge_winch` | None | - | - | May try | Get across the chasm first |
+| **Crumbling Ledge**<br>`dndclasses:crumbling_ledge` | None | - | - | Can't try | Keep moving, and don't look down |
+| **Holy Ward**<br>`dndclasses:holy_ward` | Religion | **Cleric** (only) | Paladin | Can't try | Douse it with 3 thrown Potions of Healing (holy water) |
+| **Desecrated Altar**<br>`dndclasses:desecrated_altar` | Religion | **Cleric** (only) | - | Can't try | Smash it, but the dead will rise and the spawners stay on |
+| **Dread Ward**<br>`dndclasses:dread_ward` | None | **Paladin** (only) | - | Can't try | Anyone else can push through, frightened and slow |
+| **Ossuary Gate**<br>`dndclasses:ossuary_gate` | Intimidation | **Necromancer** (only) | - | Can't try | Smash it, and fight the bones that rise |
+| **Blood Seal**<br>`dndclasses:blood_seal` | None | **Blood Hunter** (only) | - | May try | Anyone can pay 8 hearts, shared by up to 3 players |
+| **Hidden Door**<br>(also Hidden Deepslate Door, Hidden Blackstone Door)<br>`dndclasses:hidden_door` | None | **Ranger** (only) | - | May try | Search the walls (sneak + right-click) to find it |
+| **Locked Door**<br>`dndclasses:locked_door` | Lockpicking | **Rogue** (only) | - | Can't try | Find its key, or tear the iron door down (slow and loud) |
+| **Guardian Beast**<br>`dndclasses:guardian_beast` | Animal Handling | Bard, Druid | - | Can't try | Fight your way past them |
+| **Thornwall**<br>`dndclasses:thornwall` | Nature | **Druid** (only) | - | Can't try | Burn it (flint and steel), or cut it with shears or an axe (it bites back) |
+| **Singing Door**<br>`dndclasses:singing_door` | Performance | **Bard** (only) | - | Can't try | Touch it to hear its tune, then play it back on the note blocks |
+| **Clockwork Door**<br>`dndclasses:clockwork_door` | Tinker's Tools | **Artificer** (only) | Rogue | Can't try | Smash the mechanism, if no dwarf is watching |
+| **Alchemical Seal**<br>`dndclasses:alchemical_seal` | Alchemist's Supplies | **Alchemist** (only) | - | Can't try | Break it, and ruin some of what it seals |
+| **Miasma Vent**<br>`dndclasses:miasma_vent` | Alchemist's Supplies | **Alchemist** (only) | - | Can't try | Rogues shrug off its poison; anyone else can run through (poison can't kill) |
+| **Fire Curtain**<br>`dndclasses:fire_curtain` | None | **Warlock** (only) | - | Can't try | Walk through with Fire Resistance (Transmute covers potion-immune classes) |
+| **Fire Curtain Brazier**<br>`dndclasses:fire_curtain_brazier` | None | **Warlock** (only) | - | May try | Get through the fire curtain first |
+
+| Class | Only they can handle |
+|-|-|
+| Barbarian | Heavy Boulder |
+| Bard | Singing Door |
+| Cleric | Holy Ward, Desecrated Altar |
+| Druid | Thornwall |
+| Fighter | Portcullis |
+| Monk | Chasm |
+| Paladin | Dread Ward |
+| Ranger | Hidden Door |
+| Rogue | Locked Door |
+| Necromancer | Ossuary Gate |
+| Warlock | Fire Curtain, Fire Curtain Brazier |
+| Wizard | Lesser Arcane Seal, Greater Arcane Seal |
+| Artificer | Clockwork Door |
+| Blood Hunter | Blood Seal |
+| Alchemist | Alchemical Seal, Miasma Vent |
+<!-- obstacle-table:end -->
+
 ## How it works
 ### Arcane Seals
 | | Lesser Arcane Seal | Greater Arcane Seal |
@@ -32,9 +85,9 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 - **Rage:** a raging Barbarian rolls Athletics with advantage (two dice, keep the higher). This comes from the [character sheet](ability-scores.md), so it covers every Athletics obstacle.
 - **Wedge (Fighters only):** while the portcullis is up, a Fighter who succeeds at the winch again jams it. The gate stays up for good and the winch shows as wedged. Resetting the winch (`/dndobstacle reset`) drops the gate again.
 - Only the first raise of a winch earns class XP, so cranking it over and over isn't a way to level. A wedge earns nothing more: the winch gives its XP once, until it's reset (`/dndobstacle reset`).
-- The **Portcullis** itself has no check. Its hint says its winch raises it; right-clicking it just says so. A winch works the nearest portcullis within 6 blocks, unless a structure or `/dndobstacle link` tells it which one.
+- The **Portcullis** itself has no check and takes no clicks (right-clicking it does nothing). Its hint says its winch raises it and that a Fighter can wedge it; a Fighter sees that line in green, and anyone else's hint names a Fighter nearby to ask. The wedge makes the Fighter its only primary solver (their exclusive in the catalogue). A winch works the nearest portcullis within 6 blocks, unless a structure or `/dndobstacle link` tells it which one.
 
-**Chasm.** A gap with a pit under it, and a **Bridge Winch** on the far side. The chasm's top layer is its retracted bridge: invisible and with no collision, so you fall straight through, but it's a sealed obstacle, so nobody can build across it or pillar up within a block of it. There's no roll: whoever gets across right-clicks the bridge winch (with an empty hand) and the bridge (spruce planks) swings down for everyone. The first lowering earns the winch's tier XP. Chasms are meant to be 7 blocks long: a Monk's triple jump clears that, a sprint jump (about 4 blocks) doesn't. An ender pearl or a Rogue's 12-block Shadowstep also gets across, and falling in means climbing out of the pit the hard way. A bridge winch works the nearest chasm within 8 blocks unless linked.
+**Chasm.** A gap with a pit under it, and a **Bridge Winch** on the far side. The chasm's top layer is its retracted bridge: invisible and with no collision, so you fall straight through, but it's a sealed obstacle, so nobody can build across it or pillar up within a block of it. There's no roll: whoever gets across right-clicks the bridge winch (with an empty hand) and the bridge (spruce planks) swings down for everyone. The first lowering earns the winch's tier XP. Chasms are meant to be 7 blocks long: a Monk's triple jump clears that, a sprint jump (about 4 blocks) doesn't. An ender pearl or a Rogue's 12-block Shadowstep also gets across, and falling in means climbing out of the pit the hard way. A bridge winch works the nearest chasm within 8 blocks unless linked. The Monk is the Chasm's only primary solver (their exclusive in the catalogue); the gap has no outline, so it shows no hint.
 
 **Crumbling Ledge.** Ledge blocks that give way under you: each one crumbles 10 ticks (half a second) after a player first stands on it, or 40 ticks (2 seconds) for a Monk, and comes back 100 ticks (5 seconds) later once nothing is in the way. Sneaking doesn't help (standing on it is checked every tick). There's no roll and nothing to break; creative and spectator players don't set it off.
 
@@ -80,6 +133,7 @@ Nobody can dispel a seal while under the Beholder's Anti-Magic. Seals glow at li
 ### Hidden and locked (Rangers, Rogues, Artificers)
 **Hidden Door.** A door that looks exactly like the wall it's in: stone bricks (`hidden_door`), deepslate bricks (`hidden_deepslate_door`) or polished blackstone bricks (`hidden_blackstone_door`), shaded like a full block. Until you've found it, it's just a wall: no crosshair hint, and right-clicking does nothing. It can't be broken, and it has no protected shell (a refused block would give it away).
 - **Rangers notice them passively.** Once a second, every Hidden Door within 6 blocks of a Ranger is checked against the Ranger's passive score: 10 + the better of their Perception and Investigation bonuses. A Ranger at class levels 0-4 has a passive 14 (WIS 14 +2, proficient +2), so they notice Easy (DC 10) and Medium (DC 13) doors on their own, but not Hard (15) or Very Hard (18) ones.
+- **Dwarves sense them.** A sneaking Dwarf's [Stonecunning](../races/passive-traits.md) checks every Hidden Door within 8 blocks once a second, like a Ranger's passive check but with +5 (advantage) on the passive score, and finds those whose DC it meets.
 - **Anyone can search.** Sneak and right-click the side of any plain full block (a wall, not the floor or ceiling) with both hands empty. That rolls Investigation ("Search the Wall" on the HUD) on a 5 second cooldown, and finds every Hidden Door within 3 blocks of the block you clicked whose DC the total meets (a natural 20 finds them all, a natural 1 nothing). The roll shows whether or not there's a door. Blocks that do something when used (crafting tables, note blocks and the like), and anything with a block entity (chests, trap tiles), don't count as walls. The Search key (V) also finds Hidden Doors within 8 blocks, using the better of Perception and Investigation.
 - **Found for the whole party.** A door you find is revealed to you and to every member of your `/party`, and they're told who found it. It's outlined in gold dust for everyone who knows about it (within 16 blocks), and its crosshair hint appears: "Found! Anyone can open it now".
 - **Opening.** Anyone who knows about it right-clicks it with an empty hand: no roll. It slides open (no collision).
@@ -121,7 +175,7 @@ Only temples generated after this change are registered (a mixin on each temple 
 | Success | The gears catch and the whole door opens | The resin dissolves | The vent stops for good (the grate stays, dark) |
 | Failed roll | Sparks: 1 damage | It fizzes (no harm) | It belches gas at you: Poison II and Nausea for 10 s |
 | Natural 1 | The gears jam: nobody can work it for 30 s (600 ticks), and an alarm | Acid: 3 magic damage and Poison I for 5 s; alarm | It bursts over everyone within 5 blocks (Poison II and Nausea for 10 s); alarm |
-| Fallback | Smash the mechanism with a pickaxe: hardness 50 (like obsidian). Breaking any block opens the whole door, but any Mountain Dwarf who can see you takes it as breaking their fortress's things: they turn on you and your standing with them drops (a Dwarf gets one warning a day) | Break it with a pickaxe: hardness 3. The whole seal shatters, and every chest, barrel or other loot container touching it (diagonals too) rolls its loot and loses each stack with a 40% chance, exactly like a smashed locked chest | Run it. Poison can't kill, and Rogues are immune to it |
+| Fallback | Smash the mechanism with a pickaxe: hardness 50 (like obsidian). Breaking any block opens the whole door (the broken block stays in place, open, so a reset rebuilds the whole door), but any Mountain Dwarf who can see you takes it as breaking their fortress's things: they turn on you and your standing with them drops (a Dwarf gets one warning a day) | Break it with a pickaxe: hardness 3. The whole seal shatters (the broken block stays in place, open, so a reset puts the whole seal back), and every chest, barrel or other loot container touching it (diagonals too) rolls its loot and loses each stack with a 40% chance, exactly like a smashed locked chest | Run it. Poison can't kill, and Rogues are immune to it |
 
 - **Holding the cost.** Right-click with an empty hand or with what it takes in hand (an iron ingot or redstone dust for the door, any potion for the seal and the vent). The cost is paid as the roll (or a take-your-time focus) starts, so a try that's refused (wait, jammed door, no potion) costs nothing. "Any potion" is any brewed potion, splash or lingering, Awkward Potions included, but not a water bottle. The one in your hands goes first, else the first in your inventory.
 - **Glued shut.** While an Alchemical Seal is sealed, a container with the resin on any side can't be opened in survival ("Amber resin glues it shut").
@@ -212,7 +266,6 @@ None.
 - An Owlbear won at a post follows the Bard as an Animal Friends companion, outside the companion cap. When its day is up it goes wild again (it's still an Owlbear).
 - Guardian Beast posts, Thornwalls and Singing Doors aren't placed in any structure yet (that's the structure placements ticket); place them with `/dndobstacle place`.
 - Burrow (a crawl tunnel for a Druid in a small Wild Shape form) isn't built: it needs the Identity mod's small forms.
-- A smashed Clockwork Door loses the block you broke (the rest of the door opens), so `/dndobstacle reset` can't bring that block back.
 - An Alchemical Seal over a locked loot chest still leaves the chest locked: a Rogue picks it once the resin is gone (or it's smashed open with the usual ruin). Breaking the resin rolls and ruins the cache straight away, so its chest is no longer locked.
 - If your Fire Resistance runs out while you stand inside a Fire Curtain, the curtain is solid round you and you may have to push your way out.
 - Fire Curtain collision for players is decided on each side from the class, Fire Resistance and game mode both sides know; a Fire Resistance that ends at the very moment you step in can make you rubber-band.
@@ -242,11 +295,17 @@ None.
 - `ObstacleType` hooks added for them: `skillFor(player)` (a per-class skill; the hint uses it too), `accepts(player, held)` (which main-hand items work it), `intercept(...)` (handle a click without a roll), `rollExtras(builder, player)` (per-roll bonuses), `onRolled(...)` (sees the natural before the result plays out), `breakingDelta(player, vanilla)` and `neighborChanged(world, pos, from)`.
 - Textures are made by `tools/nature_song_obstacle_textures.py`. `devscripts/obstacle-nature-song.txt` covers a Druid and a Bard calming beasts, a Bard's natural 20 winning an Owlbear, a post attacking a Fighter and opening when its wolf dies, a Druid parting a Thornwall (and its regrowth), a Fighter burning and cutting one, a Bard singing a door open and a Fighter playing a door's tune back.
 - `ObstacleInteractions.solve` pays XP through `ObstacleGroups.claimReward`, which marks the group's `Data.XpEarned`; `ObstacleGroups.reset` clears it.
+- `ObstacleType.opensWhenBroken()` (Clockwork Door, Alchemical Seal): `ObstacleBlock`'s `PlayerBlockBreakEvents.BEFORE` handler runs `onBrokenByHand` (which opens the group) and cancels the break, so the block stays, open, and `ObstacleGroups.reset` reseals it with the rest.
 - `ObstacleGroups.dataInt` / `setDataInt` keep a per-type number on every block of a group. `ObstacleEvents.SOLVED` fires only for a solve that earns XP (not re-cranking a winch, paying a Blood Seal's fallback price, or re-consecrating an altar).
 - Craft and element types: `ClockworkDoorType` (jam time in `Data.JammedUntil`), `AlchemicalSealType`, `MiasmaVentType` (per-second `END_WORLD_TICK` gas), `FireCurtainType` and `FireBrazierType` (a `WinchType` whose target is the curtain), registered in `types/CraftElementObstacles`, which `ObstacleTypes` loads from a static block before it builds the shared block entity type (each obstacle family can register from its own file this way, with the public `ObstacleTypes.register`, `solidSettings` and `glowSettings`). `types/Reagents` takes the iron, redstone and potions. `SkillChecks/LootRuin` is the shared 40% ruin of a forced container (`Lockpicking` uses it too). `MountainDwarfEntity.witness(player, pos)` has dwarves who can see it judge a broken piece of dwarven work.
 - More `ObstacleType` hooks: `accepts(player, held)` (shared with the nature and song types: what the main hand may hold to work it), `payForAttempt(world, pos, player)` (uses up the cost as a roll or focus starts, or refuses) and `collides(state, shapeContext)` (per-entity collision; the Fire Curtain uses it). The crosshair hint shows a click-free obstacle's own text to the class it's for (a Paladin at a Dread Ward, a Warlock at a Fire Curtain).
 - Textures are made by `tools/craft_obstacle_textures.py`; the Fire Curtain uses vanilla soul fire models. `devscripts/obstacle-craft-element.txt` covers an Artificer (no parts, a roll, a jam), a Rogue, a Fighter smashing a door in front of a dwarf, an Alchemist's seal (glued chest, no potion, a roll, acid), a Fighter breaking a seal over a loot chest, the Miasma Vent (Fighter, Rogue, Alchemist), and the Fire Curtain (a Fighter stopped and refused his potion, a Warlock walking through and dousing the brazier, and a Fighter under an Alchemist's Transmute walking through).
 - Textures are made by `tools/divine_obstacle_textures.py`. `devscripts/obstacle-divine.txt` covers a Cleric, a Fighter's fallbacks, the Dread Ward, a Necromancer, a crypt sleeper and the Blood Seal.
+- `Obstacles/ObstacleCodex` reads the registry: `exclusiveSolver(type)` (the only PRIMARY class, if any), `exclusives(types)`, `classesWithoutExclusive(types)`, and `entries()` (every type, minus look-alike `variants(type)` such as the deepslate and blackstone Hidden Doors). The guidebook's Obstacle Codex chapter (`ClassGuidebookScreen.codexPages`) is built from it.
+- `src/test/java/.../Obstacles/ObstacleCodexTest` (JUnit through `fabric-loader-junit`, so it bootstraps Minecraft and the real registry; `./gradlew test`, part of `build`):
+  - `everyClassHasAnExclusiveObstacle`: every `DndCharacter` but `NONE` is the sole PRIMARY of at least one type. A new class, or a type change that takes a class's last exclusive away, fails the build. `losingAnExclusiveFailsTheCheck` demotes each class in turn to prove the check notices.
+  - `classInfoObstacleListsMatchTheRegistry`: each class's `obstacles` list in `class_info.json` names every type it's PRIMARY or SECONDARY for, and its exclusives in bold.
+  - `docsTableMatchesTheRegistry`: the catalogue table above (between the `obstacle-table` markers) matches the registry and `en_us.json`. Regenerate it with `./gradlew generateObstacleTable`; don't edit it by hand.
 - Textures are made by `tools/physical_obstacle_textures.py`. `devscripts/obstacle-physical.txt` covers a Barbarian, a Fighter, a Monk and a Wizard's solo fallbacks.
 - Textures are made by `tools/obstacle_textures.py`. The Locked Door's comes from `tools/locked_door_texture.py`; Hidden Doors use the vanilla brick models.
 - `devscripts/obstacle-hidden-locked.txt` covers a Fighter searching for a Hidden Door, a Ranger noticing one, a Locked Door (refused, picked, XP once per reset), an Artificer disarming and fumbling dungeon traps, the lock glint, and a freshly placed desert pyramid's plate spotted by a Ranger and disarmed by a Rogue. `devscripts/obstacle-party-traps-host.txt` and `-guest.txt` check that a found door and a spotted trap are shared with a party member over LAN.

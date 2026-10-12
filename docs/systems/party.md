@@ -20,12 +20,23 @@ The player who creates the party leads it. If the leader leaves, the member who 
 
 **Role synergies.** Each member's [party role](party-roles.md) helps the others: Bodyguard, Triage, Opportunist, Inspire, Scout and assisted obstacle checks. See [Party synergies](party-synergies.md).
 
-**Cleric special.** It reaches party members too:
+**Party heals and wards.** Two class skills reach party members further than other players:
 
 | Special | Everyone | Party members |
 |-|-|-|
 | Paladin, Circle of Healing (tree skill) | Players within 10 blocks are healed to full | Members within 24 blocks (and the Paladin) are healed to full and get Absorption I for 30 s |
 | Cleric, Sanctuary | The Cleric gets Mob Repel for 6 / 9 / 12 / 15 s (ranks I-IV) | From rank II, members within 8 / 12 / 16 blocks (ranks II-IV) also get Mob Repel for the same time and Regeneration I 5 s / I 8 s / II 10 s, and mobs drop them as a target. At rank I only the Cleric is covered |
+
+### Elsewhere in the mod
+Other systems check the party too:
+- **Quests:** starting one shares it with members within 48 blocks; see [Quests](quests.md).
+- **Dungeons:** room fights scale with the members within 48 blocks of whoever sets them off, and room and puzzle clear XP is split like kill XP; see [Dungeon encounters](dungeon-encounters.md).
+- **Rests:** members resting at campfires within 8 blocks rest together (Song of Rest), and a [party camp](rests.md#party-camps) gives the whole party a long rest at night.
+- **Your own area attacks spare the party:** Warlock Fire Breath, the Dragonborn [Breath Weapon](../races/breath-weapon.md) and the Evocation Wizard's Sculpt Spells don't hit members or their pets, and a tamed River Pikehorn won't fight its owner's party.
+- **Roles:** the HUD and picker show each class's [party role](party-roles.md).
+
+## Where to find it
+There's nothing to craft: use the `/party` commands below. The HUD shows up in the top-left corner once you're in a party with someone else.
 
 ## Commands
 Every player can use these. No op is needed.
@@ -41,7 +52,7 @@ Every player can use these. No op is needed.
 
 ## Known limitations
 - XP is split, not copied. With one partner nearby, each of you gets half.
-- Only class XP from kills is shared. Class XP from other actions (mining, brewing, crafting, the once-a-minute trickle, kills by summons and pets) stays with whoever earned it. Each member gets their share in their own class, and a member with no class gets nothing from it.
+- Only class XP from kills and from dungeon room and puzzle clears is shared. Class XP from other actions (mining, brewing, crafting, the once-a-minute trickle, kills by summons and pets, bounties, quests, obstacles) stays with whoever earned it. Each member gets their share in their own class, and a member with no class gets nothing from it.
 - Mobs that members summon or control can still hit other members: Bard animals, Necromancer undead and mobs a Blood Hunter is controlling.
 - Party members can hurt each other's pets.
 - The party size (8) and XP range (48) are constants in the code, not config options.

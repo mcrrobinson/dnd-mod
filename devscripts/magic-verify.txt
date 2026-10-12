@@ -3,6 +3,7 @@
 # timeout 400 ./gradlew runClient -PdevScript=devscripts/magic-verify.txt
 wait 40
 closescreen
+include _reset.txt
 /dndclass set @s wizard
 wait 40
 closescreen

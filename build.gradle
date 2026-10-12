@@ -109,6 +109,29 @@ dependencies {
 	localRuntime("blue.endless:jankson:1.2.2")
 	modImplementation("software.bernie.geckolib:geckolib-fabric-1.19.4:4.2")
 	implementation("com.eliotlash.mclib:mclib:20")
+
+	// Unit tests run inside Fabric Loader (mixins applied), so they can bootstrap Minecraft and read the registries
+	testImplementation "net.fabricmc:fabric-loader-junit:${project.loader_version}"
+}
+
+test {
+	useJUnitPlatform()
+	// ObstacleCodexTest compares the docs catalogue table with the registry
+	inputs.file('docs/systems/obstacles.md')
+}
+
+// The obstacle catalogue table in docs/systems/obstacles.md is generated from the obstacle registry by
+// ObstacleCodexTest, which `test` (and so `build`) runs; it fails if the table is stale. Change the
+// obstacle types or their lang text, then run ./gradlew generateObstacleTable.
+tasks.register('generateObstacleTable', Test) {
+	group = 'documentation'
+	description = 'Regenerates the obstacle catalogue table in docs/systems/obstacles.md from the obstacle registry.'
+	testClassesDirs = sourceSets.test.output.classesDirs
+	classpath = sourceSets.test.runtimeClasspath
+	useJUnitPlatform()
+	filter { includeTestsMatching '*ObstacleCodexTest.docsTableMatchesTheRegistry' }
+	systemProperty 'dnd.writeObstacleTable', 'true'
+	outputs.upToDateWhen { false }
 }
 
 processResources {

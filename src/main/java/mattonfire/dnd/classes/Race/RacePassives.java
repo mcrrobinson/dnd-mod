@@ -14,7 +14,13 @@ import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.RollFilter;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.Registry.ModEffects;
+import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
+import mattonfire.dnd.classes.Obstacles.ObstacleBlockEntity;
+import mattonfire.dnd.classes.Obstacles.ObstacleIndex;
+import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Obstacles.types.HiddenDoorType;
 import mattonfire.dnd.classes.Rest.CampWatch;
+import mattonfire.dnd.classes.SkillChecks.PerceptionService;
 import mattonfire.dnd.dungeon.DungeonRegistry;
 import mattonfire.dnd.world.gen.dungeon.DungeonPiece;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -64,7 +70,9 @@ import net.minecraft.util.math.Vec3d;
  * <li><b>Second Breakfast</b> (Halfling): food restores {@value #SECOND_BREAKFAST} extra hunger point.</li>
  * <li><b>Stonecunning</b> (Dwarf): x{@value #STONECUNNING_SPEED} break speed on {@link #STONECUNNING_BLOCKS};
  * while sneaking, the bricked-up hidden doorways of a dungeon within {@value #SECRET_DOOR_RANGE} blocks are
- * outlined (when they're stonework, {@link #SECRET_DOOR}).</li>
+ * outlined (when they're stonework, {@link #SECRET_DOOR}), and once a second each Hidden Door obstacle within that
+ * range that's still hidden from you is checked against your passive score + {@value #STONECUNNING_PASSIVE_BONUS}
+ * (advantage): if it meets the DC you find it, as a Ranger would ({@link #stonecunningDoors}).</li>
  * <li><b>Tinker</b> (Gnome): crafting an item in {@link #TINKER_CRAFTS} has a {@value #TINKER_CHANCE} chance to
  * make one extra.</li>
  * <li><b>Ambitious</b> (Human): +{@value #AMBITIOUS_PERCENT}% class XP ({@link #ambitiousXp}), with the
@@ -91,6 +99,8 @@ public final class RacePassives {
 
     public static final float STONECUNNING_SPEED = 1.2F;
     public static final double SECRET_DOOR_RANGE = 8.0;
+    /** Stonecunning's bonus to the passive check against a Hidden Door obstacle: advantage, as on a passive score. */
+    public static final int STONECUNNING_PASSIVE_BONUS = 5;
     private static final DustParticleEffect SECRET_DOOR_DUST = new DustParticleEffect(new Vector3f(0.95F, 0.8F, 0.35F),
             1.2F);
 
@@ -329,6 +339,30 @@ public final class RacePassives {
         }
     }
 
+    /**
+     * A sneaking Dwarf's Stonecunning against the Hidden Door obstacles round them: each one within
+     * {@value #SECRET_DOOR_RANGE} blocks, still hidden from them, is found (for them and their party, with the
+     * finder's XP once per reset) if their passive score + {@value #STONECUNNING_PASSIVE_BONUS} meets its DC.
+     */
+    private static void stonecunningDoors(ServerWorld world, ServerPlayerEntity player) {
+        double rangeSq = SECRET_DOOR_RANGE * SECRET_DOOR_RANGE;
+        int passive = PerceptionService.passive(player, Skill.INVESTIGATION) + STONECUNNING_PASSIVE_BONUS;
+        for (BlockPos pos : ObstacleIndex.get(world).within(player.getBlockPos(), (int) Math.ceil(SECRET_DOOR_RANGE))) {
+            if (player.squaredDistanceTo(pos.toCenterPos()) > rangeSq) {
+                continue;
+            }
+            BlockState state = world.getBlockState(pos);
+            if (!ObstacleBlock.isSealed(state) || !(((ObstacleBlock) state.getBlock()).type() instanceof HiddenDoorType door)
+                    || !door.hiddenFrom(world, pos, player)) {
+                continue;
+            }
+            Tier tier = world.getBlockEntity(pos) instanceof ObstacleBlockEntity be ? be.tier() : Tier.MEDIUM;
+            if (passive >= tier.dc) {
+                door.reveal(world, pos, player, HiddenDoorType.How.STONECUNNING);
+            }
+        }
+    }
+
     /** Draws a doorway's outline in dust, on both faces of the wall, for this player only. */
     private static void outline(ServerWorld world, ServerPlayerEntity player, List<BlockPos> blocks) {
         BlockBox box = BlockBox.encompassPositions(blocks).orElse(null);
@@ -429,6 +463,9 @@ public final class RacePassives {
                 ServerWorld world = player.getWorld();
                 for (List<BlockPos> doorway : secretDoorways(world, player.getBlockPos(), SECRET_DOOR_RANGE)) {
                     outline(world, player, doorway);
+                }
+                if (ticks % 20 == 0 && !player.isCreative()) {
+                    stonecunningDoors(world, player);
                 }
             }
         }

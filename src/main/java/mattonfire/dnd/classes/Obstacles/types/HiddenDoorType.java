@@ -41,6 +41,8 @@ import net.minecraft.world.BlockView;
  * <li><b>Ranger, passive:</b> a Ranger within {@value #PASSIVE_RANGE} blocks whose passive Perception (or
  * Investigation, whichever is better) meets the tier's DC finds it without trying
  * ({@code ObstacleAuras}).</li>
+ * <li><b>Dwarf, sneaking:</b> Stonecunning, the same passive check with advantage (+5) within 8 blocks
+ * ({@code RacePassives}).</li>
  * <li><b>Anyone, searching:</b> sneak + right-click a wall with an empty hand ({@code HiddenSearch}), or the
  * Search key (V).</li>
  * </ul>
@@ -58,7 +60,7 @@ public final class HiddenDoorType extends ObstacleType {
 
     /** How a door was found, for the log and the message. */
     public enum How {
-        PASSIVE, SEARCH, PARTY
+        PASSIVE, SEARCH, PARTY, STONECUNNING
     }
 
     private final Block lookalike;
@@ -158,7 +160,11 @@ public final class HiddenDoorType extends ObstacleType {
                     true, part.getX() + 0.5, part.getY() + 0.5, part.getZ() + 0.5, 8, 0.4, 0.4, 0.4, 0.05);
         }
         Tier tier = world.getBlockEntity(pos) instanceof ObstacleBlockEntity be ? be.tier() : Tier.MEDIUM;
-        finder.sendMessage(Text.translatable(translationKey() + (how == How.PASSIVE ? ".noticed" : ".found")), true);
+        finder.sendMessage(Text.translatable(translationKey() + switch (how) {
+            case PASSIVE -> ".noticed";
+            case STONECUNNING -> ".stonecunning";
+            default -> ".found";
+        }), true);
         world.playSound(null, pos, SoundEvents.BLOCK_STONE_HIT, SoundCategory.BLOCKS, 1.0f, 0.6f);
         finder.playSound(SoundEvents.BLOCK_NOTE_BLOCK_CHIME.value(), SoundCategory.PLAYERS, 0.6f, 1.4f);
         for (UUID id : told) {

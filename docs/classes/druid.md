@@ -63,6 +63,11 @@ How the features work:
 - **Primal Strike** (Moon): in animal form your own attacks deal +2 damage (added before armor).
 - **Natural Recovery** (Land): every 30 s you spend standing on grass blocks, moss or leaves gives you 1 mana pip, on top of normal mana regeneration. Time off natural ground pauses the count rather than resetting it.
 
+## Where to find it
+- Pick the Druid in the class picker (or on the character creation screen) the first time you join. After that only an operator can change it, with `/dndclass set <player> druid`. See [Class selection](../systems/class-selection.md).
+- Open the skill tree with **O**. Swapping your active and passives, ranking up and choosing a subclass at level 3 happen at an [Attunement Table](../systems/class-progression.md#where-to-find-it).
+- Wild Shape needs the Identity mod, which the mod recommends but doesn't bundle. Forms are unlocked in the Bestiary tab of an Attunement Table.
+
 ## Commands
 - `/dndclass set <player> druid` (see [Admin commands](../systems/admin-commands.md)).
 

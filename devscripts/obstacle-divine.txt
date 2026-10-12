@@ -12,6 +12,7 @@
 #  Blood Hunter: right-clicking a Blood Seal takes 4 health and opens it. A Fighter alone pays 16 health.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /gamerule doDaylightCycle false

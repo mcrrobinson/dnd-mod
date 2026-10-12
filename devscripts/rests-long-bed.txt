@@ -6,6 +6,7 @@
 # bed-asleep, bed-rested, bed-already, bed-woken, bed-downed.
 wait 40
 closescreen
+include _reset.txt
 respawn
 /gamemode survival
 /difficulty easy

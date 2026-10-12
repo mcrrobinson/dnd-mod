@@ -13,7 +13,7 @@ Smite Dragons is an Artificer enchantment for swords and axes. It's Smite for dr
 - Other mobs take no extra damage.
 - It can't be combined with Sharpness, Smite or Bane of Arthropods.
 
-## How to get it
+## Where to find it
 
 - At an enchanting table as an **Artificer**: swords and axes can roll it, at the same power levels as Smite. Other classes never roll it.
 - On items an Artificer crafts, through the class's chance for crafted gear to come out enchanted.

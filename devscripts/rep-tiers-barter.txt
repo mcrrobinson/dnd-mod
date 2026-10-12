@@ -5,6 +5,7 @@
 # honored table.
 wait 40
 closescreen
+include _reset.txt
 /gamemode survival
 /dndclass set @s fighter
 /effect give @s minecraft:resistance 900 4 true

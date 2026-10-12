@@ -21,6 +21,7 @@ Bosses and the big dragons share one fight system: a boss bar, fight music, heal
 | [Goblin Warlord](goblin-warlord.md) | 250 | yellow, notched | 48 | none | red enrage below 50% | 60 | none |
 | [Magmamuncher Alpha](magmamuncher-alpha.md) | 300 | yellow, notched | 48 | Tooth and Claw | red enrage below 50% | 100 | none |
 | [Lich](lich.md) | 300 | purple, notched | 48 | Lich theme | blue below 60%, red below 30% | 150 | Lichbane |
+| [Orc War Chief](orc-war-chief.md) | 90 | red, notched | 48 | Tooth and Claw | purple War Cry below 50% | 60 | none |
 | [Beholder](beholder.md) | 250 | purple, notched | 48 | Tooth and Claw | red enrage below 50% | 120 | An Eye for an Eye |
 | [Wyvern](../mobs/dragons.md) (wild) | 40 | red | 64 | Tooth and Claw | none | 20 | Dragon Slayer |
 | [Lightning Chaser](../mobs/dragons.md) (wild) | 200 | yellow | 64 | Tooth and Claw | none | 80 | Dragon Slayer |
@@ -32,6 +33,17 @@ Tamed dragons never start a boss fight. The Ember Wyvern is a dragon too, but a 
 - The bar tells you when a boss changes phase. When it turns red, expect something new: summoned minions, faster attacks or more damage.
 - Several bosses gain new attacks at range when they enrage, so plan your cover before you get them to half health.
 - A boss that has fought a player doesn't despawn, so you can retreat, heal and come back.
+
+## Where to find it
+- Goblin Warlord: [Nether Fortresses](../structures/nether-fortresses.md), 30% of [goblin camps](../structures/goblin-camps.md), the last wave of every [goblin raid](../systems/goblin-raids.md) and the boss room of a Goblin Warren dungeon.
+- Magmamuncher Alpha: rare spawns in Basalt Deltas and Nether Wastes.
+- Lich: stronghold libraries and the boss room of a [Crypt](../structures/dungeons.md) dungeon.
+- Orc War Chief: [Orc Strongholds](../structures/orc-strongholds.md).
+- Beholder: its deep underground lair, and the boss room of a Dwarven Ruins dungeon.
+- Dragons: see [Dragons](../mobs/dragons.md) and the [lairs](../structures/dragon-lairs.md).
+
+## Commands
+None of their own. `/summon dndclasses:<boss>` spawns one for testing.
 
 ## For developers
 - See [Boss framework](../dev/boss-framework.md) for adding a boss with `BossFight`.

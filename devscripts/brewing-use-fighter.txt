@@ -1,6 +1,7 @@
 # A fighter opens a brewing stand and adds the ingredient, so the brew starts with them looking: it must explode.
 wait 40
 closescreen
+include _reset.txt
 wait 10
 /gamemode creative
 /dndclass set @s fighter

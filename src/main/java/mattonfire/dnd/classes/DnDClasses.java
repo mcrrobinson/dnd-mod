@@ -10,17 +10,13 @@ import org.slf4j.LoggerFactory;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.Config.FAConfig;
 import mattonfire.dnd.classes.Items.ClassGuidebook;
-import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Effects.SuperStrengthStatusEffect;
 import mattonfire.dnd.classes.Goals.PriorityPlayerTargetGoal;
 import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
 import mattonfire.dnd.classes.Misc.BloodHunterControl;
-import mattonfire.dnd.classes.Misc.PowerUpEffect;
 import mattonfire.dnd.classes.Progression.Abilities;
 import mattonfire.dnd.classes.Progression.Progression;
-import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModBlocks;
-import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.Registry.ModEntities;
@@ -28,32 +24,16 @@ import mattonfire.dnd.classes.Registry.ModItemGroup;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
 import mattonfire.dnd.classes.Registry.ModSounds;
-import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import mattonfire.dnd.particle.ModParticles;
 import mattonfire.dnd.classes.Commands.DndClassCommand;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.registry.FabricBrewingRecipeRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.effect.StatusEffectInstance;
-import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.BowItem;
-import net.minecraft.item.CrossbowItem;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SwordItem;
 import net.minecraft.item.Items;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.s2c.play.SubtitleS2CPacket;
@@ -63,16 +43,11 @@ import net.minecraft.potion.Potions;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
-import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TypedActionResult;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 
 public class DnDClasses implements ModInitializer {
@@ -88,64 +63,6 @@ public class DnDClasses implements ModInitializer {
         public static final Logger LOGGER = LoggerFactory.getLogger("dndclasses");
 
         public static final Map<String, String> respawnMessage = new HashMap<String, String>();
-
-        private static void sendPowerupPacket(MinecraftServer server, ServerPlayerEntity player,
-                        ServerPlayNetworkHandler handler, PacketByteBuf buf, PacketSender responseSender) {
-                server.execute(() -> {
-                        // Held by the Dungeon Master's freeze: no powers.
-                        if (mattonfire.dnd.dm.DmFreeze.isFrozen(player)) {
-                                return;
-                        }
-                        // Downed: no specials (holding the key gives up instead, see DownedEvents).
-                        if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
-                                return;
-                        }
-                        // Firing a power gets you up from a short rest.
-                        mattonfire.dnd.classes.Rest.RestSession.cancel(player, "you used a power");
-                        // The equipped active skill; classes without a tree yet use their power-up at full mana.
-                        mattonfire.dnd.classes.Progression.ClassProgress progress = Progression.current(player);
-                        SkillNode skill = progress.activeNode();
-                        int cost = skill == null ? MANA_ICONS
-                                        : mattonfire.dnd.classes.Progression.ClassSkills.manaCostFor(progress, skill);
-                        // Sneak + power-up picks the Druid's Wild Shape form; free, so before the mana check.
-                        if (Druid.cycleForm(player)) {
-                                return;
-                        }
-                        int mana = ManaManager.getMana(player);
-                        if (mana < cost) {
-                                return;
-                        }
-                        // Major actives also cost charges, which only rests restore (off with dndRests false)
-                        if (!Charges.canAfford(player, skill)) {
-                                player.sendMessage(Text.literal("No charges left: rest to recover")
-                                                .formatted(Formatting.RED), true);
-                                return;
-                        }
-                        // A Beholder's anti-magic cone: the power fizzles and the mana is kept
-                        if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)) {
-                                return;
-                        }
-
-                        // Heals the skill lands on others count as outside heals: they revive Downed players
-                        boolean success = mattonfire.dnd.classes.Downed.Revives.asHealer(player, () -> skill == null
-                                        ? PowerUpEffect.play(server, player, Progression.classOf(player))
-                                        : Abilities.activate(player, skill));
-                        if (success) {
-                                ManaManager.setMana(player, mana - cost);
-                                ManaManager.sync(player);
-                                Charges.spend(player, skill);
-                                mattonfire.dnd.classes.Progression.ClassSkills skills = mattonfire.dnd.classes.Progression.ClassTrees
-                                                .skills(progress.dndClass);
-                                if (skills != null) {
-                                        skills.afterActivate(player, progress, skill);
-                                }
-                                ServerPlayNetworking.send(player,
-                                                ClassPackets.S2C_POWERUP_EFFECTS_PACKET_ID,
-                                                new PacketByteBuf(Unpooled.buffer()));
-                        }
-                });
-
-        }
 
         /** Shows the hint left by a player's last death, if any, once. */
         public static void sendRespawnHint(ServerPlayerEntity player) {
@@ -254,154 +171,9 @@ public class DnDClasses implements ModInitializer {
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();
 
-                AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-                        if (player instanceof PlayerEntityExt) {
-                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) player;
-                                DndCharacter dndCharacter = playerEntityExt.getDndClass();
-                                if (dndCharacter == DndCharacter.NECROMANCER) {
-                                        // Apply wither to the enemy
-                                        if (entity instanceof LivingEntity) {
-                                                LivingEntity livingEntity = (LivingEntity) entity;
-                                                livingEntity.addStatusEffect(new StatusEffectInstance(
-                                                                StatusEffects.WITHER,
-                                                                5,
-                                                                0));
-                                        }
-                                }
-                        }
-                        return ActionResult.PASS;
-                });
-
-                ServerLivingEntityEvents.AFTER_DEATH.register((entity, damageSource) -> {
-                        if (damageSource.getTypeRegistryEntry().getKey()
-                                        .orElse(null) == ModDamageTypes.BREWING_STAND_DAMAGE_SOURCE) {
-                                DnDClasses.respawnMessage.put(entity.getUuidAsString(),
-                                                "Maybe get a alchamist to brew next time...");
-
-                        }
-                });
-
-                // Warlock fire breath ticks in Warlock.register().
-
-                ServerTickEvents.END_WORLD_TICK.register(serverWorld -> {
-                        {
-                                long currentTick = serverWorld.getServer().getTicks();
-
-                                if (currentTick % MANA_TICKS_PER_INCREMENT == 0) {
-                                        for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-                                                // Downed players don't regain mana
-                                                if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
-                                                        continue;
-                                                }
-                                                ManaManager.regenerateMana(player);
-                                        }
-                                }
-                        }
-                });
-
-                AttackEntityCallback.EVENT.register((player, world, hand, entity, hitResult) -> {
-                        // The params used to be swapped (hitResult, entity), so `entity` was the hit
-                        // result and nothing below ran. A RANGER branch here returned FAIL when the
-                        // *target* was a Ranger (making Rangers immune to player melee); it never
-                        // took effect and isn't in the README, so it stays disabled.
-
-                        // Blood Hunter: every sword has Fire Aspect II (8 seconds of fire).
-                        if (!world.isClient && player instanceof PlayerEntityExt attacker
-                                        && attacker.getDndClass() == DndCharacter.BLOODHUNTER
-                                        && player.getStackInHand(hand).getItem() instanceof SwordItem
-                                        && entity instanceof LivingEntity) {
-                                entity.setOnFireFor(8);
-                        }
-
-                        return ActionResult.PASS;
-                });
-
-                // Register event listener
-                // Runs on both sides, so the client refuses before starting the drink or draw animation
-                UseItemCallback.EVENT.register((player, world, hand) -> {
-                        if (player instanceof PlayerEntityExt) {
-                                PlayerEntityExt playerEntityExt = (PlayerEntityExt) player;
-                                if (playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
-                                        ItemStack itemStack = player.getStackInHand(hand);
-                                        if (itemStack.getItem() instanceof BowItem
-                                                        || itemStack.getItem() instanceof CrossbowItem) {
-                                                player.sendMessage(Text.of("Fighters cannot use bows!"), true);
-                                                return TypedActionResult.fail(itemStack);
-                                        }
-                                }
-                                if (playerEntityExt.getDndClass() == DndCharacter.ARTIFICER
-                                                && player.getStackInHand(hand).isOf(Items.POTION)) {
-                                        // Drinking would waste it; splash/lingering can still be thrown at others
-                                        player.sendMessage(Text.of("Potions have no effect on you!"), true);
-                                        return TypedActionResult.fail(player.getStackInHand(hand));
-                                }
-                                if (playerEntityExt.getDndClass() == DndCharacter.PALADIN
-                                                || playerEntityExt.getDndClass() == DndCharacter.FIGHTER) {
-                                        ItemStack itemStack = player.getStackInHand(hand);
-
-                                        // Only drinking is blocked. Splash and lingering potions can still be
-                                        // thrown (e.g. holy water at a Holy Ward); PotionImmunity keeps their
-                                        // buffs off the thrower.
-                                        if (itemStack.isOf(Items.POTION)) {
-                                                // Prevent the player from using it
-                                                player.sendMessage(Text
-                                                                .of("You are not allowed to drink potions!"),
-                                                                true);
-                                                return TypedActionResult.fail(itemStack);
-                                        }
-                                } else if (playerEntityExt.getDndClass() == DndCharacter.WARLOCK) {
-                                        // Empty-hand fireballs are handled in Warlock (client mixin + C2S packet).
-                                }
-                        }
-                        return TypedActionResult.pass(player.getStackInHand(hand));
-                });
-
-                UseItemCallback.EVENT.register((player, world, hand) -> {
-
-                        ItemStack stack = player.getStackInHand(hand);
-                        if (!world.isClient) {
-
-                                // Get the level
-                                int level = EnchantmentHelper.getLevel(ModEnchantments.LUNGE_ENCHANTMENT, stack);
-                                if (level > 0) {
-
-                                        if (player.getItemCooldownManager().isCoolingDown(stack.getItem())) {
-                                                return TypedActionResult.fail(stack);
-                                        }
-
-                                        // Perform the lunge movement
-                                        Vec3d lookVec = player.getRotationVec(1.0F);
-                                        double lungeStrength = 1 * level;
-
-                                        Vec3d lungeMotion = new Vec3d(lookVec.x * lungeStrength, 0.3,
-                                                        lookVec.z * lungeStrength);
-                                        player.addVelocity(lungeMotion.x, lungeMotion.y, lungeMotion.z);
-                                        player.velocityModified = true;
-
-                                        player.getItemCooldownManager().set(stack.getItem(), 100);
-
-                                        // Show effects to all players.
-                                        PacketByteBuf passedData = new PacketByteBuf(Unpooled.buffer());
-                                        passedData.writeUuid(player.getUuid());
-
-                                        // Send effects to the current player.
-                                        ServerPlayNetworking.send((ServerPlayerEntity) player,
-                                                        ClassPackets.S2C_LUNGE_EFFECTS_PACKET_ID,
-                                                        passedData);
-
-                                        // Send effects to all players in vicinity
-                                        PlayerLookup.tracking(player).forEach(p -> {
-                                                ServerPlayNetworking.send(p, ClassPackets.S2C_LUNGE_EFFECTS_PACKET_ID,
-                                                                passedData);
-                                        });
-
-                                        return TypedActionResult.success(stack);
-                                }
-
-                        }
-                        return TypedActionResult.pass(stack);
-
-                });
+                // Class rules (Fighter bows, potion bans, Necromancer wither, Blood Hunter fire), the Lunge
+                // enchantment, mana regeneration and the brewing-death hint.
+                ClassEvents.register();
 
                 FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Ingredient.ofItems(Items.ICE),
                                 ModPotions.FREEZE_POTION.value());
@@ -410,8 +182,7 @@ public class DnDClasses implements ModInitializer {
                 // The double-jump packet is handled in MonkHandler.register().
 
                 // Register powerup registry.
-                ServerPlayNetworking.registerGlobalReceiver(ClassPackets.C2S_POWERUP_EFFECTS_REQUEST_PACKET_ID,
-                                DnDClasses::sendPowerupPacket);
+                PowerUpRequests.register();
 
                 // Register classpick registry.
 

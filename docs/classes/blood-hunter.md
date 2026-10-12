@@ -73,5 +73,5 @@ How the features work:
 
 ## For developers
 - Test: `devscripts/blood-hunter-ranks.txt` (ranks, boss refusal; needs Identity in `run/mods` or on the classpath).
-- Fire and damage: `DnDClasses` (`AttackEntityCallback`) and `mixin/LivingEntityMixin.modifyDamageAmount`. No sword drops: `Misc/BloodHunterSwords` and the `*SwordDropMixin` mixins. Control: `Misc/BloodHunterControl` (`successChance`, strong-mob penalty and blood price constants, boss filter), `Misc/BloodHunterIdentityCompat`. Per-rank duration, success and range: `BloodHunterSkills.BLOOD_CONTROL`.
+- Fire and damage: `ClassEvents` (`AttackEntityCallback`) and `mixin/LivingEntityMixin.modifyDamageAmount`. No sword drops: `Misc/BloodHunterSwords` and the `*SwordDropMixin` mixins. Control: `Misc/BloodHunterControl` (`successChance`, strong-mob penalty and blood price constants, boss filter), `Misc/BloodHunterIdentityCompat`. Per-rank duration, success and range: `BloodHunterSkills.BLOOD_CONTROL`.
 - Skill tree: `Progression/Classes/BloodHunterSkills.java`. The day/night multiplier is applied in `LivingEntityMixin` after the skill hooks, so Sunshield and Blood Moon scale day damage up first to land on their targets.

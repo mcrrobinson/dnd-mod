@@ -75,6 +75,6 @@ Pick the Necromancer in the class picker (or on the character creation screen) w
 - Raised undead die and drop their normal loot (rotten flesh, bones, string) if something kills them before their time is up.
 
 ## For developers
-- Wither: the `AttackEntityCallback` in `DnDClasses`. Undead: `mixin/ActiveTargetGoalMixin`. Summons: `PowerUpEffect.spawnUndead` through `SkillHelpers.spawnSummon`, and `Goals/FollowSummonerGoal`. Raise Dead's per-rank numbers are `NecromancerSkills.RAISE_DEAD` and the kinds `NecromancerSkills.raisedUndead(rank)`; raised units carry the tag `dndclasses.raised_dead` (`PowerUpEffect.MAX_RAISED`).
+- Wither: the `AttackEntityCallback` in `ClassEvents`. Undead: `mixin/ActiveTargetGoalMixin`. Summons: `PowerUpEffect.spawnUndead` through `SkillHelpers.spawnSummon`, and `Goals/FollowSummonerGoal`. Raise Dead's per-rank numbers are `NecromancerSkills.RAISE_DEAD` and the kinds `NecromancerSkills.raisedUndead(rank)`; raised units carry the tag `dndclasses.raised_dead` (`PowerUpEffect.MAX_RAISED`).
 - Test: `devscripts/necromancer-ranks.txt` (counts at rank I and V, the Bone Wyvern's parts, and the despawn).
 - Skill tree: `Progression/Classes/NecromancerSkills.java`. All summons join a scoreboard team named after your UUID, which is also how a summon's kill is traced back to you. The team is removed when your last summon is gone.

@@ -11,7 +11,7 @@
       "role": "TANK",
       "secondaryRole": "DAMAGE",
       "roleBlurb": "Soak hits up front and smash through what blocks the way",
-      "obstacles": ["**Heavy Boulders**: heave them aside while raging (only you)", "Collapsed Passages"],
+      "obstacles": ["**Heavy Boulders**: heave them aside while raging (only you)", "Collapsed Passages", "Portcullis Winches"],
       "subclasses": [
         {"id": "barbarian.berserker", "name": "Path of the Berserker", "title": "Berserker Barbarian", "flavour": "Rage without end: every kill feeds the fury.", "feature": "**Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage)", "featureReady": true},
         {"id": "barbarian.totem_warrior", "name": "Path of the Totem Warrior", "title": "Totem Warrior Barbarian", "flavour": "A bear spirit stands with you, shrugging off blows.", "feature": "**Bear Totem Spirit**: while Rage is active you take 15% less damage (not from the void, /kill or starving)", "featureReady": true}
@@ -51,7 +51,7 @@
       "role": "HEALER",
       "secondaryRole": "SUPPORT",
       "roleBlurb": "Keep the party alive and turn back the unholy",
-      "obstacles": ["**Desecrated Altars**: consecrate them to stop nearby spawners and heal the party (only you)", "Holy Wards"],
+      "obstacles": ["**Desecrated Altars**: consecrate them to stop nearby spawners and heal the party (only you)", "**Holy Wards**: open them with a prayer (a Paladin can try too)"],
       "subclasses": [
         {"id": "cleric.life", "name": "Life Domain", "title": "Life Cleric", "flavour": "A healer first, and a scourge of the undead.", "feature": "**Disciple of Life**: Cure Wounds heals 25% more, Preserve Life's and Sanctuary's party Regeneration last 25% longer, and Divine Intervention also gives Absorption I for 10 seconds", "featureReady": true},
         {"id": "cleric.forge", "name": "Forge Domain", "title": "Forge Cleric", "flavour": "Blessed hammer, blessed ore, blessed steel.", "feature": "**Blessing of the Forge**: once per long rest (once per in-game day with the dndRests gamerule off), make one held weapon or worn armor piece +1 (up to +3) until your next long rest, from an Attunement Table's Items tab", "featureReady": true}
@@ -131,7 +131,7 @@
       "role": "TANK",
       "secondaryRole": "HEALER",
       "roleBlurb": "Shield your allies with your aura and heal them when it counts",
-      "obstacles": ["**Dread Wards**: walk through and shield allies within 6 blocks from the fear (only you)", "Holy Wards"],
+      "obstacles": ["**Dread Wards**: walk through and shield allies within 6 blocks from the fear (only you)", "Holy Wards", "Collapsed Passages", "Portcullis Winches"],
       "subclassTerm": "oath",
       "subclasses": [
         {"id": "paladin.devotion", "name": "Oath of Devotion", "title": "Devotion Paladin", "flavour": "Sworn to honour, light and the slaying of the undead.", "feature": "**Purity of Spirit**: you're immune to Wither and Poison, and undead deal you 15% less damage", "featureReady": true},
@@ -172,7 +172,7 @@
       "role": "DAMAGE",
       "secondaryRole": "UTILITY",
       "roleBlurb": "Strike from the shadows and open what is locked",
-      "obstacles": ["**Locked chests and doors**: pick them (only you)", "**Spotted traps**: disarm them (only you)", "Miasma Vents (immune to poison)"],
+      "obstacles": ["**Locked doors and chests**: pick them (only you)", "**Spotted traps**: disarm them (only you)", "Clockwork Doors", "Miasma Vents (immune to poison)"],
       "subclasses": [
         {"id": "rogue.assassin", "name": "Assassin", "title": "Assassin Rogue", "flavour": "Strike first, from the dark, and once is enough.", "feature": "**Assassinate**: double melee damage to a mob that isn't targeting you, and your first melee swing out of Vanish (while it lasts or up to 5 seconds after) is a critical", "featureReady": true},
         {"id": "rogue.thief", "name": "Thief", "title": "Thief Rogue", "flavour": "Quick hands, light feet and an eye for treasure.", "feature": "**Fast Hands**: +3 to lockpicking (Thieves' Tools), and you ignore class restrictions when attuning magic items", "featureReady": true}
@@ -212,7 +212,7 @@
       "role": "DAMAGE",
       "secondaryRole": "SUPPORT",
       "roleBlurb": "Blast foes with eldritch fire and curse them for your allies",
-      "obstacles": ["**Fire Curtains**: walk through and douse the brazier (only you)", "Lesser Arcane Seals"],
+      "obstacles": ["**Fire Curtains**: walk through, then douse the **Fire Curtain Brazier** beyond (only you)", "Lesser Arcane Seals"],
       "subclasses": [
         {"id": "warlock.fiend", "name": "The Fiend", "title": "Fiend Warlock", "flavour": "A pact sealed in hellfire.", "feature": "**Dark One's Own Luck**: once every 2 minutes, a failed d20 roll of yours (a check, a save or a fumbled attack) is rolled again", "featureReady": true},
         {"id": "warlock.great_old_one", "name": "The Great Old One", "title": "Great Old One Warlock", "flavour": "A pact with something vast, from beyond the stars.", "feature": "**Entropic Ward**: once every 60 seconds, a projectile that would hit you misses", "featureReady": true}
@@ -232,7 +232,7 @@
       "role": "DAMAGE",
       "secondaryRole": "UTILITY",
       "roleBlurb": "Deal huge area damage and unravel magic",
-      "obstacles": ["**Greater Arcane Seals**: dispel them (only you)", "Lesser Arcane Seals"],
+      "obstacles": ["**Greater Arcane Seals**: dispel them (only you)", "**Lesser Arcane Seals**: dispel them (a Warlock can try too)"],
       "subclasses": [
         {"id": "wizard.evocation", "name": "School of Evocation", "title": "Evocation Wizard", "flavour": "Raw elemental power, shaped so it spares your friends.", "feature": "**Sculpt Spells**: your staff blasts, Arcane Explosion and Meteor Swarm don't hurt or knock back party members or their pets", "featureReady": true},
         {"id": "wizard.abjuration", "name": "School of Abjuration", "title": "Abjuration Wizard", "flavour": "Wards, shields and the art of staying alive.", "feature": "**Arcane Ward**: every active you fire gives 2 absorption hearts (up to 4), fading 60 seconds after the last", "featureReady": true}
@@ -252,7 +252,7 @@
       "role": "UTILITY",
       "secondaryRole": "TANK",
       "roleBlurb": "Craft better gear and keep the party's armour strong",
-      "obstacles": ["**Clockwork Doors**: repair them (only you)", "Disarming mechanical traps"],
+      "obstacles": ["**Clockwork Doors**: repair them (a Rogue can try too)", "Disarming mechanical traps"],
       "subclasses": [
         {"id": "artificer.armorer", "name": "Armorer", "title": "Armorer Artificer", "flavour": "Your armor is your greatest invention.", "feature": "**Power Armor**: Arcane Armor lasts 45 seconds instead of 30 and adds 0.5 knockback resistance", "featureReady": true},
         {"id": "artificer.battle_smith", "name": "Battle Smith", "title": "Battle Smith Artificer", "flavour": "A smith of war, with a steel companion at your side.", "feature": "**Battle Ready**: +2 melee damage with any identified magic weapon", "featureReady": true}

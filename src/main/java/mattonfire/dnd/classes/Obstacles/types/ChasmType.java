@@ -39,7 +39,8 @@ public final class ChasmType extends ObstacleType {
 
     @Override
     public Eligibility eligibility(DndCharacter dndClass) {
-        return Eligibility.NONE;
+        // The Monk's job (their exclusive): nothing to roll or click, but their hint is theirs
+        return dndClass == DndCharacter.MONK ? Eligibility.PRIMARY : Eligibility.NONE;
     }
 
     @Override

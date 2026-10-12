@@ -15,6 +15,9 @@ import net.minecraft.util.math.BlockPos;
  * An iron portcullis. Nobody rolls against the gate itself: its {@link PortcullisWinchType winch}
  * raises it. Anyone can mine through instead (hardness 50, like obsidian, per bar), and a Fighter can
  * wedge it open for good from the winch.
+ *
+ * <p>The Fighter is its only PRIMARY (the wedge is their exclusive job, see {@code ObstacleCodex}), but the gate
+ * itself takes no clicks: the wedge happens at the winch. Its hint names the winch and the Fighter.
  */
 public final class PortcullisType extends ObstacleType {
     public PortcullisType(Identifier id) {
@@ -28,7 +31,13 @@ public final class PortcullisType extends ObstacleType {
 
     @Override
     public Eligibility eligibility(DndCharacter dndClass) {
-        return Eligibility.NONE;
+        return dndClass == DndCharacter.FIGHTER ? Eligibility.PRIMARY : Eligibility.NONE;
+    }
+
+    /** Worked from its winch, so a Fighter isn't told to right-click the gate. */
+    @Override
+    public boolean interactive() {
+        return false;
     }
 
     @Override

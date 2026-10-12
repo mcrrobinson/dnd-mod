@@ -58,7 +58,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data, with an Obstacle Codex chapter built from the obstacle registry
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
-- [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses; the settlement's health, and losing the raid when it falls (PR #TBD)
+- [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses; the settlement's health, and losing the raid when it falls (PR #217)
 - [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids, and higher tiers add perks (raid lookouts and loot, a free room, barrels, dwarf allies)
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts

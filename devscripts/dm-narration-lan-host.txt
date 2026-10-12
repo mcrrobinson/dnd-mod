@@ -1,0 +1,55 @@
+# DM narration and loot planting over LAN, host side (the DM).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dm-narration-lan-host.txt
+# then, once "Started serving on" is in the log, dm-narration-lan-guest.txt as Guest in run-2 (port 25643).
+# Expect in this latest.log: "[DM] narrate to Dev, Guest", "[DM] title ...", "[DM] say as Gimli Stonebeard",
+# "[DM] mood boss (dndclasses:music.dragon_fight) for Dev, Guest", "Planted a chest of ... (locked, DC 18)",
+# "[D20] Guest Lockpicking 8 ... vs DC 18 -> FAILURE", and "Test passed" for the chest still being locked.
+wait 40
+closescreen
+respawn
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/publish true survival 25643
+/kill @e[type=!player,distance=..30]
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 153 8 minecraft:air
+/tp @s 1.5 150 1.5 0 0
+/dm on
+waitchat guest-ready
+wait 20
+/dndclass set @a[name=Guest] fighter
+/tp @a[name=Guest] 4.5 150 2.5 0 10
+/summon dndclasses:mountain_dwarf 4.5 150 6.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],CustomName:'"Gimli Stonebeard"'}
+wait 20
+/dm narrate The torches gutter as you step into the *Hall of Kings*.
+/dm narrate @a[name=Guest] Something glints under the dwarf's beard.
+wait 30
+/dm title Chapter Two | The Hall of Kings
+wait 40
+/dm say @e[type=dndclasses:mountain_dwarf,limit=1,sort=nearest] Who goes there? Speak, or be silent forever.
+wait 40
+/dm mood boss
+wait 60
+/dm loot plant minecraft:chests/simple_dungeon 4 150 4 dc 18
+/tp @a[name=Guest] 4.5 150 2.5 0 35
+/tellraw @a "try-chest"
+waitchat fighter-tried
+/dndclass set @a[name=Guest] rogue
+/dndclass forceroll @a[name=Guest] 8
+wait 10
+/tellraw @a "pick-chest"
+waitchat rogue-tried
+wait 10
+/data get block 4 150 4
+/execute if data block 4 150 4 LootTable
+/dm mood off
+wait 20
+screenshot dm-narration-lan-host
+/kill @e[type=dndclasses:mountain_dwarf]
+/setblock 4 150 4 minecraft:air
+/tellraw @a "host-done"
+wait 60
+/dm off
+quit

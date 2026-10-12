@@ -72,6 +72,7 @@ Each ticket gets its own git worktree so multiple Claude sessions can work in pa
   - Grep the log for `[DevScript] actionbar:` instead of screenshotting action-bar messages.
   - `sneak on` needs a few ticks to reach the server: `wait 3` before the `use`.
   - Hitbox rendering also draws dragon part shapes as green boxes.
+  - Structure mobs (goblin camp garrisons, settlement guards, ...) are persistent and don't respawn, so a `/kill @e[...]` near one removes them from that world for good. Clean up with a tag (`/kill @e[tag=mytest]`) or a small `distance=..N` round your own test area, and summon tagged stand-ins rather than relying on a structure's own mobs.
 - Script gotchas:
   - `/dndclass set` puts the Class Guidebook in the first empty slot, often the hand, and a later `use` opens it (pausing the game). Run `/clear @s dndclasses:class_guidebook` after it.
   - NPCs only open dialogue for an empty hand (the innkeeper also with most items in hand). The innkeeper's trades open on sneak + right-click with an empty hand.

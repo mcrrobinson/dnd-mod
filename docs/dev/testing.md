@@ -28,6 +28,9 @@ Mobs and bosses log each special action at DEBUG level, which the dev client wri
 
 The name, the action, the target, the mob's health and the world time, so a script can check how often something happens. Logged: Owlbear charge (with the cooldown that follows it) and bear hug, breath weapons (`FireBreathGoal`), Lich spells, Beholder rays and enrage, Goblin Warlord waves and enrage, Magmamuncher Alpha fire spit and enrage (`entity/MobActions`). `devscripts/owlbear-fury.txt` uses it to check that a furious owlbear charges more often below half health.
 
+## Logging
+All mod code logs through the one slf4j logger, `DnDClasses.LOGGER` (logger name `dndclasses`); nothing prints to `System.out` or calls `printStackTrace`. INFO lines (one-off events, the `[Dungeon]`, `[Party]`, `[D20]`... prefixes) go to `latest.log`; DEBUG lines (anything per tick or per packet: `[MobAction]`, `[Subclass]` mana gains, mana syncs, power-up starts) go to `debug.log` only. Problems log at WARN or ERROR with the exception attached. `devscripts/logger-smoke.txt` checks both files.
+
 ## Known limitations
 - Minecraft 1.19.4 ignores `--quickPlaySingleplayer`; DevScript's auto-join does that job.
 - Script gotchas (Class Guidebook in hand after `/dndclass set`, `/kill` not counting for quests, NoAI side effects, one-player commands, obstacle roll delay, test spawners) are listed in CLAUDE.md.

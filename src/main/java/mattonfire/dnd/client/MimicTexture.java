@@ -11,8 +11,6 @@ import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.resource.ResourceManager;
 import net.minecraft.resource.ResourceType;
 import net.minecraft.util.Identifier;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * The mimic's skin: the real chest texture (from whatever resource pack is active), with the
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
  * chests around it.
  */
 public final class MimicTexture {
-    private static final Logger LOGGER = LoggerFactory.getLogger("dndclasses/mimic");
     public static final Identifier ID = new Identifier(DnDClasses.MOD_ID, "dynamic/mimic");
     private static final Identifier CHEST = new Identifier("minecraft", "textures/entity/chest/normal.png");
     /** 64x64, laid out like the chest texture; transparent wherever the chest should show through. */
@@ -84,7 +81,7 @@ public final class MimicTexture {
             client.getTextureManager().registerTexture(ID, new NativeImageBackedTexture(out));
             return ID;
         } catch (IOException | RuntimeException e) {
-            LOGGER.warn("Couldn't build the mimic texture, drawing it as a plain chest", e);
+            DnDClasses.LOGGER.warn("Couldn't build the mimic texture, drawing it as a plain chest", e);
             return CHEST;
         }
     }

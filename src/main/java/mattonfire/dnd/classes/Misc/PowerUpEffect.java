@@ -167,7 +167,7 @@ public class PowerUpEffect {
         if (character == null || character == DndCharacter.NONE)
             return false; // No class picked yet, keep the mana
 
-        System.out.println("Starting powerup on: " + character.toString());
+        DnDClasses.LOGGER.debug("Starting power-up {} for {}", character, player.getName().getString());
         switch (character) {
             case RANGER:
                 // Fire rate and arrow speed are read from the rank while it runs (PlayerEntityMixin, BowItemMixin).

@@ -56,7 +56,7 @@ final class DmNarration {
     public static final int TITLE_FADE_OUT = 20;
     public static final double MOOD_RANGE = 96.0;
     /** The fake boss bar a mood track is filed under on the client ({@link BossMusic}). */
-    public static final UUID MOOD_BAR = UUID.nameUUIDFromBytes("dndclasses:dm_mood".getBytes());
+    public static final UUID MOOD_BAR = BossMusic.MOOD_BAR;
 
     private static final SimpleCommandExceptionType NO_PLAYERS = new SimpleCommandExceptionType(
             Text.literal("No players to tell"));

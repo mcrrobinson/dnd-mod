@@ -1,0 +1,49 @@
+# A real boss fight's track plays over the DM's mood music, and the mood comes back when the fight ends.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/boss-over-mood.txt
+# Check latest.log, "[EventMusic] bar track <id> (mood|fight)" lines in this order:
+#   instrument.lute (mood) -> music.dragon_fight (fight) -> music.dungeon (mood, the mood set mid-fight)
+#   -> music.dragon_fight (fight, second wyvern) -> "BOSS_FIGHT -> NONE" (mood turned off mid-fight).
+# The player isn't a DM (a DM doesn't start boss fights); /dm mood only needs op.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/time set day
+/weather clear
+/gamemode survival
+/effect give @s minecraft:resistance 120 4 true
+/kill @e[tag=boss_over_mood]
+/fill -12 149 -12 12 149 12 glass
+/fill -12 150 -12 12 160 12 air
+/tp @s 0 150 8 180 10
+/dm mood off
+wait 20
+# 1. Mood alone
+/dm mood tavern
+wait 40
+# 2. A boss fight starts: its track takes over
+/summon dndclasses:wyvern -4 150 -4 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f],Tags:["boss_over_mood"]}
+wait 5
+/damage @e[tag=boss_over_mood,limit=1] 1 minecraft:player_attack by @s
+wait 40
+# 3. A new mood mid-fight is remembered but doesn't interrupt the fight
+/dm mood dungeon
+wait 40
+/damage @e[tag=boss_over_mood,limit=1] 1 minecraft:player_attack by @s
+wait 20
+# 4. The fight ends: the mood set mid-fight comes back
+/kill @e[tag=boss_over_mood]
+wait 60
+# 5. Second fight, mood off mid-fight: the fight track keeps playing, then nothing after it
+/summon dndclasses:wyvern -4 150 -4 {NoAI:1b,NoGravity:1b,Rotation:[0f,0f],Tags:["boss_over_mood"]}
+wait 5
+/damage @e[tag=boss_over_mood,limit=1] 1 minecraft:player_attack by @s
+wait 40
+/dm mood off
+wait 40
+/kill @e[tag=boss_over_mood]
+wait 60
+/gamemode creative
+quit

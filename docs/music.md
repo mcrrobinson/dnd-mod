@@ -19,7 +19,9 @@ The mod picks the background music from what you're doing, in this order. The fi
 | Travelling | **Awake Cart**, mixed with vanilla music | After you cover 80 blocks in 30 seconds, until you slow to under 30 blocks per 30 seconds. Teleports don't count |
 | Night | **Silent Footsteps**, mixed with vanilla music | From dusk (time 13000) to dawn (23000) |
 
-Vanilla's underwater, menu, credits and End music still take priority over everything except a boss fight. The [Goblin Warlord](bosses/goblin-warlord.md) has a boss bar but no fight track.
+A DM's [mood music](systems/dungeon-master.md#mood-music) (`/dm mood`) plays in the boss fight slot, above everything else except a real fight: a boss or goblin raid track plays over the mood, and the mood comes back straight away when the fight ends. Between two real fights (a boss during a raid, two bosses) the one you got first keeps playing.
+
+Vanilla's underwater, menu, credits and End music still take priority over everything except a boss fight (or a mood). The [Goblin Warlord](bosses/goblin-warlord.md) has a boss bar but no fight track.
 
 ### Dungeon themes
 Each dungeon theme has its own ambient loop. It cuts in about a second after you walk into the dungeon (replacing whatever was playing), comes back 5-20 seconds after each pass, and stops when you leave, followed by 10 seconds of quiet.
@@ -70,7 +72,7 @@ Event music and stings follow the **Music** volume slider. Discs and instrument 
 - Server-side dungeon and fortress detection: `Music/DungeonMusic` (structure tags `dndclasses:music_dungeons` and `music_nether_fortresses`, checked every 40 ticks).
 - Dungeon themes: `DungeonMusic` sends `music_dungeon_theme`, a byte (0 = generic, else `DungeonTheme` ordinal + 1), from the dungeon structure at the player (or, for `/place`d dungeons with no structure start, the `DungeonRegistry` bounds). `EventMusic.DUNGEON_THEMES` maps it to a track; a new theme needs a loop, a `sounds.json` entry, a `ModSounds` event and a slot there, else it plays Silent Footsteps.
 - Dungeon stings: `DungeonMusic` listens to `DungeonEvents.ROOM_CLEARED` / `CLEARED` and sends `music_dungeon_sting` (0 = room, 1 = dungeon); `MusicStings` plays it and ducks the music.
-- Boss tracks: `entity/boss/BossMusic` sends the track for a boss bar. A boss gets one through `BossFight.music(...)`; goblin raids send `MUSIC_GOBLIN_RAID` directly.
+- Boss tracks: `entity/boss/BossMusic` sends the track for a boss bar. A boss gets one through `BossFight.music(...)`; goblin raids send `MUSIC_GOBLIN_RAID` directly. The DM's mood goes through it too, under the fake bar `BossMusic.MOOD_BAR`; `EventMusic.barTrack()` picks the first real bar's track and falls back to the mood.
 - Sounds: `assets/dndclasses/sounds.json`, `Registry/ModSounds`. Discs: `Registry/ModItems` and the `#minecraft:music_discs` tag.
 - The tracks are made with `tools/music-gen/` (see its README).
-- Devscripts: `event-music.txt`, `music-events.txt`, `dungeon-music.txt` (crypt vs warren loop, both stings, generic spawner track; logs `[EventMusic]` / `[DungeonMusic]` lines).
+- Devscripts: `event-music.txt`, `music-events.txt`, `dungeon-music.txt` (crypt vs warren loop, both stings, generic spawner track; logs `[EventMusic]` / `[DungeonMusic]` lines), `boss-over-mood.txt` (a boss fight over a mood and the mood coming back; logs `[EventMusic] bar track <id> (mood|fight)`).

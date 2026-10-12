@@ -31,6 +31,8 @@ This page covers the framework and the three themes: the **Crypt**, the **Goblin
 
 ### The Crypt
 The first theme: a barrow over a buried tomb, home of the Ossuary Cube and the Lich.
+
+![A Crypt cut away from above, north up: the boss room (left) with the reliquary and vault beside it, the Ossuary and the puzzle room in the middle, and the entrance, antechamber and side vault along the bottom](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-plan.png)
 - **Entrance**: a **barrow**, a grassy burial mound (radius about 9, 4-5 blocks high) heaped over the top of the stair and roofed over it. A passage 3 wide and 3 high runs into one side of the mound: stone-floored and stone-walled, under a stone lintel for its inner 4 blocks, with two tall chiselled door stones and a slab capstone at its mouth and an open cut beyond. A soul lantern hangs where it meets the stair. Nine weathered standing stones ring the mound 12 blocks out, each on the ground where it stands; a quarter have toppled, and about a third carry a skull. The mound only fills air, plants and water, so it never fills the shaft or carves into a hill.
 - **Names**: "The `<place>` of `<name>`" with 6 places (Barrow, Crypt, Tomb, Ossuary, Sepulchre, Catacombs) and 16 names (Ashmoor, Vell, the Grey King, Hollowmere, Saint Corvin, the Drowned Lord, Blackfen, the Last Watch, Morrow Fen, the Weeping Saint, Old Harrowgate, the Ashen Queen, Wyrmstone, the Pale Brothers, Duskwold, the Hollow Crown), picked from the dungeon's position.
 - **Dressing** (placed only into air, so it never covers a doorway, chest, trap or ward, and drawn from its own random, so it never changes a room's layout):
@@ -48,6 +50,14 @@ The first theme: a barrow over a buried tomb, home of the Ossuary Cube and the L
 | Reliquary | a chiselled deepslate altar with polished deepslate steps, four columns, four soul lanterns, candles on the diagonals, bone piles in the corners, skulls |
 
 A sarcophagus is two polished deepslate blocks under a deepslate tile slab lid, with candles at its corner end half the time. A bone pile is a bone block on its side, sometimes stacked, often with a skull.
+
+![The antechamber: cold campfire in the middle, sarcophagi along the walls, a soul lantern and cobwebs](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-antechamber.png)
+
+![The Ossuary (mid-boss room): bone piles with skulls in the corners and along the walls](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-ossuary.png)
+
+![The boss room: the Lich on the central dais with its first minions, sarcophagi and candles along the walls](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-boss-lich.png)
+
+![The reliquary: the phylactery on the chiselled deepslate altar, with candles, columns and bone piles](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-reliquary.png)
 
 - **The reliquary**: the room off the boss room where the **phylactery** appears, on the altar in the middle (one block up), when the Lich is called up. It's about 25 blocks from the boss's dais, through a short corridor, so it's inside the Lich's leash; its doorway stays open while the boss room is sealed. See [Dungeon encounters](../systems/dungeon-encounters.md#boss).
 - **Vault**: at III and IV the Hoard Coffer's full roll has a 15% chance of a Staff of Ice on top (see [Dungeon loot](../systems/dungeon-loot.md)).
@@ -144,7 +154,7 @@ For all of them, the entrance has to be on dry land, and at most 2 of the 25 gro
 - On a very steep slope the gatehouse hall is level with the top of the stair, so a downhill side stands on a footing up to 8 blocks deep and an uphill side is cut into the hill.
 - The Warren's barrels are empty props (only the encounter chest holds loot).
 - Trees can grow on the barrow mound, and on a steep slope the mound and its passage follow the ground at the top of the stair, so one side can sit in the hillside or stand proud of it.
-- The Crypt's, the Warren's and the Ruin's room screenshots for the docs are still to be taken in-game.
+- The Warren's and the Ruin's room screenshots for the docs are still to be taken in-game.
 
 ## For developers
 - `src/main/java/mattonfire/dnd/world/gen/dungeon/`:
@@ -167,4 +177,4 @@ For all of them, the entrance has to be on dry land, and at most 2 of the 25 gro
 - `classes/Commands/DungeonCommand`.
 - Data: `worldgen/structure/{crypt,goblin_warren,dwarven_ruin}.json`, `worldgen/structure_set/{crypts,goblin_warrens,dwarven_ruins}.json`, `tags/worldgen/biome/has_structure/{crypt,goblin_warren,dwarven_ruin}.json`, `tags/worldgen/structure/dungeons.json`.
 - `entity/DwarfGrudges`: the `DungeonEvents.CLEARED` listener for the Ruin (`REPUTATION` 60, `FORTRESS_RANGE` 512, `FORTRESS_RADIUS` 128; `nearestFortress` uses `#dndclasses:faction/mountain_dwarves`), through `SettlementGrudges.forgive(player, area)` for loaded dwarves, and `entity/FortressForgiveness` (saved data: fortress start, player, game time) for the rest: a `MountainDwarfEntity` saves `DndSavedAt` and, on its first tick after loading, drops a grudge against a player its fortress forgave at or after that time.
-- Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots), `dungeon-crypt.txt` (a fresh `/place`d Crypt: the barrow from outside, then the cut-away layout with its reliquary), `dungeon-warren.txt` (the same for a Goblin Warren: the cave mouth, then the cut-away layout), `dungeon-ruin.txt` (the same for a Dwarven Ruin: the gatehouse, then the cut-away layout with its dome).
+- Devscripts: `devscripts/dungeon-place.txt` (walks into a natural crypt in survival, then overhead cutaway shots of it and of a `/place`d one; use a scratch run dir), `dungeon-info.txt` (prints `/dungeon info` again, to check it survived a restart), `dungeon-recon.txt` (tries `/place` at a few spots), `dungeon-crypt.txt` (a fresh `/place`d Crypt: the barrow from outside, then the cut-away layout with its reliquary), `dungeon-warren.txt` (the same for a Goblin Warren: the cave mouth, then the cut-away layout), `dungeon-ruin.txt` (the same for a Dwarven Ruin: the gatehouse, then the cut-away layout with its dome), `crypt-docs-rooms.txt` (this page's Crypt shots: a `/place`d Crypt's antechamber, Ossuary, boss room with the Lich frozen on the dais, reliquary, then the cut-away plan; 1920x1080).

@@ -1,0 +1,14 @@
+# Balanced party class XP, first guest (see balanced-party-host.txt). Not an op, so no reset header.
+wait 40
+closescreen
+respawn
+wait 40
+/party leave
+/me g2-ready
+waitchat invited you to their party
+/party accept
+waitchat classes-set
+closescreen
+waitchat bp-done
+wait 20
+quit

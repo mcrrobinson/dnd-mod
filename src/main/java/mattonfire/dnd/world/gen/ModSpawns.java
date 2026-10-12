@@ -137,6 +137,11 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.ORC_WARRIOR, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canOrcSpawn);
 
+        // Tiefling Exiles only spawn inside brimstone sanctums (the structure's spawn_overrides), on the
+        // platform inside the wall, at most MAX_EXILES_NEARBY of them within 48 blocks.
+        SpawnRestriction.register(ModEntityTypes.TIEFLING_EXILE, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canExileSpawn);
+
         // Beholders only live in their underground lairs (the structure's spawn_overrides), which
         // get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.BEHOLDER, SpawnRestriction.Location.ON_GROUND,
@@ -231,6 +236,31 @@ public class ModSpawns {
         double wall = mattonfire.dnd.world.gen.stronghold.OrcStrongholdStructure.PALISADE - 1;
         return dx * dx + dz * dz <= wall * wall
                 && world.getEntitiesByClass(mattonfire.dnd.entity.OrcEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_ORCS_NEARBY;
+    }
+
+    public static final int MAX_EXILES_NEARBY = 8;
+
+    private static boolean canExileSpawn(EntityType<mattonfire.dnd.entity.TieflingExileEntity> type, ServerWorldAccess world,
+                                         SpawnReason reason, BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        if (reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION) {
+            return true;
+        }
+        StructureStart start = world.toServerWorld().getStructureAccessor().getStructureContaining(pos,
+                mattonfire.dnd.world.gen.sanctum.BrimstoneSanctumStructures.KEY);
+        if (!start.hasChildren()) {
+            return false;
+        }
+        // On the platform (its top is the start's y) and inside the wall.
+        BlockPos center = start.getChildren().get(0) instanceof mattonfire.dnd.world.gen.sanctum.BrimstonePiece piece
+                ? piece.center() : start.getBoundingBox().getCenter();
+        double dx = pos.getX() - center.getX();
+        double dz = pos.getZ() - center.getZ();
+        double wall = mattonfire.dnd.world.gen.sanctum.BrimstoneSanctumStructure.WALL - 1;
+        return pos.getY() == center.getY() + 1 && dx * dx + dz * dz <= wall * wall
+                && world.getEntitiesByClass(mattonfire.dnd.entity.TieflingEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_EXILES_NEARBY;
     }
 
     /** Whether {@code pos} is inside one of a dragon temple's pieces. */

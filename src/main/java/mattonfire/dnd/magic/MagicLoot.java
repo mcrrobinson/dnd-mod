@@ -125,6 +125,12 @@ public final class MagicLoot {
         chest("orc_stronghold_armory", 0.15F, tier(u, 75), tier(r, 25));
         chest("orc_stronghold_hoard", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
 
+        // Brimstone Sanctums: the offering chest behind the Pact Hall altar is locked at DC 15 and guarded
+        chest("brimstone_sanctum_refuge", 0.05F, tier(u, 1));
+        chest("brimstone_sanctum_market", 0.05F, tier(u, 1));
+        chest("brimstone_sanctum_den", 0.12F, tier(u, 80), tier(r, 20));
+        chest("brimstone_sanctum_altar", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
+
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 

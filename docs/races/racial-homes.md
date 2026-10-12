@@ -1,5 +1,5 @@
 # Racial homes
-Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md), Elves in [Elven Enclaves](../structures/elven-enclaves.md), Dragonborn in [Dragon Temples](../structures/dragon-temples.md) and Half-Orcs in [Orc Strongholds](../structures/orc-strongholds.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
+Every [race](races.md) has a home settlement. Anyone can visit any settlement, but players of the home race get extra benefits there: a welcome, a hearth that heals, kin prices and kin trust. Halflings are at home in [Hobbit Villages](../structures/hobbit-villages.md), Dwarves in [Dwarven Fortresses](../structures/dwarven-fortresses.md), Elves in [Elven Enclaves](../structures/elven-enclaves.md), Dragonborn in [Dragon Temples](../structures/dragon-temples.md), Half-Orcs in [Orc Strongholds](../structures/orc-strongholds.md) and Tieflings in [Brimstone Sanctums](../structures/brimstone-sanctums.md). Gnomes count the fortresses as home for prices until they get one of their own, and Humans count vanilla villages as home.
 
 ![A Halfling arriving at the Green Dragon inn: "Welcome home, Halfling", the welcome basket in the hotbar and Regeneration from the hearth](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-homes/rh-halfling-welcome.png)
 
@@ -72,6 +72,17 @@ Once a second the mod checks where each player is. A player is in a settlement w
 | Kin trust | None: opening the hoard or striking an orc angers the hold |
 | Standing | The Bloodtusk Horde: 0 (Neutral), so the orcs tolerate you; everyone else starts Hostile |
 
+### Tiefling: Brimstone Sanctums
+| Bonus | Value |
+|-|-|
+| Hearth | The Pact Hall |
+| Fire immunity | No damage from fire, lava, burning or magma anywhere in the sanctum |
+| Refuge anchor | Bind to one of the Refuge's respawn anchors for free; it refills to 4 charges every in-game day for you |
+| Kin prices | The Pactbroker's trades. For example, a ghast tear costs 2 emeralds instead of 3, the daily netherite scrap 18 instead of 24, and he buys 15 quartz instead of 20. |
+| Kin stock | The Pactbroker sells the [Infernal Regalia](../items/armor.md#racial-armor) set: helmet 12, chestplate 20, leggings 18, boots 10 emeralds (9, 15, 13 and 7 at kin price) |
+| Kin trust | The first time each in-game day you open or break a sanctum chest or barrel where a Tiefling can see, you're let off with "The exiles look away, this once." |
+| Standing | The Brimstone Covenant: 150 (Friendly) |
+
 ### Human: vanilla villages
 The first time a Human opens a villager's trades, that villager gains 10 `minor_positive` gossip about them, which makes its trades a little cheaper. Each villager does this once per player. Villages have no hearth, welcome or kin trust.
 
@@ -81,6 +92,7 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - [Elven Enclaves](../structures/elven-enclaves.md): `/locate structure dndclasses:elven_enclave`
 - [Dragon Temples](../structures/dragon-temples.md): `/locate structure dndclasses:dragon_temple`
 - [Orc Strongholds](../structures/orc-strongholds.md): `/locate structure dndclasses:orc_stronghold`
+- [Brimstone Sanctums](../structures/brimstone-sanctums.md) (in the Nether): `/execute in minecraft:the_nether run locate structure dndclasses:brimstone_sanctum`
 
 ## Commands
 - `/dndhome [player]` (operators): which racial home the player is in, the piece under their feet, and whether it's their own home and hearth.
@@ -95,14 +107,14 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 - The welcome's 5-minute timer is kept in memory, so you're welcomed again after the server restarts.
 - The kin discount applies to every innkeeper, since they're all hobbits, even one summoned outside a village.
 - Dwarven kin trust only covers opening chests in the four side rooms. Breaking those chests still counts as an offence.
-- The Tiefling and Gnome settlements are later tickets. Infernal Regalia already exists and the kin stock lists are ready in `KinStockOffers.brimstoneSanctum` / `cogsdeep`, but nobody sells them yet.
+- The Gnome settlement is a later ticket. Its kin stock list is ready in `KinStockOffers.cogsdeep`, but nobody sells it yet.
 
 ## For developers
 - `world/gen/RacialHomes`: the registry. A `Home` has the structure id, home race, extra price-kin races, faction id, hearth piece type and an optional first-visit gift. `homeAt(world, pos)` returns a `Visit` (home plus `StructureStart`, with `pieceAt` and `inHearth`), `ownHomeAt(player)` only for the home race, `isHearth(player)` (a Safe Haven hook for rests), and `homeOfMember(npc)` maps an NPC to its home through `Reputation.factionOf`. A new settlement registers one `Home`.
 - `world/gen/HomeBonuses`: the 1 s tick (welcome, first-visit gift, hearth), `giftCooldown` (used by `HobbitEntity`), `kingAudience` (used by `MountainDwarfEntity`, with an `onKingAudience` quest hook) and the Human villager gossip (`UseEntityCallback`, remembered as a `dndclasses.kin_greeted.<uuid>` command tag on the villager).
 - `entity/KinPrices`: the kin discount, a separate special-price modifier. `InnkeeperEntity.prepareOffersFor` clears the special prices, then each modifier adds its share, so other modifiers such as reputation tiers stack with it. `KinPrices.barter` is the double roll for barterers. It reads entry weights from the loot table's JSON and logs `[KinPrices] Kin barter for ...`.
-- `entity/SettlementGrudges` (was `DwarfGrudges`): per-settlement `Rules` (what's protected, witnesses, provoke, warn, kin-trust `judge`). `MOUNTAIN_DWARVES` keeps the old behaviour for everyone but Dwarves; `SYLVAN_COURT` is the enclaves' Sylvan Law (`entity/SylvanLaw`), which adds the `HARM` and `FIRE` offences; `DRAGONSWORN` is the temples' law (`entity/TempleLaw`). `witness` logs `[Grudges] <rules> <offence> at <pos> by <player>: <n> witness(es), <verdict>`. `forgive` calms dwarves, Elf Wardens and Dragonborn Templars. `opened(player, pos)` is for containers opened another way (picked locks). `dailyWarning` stores the day in `DndKinTrust`. `D20.register()` must still run before `SettlementGrudges.register()`.
-- `entity/KinStock`: a merchant's kin-only offers, kept in their own list (NBT `KinOffers`) and appended to the merchant's `getOffers()` only while a customer of the home race (`KinStock.isKin`, home race only, not the extra price-kin races) trades. `entity/KinStockOffers` holds each settlement's list, including `orcStronghold`, `orcishGreataxe`, `brimstoneSanctum` and `cogsdeep` for the settlements still to come. See [Racial weapons](../items/racial-weapons.md#for-developers).
+- `entity/SettlementGrudges` (was `DwarfGrudges`): per-settlement `Rules` (what's protected, witnesses, provoke, warn, kin-trust `judge`). `MOUNTAIN_DWARVES` keeps the old behaviour for everyone but Dwarves; `SYLVAN_COURT` is the enclaves' Sylvan Law (`entity/SylvanLaw`), which adds the `HARM` and `FIRE` offences; `DRAGONSWORN` is the temples' law (`entity/TempleLaw`); `BRIMSTONE_COVENANT` the sanctums' (`entity/SanctumLaw`). `witness` logs `[Grudges] <rules> <offence> at <pos> by <player>: <n> witness(es), <verdict>`. `forgive` calms dwarves, Elf Wardens, Dragonborn Templars and Tiefling Exiles. `opened(player, pos)` is for containers opened another way (picked locks). `dailyWarning` stores the day in `DndKinTrust`. `D20.register()` must still run before `SettlementGrudges.register()`.
+- `entity/KinStock`: a merchant's kin-only offers, kept in their own list (NBT `KinOffers`) and appended to the merchant's `getOffers()` only while a customer of the home race (`KinStock.isKin`, home race only, not the extra price-kin races) trades. A `KinStock` can also take another audience and NBT key (the Pactbroker's Warlock and Alchemist stock). `entity/KinStockOffers` holds each settlement's list, including `cogsdeep` for the settlement still to come. See [Racial weapons](../items/racial-weapons.md#for-developers).
 - `world/gen/StructureProximity.near(context, set, radius)`: the "is another structure's start nearby" check, taken from `GoblinCampStructure`, for later settlements to reuse. `nearGenerating` also runs the other structure's site check, so only starts that really generate count (the Dragon Temple's lair rule).
 - Player persistent data: `DndHomeBaskets` (start-chunk longs of visited settlements), `DndKingAudienceDay`, `DndKinTrust`.
 - DevScript `slots` also logs a trade screen's offers with their adjusted prices.

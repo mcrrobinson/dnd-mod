@@ -46,6 +46,7 @@ public final class RaceFeatures {
     private static ModelPart horns;
     private static ModelPart tusks;
     private static ModelPart snout;
+    private static ModelPart tail;
 
     private RaceFeatures() {
     }
@@ -94,6 +95,38 @@ public final class RaceFeatures {
         horns = buildHorns();
         tusks = buildTusks();
         snout = buildSnout();
+        tail = buildTail();
+    }
+
+    /**
+     * Draws a Tiefling tail on a biped body, tinted {@code tint} (RGB 0-1). The matrix stack must be in the
+     * model's space; {@code body} is the posed body part. Used by the Tiefling NPCs (players don't get one yet).
+     */
+    public static void renderTail(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
+            ModelPart body, float[] tint) {
+        build();
+        matrices.push();
+        body.rotate(matrices);
+        draw(tail, matrices, vertexConsumers, light, tint);
+        matrices.pop();
+    }
+
+    /**
+     * A tail from the small of the back: a chain of three 1x1x2 cuboids (6 long), drooping, then curling up,
+     * ending in a small spade.
+     */
+    private static ModelPart buildTail() {
+        ModelData data = new ModelData();
+        ModelPartData root = data.getRoot();
+        ModelPartData base = root.addChild("tail_base", ModelPartBuilder.create().uv(0, 0).cuboid(-0.5f, -0.5f, 0f, 1f, 1f, 2f),
+                ModelTransform.of(0f, 10.5f, 1.8f, -0.75f, 0f, 0f));
+        ModelPartData mid = base.addChild("tail_mid", ModelPartBuilder.create().uv(0, 0).cuboid(-0.5f, -0.5f, 0f, 1f, 1f, 2f),
+                ModelTransform.of(0f, 0f, 2f, 0.55f, 0f, 0f));
+        ModelPartData tip = mid.addChild("tail_tip", ModelPartBuilder.create().uv(0, 0).cuboid(-0.5f, -0.5f, 0f, 1f, 1f, 2f),
+                ModelTransform.of(0f, 0f, 2f, 0.7f, 0f, 0f));
+        tip.addChild("tail_spade", ModelPartBuilder.create().uv(0, 8).cuboid(-1f, -0.25f, 0f, 2f, 0.5f, 1.5f),
+                ModelTransform.of(0f, 0f, 2f, 0f, 0f, 0f));
+        return TexturedModelData.of(data, 32, 32).createModel();
     }
 
     // Head space: the head cube is x -4..4, y -8..0 (up is -y), z -4..4 (the face is at z -4). The hat

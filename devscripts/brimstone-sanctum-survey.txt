@@ -1,0 +1,45 @@
+# Brimstone Sanctum placement survey and shots, in the Nether.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/brimstone-sanctum-survey.txt (add -PdevWorld=<world> for
+# another seed; the survey area, 12000 12000 in the Nether, must be unexplored so the chunks generate fresh).
+# Checks, in <run dir>/logs/latest.log:
+# - the [CHAT] line of /locate (nearest sanctum)
+# - "[SanctumSurvey] sanctum at X Y Z: biome ..., lava under 0 of N columns, cut ceiling over C: PASS" for every
+#   sanctum found from a 3x3 grid of points 1500 blocks apart, and "[SanctumSurvey] n sanctums, n pass, 0 fail"
+# - "[Home] Brimstone Sanctum at chunk ..." from /dndhome sanctum; screenshots bs-top (aerial), bs-side (side
+#   view of the platform and pillars), bs-gate, bs-hall, bs-refuge, bs-market, bs-den
+# - "Test passed" counts of Exiles (4-6 when freshly generated) and the Pactbroker within 48 blocks
+wait 40
+closescreen
+/gamemode spectator
+/execute in minecraft:the_nether run tp @s 12000 100 12000
+wait 100
+/locate structure dndclasses:brimstone_sanctum
+waitserver 2
+/dndhome sanctumsurvey 3 1500
+waitserver 2
+/dndhome sanctum top
+wait 300
+hud off
+screenshot bs-top
+/dndhome sanctum side
+wait 100
+screenshot bs-side
+/dndhome sanctum gate
+wait 80
+screenshot bs-gate
+/dndhome sanctum hall
+wait 80
+screenshot bs-hall
+/dndhome sanctum anchor
+wait 60
+screenshot bs-refuge
+/dndhome sanctum market
+wait 60
+screenshot bs-market
+/dndhome sanctum den
+wait 60
+screenshot bs-den
+hud on
+/execute at @s if entity @e[type=dndclasses:tiefling_exile,distance=..48]
+/execute at @s if entity @e[type=dndclasses:tiefling_pactbroker,distance=..48]
+quit

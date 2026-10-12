@@ -49,7 +49,7 @@ Five sets made by and for one race each, sold as kin stock in that race's home s
 | Dwarven Plate | dwarves in a [Dwarven Fortress](../structures/dwarven-fortresses.md), as a rare extra barter roll for Dwarves only (1% per piece per gold ingot) | |
 | Draconic Scale | the Elder in a [Dragon Temple](../structures/dragon-temples.md), to Dragonborn only: helmet 12, chestplate 20, leggings 18, boots 10 | |
 | Orcish Warplate | nobody yet (the Orc Stronghold will sell it to Half-Orcs) | |
-| Infernal Regalia | nobody yet (the Brimstone Sanctum will sell it to Tieflings) | |
+| Infernal Regalia | the Pactbroker in a [Brimstone Sanctum](../structures/brimstone-sanctums.md), to Tieflings only: helmet 12, chestplate 20, leggings 18, boots 10 emeralds | |
 
 Kin prices (25% off) apply to these trades too. The racial weapons are on their own page: [Racial weapons](racial-weapons.md).
 
@@ -65,7 +65,7 @@ Kin prices (25% off) apply to these trades too. The racial weapons are on their 
 
 ## Known limitations
 - Hellish Rebuke doesn't exist yet (it's part of the racial traits update), so the Infernal Regalia's Tiefling bonus does nothing until then: the set exposes `RacialGear.rebukeCooldown(player, ticks)` for it.
-- The Orcish Warplate and Infernal Regalia have no seller until their settlements exist.
+- The Orcish Warplate has no seller until its settlement exists.
 - The racial sets' textures are recoloured from other sets (Wooden, Warrior, Steampunk, Prismarine and Holy Armor) by `tools/racial_gear_textures.py`.
 - The Wither set has no boots in the creative tab (`/give @s dndclasses:wither_boots` works).
 - The Thief set's items are named `rogue_*`.

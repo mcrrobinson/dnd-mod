@@ -1,0 +1,15 @@
+{
+  "name": "faction.dndclasses.brimstone_covenant",
+  "color": "#B5372A",
+  "members": "#dndclasses:faction/brimstone_covenant",
+  "settlements": "#dndclasses:faction/brimstone_covenant",
+  "start": 0,
+  "start_by_race": {"dndclasses:tiefling": 150},
+  "decay_per_day": 5,
+  "hit_member": -15,
+  "kill_member": -120,
+  "kill_member_overrides": {"dndclasses:tiefling_pactbroker": -400},
+  "trade": 1,
+  "trade_cap": 15,
+  "theft_witnessed": -40
+}

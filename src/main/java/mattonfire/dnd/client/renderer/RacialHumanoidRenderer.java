@@ -15,6 +15,8 @@ import mattonfire.dnd.entity.OrcChampionEntity;
 import mattonfire.dnd.entity.OrcEntity;
 import mattonfire.dnd.entity.OrcQuartermasterEntity;
 import mattonfire.dnd.entity.OrcWarChiefEntity;
+import mattonfire.dnd.entity.TieflingEntity;
+import mattonfire.dnd.entity.TieflingPactbrokerEntity;
 import net.minecraft.client.model.ModelPart;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.BipedEntityRenderer;
@@ -35,7 +37,7 @@ import net.minecraft.util.Identifier;
 /**
  * The racial NPC model kit: the player model (slim Alex arms or classic Steve ones) with the race's head
  * features, a per-entity scale, armour, and arm poses for held items and drawn bows. The settlement NPCs of
- * each race use it with their own skins: the elves, the Dragon Temple's Dragonborn and the Orc Strongholds' orcs. Head features (elf ears, and later orc
+ * each race use it with their own skins: the elves, the Dragon Temple's Dragonborn, the Orc Strongholds' orcs and the Brimstone Sanctums' Tieflings. Head features (elf ears, and later orc
  * tusks, tiefling horns, a dragonborn snout) come from {@link RaceFeatures#renderHead}, the same code that
  * draws them on players, so NPCs and players of a race match.
  */
@@ -65,6 +67,9 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
                 context.getModelManager()));
         if (look.race() != DndRace.NONE) {
             this.addFeature(new HeadFeature<>(this, look.race()));
+        }
+        if (look.race() == DndRace.TIEFLING) {
+            this.addFeature(new TailFeature<>(this));
         }
     }
 
@@ -146,6 +151,29 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
         return new RacialHumanoidRenderer<>(context, ORC_WAR_CHIEF, orc -> WAR_CHIEF_SKIN);
     }
 
+    // ---- The Tieflings ----
+
+    /** Tieflings: classic arms, horns and a tail. */
+    public static final Look TIEFLING = new Look(false, DndRace.TIEFLING, 1.0F);
+    private static final Identifier[] TIEFLING_SKINS = new Identifier[TieflingEntity.VARIANTS];
+    private static final Identifier PACTBROKER_SKIN = new Identifier(DnDClasses.MOD_ID, "textures/entity/tiefling/pactbroker.png");
+
+    static {
+        for (int i = 0; i < TIEFLING_SKINS.length; i++) {
+            TIEFLING_SKINS[i] = new Identifier(DnDClasses.MOD_ID, "textures/entity/tiefling/tiefling_" + i + ".png");
+        }
+    }
+
+    /** Exiles: crimson, plum, ash, slate or ember skin (their variant) under dark leathers. */
+    public static <E extends TieflingEntity> RacialHumanoidRenderer<E> tiefling(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, TIEFLING, npc -> TIEFLING_SKINS[Math.floorMod(npc.getVariant(), TIEFLING_SKINS.length)]);
+    }
+
+    /** The Pactbroker: black and gold robes. */
+    public static RacialHumanoidRenderer<TieflingPactbrokerEntity> pactbroker(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, TIEFLING, npc -> PACTBROKER_SKIN);
+    }
+
     @Override
     public Identifier getTexture(T entity) {
         return this.texture.apply(entity);
@@ -176,6 +204,23 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
             }
             this.leftArmPose = ArmPose.EMPTY;
             super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
+        }
+    }
+
+    /** A Tiefling's tail, on the posed body, in the horns' colour. */
+    private static final class TailFeature<T extends MobEntity> extends FeatureRenderer<T, HumanoidModel<T>> {
+        private static final float[] TINT = {0.5f, 0.16f, 0.2f};
+
+        TailFeature(FeatureRendererContext<T, HumanoidModel<T>> context) {
+            super(context);
+        }
+
+        @Override
+        public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle,
+                           float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+            if (!entity.isInvisible()) {
+                RaceFeatures.renderTail(matrices, vertexConsumers, light, this.getContextModel().body, TINT);
+            }
         }
     }
 

@@ -1,0 +1,100 @@
+# Brimstone Sanctum: the Refuge anchor, fire immunity, the Pactbroker's gated trades and the Exiles' fire.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/brimstone-sanctum-check.txt (needs a sanctum near
+# 12000 12000 in the Nether; brimstone-sanctum-survey.txt finds one there in the dev world).
+# Checks, in <run dir>/logs/latest.log:
+# - anchor: "Test passed" for charges=0 before the first use, then "The anchor kindles for you: 4 charges"
+#   (action bar), "[BrimstoneSanctum] Refilled Refuge anchor", charges=4 and SpawnDimension "minecraft:the_nether";
+#   after emptying it the same day it stays at charges=0 (Test passed); after /time add 24000 it's back to 4
+# - fire: Health stays 20.0 after 6 lava damage inside the sanctum as a Tiefling, then drops outside it
+# - trades: as a Tiefling Warlock the Pactbroker lists 14 trades (9, 4 Infernal Regalia, 1 Wither piece) at kin
+#   prices; as a Human Alchemist 10 (the Fast Brewing Stand last)
+# - rebuke: "[BrimstoneSanctum] <exile> rebuked Dev (fire 4 s)" and a Fire value above 0 after hitting an Exile,
+#   then "[BrimstoneSanctum] Exile ... threw a fireball at Dev" from the Exile 10 blocks off
+wait 40
+closescreen
+/gamemode spectator
+/clear @s
+/dndrace set @s tiefling
+/execute in minecraft:the_nether run tp @s 12000 100 12000
+wait 60
+/dndhome sanctum anchor
+wait 100
+# A fresh start: a new day (so today's refill is owed) and an empty anchor.
+/time add 24000
+/execute at @s rotated ~ 0 run setblock ^ ^ ^2 minecraft:respawn_anchor[charges=0]
+/gamemode survival
+wait 20
+/execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=0]
+use
+wait 5
+actionbar
+screenshot bsc-anchor
+/execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=4]
+/data get entity @s SpawnDimension
+/execute at @s rotated ~ 0 run setblock ^ ^ ^2 minecraft:respawn_anchor[charges=0]
+wait 220
+/execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=0]
+/time add 24000
+wait 220
+/execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=4]
+# Fire immunity inside the sanctum, for a Tiefling.
+/effect clear @s
+/effect give @s instant_health 1 5
+wait 10
+/dndhome
+/data get entity @s Health
+/damage @s 6 minecraft:lava
+wait 5
+/data get entity @s Health
+/dndhome sanctum gate
+wait 20
+/dndhome
+/damage @s 6 minecraft:lava
+wait 5
+/data get entity @s Health
+# The Pactbroker's stock, in a sky arena.
+/effect give @s resistance 1000 4 true
+/effect give @s instant_health 1 5
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 20
+wait 40
+/fill -10 149 -10 10 149 12 minecraft:glass
+# An Exile side on: horns and tail.
+/summon dndclasses:tiefling_exile 0.5 150 3.5 {NoAI:1b,Rotation:[90f,0f]}
+wait 20
+look 0 10
+hud off
+screenshot bsc-exile-side
+hud on
+/tp @e[type=dndclasses:tiefling_exile] 0.5 -100 0.5
+wait 20
+/summon dndclasses:tiefling_pactbroker 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f]}
+wait 20
+/dndclass set @s warlock
+look 0 20
+use
+wait 10
+slots
+screenshot bsc-trades-warlock
+closescreen
+/dndrace set @s human
+/dndclass set @s alchemist
+wait 5
+use
+wait 10
+slots
+screenshot bsc-trades-alchemist
+closescreen
+/kill @e[type=dndclasses:tiefling_pactbroker]
+# Hellish Rebuke and the fireball.
+/summon dndclasses:tiefling_exile 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f]}
+/summon dndclasses:tiefling_exile 0.5 150 10.5 {Rotation:[180f,0f]}
+wait 20
+look 0 20
+attack
+wait 3
+/data get entity @s Fire
+screenshot bsc-rebuke
+wait 60
+screenshot bsc-fireball
+/kill @e[type=dndclasses:tiefling_exile]
+quit

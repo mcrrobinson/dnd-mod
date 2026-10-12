@@ -62,6 +62,8 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndhome strongholdsurvey [grid] [spacing]` | Checks the nearest stronghold from each point of a grid round you is in the badlands with all its pieces (`[StrongholdSurvey]` lines) |
 | `/dndhome bloodsworn <players> <true\|false>` | Sets or clears Blood-Sworn at the stronghold you stand in |
 | `/dndhome trialreset <players>` | Lets the players take the Trial of Strength again today at the stronghold you stand in |
+| `/dndhome sanctum [hall\|offering\|anchor\|market\|den\|gate\|top\|side]` | Teleports you to that spot of the nearest [Brimstone Sanctum](../structures/brimstone-sanctums.md) (run it in the Nether) |
+| `/dndhome sanctumsurvey [grid] [spacing]` | Checks the nearest sanctum from each point of a grid round you is in a sanctum biome with all its pieces, with no lava under it and no cut ceiling (`[SanctumSurvey]` lines; run it in the Nether) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
 Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`, `tiefling`, `dragonborn`, `none`. Dragonborn need an ancestry: `ember`, `frost` or `storm`. `/gamerule dndRaces false` turns races off (no prompt, no modifiers). See [Races](../races/races.md).

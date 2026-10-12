@@ -1,0 +1,23 @@
+{
+  "type": "dndclasses:brimstone_sanctum",
+  "biomes": "#dndclasses:has_structure/brimstone_sanctum",
+  "step": "surface_structures",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {
+    "creature": {
+      "bounding_box": "piece",
+      "spawns": [
+        {
+          "type": "dndclasses:tiefling_exile",
+          "weight": 1,
+          "minCount": 1,
+          "maxCount": 1
+        }
+      ]
+    },
+    "monster": {
+      "bounding_box": "full",
+      "spawns": []
+    }
+  }
+}

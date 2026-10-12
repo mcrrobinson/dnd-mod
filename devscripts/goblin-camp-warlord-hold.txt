@@ -1,0 +1,181 @@
+# Verify PR #214: a camp Warlord holds its spot (GuardPos = the fire, radius 12) in front of the chief's tent.
+# Visits 10 goblin camps (from /locate in the dev world; 30% have a Warlord) and logs each Warlord's Pos and GuardPos on
+# arrival and 30 s and 60 s later. Natural camps: /place structure dndclasses:goblin_camp at 61000 61000 just said "Failed to place structure".
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/goblin-camp-warlord-hold.txt
+# Check latest.log after each "warlord-<camp>-<t>" chat line: the first "Test passed" means the camp has a Warlord
+# (the second counts its warriors); its
+# horizontal distance Pos -> GuardPos should stay within about 13.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set 6000
+/weather clear
+/tp @s 10536 160 -10088 0 90
+wait 300
+waitserver 2
+/say warlord-c0-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c0-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c0-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=10488,y=-64,z=-10136,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s -10072 160 10536 0 90
+wait 300
+waitserver 2
+/say warlord-c1-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c1-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c1-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-10120,y=-64,z=10488,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s 20168 160 19896 0 90
+wait 300
+waitserver 2
+/say warlord-c2-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c2-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c2-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=20120,y=-64,z=19848,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s -20968 160 -20568 0 90
+wait 300
+waitserver 2
+/say warlord-c3-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c3-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c3-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-21016,y=-64,z=-20616,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s 31000 160 -30776 0 90
+wait 300
+waitserver 2
+/say warlord-c4-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c4-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c4-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=30952,y=-64,z=-30824,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s -31560 160 28056 0 90
+wait 300
+waitserver 2
+/say warlord-c5-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c5-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c5-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-31608,y=-64,z=28008,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s 48632 160 1432 0 90
+wait 300
+waitserver 2
+/say warlord-c6-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c6-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c6-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=48584,y=-64,z=1384,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s 168 160 49896 0 90
+wait 300
+waitserver 2
+/say warlord-c7-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=120,y=-64,z=49848,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c7-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c7-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=120,y=-64,z=49848,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s -51048 160 648 0 90
+wait 300
+waitserver 2
+/say warlord-c8-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c8-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c8-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=-51096,y=-64,z=600,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s 664 160 -50360 0 90
+wait 300
+waitserver 2
+/say warlord-c9-0
+/execute if entity @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96]
+/execute if entity @e[type=dndclasses:goblin_warrior,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96]
+/execute as @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c9-30s
+/execute as @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+wait 600
+/say warlord-c9-60s
+/execute as @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96] run data get entity @s Pos
+/execute as @e[type=dndclasses:goblin_warlord,x=616,y=-64,z=-50408,dx=96,dy=400,dz=96] run data get entity @s GuardPos
+/tp @s 0.5 150 0.5
+/gamemode creative
+wait 20
+quit

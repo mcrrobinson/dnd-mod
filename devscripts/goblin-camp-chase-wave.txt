@@ -1,0 +1,104 @@
+# Verify PR #214, second part: a camp goblin chases a Hostile player out of camp, loses them and walks back; a
+# Goblin Warlord's summoned wave 30 blocks from the camp has no CampCenter and goes for the player.
+# Camp nearest 40000 40000 (fire 38312 77 39032; run goblin-camp-leash.txt first so it exists).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/goblin-camp-chase-wave.txt
+# Check latest.log: after "chase-*" lines the camp goblins' (tag campg) Pos: some reach 20+ blocks out while
+# chasing, then back within about 12 by "lost-*". "wave-*": minions target Dev, and "Test failed" for CampCenter.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set 6000
+/tp @s 38312 160 39032 0 90
+wait 300
+waitserver 2
+/kill @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160,nbt=!{PersistenceRequired:1b}]
+/tag @e[tag=campg] remove campg
+/tag @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160,nbt={CampCenter:{}}] add campg
+/say chase-start
+/execute as @e[tag=campg] run data get entity @s Pos
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/effect give @s resistance 1000 4 true
+/effect give @s regeneration 1000 4 true
+/effect give @s saturation 1000 4 true
+/spreadplayers 38318 39032 0 1 false @s
+wait 40
+/damage @e[tag=campg,limit=1,sort=nearest] 1 minecraft:player_attack by @s
+wait 40
+target @e[tag=campg]
+/spreadplayers 38322 39032 0 1 false @s
+wait 25
+/spreadplayers 38325 39032 0 1 false @s
+wait 25
+/spreadplayers 38328 39032 0 1 false @s
+wait 25
+/spreadplayers 38331 39032 0 1 false @s
+wait 25
+/spreadplayers 38334 39032 0 1 false @s
+wait 25
+/spreadplayers 38337 39032 0 1 false @s
+wait 25
+/spreadplayers 38340 39032 0 1 false @s
+wait 25
+/spreadplayers 38343 39032 0 1 false @s
+wait 25
+/spreadplayers 38346 39032 0 1 false @s
+wait 25
+/spreadplayers 38349 39032 0 1 false @s
+wait 25
+/say chase-out
+target @e[tag=campg]
+/execute as @e[tag=campg] run data get entity @s Pos
+wait 60
+/say chase-out-3s
+/execute as @e[tag=campg] run data get entity @s Pos
+/gamemode spectator
+/tp @s 38312 180 39032 0 90
+/rep @s dndclasses:goblins set 0
+wait 200
+/say lost-10s
+/execute as @e[tag=campg] run data get entity @s Pos
+wait 400
+/say lost-30s
+/execute as @e[tag=campg] run data get entity @s Pos
+wait 600
+/say lost-60s
+/execute as @e[tag=campg] run data get entity @s Pos
+target @e[tag=campg]
+
+# Warlord wave on a platform 30 blocks south of the fire, 100 up.
+/fill 38302 99 39052 38322 99 39072 minecraft:stone
+/fill 38302 100 39052 38322 104 39072 minecraft:air
+/summon dndclasses:goblin_warlord 38312 100 39062 {Tags:["wavetest"]}
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/tp @s 38312 100 39068
+wait 300
+/execute at @e[tag=wavetest] run tag @e[type=dndclasses:goblin_warrior,distance=..20,tag=!campg] add wavemin
+/say wave-15s
+target @e[tag=wavetest]
+target @e[tag=wavemin]
+/execute if entity @e[tag=wavemin]
+/execute if entity @e[tag=wavemin,nbt={CampCenter:{}}]
+/execute if entity @e[tag=wavemin,tag=dndclasses.boss_minion]
+/data get entity @e[tag=wavemin,limit=1] Tags
+/execute as @e[tag=wavemin] run data get entity @s Pos
+wait 200
+/say wave-25s
+target @e[tag=wavemin]
+/execute as @e[tag=wavemin] run data get entity @s Pos
+/execute if entity @e[tag=wavemin,nbt={CampCenter:{}}]
+/gamemode spectator
+/rep @s dndclasses:goblins set 0
+/kill @e[tag=wavetest]
+/kill @e[tag=wavemin]
+/fill 38302 99 39052 38322 104 39072 minecraft:air
+/tp @s 0.5 150 0.5
+/gamemode creative
+wait 20
+quit

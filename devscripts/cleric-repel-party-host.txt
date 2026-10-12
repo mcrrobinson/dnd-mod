@@ -1,0 +1,96 @@
+# Verify PR #215 with a party: a Cleric's Sanctuary (Mob Repel, rank IV, party reach 16) keeps mobs off the
+# Cleric and a party member in reach, and a mob already chasing someone else (a villager) keeps chasing it.
+# Two clients (LAN port 25695):
+#  1. timeout 400 ./gradlew runClient -PdevScript=devscripts/cleric-repel-party-host.txt
+#  2. once the host log says "Started serving on":
+#     timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25695 -PdevScript=devscripts/cleric-repel-party-guest.txt
+# Check the host's latest.log after each "repel-<step>" chat line:
+#   repel-before: the "onguest" zombie targets the guest, the "onvillager" zombie the villager.
+#   repel-after: both players' ActiveEffects hold dndclasses:mob_repel (Id 37 or the mod's raw id); after that no
+#   zombie targets Dev or the guest, and the onvillager zombie keeps the villager.
+wait 40
+closescreen
+/spreadplayers 3010 3010 0 1 false @s
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/tag @s add host
+/gamemode creative
+/time set 18000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tp @s 3010 160 3010 90 0
+wait 40
+/kill @e[tag=crp]
+/fill 2980 149 3000 3045 156 3020 minecraft:barrier hollow
+/fill 2981 150 3001 3044 155 3019 minecraft:air
+/tp @s 3010 150 3010 -90 0
+/dndclass set @s cleric
+/clear @s dndclasses:class_guidebook
+wait 40
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/dndclass rank @s cleric.sanctuary 4
+/publish true survival 25695
+waitchat joined the game
+wait 100
+/party invite @a[tag=!host,limit=1]
+wait 100
+/party invite @a[tag=!host,limit=1]
+wait 100
+/party list
+/tp @a[tag=!host] 3016 150 3010 -90 0
+/gamemode creative @a
+/effect give @a minecraft:resistance 1000 4 true
+/effect give @a minecraft:saturation 1000 4 true
+/summon minecraft:villager 3042 150 3010 {Tags:["crp"],NoAI:1b,PersistenceRequired:1b,ActiveEffects:[{Id:11,Amplifier:4b,Duration:100000,ShowParticles:0b}]}
+/summon minecraft:zombie 3036 150 3010 {Tags:["crp","onvillager"],PersistenceRequired:1b,CanPickUpLoot:0b}
+wait 60
+/gamemode survival @a[tag=!host]
+/summon minecraft:zombie 3016 150 3004 {Tags:["crp","onguest"],PersistenceRequired:1b,CanPickUpLoot:0b}
+wait 40
+/say repel-before
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+/gamemode survival @s
+/tp @s 3010 150 3010 -90 0
+press key.dnd-classes.power-up
+wait 10
+/say repel-after
+/data get entity @s ActiveEffects
+/data get entity @a[tag=!host,limit=1] ActiveEffects
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+wait 20
+target @e[tag=crp,type=minecraft:zombie]
+/say repel-done
+/kill @e[tag=crp]
+/party leave
+/tag @s remove host
+/dndclass resetprogress @s
+/dndclass set @s none
+/clear @s dndclasses:class_guidebook
+wait 40
+closescreen
+/fill 2980 149 3000 3045 156 3020 minecraft:air
+/spreadplayers 3010 3010 0 1 false @a
+wait 40
+quit

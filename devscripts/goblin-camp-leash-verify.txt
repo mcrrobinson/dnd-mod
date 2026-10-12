@@ -1,0 +1,152 @@
+# Verify PR #214 (camp goblins keep their leash). Run after goblin-camp-leash.txt in the same run dir, as a new
+# launch, so the first readout is after a quit and rejoin. Camp nearest 40000 40000: fire at 38312 77 39032.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/goblin-camp-leash-verify.txt
+# Check latest.log after each "camp-<step>" chat line: warrior Pos lines (horizontal distance from 38312 39032),
+# CampCenter lines, and "[DevScript] target" lines.
+#   camp-rejoin: every warrior within about 12 of the fire, CampCenter 38312 77 39032.
+#   camp-wander-*: the warriors moved ~28 out walk back within about 12; the leash-less persistent stand-in
+#     (tag oldcamp) picks up CampCenter and walks in too.
+#   camp-chase: warriors (tag campg) target Dev; camp-lost-*: back within about 12. The camp's tents and palisade
+#     often stop them following far: goblin-leash-chase.txt tests a chase past the leash on open ground.
+#   camp-others: non-camp goblins (leftover raiders, waves): "Test failed" = none has CampCenter or is persistent.
+#   camp-raid-*: "Test failed" (no raider has CampCenter); raiders march to the rally (38352 39032) and target Dev.
+#   camp-wave-*: summoned on uneven ground the wave can fail to place; goblin-camp-chase-wave.txt uses a platform.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set 6000
+/weather clear
+/tp @s 38312 160 39032 0 90
+wait 300
+waitserver 2
+/say camp-rejoin
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+/tag @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160,nbt={CampCenter:{}}] add campg
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s CampCenter
+wait 600
+/say camp-rejoin-30s
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+
+# Goblins that had wandered off: move them ~28 blocks east, plus a persistent stand-in with no leash.
+/tag @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] add cw
+/spreadplayers 38340 39032 0 3 false @e[tag=cw]
+/summon dndclasses:goblin_warrior 38312 120 39064 {Tags:["oldcamp"],PersistenceRequired:1b}
+/spreadplayers 38312 39062 0 1 false @e[tag=oldcamp]
+wait 5
+/say camp-wander-0
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+wait 400
+/say camp-wander-20s
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+wait 400
+/say camp-wander-40s
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+wait 600
+/say camp-wander-70s
+/execute as @e[type=dndclasses:goblin_warrior,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+/execute as @e[tag=oldcamp] run data get entity @s CampCenter
+/execute as @e[tag=oldcamp] run data get entity @s Pos
+/kill @e[tag=oldcamp]
+/tag @e[tag=cw] remove cw
+
+# Chase: a Hostile player by the fire hits a camp goblin, runs east and vanishes.
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/effect give @s resistance 1000 4 true
+/effect give @s regeneration 1000 4 true
+/effect give @s saturation 1000 4 true
+/spreadplayers 38318 39032 0 1 false @s
+wait 60
+/damage @e[tag=campg,limit=1,sort=nearest] 1 minecraft:player_attack by @s
+wait 20
+/say camp-chase
+target @e[tag=campg]
+/spreadplayers 38330 39032 0 1 false @s
+wait 60
+/spreadplayers 38342 39032 0 1 false @s
+wait 60
+/spreadplayers 38352 39032 0 1 false @s
+wait 80
+target @e[tag=campg]
+/say camp-chase-out
+/execute as @e[tag=campg] run data get entity @s Pos
+/say camp-others
+/execute as @e[type=dndclasses:goblin_warrior,tag=!campg,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=!campg,tag=dndclasses.goblin_raider,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160]
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=!campg,nbt={CampCenter:{}},x=38232,y=-64,z=38952,dx=160,dy=400,dz=160]
+/execute if entity @e[type=dndclasses:goblin_warrior,tag=!campg,nbt={PersistenceRequired:1b},x=38232,y=-64,z=38952,dx=160,dy=400,dz=160]
+/gamemode spectator
+/tp @s 38312 180 39032 0 90
+/rep @s dndclasses:goblins set 0
+wait 400
+/say camp-lost-20s
+/execute as @e[tag=campg] run data get entity @s Pos
+wait 600
+/say camp-lost-50s
+/execute as @e[tag=campg] run data get entity @s Pos
+wait 600
+/say camp-lost-80s
+/execute as @e[tag=campg] run data get entity @s Pos
+/say camp-others-80s
+/execute as @e[type=dndclasses:goblin_warrior,tag=!campg,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160] run data get entity @s Pos
+/kill @e[type=dndclasses:goblin_warrior,tag=!campg,x=38232,y=-64,z=38952,dx=160,dy=400,dz=160]
+
+# Raid with its rally 40 blocks east of the camp fire.
+/gamemode survival
+/spreadplayers 38352 39032 0 1 false @s
+/rep @s dndclasses:goblins set -717
+/effect give @s resistance 1000 4 true
+/execute positioned 38352 80 39032 run goblinraid start here
+wait 260
+/say camp-raid-0
+/execute as @e[tag=dndclasses.goblin_raider] run data get entity @s Pos
+/execute if entity @e[tag=dndclasses.goblin_raider,nbt={CampCenter:{}}]
+target @e[tag=dndclasses.goblin_raider]
+wait 200
+/say camp-raid-10s
+/execute as @e[tag=dndclasses.goblin_raider] run data get entity @s Pos
+target @e[tag=dndclasses.goblin_raider]
+wait 300
+/say camp-raid-25s
+/execute as @e[tag=dndclasses.goblin_raider] run data get entity @s Pos
+/execute if entity @e[tag=dndclasses.goblin_raider,nbt={CampCenter:{}}]
+target @e[tag=dndclasses.goblin_raider]
+/execute positioned 38352 80 39032 run goblinraid stop
+/rep @s dndclasses:goblins set 0
+/kill @e[tag=dndclasses.goblin_raider]
+/gamemode spectator
+/tp @s 38312 180 39032 0 90
+wait 100
+
+# Warlord wave 30 blocks south of the camp fire.
+/summon dndclasses:goblin_warlord 38312 120 39062 {Tags:["wavetest"]}
+/spreadplayers 38312 39062 0 1 false @e[tag=wavetest]
+/rep @s dndclasses:goblins set -717
+/gamemode survival
+/spreadplayers 38312 39068 0 1 false @s
+wait 300
+/execute at @e[tag=wavetest] run tag @e[type=dndclasses:goblin_warrior,distance=..20,tag=!wavetest,tag=!campg] add wavemin
+/say camp-wave-10s
+target @e[tag=wavetest]
+target @e[tag=wavemin]
+/execute if entity @e[tag=wavemin,nbt={CampCenter:{}}]
+/execute if entity @e[tag=wavemin]
+/execute as @e[tag=wavemin] run data get entity @s Pos
+wait 200
+/say camp-wave-20s
+target @e[tag=wavemin]
+/execute as @e[tag=wavemin] run data get entity @s Pos
+/gamemode spectator
+/rep @s dndclasses:goblins set 0
+/kill @e[tag=wavetest]
+/kill @e[tag=wavemin]
+/tag @e[tag=campg] remove campg
+/tp @s 0.5 150 0.5
+/gamemode creative
+wait 20
+quit

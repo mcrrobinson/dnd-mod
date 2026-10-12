@@ -1,0 +1,189 @@
+# Verify PR #215 (mobs skip a DM / Bard / Necromancer / Mob Repel player without dropping their real target).
+# A barrier box at 1990..2030 x 149..156 y 2000..2020 z, at night, the player at 2010 150 2010 with Resistance V.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dm-skip-verify.txt
+# Check in latest.log: the "[DevScript] target" lines after each "<phase>" chat line.
+#   dm-alone / dm-veiled: every hostile -> none. dm-off-control: they now target Dev.
+#   bard-unprovoked: none. bard-after-hit: the zombie Dev hit targets Dev.
+#   necro: zombie/skeleton none, spider Dev, Lich Dev.
+#   cleric-repel: the zombie that chased Dev drops it; the zombie chasing the villager keeps the villager.
+wait 40
+closescreen
+/spreadplayers 2010 2010 0 1 false @s
+include _reset.txt
+wait 40
+closescreen
+/gamemode creative
+/dm off
+/time set 18000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/tp @s 2010 160 2010 90 0
+wait 40
+/kill @e[tag=dms]
+/fill 1990 149 2000 2030 156 2020 minecraft:barrier hollow
+/fill 1991 150 2001 2029 155 2019 minecraft:air
+/tp @s 2010 150 2010 90 0
+/gamemode survival
+/effect give @s minecraft:resistance 1000 4 true
+/effect give @s minecraft:saturation 1000 255 true
+/effect give @s minecraft:regeneration 1000 4 true
+
+# Phase dm-alone: DM mode on, hostiles all round.
+/dm on
+/summon minecraft:zombie 2004 150 2010 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+/summon minecraft:skeleton 2016 150 2010 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+/summon minecraft:spider 2010 150 2004 {Tags:["dms"],PersistenceRequired:1b}
+/summon minecraft:husk 2010 150 2016 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+wait 40
+/say dm-alone
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+/dm veil on
+wait 20
+/say dm-veiled
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+/dm veil off
+/dm off
+wait 20
+/say dm-off-control
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+/kill @e[tag=dms]
+
+# Phase bard: hostiles ignore a Bard until hit.
+/dndclass set @s bard
+/clear @s dndclasses:class_guidebook
+wait 40
+closescreen
+/tp @s 2010 150 2010 90 0
+/summon minecraft:zombie 2004 150 2010 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+/summon minecraft:skeleton 2016 150 2016 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+/summon minecraft:spider 2010 150 2004 {Tags:["dms"],PersistenceRequired:1b}
+wait 40
+/say bard-unprovoked
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+# Hit the zombie: it stands 2 blocks west, frozen by Slowness so the swing lands.
+/tp @e[tag=dms,type=minecraft:zombie] 2008 150 2010.5
+/effect give @e[tag=dms,type=minecraft:zombie] minecraft:slowness 3 255 true
+/tp @s 2010.5 150 2010.5 90 10
+wait 5
+attack
+wait 10
+/say bard-after-hit
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+/kill @e[tag=dms]
+
+# Phase necro: undead ignore a Necromancer, other hostiles and the Lich don't.
+/dndclass set @s necromancer
+/clear @s dndclasses:class_guidebook
+wait 40
+closescreen
+/tp @s 2010 150 2010 90 0
+/summon minecraft:zombie 2004 150 2010 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+/summon minecraft:skeleton 2016 150 2010 {Tags:["dms"],PersistenceRequired:1b,CanPickUpLoot:0b}
+/summon minecraft:spider 2010 150 2004 {Tags:["dms"],PersistenceRequired:1b}
+/summon dndclasses:lich 2020 150 2016
+wait 2
+/tag @e[type=dndclasses:lich,x=2020,y=150,z=2016,distance=..3] add dms
+wait 40
+/say necro
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+wait 20
+target @e[tag=dms,type=!minecraft:villager]
+/kill @e[tag=dms]
+/kill @e[type=dndclasses:lich,x=2010,y=150,z=2010,distance=..40]
+/kill @e[type=!minecraft:player,x=2010,y=150,z=2010,distance=..40]
+
+# Phase cleric-repel (solo Mob Repel): a zombie chasing Dev gives up; a zombie chasing a villager keeps it.
+/dndclass set @s cleric
+/clear @s dndclasses:class_guidebook
+wait 40
+closescreen
+/tp @s 2010 150 2010 90 0
+/summon minecraft:villager 2026 150 2010 {Tags:["dms"],NoAI:1b,PersistenceRequired:1b,ActiveEffects:[{Id:11,Amplifier:4b,Duration:100000,ShowParticles:0b}]}
+/summon minecraft:zombie 2006 150 2010 {Tags:["dms","onplayer"],PersistenceRequired:1b,CanPickUpLoot:0b}
+wait 60
+/summon minecraft:zombie 2014 150 2010 {Tags:["dms","onvillager"],PersistenceRequired:1b,CanPickUpLoot:0b}
+wait 20
+/say cleric-before-repel
+target @e[tag=dms,type=minecraft:zombie]
+/effect give @s dndclasses:mob_repel 60 0
+/tp @s 2018 150 2010 90 0
+wait 10
+/say cleric-repel
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+wait 20
+target @e[tag=dms,type=minecraft:zombie]
+/kill @e[tag=dms]
+/effect clear @s
+/dndclass set @s none
+/clear @s dndclasses:class_guidebook
+wait 40
+closescreen
+/fill 1990 149 2000 2030 156 2020 minecraft:air
+/spreadplayers 2010 2010 0 1 false @s
+quit

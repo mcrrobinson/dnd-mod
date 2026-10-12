@@ -132,6 +132,7 @@ public class MagmamuncherAlphaEntity extends HostileEntity implements GeoEntity,
 
     /** A spread of small fireballs from the mouth, like a blaze volley but all at once. */
     private void spitFire(LivingEntity target) {
+        MobActions.log(this, "spit fire", target);
         this.triggerAnim("attack_controller", "attack1");
         this.getLookControl().lookAt(target, 30.0F, 30.0F);
         double mouthY = this.getBodyY(0.6D);
@@ -176,6 +177,7 @@ public class MagmamuncherAlphaEntity extends HostileEntity implements GeoEntity,
     }
 
     private void enrage() {
+        MobActions.log(this, "enrage", this.getTarget());
         addModifier(this.getAttributeInstance(EntityAttributes.GENERIC_MOVEMENT_SPEED),
                 new EntityAttributeModifier(ENRAGE_SPEED_ID, "Magmamuncher Alpha enrage speed", 0.3D,
                         EntityAttributeModifier.Operation.MULTIPLY_BASE));

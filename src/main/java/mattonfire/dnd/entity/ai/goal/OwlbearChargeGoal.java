@@ -3,6 +3,7 @@ package mattonfire.dnd.entity.ai.goal;
 import java.util.EnumSet;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.entity.GrabSaves;
+import mattonfire.dnd.entity.MobActions;
 import mattonfire.dnd.entity.OwlbearEntity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -62,6 +63,8 @@ public class OwlbearChargeGoal extends Goal {
         this.owlbear.getNavigation().stop();
         this.owlbear.triggerAnim("attack_controller", OwlbearEntity.ROAR);
         this.owlbear.playSound(SoundEvents.ENTITY_POLAR_BEAR_WARNING, 2.0F, 0.6F);
+        MobActions.log(this.owlbear, "charge (cooldown " + this.owlbear.chargeCooldown() + ")",
+                this.owlbear.getTarget());
     }
 
     @Override

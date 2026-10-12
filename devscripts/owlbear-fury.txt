@@ -1,0 +1,364 @@
+# Grimclaw's fury: a furious owlbear (tag dndclasses.owlbear_fury, as DungeonChampion gives the Goblin Warren's
+# Grimclaw) charges every 80 ticks below half health instead of 120. A plain owlbear stays at 120.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/owlbear-fury.txt
+# The owlbear is put back 10 blocks from the player every 10 ticks, so every charge misses and it keeps charging.
+# Check run/logs/debug.log for "[MobAction] Grimclaw charge (cooldown N)" lines and their t= world times:
+#  phase 1 (150/150 HP): cooldown 120, about 170 ticks apart (20 wind-up + 30 charge + 120)
+#  phase 2 (60/150 HP):  cooldown 80, about 130 ticks apart
+#  phase 3 (a plain owlbear, "Plain Owlbear", 20/50 HP): cooldown 120 again
+wait 40
+closescreen
+respawn
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/difficulty normal
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 6 149 20 minecraft:stone
+/fill 0 150 0 6 154 20 minecraft:air
+/gamemode survival
+/effect give @s minecraft:resistance 1000 4 true
+/effect give @s minecraft:regeneration 1000 2 true
+/tp @s 3.5 150 15.5 180 10
+/summon dndclasses:owlbear 3.5 150 5.5 {CustomName:'"Grimclaw"',Tags:["dndclasses.owlbear_fury","dndclasses.dungeon_champion"],PersistenceRequired:1b,Attributes:[{Name:"generic.max_health",Base:150d}],Health:150f}
+/say phase-1-full-health
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+screenshot owlbear-fury-full
+/data merge entity @e[type=dndclasses:owlbear,limit=1] {Health:60f}
+/data get entity @e[type=dndclasses:owlbear,limit=1] Health
+/say phase-2-below-half
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+screenshot owlbear-fury-low
+/kill @e[type=dndclasses:owlbear]
+/summon dndclasses:owlbear 3.5 150 5.5 {CustomName:'"Plain Owlbear"',PersistenceRequired:1b,Health:20f}
+/say phase-3-plain-low
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+wait 10
+/tp @e[type=dndclasses:owlbear] 3.5 150 5.5 0 0
+/kill @e[type=dndclasses:owlbear]
+quit

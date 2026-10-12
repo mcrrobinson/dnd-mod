@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -11,7 +13,9 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * The treasury behind the throne: a low blackstone vault heaped with gold, with treasure chests
- * on gilded plinths and the odd block of emerald or diamond. Always watched.
+ * on gilded plinths and the odd block of emerald or diamond. Always watched, and shut behind a
+ * Clockwork Door (Hard): an Artificer or a Rogue repairs it open, anyone else smashes it and angers
+ * the dwarves who see it.
  */
 public class TreasuryPiece extends FortressPiece {
     private static final int WIDTH = 13;
@@ -74,5 +78,8 @@ public class TreasuryPiece extends FortressPiece {
             b.set(MID, HEIGHT - 2, z, lantern(true));
         }
         b.dwarf(MID, 1, 3);
+
+        // Last, so the randoms above match treasuries generated before the door was added.
+        b.obstacle(MID - 1, 1, 0, MID + 1, 3, 0, CraftElementObstacles.CLOCKWORK_DOOR, Tier.HARD, false);
     }
 }

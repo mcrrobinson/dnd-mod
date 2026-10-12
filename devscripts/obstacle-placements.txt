@@ -1,0 +1,143 @@
+# Obstacle placements in structures, and the dndclasses:obstacle_tier template processor.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/obstacle-placements.txt
+# The survey areas (x, z = 70000 and up, the Nether at 52000) must be unexplored, so the structures generate fresh
+# with /place structure (the same generator as natural ones).
+# Expect, in <run dir>/logs/latest.log ([CHAT] lines):
+#  Processor: the template copied at depth 3 is Hard (seal) and still critical (altar); at very_hard Very Hard; with
+#   no tier it keeps Easy. The two touching copies at z = 3004/3005 stay separate groups ("group of 2").
+#  Lich: with the altar consecrated, "[Obstacle] Lich at ... raises N dead at half health", and a minion's Health
+#   is half its max_health.
+#  Each /dndobstacle list after a /place shows the structure's obstacle with its full group size:
+#   goblin camp: Guardian Beast (Easy) 1 block + 2 wolves bound (Data.Beasts), critical
+#   dragon lair and frost lair: Heavy Boulder (Hard), 8 blocks
+#   beholder lair: Greater Arcane Seal (Very Hard), 4 blocks
+#   dwarven fortress: Clockwork Door (Hard) 9, Collapsed Passage (Medium) 8, Alchemical Seal (Medium) 1 (per piece)
+#   nether fortress: Fire Curtain (Hard) 8 + Fire Curtain Brazier (Hard) 1
+#   strongholds: Desecrated Altar (Hard) 1 per library; Hidden Door (Hard) 2 in some corridors
+#   mineshafts: Collapsed Passage (Easy) 18 in some corridors
+wait 40
+closescreen
+include _reset.txt
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/gamemode creative
+
+# ---- The template processor
+/tp @s 3002 152 2996 0 30
+wait 100
+/fill 2995 149 2995 3010 149 3010 minecraft:stone
+/fill 2995 150 2995 3010 156 3010 minecraft:air
+/dndobstacle place 3000 150 3000 3001 151 3000 dndclasses:lesser_arcane_seal easy
+/dndobstacle place 3003 150 3000 3003 150 3000 dndclasses:desecrated_altar easy true
+/setblock 3000 150 2998 minecraft:structure_block{mode:"SAVE",name:"dndclasses:obstacle_test",posX:0,posY:0,posZ:2,sizeX:4,sizeY:2,sizeZ:1}
+/setblock 3000 149 2998 minecraft:redstone_block
+waitserver 5
+/dndobstacle template dndclasses:obstacle_test 3000 150 3004 depth 3
+/dndobstacle template dndclasses:obstacle_test 3000 150 3005 depth 3
+/dndobstacle template dndclasses:obstacle_test 3000 150 3007 very_hard
+/dndobstacle template dndclasses:obstacle_test 3000 150 3009
+waitserver 2
+/dndobstacle info 3000 150 3004
+/dndobstacle info 3003 150 3004
+/dndobstacle info 3000 151 3007
+/dndobstacle info 3000 150 3009
+/data get block 3000 150 3000 GroupSeed
+/data get block 3000 150 3004 GroupSeed
+/data get block 3000 150 3005 GroupSeed
+hud off
+screenshot placements-processor
+hud on
+
+# ---- Lich minions at half health beside a consecrated altar (at night, so they don't burn)
+/time set midnight
+/fill 3020 149 3020 3036 149 3036 minecraft:stone
+/fill 3020 150 3020 3036 156 3036 minecraft:air
+/dndobstacle place 3028 150 3022 3028 150 3022 dndclasses:desecrated_altar hard
+/dndobstacle open 3028 150 3022
+/tp @s 3028 150 3034 180 0
+/gamemode survival
+/effect give @s minecraft:resistance 600 4 true
+/effect give @s minecraft:regeneration 600 4 true
+/summon dndclasses:lich 3028 150 3026
+wait 60
+/execute as @e[tag=dndclasses.lich_minion,limit=2,distance=..40] run data get entity @s Health
+/execute as @e[tag=dndclasses.lich_minion,limit=2,distance=..40] run attribute @s minecraft:generic.max_health get
+/gamemode creative
+/kill @e[tag=dndclasses.lich_minion,x=3028,y=150,z=3028,distance=..64]
+/kill @e[type=dndclasses:lich,x=3028,y=150,z=3028,distance=..64]
+/kill @e[type=dndclasses:phylactery,x=3028,y=150,z=3028,distance=..64]
+/kill @e[type=minecraft:item,x=3028,y=150,z=3028,distance=..64]
+/effect clear @s
+/time set noon
+
+# ---- Goblin camp
+/gamemode spectator
+/tp @s 70000 120 70000
+wait 200
+/place structure dndclasses:goblin_camp 70000 64 70000
+waitserver 5
+/dndobstacle list 96
+/execute as @e[type=minecraft:wolf,distance=..96] run data get entity @s Tags
+
+# ---- Dragon lair
+/tp @s 72000 200 70000
+wait 200
+/place structure dndclasses:dragon_lair 72000 64 70000
+waitserver 5
+/dndobstacle list 96
+
+# ---- Frost lair
+/tp @s 74000 200 70000
+wait 200
+/place structure dndclasses:frost_lair 74000 64 70000
+waitserver 5
+/dndobstacle list 96
+
+# ---- Beholder lair
+/tp @s 76000 60 70000
+wait 200
+/place structure dndclasses:beholder_lair 76000 64 70000
+waitserver 5
+/dndobstacle list 96
+
+# ---- Dwarven fortress
+/tp @s 78000 150 70000
+wait 200
+/place structure dndclasses:dwarven_fortress 78000 64 70000
+waitserver 5
+/dndobstacle list 128
+
+# ---- Strongholds (two, for the library altar and the hidden closets)
+/tp @s 80000 40 70000
+wait 200
+/place structure minecraft:stronghold 80000 30 70000
+waitserver 5
+/dndobstacle list 128
+/tp @s 82000 40 70000
+wait 200
+/place structure minecraft:stronghold 82000 30 70000
+waitserver 5
+/dndobstacle list 128
+
+# ---- Mineshafts (two)
+/tp @s 84000 40 70000
+wait 200
+/place structure minecraft:mineshaft 84000 30 70000
+waitserver 5
+/dndobstacle list 128
+/tp @s 86000 40 70000
+wait 200
+/place structure minecraft:mineshaft 86000 30 70000
+waitserver 5
+/dndobstacle list 128
+
+# ---- Nether fortress
+/execute in minecraft:the_nether run tp @s 52000 70 52000
+wait 200
+/execute in minecraft:the_nether run place structure minecraft:fortress 52000 64 52000
+waitserver 5
+/execute in minecraft:the_nether run dndobstacle list 96
+/execute in minecraft:overworld run tp @s 0 151 0
+wait 20
+quit

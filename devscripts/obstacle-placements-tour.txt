@@ -1,0 +1,32 @@
+# Generates the natural structures found by obstacle-placements-locate.txt (with the dev world's seed; the second
+# dragon lair is the one nearest -100000, -100000) and lists
+# their obstacles. Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/obstacle-placements-tour.txt
+# Expect "/dndobstacle list" lines: Guardian Beast (Easy) 1 block (critical, 2 bound wolves); Heavy Boulder (Hard)
+# 8 blocks at each lair; Greater Arcane Seal (Very Hard) 4 blocks; Clockwork Door (Hard) 9, Collapsed Passage
+# (Medium) 8 and Alchemical Seal (Medium) 1 per mine and forge in the fortress.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/tp @s 97824 140 99712
+wait 200
+/dndobstacle list 96
+/execute as @e[type=minecraft:wolf,distance=..96] run data get entity @s Tags
+/tp @s 95344 250 103120
+wait 200
+/dndobstacle list 96
+/tp @s -99216 200 -101904
+wait 400
+/dndobstacle list 96
+/tp @s 98144 250 101568
+wait 200
+/dndobstacle list 96
+/tp @s 99280 -20 100192
+wait 200
+/dndobstacle list 96
+/tp @s 101424 150 100160
+wait 200
+/dndobstacle list 128
+/tp @s 0 151 0
+wait 20
+quit

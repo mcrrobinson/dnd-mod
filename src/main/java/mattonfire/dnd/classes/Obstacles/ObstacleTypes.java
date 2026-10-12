@@ -203,6 +203,7 @@ public final class ObstacleTypes {
         ObstacleAuras.register();
         ObstacleBlock.registerBreakEvents();
         VanillaTraps.register();
+        ObstacleTierProcessor.register();
         for (ObstacleType type : TYPES.values()) {
             type.registerEvents();
         }

@@ -19,6 +19,7 @@ import mattonfire.dnd.classes.Obstacles.ObstacleGroups;
 import mattonfire.dnd.classes.Obstacles.ObstacleIndex;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleText;
+import mattonfire.dnd.classes.Obstacles.ObstacleTierProcessor;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.Tier;
@@ -47,6 +48,7 @@ import net.minecraft.util.math.BlockPos;
  * /dndobstacle link &lt;winch&gt; &lt;target&gt;                      connect a winch to its portcullis or chasm bridge
  * /dndobstacle list [radius]                              obstacle groups near you (default 64 blocks)
  * /dndobstacle sleep|wake [radius]                        lay undead near you down as crypt sleepers, or wake them (default 8)
+ * /dndobstacle template &lt;template&gt; &lt;pos&gt; [&lt;tier&gt;|depth &lt;n&gt;]  place a structure template through the obstacle_tier processor
  *
  * Op level 2. The DM toolkit's seam for obstacles.
  */
@@ -61,6 +63,8 @@ public final class ObstacleCommand {
             Text.literal("That isn't a winch"));
     private static final DynamicCommandExceptionType WRONG_TARGET = new DynamicCommandExceptionType(
             name -> Text.literal("This winch works a ").append((Text) name).append(", and that isn't one"));
+    private static final DynamicCommandExceptionType UNKNOWN_TEMPLATE = new DynamicCommandExceptionType(
+            id -> Text.literal("Unknown structure template: " + id));
     private static final SimpleCommandExceptionType TOO_BIG = new SimpleCommandExceptionType(
             Text.literal("An obstacle group can have at most " + ObstacleGroups.MAX_BLOCKS + " blocks"));
 
@@ -115,6 +119,19 @@ public final class ObstacleCommand {
                         .executes(context -> traps(context, false))
                         .then(CommandManager.literal("tp")
                                 .executes(context -> traps(context, true))))
+                .then(CommandManager.literal("template")
+                        .then(CommandManager.argument("template", IdentifierArgumentType.identifier())
+                                .then(CommandManager.argument("pos", BlockPosArgumentType.blockPos())
+                                        .executes(context -> template(context,
+                                                new ObstacleTierProcessor(null, null, null), "as saved"))
+                                        .then(CommandManager.literal("depth")
+                                                .then(CommandManager.argument("depth", IntegerArgumentType.integer(0, 64))
+                                                        .executes(context -> template(context,
+                                                                ObstacleTierProcessor.ofDepth(
+                                                                        IntegerArgumentType.getInteger(context, "depth")),
+                                                                "depth " + IntegerArgumentType.getInteger(context, "depth")))))
+                                        .then(tierArgument().executes(context -> template(context,
+                                                ObstacleTierProcessor.ofTier(tier(context)), tier(context).asString()))))))
                 .then(CommandManager.literal("list")
                         .executes(context -> list(context, 64))
                         .then(CommandManager.argument("radius", IntegerArgumentType.integer(1, 512))
@@ -162,6 +179,25 @@ public final class ObstacleCommand {
         context.getSource().sendFeedback(Text.literal("Placed " + placed + " block" + (placed == 1 ? "" : "s") + " of ")
                 .append(ObstacleText.name(type, tier)).append(critical ? ", critical" : ""), true);
         return placed;
+    }
+
+    /** Places a structure template through the {@code dndclasses:obstacle_tier} processor, as a dungeon would. */
+    private static int template(CommandContext<ServerCommandSource> context, ObstacleTierProcessor processor,
+            String how) throws CommandSyntaxException {
+        ServerWorld world = context.getSource().getWorld();
+        Identifier id = IdentifierArgumentType.getIdentifier(context, "template");
+        BlockPos pos = BlockPosArgumentType.getLoadedBlockPos(context, "pos");
+        java.util.Optional<net.minecraft.structure.StructureTemplate> template = world.getStructureTemplateManager()
+                .getTemplate(id);
+        if (template.isEmpty()) {
+            throw UNKNOWN_TEMPLATE.create(id);
+        }
+        net.minecraft.structure.StructurePlacementData data = new net.minecraft.structure.StructurePlacementData()
+                .addProcessor(processor);
+        template.get().place(world, pos, pos, data, world.getRandom(), net.minecraft.block.Block.NOTIFY_LISTENERS);
+        context.getSource().sendFeedback(Text.literal("Placed template " + id + " at " + pos.toShortString()
+                + " through dndclasses:obstacle_tier (" + how + ")"), true);
+        return 1;
     }
 
     private static int info(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {

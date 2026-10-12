@@ -124,10 +124,15 @@ public final class DesecratedAltarType extends ObstacleType {
 
     /** Whether a consecrated altar keeps the spawner at {@code spawner} quiet. */
     public boolean suppresses(World world, BlockPos spawner) {
+        return consecratedNear(world, spawner, SPAWNER_RADIUS);
+    }
+
+    /** Whether a consecrated (open) altar is within {@code radius} blocks of {@code center} (the Lich asks too). */
+    public boolean consecratedNear(World world, BlockPos center, int radius) {
         if (!(world instanceof ServerWorld serverWorld)) {
             return false;
         }
-        for (BlockPos pos : ObstacleIndex.get(serverWorld).within(spawner, SPAWNER_RADIUS)) {
+        for (BlockPos pos : ObstacleIndex.get(serverWorld).within(center, radius)) {
             if (!world.isChunkLoaded(pos)) {
                 continue;
             }

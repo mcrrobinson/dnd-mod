@@ -1,6 +1,9 @@
 package mattonfire.dnd.world.gen.fortress;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
+import mattonfire.dnd.classes.Obstacles.ObstacleType;
+import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
@@ -66,6 +69,7 @@ public abstract class FortressPiece extends StructurePiece {
     protected static final Identifier BARRACKS = loot("dwarven_fortress_barracks");
     protected static final Identifier BREWHALL = loot("dwarven_fortress_brewhall");
     protected static final Identifier MINE = loot("dwarven_fortress_mine");
+    protected static final Identifier REAGENTS = loot("dwarven_fortress_reagents");
 
     /** How far down a floor gets propped up over caves and cliffs. */
     private static final int MAX_FOUNDATION = 24;
@@ -325,6 +329,21 @@ public abstract class FortressPiece extends StructurePiece {
             if (width >= 3) {
                 this.set(x1, height, z, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.EAST, true));
                 this.set(x2, height, z, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.WEST, true));
+            }
+        }
+
+        /**
+         * Fills the local box (x1, y1, z1) to (x2, y2, z2) with one sealed obstacle group. Only the blocks in this
+         * chunk are written ({@link ObstaclePlacer}); the group seed is drawn either way, so every chunk agrees.
+         */
+        void obstacle(int x1, int y1, int z1, int x2, int y2, int z2, ObstacleType type, Tier tier, boolean critical) {
+            long groupSeed = this.random.nextLong();
+            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
+                for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
+                    for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
+                        ObstaclePlacer.place(this.world, this.chunkBox, this.pos(x, y, z), type, tier, critical, groupSeed);
+                    }
+                }
             }
         }
 

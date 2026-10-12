@@ -34,6 +34,12 @@ The dwarves are neutral until you cross them. If you open or break a chest or ba
 - The chests are locked. A [Rogue](../classes/rogue.md) can pick them (DC 15 in the treasury, DC 10 elsewhere, see [d20 skill checks](../systems/d20-skill-checks.md#lockpicking-rogue)). Anyone else has to break them and loses some of the loot. A picked lock still angers a dwarf that's watching.
 - Help the dwarves drive off a [goblin raid](../systems/goblin-raids.md). Every dwarf of that fortress forgives you.
 
+Some treasure is behind [class-gated obstacles](../systems/obstacles.md) (fortresses generated after they were added):
+
+- The treasury doorway is a **Clockwork Door** (Hard, DC 15). An Artificer, or a Rogue, repairs it open with an iron ingot and a redstone dust per try. Anyone else smashes it (hardness 50), and the dwarves who see it take offence.
+- Each **mine** has an ore pocket in a back corner: a mine chest in a hollow studded with ore, behind a 2x2x2 **Collapsed Passage** (Medium, DC 13). Barbarians and Fighters clear it with Athletics; anyone can dig through it.
+- Each **forge** has a barrel of reagents in a back corner, at the end of the lava channel, sealed with an **Alchemical Seal** (Medium). An Alchemist dissolves it with a potion; breaking it ruins some of the contents. The barrel uses `chests/dwarven_fortress_reagents`: blaze powder, nether wart, glowstone, redstone, gunpowder, fermented spider eyes, magma cream, glistering melon, golden carrots, glass bottles, the odd ghast tear and potions of Fire Resistance, Healing and Swiftness.
+
 ## For your race
 Dwarven Fortresses are the Dwarf home (see [Racial homes](../races/racial-homes.md)). A Dwarf gets:
 
@@ -53,7 +59,7 @@ Meadow, Grove, Snowy Slopes, Jagged Peaks, Frozen Peaks, Stony Peaks, Windswept 
 - `/locate structure dndclasses:dwarven_fortress`
 
 ## For developers
-- `world/gen/fortress/`: `DwarvenFortressStructure` finds the gate site, `FortressPlanner` lays out the gate, hall, throne room, treasury and side rooms (one `*Piece` each), and `CladdingPiece` heaps rock over anything the mountain doesn't cover. `FortressPiece` holds the shared loot ids.
+- `world/gen/fortress/`: `DwarvenFortressStructure` finds the gate site, `FortressPlanner` lays out the gate, hall, throne room, treasury and side rooms (one `*Piece` each), and `CladdingPiece` heaps rock over anything the mountain doesn't cover. `FortressPiece` holds the shared loot ids and `Builder.obstacle(...)`, which places one obstacle group in local coordinates. Each piece places its obstacles last in `build`, so the earlier random draws (and half-generated fortresses from before) don't change.
 - Data: `worldgen/structure/dwarven_fortress.json` (dwarf spawn override, empty monster list), `worldgen/structure_set/dwarven_fortresses.json`, the `#dndclasses:has_structure/dwarven_fortress` biome tag and `loot_tables/chests/dwarven_fortress_*.json`.
 - Grudges: `entity/SettlementGrudges.java` (the `MOUNTAIN_DWARVES` rules, including Dwarf kin trust) and `MountainDwarfEntity.provoke`.
 - Devscripts: `dwarven-fortress-locate.txt`, `dwarven-fortress-survey.txt`.

@@ -76,6 +76,8 @@ Beholders only live in **Beholder lairs**, which are rare (spacing 40 chunks, se
 
 **The cavern** is a dome of radius 16 and height 12, with its floor somewhere between y=-38 and y=-19. A two-block deepslate shell keeps caves, water and lava out. The floor is a great eye of calcite and blackstone round a verdant froglight iris and an obsidian pupil, and the walls have crying obsidian, amethyst, dripstone and the odd shroomlight. Five petrified adventurers (grey armour stands, arms raised) stand round the floor. Against the west wall, a hoard of gold, bones and skulls surrounds a chest (`chests/beholder_lair`), which always holds a magic item (Rare 40%, Very Rare 45%, Legendary 15%), plus a 4% chance of an Immovable Rod and 2% of the Eye of the Tyrant. The Beholder hovers 5 blocks above the middle of the floor.
 
+**The side vault**: off the north wall of the tunnel, a 2x2 **Greater Arcane Seal** (Very Hard, DC 18) closes a small deepslate-brick vault with a second `chests/beholder_lair` chest, a lectern and a soul lantern. Only a Wizard can dispel it, and not while under the Beholder's Anti-Magic, so it's for after the fight ([Class-gated obstacles](../systems/obstacles.md)). Lairs generated before it was added don't have one.
+
 **The way in** is a deepslate spiral stair that comes up 20 blocks east of the cavern's centre, inside a mossy ring of wall with a soul lantern, and a tunnel from its foot to the cavern.
 
 No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its Beholder is dead, the lair now and then sends a new one: a 1 in 20 roll on each natural spawn, out of sight of the sky, with no other Beholder within 64 blocks.

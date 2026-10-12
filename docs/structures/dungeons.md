@@ -27,7 +27,7 @@ This page covers the framework and the three themes: the **Crypt**, the **Goblin
 - **Crypt palette**: stone bricks (some mossy or cracked), polished andesite floors, polished deepslate trim, chiselled stone accents, soul lanterns.
 - **Chests**: one in each encounter room, the secret room and the side vault, with locked tier loot (`dndclasses:chests/dungeon/<theme>_<room>_t<tier>`); 8% of them are Mimics. See [Dungeon loot](../systems/dungeon-loot.md).
 - **No natural monster spawns** inside (`spawn_overrides.monster` is empty): every monster will come from an encounter.
-- **Music**: inside a dungeon you hear the dungeon track, Silent Footsteps (all dungeons are in `#dndclasses:music_dungeons`).
+- **Music**: each theme has its own ambient loop inside (an organ drone in the Crypt, tribal drums in the Warren, brass and echoing anvils in the Ruin), a short sting plays when a room's fight ends and a fanfare when the dungeon is cleared. See [Music](../music.md).
 
 ### The Crypt
 The first theme: a barrow over a buried tomb, home of the Ossuary Cube and the Lich.
@@ -139,11 +139,9 @@ For all of them, the entrance has to be on dry land, and at most 2 of the 25 gro
 - `/dungeon cutaway`: for screenshots: removes everything from 3 blocks above the floor up to the sky over the dungeon. Destructive.
 
 ## Known limitations
-- A dungeon made with `/place structure` plays no dungeon music (vanilla `/place` doesn't record a structure start), but its wards and `/dungeon` commands work.
-- The Ruin's music is the generic dungeon track until the dungeon music ticket.
+- A dungeon made with `/place structure` has no structure start (vanilla `/place` doesn't record one), so its music only starts once its wards have recorded it, a moment after it loads. Its wards and `/dungeon` commands work.
 - A Dwarf's stonecunning doesn't find the Ruin's secret doors yet (a hook for the races area); anyone can break the cracked bricks.
 - On a very steep slope the gatehouse hall is level with the top of the stair, so a downhill side stands on a footing up to 8 blocks deep and an uphill side is cut into the hill.
-- The Warren's music is the generic dungeon track until the dungeon music ticket.
 - The Warren's barrels are empty props (only the encounter chest holds loot).
 - Trees can grow on the barrow mound, and on a steep slope the mound and its passage follow the ground at the top of the stair, so one side can sit in the hillside or stand proud of it.
 - The Crypt's, the Warren's and the Ruin's room screenshots for the docs are still to be taken in-game.

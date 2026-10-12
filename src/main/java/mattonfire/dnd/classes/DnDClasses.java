@@ -217,6 +217,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.ModEntityTypes.registerEntityTypes();
                 mattonfire.dnd.entity.DragonSaves.register();
                 mattonfire.dnd.entity.BossSaves.register();
+                mattonfire.dnd.entity.GrabSaves.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
@@ -481,6 +482,7 @@ public class DnDClasses implements ModInitializer {
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.dm.DmCommand.register(dispatcher));
                 mattonfire.dnd.dm.DmVeil.register();
                 mattonfire.dnd.dm.DmFreeze.register();
+                mattonfire.dnd.dm.DmRollCalls.register();
                 mattonfire.dnd.dm.encounter.Encounters.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.ObstacleCommand.register(dispatcher));

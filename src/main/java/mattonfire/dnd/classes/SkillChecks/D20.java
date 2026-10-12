@@ -537,6 +537,7 @@ public final class D20 {
     public static void register() {
         Lockpicking.register();
         SavingThrow.register();
+        Grapple.register();
         Persuasion.register();
         AttackRolls.register();
         TrapDisarm.register();

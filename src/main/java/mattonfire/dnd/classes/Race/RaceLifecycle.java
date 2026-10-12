@@ -48,6 +48,7 @@ public final class RaceLifecycle {
         RaceAbilityBonuses.register();
         BreathWeapon.register();
         RaceTraits.register();
+        RacePassives.register();
         ServerPlayNetworking.registerGlobalReceiver(C2S_RACE_PICK, (server, player, handler, buf, sender) -> {
             int race = buf.readVarInt();
             int ancestry = buf.readVarInt();
@@ -189,7 +190,7 @@ public final class RaceLifecycle {
         }
         player.sendMessage(Text.literal("Ability scores: " + info.abilityText() + ".")
                 .formatted(Formatting.AQUA), false);
-        player.sendMessage(Text.literal("Traits (coming soon): " + ClassInfo.joinForGame(info.traits()))
+        player.sendMessage(Text.literal("Traits: " + ClassInfo.joinForGame(info.traits()))
                 .formatted(Formatting.DARK_PURPLE), false);
         player.sendMessage(Text.literal("Your heritage is in your Class Guidebook.").formatted(Formatting.GRAY,
                 Formatting.ITALIC), false);

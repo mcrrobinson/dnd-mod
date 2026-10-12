@@ -99,6 +99,8 @@ public final class SettlementGrudges {
     public static final Rules BLOODTUSK_HORDE = add(new OrcLaw());
     /** The Tieflings of the Brimstone Sanctums guarding their chests and barrels. */
     public static final Rules BRIMSTONE_COVENANT = add(new SanctumLaw());
+    /** The goblins of a camp, who come for anyone opening their chief's chest, whatever their standing. */
+    public static final Rules GOBLIN_CAMP = add(new GoblinCampLaw());
 
     private SettlementGrudges() {
     }
@@ -253,6 +255,11 @@ public final class SettlementGrudges {
 
         @Override
         public Verdict judge(ServerPlayerEntity player, BlockPos pos, Offence offence) {
+            // Honored with the dwarves: their barrels are yours to open (the chests and gold still aren't).
+            if (offence == Offence.OPEN && player.getWorld().getBlockEntity(pos) instanceof BarrelBlockEntity
+                    && TierEffects.trustedWithBarrels(TierEffects.tierWith(player, ModEntityTypes.MOUNTAIN_DWARF))) {
+                return Verdict.TRUSTED;
+            }
             if (!RacialHomes.DWARVEN_FORTRESS.isHomeOf(RaceLifecycle.activeRaceOf(player))) {
                 return Verdict.GRUDGE;
             }

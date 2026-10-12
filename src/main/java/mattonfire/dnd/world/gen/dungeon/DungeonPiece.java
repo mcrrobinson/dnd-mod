@@ -190,6 +190,53 @@ public abstract class DungeonPiece extends StructurePiece {
         return DungeonLoot.chestTable(this.info.theme(), room, this.info.tier());
     }
 
+    /**
+     * The bricked-up blocks of each hidden doorway in this piece's walls, in world coordinates (the inner wall's
+     * {@link #DOOR_WIDTH} x {@link #DOOR_HEIGHT} plug, as {@code Builder.doorway} builds it). For a Dwarf's
+     * Stonecunning ({@code RacePassives}); the blocks may have been broken since.
+     */
+    public List<List<BlockPos>> hiddenDoorways() {
+        List<List<BlockPos>> doorways = new ArrayList<>();
+        BlockBox box = this.boundingBox;
+        int w = this.width();
+        int d = this.depth();
+        for (Door door : this.doors) {
+            if (!door.hidden()) {
+                continue;
+            }
+            boolean alongX = door.side().getAxis() == Direction.Axis.Z;
+            int centre = alongX ? door.along() - box.getMinX() : door.along() - box.getMinZ();
+            List<BlockPos> blocks = new ArrayList<>();
+            for (int t = -DOOR_WIDTH / 2; t <= DOOR_WIDTH / 2; t++) {
+                int x;
+                int z;
+                switch (door.side()) {
+                    case NORTH -> {
+                        x = centre + t;
+                        z = 1;
+                    }
+                    case SOUTH -> {
+                        x = centre + t;
+                        z = d - 2;
+                    }
+                    case WEST -> {
+                        x = 1;
+                        z = centre + t;
+                    }
+                    default -> {
+                        x = w - 2;
+                        z = centre + t;
+                    }
+                }
+                for (int y = 1; y <= DOOR_HEIGHT; y++) {
+                    blocks.add(new BlockPos(box.getMinX() + x, this.info.floorY() + y, box.getMinZ() + z));
+                }
+            }
+            doorways.add(blocks);
+        }
+        return doorways;
+    }
+
     protected int width() {
         return this.boundingBox.getBlockCountX();
     }

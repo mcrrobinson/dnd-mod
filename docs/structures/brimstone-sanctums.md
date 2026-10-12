@@ -70,7 +70,7 @@ Run these in the Nether (e.g. `/execute in minecraft:the_nether run ...`).
 - Huge fungi grow after the sanctum is built, so a crimson or warped fungus next to the wall may hang its cap over it.
 - The cleared space is a flat-topped cylinder: where the cavern roof dips to within 15 blocks of the platform near the wall, it's cut flat.
 - Goblins don't raid sanctums, and there are no Covenant bounties or quests yet.
-- Hellish Resistance (half fire damage everywhere) is a separate trait ticket; inside a sanctum a Tiefling is fully immune either way.
+- Hellish Resistance (half fire damage everywhere, see [Passive racial traits](../races/passive-traits.md)) still applies outside; inside a sanctum a Tiefling is fully immune.
 
 ## For developers
 - `world/gen/sanctum/`. `BrimstoneSanctumStructure` finds the site with `NetherColumns` (`ChunkGenerator.getColumnSample`, cached per column: `solid`, `clear`, `groundBelow`, `biomeAllowed`) and places the pieces (`plan`). `BrimstonePiece` is the shared base, laid out like the Orc Stronghold's (local a/b round the centre, y 0 the platform top, states written for a south gate and rotated, a per-piece seed, the sanctum key), with the loot ids and a `Builder` (`foundation`, `inChunkGap`, `container`, `chandelier`, `tiefling`). Pieces: `PlatformPiece` (platform, pillars, wall, gate, braziers, Exiles), `PactHallPiece` (`altar`, `offering`, `broker`), `MarketPiece` (one per stall), `DenPiece`, `RefugePiece` (`anchors`, `beforeAnchor`). `BrimstoneSanctumStructures` registers them.

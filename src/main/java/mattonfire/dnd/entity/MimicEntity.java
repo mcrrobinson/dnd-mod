@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.SkillChecks.Grapple;
 import mattonfire.dnd.classes.SkillChecks.Perceivable;
 import mattonfire.dnd.classes.SkillChecks.Perception;
 import mattonfire.dnd.classes.SkillChecks.PerceptionService;
@@ -62,7 +63,7 @@ import software.bernie.geckolib.util.GeckoLibUtil;
  * settles back onto the grid and goes dormant again. When it dies it drops the loot it was
  * guarding: its loot table is the one of the chest it replaced.
  */
-public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable {
+public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable, Grapple.Holder {
     private static final TrackedData<Boolean> DORMANT = DataTracker.registerData(MimicEntity.class, TrackedDataHandlerRegistry.BOOLEAN);
 
     /** Ticks without a target before an awake mimic shuts its lid and pretends again. */
@@ -197,7 +198,7 @@ public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable
     private void settle() {
         this.setDormant(true);
         this.idleTicks = 0;
-        this.grabbed = null;
+        this.letGo();
         this.getNavigation().stop();
         this.restYaw = Direction.fromRotation(this.getYaw()).asRotation();
         BlockPos block = this.getBlockPos();
@@ -223,13 +224,42 @@ public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable
         this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 1.0F, 0.6F);
         if (hit) {
             this.playSound(SoundEvents.ENTITY_EVOKER_FANGS_ATTACK, 1.0F, 0.8F);
-            if (target instanceof LivingEntity living && this.grabCooldown <= 0) {
-                this.grabbed = living;
-                this.grabTicks = GRAB_TICKS;
-                this.grabCooldown = GRAB_TICKS + GRAB_COOLDOWN;
+            if (target instanceof LivingEntity living && living.isAlive() && this.grabCooldown <= 0) {
+                if (GrabSaves.roll(living, this, GrabSaves.MIMIC_GRAB).succeeded()) {
+                    // Bitten but pulls free of the jaws; it tries again after the cooldown
+                    DnDClasses.LOGGER.info("[Grapple] {} resists the mimic's grab", living.getName().getString());
+                    this.grabCooldown = GRAB_COOLDOWN;
+                } else {
+                    DnDClasses.LOGGER.info("[Grapple] the mimic grabs {}", living.getName().getString());
+                    this.grabbed = living;
+                    this.grabTicks = GRAB_TICKS;
+                    this.grabCooldown = GRAB_TICKS + GRAB_COOLDOWN;
+                    Grapple.hold(living, this, GrabSaves.MIMIC_GRAB_DC, "grapple.dndclasses.mimic");
+                }
             }
         }
         return hit;
+    }
+
+    private void letGo() {
+        if (this.grabbed != null) {
+            Grapple.release(this.grabbed, this);
+            this.grabbed = null;
+        }
+    }
+
+    @Override
+    public boolean isHolding(LivingEntity victim) {
+        return this.grabbed == victim && this.isAlive() && !this.isRemoved();
+    }
+
+    /** The victim struggled free (Athletics or Acrobatics against the grab DC). */
+    @Override
+    public void breakFree(LivingEntity victim) {
+        if (this.grabbed == victim) {
+            this.letGo();
+            this.playSound(SoundEvents.BLOCK_CHEST_CLOSE, 1.0F, 0.9F);
+        }
     }
 
     /** Drags the victim back to the mimic's mouth and keeps them there. */
@@ -315,7 +345,7 @@ public class MimicEntity extends HostileEntity implements GeoEntity, Perceivable
                     || this.squaredDistanceTo(victim) > 16.0D
                     || (victim instanceof PlayerEntity player && (player.isCreative() || player.isSpectator()));
             if (free) {
-                this.grabbed = null;
+                this.letGo();
             } else {
                 this.getNavigation().stop();
                 this.holdGrabbed(victim);

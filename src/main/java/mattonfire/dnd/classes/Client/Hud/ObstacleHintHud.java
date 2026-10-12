@@ -68,6 +68,10 @@ public final class ObstacleHintHud {
             return;
         }
         ObstacleType type = ((ObstacleBlock) state.getBlock()).type();
+        if (type.hiddenFrom(client.world, pos, player)) {
+            // A hidden door you haven't found is just a wall
+            return;
+        }
         Tier tier = client.world.getBlockEntity(pos) instanceof ObstacleBlockEntity be ? be.tier() : Tier.MEDIUM;
 
         List<Line> lines = new ArrayList<>();

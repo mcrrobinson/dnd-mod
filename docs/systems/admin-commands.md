@@ -53,6 +53,7 @@ Skill ids look like `barbarian.war_cry` and tab-complete from the player's class
 | `/dndrace set <player> <race> [ancestry]` | Changes the race: removes the old race's modifiers, applies the new ones and prints the race summary. `none` clears the race and reopens the race picker |
 | `/dndrace list` | Lists online players with their race and class |
 | `/dndrace cooldowns <player> [reset]` | Prints the racial cooldowns left (Relentless Endurance, Hellish Rebuke, Breath Weapon); `reset` readies them all |
+| `/dndrace traits <player>` | Prints what the passive traits come to now: the break speed on deepslate (1.20 for a Dwarf) and the hidden stone doorways of the dungeon within 128 blocks |
 
 | `/dndhome [player]` | Which [racial home](../races/racial-homes.md) the player is in, the piece under their feet, and whether it's their own home and hearth |
 | `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box |
@@ -81,7 +82,7 @@ See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
 See [Goblin raids](goblin-raids.md) for the details.
 
 ### Dungeon Master
-`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze` and `/dm check|save` let an op run a session: hide from the players, drop premade encounters and pause the scene. `/dm grant <player>` opens them to a non-op. See [Dungeon Master](dungeon-master.md).
+`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save` and `/dm roll|apply` let an op run a session: hide from the players, drop premade encounters, pause the scene and call for rolls on the players' d20 HUD. `/dm grant <player>` opens them to a non-op. See [Dungeon Master](dungeon-master.md).
 
 ### Useful vanilla commands
 - `/locate structure dndclasses:dragon_lair`, `dndclasses:hobbit_village`, `dndclasses:dwarven_fortress`, `dndclasses:goblin_camp`, `dndclasses:beholder_lair`

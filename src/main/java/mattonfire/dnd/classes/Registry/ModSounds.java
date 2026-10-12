@@ -23,6 +23,10 @@ public class ModSounds {
     public static final SoundEvent MUSIC_NETHER_FORTRESS = registerSoundEvent("music.nether_fortress");
     public static final SoundEvent MUSIC_GOBLIN_RAID = registerSoundEvent("music.goblin_raid");
     public static final SoundEvent MUSIC_LICH_FIGHT = registerSoundEvent("music.lich_fight");
+    // Dungeon theme loops (tools/music-gen), picked by the theme DungeonMusic sends
+    public static final SoundEvent MUSIC_DUNGEON_CRYPT = registerSoundEvent("music.dungeon_crypt");
+    public static final SoundEvent MUSIC_DUNGEON_WARREN = registerSoundEvent("music.dungeon_warren");
+    public static final SoundEvent MUSIC_DUNGEON_RUIN = registerSoundEvent("music.dungeon_ruin");
 
     // Short synthesized stings (tools/music-gen) played when a class special fires, one per class
     public static final SoundEvent STING_BARBARIAN = registerSoundEvent("sting.barbarian");
@@ -40,6 +44,9 @@ public class ModSounds {
     public static final SoundEvent STING_ARTIFICER = registerSoundEvent("sting.artificer");
     public static final SoundEvent STING_BLOODHUNTER = registerSoundEvent("sting.bloodhunter");
     public static final SoundEvent STING_ALCHEMIST = registerSoundEvent("sting.alchemist");
+    // Dungeon stings (tools/music-gen): a room's fight is over, the whole dungeon is cleared
+    public static final SoundEvent STING_ROOM_CLEARED = registerSoundEvent("sting.room_cleared");
+    public static final SoundEvent STING_DUNGEON_CLEARED = registerSoundEvent("sting.dungeon_cleared");
 
     // Bard instrument songs (tools/music-gen), played by the lute, drum and flute
     public static final SoundEvent SONG_LUTE = registerSoundEvent("instrument.lute");

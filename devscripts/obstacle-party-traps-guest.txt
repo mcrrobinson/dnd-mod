@@ -1,0 +1,45 @@
+# Guest half of obstacle-party-traps-host.txt (a Fighter). See that script for how to run both.
+# Screenshots every 5 s (party-guest-01..), to catch the door outline and the trap outline as the host moves.
+wait 40
+closescreen
+wait 100
+screenshot party-guest-01
+wait 100
+screenshot party-guest-02
+wait 100
+screenshot party-guest-03
+wait 100
+screenshot party-guest-04
+wait 100
+screenshot party-guest-05
+wait 100
+screenshot party-guest-06
+wait 100
+screenshot party-guest-07
+wait 100
+screenshot party-guest-08
+wait 100
+screenshot party-guest-09
+wait 100
+screenshot party-guest-10
+wait 100
+screenshot party-guest-11
+wait 100
+screenshot party-guest-12
+wait 100
+screenshot party-guest-13
+wait 100
+screenshot party-guest-14
+wait 100
+screenshot party-guest-15
+wait 100
+screenshot party-guest-16
+wait 100
+screenshot party-guest-17
+wait 100
+screenshot party-guest-18
+wait 100
+screenshot party-guest-19
+wait 100
+screenshot party-guest-20
+quit

@@ -63,6 +63,30 @@
             }
         ]
     },
+    "music.dungeon_crypt": {
+        "sounds": [
+            {
+                "name": "dndclasses:dungeon_crypt",
+                "stream": true
+            }
+        ]
+    },
+    "music.dungeon_warren": {
+        "sounds": [
+            {
+                "name": "dndclasses:dungeon_warren",
+                "stream": true
+            }
+        ]
+    },
+    "music.dungeon_ruin": {
+        "sounds": [
+            {
+                "name": "dndclasses:dungeon_ruin",
+                "stream": true
+            }
+        ]
+    },
     "music.night": {
         "sounds": [
             {
@@ -225,6 +249,20 @@
         "sounds": [
             {
                 "name": "dndclasses:sting_alchemist"
+            }
+        ]
+    },
+    "sting.room_cleared": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_room_cleared"
+            }
+        ]
+    },
+    "sting.dungeon_cleared": {
+        "sounds": [
+            {
+                "name": "dndclasses:sting_dungeon_cleared"
             }
         ]
     },

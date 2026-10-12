@@ -24,6 +24,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Races](races/races.md): the race picker (before the class), 8 races with body sizes, head features, stat modifiers and ability bonuses, `/dndrace` and the `dndRaces` gamerule
 - [Dragonborn Breath Weapon](races/breath-weapon.md): B breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [d20 and combat racial traits](races/combat-traits.md): Halfling Lucky rerolls natural 1s (clover on the HUD), Half-Orc Savage Attacks (x2.5 crits) and Relentless Endurance (1 HP instead of dying, 10 min), Tiefling Hellish Rebuke (melee attackers burn, 20 s)
+- [Passive racial traits](races/passive-traits.md): Darkvision, half damage from fire (Tiefling) or your breath element (Dragonborn), Gnome -30% magic, Dwarf half poison and +20% mining with hidden doorways outlined, Elf Keen Senses and Trance, Halfling Second Breakfast, Gnome Tinker, Human +10% XP and +2 social checks
 - [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves), Dragonborn (Dragon Temples), Half-Orcs (Orc Strongholds) and Tieflings (Brimstone Sanctums): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth, the Rally and the Trial of Strength, sanctum fire immunity and a free daily-refilled respawn anchor
 
 ## Systems
@@ -32,30 +33,30 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Rests and charges](systems/rests.md): charges for major actives, short rests at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up; a downed HUD, party status and red ally outlines show who's down
 - [Class progression](systems/class-progression.md): class levels, subclasses chosen at level 3, ability ranks at the Attunement Table and the Bard/Druid bestiary
-- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list|cooldowns`
+- [Admin commands](systems/admin-commands.md): `/dndclass get|set`, progress, rests and charges, `/dndrace get|set|list|cooldowns|traits`
 - [Party](systems/party.md): group up with other players
 - [Party roles](systems/party-roles.md): Tank, Healer, Damage, Support or Utility for every class, in the picker, guidebook and party HUD
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8
-- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair and `/dm save|check`
+- [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair, STR/DEX saves against grabs with jump-to-struggle escapes, and `/dm save|check`
 - [Data-driven saves](systems/data-driven-saves.md): datapack JSON saves against effects and damage types: CON vs mob poison and wither (Lich Wither Bolt DC 15), Warden sonic boom and Ender Dragon breath; half duration or damage
 - [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
 - [Creature study](systems/creature-study.md): V on a creature rolls Religion, Nature, Arcana or Insight (DC 10/13/15) for a card of its health, armour, save-calling attacks and immunities; a natural 20 adds its weakness; Insight reads villagers and dwarves
-- [D20 skill checks](systems/d20-skill-checks.md): lockpicking, persuasion, Arcana, crits and fumbles
-- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, and divine and death obstacles (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers, Blood Seals) for Clerics, Paladins, Necromancers and Blood Hunters, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
+- [D20 skill checks](systems/d20-skill-checks.md): lockpicking (chests and doors, with a lock glint for Rogues and Rangers), searching walls, persuasion, Arcana, crits and fumbles
+- [Class-gated obstacles](systems/obstacles.md): Arcane Seals for Wizards and Warlocks, physical obstacles (Collapsed Passages, Heavy Boulders, Portcullis winches, Chasms, Crumbling Ledges) for Barbarians, Fighters and Monks, and divine and death obstacles (Holy Wards, Desecrated Altars, Dread Wards, Ossuary Gates, Crypt Sleepers, Blood Seals) for Clerics, Paladins, Necromancers and Blood Hunters, and Hidden Doors, Locked Doors and temple traps for Rangers and Rogues, with a crosshair hint and `/dndobstacle`, rolled from the character sheet
 - [Class guidebook](systems/class-guidebook.md): in-game guidebook item driven by shared class data
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses
-- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids
+- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids, and higher tiers add perks (raid lookouts and loot, a free room, barrels, dwarf allies)
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
-- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters and freeze for running a session
+- [Dungeon Master](systems/dungeon-master.md): `/dm` mode, the veil, data-driven encounters, freeze and roll calls on the d20 HUD for running a session
 - [Dungeon encounters](systems/dungeon-encounters.md): party-scaled room fights, ward seals, the Ossuary Cube champion (splits at half health) and the Lich boss leashed to its reliquary
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault
-- [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, spotting, Rogue disarming and re-arming on reset
+- [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, party-shared spotting, Rogue and Artificer disarming and re-arming on reset
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn; DEX saves against breath and storms
@@ -68,9 +69,9 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Orcs](mobs/orcs.md): the Bloodtusk Horde's Warriors, crossbow Archers, the Quartermaster merchant and the Trial's Champion; hostile except to Half-Orcs, allied with goblins
 - [Tieflings](mobs/tieflings.md): fire-immune Exiles with Hellish Rebuke and fireballs, and the Pactbroker merchant with Tiefling, Warlock and Alchemist stock, of the Brimstone Sanctums (PR #188)
 - [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves
-- [Mimic](mobs/mimic.md): a chest that bites; hides in dungeons, dragon lairs and dwarven fortresses
-- [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs; Druids can take its form
-- [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items
+- [Mimic](mobs/mimic.md): a chest that bites and grabs (STR save, jump to struggle free); hides in dungeons, dragon lairs and dwarven fortresses
+- [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs (STR saves, jump to struggle free); Druids can take its form
+- [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes
@@ -114,7 +115,7 @@ Each page follows the same template: summary, How it works, Where to find it, Co
 - [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
 
 ## Music
-- [Music](music.md): event music, class stings and music discs
+- [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs
 
 ## Developers
 - [Testing in the dev client](dev/testing.md): DevScript and scripted, hidden test clients

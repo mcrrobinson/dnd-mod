@@ -159,6 +159,11 @@ public final class Lockpicking {
         return null;
     }
 
+    /** Whether the block at pos is a locked chest (its loot not rolled yet). */
+    public static boolean isLocked(World world, BlockPos pos) {
+        return lockedTableAt(world, pos) != null;
+    }
+
     /** The other half of a double chest, or null. */
     private static BlockPos otherHalf(BlockState state, BlockPos pos) {
         if (state.getBlock() instanceof ChestBlock && state.get(ChestBlock.CHEST_TYPE) != ChestType.SINGLE) {

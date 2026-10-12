@@ -36,7 +36,7 @@ import net.minecraft.util.math.Box;
 
 /**
  * The Dungeon Master commands. Ops (permission level 2) can run all of them; players given {@code /dm grant} can
- * run everything except {@code grant} and {@code revoke}.
+ * run everything except {@code grant}, {@code revoke} and {@code apply}.
  *
  * <pre>
  * /dm on | off                                   DM mode for yourself (off also lifts the veil)
@@ -50,6 +50,8 @@ import net.minecraft.util.math.Box;
  * /dm unfreeze &lt;targets&gt; | radius [r] | all
  * /dm check &lt;players&gt; &lt;skill&gt; &lt;dc&gt; [adv|dis] [silent]    skill check on each player's d20 panel
  * /dm save &lt;targets&gt; &lt;ability&gt; &lt;dc&gt; [adv|dis] [silent]  saving throw on the save lane ({@link DmRolls})
+ * /dm roll &lt;players&gt; &lt;check&gt; &lt;dc&gt; [advantage|disadvantage] [secret] [auto]  prompted roll call ({@link DmRollCalls})
+ * /dm apply pass|fail|all &lt;command&gt;            (op only) run a command as each player of the last roll call
  * </pre>
  */
 public final class DmCommand {
@@ -107,6 +109,8 @@ public final class DmCommand {
                                                 IntegerArgumentType.getInteger(context, "n"))))))
                 .then(DmRolls.check())
                 .then(DmRolls.save())
+                .then(DmRolls.roll())
+                .then(DmRolls.apply())
                 .then(CommandManager.literal("freeze")
                         .then(CommandManager.literal("radius")
                                 .executes(context -> freezeRadius(context, DEFAULT_RADIUS, true))

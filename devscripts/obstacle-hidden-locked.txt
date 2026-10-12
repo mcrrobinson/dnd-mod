@@ -1,0 +1,182 @@
+# Hidden doors, locked doors and traps (Rangers, Rogues, Artificers).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/obstacle-hidden-locked.txt
+# Expect (screenshots + log):
+#  Hidden door (Medium, DC 13): a Fighter sees no hint and right-clicking does nothing ("Test passed" for
+#   state=sealed); a rigged 18 on a wall search (sneak + right-click) finds it ("[Obstacle] ... found the
+#   dndclasses:hidden_door ... +10 class XP"), then a plain right-click opens it (state=open).
+#  After a reset, a Ranger standing 3 blocks away finds it passively (passive 14 vs DC 13), but not a Hard one
+#   (DC 15) 3 blocks further on.
+#  Locked door: a Fighter is told only a Rogue could pick it; a Rogue's rigged 18 opens it for +10 class XP.
+#   It reseals after 40 ticks and a second pick earns +0 (XP once per reset); after /dndobstacle reset, +10 again.
+#  Dungeon trap: an Artificer's rigged 18 disarms a dart trap (+5 class XP, 2 arrows), a rigged 1 on a flame trap
+#   sets it off. A Rogue sees the lock glint on a locked chest (screenshot).
+#  Desert pyramid placed now: a Ranger spots its plate ("[Trap] ... spots the pressure_plate temple trap"), a Rogue's
+#   rigged 18 disarms it and the TNT under it is gone (Test failed for minecraft:tnt).
+wait 40
+closescreen
+respawn
+hotbar 0
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doImmediateRespawn true
+/gamerule sendCommandFeedback true
+/time set noon
+/kill @e[type=!minecraft:player]
+/fill 0 149 0 14 149 40 minecraft:stone
+/fill 0 150 0 14 156 40 minecraft:air
+
+# A stone-brick wall at z=8 with a Medium hidden door in it, and a Hard one at x=10
+/fill 0 150 8 14 153 8 minecraft:stone_bricks
+/dndobstacle place 4 150 8 4 151 8 dndclasses:hidden_door medium
+/dndobstacle place 11 150 8 11 151 8 dndclasses:hidden_door hard
+/dndclass set @s fighter
+wait 5
+/clear @s
+/effect clear @s
+/tp @s 4.5 150 5.5 0 10
+wait 10
+screenshot hidden-fighter-no-hint
+use
+wait 10
+/execute if block 4 150 8 dndclasses:hidden_door[state=sealed]
+/dndclass forceroll @s 18
+sneak on
+use
+wait 5
+sneak off
+wait 20
+screenshot hidden-fighter-found
+use
+wait 10
+/execute if block 4 150 8 dndclasses:hidden_door[state=open]
+screenshot hidden-door-open
+
+# Reset; a Ranger notices it passively from 3 blocks, but not the Hard one
+/dndobstacle reset 4 150 8
+/execute if block 4 150 8 dndclasses:hidden_door[state=sealed]
+/dndclass set @s ranger
+wait 5
+/clear @s
+/tp @s 4.5 150 5.5 0 10
+wait 40
+screenshot hidden-ranger-noticed
+/tp @s 11.5 150 5.5 0 10
+wait 40
+screenshot hidden-ranger-hard
+/dndobstacle info 11 150 8
+
+# Locked door (Medium) that reseals 40 ticks after opening
+/fill 0 150 14 14 153 14 minecraft:stone_bricks
+/dndobstacle place 7 150 14 7 151 14 dndclasses:locked_door medium
+/dndobstacle reseal 7 150 14 40
+/dndclass set @s fighter
+wait 5
+/clear @s
+/tp @s 7.5 150 11.5 0 10
+wait 10
+screenshot locked-fighter-hint
+use
+wait 5
+screenshot locked-fighter-refused
+/dndclass set @s rogue
+wait 5
+/clear @s
+/tp @s 7.5 150 11.5 0 10
+wait 10
+screenshot locked-rogue-hint
+/dndclass forceroll @s 18
+use
+wait 10
+screenshot locked-rogue-roll
+wait 30
+/execute if block 7 150 14 dndclasses:locked_door[state=open]
+wait 60
+/execute if block 7 150 14 dndclasses:locked_door[state=sealed]
+/dndclass forceroll @s 18
+use
+wait 40
+/execute if block 7 150 14 dndclasses:locked_door[state=open]
+wait 40
+/dndobstacle reset 7 150 14
+/dndclass forceroll @s 18
+use
+wait 40
+
+# Dungeon traps: an Artificer disarms a dart trap, then fumbles a flame trap
+/setblock 4 149 24 dndclasses:trap_trigger{Kind:"dart",Tier:1,Armed:1b}
+/setblock 10 149 24 dndclasses:trap_trigger{Kind:"flame",Tier:1,Armed:1b}
+/dndclass set @s artificer
+wait 5
+/clear @s
+/tp @s 4.5 150 22.5 0 40
+wait 10
+/dndclass forceroll @s 18
+sneak on
+use
+wait 5
+sneak off
+wait 30
+screenshot trap-artificer-disarmed
+/execute if block 4 149 24 dndclasses:trap_trigger[armed=false]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:arrow",Count:2b}]}]
+/clear @s
+/tp @s 10.5 150 22.5 0 40
+wait 10
+/dndclass forceroll @s 1
+sneak on
+use
+wait 5
+sneak off
+wait 30
+/execute if block 10 149 24 dndclasses:trap_trigger[armed=false]
+
+# Lock glint on a locked chest, for a Rogue
+/setblock 7 150 32 minecraft:air
+/setblock 7 150 32 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/kill @e[type=item]
+/dndclass set @s rogue
+wait 5
+/clear @s
+/tp @s 7.5 150 28.5 0 25
+wait 30
+hud off
+screenshot rogue-lock-glint
+hud on
+
+# A desert pyramid generated now: a Ranger spots its plate, a Rogue disarms it
+# (spectator while the far chunks load, so nobody falls)
+/gamemode spectator
+/tp @s 4000 150 4000
+wait 100
+/place structure minecraft:desert_pyramid 4000 80 4000
+wait 40
+/dndobstacle traps
+/dndclass set @s ranger
+wait 5
+/clear @s
+/dndobstacle traps tp
+/gamemode survival
+look 135 50
+wait 40
+hud off
+screenshot desert-ranger-spots
+hud on
+/dndclass set @s rogue
+wait 5
+/clear @s
+/dndobstacle traps tp
+/execute at @s if block ~-1 ~-2 ~-1 minecraft:tnt
+look 135 50
+wait 5
+/dndclass forceroll @s 18
+sneak on
+use
+wait 5
+sneak off
+wait 30
+screenshot desert-rogue-disarmed
+/execute at @s if block ~-1 ~-2 ~-1 minecraft:tnt
+/execute at @s if block ~-1 ~-2 ~-1 minecraft:sandstone
+/dndobstacle traps
+quit

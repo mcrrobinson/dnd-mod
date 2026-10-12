@@ -1,0 +1,249 @@
+# Passive racial traits: resistances, Dwarven Resilience, Ambitious, Diplomat, sheet advantages, Stonecunning
+# break speed, Trance, Second Breakfast, Tinker, Keen Senses and Darkvision.
+# Run: timeout 600 ./gradlew runClient --offline -PdevScript=devscripts/race-passive-traits.txt
+# Expect in latest.log ([CHAT] lines):
+#  - Fire: Human loses 4 health to /damage 4 in_fire, Tiefling 2; Ember Dragonborn 2 (in_fire), Storm 2
+#    (lightning_bolt), Frost 2 (freeze); Gnome 2.8 to magic, Human 4.
+#  - Poison 20 s: Human ActiveEffects Duration about 400 and 4 health lost in 5 s; Dwarf about 200 and 2 lost.
+#  - Ambitious: Human xp add 100 -> 110, then add 5 twice -> 121 (the half point carries); Dwarf 100 -> 100.
+#  - /dndclass sheet: "Human (Diplomat)" +2 on PERSUASION, DECEPTION, INTIMIDATION; Dwarf advantage lines for
+#    poison saves and camp watches underground; Gnome advantage on INT/WIS/CHA saves against magic.
+#  - /dndrace traits: deepslate break speed 1.00 for a Human, 1.20 for a Dwarf.
+#  - Trance: the time_since_rest score after 10 s is under 20 for an Elf, about 200 for a Human.
+#  - Second Breakfast: bread raises foodLevel by 5 for a Human, 6 for a Halfling.
+#  - Tinker: 64 rail crafts give a Human exactly 1024 rails; a Gnome more (about 1040) with "[Race] ... Tinker" lines.
+# Screenshots: keen-senses-elf (husks outlined through the wall), keen-senses-human (no outline),
+#  darkvision-elf, darkvision-dwarf and darkvision-human (the same dark room).
+wait 40
+closescreen
+wait 10
+/gamerule dndRaces true
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/gamerule doImmediateRespawn true
+/time set noon
+/weather clear
+/gamemode survival
+/clear @s
+/effect clear @s
+/dndclass set @s fighter
+/effect give @s minecraft:slow_falling 10 0 true
+/tp @s 300.5 170 300.5 0 0
+wait 60
+/fill 290 149 290 312 149 312 minecraft:stone
+/fill 290 150 290 312 168 312 minecraft:air
+/tp @s 300.5 150 300.5 0 0
+/effect clear @s
+wait 20
+# --- Resistances ---
+/dndrace set @s human
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:in_fire
+wait 5
+/data get entity @s Health
+/dndrace set @s tiefling
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:in_fire
+wait 5
+/data get entity @s Health
+/dndrace set @s dragonborn ember
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:in_fire
+wait 5
+/data get entity @s Health
+/dndrace set @s dragonborn storm
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:lightning_bolt
+wait 5
+/data get entity @s Health
+/dndrace set @s dragonborn frost
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:freeze
+wait 5
+/data get entity @s Health
+/dndrace set @s gnome
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:magic
+wait 5
+/data get entity @s Health
+/dndrace set @s human
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/data get entity @s Health
+/damage @s 4 minecraft:magic
+wait 5
+/data get entity @s Health
+# --- Dwarven Resilience: poison duration and tick damage ---
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/effect give @s minecraft:poison 20 0
+/data get entity @s ActiveEffects[0].Duration
+/data get entity @s Health
+wait 100
+/data get entity @s Health
+/effect clear @s
+/dndrace set @s dwarf
+/effect give @s minecraft:instant_health 1 10 true
+wait 20
+/effect give @s minecraft:poison 20 0
+/data get entity @s ActiveEffects[0].Duration
+/data get entity @s Health
+wait 100
+/data get entity @s Health
+/effect clear @s
+/effect give @s minecraft:instant_health 1 10 true
+# --- Ambitious ---
+/dndrace set @s human
+/dndclass xp @s set 0
+/dndclass xp @s add 100
+/dndclass xp @s add 5
+/dndclass xp @s add 5
+/dndrace set @s dwarf
+/dndclass xp @s set 0
+/dndclass xp @s add 100
+/dndclass xp @s set 0
+# --- Sheet: Diplomat and advantages ---
+/dndrace set @s human
+/dndclass sheet @s
+/dndrace set @s dwarf
+/dndclass sheet @s
+/dndrace set @s gnome
+/dndclass sheet @s
+# --- Stonecunning break speed ---
+/dndrace set @s human
+/dndrace traits @s
+/dndrace set @s dwarf
+/dndrace traits @s
+# --- Trance ---
+/scoreboard objectives add dndrest minecraft.custom:minecraft.time_since_rest
+/dndrace set @s human
+wait 200
+/scoreboard players get @s dndrest
+/dndrace set @s elf
+wait 200
+/scoreboard players get @s dndrest
+/scoreboard objectives remove dndrest
+# --- Second Breakfast ---
+/dndrace set @s human
+/effect give @s minecraft:hunger 6 255 true
+wait 130
+/effect clear @s
+/data get entity @s foodLevel
+/item replace entity @s hotbar.0 with minecraft:bread 4
+hotbar 0
+holduse on
+wait 45
+holduse off
+wait 5
+/data get entity @s foodLevel
+/dndrace set @s halfling
+/effect give @s minecraft:hunger 6 255 true
+wait 130
+/effect clear @s
+/data get entity @s foodLevel
+holduse on
+wait 45
+holduse off
+wait 5
+/data get entity @s foodLevel
+/effect give @s minecraft:saturation 5 10 true
+/clear @s
+# --- Tinker: 64 rail crafts (16 each) ---
+/dndrace set @s gnome
+/setblock 300 150 302 minecraft:crafting_table
+/tp @s 300.5 150 300.5 0 20
+wait 10
+/item replace entity @s hotbar.0 with minecraft:iron_ingot 64
+/item replace entity @s hotbar.1 with minecraft:iron_ingot 64
+/item replace entity @s hotbar.2 with minecraft:iron_ingot 64
+/item replace entity @s hotbar.3 with minecraft:iron_ingot 64
+/item replace entity @s hotbar.4 with minecraft:iron_ingot 64
+/item replace entity @s hotbar.5 with minecraft:iron_ingot 64
+/item replace entity @s hotbar.6 with minecraft:stick 64
+hotbar 8
+use
+wait 10
+slot 37
+slot 1
+slot 38
+slot 3
+slot 39
+slot 4
+slot 40
+slot 6
+slot 41
+slot 7
+slot 42
+slot 9
+slot 43
+slot 5
+wait 5
+slot 0 quick_move
+wait 10
+closescreen
+wait 5
+/clear @s minecraft:rail 0
+/clear @s
+/setblock 300 150 302 minecraft:air
+# --- Keen Senses: two husks behind a wall, 6 blocks away ---
+/fill 297 150 304 303 153 304 minecraft:stone
+/summon minecraft:husk 299.5 150 307.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["dndkeen"]}
+/summon minecraft:husk 301.5 150 307.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["dndkeen"]}
+/tp @s 300.5 150 300.5 0 10
+/dndrace set @s elf
+sneak on
+wait 40
+hud off
+screenshot keen-senses-elf
+hud on
+/dndrace set @s human
+wait 20
+hud off
+screenshot keen-senses-human
+hud on
+sneak off
+/kill @e[tag=dndkeen]
+/fill 297 150 304 303 153 304 minecraft:air
+# --- Darkvision: a sealed stone room with some blocks to see ---
+/fill 294 160 294 306 166 306 minecraft:stone
+/fill 295 161 295 305 165 305 minecraft:air
+/setblock 300 161 304 minecraft:red_wool
+/setblock 299 161 304 minecraft:iron_ore
+/setblock 301 161 304 minecraft:white_wool
+/setblock 300 162 304 minecraft:gold_block
+/setblock 297 161 303 minecraft:chest
+/setblock 303 161 303 minecraft:barrel
+/tp @s 300.5 161 296.5 0 10
+/dndrace set @s elf
+wait 60
+hud off
+screenshot darkvision-elf
+hud on
+/dndrace set @s dwarf
+wait 40
+hud off
+screenshot darkvision-dwarf
+hud on
+/dndrace set @s human
+wait 40
+hud off
+screenshot darkvision-human
+hud on
+/fill 294 160 294 306 166 306 minecraft:air
+/tp @s 300.5 150 300.5 0 0
+/gamerule naturalRegeneration true
+wait 20
+quit

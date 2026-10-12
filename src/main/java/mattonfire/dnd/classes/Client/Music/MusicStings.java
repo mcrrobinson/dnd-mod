@@ -3,6 +3,7 @@ package mattonfire.dnd.classes.Client.Music;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Music.DungeonMusic;
 import mattonfire.dnd.classes.Music.InstrumentSongs;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
@@ -16,16 +17,21 @@ import net.minecraft.sound.SoundEvent;
 /**
  * Plays a short musical sting when the player's class special fires, and ducks the background music
  * under it (SoundSystemMusicDuckMixin) so the track carries on quietly instead of being cut off.
- * Bard instrument songs (InstrumentItem) duck the music the same way.
+ * Bard instrument songs (InstrumentItem) duck the music the same way, and so do the dungeon stings
+ * (a room's fight is over, the whole dungeon is cleared) the server sends through DungeonMusic.
  */
 public class MusicStings {
     // The sting files are at most 4 s long
     private static final int STING_TICKS = 80;
+    // Dungeon stings: room cleared is under 2 s, the dungeon-cleared fanfare under 6 s
+    private static final int ROOM_CLEARED_TICKS = 40;
+    private static final int DUNGEON_CLEARED_TICKS = 120;
     private static final float DUCKED_VOLUME = 0.3F;
     private static final float DUCK_DOWN_PER_TICK = 0.14F; // ~5 ticks to duck
     private static final float DUCK_UP_PER_TICK = 0.035F; // ~1 s to come back
 
     private static int duckTicksLeft = 0;
+    private static StingSoundInstance roomSting = null;
     private static float duckFactor = 1.0F;
 
     public static void register() {
@@ -35,6 +41,25 @@ public class MusicStings {
             int ticks = buf.readVarInt();
             client.execute(() -> duck(ticks));
         });
+        ClientPlayNetworking.registerGlobalReceiver(DungeonMusic.S2C_DUNGEON_STING, (client, handler, buf, sender) -> {
+            byte sting = buf.readByte();
+            client.execute(() -> onDungeonSting(client, sting));
+        });
+    }
+
+    /** A room's fight is over, or the whole dungeon is cleared. */
+    private static void onDungeonSting(MinecraftClient client, byte sting) {
+        boolean dungeon = sting == DungeonMusic.STING_DUNGEON_CLEARED;
+        SoundEvent sound = dungeon ? ModSounds.STING_DUNGEON_CLEARED : ModSounds.STING_ROOM_CLEARED;
+        // The fanfare takes over from a room sting that's still ringing (the boss room clearing with the boss)
+        if (dungeon && roomSting != null && client.getSoundManager().isPlaying(roomSting)) {
+            client.getSoundManager().stop(roomSting);
+        }
+        DnDClasses.LOGGER.info("[EventMusic] sting {}", sound.getId());
+        StingSoundInstance instance = new StingSoundInstance(sound);
+        client.getSoundManager().play(instance);
+        roomSting = dungeon ? null : instance;
+        duck(dungeon ? DUNGEON_CLEARED_TICKS : ROOM_CLEARED_TICKS);
     }
 
     /** Called when the server confirms the player's special fired. */

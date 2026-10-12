@@ -60,9 +60,9 @@ Each NPC checks the standing of the player it's dealing with (or looking at) wit
 | Hostile | Hobbits flee you (8 blocks) and give no gifts. The innkeeper won't trade or pay bounties; bounty boards won't give or take notices ("The notices are not for the likes of you."). |
 | Unfriendly | Innkeeper prices +50% (rounded up, at least +1); a hobbit gives a gift every 15 minutes instead of 5. |
 | Neutral | As before. |
-| Friendly | Prices -10% (rounded). |
-| Honored | Prices -25%; gifts every 2.5 minutes. |
-| Exalted | Prices -40%; gifts every 2.5 minutes. |
+| Friendly | Prices -10% (rounded). Lookouts: when a goblin raid sets out for a hobbit village you're defending, you hear the horn and get a warning straight away, and the first wave comes 20 s after it instead of 10 s. |
+| Honored | Prices -25%; gifts every 2.5 minutes. The innkeeper adds a 15th trade, a round of 3 ale for 1 emerald that comes with a cake on the house, and the first time you open the trades each day hands you that night's Room Key free (so the long rest at the inn costs nothing). |
+| Exalted | Prices -40%; gifts every 2.5 minutes. Winning a raid on a hobbit village rolls its victory loot twice for you. |
 
 "Price" is the first thing a trade asks for: emeralds for food and ale, or the produce the innkeeper buys (20 wheat becomes 30 at Unfriendly and 12 at Exalted). A trade never drops below 1.
 
@@ -74,8 +74,8 @@ Each NPC checks the standing of the player it's dealing with (or looking at) wit
 | Unfriendly | Half the time a dwarf refuses to barter (the gold stays with you); a dwarf notices you at the hoard from 24 blocks instead of 16. |
 | Neutral | As before. |
 | Friendly | Barter: 15% chance of a second roll. |
-| Honored | Barter: 30% second roll, from the better `gameplay/dwarf_barter_honored` table. |
-| Exalted | Barter: 50% second roll, from the honored table. |
+| Honored | Barter: 30% second roll, from the better `gameplay/dwarf_barter_honored` table. Opening a barrel in front of a dwarf no longer counts as theft (chests and gold still do). |
+| Exalted | Barter: 50% second roll, from the honored table. Dwarves fight at your side: a dwarf within 16 blocks of you goes for a mob that hit you or that you hit in the last 5 s, or that has you as its target (not players, other dwarves, your own pets or creepers). Sneak + right-click a dwarf holding an unidentified magic item and it identifies it free (anyone else is told the dwarves "only look over magic for a friend of the mountain"). |
 
 **Goblins** ([goblins](../mobs/goblins.md), [raids](goblin-raids.md))
 
@@ -85,6 +85,7 @@ Each NPC checks the standing of the player it's dealing with (or looking at) wit
 | Hostile | Goblins attack on sight, as before. |
 | Unfriendly | Goblins (camp, Nether, raiders, the Warlord) leave you alone unless you come within 6 blocks ("parley range") or hit one. |
 | Neutral and up | Goblins ignore you unless you hit one. |
+| Any | Open (or smash) a goblin camp chief's chest and every goblin within 24 blocks of it comes for you, whether or not it can see you. They keep at it while they fight you and for 30 s after. |
 
 "Hit one" means you hit that goblin, or any goblin in the last 10 seconds; a goblin you've provoked at Neutral stands down 10 seconds after you stop fighting. A goblin that's already fighting you when your standing improves (a quest, `/rep`) stands down within a second.
 
@@ -148,7 +149,9 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
 The entity tags `dndclasses:faction/<id>` and structure tags `dndclasses:faction/<id>` list the members and settlements of the launch factions. A file with an unknown field, a wrong type or an unknown entity type is logged (`[Factions] Skipping faction ...`) and skipped; the other factions still load.
 
 ## Known limitations
-- Not yet: Friendly's earlier raid horn, Honored's extra innkeeper trade and free long rest, Exalted's double raid loot, the Honored barrel exception at the hoard, Exalted dwarves joining your fights and identifying items, and goblin aggro for opening a camp chief's chest. Quest and dialogue unlocks come with the quest tickets.
+- Quest and dialogue unlocks come with the quest tickets.
+- The tier perks are built for the hobbits and Mountain Dwarves (and the goblin camp chest for goblins). Other factions, including data-pack ones, get the price, hostility and DC rules but not these perks.
+- Any dwarf joins your fights and identifies your items, not only those of a fortress or its King.
 - Hobbit gift cooldowns are per hobbit: each gift starts that player's wait, and the next player gets a gift once their own wait has passed since it (or the last one's wait is over).
 - Bounty boards outside every faction's settlements credit every faction with a `bounties` reward.
 
@@ -160,4 +163,5 @@ The entity tags `dndclasses:faction/<id>` and structure tags `dndclasses:faction
 - Storage: player persistent data, `DndReputation` (faction id to value; missing = start) and `DndRepCaps` (`Day`, `DecayDay` and today's capped gains). Copied on respawn by `ClassLifecycle`.
 - Sync: S2C `dndclasses:reputation_sync` (count, then id, name key, colour, value per faction) on join, respawn, data pack reload and every change. The client logs `[Reputation] client sync: [...]`.
 - Tier effects: `TierEffects` holds every number and rule (`tierWith(player, npc|type|faction)`, `reputationPriceDelta`, `giftCooldown`, `refusesBarter`, `secondBarterRollChance`, `honoredBarter`, `witnessRange`, `goblinMayTarget`, `provoked`, `isMarked`, `raidChance`, `dcShift`). The NPCs only ask it: `InnkeeperEntity.applyReputationPrices` (special price per customer, added in `prepareOffersFor` after the prices are cleared and before `KinPrices.apply`, so the two stack; cleared when the customer leaves), `BountyBoardBlock.shuns`, `HobbitEntity` (flee goal, gift cooldown), `MountainDwarfEntity` (`shouldAngerAt`, barter), `SettlementGrudges` (the dwarves' witness range), `GoblinWarriorEntity` (target goal predicate, `setTarget` filter, stand-down check; the Warlord inherits it and rallies its kin through `rallyAgainst`), `GoblinRaid.nearestDefender`, `GoblinRaids.maybeStartRaids`, `Persuasion.dc(player, target[, base])` (the hook for dialogue checks).
-- Tests: `devscripts/rep-tiers.txt` (prices, refusals, flee, gifts, dwarf aggro, witness range, goblin targeting, Persuasion DC; the Persuasion part needs a test data pack faction `dndtest:villagers` with `"members": "minecraft:villager"` in the world), `rep-tiers-raid.txt` (raiders at Neutral and Hostile), `rep-tiers-barter.txt` (refusals and second rolls), `devscripts/faction-rep.txt` (kills, cap, Warlord, raid, death), `faction-rep-relog.txt`, `faction-rep-sources.txt` (trades, bounties, barter, hoard, King, betrayal, decay).
+- Higher-tier perks: also in `TierEffects` (`earlyRaidWarning`, `raidLootRolls`, `innkeeperFavours`, `trustedWithBarrels`, `dwarfFriend`, the constants `EARLY_HORN_TICKS`, `DWARF_ALLY_RANGE`, `ALLY_FIGHT_TICKS`). `GoblinRaid.lookouts` (first tick of the countdown with defenders; saved as `FirstWaveDelay`/`LookoutsChecked`) and the loot loop in `GoblinRaid.win`; `InnkeeperEntity` (`honoredOffer`, saved as `HonoredOffer` and restocked daily, shown at the end of the list only to an Honored customer; `giveFreeRoom` stamps a Room Key and calls `TavernRooms.markRented`, so it's one a day like a bought one); `SettlementGrudges` `DwarfRules.judge` (barrels `TRUSTED`); `ai/goal/DwarfFriendGoal` (target goal, priority 2); `MountainDwarfEntity.interactMob` (identification through `Identify.reveal(..., "dwarf")`); `GoblinCampLaw` (a `SettlementGrudges.Rules` for chests inside a `GoblinCampPiece`, witnesses every goblin within 24 blocks) calling `GoblinWarriorEntity.provokeByTheft`, whose grudge counts as provoked in `TierEffects.provoked` through the `faction/Provokable` interface.
+- Tests: `devscripts/rep-perks.txt` (innkeeper round and free room, barrels, identification, dwarves joining a fight, the goblin camp chest at the dev world's camp, -408 71 1103), `rep-perks-raid.txt` (lookouts and double loot at the dev world's hobbit village), `devscripts/rep-tiers.txt` (prices, refusals, flee, gifts, dwarf aggro, witness range, goblin targeting, Persuasion DC; the Persuasion part needs a test data pack faction `dndtest:villagers` with `"members": "minecraft:villager"` in the world), `rep-tiers-raid.txt` (raiders at Neutral and Hostile), `rep-tiers-barter.txt` (refusals and second rolls), `devscripts/faction-rep.txt` (kills, cap, Warlord, raid, death), `faction-rep-relog.txt`, `faction-rep-sources.txt` (trades, bounties, barter, hoard, King, betrayal, decay).

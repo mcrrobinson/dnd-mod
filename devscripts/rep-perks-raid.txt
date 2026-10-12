@@ -1,0 +1,59 @@
+# Raid perks with the hobbits, at the dev world's hobbit village (200, 1352).
+# Run: timeout 500 ./gradlew runClient --offline -PdevScript=devscripts/rep-perks-raid.txt
+# Expect in run/logs/latest.log:
+# - raid 1 (Friendly): "[GoblinRaid] raid N lookouts warn 1 player(s): first wave in 20 s" and the chat warning;
+#   won at Exalted: "reward for Dev: 2 loot roll(s)"
+# - raid 2 (Neutral): no lookouts line; won: "reward for Dev: 1 loot roll(s)"
+wait 40
+closescreen
+/difficulty easy
+/gamemode survival
+/dndclass set @s fighter
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/rep @s dndclasses:goblins set -600
+/rep @s dndclasses:hobbits set 200
+/tp @s 200 110 1352 0 60
+wait 100
+/kill @e[type=#dndclasses:dragons]
+/goblinraid stop
+wait 20
+/say [perks] raid friendly
+/goblinraid start
+waitchat lookouts sound the horn
+wait 20
+screenshot rep-perks-raid-lookouts
+waitchat (wave 1/2)
+wait 40
+/kill @e[type=dndclasses:goblin_warrior]
+/rep @s dndclasses:hobbits set 800
+waitchat final assault
+wait 40
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+waitchat share their stores
+wait 20
+screenshot rep-perks-raid-exalted-loot
+/goblinraid list
+/goblinraid stop
+/clear @s
+wait 120
+/rep @s dndclasses:hobbits set 0
+/say [perks] raid neutral
+/goblinraid start
+waitchat (wave 1/2)
+wait 40
+/kill @e[type=dndclasses:goblin_warrior]
+waitchat final assault
+wait 40
+/kill @e[type=dndclasses:goblin_warrior]
+/kill @e[type=dndclasses:goblin_warlord]
+waitchat share their stores
+wait 20
+/goblinraid list
+/goblinraid stop
+/difficulty normal
+/clear @s
+wait 20
+quit

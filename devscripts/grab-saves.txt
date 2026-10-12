@@ -1,0 +1,157 @@
+# STR/DEX saves against grabs and the jump-to-struggle escape (docs/mobs/mimic.md, owlbear.md, gelatinous-cube.md).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/grab-saves.txt
+# The player is a Wizard (no save features). Failing rolls are forced 2s, not 1s, so a Halfling's Lucky reroll
+# can't eat a second forced die. Check run/logs/latest.log:
+# 1. Mimic, forced 20: "[D20] ... Mimic's grab 20" then "[Grapple] Player... resists the mimic's grab", and no
+#    "the mimic grabs" line.
+# 2. Owlbear (HugChance 1.0), forced 20: "[Grapple] ... resists the owlbear's hug", no "the owlbear hugs".
+# 3. Owlbear, forced 2: "the owlbear hugs"; then jump with a forced 2 -> "struggles against the bear hug ...
+#    still held"; jump with a forced 20 -> "breaks free".
+# 4. Mimic, forced 2: "the mimic grabs"; jump with a forced 20 -> "struggles against the mimic's jaws ... breaks free".
+# 5. Cube, forced 20: "[Grapple] ... slips out of the gelatinous cube", and the player's Pos is outside the cube.
+#    Forced 2: no slip line; Slowness in ActiveEffects.
+# 6. Owlbear charge from 14 blocks: forced 20 -> "[D20] ... Owlbear charge" and "stands firm"; forced 2 -> no
+#    "stands firm" line (thrown).
+# Screenshots: grab-mimic-resist, grab-owlbear-free, grab-mimic-held, grab-mimic-free, grab-cube-slip,
+# grab-cube-engulfed.
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty normal
+wait 40
+closescreen
+respawn
+wait 10
+/dndclass set @s wizard
+wait 5
+closescreen
+/fill -6 149 -6 14 149 14 minecraft:stone
+/fill -6 150 -6 14 156 14 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:resistance 600 4 true
+/effect give @s minecraft:health_boost 600 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s clear
+
+# ---- 1. Mimic bite with a forced 20: bitten, not grabbed ----
+/dndclass forceroll @s 20 20
+/summon dndclasses:mimic 4.5 150 5.5 {Rotation:[180f,0f]}
+/tp @s 4.5 150 3.5 0 30
+wait 5
+use
+wait 8
+clearchat
+screenshot grab-mimic-resist
+wait 30
+/kill @e[type=dndclasses:mimic]
+/dndclass forceroll @s clear
+wait 20
+
+# ---- 2. Owlbear hug with a forced 20: the hug never starts ----
+/tp @s 4.5 150 3.5 0 0
+/dndclass forceroll @s 20 20
+/summon dndclasses:owlbear 4.5 150 5.6 {Rotation:[180f,0f],HugChance:1.0f}
+wait 60
+/kill @e[type=dndclasses:owlbear]
+/dndclass forceroll @s clear
+wait 20
+
+# ---- 3. Owlbear hug with a forced 2, then struggle: fail, then succeed ----
+# All three dice are queued up front, since when the owlbear swings varies: the hug save takes the first 2, and
+# jump presses only send a struggle once the hug has started, so the first struggle gets the second 2 and the
+# second struggle the 20. Presses after that do nothing (no longer held).
+/tp @s 4.5 150 3.5 0 0
+/dndclass forceroll @s 2 2 20
+/summon dndclasses:owlbear 4.5 150 5.6 {Rotation:[180f,0f],HugChance:1.0f}
+perspective back
+wait 20
+press key.jump
+wait 12
+press key.jump
+wait 12
+press key.jump
+wait 12
+press key.jump
+wait 12
+press key.jump
+wait 12
+press key.jump
+wait 12
+press key.jump
+wait 12
+clearchat
+screenshot grab-owlbear-free
+perspective first
+/kill @e[type=dndclasses:owlbear]
+/dndclass forceroll @s clear
+wait 20
+
+# ---- 4. Mimic grab with a forced 2, then struggle free with a forced 20 ----
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s 2 20
+/summon dndclasses:mimic 4.5 150 5.5 {Rotation:[180f,0f]}
+/tp @s 4.5 150 3.5 0 30
+wait 5
+use
+wait 3
+clearchat
+screenshot grab-mimic-held
+press key.jump
+wait 4
+press key.jump
+wait 4
+press key.jump
+wait 16
+clearchat
+screenshot grab-mimic-free
+/kill @e[type=dndclasses:mimic]
+/dndclass forceroll @s clear
+wait 20
+
+# ---- 5. Gelatinous Cube: forced 20 slips out, forced 2 is engulfed ----
+/effect clear @s minecraft:slowness
+/tp @s 4.5 150 4.5 0 30
+/dndclass forceroll @s 20
+/summon dndclasses:gelatinous_cube 4.5 150 4.5 {NoAI:1b,Rotation:[0f,0f]}
+wait 2
+clearchat
+screenshot grab-cube-slip
+wait 10
+/data get entity @s Pos
+/data get entity @e[type=dndclasses:gelatinous_cube,limit=1] Pos
+/kill @e[type=dndclasses:gelatinous_cube]
+/dndclass forceroll @s clear
+wait 10
+/tp @s 4.5 150 4.5 0 30
+/dndclass forceroll @s 2
+/summon dndclasses:gelatinous_cube 4.5 150 4.5 {NoAI:1b,Rotation:[0f,0f]}
+wait 10
+screenshot grab-cube-engulfed
+/data get entity @s ActiveEffects
+/data get entity @s Pos
+/kill @e[type=dndclasses:gelatinous_cube]
+/dndclass forceroll @s clear
+wait 20
+
+# ---- 6. Owlbear charge: forced 20 stands firm (full damage, not thrown), forced 2 is thrown ----
+/tp @s 4.5 150 -4.5 0 0
+/dndclass forceroll @s 20
+/summon dndclasses:owlbear 4.5 150 9.5 {Rotation:[180f,0f],HugChance:0.0f}
+wait 60
+/data get entity @s Pos
+/kill @e[type=dndclasses:owlbear]
+/dndclass forceroll @s clear
+wait 20
+/tp @s 4.5 150 -4.5 0 0
+/dndclass forceroll @s 2
+/summon dndclasses:owlbear 4.5 150 9.5 {Rotation:[180f,0f],HugChance:0.0f}
+wait 60
+/data get entity @s Pos
+/kill @e[type=dndclasses:owlbear]
+/dndclass forceroll @s clear
+/gamemode creative
+quit

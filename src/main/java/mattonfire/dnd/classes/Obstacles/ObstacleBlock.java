@@ -83,12 +83,13 @@ public class ObstacleBlock extends BlockWithEntity {
 
     @Override
     public float getAmbientOcclusionLightLevel(BlockState state, BlockView world, BlockPos pos) {
-        return 1.0f;
+        // A disguised obstacle is shaded like the full blocks round it
+        return type.disguised() && state.get(STATE) == ObstacleState.SEALED ? 0.2f : 1.0f;
     }
 
     @Override
     public boolean isTransparent(BlockState state, BlockView world, BlockPos pos) {
-        return true;
+        return !(type.disguised() && state.get(STATE) == ObstacleState.SEALED);
     }
 
     @Override

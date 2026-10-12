@@ -26,6 +26,7 @@ import net.minecraft.text.Text;
  * /dndrace get <player>
  * /dndrace set <player> <race> [ancestry]
  * /dndrace list
+ * /dndrace traits <player>   (passive trait readout: break speed on deepslate, hidden stone doorways within 128 blocks)
  * /dndrace cooldowns <player> [reset]   (Relentless Endurance, Hellish Rebuke and Breath Weapon cooldowns)
  *
  * Operator control of races. Setting "none" clears the race and reopens the race picker.
@@ -66,6 +67,9 @@ public final class DndRaceCommand {
                                 .executes(context -> cooldowns(context, false))
                                 .then(CommandManager.literal("reset")
                                         .executes(context -> cooldowns(context, true)))))
+                .then(CommandManager.literal("traits")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .executes(DndRaceCommand::traits)))
                 .then(CommandManager.literal("list").executes(DndRaceCommand::list)));
     }
 
@@ -83,6 +87,24 @@ public final class DndRaceCommand {
                 + ": Relentless Endurance " + seconds(relentless) + ", Hellish Rebuke " + seconds(rebuke)
                 + ", Breath Weapon " + seconds(breath)), true);
         return 1;
+    }
+
+    /** What the passive traits come to for this player right now (for testing). */
+    private static int traits(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        float speed = player.getBlockBreakingSpeed(net.minecraft.block.Blocks.DEEPSLATE.getDefaultState());
+        StringBuilder doors = new StringBuilder();
+        var doorways = mattonfire.dnd.classes.Race.RacePassives.secretDoorways(player.getWorld(),
+                player.getBlockPos(), 128.0);
+        for (var doorway : doorways) {
+            var first = doorway.get(0);
+            doors.append(doors.length() == 0 ? "" : ", ").append(first.getX()).append(' ').append(first.getY())
+                    .append(' ').append(first.getZ()).append(" (").append(doorway.size()).append(" blocks)");
+        }
+        context.getSource().sendFeedback(Text.literal(player.getEntityName() + " (" + describe(player)
+                + "): deepslate break speed " + String.format(Locale.ROOT, "%.2f", speed)
+                + "; hidden stone doorways within 128 blocks: " + (doors.length() == 0 ? "none" : doors)), false);
+        return doorways.size();
     }
 
     private static String seconds(long ticks) {

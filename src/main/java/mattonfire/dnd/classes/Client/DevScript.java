@@ -107,6 +107,13 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code widget <label>} presses the open screen's button with that label (e.g. {@code Yes} in a confirm
  *     dialog)</li>
+ * <li>{@code field <n> <text>} types {@code text} into the open screen's n-th text box (from 0), replacing what's
+ *     there</li>
+ * <li>{@code cycle <label> <value>} presses the cycling button whose label starts with {@code label} until it shows
+ *     {@code value} (e.g. {@code cycle Check Dexterity Save} in the DM panel)</li>
+ * <li>{@code dmselect <encounter>} selects an encounter in the open DM panel</li>
+ * <li>{@code dmpanel <action> [args...]} sends a DM panel action packet straight to the server, as a forged packet
+ *     would (e.g. {@code dmpanel narrate Hello} from a non-DM, to check it's refused)</li>
  * <li>{@code page <n|last>} turns an open book to page n (from 0) or the last page</li>
  * <li>{@code hover <dx> <dy>} moves the cursor to GUI coordinates measured from the screen's centre, so the open
  *     screen draws the tooltip there (take a screenshot after it)</li>
@@ -429,6 +436,59 @@ public final class DevScript {
                 if (!found) {
                     DnDClasses.LOGGER.warn("[DevScript] {}: no button '{}' on the open screen", lineNumber, argument);
                 }
+            }
+            case "field" -> {
+                String[] args = argument.split("\\s+", 2);
+                int wanted = Integer.parseInt(args[0]);
+                int index = 0;
+                boolean found = false;
+                if (client.currentScreen != null) {
+                    for (var child : client.currentScreen.children()) {
+                        if (child instanceof net.minecraft.client.gui.widget.TextFieldWidget field && index++ == wanted) {
+                            field.setText(args.length > 1 ? args[1] : "");
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no text box {} on the open screen", lineNumber, wanted);
+                }
+            }
+            case "cycle" -> {
+                String[] args = argument.split("\\s+", 2);
+                boolean found = false;
+                if (client.currentScreen != null && args.length == 2) {
+                    for (var child : client.currentScreen.children()) {
+                        if (child instanceof net.minecraft.client.gui.widget.CyclingButtonWidget<?> cycling
+                                && cycling.getMessage().getString().startsWith(args[0])) {
+                            for (int i = 0; i < 200 && !cycling.getMessage().getString().endsWith(args[1]); i++) {
+                                cycling.onPress();
+                            }
+                            found = cycling.getMessage().getString().endsWith(args[1]);
+                            break;
+                        }
+                    }
+                }
+                if (!found) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no cycling button '{}' reaching '{}'", lineNumber,
+                            args[0], args.length > 1 ? args[1] : "");
+                }
+            }
+            case "dmselect" -> {
+                if (!(client.currentScreen instanceof mattonfire.dnd.classes.Client.Hud.DmPanelScreen panel)
+                        || !panel.select(argument)) {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: no DM panel open, or no encounter '{}'", lineNumber,
+                            argument);
+                }
+            }
+            case "dmpanel" -> {
+                String[] args = argument.split("\\s+", 2);
+                String action = args[0];
+                java.util.List<String> rest = args.length < 2 ? java.util.List.of()
+                        : action.equals("narrate") ? java.util.List.of(args[1])
+                        : java.util.List.of(args[1].split("\\s+"));
+                mattonfire.dnd.classes.Client.Hud.DmPanelScreen.send(action, rest);
             }
             case "page" -> {
                 if (client.currentScreen instanceof BookScreen book) {

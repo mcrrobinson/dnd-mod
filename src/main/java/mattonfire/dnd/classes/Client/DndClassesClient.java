@@ -55,6 +55,10 @@ public class DndClassesClient implements ClientModInitializer {
     private net.minecraft.world.World fireBreathWorld = null;
     private static final KeyBinding OPEN_MENU_KEY = KeyBindingHelper.registerKeyBinding(
             new KeyBinding("key.dnd-classes.skill-tree", GLFW.GLFW_KEY_O, "category.dnd-classes.dnd-classes"));
+    /** The DM panel (K): asks the server, which opens it only for players allowed to use {@code /dm}. */
+    private static final KeyBinding DM_PANEL_KEY = KeyBindingHelper.registerKeyBinding(
+            new KeyBinding(mattonfire.dnd.classes.Client.Hud.DmPanelScreen.KEY, GLFW.GLFW_KEY_K,
+                    "category.dnd-classes.dnd-classes"));
 
     private static void handleClassQuery(MinecraftClient client, ClientPlayNetworkHandler handler, PacketByteBuf buf,
             PacketSender responseSender) {
@@ -167,6 +171,7 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Hud.QuestJournalScreen.register();
         mattonfire.dnd.classes.Client.Hud.QuestTrackerHud.register();
         mattonfire.dnd.classes.Client.Hud.DialogueScreen.register();
+        mattonfire.dnd.classes.Client.Hud.DmPanelScreen.register();
         // The model has see-through quads like the vanilla brewing stand, which draw black on the default solid layer
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
                 mattonfire.dnd.classes.Registry.ModBlocks.FAST_BREWING_STAND_BLOCK, net.minecraft.client.render.RenderLayer.getCutout());
@@ -262,6 +267,11 @@ public class DndClassesClient implements ClientModInitializer {
             while (OPEN_MENU_KEY.wasPressed()) {
                 if (client.currentScreen == null) {
                     client.setScreen(new SkillTreeScreen(false));
+                }
+            }
+            while (DM_PANEL_KEY.wasPressed()) {
+                if (client.currentScreen == null && client.player != null) {
+                    mattonfire.dnd.classes.Client.Hud.DmPanelScreen.request();
                 }
             }
         });

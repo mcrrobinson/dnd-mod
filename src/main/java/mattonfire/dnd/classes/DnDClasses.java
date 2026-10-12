@@ -484,6 +484,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.dm.DmFreeze.register();
                 mattonfire.dnd.dm.DmWand.register();
                 mattonfire.dnd.dm.DmRollCalls.register();
+                mattonfire.dnd.dm.DmPanelPackets.register();
                 mattonfire.dnd.dm.encounter.Encounters.register();
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.ObstacleCommand.register(dispatcher));

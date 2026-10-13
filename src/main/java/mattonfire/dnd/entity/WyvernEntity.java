@@ -16,6 +16,8 @@ import net.minecraft.world.World;
 import org.joml.Vector3f;
 
 public class WyvernEntity extends FlyingDragonEntity {
+    private static final Identifier TEXTURE = new Identifier(DnDClasses.MOD_ID, "textures/entity/wyvern/green.png");
+
     // The model is ~12 blocks wide but the entity hitbox is only 1.5, so wings, neck, head and tail
     // get their own hittable parts (like the ender dragon), each wrapping a group of model bones.
     // Root bone sits 11px lower on the ground and 34.5px lower in flight (wyvern.animation.json).
@@ -72,7 +74,7 @@ public class WyvernEntity extends FlyingDragonEntity {
 
     /** The model texture; variants override it. */
     public Identifier getTexture() {
-        return new Identifier(DnDClasses.MOD_ID, "textures/entity/wyvern/green.png");
+        return TEXTURE;
     }
 
     @Override

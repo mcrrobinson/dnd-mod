@@ -173,7 +173,7 @@ public class ModelGeckoPlayer extends GeoModel<GeoAnimatable> {
         if (entity instanceof PlayerEntityExt player) {
             return GeoModelHelper.getModelLocation(player.getDndClass());
         }
-        return new Identifier("dndclasses", "geo/wizard_armor.geo.json");
+        return GeoModelHelper.WIZARD_MODEL;
     }
 
     @Override
@@ -181,6 +181,6 @@ public class ModelGeckoPlayer extends GeoModel<GeoAnimatable> {
         if (entity instanceof PlayerEntityExt player) {
             return GeoModelHelper.getTextureLocation(player.getDndClass());
         }
-        return new Identifier("dndclasses", "textures/models/armor/wizard_armor.png");
+        return GeoModelHelper.WIZARD_TEXTURE;
     }
 }

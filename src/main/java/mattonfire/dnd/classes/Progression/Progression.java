@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Progression;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -15,6 +16,7 @@ import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -57,12 +59,31 @@ public final class Progression {
     /** The attunement table each player last opened; the loadout can only change near it. */
     private static final Map<UUID, BlockPos> OPEN_TABLES = new HashMap<>();
 
+    /**
+     * Parsed progress per player and class, so the many reads per hit, roll and tick don't re-parse the NBT.
+     * An entry is only used while the player's data compound and the class's saved tag are the very objects it
+     * was parsed from: {@link #save} puts a new tag (and caches the progress it wrote), and death/End-exit
+     * copies, {@code readNbt} and a reset all make new objects, so a stale entry can't be served even if an
+     * {@link #invalidate} call is missed. Server thread only.
+     */
+    private static final Map<UUID, Map<DndCharacter, Cached>> CACHE = new HashMap<>();
+
+    private record Cached(NbtCompound data, NbtElement source, ClassProgress progress) {
+    }
+
     private Progression() {
     }
 
     public static void register() {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> sync(handler.player));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> OPEN_TABLES.remove(handler.player.getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            OPEN_TABLES.remove(handler.player.getUuid());
+            invalidate(handler.player);
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            CACHE.clear();
+            OPEN_TABLES.clear();
+        });
 
         // ClassLifecycle copies the progress to the new player entity on death and End exit.
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> sync(newPlayer));
@@ -114,22 +135,49 @@ public final class Progression {
         return dndClass == null ? DndCharacter.NONE : dndClass;
     }
 
+    /**
+     * The player's progress in a class. On the server it's cached (see {@link #CACHE}): the result is shared, so
+     * only change it through this class's methods, which save it.
+     */
     public static ClassProgress get(PlayerEntity player, DndCharacter dndClass) {
         if (player.getWorld().isClient) {
             return ClassProgress.client.dndClass == dndClass ? ClassProgress.client : new ClassProgress(dndClass);
         }
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
-        NbtCompound saved = data.getCompound(DATA_KEY).getCompound(dndClass.name());
+        NbtElement source = savedTag(data, dndClass);
+        Map<DndCharacter, Cached> perClass = CACHE.computeIfAbsent(player.getUuid(),
+                uuid -> new EnumMap<>(DndCharacter.class));
+        Cached cached = perClass.get(dndClass);
+        if (cached != null && cached.data() == data && cached.source() == source) {
+            return cached.progress();
+        }
+
+        NbtCompound saved = source instanceof NbtCompound compound ? compound : new NbtCompound();
         ClassProgress progress = ClassProgress.fromNbt(dndClass, saved);
         if (dndClass == DndCharacter.DRUID && !saved.contains("learned")) {
             // Kept until something saves the progress, which writes "learned".
             data.getList(OLD_DRUID_KILLS_KEY, NbtElement.STRING_TYPE)
                     .forEach(e -> progress.learned.add(e.asString()));
         }
+        perClass.put(dndClass, new Cached(data, source, progress));
         if (!saved.isEmpty() && !saved.contains("subclass") && player instanceof ServerPlayerEntity serverPlayer) {
+            // Saves, which re-caches the migrated progress against its new tag.
             migrateSubclass(serverPlayer, progress);
         }
         return progress;
+    }
+
+    /** The class's saved tag, or null if it has none yet. */
+    private static NbtElement savedTag(NbtCompound data, DndCharacter dndClass) {
+        return data.get(DATA_KEY) instanceof NbtCompound all ? all.get(dndClass.name()) : null;
+    }
+
+    /**
+     * Drops the player's cached progress. Not needed for correctness (entries check they still match the saved
+     * data) but frees it on leave, death/End-exit copies and class changes.
+     */
+    public static void invalidate(PlayerEntity player) {
+        CACHE.remove(player.getUuid());
     }
 
     /** Progress saved before subclasses gets one from the branch it's furthest down (see {@link ClassProgress#migrateSubclass}). */
@@ -158,8 +206,11 @@ public final class Progression {
     private static void save(ServerPlayerEntity player, ClassProgress progress) {
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
         NbtCompound all = data.getCompound(DATA_KEY);
-        all.put(progress.dndClass.name(), progress.toNbt());
+        NbtCompound saved = progress.toNbt();
+        all.put(progress.dndClass.name(), saved);
         data.put(DATA_KEY, all);
+        CACHE.computeIfAbsent(player.getUuid(), uuid -> new EnumMap<>(DndCharacter.class))
+                .put(progress.dndClass, new Cached(data, saved, progress));
     }
 
     public static void sync(ServerPlayerEntity player) {

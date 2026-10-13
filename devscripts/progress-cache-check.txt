@@ -1,0 +1,25 @@
+# Run after progress-cache-set.txt with the same -PdevUser (see there). After the relog:
+#  1. progress shows subclass barbarian.berserker, ranks {barbarian.rage=2}, 310 xp; armor 4.0
+#  2. after /dndclass resetprogress: level 1, 0 xp, nothing unlocked; armor 0.0
+# Screenshot progress-cache-relog-tree: the skill tree after the relog, Bloodlust and Bear Hide unlocked.
+#  3. after xp set 120 and unlocking thick_skin again: armor 4.0
+wait 40
+closescreen
+wait 20
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+press key.dnd-classes.skill-tree
+wait 10
+screenshot progress-cache-relog-tree
+closescreen
+/dndclass resetprogress @s
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+/dndclass xp @s set 120
+/dndclass unlock @s barbarian.thick_skin
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+wait 10
+quit

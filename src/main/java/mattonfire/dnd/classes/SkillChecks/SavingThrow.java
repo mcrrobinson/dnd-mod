@@ -399,8 +399,8 @@ public final class SavingThrow {
     }
 
     private static void sendNow(ServerPlayerEntity player, D20.Roll roll, Text detail, int count) {
-        DnDClasses.LOGGER.info("[D20] save lane -> " + player.getEntityName() + ": " + roll.label().getString()
-                + " " + roll.outcome() + " x" + count);
+        DnDClasses.LOGGER.info("[D20] save lane -> {}: {} {} x{}", player.getEntityName(), roll.label().getString(),
+                roll.outcome(), count);
         D20.send(player, roll, detail, count);
     }
 

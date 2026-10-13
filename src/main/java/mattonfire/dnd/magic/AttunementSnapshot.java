@@ -27,7 +27,9 @@ public record AttunementSnapshot(int slots, List<Bond> bonds, int forge, int cha
     public record Bond(UUID uuid, String item, Text name, boolean cursed, String curse, String tier) {
     }
 
-    public static AttunementSnapshot client = new AttunementSnapshot(Attunement.BASE_SLOTS, List.of(), 0, -1, 0, 0);
+    /** No bonds and the base slots: the client's state before the first sync. */
+    public static final AttunementSnapshot EMPTY = new AttunementSnapshot(Attunement.BASE_SLOTS, List.of(), 0, -1, 0, 0);
+    public static AttunementSnapshot client = EMPTY;
 
     public boolean bonded(UUID uuid) {
         for (Bond bond : bonds)

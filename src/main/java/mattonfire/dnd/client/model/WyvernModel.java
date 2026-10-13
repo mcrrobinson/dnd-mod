@@ -5,9 +5,12 @@ import net.minecraft.util.Identifier;
 import software.bernie.geckolib.model.GeoModel;
 
 public class WyvernModel extends GeoModel<WyvernEntity> {
+    private static final Identifier MODEL = new Identifier("dndclasses", "geo/wyvern.geo.json");
+    private static final Identifier ANIMATION = new Identifier("dndclasses", "animations/wyvern.animation.json");
+
     @Override
     public Identifier getModelResource(WyvernEntity object) {
-        return new Identifier("dndclasses", "geo/wyvern.geo.json");
+        return MODEL;
     }
 
     @Override
@@ -17,6 +20,6 @@ public class WyvernModel extends GeoModel<WyvernEntity> {
 
     @Override
     public Identifier getAnimationResource(WyvernEntity object) {
-        return new Identifier("dndclasses", "animations/wyvern.animation.json");
+        return ANIMATION;
     }
 }

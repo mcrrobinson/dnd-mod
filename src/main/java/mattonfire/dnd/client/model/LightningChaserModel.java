@@ -6,6 +6,9 @@ import software.bernie.geckolib.model.GeoModel;
 
 /** The Lightning Chaser's model and animations, shared by the Frost Drake with its own texture. */
 public class LightningChaserModel extends GeoModel<LairDragonEntity> {
+    private static final Identifier MODEL = new Identifier("dndclasses", "geo/lightning_chaser.geo.json");
+    private static final Identifier ANIMATION = new Identifier("dndclasses", "animations/lightning_chaser.animation.json");
+
     private final Identifier texture;
 
     public LightningChaserModel() {
@@ -18,7 +21,7 @@ public class LightningChaserModel extends GeoModel<LairDragonEntity> {
 
     @Override
     public Identifier getModelResource(LairDragonEntity object) {
-        return new Identifier("dndclasses", "geo/lightning_chaser.geo.json");
+        return MODEL;
     }
 
     @Override
@@ -28,6 +31,6 @@ public class LightningChaserModel extends GeoModel<LairDragonEntity> {
 
     @Override
     public Identifier getAnimationResource(LairDragonEntity object) {
-        return new Identifier("dndclasses", "animations/lightning_chaser.animation.json");
+        return ANIMATION;
     }
 }

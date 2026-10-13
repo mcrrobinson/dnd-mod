@@ -38,8 +38,8 @@ public class GelatinousCubeRenderer extends GeoEntityRenderer<GelatinousCubeEnti
     public void render(GelatinousCubeEntity cube, float entityYaw, float partialTick, MatrixStack poseStack,
                        VertexConsumerProvider bufferSource, int packedLight) {
         // Items first: they're opaque, and the translucent jelly is drawn over them afterwards.
-        this.renderAbsorbedItems(cube, partialTick, poseStack, bufferSource, packedLight);
-        if (bufferSource instanceof VertexConsumerProvider.Immediate immediate) {
+        boolean drewItems = this.renderAbsorbedItems(cube, partialTick, poseStack, bufferSource, packedLight);
+        if (drewItems && bufferSource instanceof VertexConsumerProvider.Immediate immediate) {
             // Item quads go into shared buffers that are normally drawn after every entity, which would be
             // after the jelly has already written its depth, hiding them. Draw them now instead.
             immediate.draw(TexturedRenderLayers.getEntitySolid());
@@ -50,15 +50,18 @@ public class GelatinousCubeRenderer extends GeoEntityRenderer<GelatinousCubeEnti
         super.render(cube, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }
 
-    private void renderAbsorbedItems(GelatinousCubeEntity cube, float partialTick, MatrixStack poseStack,
-                                     VertexConsumerProvider bufferSource, int packedLight) {
+    /** @return whether any item was drawn (an empty cube has nothing to flush) */
+    private boolean renderAbsorbedItems(GelatinousCubeEntity cube, float partialTick, MatrixStack poseStack,
+                                        VertexConsumerProvider bufferSource, int packedLight) {
         float bodyYaw = MathHelper.lerpAngleDegrees(partialTick, cube.prevBodyYaw, cube.bodyYaw);
         float time = cube.age + partialTick;
+        boolean drew = false;
         for (int i = 0; i < GelatinousCubeEntity.MAX_ABSORBED; i++) {
             ItemStack stack = cube.getAbsorbed(i);
             if (stack.isEmpty()) {
                 continue;
             }
+            drew = true;
             float[] slot = SLOTS[i];
             poseStack.push();
             poseStack.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(180.0f - bodyYaw));
@@ -71,6 +74,7 @@ public class GelatinousCubeRenderer extends GeoEntityRenderer<GelatinousCubeEnti
                     poseStack, bufferSource, cube.world, cube.getId() * 31 + i);
             poseStack.pop();
         }
+        return drew;
     }
 
     @Override

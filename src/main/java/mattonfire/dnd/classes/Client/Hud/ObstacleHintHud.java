@@ -60,9 +60,12 @@ public final class ObstacleHintHud {
             return;
         }
         HitResult hit = client.crosshairTarget;
-        double range = scouted(client, player) ? PartySynergies.SCOUT_HINT_RANGE : RANGE;
-        if (range > RANGE && (hit == null || hit.getType() != HitResult.Type.ENTITY)) {
+        double range = RANGE;
+        // A block within reach is what a longer ray would hit first anyway, so the party scan behind
+        // scouted() only runs when the crosshair found nothing.
+        if ((hit == null || hit.getType() == HitResult.Type.MISS) && scouted(client, player)) {
             // Scout: look further than the hand can reach
+            range = PartySynergies.SCOUT_HINT_RANGE;
             hit = player.raycast(range, tickDelta, false);
         }
         if (!(hit instanceof BlockHitResult blockHit) || hit.getType() != HitResult.Type.BLOCK

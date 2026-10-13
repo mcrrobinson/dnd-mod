@@ -325,6 +325,11 @@ public class DndClassesClient implements ClientModInitializer {
             MySphereRenderState.shouldRenderSphere = false;
             // No rest carries over to the next world (it would lock movement).
             mattonfire.dnd.classes.Rest.RestSnapshot.client = mattonfire.dnd.classes.Rest.RestSnapshot.NONE;
+            // Nor the class tree, sheet or attunements: the next world syncs its own on join.
+            mattonfire.dnd.classes.Progression.ClassProgress.client = new mattonfire.dnd.classes.Progression.ClassProgress(
+                    mattonfire.dnd.classes.DndCharacter.NONE);
+            mattonfire.dnd.classes.Abilities.CharacterSheet.client = mattonfire.dnd.classes.Abilities.CharacterSheet.classless();
+            mattonfire.dnd.magic.AttunementSnapshot.client = mattonfire.dnd.magic.AttunementSnapshot.EMPTY;
         }));
         ClientPlayNetworking.registerGlobalReceiver(ClassPackets.S2C_WIZARD_EFFECTS_PACKET_ID,
                 this::handleWizardPowerupPacket);

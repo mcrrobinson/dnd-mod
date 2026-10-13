@@ -72,7 +72,8 @@ public final class PerceivedMarks {
 
     /** Whether the entity should get the red Search outline (client entities only). */
     public static boolean outlined(Entity entity) {
-        if (!entity.getWorld().isClient) {
+        // Asked for every rendered entity every frame; nothing marked is the usual case
+        if (OUTLINED.isEmpty() || !entity.getWorld().isClient) {
             return false;
         }
         Mark mark = OUTLINED.get(entity.getId());

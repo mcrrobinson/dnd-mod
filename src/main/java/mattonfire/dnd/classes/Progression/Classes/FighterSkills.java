@@ -13,6 +13,7 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.ManaManager;
 import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Progression.Progression;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
@@ -150,6 +151,13 @@ public class FighterSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            SUPERIORITY_READY.clear();
+            RIPOSTE_UNTIL.clear();
+            SECOND_WIND_READY.clear();
+            INDOMITABLE_UNTIL.clear();
+        });
         // Superior Critical, on the sheet so the attack roll (and its HUD and log) uses it.
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/fighter_champion"), (player, c) -> {
             if (Progression.classOf(player) == DndCharacter.FIGHTER

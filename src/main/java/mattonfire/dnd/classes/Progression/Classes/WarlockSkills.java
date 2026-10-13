@@ -155,6 +155,9 @@ public class WarlockSkills extends ClassSkills {
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             HEXES.clear();
             HELLGATES.clear();
+            // Cooldowns count server ticks, which restart at 0 with the next world
+            LUCK_READY.clear();
+            WARD_READY.clear();
         });
         ServerTickEvents.END_WORLD_TICK.register(world -> {
             long now = world.getTime();

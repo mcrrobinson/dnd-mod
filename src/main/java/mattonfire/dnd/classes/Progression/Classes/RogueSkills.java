@@ -14,6 +14,7 @@ import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.AttackRolls;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
@@ -115,6 +116,10 @@ public class RogueSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            ASSASSINATE_UNTIL.clear();
+        });
         // Fast Hands, on the sheet so the lockpick roll (and its HUD and log) shows it. Ignoring class
         // restrictions when attuning comes with the attunement card.
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/rogue_thief"), (player, c) -> {

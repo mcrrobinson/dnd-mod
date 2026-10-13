@@ -120,13 +120,13 @@ public class PartyEvents {
     /** Sends every online party member the health, class and Downed status of the rest of their party. */
     public static void syncHud(MinecraftServer server) {
         PartyManager manager = PartyManager.get(server);
+        // Dungeon Masters don't show on the party HUD.
+        DungeonMaster dm = DungeonMaster.get(server);
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             Party party = manager.getParty(player.getUuid());
             if (party == null) {
                 continue;
             }
-            // Dungeon Masters don't show on the party HUD.
-            DungeonMaster dm = DungeonMaster.get(server);
             List<UUID> shown = party.getMembers().stream()
                     .filter(uuid -> !uuid.equals(player.getUuid()) && !dm.isDm(uuid)).toList();
             PacketByteBuf buf = PacketByteBufs.create();

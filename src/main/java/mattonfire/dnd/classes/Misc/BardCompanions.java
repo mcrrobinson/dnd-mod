@@ -177,6 +177,9 @@ public final class BardCompanions {
             return;
         }
         for (Entity entity : world.iterateEntities()) {
+            if (entity.getCommandTags().isEmpty()) {
+                continue; // Almost every entity: no copy to make
+            }
             for (String tag : java.util.List.copyOf(entity.getCommandTags())) {
                 if (!tag.startsWith(UNTIL_PREFIX)) {
                     continue;

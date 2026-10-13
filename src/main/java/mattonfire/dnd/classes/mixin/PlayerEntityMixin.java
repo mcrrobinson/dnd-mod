@@ -234,13 +234,12 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
             if (!world.isClient && this.age % 20 == 0 && player instanceof ServerPlayerEntity serverPlayer) {
                 Druid.serverTick(serverPlayer);
             }
-            if (playerEntity.getDndClass() == DndCharacter.DRUID
+            // The passive lookup parses the class progress out of NBT on the server, so it comes last.
+            if (playerEntity.getDndClass() == DndCharacter.DRUID && isSubmergedIn(FluidTags.WATER)
+                    && !player.isCreative() && !player.isSpectator() && !player.getAbilities().flying
                     && !Progression.hasPassive(player, "druid.tidecaller")) {
-                if (isSubmergedIn(FluidTags.WATER) && !player.isCreative() && !player.isSpectator() &&
-                        !player.getAbilities().flying) {
-                    // Pull down, but keep walking along the bottom possible
-                    this.setVelocity(this.getVelocity().x, -0.5, this.getVelocity().z);
-                }
+                // Pull down, but keep walking along the bottom possible
+                this.setVelocity(this.getVelocity().x, -0.5, this.getVelocity().z);
             }
         }
 

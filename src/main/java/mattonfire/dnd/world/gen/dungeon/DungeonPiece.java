@@ -56,8 +56,6 @@ public abstract class DungeonPiece extends StructurePiece {
     /** Doorways between rooms and corridors: 3 wide, 3 high. */
     public static final int DOOR_WIDTH = 3;
     public static final int DOOR_HEIGHT = 3;
-    /** Vanilla dungeon loot, for chests that don't have a dungeon table yet; rooms use {@link #loot(String)}. */
-    protected static final Identifier PLACEHOLDER_LOOT = new Identifier("minecraft", "chests/simple_dungeon");
 
     /** What every piece of one dungeon shares. */
     public record Info(long startKey, DungeonTheme theme, int tier, int floorY) {

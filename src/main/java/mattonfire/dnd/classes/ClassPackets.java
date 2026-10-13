@@ -20,8 +20,6 @@ public final class ClassPackets {
         public static final Identifier S2C_POWERUP_EFFECTS_PACKET_ID = Identifier.of("powerup",
                         "play_powerup_effects");
 
-        public static final Identifier C2S_LUNGE_REQUEST_PACKET_ID = Identifier.of("lunge",
-                        "request_lunge_effects");
         public static final Identifier S2C_LUNGE_EFFECTS_PACKET_ID = Identifier.of("lunge", "play_lunge_effects");
 
         public static final Identifier S2C_SYNC_MANA = Identifier.of("mana",

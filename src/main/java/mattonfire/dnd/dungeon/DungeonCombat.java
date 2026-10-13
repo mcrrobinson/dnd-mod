@@ -150,8 +150,4 @@ public final class DungeonCombat {
         return world.getBlockEntity(pos) instanceof DungeonWardBlockEntity ward ? ward : null;
     }
 
-    /** True for an entity a room's ward follows. */
-    public static boolean isDungeonMob(Entity entity) {
-        return entity.getCommandTags().contains(EncounterBuilder.TAG);
-    }
 }

@@ -287,12 +287,6 @@ public class BardSkills extends ClassSkills {
         }
     }
 
-    /** Whether the player has Combat Inspiration's armor. */
-    public static boolean isInspired(PlayerEntity player) {
-        EntityAttributeInstance armor = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
-        return armor != null && armor.getModifier(COMBAT_INSPIRATION_ID) != null;
-    }
-
     private static void setInspiredArmor(ServerPlayerEntity player, boolean on) {
         EntityAttributeInstance armor = player.getAttributeInstance(EntityAttributes.GENERIC_ARMOR);
         if (armor == null)

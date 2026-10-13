@@ -24,10 +24,6 @@ public interface RollFilter {
         return q -> q.kind() == kind;
     }
 
-    static RollFilter allChecks() {
-        return kind(RollKind.CHECK);
-    }
-
     static RollFilter allSaves() {
         return kind(RollKind.SAVE);
     }

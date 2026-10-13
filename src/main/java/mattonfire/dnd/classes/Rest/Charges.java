@@ -101,10 +101,6 @@ public final class Charges {
         RestSync.sync(player);
     }
 
-    public static void restoreAll(ServerPlayerEntity player) {
-        restore(player, Integer.MAX_VALUE);
-    }
-
     /** Sets the charges, clamped to 0..max. */
     public static void set(ServerPlayerEntity player, int n) {
         RestState state = RestState.get(player);

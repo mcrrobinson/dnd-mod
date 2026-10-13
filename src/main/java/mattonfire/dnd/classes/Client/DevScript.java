@@ -84,6 +84,10 @@ import net.minecraft.util.Identifier;
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
  * <li>{@code walk on|off} (or {@code forward on|off}) holds or releases the walk forward key, e.g. to crawl
  *     into a gap or to check movement is locked</li>
+ * <li>{@code walkto <x> <z> [ticks]} holds the walk forward key and turns the player towards block x z (its
+ *     centre, x.5 z.5) every tick, so it walks there over the real terrain (stairs, steps, collisions), until it's
+ *     within 0.2 blocks or {@code ticks} (default 200) pass; logs {@code walkto x z: reached|timed out at x y z}.
+ *     It never jumps, so a step higher than half a block stops it</li>
  * <li>{@code fov <30-110>} sets the field of view, e.g. 30 to zoom in on a third-person close-up</li>
  * <li>{@code sizes} logs every player's pose, hitbox (width x height), eye height, position and body race as
  * this client sees them, and in singleplayer as the integrated server sees them</li>
@@ -171,6 +175,9 @@ public final class DevScript {
     private int waitServerUntil = -1;
     /** The last action bar message logged, so each one is logged once. */
     private String lastActionBar;
+    /** Block centre a {@code walkto} step walks to (x, z), or null; its ticks left. */
+    private double[] walkTo;
+    private int walkToTicks;
     /** The key a {@code key} step pressed last tick, whose resulting screen is logged this tick. */
     private String keyLogged;
 
@@ -302,6 +309,22 @@ public final class DevScript {
             this.waitTicks--;
             return;
         }
+        if (this.walkTo != null) {
+            double dx = this.walkTo[0] - client.player.getX();
+            double dz = this.walkTo[1] - client.player.getZ();
+            boolean reached = dx * dx + dz * dz < 0.04D;
+            if (!reached && this.walkToTicks-- > 0) {
+                client.player.setYaw((float) (Math.toDegrees(Math.atan2(dz, dx)) - 90.0D));
+                client.options.forwardKey.setPressed(true);
+                return;
+            }
+            client.options.forwardKey.setPressed(false);
+            DnDClasses.LOGGER.info("[DevScript] walkto {} {}: {} at {} {} {}", (int) Math.floor(this.walkTo[0]),
+                    (int) Math.floor(this.walkTo[1]), reached ? "reached" : "timed out",
+                    String.format("%.2f", client.player.getX()), String.format("%.2f", client.player.getY()),
+                    String.format("%.2f", client.player.getZ()));
+            this.walkTo = null;
+        }
         if (this.waitServerUntil >= 0) {
             if (client.getServer() != null && client.getServer().getTicks() < this.waitServerUntil) {
                 return;
@@ -405,6 +428,11 @@ public final class DevScript {
                 ((MinecraftClientInvoker) client).invokeDoAttack();
             }
             case "sneak" -> client.options.sneakKey.setPressed(argument.equals("on"));
+            case "walkto" -> {
+                String[] args = argument.split("\\s+");
+                this.walkTo = new double[]{Integer.parseInt(args[0]) + 0.5D, Integer.parseInt(args[1]) + 0.5D};
+                this.walkToTicks = args.length > 2 ? Integer.parseInt(args[2]) : 200;
+            }
             case "walk", "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
             case "sizes" -> logSizes(client);
             case "fov" -> client.options.getFov().setValue(Integer.parseInt(argument));

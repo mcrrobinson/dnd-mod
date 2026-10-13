@@ -29,9 +29,7 @@ public final class ClassGuidebook {
             }
         }
         ItemStack book = new ItemStack(ModItems.CLASS_GUIDEBOOK);
-        if (!inventory.insertStack(book)) {
-            player.dropItem(book, false);
-        }
+        inventory.offerOrDrop(book);
         player.sendMessage(Text.translatable("message.dndclasses.class_guidebook.received")
                 .formatted(Formatting.GOLD), false);
     }

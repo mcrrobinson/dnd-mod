@@ -24,6 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Per-player faction reputation, -1000 to 1000 per faction. Stored in the player's persistent data
@@ -208,15 +209,11 @@ public final class Reputation {
 
     // ---- Daily caps and decay ----
 
-    static long today(ServerPlayerEntity player) {
-        return player.getServer().getOverworld().getTimeOfDay() / 24000L;
-    }
-
     /** Today's cap counters; reset when the day changes. */
     private static NbtCompound caps(ServerPlayerEntity player) {
         NbtCompound data = data(player);
         NbtCompound caps = data.getCompound(CAPS_KEY);
-        long today = today(player);
+        long today = GameTime.day(player.getServer());
         if (!caps.contains("Day") || caps.getLong("Day") != today) {
             long decayDay = caps.contains("DecayDay") ? caps.getLong("DecayDay") : today;
             caps = new NbtCompound();
@@ -233,7 +230,7 @@ public final class Reputation {
      */
     static void decay(ServerPlayerEntity player) {
         NbtCompound caps = caps(player);
-        long today = today(player);
+        long today = GameTime.day(player.getServer());
         long last = caps.getLong("DecayDay");
         caps.putLong("DecayDay", today);
         if (today <= last) {

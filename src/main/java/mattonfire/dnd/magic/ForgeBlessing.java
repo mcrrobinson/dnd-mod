@@ -5,7 +5,6 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Rest.DndRules;
-import mattonfire.dnd.classes.Rest.Rests;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -19,6 +18,7 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The Forge Domain Cleric's subclass feature, Blessing of the Forge: once per long rest (once per in-game
@@ -64,7 +64,7 @@ public final class ForgeBlessing {
      */
     private static String restKey(ServerPlayerEntity player) {
         String key = "rest:" + ((IEntityDataSaver) player).getPersistentData().getInt(RESTS_KEY);
-        return DndRules.rests(player.getWorld()) ? key : key + "/day:" + Rests.day(player);
+        return DndRules.rests(player.getWorld()) ? key : key + "/day:" + GameTime.day(player.getServer());
     }
 
     private static boolean used(ServerPlayerEntity player) {

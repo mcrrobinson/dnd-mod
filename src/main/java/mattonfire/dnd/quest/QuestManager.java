@@ -41,6 +41,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.world.PersistentState;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Quest state for the whole world, saved in the overworld as {@code dndclasses_quests}: the started
@@ -154,10 +155,6 @@ public final class QuestManager extends PersistentState {
         return this.players.computeIfAbsent(player, uuid -> new PlayerRecord());
     }
 
-    static long today(MinecraftServer server) {
-        return server.getOverworld().getTimeOfDay() / 24000L;
-    }
-
     /**
      * Why {@code player} can't take {@code quest} right now (already on it, finished, on cooldown,
      * missing a required quest or standing), or null if they can. Dialogue and rumours use this.
@@ -179,7 +176,7 @@ public final class QuestManager extends PersistentState {
             if (!quest.repeatable()) {
                 return Text.translatable("quest.dndclasses.error.already_done", quest.title());
             }
-            long wait = finishedDay + quest.cooldownDays() - today(player.getServer());
+            long wait = finishedDay + quest.cooldownDays() - GameTime.day(player.getServer());
             if (wait > 0) {
                 return Text.translatable("quest.dndclasses.error.cooldown", quest.title(), wait);
             }
@@ -314,7 +311,7 @@ public final class QuestManager extends PersistentState {
 
     private QuestInstance create(MinecraftServer server, QuestDefinition quest, LinkedHashSet<UUID> participants) {
         QuestInstance instance = new QuestInstance(this.nextId++, quest.id(), 0,
-                new int[quest.stage(0).objectives().size()], new LinkedHashSet<>(), participants, today(server));
+                new int[quest.stage(0).objectives().size()], new LinkedHashSet<>(), participants, GameTime.day(server));
         this.instances.put(instance.id(), instance);
         for (UUID uuid : participants) {
             this.record(uuid).tracked = instance.id();
@@ -775,7 +772,7 @@ public final class QuestManager extends PersistentState {
      */
     private void finish(MinecraftServer server, QuestInstance instance, QuestDefinition quest) {
         this.instances.remove(instance.id());
-        long today = today(server);
+        long today = GameTime.day(server);
         DnDClasses.LOGGER.info("[Quests] #{} {}: finished by {}", instance.id(), quest.id(), this.names(server, instance));
         for (UUID uuid : instance.participants()) {
             PlayerRecord record = this.record(uuid);

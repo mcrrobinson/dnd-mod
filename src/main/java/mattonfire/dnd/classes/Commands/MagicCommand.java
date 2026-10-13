@@ -130,8 +130,7 @@ public final class MagicCommand {
         if (tier != null || MagicItems.def(item) != null || unidentified)
             MagicItemLootFunction.apply(stack, tier, plus, !unidentified);
         Text name = stack.toHoverableText();
-        if (!player.giveItemStack(stack))
-            player.dropItem(stack, false);
+        player.getInventory().offerOrDrop(stack);
         context.getSource().sendFeedback(Text.literal("Gave ").append(name).append(" to ")
                 .append(player.getDisplayName()), true);
         return 1;

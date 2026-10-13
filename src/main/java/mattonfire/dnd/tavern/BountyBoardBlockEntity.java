@@ -11,6 +11,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Remembers which bounties are pinned to a board today, and whether the last slot holds a Rumour
@@ -31,7 +32,7 @@ public class BountyBoardBlockEntity extends BlockEntity {
 
     /** Pins up a fresh set of notices if a new day has dawned since the last ones went up. */
     public void refresh(World world) {
-        long today = world.getTimeOfDay() / 24000L;
+        long today = GameTime.day(world);
         if (today == this.day) {
             return;
         }
@@ -52,7 +53,7 @@ public class BountyBoardBlockEntity extends BlockEntity {
      * taking a board down and putting it back up doesn't post a fresh set.
      */
     public void startBare(World world) {
-        this.day = world.getTimeOfDay() / 24000L;
+        this.day = GameTime.day(world);
         BlockState state = world.getBlockState(this.pos);
         this.rumour = false;
         for (int i = 0; i < this.posted.length; i++) {

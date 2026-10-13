@@ -7,6 +7,7 @@ import com.mojang.datafixers.util.Pair;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import mattonfire.dnd.dungeon.DungeonMaps;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.entity.boss.BossFight;
@@ -14,11 +15,9 @@ import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Factions;
 import mattonfire.dnd.faction.Reputation;
 import mattonfire.dnd.quest.QuestJson.StructureMatch;
-import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
-import net.minecraft.item.map.MapState;
 import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
@@ -71,7 +70,7 @@ public sealed interface QuestAction {
             if (this.nbt != null) {
                 stack.setNbt(this.nbt.copy());
             }
-            give(context.player(), stack);
+            context.player().getInventory().offerOrDrop(stack);
         }
     }
 
@@ -87,7 +86,7 @@ public sealed interface QuestAction {
         public void run(Context context) {
             ItemStack stack = QuestHooks.magicItem.apply(context.player(), this.rarity);
             if (stack != null && !stack.isEmpty()) {
-                give(context.player(), stack);
+                context.player().getInventory().offerOrDrop(stack);
             } else {
                 loot(context.player(), new Identifier(DnDClasses.MOD_ID, "gameplay/quest_reward_" + this.rarity));
             }
@@ -100,7 +99,7 @@ public sealed interface QuestAction {
             int left = this.count;
             while (left > 0) {
                 int stack = Math.min(left, 64);
-                give(context.player(), new ItemStack(Items.EMERALD, stack));
+                context.player().getInventory().offerOrDrop(new ItemStack(Items.EMERALD, stack));
                 left -= stack;
             }
         }
@@ -161,14 +160,11 @@ public sealed interface QuestAction {
                 return;
             }
             BlockPos pos = found.getFirst();
-            ItemStack map = FilledMapItem.createMap(world, pos.getX(), pos.getZ(), (byte) 2, true, true);
-            FilledMapItem.fillExplorationMap(world, map);
-            MapState.addDecorationsNbt(map, pos, "+", MapIcon.Type.TARGET_X);
-            map.setCustomName(Text.translatable("quest.dndclasses.reveal.map", this.structure.name())
-                    .styled(style -> style.withItalic(false)));
+            ItemStack map = DungeonMaps.explorerMap(world, pos, "+", MapIcon.Type.TARGET_X,
+                    Text.translatable("quest.dndclasses.reveal.map", this.structure.name()).styled(style -> style.withItalic(false)));
             DnDClasses.LOGGER.info("[Quests] {}: revealed {} at {} for {}", context.quest().id(), this.structure,
                     pos.toShortString(), player.getEntityName());
-            give(player, map);
+            player.getInventory().offerOrDrop(map);
         }
     }
 
@@ -240,12 +236,6 @@ public sealed interface QuestAction {
         }
     }
 
-    static void give(ServerPlayerEntity player, ItemStack stack) {
-        if (!player.giveItemStack(stack)) {
-            player.dropItem(stack, false);
-        }
-    }
-
     static void loot(ServerPlayerEntity player, Identifier tableId) {
         ServerWorld world = player.getWorld();
         LootTable table = world.getServer().getLootManager().getTable(tableId);
@@ -258,7 +248,7 @@ public sealed interface QuestAction {
                 .parameter(LootContextParameters.THIS_ENTITY, player)
                 .random(player.getRandom())
                 .build(LootContextTypes.GIFT));
-        spoils.forEach(stack -> give(player, stack));
+        spoils.forEach(stack -> player.getInventory().offerOrDrop(stack));
     }
 
     public static QuestAction parse(JsonElement element) {

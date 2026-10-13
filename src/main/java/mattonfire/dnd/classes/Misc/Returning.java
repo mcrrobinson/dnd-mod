@@ -42,9 +42,7 @@ public class Returning {
         if (giveItem && !stack.isEmpty()) {
             ItemStack copy = stack.copy();
             copy.setCount(1);
-            if (!player.getInventory().insertStack(copy) && !copy.isEmpty()) {
-                player.dropItem(copy, false);
-            }
+            player.getInventory().offerOrDrop(copy);
         }
         player.world.playSound(null, player.getX(), player.getY(), player.getZ(), sound, SoundCategory.PLAYERS,
                 volume, pitch);

@@ -11,7 +11,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -42,20 +41,17 @@ public class PhylacteryLocketItem extends Item {
     }
 
     public static boolean isCharged(ItemStack stack, World world) {
-        NbtCompound nbt = MagicData.get(stack);
-        return nbt == null || !nbt.contains(READY_KEY) || world.getTime() >= nbt.getLong(READY_KEY);
+        return MagicData.readyIn(stack, READY_KEY, world.getTime()) == 0;
     }
 
     public static void recharge(ItemStack stack) {
-        NbtCompound nbt = MagicData.get(stack);
-        if (nbt != null)
-            nbt.remove(READY_KEY);
+        MagicData.clearReadyAt(stack, READY_KEY);
     }
 
     /** The locket takes the killing blow: 2 HP, Resistance V, a blink away, and it's spent. */
     public static void save(ServerPlayerEntity player, ItemStack stack) {
         ServerWorld world = (ServerWorld) player.getWorld();
-        MagicData.getOrCreate(stack).putLong(READY_KEY, world.getTime() + RECHARGE_MINUTES * 60L * 20L);
+        MagicData.setReadyAt(stack, READY_KEY, world.getTime() + RECHARGE_MINUTES * 60L * 20L);
         player.setHealth(HEALTH_LEFT);
         player.extinguish();
         player.fallDistance = 0.0F;

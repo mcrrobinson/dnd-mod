@@ -27,6 +27,7 @@ import net.minecraft.village.Merchant;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * What every settlement merchant (innkeeper, Elf Speaker and Fletcher, Dragonborn Elder, Gnome Tinker, Orc
@@ -289,7 +290,7 @@ public final class NpcMerchant {
     }
 
     private void restockIfNewDay() {
-        long today = this.npc.getWorld().getTimeOfDay() / 24000L;
+        long today = GameTime.day(this.npc.getWorld());
         if (today != this.lastRestockDay) {
             this.lastRestockDay = today;
             if (this.offers != null) {

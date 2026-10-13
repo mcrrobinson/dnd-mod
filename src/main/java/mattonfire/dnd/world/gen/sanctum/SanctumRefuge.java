@@ -24,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The Tiefling home bonuses of a Brimstone Sanctum that aren't the shared ones ({@link mattonfire.dnd.world.gen.HomeBonuses}):
@@ -129,11 +130,7 @@ public final class SanctumRefuge {
     /** Whether today's refill is still owed to {@code player}. */
     private static boolean owed(ServerPlayerEntity player) {
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
-        return !data.contains(DAY_KEY) || data.getLong(DAY_KEY) != today(player);
-    }
-
-    private static long today(ServerPlayerEntity player) {
-        return player.getServer().getOverworld().getTimeOfDay() / 24000L;
+        return !data.contains(DAY_KEY) || data.getLong(DAY_KEY) != GameTime.day(player.getServer());
     }
 
     /**
@@ -152,13 +149,13 @@ public final class SanctumRefuge {
         if (state.get(RespawnAnchorBlock.CHARGES) >= CHARGES) {
             return;
         }
-        ((IEntityDataSaver) player).getPersistentData().putLong(DAY_KEY, today(player));
+        ((IEntityDataSaver) player).getPersistentData().putLong(DAY_KEY, GameTime.day(player.getServer()));
         world.setBlockState(pos, state.with(RespawnAnchorBlock.CHARGES, CHARGES));
         world.playSound(null, pos, SoundEvents.BLOCK_RESPAWN_ANCHOR_CHARGE, SoundCategory.BLOCKS, 1.0F, 1.0F);
         if (used) {
             player.sendMessage(Text.translatable("message.dndclasses.sanctum.anchor_kindled", CHARGES).formatted(Formatting.GOLD), true);
         }
         DnDClasses.LOGGER.info("[BrimstoneSanctum] Refilled Refuge anchor {} to {} for {} (day {})", pos.toShortString(),
-                CHARGES, player.getEntityName(), today(player));
+                CHARGES, player.getEntityName(), GameTime.day(player.getServer()));
     }
 }

@@ -26,6 +26,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Short rests in progress at campfires, one per player, held in memory and
@@ -164,7 +165,7 @@ public final class RestSession {
             List<ServerPlayerEntity> resting = companions.get(player);
             DnDClasses.LOGGER.info("[Rest] {} finished a short rest with {}", player.getEntityName(),
                     resting.stream().map(ServerPlayerEntity::getEntityName).toList());
-            Rests.complete(player, RestKind.SHORT, RestSource.CAMPFIRE, resting, Rests.day(player));
+            Rests.complete(player, RestKind.SHORT, RestSource.CAMPFIRE, resting, GameTime.day(player.getServer()));
             player.sendMessage(Text.literal("Short rest complete").formatted(Formatting.GOLD), true);
             BardSkills.songOfRest(player, resting);
         }

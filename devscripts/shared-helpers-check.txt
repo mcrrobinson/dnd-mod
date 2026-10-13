@@ -1,0 +1,93 @@
+# Shared helpers refactor (GameTime, MagicData ready/dawn helpers, offerOrDrop): behaviour checks that should
+# read the same before and after the refactor.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/shared-helpers-check.txt
+# Checks, in <run dir>/logs/latest.log ([CHAT] lines):
+# - Wand of Magic Missiles at 0 charges: still 0 the same day, 2-7 after /time add 24000 (dawn recharge)
+# - Eye of the Tyrant at 0 charges: 0 the same day, 1 after the dawn
+# - Warlord's Warhorn: hornReadyAt stored after a blow; a second blow logs the cooldown on the action bar
+# - give-or-drop: /dndmagic give with a full inventory drops the wand at the player's feet (Test passed)
+# - Blood Hunter sword damage: the zombie loses twice as much at night (18000) as by day (6000) x4
+wait 40
+closescreen
+include _reset.txt
+# A class and race keep the pickers (which pause the game) from opening mid-test
+/dndrace set @s human
+/dndclass set @s fighter
+wait 10
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/difficulty normal
+/kill @e[type=item,distance=..20]
+/kill @e[tag=helpers]
+/clear @s
+/tp @s 0.5 150 0.5 0 0
+/setblock 0 149 0 minecraft:glass
+/effect give @s minecraft:resistance 120 4 true
+# --- dawn recharge (MagicData.newDawn) ---
+/time set 1000
+/item replace entity @s hotbar.0 with dndclasses:wand_of_magic_missiles{dndclasses_magic:{charges:0,dawnDay:0L}}
+/item replace entity @s hotbar.1 with dndclasses:eye_of_the_tyrant{dndclasses_magic:{charges:0,dawnDay:0L}}
+closescreen
+waitserver 45
+/data get entity @s Inventory[{Slot:0b}].tag.dndclasses_magic
+/data get entity @s Inventory[{Slot:1b}].tag.dndclasses_magic
+/time add 24000
+closescreen
+waitserver 45
+/data get entity @s Inventory[{Slot:0b}].tag.dndclasses_magic
+/data get entity @s Inventory[{Slot:1b}].tag.dndclasses_magic
+/time add 24000
+closescreen
+waitserver 45
+/data get entity @s Inventory[{Slot:1b}].tag.dndclasses_magic
+screenshot helpers-dawn
+# --- Warhorn readyAt (MagicData.readyIn / setReadyAt) ---
+/clear @s
+/kill @e[type=item,distance=..20]
+/item replace entity @s hotbar.0 with dndclasses:warlords_warhorn
+hotbar 0
+look 0 0
+wait 5
+use
+wait 10
+/data get entity @s SelectedItem.tag.dndclasses_magic
+/item replace entity @s hotbar.1 with dndclasses:warlords_warhorn{dndclasses_magic:{hornReadyAt:99999999999L}}
+hotbar 1
+wait 5
+use
+wait 10
+actionbar
+/data get entity @s SelectedItem.tag.dndclasses_magic
+# --- give-or-drop with a full inventory ---
+/clear @s
+/kill @e[type=item,distance=..20]
+/give @s minecraft:cobblestone 2304
+/give @s minecraft:cobblestone 64
+wait 5
+/dndmagic give @s dndclasses:wand_of_magic_missiles
+wait 20
+/execute if entity @e[type=item,distance=..4,nbt={Item:{id:"dndclasses:wand_of_magic_missiles"}}]
+/clear @s
+/kill @e[type=item,distance=..20]
+# --- Blood Hunter night window (GameTime.isNight) ---
+/dndclass set @s bloodhunter
+/clear @s dndclasses:class_guidebook
+/item replace entity @s weapon.mainhand with minecraft:iron_sword
+/summon minecraft:zombie 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["helpers"],Rotation:[180f,0f],Silent:1b}
+/time set 18000
+wait 10
+/damage @e[tag=helpers,limit=1] 4 minecraft:player_attack by @s
+wait 5
+/data get entity @e[tag=helpers,limit=1] Health
+/kill @e[tag=helpers]
+/summon minecraft:zombie 0.5 150 3.5 {NoAI:1b,NoGravity:1b,Tags:["helpers"],Rotation:[180f,0f],Silent:1b}
+/time set 6000
+wait 10
+/damage @e[tag=helpers,limit=1] 4 minecraft:player_attack by @s
+wait 5
+/data get entity @e[tag=helpers,limit=1] Health
+/kill @e[tag=helpers]
+/clear @s
+/time set 6000
+quit

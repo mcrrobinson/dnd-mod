@@ -1,0 +1,12 @@
+# Orc trial duel bar across dimensions, guest side: see orc-trial-bar-host.txt.
+# Screenshots: orc-bar-guest-near (the duel bar shows), orc-bar-guest-nether (no duel bar).
+wait 40
+closescreen
+waitchat step-bar
+wait 20
+screenshot orc-bar-guest-near
+waitchat step-nether
+wait 20
+screenshot orc-bar-guest-nether
+waitchat step-done
+quit

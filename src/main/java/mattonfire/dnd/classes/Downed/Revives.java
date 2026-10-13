@@ -201,8 +201,8 @@ public final class Revives {
         if (!leftover.isEmpty()) {
             if (stack.isEmpty()) {
                 helper.setStackInHand(hand, leftover);
-            } else if (!helper.getInventory().insertStack(leftover)) {
-                helper.dropItem(leftover, false);
+            } else {
+                helper.getInventory().offerOrDrop(leftover);
             }
         }
     }

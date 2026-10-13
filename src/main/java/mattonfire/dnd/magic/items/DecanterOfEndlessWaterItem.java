@@ -62,13 +62,13 @@ public class DecanterOfEndlessWaterItem extends BucketItem {
         if (!MagicItemUse.ready(player, stack))
             return TypedActionResult.fail(stack);
         long now = world.getTime();
-        long readyAt = MagicData.get(stack) == null ? 0 : MagicData.get(stack).getLong(READY_KEY);
-        if (now < readyAt) {
+        long left = MagicData.readyIn(stack, READY_KEY, now);
+        if (left > 0) {
             player.sendMessage(Text.translatable("item.dndclasses.decanter_of_endless_water.cooldown",
-                    (readyAt - now + 19) / 20).formatted(Formatting.GRAY), true);
+                    (left + 19) / 20).formatted(Formatting.GRAY), true);
             return TypedActionResult.fail(stack);
         }
-        MagicData.getOrCreate(stack).putLong(READY_KEY, now + GEYSER_COOLDOWN_SECONDS * 20L);
+        MagicData.setReadyAt(stack, READY_KEY, now + GEYSER_COOLDOWN_SECONDS * 20L);
         ServerWorld server = (ServerWorld) world;
         Vec3d eye = player.getEyePos();
         Vec3d look = player.getRotationVec(1.0F);

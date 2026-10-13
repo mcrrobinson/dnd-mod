@@ -37,6 +37,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Blood Hunter tree. The class's x2 night / x0.5 day sword multiplier is
@@ -174,8 +175,7 @@ public class BloodHunterSkills extends ClassSkills {
 
     /** Same night window as LivingEntityMixin's sword multiplier. */
     private static boolean isNight(PlayerEntity player) {
-        long time = player.getWorld().getTimeOfDay() % 24000;
-        return time >= 13000 && time <= 23000;
+        return GameTime.isNight(player.getWorld());
     }
 
     private static boolean bloodMoonActive(PlayerEntity player) {

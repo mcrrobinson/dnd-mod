@@ -53,11 +53,11 @@ public class WarlordsWarhornItem extends Item {
         if (!MagicItemUse.ready(player, stack))
             return TypedActionResult.fail(stack);
         long now = world.getTime();
-        if (now < MagicData.getOrCreate(stack).getLong(READY_KEY) && !player.getAbilities().creativeMode) {
+        if (MagicData.readyIn(stack, READY_KEY, now) > 0 && !player.getAbilities().creativeMode) {
             sendCooldown(player, stack);
             return TypedActionResult.fail(stack);
         }
-        MagicData.getOrCreate(stack).putLong(READY_KEY, now + COOLDOWN_SECONDS * 20L);
+        MagicData.setReadyAt(stack, READY_KEY, now + COOLDOWN_SECONDS * 20L);
         player.getItemCooldownManager().set(this, COOLDOWN_SECONDS * 20);
 
         List<ServerPlayerEntity> allies = new ArrayList<>();
@@ -106,7 +106,7 @@ public class WarlordsWarhornItem extends Item {
 
     /** "Your lungs need a rest (N s)" on the action bar, N from {@value #READY_KEY} on the item. */
     private static void sendCooldown(PlayerEntity player, ItemStack stack) {
-        long left = MagicData.getOrCreate(stack).getLong(READY_KEY) - player.getWorld().getTime();
+        long left = MagicData.readyIn(stack, READY_KEY, player.getWorld().getTime());
         if (left <= 0) // cooldown sweep without a stored time (e.g. /item replace): use the sweep instead
             left = (long) (player.getItemCooldownManager().getCooldownProgress(stack.getItem(), 0.0F)
                     * COOLDOWN_SECONDS * 20);

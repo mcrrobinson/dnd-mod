@@ -24,6 +24,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The Dragonborn shrines: the three breath altars in a Dragon Temple's sanctum ({@link SanctumPiece}).
@@ -100,7 +101,7 @@ public final class TempleShrine {
 
     private static ActionResult bless(ServerPlayerEntity player, BlockPos pos, DragonAncestry ancestry) {
         NbtCompound data = data(player);
-        long today = player.getServer().getOverworld().getTimeOfDay() / 24000L;
+        long today = GameTime.day(player.getServer());
         if (data.contains(DAY_KEY) && data.getLong(DAY_KEY) == today) {
             hint(player, Text.translatable("message.dndclasses.shrine.blessed_today"));
             return ActionResult.SUCCESS;

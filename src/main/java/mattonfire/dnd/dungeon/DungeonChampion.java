@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import mattonfire.dnd.entity.boss.BossBars;
 import mattonfire.dnd.entity.GelatinousCubeEntity;
 import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.OwlbearEntity;
@@ -22,7 +23,6 @@ import net.minecraft.loot.LootTable;
 import net.minecraft.loot.context.LootContext;
 import net.minecraft.loot.context.LootContextParameters;
 import net.minecraft.loot.context.LootContextTypes;
-import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -238,16 +238,7 @@ public final class DungeonChampion {
         });
         bar.setPercent(MathHelper.clamp(champion.getHealth() / champion.getMaxHealth(), 0.0F, 1.0F));
         Vec3d pos = champion.getPos();
-        for (ServerPlayerEntity player : List.copyOf(bar.getPlayers())) {
-            if (player.isRemoved() || player.getWorld() != world || player.squaredDistanceTo(pos) > BAR_RANGE * BAR_RANGE) {
-                bar.removePlayer(player);
-            }
-        }
-        for (ServerPlayerEntity player : world.getPlayers()) {
-            if (!player.isSpectator() && player.squaredDistanceTo(pos) <= BAR_RANGE * BAR_RANGE) {
-                bar.addPlayer(player);
-            }
-        }
+        BossBars.syncViewers(bar, world, player -> !player.isSpectator() && player.squaredDistanceTo(pos) <= BAR_RANGE * BAR_RANGE);
     }
 
     /**

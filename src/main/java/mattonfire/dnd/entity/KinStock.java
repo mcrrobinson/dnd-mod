@@ -17,9 +17,7 @@ import org.jetbrains.annotations.Nullable;
  * shown after the merchant's normal offers only while a customer of the settlement's home race trades
  * ({@link #isKin}); everyone else never sees them. Kin prices apply to them like any other offer.
  * <p>
- * Use: the merchant's {@code getOffers()} returns {@link #view(TradeOfferList)} of its normal offers,
- * {@code setCustomer} calls {@link #setCustomer}, the morning restock calls {@link #restock()}, and the NBT
- * methods call {@link #write} / {@link #read}.
+ * A merchant lists its stocks in its {@link NpcMerchant}, which shows them, restocks them and saves them.
  */
 public final class KinStock {
     private static final String NBT_KEY = "KinOffers";
@@ -30,9 +28,6 @@ public final class KinStock {
     private final String nbtKey;
     @Nullable
     private TradeOfferList offers;
-    /** Normal + kin offers, while a kin customer trades. The same offer objects, so uses are shared. */
-    @Nullable
-    private TradeOfferList shown;
 
     public KinStock(Supplier<TradeOfferList> factory) {
         this(factory, KinStock::isKin, NBT_KEY);
@@ -40,7 +35,7 @@ public final class KinStock {
 
     /**
      * Offers only {@code audience} sees, saved under {@code nbtKey}: e.g. the Pactbroker's class-gated stock
-     * for Warlocks and Alchemists. A merchant with several of these combines them itself ({@link #shownTo}).
+     * for Warlocks and Alchemists.
      */
     public KinStock(Supplier<TradeOfferList> factory, BiPredicate<PlayerEntity, Entity> audience, String nbtKey) {
         this.factory = factory;
@@ -70,24 +65,11 @@ public final class KinStock {
         return this.offers;
     }
 
-    /** What the merchant shows: {@code base}, plus the kin offers while a kin customer trades. */
-    public TradeOfferList view(TradeOfferList base) {
-        return this.shown != null ? this.shown : base;
-    }
-
-    /** The merchant's customer changed. Call before preparing the customer's prices. */
-    public void setCustomer(Entity npc, @Nullable PlayerEntity customer, TradeOfferList base) {
-        if (customer != null && this.shownTo(customer, npc) && !this.offers().isEmpty()) {
-            TradeOfferList all = new TradeOfferList();
-            all.addAll(base);
-            all.addAll(this.offers());
-            this.shown = all;
-            return;
-        }
-        if (customer == null && this.offers != null) {
+    /** The customer left: their prices come off these offers. */
+    public void clearSpecialPrices() {
+        if (this.offers != null) {
             this.offers.forEach(TradeOffer::clearSpecialPrice);
         }
-        this.shown = null;
     }
 
     public void restock() {

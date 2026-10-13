@@ -1,8 +1,9 @@
 package mattonfire.dnd.entity;
 
+import static mattonfire.dnd.entity.NpcTrades.sell;
+
 import mattonfire.dnd.classes.Registry.ModItems;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
@@ -15,9 +16,6 @@ import net.minecraft.village.TradeOfferList;
  * ({@link MountainDwarfEntity}).
  */
 public final class KinStockOffers {
-    private static final int MAX_USES = 12;
-    private static final int MERCHANT_XP = 2;
-    private static final float PRICE_MULTIPLIER = 0.05F;
 
     private KinStockOffers() {
     }
@@ -71,8 +69,7 @@ public final class KinStockOffers {
      */
     public static TradeOfferList cogsdeep() {
         TradeOfferList offers = new TradeOfferList();
-        offers.add(new TradeOffer(new ItemStack(Items.EMERALD, 14),
-                mattonfire.dnd.classes.Items.racial.GnomishRepeaterItem.create(), MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER));
+        offers.add(sell(14, mattonfire.dnd.classes.Items.racial.GnomishRepeaterItem.create()));
         offers.add(sell(10, ModItems.TINKERS_GOGGLES));
         return offers;
     }
@@ -85,10 +82,5 @@ public final class KinStockOffers {
         offers.add(sell(legsPrice, legs));
         offers.add(sell(bootsPrice, boots));
         return offers;
-    }
-
-    private static TradeOffer sell(int emeralds, Item item) {
-        return new TradeOffer(new ItemStack(Items.EMERALD, emeralds), new ItemStack(item), MAX_USES, MERCHANT_XP,
-                PRICE_MULTIPLIER);
     }
 }

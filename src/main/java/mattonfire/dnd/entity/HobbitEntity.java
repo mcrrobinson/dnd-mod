@@ -5,23 +5,9 @@ import mattonfire.dnd.world.gen.HomeBonuses;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
-import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.EscapeDangerGoal;
-import net.minecraft.entity.ai.goal.FleeEntityGoal;
-import net.minecraft.entity.ai.goal.GoToWalkTargetGoal;
-import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
-import net.minecraft.entity.ai.goal.LookAroundGoal;
-import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
-import net.minecraft.entity.ai.pathing.MobNavigation;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.data.DataTracker;
-import net.minecraft.entity.data.TrackedData;
-import net.minecraft.entity.data.TrackedDataHandlerRegistry;
-import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.PathAwareEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -29,16 +15,13 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ItemStackParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -50,16 +33,14 @@ import org.jetbrains.annotations.Nullable;
  * keeps away from monsters and is always snacking. Right-click one with an empty hand and it
  * shares some of its food.
  */
-public class HobbitEntity extends PathAwareEntity {
+public class HobbitEntity extends SettlementNpcEntity {
     public static final int VARIANTS = 6;
-    private static final TrackedData<Integer> VARIANT = DataTracker.registerData(HobbitEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
     /** Command tag of the village's elder, the Thain: a quest giver (see {@code DialogueManager}). */
     public static final String ELDER_TAG = "dndclasses.role.hobbit_elder";
 
     private static final int DAY_RANGE = 24;
     private static final int NIGHT_RANGE = 3;
-    private static final float HOSTILE_FLEE_DISTANCE = 8.0F;
 
     private static final Item[] SNACKS = {
             Items.BREAD, Items.APPLE, Items.COOKIE, Items.PUMPKIN_PIE, Items.BAKED_POTATO,
@@ -76,8 +57,6 @@ public class HobbitEntity extends PathAwareEntity {
             "Brockhouse", "Twofoot", "Puddifoot", "Sandyman", "Banks", "Longhole"
     };
 
-    @Nullable
-    private BlockPos home;
     /** The wait a hobbit without a saved {@code GiftWait} assumes (the Neutral 5 minutes). */
     private static final int DEFAULT_GIFT_WAIT = 20 * 60 * 5;
     /** Ticks left of the wait set by the last gift (that player's wait). */
@@ -87,8 +66,6 @@ public class HobbitEntity extends PathAwareEntity {
 
     public HobbitEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
-        ((MobNavigation) this.getNavigation()).setCanPathThroughDoors(true);
-        this.getNavigation().setCanSwim(true);
     }
 
     public static DefaultAttributeContainer.Builder createHobbitAttributes() {
@@ -100,41 +77,20 @@ public class HobbitEntity extends PathAwareEntity {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(1, new EscapeDangerGoal(this, 1.4D));
-        this.goalSelector.add(2, new FleeEntityGoal<>(this, HostileEntity.class, 10.0F, 0.9D, 1.3D));
-        // Players Hostile with the hobbits are kept at a distance.
-        this.goalSelector.add(2, new FleeEntityGoal<>(this, PlayerEntity.class, HOSTILE_FLEE_DISTANCE, 0.9D, 1.3D,
-                player -> TierEffects.fleesFrom(TierEffects.tierWith((PlayerEntity) player, this))));
-        this.goalSelector.add(3, new LongDoorInteractGoal(this, true));
-        this.goalSelector.add(4, new GoToWalkTargetGoal(this, 0.8D));
-        this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.6D));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 6.0F));
-        this.goalSelector.add(6, new LookAtEntityGoal(this, HobbitEntity.class, 6.0F));
-        this.goalSelector.add(7, new LookAroundGoal(this));
+        this.folkGoals().escape(1.4D).fleeMonsters(10.0F, 1.3D).fleePlayers(1.3D).walkTarget(0.8D).wander(0.6D)
+                .lookAtKin(HobbitEntity.class).add();
     }
 
     @Override
-    protected void initDataTracker() {
-        super.initDataTracker();
-        this.dataTracker.startTracking(VARIANT, 0);
-    }
-
-    public int getVariant() {
-        return this.dataTracker.get(VARIANT);
-    }
-
-    /** Ties the hobbit to a spot it wanders around by day and returns to at night. */
-    public void setHome(BlockPos home) {
-        this.home = home.toImmutable();
-        this.updateRange();
+    protected int variants() {
+        return VARIANTS;
     }
 
     @Override
     public EntityData initialize(ServerWorldAccess world, LocalDifficulty difficulty, SpawnReason spawnReason,
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         Random random = world.getRandom();
-        this.dataTracker.set(VARIANT, random.nextInt(VARIANTS));
+        this.setVariant(random.nextInt(VARIANTS));
         this.setCustomName(Text.literal(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)] + " "
                 + SURNAMES[random.nextInt(SURNAMES.length)]));
         this.equipStack(EquipmentSlot.MAINHAND, new ItemStack(SNACKS[random.nextInt(SNACKS.length)]));
@@ -152,24 +108,11 @@ public class HobbitEntity extends PathAwareEntity {
         this.addCommandTag(ELDER_TAG);
     }
 
-    // The mod gives every mob a player-targeting goal; hobbits never pick fights.
-    @Override
-    public void setTarget(@Nullable LivingEntity target) {
-    }
-
-    @Override
-    public boolean canPickUpLoot() {
-        return false;
-    }
-
     @Override
     protected void mobTick() {
         super.mobTick();
         if (this.giftCooldown > 0) {
             this.giftCooldown--;
-        }
-        if (this.age % 100 == 0) {
-            this.updateRange();
         }
         if (this.random.nextInt(900) == 0 && !this.getMainHandStack().isEmpty()) {
             this.nibble();
@@ -177,18 +120,12 @@ public class HobbitEntity extends PathAwareEntity {
     }
 
     // Stay near home: the whole village by day, indoors at night.
-    private void updateRange() {
-        if (this.home != null) {
-            this.setPositionTarget(this.home, this.world.isDay() ? this.dayRange() : this.nightRange());
-        }
-    }
-
-    /** How far from home this hobbit roams by day. */
+    @Override
     protected int dayRange() {
         return DAY_RANGE;
     }
 
-    /** How far from home this hobbit roams at night. */
+    @Override
     protected int nightRange() {
         return NIGHT_RANGE;
     }
@@ -239,46 +176,17 @@ public class HobbitEntity extends PathAwareEntity {
         return super.getSoundPitch() * 1.35F;
     }
 
-    @Nullable
-    @Override
-    protected SoundEvent getAmbientSound() {
-        return SoundEvents.ENTITY_VILLAGER_AMBIENT;
-    }
-
-    @Override
-    protected SoundEvent getHurtSound(net.minecraft.entity.damage.DamageSource source) {
-        return SoundEvents.ENTITY_VILLAGER_HURT;
-    }
-
-    @Override
-    protected SoundEvent getDeathSound() {
-        return SoundEvents.ENTITY_VILLAGER_DEATH;
-    }
-
-    @Override
-    public boolean canImmediatelyDespawn(double distanceSquared) {
-        return false;
-    }
-
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("Variant", this.getVariant());
         nbt.putInt("GiftCooldown", this.giftCooldown);
         nbt.putInt("GiftWait", this.giftWait);
-        if (this.home != null) {
-            nbt.put("Home", NbtHelper.fromBlockPos(this.home));
-        }
     }
 
     @Override
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
-        this.dataTracker.set(VARIANT, Math.floorMod(nbt.getInt("Variant"), VARIANTS));
         this.giftCooldown = nbt.getInt("GiftCooldown");
         this.giftWait = nbt.contains("GiftWait") ? nbt.getInt("GiftWait") : DEFAULT_GIFT_WAIT;
-        if (nbt.contains("Home")) {
-            this.setHome(NbtHelper.toBlockPos(nbt.getCompound("Home")));
-        }
     }
 }

@@ -48,7 +48,7 @@ Only in Elven Enclaves, where they also spawn naturally inside the trees, the gl
 - `#dndclasses:faction/sylvan_court` lists the elf entity types.
 
 ## For developers
-- `entity/ElfEntity` (the Wood Elf and base class: variant, name, home, `mayTarget` filter, Warden call for help on being struck), `ElfWardenEntity` (`Angerable`, `RangedAttackMob`, its own `WardenAttackGoal` because `BowAttackGoal` needs a `HostileEntity`), `ElfMerchantEntity` + `ElfTrades` (kin stock through `KinStock` / `KinStockOffers.elvenSpeaker`), `SylvanLaw`.
+- `entity/ElfEntity` (the Wood Elf and base class, a `SettlementNpcEntity`: variant, name, home, `mayTarget` filter, Warden call for help on being struck), `ElfWardenEntity` (`GuardAnger`, `RangedAttackMob`, its own `WardenAttackGoal` because `BowAttackGoal` needs a `HostileEntity`), `ElfMerchantEntity` + `ElfTrades` (an `NpcMerchant`; kin stock through `KinStock` / `KinStockOffers.elvenSpeaker`), `SylvanLaw`.
 - `client/renderer/RacialHumanoidRenderer`: the racial NPC kit (player model, slim or classic arms, armour, arm poses for held items and drawn bows, scale). Head features come from `RaceFeatures.renderHead`, as on players, for the `Look`'s race; they're skipped while something is worn on the head.
 - Skins: `python3 tools/elf_skins.py` writes `textures/entity/elf/`.
 - `ModSpawns.canElfSpawn`: natural and chunk-generation spawns only inside real enclave pieces, at most 12 elves within 48 blocks.

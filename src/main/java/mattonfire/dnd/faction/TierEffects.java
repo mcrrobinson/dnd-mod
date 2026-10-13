@@ -27,8 +27,8 @@ public final class TierEffects {
     public static final int PROVOKED_TICKS = 20 * 10;
 
     /** The factions whose higher-tier perks are built in (the perks name them; other factions get none). */
-    public static final Identifier HOBBITS = new Identifier("dndclasses", "hobbits");
-    public static final Identifier MOUNTAIN_DWARVES = new Identifier("dndclasses", "mountain_dwarves");
+    public static final Identifier HOBBITS = FactionIds.HOBBITS;
+    public static final Identifier MOUNTAIN_DWARVES = FactionIds.MOUNTAIN_DWARVES;
 
     /** Friendly hobbits: the lookouts' horn sounds this many ticks earlier before a raid's first wave. */
     public static final int EARLY_HORN_TICKS = 20 * 10;

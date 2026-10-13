@@ -94,9 +94,8 @@ public final class SanctumRefuge {
         if (!(world instanceof ServerWorld serverWorld) || !world.getBlockState(pos).isOf(Blocks.RESPAWN_ANCHOR)) {
             return false;
         }
-        RacialHomes.Visit visit = RacialHomes.homeAt(serverWorld, pos);
-        return visit != null && visit.home() == RacialHomes.BRIMSTONE_SANCTUM
-                && visit.pieceAt(pos, BrimstoneSanctumStructures.REFUGE) != null;
+        RacialHomes.Visit visit = RacialHomes.visitOf(serverWorld, pos, RacialHomes.BRIMSTONE_SANCTUM);
+        return visit != null && visit.pieceAt(pos, BrimstoneSanctumStructures.REFUGE) != null;
     }
 
     /** The Refuge anchor {@code player}'s spawn is bound to, or null. */

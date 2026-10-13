@@ -71,7 +71,7 @@ public final class OrcTrial {
     public static final double LEASH = 12.0D;
     public static final double BAR_RANGE = 32.0D;
     public static final Identifier ADVANCEMENT = new Identifier(DnDClasses.MOD_ID, "blood_and_thunder");
-    public static final Identifier FACTION = new Identifier(DnDClasses.MOD_ID, "bloodtusk_horde");
+    public static final Identifier FACTION = mattonfire.dnd.faction.FactionIds.BLOODTUSK_HORDE;
 
     /** Quest hook: called when a player wins the Trial at a hold (the hold key). */
     public static BiConsumer<ServerPlayerEntity, Long> onTrialWon = (player, hold) -> {

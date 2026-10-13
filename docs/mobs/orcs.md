@@ -58,6 +58,6 @@ The Quartermaster trades only with Half-Orcs and with players Blood-Sworn at his
 - Orcs wearing a helmet don't show their tusks.
 
 ## For developers
-- `entity/OrcEntity` (base: variant, name, home, hold key, `Angerable` grudges, ally rules), `OrcWarriorEntity`, `OrcArcherEntity` (`CrossbowUser`, its own load-hold-shoot goal), `OrcQuartermasterEntity` (`Merchant`, `KinStock` with `KinStockOffers.orcStronghold`), `OrcChampionEntity` (`setHealth` clamp while duelling), `OrcWarChiefEntity`, `OrcHostility` (who they fight), `OrcTrades`.
+- `entity/OrcEntity` (base: variant, name, home, hold key, `GuardAnger` grudges, ally rules), `OrcWarriorEntity`, `OrcArcherEntity` (`CrossbowUser`, its own load-hold-shoot goal), `OrcQuartermasterEntity` (`NpcMerchant` serving Half-Orcs and the Blood-Sworn, `KinStock` with `KinStockOffers.orcStronghold`), `OrcChampionEntity` (`setHealth` clamp while duelling), `OrcWarChiefEntity`, `OrcHostility` (who they fight), `OrcTrades`.
 - `client/renderer/RacialHumanoidRenderer` (`orc`, `orcQuartermaster`, `orcChampion`, `orcWarChief`; `Look` now has a separate width, and crossbow arm poses).
 - `GoblinWarriorEntity` refuses orc targets and orc damage. Loot: `loot_tables/entities/orc_*.json`, and the war token pool in `goblin_warrior.json`.

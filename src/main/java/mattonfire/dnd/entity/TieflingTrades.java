@@ -1,5 +1,8 @@
 package mattonfire.dnd.entity;
 
+import static mattonfire.dnd.entity.NpcTrades.sell;
+import static mattonfire.dnd.entity.NpcTrades.buy;
+
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModBlocks;
@@ -7,13 +10,11 @@ import mattonfire.dnd.classes.Registry.ModItems;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
 /**
@@ -29,9 +30,6 @@ import net.minecraft.village.TradeOfferList;
  * </ul>
  */
 public final class TieflingTrades {
-    private static final int MAX_USES = 12;
-    private static final int MERCHANT_XP = 2;
-    private static final float PRICE_MULTIPLIER = 0.05F;
     public static final int WITHER_PRICE = 20;
     public static final int BREWING_STAND_PRICE = 12;
     public static final int SCRAP_PRICE = 24;
@@ -45,8 +43,8 @@ public final class TieflingTrades {
         offers.add(sell(3, new ItemStack(Items.GHAST_TEAR)));
         offers.add(sell(2, new ItemStack(Items.MAGMA_CREAM, 4)));
         offers.add(sell(4, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.FIRE_RESISTANCE)));
-        offers.add(new TradeOffer(new ItemStack(Items.EMERALD, SCRAP_PRICE), new ItemStack(Items.NETHERITE_SCRAP), 1,
-                MERCHANT_XP * 5, PRICE_MULTIPLIER));
+        offers.add(NpcTrades.offer(new ItemStack(Items.EMERALD, SCRAP_PRICE), new ItemStack(Items.NETHERITE_SCRAP), 1,
+                NpcTrades.MERCHANT_XP * 5));
         offers.add(buy(Items.QUARTZ, 20));
         offers.add(buy(Items.NETHER_WART, 22));
         offers.add(buy(Items.GOLD_INGOT, 3));
@@ -75,13 +73,5 @@ public final class TieflingTrades {
 
     static boolean isAlchemist(PlayerEntity player, Entity npc) {
         return Progression.classOf(player) == DndCharacter.ALCHEMIST;
-    }
-
-    private static TradeOffer sell(int emeralds, ItemStack stack) {
-        return new TradeOffer(new ItemStack(Items.EMERALD, emeralds), stack, MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
-    }
-
-    private static TradeOffer buy(ItemConvertible item, int count) {
-        return new TradeOffer(new ItemStack(item, count), new ItemStack(Items.EMERALD), MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
     }
 }

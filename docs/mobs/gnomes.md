@@ -63,7 +63,7 @@ Only in Cogsdeep, where both also spawn naturally on the burrow's floor (up to 1
 - Tinkers don't actually tinker: they stand at their benches and wander.
 
 ## For developers
-- `entity/GnomeTinkerEntity` (`Merchant`, variants, names, home and range, `setTarget` refuses everything, `defend`, `ROLE_TAG`, one `KinStock` of `KinStockOffers.cogsdeep`), `entity/TinkerTrades`, `entity/ClockworkSentinelEntity` (an `IronGolemEntity` with its own goals: melee, wander, hunt monsters near home, group revenge; `provoke`, the `setTarget` filter, copper mending), `entity/TinkersLaw`.
+- `entity/GnomeTinkerEntity` (a `SettlementNpcEntity` with an `NpcMerchant`: variants, names, home and range, `setTarget` refuses everything, `defend`, `ROLE_TAG`, one `KinStock` of `KinStockOffers.cogsdeep`), `entity/TinkerTrades`, `entity/ClockworkSentinelEntity` (an `IronGolemEntity` and `SettlementGuard` with its own goals: melee, wander, hunt monsters near home, group revenge; `provoke`, the `setTarget` filter, copper mending), `entity/TinkersLaw`.
 - Renderers: `RacialHumanoidRenderer.gnome` (`Look GNOME`, scale 0.65, with a `NoseFeature` drawing `RaceFeatures.renderNose` from the skin's own texture) and `client/renderer/ClockworkSentinelRenderer` (`IronGolemEntityModel`, scale 0.75, crack and emissive eye layers).
 - `ModEntityTypes.GNOME_TINKER` (0.4 x 1.25) and `CLOCKWORK_SENTINEL` (1.05 x 2.0), `ModSpawns.canCogsdeepSpawn`, `loot_tables/entities/clockwork_sentinel.json`.
 - Devscript: `cogsdeep-check.txt` (trades, standing, a Sentinel against a zombie, the law).

@@ -1,9 +1,10 @@
 package mattonfire.dnd.entity;
 
-import net.minecraft.item.ItemConvertible;
+import static mattonfire.dnd.entity.NpcTrades.sell;
+import static mattonfire.dnd.entity.NpcTrades.buy;
+
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
 /**
@@ -17,9 +18,6 @@ import net.minecraft.village.TradeOfferList;
  * </ul>
  */
 public final class TinkerTrades {
-    private static final int MAX_USES = 12;
-    private static final int MERCHANT_XP = 2;
-    private static final float PRICE_MULTIPLIER = 0.05F;
 
     private TinkerTrades() {
     }
@@ -42,13 +40,5 @@ public final class TinkerTrades {
         offers.add(buy(Items.IRON_INGOT, 3));
         offers.add(buy(Items.REDSTONE, 12));
         return offers;
-    }
-
-    private static TradeOffer sell(int emeralds, ItemStack stack) {
-        return new TradeOffer(new ItemStack(Items.EMERALD, emeralds), stack, MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
-    }
-
-    private static TradeOffer buy(ItemConvertible item, int count) {
-        return new TradeOffer(new ItemStack(item, count), new ItemStack(Items.EMERALD), MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
     }
 }

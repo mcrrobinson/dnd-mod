@@ -1,0 +1,494 @@
+# The settlement merchants, guards and peaceful NPCs after the merge into NpcMerchant / SettlementNpcEntity /
+# GuardAnger (one run before and one after the refactor; the readouts should match).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/settlement-npcs-dedupe.txt
+# Expect in <run dir>/logs/latest.log, after each "[nm] ..." /say marker:
+# - merchants (innkeeper, Speaker, Fletcher, Elder, Tinker, Quartermaster, Pactbroker): "[DevScript] trade i: ..."
+#   lines from slots, with Neutral prices; after buying trade 0 its uses go up by one; with the home race the kin
+#   stock is listed after the normal offers at kin prices (the Quartermaster only serves a Half-Orc); the
+#   Pactbroker also shows the Wither piece to a Warlock; at Hostile no screen opens and the action bar says
+#   "... refuses to trade with you"
+# - struck peaceful NPCs (/damage ... by @s): the guard next to them has AngryAt = the player's UUID
+#   (wood elf -> Elf Warden, Elder -> Templar, Pactbroker -> Exile and "[BrimstoneSanctum] ... rebuked Dev",
+#   Tinker -> Clockwork Sentinel, orc warrior -> orc archer), the hobbit's has none
+# - Home / HomeRange / Variant NBT of a Tiefling Exile, Gnome Tinker and wood elf
+# - a chest opened next to a watching mountain dwarf: "[Grudges] dndclasses:mountain_dwarves OPEN ... GRUDGE" and
+#   its AngryAt
+wait 40
+closescreen
+include _reset.txt
+/dm off
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set 6000
+/effect give @s minecraft:resistance 900 4 true
+/kill @e[tag=nm]
+/fill 30 149 30 50 149 50 minecraft:stone
+/fill 30 150 30 50 156 50 minecraft:air
+/clear @s
+/tp @s 40.5 150 40.5 0 15
+wait 40
+/give @s minecraft:emerald 64
+hotbar 8
+sneak on
+wait 3
+
+# ---- Innkeeper (hobbits, Halfling kin)
+/rep @s dndclasses:hobbits set 0
+/summon dndclasses:innkeeper 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:innkeeper,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] innkeeper neutral
+slots
+trade 0
+wait 3
+slot 2 quick_move
+waitserver 5
+wait 5
+/say [nm] innkeeper bought
+slots
+closescreen
+wait 5
+/dndrace set @s halfling
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] innkeeper kin
+slots
+closescreen
+wait 5
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/rep @s dndclasses:hobbits set -600
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] innkeeper hostile
+actionbar
+closescreen
+/rep @s dndclasses:hobbits set 0
+/kill @e[tag=nm]
+wait 5
+
+# ---- Elf Speaker (Sylvan Court, Elf kin)
+/rep @s dndclasses:sylvan_court set 0
+/summon dndclasses:elf_speaker 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:elf_speaker,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] speaker neutral
+slots
+closescreen
+wait 5
+/dndrace set @s elf
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] speaker kin
+slots
+closescreen
+wait 5
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/rep @s dndclasses:sylvan_court set -600
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] speaker hostile
+actionbar
+closescreen
+/rep @s dndclasses:sylvan_court set 0
+/kill @e[tag=nm]
+wait 5
+
+# ---- Elf Fletcher
+/summon dndclasses:elf_fletcher 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:elf_fletcher,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] fletcher neutral
+slots
+trade 0
+wait 3
+slot 2 quick_move
+waitserver 5
+wait 5
+/say [nm] fletcher bought
+slots
+closescreen
+wait 5
+/dndrace set @s elf
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] fletcher kin
+slots
+closescreen
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/kill @e[tag=nm]
+wait 5
+
+# ---- Dragonborn Elder (Dragonsworn, Dragonborn kin)
+/rep @s dndclasses:dragonsworn set 0
+/summon dndclasses:dragonborn_elder 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:dragonborn_elder,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] elder neutral
+slots
+trade 0
+wait 3
+slot 2 quick_move
+waitserver 5
+wait 5
+/say [nm] elder bought
+slots
+closescreen
+wait 5
+/dndrace set @s dragonborn ember
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] elder kin
+slots
+closescreen
+wait 5
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/rep @s dndclasses:dragonsworn set -600
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] elder hostile
+actionbar
+closescreen
+/rep @s dndclasses:dragonsworn set 0
+/kill @e[tag=nm]
+wait 5
+
+# ---- Gnome Tinker (Tinkers' Guild, Gnome kin)
+/rep @s dndclasses:tinkers_guild set 0
+/summon dndclasses:gnome_tinker 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:gnome_tinker,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] tinker neutral
+slots
+trade 0
+wait 3
+slot 2 quick_move
+waitserver 5
+wait 5
+/say [nm] tinker bought
+slots
+closescreen
+wait 5
+/dndrace set @s gnome
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] tinker kin
+slots
+closescreen
+wait 5
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/rep @s dndclasses:tinkers_guild set -600
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] tinker hostile
+actionbar
+closescreen
+/rep @s dndclasses:tinkers_guild set 0
+/say [nm] tinker nbt
+/data get entity @e[type=dndclasses:gnome_tinker,limit=1,sort=nearest] Home
+/data get entity @e[type=dndclasses:gnome_tinker,limit=1,sort=nearest] HomeRange
+/execute if data entity @e[type=dndclasses:gnome_tinker,limit=1,sort=nearest] Variant
+/kill @e[tag=nm]
+wait 5
+
+# ---- Orc Quartermaster (Bloodtusk Horde, serves Half-Orcs)
+/rep @s dndclasses:bloodtusk_horde set 0
+/summon dndclasses:orc_quartermaster 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:orc_quartermaster,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] quartermaster human
+actionbar
+slots
+closescreen
+wait 5
+/dndrace set @s halforc
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] quartermaster kin
+slots
+trade 0
+wait 3
+slot 2 quick_move
+waitserver 5
+wait 5
+/say [nm] quartermaster bought
+slots
+closescreen
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/kill @e[tag=nm]
+wait 5
+
+# ---- Tiefling Pactbroker (Brimstone Covenant, Tiefling kin, Warlock / Alchemist stock)
+/rep @s dndclasses:brimstone_covenant set 0
+/summon dndclasses:tiefling_pactbroker 40.5 150 42.5
+waitserver 5
+/data merge entity @e[type=dndclasses:tiefling_pactbroker,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm"]}
+wait 5
+use
+waitserver 5
+wait 10
+/say [nm] pactbroker neutral
+slots
+trade 0
+wait 3
+slot 2 quick_move
+waitserver 5
+wait 5
+/say [nm] pactbroker bought
+slots
+closescreen
+wait 5
+/dndrace set @s tiefling
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] pactbroker kin
+slots
+closescreen
+wait 5
+/dndrace set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/dndclass set @s warlock
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] pactbroker warlock
+slots
+closescreen
+wait 5
+/dndclass set @s alchemist
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] pactbroker alchemist
+slots
+closescreen
+wait 5
+/dndclass set @s none
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+waitserver 2
+/rep @s dndclasses:brimstone_covenant set -600
+wait 3
+use
+waitserver 5
+wait 10
+/say [nm] pactbroker hostile
+actionbar
+closescreen
+/rep @s dndclasses:brimstone_covenant set 0
+/kill @e[tag=nm]
+wait 5
+sneak off
+
+# ---- Guards come to a struck NPC's defence (guards a few blocks off, out of the way)
+/summon dndclasses:wood_elf 34.5 150 34.5
+waitserver 5
+/data merge entity @e[type=dndclasses:wood_elf,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","g-elf"]}
+/summon dndclasses:elf_warden 36.5 150 34.5
+waitserver 5
+/data merge entity @e[type=dndclasses:elf_warden,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","gw-elf"]}
+/summon dndclasses:dragonborn_elder 34.5 150 38.5
+waitserver 5
+/data merge entity @e[type=dndclasses:dragonborn_elder,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","g-db"]}
+/summon dndclasses:dragonborn_templar 36.5 150 38.5
+waitserver 5
+/data merge entity @e[type=dndclasses:dragonborn_templar,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","gw-db"]}
+wait 5
+/say [nm] guards before
+/data get entity @e[tag=gw-elf,limit=1] AngryAt
+/data get entity @e[tag=gw-db,limit=1] AngryAt
+/damage @e[tag=g-elf,limit=1] 1 minecraft:player_attack by @s
+waitserver 5
+/damage @e[tag=g-db,limit=1] 1 minecraft:player_attack by @s
+waitserver 5
+wait 5
+/say [nm] guards elf+dragonborn struck
+/data get entity @e[tag=gw-elf,limit=1] AngryAt
+/data get entity @e[tag=gw-db,limit=1] AngryAt
+/data get entity @e[tag=g-elf,limit=1] Home
+/execute if data entity @e[tag=g-elf,limit=1] HomeRange
+/kill @e[tag=nm]
+wait 5
+/summon dndclasses:tiefling_pactbroker 34.5 150 34.5
+waitserver 5
+/data merge entity @e[type=dndclasses:tiefling_pactbroker,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","g-tf"]}
+/summon dndclasses:tiefling_exile 36.5 150 34.5
+waitserver 5
+/data merge entity @e[type=dndclasses:tiefling_exile,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","gw-tf"]}
+/summon dndclasses:gnome_tinker 34.5 150 38.5
+waitserver 5
+/data merge entity @e[type=dndclasses:gnome_tinker,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","g-gn"]}
+/summon dndclasses:clockwork_sentinel 36.5 150 38.5
+waitserver 5
+/data merge entity @e[type=dndclasses:clockwork_sentinel,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","gw-gn"]}
+wait 5
+/damage @e[tag=g-tf,limit=1] 1 minecraft:player_attack by @s
+waitserver 5
+/damage @e[tag=g-gn,limit=1] 1 minecraft:player_attack by @s
+waitserver 5
+wait 5
+/say [nm] guards tiefling+gnome struck
+/data get entity @e[tag=gw-tf,limit=1] AngryAt
+/data get entity @e[tag=gw-gn,limit=1] AngryAt
+/data get entity @e[tag=gw-tf,limit=1] Home
+/data get entity @e[tag=gw-tf,limit=1] HomeRange
+/execute if data entity @e[tag=gw-tf,limit=1] Variant
+/kill @e[tag=nm]
+wait 5
+/summon dndclasses:orc_warrior 34.5 150 34.5
+waitserver 5
+/data merge entity @e[type=dndclasses:orc_warrior,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","g-orc"]}
+/summon dndclasses:orc_archer 36.5 150 34.5
+waitserver 5
+/data merge entity @e[type=dndclasses:orc_archer,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","gw-orc"]}
+/summon dndclasses:hobbit 34.5 150 38.5
+waitserver 5
+/data merge entity @e[type=dndclasses:hobbit,limit=1,sort=nearest] {NoAI:1b,Tags:["nm","g-hb"]}
+wait 5
+/damage @e[tag=g-orc,limit=1] 1 minecraft:player_attack by @s
+waitserver 5
+/damage @e[tag=g-hb,limit=1] 1 minecraft:player_attack by @s
+waitserver 5
+wait 5
+/say [nm] guards orc+hobbit struck
+/data get entity @e[tag=g-orc,limit=1] AngryAt
+/data get entity @e[tag=gw-orc,limit=1] AngryAt
+/data get entity @e[tag=g-hb,limit=1] Home
+/kill @e[tag=nm]
+wait 5
+
+# ---- A mountain dwarf watches a chest being opened (its rules work anywhere)
+/rep @s dndclasses:mountain_dwarves set 0
+/setblock 40 150 42 minecraft:chest
+/summon dndclasses:mountain_dwarf 40.5 150 44.5
+waitserver 5
+/data merge entity @e[type=dndclasses:mountain_dwarf,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f],Tags:["nm","gw-dw"]}
+/tp @s 40.5 150 40.5 0 35
+wait 10
+/rep @s dndclasses:mountain_dwarves set 0
+/execute as @e[tag=gw-dw] at @s run tp @s ~ ~ ~ facing entity @p eyes
+waitserver 5
+wait 10
+use
+waitserver 5
+wait 10
+closescreen
+/say [nm] dwarf chest opened
+/data get entity @e[tag=gw-dw,limit=1] AngryAt
+/kill @e[tag=nm]
+/setblock 40 150 42 minecraft:air
+/clear @s
+/gamerule doDaylightCycle true
+quit

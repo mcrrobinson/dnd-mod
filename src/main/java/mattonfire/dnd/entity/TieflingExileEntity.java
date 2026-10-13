@@ -1,20 +1,16 @@
 package mattonfire.dnd.entity;
 
 import java.util.EnumSet;
-import java.util.UUID;
-import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -34,8 +30,6 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TimeHelper;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
@@ -50,16 +44,13 @@ import org.jetbrains.annotations.Nullable;
  * ticks. Fire immune, and a melee hit on any Tiefling sets the attacker alight (Hellish Rebuke). It turns on a
  * player who strikes a Tiefling, or whom it sees break the sanctum's law ({@link SanctumLaw}).
  */
-public class TieflingExileEntity extends TieflingEntity implements Angerable {
+public class TieflingExileEntity extends TieflingEntity implements GuardAnger {
     public static final int HUNT_RANGE = 24;
     public static final double FIREBALL_MIN = 6.0D;
     public static final double FIREBALL_MAX = 16.0D;
     public static final int FIREBALL_COOLDOWN = 4 * 20;
-    private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
 
-    private int angerTime;
-    @Nullable
-    private UUID angryAt;
+    private final GuardAnger.State anger = new GuardAnger.State();
     /** The age at which the next fireball is ready. */
     private int fireballReadyAge;
 
@@ -87,10 +78,8 @@ public class TieflingExileEntity extends TieflingEntity implements Angerable {
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
 
-        this.targetSelector.add(1, new RevengeGoal(this, TieflingEntity.class).setGroupRevenge());
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, MobEntity.class, 5, true, false,
-                entity -> hunts(entity) && this.nearHome(entity)));
+        SettlementGuard.addTargetGoals(this.targetSelector, this, TieflingEntity.class,
+                entity -> hunts(entity) && this.nearHome(entity, HUNT_RANGE));
     }
 
     /** The monsters Exiles hunt: not creepers, endermen, piglins of either kind, or a dormant mimic. */
@@ -98,10 +87,6 @@ public class TieflingExileEntity extends TieflingEntity implements Angerable {
         return entity instanceof Monster && !(entity instanceof CreeperEntity) && !(entity instanceof EndermanEntity)
                 && !(entity instanceof AbstractPiglinEntity) && !(entity instanceof ZombifiedPiglinEntity)
                 && !(entity instanceof MimicEntity mimic && mimic.isDormant());
-    }
-
-    private boolean nearHome(LivingEntity entity) {
-        return this.getHome() == null || entity.getBlockPos().isWithinDistance(this.getHome(), HUNT_RANGE);
     }
 
     @Override
@@ -115,30 +100,22 @@ public class TieflingExileEntity extends TieflingEntity implements Angerable {
         return data;
     }
 
-    /** This Exile saw {@code player} wrong the sanctum, or strike one of its folk, and turns on them. */
-    public void provoke(PlayerEntity player) {
-        if (!this.shouldAngerAt(player)) {
-            this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch() * 0.8F);
-        }
-        this.setAngryAt(player.getUuid());
-        this.chooseRandomAngerTime();
-        this.setTarget(player);
+    /** The Exile's shout as it turns on a player who wronged the sanctum or struck one of its folk. */
+    @Override
+    public void provokeShout() {
+        this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch() * 0.8F);
     }
 
-    // Exiles only turn on players who wronged them, and never on their own folk.
+    // Guards only turn on players who wronged them, and never on their own folk.
     @Override
     protected boolean mayTarget(LivingEntity target) {
-        if (target instanceof PlayerEntity player) {
-            return player == this.getAttacker() || this.shouldAngerAt(player);
-        }
-        return !(target instanceof TieflingEntity);
+        return SettlementGuard.mayTarget(this, target, TieflingEntity.class);
     }
 
     /** Angry at the player it holds a grudge against, and at anyone Hostile with the Brimstone Covenant, on sight. */
     @Override
     public boolean shouldAngerAt(LivingEntity entity) {
-        return Angerable.super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
-                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
+        return GuardAnger.super.shouldAngerAt(entity) || SettlementGuard.attacksOnSight(this, entity);
     }
 
     @Override
@@ -176,29 +153,8 @@ public class TieflingExileEntity extends TieflingEntity implements Angerable {
     // ---- Angerable ----
 
     @Override
-    public int getAngerTime() {
-        return this.angerTime;
-    }
-
-    @Override
-    public void setAngerTime(int angerTime) {
-        this.angerTime = angerTime;
-    }
-
-    @Nullable
-    @Override
-    public UUID getAngryAt() {
-        return this.angryAt;
-    }
-
-    @Override
-    public void setAngryAt(@Nullable UUID angryAt) {
-        this.angryAt = angryAt;
-    }
-
-    @Override
-    public void chooseRandomAngerTime() {
-        this.setAngerTime(ANGER_TIME.get(this.random));
+    public GuardAnger.State angerState() {
+        return this.anger;
     }
 
     @Override

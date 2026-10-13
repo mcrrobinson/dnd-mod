@@ -79,9 +79,8 @@ public final class Moonwell {
     }
 
     private static boolean atMoonwell(ServerWorld world, BlockPos pos) {
-        RacialHomes.Visit visit = RacialHomes.homeAt(world, pos);
-        return visit != null && visit.home() == RacialHomes.ELVEN_ENCLAVE
-                && visit.pieceAt(pos, ElvenEnclaveStructures.MOONWELL) != null;
+        RacialHomes.Visit visit = RacialHomes.visitOf(world, pos, RacialHomes.ELVEN_ENCLAVE);
+        return visit != null && visit.pieceAt(pos, ElvenEnclaveStructures.MOONWELL) != null;
     }
 
     private static TypedActionResult<ItemStack> draw(ServerPlayerEntity player, ItemStack stack, BlockPos pos) {

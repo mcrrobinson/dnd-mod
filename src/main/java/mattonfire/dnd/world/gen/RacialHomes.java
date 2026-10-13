@@ -9,6 +9,7 @@ import java.util.function.Consumer;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Reputation;
 import mattonfire.dnd.world.gen.burrow.CogsdeepStructures;
@@ -46,27 +47,27 @@ public final class RacialHomes {
     private static final Map<Identifier, Home> HOMES = new LinkedHashMap<>();
 
     public static final Home HOBBIT_VILLAGE = register(new Home(id("hobbit_village"), DndRace.HALFLING, Set.of(),
-            id("hobbits"), HobbitVillageStructures.INN, HomeBonuses::shireWelcomeBasket));
+            FactionIds.HOBBITS, HobbitVillageStructures.INN, HomeBonuses::shireWelcomeBasket));
     public static final Home DWARVEN_FORTRESS = register(new Home(id("dwarven_fortress"), DndRace.DWARF,
-            Set.of(), id("mountain_dwarves"), DwarvenFortressStructures.HALL, null));
+            Set.of(), FactionIds.MOUNTAIN_DWARVES, DwarvenFortressStructures.HALL, null));
     /** The hearth is the Speaker's Hall up in the Heart Tree. */
     public static final Home ELVEN_ENCLAVE = register(new Home(id("elven_enclave"), DndRace.ELF, Set.of(),
-            id("sylvan_court"), ElvenEnclaveStructures.HALL, null));
+            FactionIds.SYLVAN_COURT, ElvenEnclaveStructures.HALL, null));
     /** The hearth is the sanctum with the three breath altars. */
     public static final Home DRAGON_TEMPLE = register(new Home(id("dragon_temple"), DndRace.DRAGONBORN, Set.of(),
-            id("dragonsworn"), DragonTempleStructures.SANCTUM, null));
+            FactionIds.DRAGONSWORN, DragonTempleStructures.SANCTUM, null));
     /** The hearth is the Great Longhouse. Entering also rallies a Half-Orc ({@link HomeBonuses#RALLY_DURATION}). */
     public static final Home ORC_STRONGHOLD = register(new Home(id("orc_stronghold"), DndRace.HALFORC, Set.of(),
-            id("bloodtusk_horde"), OrcStrongholdStructures.LONGHOUSE, null));
+            FactionIds.BLOODTUSK_HORDE, OrcStrongholdStructures.LONGHOUSE, null));
     /**
      * The hearth is the Pact Hall. Inside the sanctum a Tiefling is immune to fire, and binds to a Refuge anchor
      * for free ({@link mattonfire.dnd.world.gen.sanctum.SanctumRefuge}).
      */
     public static final Home BRIMSTONE_SANCTUM = register(new Home(id("brimstone_sanctum"), DndRace.TIEFLING, Set.of(),
-            id("brimstone_covenant"), BrimstoneSanctumStructures.PACT_HALL, null));
+            FactionIds.BRIMSTONE_COVENANT, BrimstoneSanctumStructures.PACT_HALL, null));
     /** The hearth is the Commons at the foot of the spiral stair. */
     public static final Home COGSDEEP = register(new Home(id("cogsdeep"), DndRace.GNOME, Set.of(),
-            id("tinkers_guild"), CogsdeepStructures.COMMONS, null));
+            FactionIds.TINKERS_GUILD, CogsdeepStructures.COMMONS, null));
 
     private RacialHomes() {
     }
@@ -170,6 +171,13 @@ public final class RacialHomes {
             }
         }
         return null;
+    }
+
+    /** The settlement of {@code home} that holds {@code pos} (as {@link #homeAt} finds it), or null. */
+    @Nullable
+    public static Visit visitOf(ServerWorld world, BlockPos pos, Home home) {
+        Visit visit = homeAt(world, pos);
+        return visit != null && visit.home() == home ? visit : null;
     }
 
     /** The home {@code player} is standing in, if it's their own race's home; null otherwise. */

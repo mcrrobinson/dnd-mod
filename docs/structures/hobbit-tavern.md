@@ -111,7 +111,7 @@ What the spoils can contain:
   - `BountyRewards` tracks kills and structure visits and pays rewards.
   - `DungeonBounties` binds dungeon clearances (notice NBT `StartKey`, `Dimension`, `DungeonName` as text JSON, `DungeonTier`), completes them on `DungeonEvents.CLEARED` and scales the emeralds (`Bounty.emeraldsFor`). `Bounty.isAvailable(world)` keeps a clearance off the board when no structure of its theme is registered.
   - `AleItem` is the ale.
-- Innkeeper: `entity/InnkeeperEntity` (a `HobbitEntity` that implements `Merchant`) and `entity/InnkeeperTrades`.
+- Innkeeper: `entity/InnkeeperEntity` (a `HobbitEntity` with an `NpcMerchant`, plus the Room Key, the Honored round and bounty payouts) and `entity/InnkeeperTrades`.
 - Rooms:
   - `tavern/RoomKeyItem`: NBT `Inn` (name), `InnBox` (int[6], the inn's bounding box) and `Day` (`timeOfDay / 24000` when bought). The innkeeper stamps the key in `onSellingItem`, when it appears in the trade output slot.
   - `InnkeeperEntity.setInn(BlockBox, name)` sets the inn its keys open; `InnPiece` passes its bounding box and "Green Dragon". An innkeeper without one (spawn egg, other settlements) uses a box around its home: 8 blocks each way across, 3 down, 8 up. Settlements with their own inns should call `setInn`.

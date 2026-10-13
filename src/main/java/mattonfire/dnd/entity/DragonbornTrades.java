@@ -1,11 +1,13 @@
 package mattonfire.dnd.entity;
 
+import static mattonfire.dnd.entity.NpcTrades.sell;
+import static mattonfire.dnd.entity.NpcTrades.buy;
+
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
@@ -19,7 +21,6 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 import net.minecraft.world.gen.structure.Structure;
 
@@ -37,9 +38,6 @@ import net.minecraft.world.gen.structure.Structure;
  * </ul>
  */
 public final class DragonbornTrades {
-    private static final int MAX_USES = 12;
-    private static final int MERCHANT_XP = 2;
-    private static final float PRICE_MULTIPLIER = 0.05F;
     /** The Elder's Smite Dragons book (of 5 levels). */
     public static final int SMITE_LEVEL = 3;
     public static final TagKey<Structure> DRAGON_LAIR_MAPS = TagKey.of(RegistryKeys.STRUCTURE,
@@ -83,14 +81,5 @@ public final class DragonbornTrades {
         MapState.addDecorationsNbt(map, target, "+", MapIcon.Type.RED_X);
         map.setCustomName(Text.translatable(name));
         return map;
-    }
-
-    private static TradeOffer sell(int emeralds, ItemStack stack) {
-        return new TradeOffer(new ItemStack(Items.EMERALD, emeralds), stack, MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
-    }
-
-    private static TradeOffer buy(ItemConvertible item, int count, int emeralds) {
-        return new TradeOffer(new ItemStack(item, count), new ItemStack(Items.EMERALD, emeralds), MAX_USES, MERCHANT_XP,
-                PRICE_MULTIPLIER);
     }
 }

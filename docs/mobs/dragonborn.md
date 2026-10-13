@@ -60,7 +60,7 @@ Only in Dragon Temples, where Templars also spawn naturally on the terrace (up t
 - Templars don't throw their tridents.
 
 ## For developers
-- `entity/DragonbornEntity` (base: variant, `getAncestry`, home and ranges, defence), `DragonbornTemplarEntity` (`Angerable`, `BreathGoal`, `breathe`), `DragonbornElderEntity` (`Merchant`, `ELDER_TAG`), `DragonbornTrades`, kin stock through `KinStock` / `KinStockOffers.dragonTemple`, `TempleLaw`.
+- `entity/DragonbornEntity` (base, a `SettlementNpcEntity`: variant, `getAncestry`, home and ranges, defence), `DragonbornTemplarEntity` (`GuardAnger`, `BreathGoal`, `breathe`), `DragonbornElderEntity` (`NpcMerchant`, `ELDER_TAG`), `DragonbornTrades`, kin stock through `KinStock` / `KinStockOffers.dragonTemple`, `TempleLaw`.
 - The breath visuals reuse `BreathWeapon.sendVisuals` and `BreathWeapon.playSound` (now public and taking any entity). Logs `[DragonTemple] Templar <name> breathed <ancestry> at <target> (<n> hit)`.
 - Renderer: `RacialHumanoidRenderer.dragonborn` / `dragonbornElder` (`Look DRAGONBORN`); the head feature uses each NPC's ancestry.
 - `ModSpawns.canTemplarSpawn` (in a temple piece, at most 7 within 48 blocks).

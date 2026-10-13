@@ -53,7 +53,8 @@ import org.lwjgl.glfw.GLFW;
  * replaces the prompt. While a prompt is up it takes the panel over any other roll.
  */
 public final class DiceRollHud {
-    private static final Identifier D20_TEXTURE = new Identifier(DnDClasses.MOD_ID, "textures/gui/d20.png");
+    /** The die face sheet, shared with {@link SaveLaneHud}. */
+    static final Identifier D20_TEXTURE = new Identifier(DnDClasses.MOD_ID, "textures/gui/d20.png");
     private static final int ROLL_TICKS = 14;
     private static final int SHOW_TICKS = 60;
     private static final int FADE_TICKS = 10;
@@ -185,12 +186,7 @@ public final class DiceRollHud {
             tumbleFace = next >= tumbleFace ? next + 1 : next; // never the same face twice
         }
         if (age == ROLL_TICKS && !roll.secret()) {
-            play(client, switch (roll.outcome()) {
-                case SUCCESS -> ModSounds.DICE_SUCCESS;
-                case FAILURE -> ModSounds.DICE_FAILURE;
-                case CRITICAL -> ModSounds.DICE_CRITICAL;
-                case FUMBLE -> ModSounds.DICE_FUMBLE;
-            }, 1.0f);
+            play(client, roll.outcome().sound(), 1.0f);
         }
         if (age > ROLL_TICKS + SHOW_TICKS) {
             roll = null;
@@ -199,15 +195,6 @@ public final class DiceRollHud {
 
     private static void play(MinecraftClient client, SoundEvent sound, float pitch) {
         client.getSoundManager().play(PositionedSoundInstance.master(sound, pitch));
-    }
-
-    private static int color(D20.Outcome outcome) {
-        return switch (outcome) {
-            case SUCCESS -> 0x55FF55;
-            case FAILURE -> 0xFF6655;
-            case CRITICAL -> 0xFFD23F;
-            case FUMBLE -> 0xC02030;
-        };
     }
 
     /** Draws the current roll; also called by {@link DialogueScreen} so rolls show over its panel. */
@@ -327,7 +314,7 @@ public final class DiceRollHud {
         text.drawWithShadow(matrices, sum, textLeft, top + 12, 0xD0D0D0 | alpha);
         if (!rolling) {
             text.drawWithShadow(matrices, outcome, textLeft, top + 23,
-                    (roll.secret() ? 0xD0D0D0 : color(roll.outcome())) | alpha);
+                    (roll.secret() ? 0xD0D0D0 : roll.outcome().color()) | alpha);
         }
         RenderSystem.disableBlend();
     }

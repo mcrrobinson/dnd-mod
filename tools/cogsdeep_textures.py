@@ -319,7 +319,9 @@ def line(c, x0, y0, x1, y1, color):
 
 
 def repeater(state):
-    """state: 'standby', 'pulling_0..2', 'arrow' or 'firework'. Drawn bottom-left (butt) to top-right (bow)."""
+    """state: 'standby', 'pulling_0..2', 'arrow' or 'firework'. Drawn bottom-left (butt) to top-right (bow), then
+    mirrored: the vanilla crossbow's item model (the parent, with its hand transforms) expects the bow at the top
+    left and the butt at the bottom right, so drawn the other way round it's held sideways across the body."""
     c = Canvas(16, 16)
     # The stock, diagonal, with a darker outline.
     line(c, 2, 13, 11, 4, WOOD_DARK)
@@ -358,6 +360,7 @@ def repeater(state):
     line(c, 10, 4, tip_a[0], tip_a[1] + 1, darker(BRASS, 0.8))
     c.put(tip_a[0], tip_a[1], darker(BRASS, 0.6))
     c.put(tip_b[0], tip_b[1], darker(BRASS, 0.6))
+    c.px = [row[::-1] for row in c.px]
     return c
 
 

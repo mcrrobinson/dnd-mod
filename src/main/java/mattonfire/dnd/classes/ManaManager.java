@@ -23,10 +23,6 @@ public class ManaManager {
         return getMana(player) >= DnDClasses.MANA_ICONS;
     }
 
-    public static void resetMana(ServerPlayerEntity player) {
-        setMana(player, 0);
-    }
-
     public static void regenerateMana(ServerPlayerEntity player) {
         int currentMana = getMana(player);
         if (currentMana < DnDClasses.MANA_ICONS) {

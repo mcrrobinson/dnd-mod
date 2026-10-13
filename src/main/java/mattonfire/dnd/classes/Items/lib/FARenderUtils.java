@@ -98,13 +98,4 @@ public final class FARenderUtils {
         }
     }
 
-    /**
-     * Toggle arm & sleeve visibility on the PlayerEntityModel.
-     */
-    public static <T extends LivingEntity> void setArmsVisibility(PlayerEntityModel<T> model, boolean visible) {
-        model.rightArm.visible = visible;
-        model.rightSleeve.visible = visible;
-        model.leftArm.visible = visible;
-        model.leftSleeve.visible = visible;
-    }
 }

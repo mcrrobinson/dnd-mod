@@ -12,12 +12,18 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.Tameable;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.RaycastContext;
 
 /** Shared bits for skills: finding targets, effects and temporary summons. */
 public final class SkillHelpers {
@@ -72,6 +78,23 @@ public final class SkillHelpers {
         entity.addCommandTag(SUMMON_TAG);
         SUMMONS.put(entity.getUuid(), world.getTime() + lifetimeTicks);
         world.spawnEntity(entity);
+    }
+
+    /** The first living non-player, non-pet in the crosshair within range, not behind blocks. */
+    public static LivingEntity lookTarget(PlayerEntity player, double range) {
+        Vec3d eye = player.getEyePos();
+        Vec3d end = eye.add(player.getRotationVec(1.0F).multiply(range));
+        HitResult block = player.getWorld().raycast(new RaycastContext(eye, end, RaycastContext.ShapeType.COLLIDER,
+                RaycastContext.FluidHandling.NONE, player));
+        if (block.getType() != HitResult.Type.MISS)
+            end = block.getPos();
+        Box area = player.getBoundingBox().stretch(end.subtract(eye)).expand(1.0);
+        UUID owner = player.getUuid();
+        EntityHitResult hit = ProjectileUtil.raycast(player, eye, end, area,
+                e -> e instanceof LivingEntity && e.isAlive() && !(e instanceof PlayerEntity)
+                        && !(e instanceof Tameable t && owner.equals(t.getOwnerUuid())),
+                eye.squaredDistanceTo(end));
+        return hit != null ? (LivingEntity) hit.getEntity() : null;
     }
 
     /** Living hostile mobs within the radius. */

@@ -43,7 +43,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 
 @Environment(EnvType.CLIENT)
 public class DndClassesClient implements ClientModInitializer {
-    public static final MinecraftClient MC = MinecraftClient.getInstance();
     /** The power-up key (Z); while Downed, holding it gives up. */
     public static KeyBinding POWER_UP_KEY;
 

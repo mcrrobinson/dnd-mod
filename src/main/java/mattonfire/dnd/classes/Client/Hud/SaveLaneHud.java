@@ -6,11 +6,9 @@ import java.util.Locale;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 
-import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Abilities.Advantage;
 import mattonfire.dnd.classes.Abilities.RollKind;
 import mattonfire.dnd.classes.Config.SaveRollsMode;
-import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
@@ -45,7 +43,7 @@ import net.minecraft.util.math.RotationAxis;
  * </ul>
  */
 public final class SaveLaneHud {
-    private static final Identifier D20_TEXTURE = new Identifier(DnDClasses.MOD_ID, "textures/gui/d20.png");
+    private static final Identifier D20_TEXTURE = DiceRollHud.D20_TEXTURE;
     static final int MAX_ROWS = 3;
     private static final int SPIN_TICKS = 6;
     private static final int HOLD_TICKS = 40;
@@ -88,7 +86,7 @@ public final class SaveLaneHud {
         boolean natural = roll.natural() == 20 || roll.natural() == 1;
         if (SaveRollsMode.current() == SaveRollsMode.OFF) {
             if (natural && !roll.secret()) {
-                play(client, sound(roll.outcome()), 1.0f);
+                play(client, roll.outcome().sound(), 1.0f);
             }
             return;
         }
@@ -99,7 +97,7 @@ public final class SaveLaneHud {
                 row.count += count;
                 row.age = SPIN_TICKS; // refresh without spinning again
                 if (!roll.secret()) {
-                    play(client, sound(roll.outcome()), natural ? 1.0f : QUIET);
+                    play(client, roll.outcome().sound(), natural ? 1.0f : QUIET);
                 }
                 return;
             }
@@ -122,32 +120,14 @@ public final class SaveLaneHud {
             row.age++;
             if (row.age == SPIN_TICKS && !row.roll.secret()) {
                 boolean natural = row.roll.natural() == 20 || row.roll.natural() == 1;
-                play(client, sound(row.roll.outcome()), natural ? 1.0f : QUIET);
+                play(client, row.roll.outcome().sound(), natural ? 1.0f : QUIET);
             }
         }
         ROWS.removeIf(row -> row.age > SPIN_TICKS + HOLD_TICKS + FADE_TICKS);
     }
 
-    private static SoundEvent sound(D20.Outcome outcome) {
-        return switch (outcome) {
-            case SUCCESS -> ModSounds.DICE_SUCCESS;
-            case FAILURE -> ModSounds.DICE_FAILURE;
-            case CRITICAL -> ModSounds.DICE_CRITICAL;
-            case FUMBLE -> ModSounds.DICE_FUMBLE;
-        };
-    }
-
     private static void play(MinecraftClient client, SoundEvent sound, float volume) {
         client.getSoundManager().play(PositionedSoundInstance.master(sound, 1.0f, volume));
-    }
-
-    private static int color(D20.Outcome outcome) {
-        return switch (outcome) {
-            case SUCCESS -> 0x55FF55;
-            case FAILURE -> 0xFF6655;
-            case CRITICAL -> 0xFFD23F;
-            case FUMBLE -> 0xC02030;
-        };
     }
 
     /** "DEX save" for a plain save, "Fire breath (DEX)" for a named one. */
@@ -229,7 +209,7 @@ public final class SaveLaneHud {
             if (compact < NO_DETAIL && !detail.getString().isEmpty()) {
                 tail.append(" ").append(detail);
             }
-            line.append(tail.styled(s -> s.withBold(false).withColor(color(roll.outcome()))));
+            line.append(tail.styled(s -> s.withBold(false).withColor(roll.outcome().color())));
         }
         if (count > 1) {
             line.append(Text.literal(" \u00d7" + count).styled(s -> s.withBold(true).withColor(0xFFD23F)));

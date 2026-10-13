@@ -39,10 +39,6 @@ public class FastBrewingStandBlockEntity extends LockableContainerBlockEntity im
     private static final int[] TOP_SLOTS = new int[] { 3 };
     private static final int[] BOTTOM_SLOTS = new int[] { 0, 1, 2, 3 };
     private static final int[] SIDE_SLOTS = new int[] { 0, 1, 2, 4 };
-    public static final int MAX_FUEL_USES = 20;
-    public static final int BREW_TIME_PROPERTY_INDEX = 0;
-    public static final int FUEL_PROPERTY_INDEX = 1;
-    public static final int PROPERTY_COUNT = 2;
     private DefaultedList<ItemStack> inventory;
     int brewTime;
     private boolean[] slotsEmptyLastTick;

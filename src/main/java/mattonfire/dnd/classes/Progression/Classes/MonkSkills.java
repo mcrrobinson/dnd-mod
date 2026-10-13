@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.lookTarget;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.Tameable;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -33,7 +33,6 @@ import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -44,11 +43,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class MonkSkills extends ClassSkills {
@@ -398,28 +393,6 @@ public class MonkSkills extends ClassSkills {
             Vec3d pos = from.add(step.multiply(points == 0 ? 0 : i / (double) points)).add(0, 1, 0);
             world.spawnParticles(ParticleTypes.END_ROD, pos.x, pos.y, pos.z, 1, 0.05, 0.1, 0.05, 0);
         }
-    }
-
-    /** Whether the player is mid Flurry Rush. */
-    public static boolean isRushing(PlayerEntity player) {
-        return RUSHES.containsKey(player.getUuid());
-    }
-
-    /** The first living non-player, non-pet in the crosshair within range, not behind blocks. */
-    private static LivingEntity lookTarget(PlayerEntity player, double range) {
-        Vec3d eye = player.getEyePos();
-        Vec3d end = eye.add(player.getRotationVec(1.0F).multiply(range));
-        HitResult block = player.getWorld().raycast(new RaycastContext(eye, end, RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE, player));
-        if (block.getType() != HitResult.Type.MISS)
-            end = block.getPos();
-        Box area = player.getBoundingBox().stretch(end.subtract(eye)).expand(1.0);
-        UUID owner = player.getUuid();
-        EntityHitResult hit = ProjectileUtil.raycast(player, eye, end, area,
-                e -> e instanceof LivingEntity && e.isAlive() && !(e instanceof PlayerEntity)
-                        && !(e instanceof Tameable t && owner.equals(t.getOwnerUuid())),
-                eye.squaredDistanceTo(end));
-        return hit != null ? (LivingEntity) hit.getEntity() : null;
     }
 
     @Override

@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import io.netty.buffer.Unpooled;
-import mattonfire.dnd.classes.DnDClasses; // For DnDClasses.WARLOCK_FIREBREATH
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Druid;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
@@ -288,7 +288,7 @@ public class PowerUpEffect {
                 break;
             case WARLOCK:
                 // Breathe fire; duration, reach, damage and burn time scale with the rank.
-                DnDClasses.WARLOCK_FIREBREATH.put(player.getUuid(),
+                mattonfire.dnd.classes.Warlock.FIREBREATH_UNTIL.put(player.getUuid(),
                         player.getWorld().getTime() + WarlockSkills.FIRE_BREATH.ticks(player, "Duration"));
 
                 break;

@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.lookTarget;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +30,6 @@ import net.minecraft.entity.damage.DamageTypes;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.DamageTypeTags;
@@ -37,11 +37,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.hit.EntityHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 
 public class WarlockSkills extends ClassSkills {
@@ -278,23 +275,6 @@ public class WarlockSkills extends ClassSkills {
         int now = player.getServer().getTicks();
         LUCK_READY.values().removeIf(t -> now >= t);
         WARD_READY.values().removeIf(t -> now >= t);
-    }
-
-    /** The first living non-player, non-pet in the crosshair within range, not behind blocks. */
-    private static LivingEntity lookTarget(PlayerEntity player, double range) {
-        Vec3d eye = player.getEyePos();
-        Vec3d end = eye.add(player.getRotationVec(1.0F).multiply(range));
-        HitResult block = player.getWorld().raycast(new RaycastContext(eye, end, RaycastContext.ShapeType.COLLIDER,
-                RaycastContext.FluidHandling.NONE, player));
-        if (block.getType() != HitResult.Type.MISS)
-            end = block.getPos();
-        Box area = player.getBoundingBox().stretch(end.subtract(eye)).expand(1.0);
-        UUID owner = player.getUuid();
-        EntityHitResult hit = ProjectileUtil.raycast(player, eye, end, area,
-                e -> e instanceof LivingEntity && e.isAlive() && !(e instanceof PlayerEntity)
-                        && !(e instanceof Tameable t && owner.equals(t.getOwnerUuid())),
-                eye.squaredDistanceTo(end));
-        return hit != null ? (LivingEntity) hit.getEntity() : null;
     }
 
     private static void beamParticles(ServerWorld world, Vec3d from, Vec3d to) {

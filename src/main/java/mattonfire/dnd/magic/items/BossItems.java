@@ -443,10 +443,6 @@ public final class BossItems {
                 true);
     }
 
-    public static boolean isRingHidden(PlayerEntity player) {
-        return RING_HIDDEN.containsKey(player.getUuid());
-    }
-
     /** Mobs chasing a hidden Ring wearer from more than 4 blocks away lose them. */
     private static void loseTrack(ServerPlayerEntity player) {
         for (MobEntity mob : player.getWorld().getEntitiesByClass(MobEntity.class,

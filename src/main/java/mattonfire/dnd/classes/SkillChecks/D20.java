@@ -12,6 +12,7 @@ import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 import io.netty.buffer.Unpooled;
+import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
@@ -27,6 +28,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.sound.SoundEvent;
 import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableTextContent;
 import net.minecraft.util.Identifier;
@@ -78,6 +80,26 @@ public final class D20 {
         CRITICAL,
         /** Natural 1. */
         FUMBLE;
+
+        /** The HUD colour for this outcome (the dice HUD and the save lane). */
+        public int color() {
+            return switch (this) {
+                case SUCCESS -> 0x55FF55;
+                case FAILURE -> 0xFF6655;
+                case CRITICAL -> 0xFFD23F;
+                case FUMBLE -> 0xC02030;
+            };
+        }
+
+        /** The dice sound for this outcome. */
+        public SoundEvent sound() {
+            return switch (this) {
+                case SUCCESS -> ModSounds.DICE_SUCCESS;
+                case FAILURE -> ModSounds.DICE_FAILURE;
+                case CRITICAL -> ModSounds.DICE_CRITICAL;
+                case FUMBLE -> ModSounds.DICE_FUMBLE;
+            };
+        }
 
         public boolean succeeded() {
             return this == SUCCESS || this == CRITICAL;

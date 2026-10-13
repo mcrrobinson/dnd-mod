@@ -2,7 +2,6 @@ package mattonfire.dnd.classes;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,8 +50,6 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 
 public class DnDClasses implements ModInitializer {
-
-        public static final Map<UUID, Long> WARLOCK_FIREBREATH = new HashMap<>();
 
         public static int MANA_FULL_SECONDS = 18; // Should be 2 seconds per increment
         public static int MANA_ICONS = 9;

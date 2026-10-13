@@ -1,0 +1,67 @@
+# Smoke check for the tick-efficiency review: the server tick handlers and client HUD paths it touched still
+# behave. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/tick-efficiency-smoke.txt
+# Expect in latest.log: no exceptions; Druid health/velocity lines (Druid pulled down under water without
+#  Tidecaller), Featherfall boots give Slow Falling mid-fall (ActiveEffects line), the Cleric keeps Haste,
+#  the Elf's Keen Senses outline and the obstacle hint render without errors.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamemode survival
+/difficulty normal
+/gamerule naturalRegeneration false
+/effect give @s dndclasses:invulnerability 1
+wait 30
+# Druid on land first (nothing happens), then under water: pulled to the bottom while submerged
+/fill 0 100 0 4 100 4 stone
+/fill 10 100 10 14 100 14 stone
+/fill 10 101 10 14 104 14 water
+/dndclass set @s druid
+/clear @s dndclasses:class_guidebook
+/tp @s 2 101 2 0 0
+wait 200
+/data get entity @s Motion
+/tp @s 12 103 12 0 0
+wait 60
+/data get entity @s Motion
+/data get entity @s Health
+wait 100
+# Featherfall: boots and a drop, Slow Falling mid-air
+/dndclass set @s none
+/item replace entity @s armor.feet with diamond_boots{Enchantments:[{id:"dndclasses:featherfall",lvl:3s}]}
+/effect give @s instant_health 1 10
+wait 20
+/tp @s 2 126 2 0 90
+wait 30
+/data get entity @s ActiveEffects
+wait 120
+/data get entity @s Health
+/item replace entity @s armor.feet with air
+# Cleric: Haste stays up
+/dndclass set @s cleric
+/clear @s dndclasses:class_guidebook
+/tp @s 2 101 2 0 0
+wait 100
+/data get entity @s ActiveEffects
+# Bard companion expiry sweep: a tagged wolf whose "until" has passed loses its tags
+/dndclass set @s bard
+/clear @s dndclasses:class_guidebook
+/summon minecraft:wolf 3 101 3 {Tags:["perftest","dnd_bard_companion:x","dnd_bard_companion_until:1"]}
+wait 120
+/data get entity @e[tag=perftest,limit=1] Tags
+/kill @e[tag=perftest]
+# Elf sneaking by a frozen zombie: Keen Senses outline path
+/dndclass set @s none
+/dndrace set @s elf
+wait 40
+closescreen
+/summon minecraft:zombie 4 101 4 {NoAI:1b,Tags:["perftest"]}
+/tp @s 2 101 2 45 10
+sneak on
+wait 60
+screenshot tick-efficiency-keen
+sneak off
+/kill @e[tag=perftest]
+wait 200
+quit

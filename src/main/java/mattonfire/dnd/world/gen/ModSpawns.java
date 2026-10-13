@@ -143,6 +143,14 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.TIEFLING_EXILE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canExileSpawn);
 
+        // Gnome Tinkers and Clockwork Sentinels only spawn inside Cogsdeep (the structure's spawn_overrides), on
+        // the burrow's floor in its rooms (not the stair or the observatory), at most MAX_GNOMES_NEARBY of them
+        // within 48 blocks.
+        SpawnRestriction.register(ModEntityTypes.GNOME_TINKER, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canCogsdeepSpawn);
+        SpawnRestriction.register(ModEntityTypes.CLOCKWORK_SENTINEL, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canCogsdeepSpawn);
+
         // Beholders only live in their underground lairs (the structure's spawn_overrides), which
         // get a new one now and then once the old one's dead.
         SpawnRestriction.register(ModEntityTypes.BEHOLDER, SpawnRestriction.Location.ON_GROUND,
@@ -237,6 +245,36 @@ public class ModSpawns {
         double wall = mattonfire.dnd.world.gen.stronghold.OrcStrongholdStructure.PALISADE - 1;
         return dx * dx + dz * dz <= wall * wall
                 && world.getEntitiesByClass(mattonfire.dnd.entity.OrcEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_ORCS_NEARBY;
+    }
+
+    public static final int MAX_GNOMES_NEARBY = 10;
+
+    private static <T extends MobEntity> boolean canCogsdeepSpawn(EntityType<T> type, ServerWorldAccess world,
+                                                                 SpawnReason reason, BlockPos pos, Random random) {
+        if (!MobEntity.canMobSpawn(type, world, reason, pos, random)) {
+            return false;
+        }
+        if (reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION) {
+            return true;
+        }
+        StructureStart start = world.toServerWorld().getStructureAccessor().getStructureContaining(pos,
+                mattonfire.dnd.world.gen.burrow.CogsdeepStructures.KEY);
+        if (!start.hasChildren()) {
+            return false;
+        }
+        boolean inRoom = false;
+        for (net.minecraft.structure.StructurePiece piece : start.getChildren()) {
+            if (piece instanceof mattonfire.dnd.world.gen.burrow.CogsdeepPiece room
+                    && !(piece instanceof mattonfire.dnd.world.gen.burrow.ObservatoryPiece)
+                    && !(piece instanceof mattonfire.dnd.world.gen.burrow.ShaftPiece)
+                    && piece.getBoundingBox().contains(pos) && pos.getY() == room.center().getY()) {
+                inRoom = true;
+                break;
+            }
+        }
+        return inRoom && world.getEntitiesByClass(MobEntity.class, new Box(pos).expand(48.0D),
+                e -> e instanceof mattonfire.dnd.entity.GnomeTinkerEntity || e instanceof mattonfire.dnd.entity.ClockworkSentinelEntity)
+                .size() < MAX_GNOMES_NEARBY;
     }
 
     public static final int MAX_EXILES_NEARBY = 8;

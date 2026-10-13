@@ -197,6 +197,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.DRAGONBORN_ELDER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::dragonbornElder);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.TIEFLING_EXILE, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::tiefling);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.TIEFLING_PACTBROKER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::pactbroker);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GNOME_TINKER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::gnome);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.CLOCKWORK_SENTINEL, mattonfire.dnd.client.renderer.ClockworkSentinelRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_WARRIOR, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orc);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_ARCHER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orc);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ORC_QUARTERMASTER, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::orcQuartermaster);
@@ -235,6 +237,7 @@ public class DndClassesClient implements ClientModInitializer {
         StabiliseClient.register();
         mattonfire.dnd.classes.Client.Hud.SaveLaneHud.register();
         mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();
+        mattonfire.dnd.classes.Client.Hud.GogglesHud.register();
         SearchKeyClient.register();
         GrappleClient.register();
         mattonfire.dnd.classes.Client.Render.PerceivedMarks.register();
@@ -436,6 +439,23 @@ public class DndClassesClient implements ClientModInitializer {
         ModelPredicateProviderRegistry.register(mattonfire.dnd.classes.Registry.ModItems.ELVEN_LONGBOW,
                 new Identifier("pulling"), (stack, world, entity, seed) -> entity != null && entity.isUsingItem()
                         && entity.getActiveItem() == stack ? 1.0F : 0.0F);
+        // Gnomish Repeater: the vanilla crossbow's pull/pulling/charged/firework model predicates
+        net.minecraft.item.Item repeater = mattonfire.dnd.classes.Registry.ModItems.GNOMISH_REPEATER;
+        ModelPredicateProviderRegistry.register(repeater, new Identifier("pull"), (stack, world, entity, seed) -> {
+            if (entity == null || net.minecraft.item.CrossbowItem.isCharged(stack) || entity.getActiveItem() != stack) {
+                return 0.0F;
+            }
+            return (float) (stack.getMaxUseTime() - entity.getItemUseTimeLeft())
+                    / (float) net.minecraft.item.CrossbowItem.getPullTime(stack);
+        });
+        ModelPredicateProviderRegistry.register(repeater, new Identifier("pulling"), (stack, world, entity, seed) ->
+                entity != null && entity.isUsingItem() && entity.getActiveItem() == stack
+                        && !net.minecraft.item.CrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
+        ModelPredicateProviderRegistry.register(repeater, new Identifier("charged"), (stack, world, entity, seed) ->
+                net.minecraft.item.CrossbowItem.isCharged(stack) ? 1.0F : 0.0F);
+        ModelPredicateProviderRegistry.register(repeater, new Identifier("firework"), (stack, world, entity, seed) ->
+                net.minecraft.item.CrossbowItem.isCharged(stack)
+                        && net.minecraft.item.CrossbowItem.hasProjectile(stack, net.minecraft.item.Items.FIREWORK_ROCKET) ? 1.0F : 0.0F);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(
                 mattonfire.dnd.entity.ModEntityTypes.SLING_STONE,
                 net.minecraft.client.render.entity.FlyingItemEntityRenderer::new);

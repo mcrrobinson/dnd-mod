@@ -108,6 +108,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Dwarven Fortresses](docs/structures/dwarven-fortresses.md) carved into mountainsides (`dndclasses:dwarven_fortress`).
 - [Orc Strongholds](docs/structures/orc-strongholds.md): palisaded warcamps in the badlands, hostile except to Half-Orcs, with a War Chief boss and the Trial of Strength (`dndclasses:orc_stronghold`).
 - [Brimstone Sanctums](docs/structures/brimstone-sanctums.md): walled Tiefling chapel-towns on pillared platforms in the Nether's crimson forests and soul sand valleys (`dndclasses:brimstone_sanctum`).
+- [Cogsdeep](docs/structures/cogsdeep.md): gnome burrows under forests and meadows, reached down a spiral stair from a copper-domed observatory, with workshops, a clocktower and a lush grotto (`dndclasses:cogsdeep`).
 - [Dungeons](docs/structures/dungeons.md): underground Crypts, Goblin Warrens and Dwarven Ruins with a planned route of rooms, a boss room and a vault (`/locate structure #dndclasses:dungeons`). Rooms seal and fill with monsters scaled to your party, up to a Lich, the Goblin Warlord or the Beholder; see [Dungeon encounters](docs/systems/dungeon-encounters.md).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.
 - Beholder Lairs: sealed domed caverns deep in the deepslate, reached by a spiral stair (`dndclasses:beholder_lair`). See [Beholder](docs/bosses/beholder.md).

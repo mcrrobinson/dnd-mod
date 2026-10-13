@@ -1,0 +1,154 @@
+# Cogsdeep: the Gnome Tinker's trades and kin stock, Tinker's Goggles, the Clockwork Sentinel against a zombie,
+# the Tinkers' Guild law and kin trust, and the Gnome's hearth.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/cogsdeep-check.txt (the second half needs a burrow
+# near 30000 30000; cogsdeep-survey.txt finds one there in the dev world).
+# Checks, in <run dir>/logs/latest.log:
+# - trades: as a Human the Tinker lists 15 offers, no Repeater or Goggles; as a Gnome 17, the last two the Gnomish
+#   Repeater (14 emeralds, 10 at kin price) and Tinker's Goggles (10, 7), every price lower (kin -25% plus Honored)
+# - rep: "The Tinkers' Guild" Friendly (150) for a Human, Honored (450) for a Gnome
+# - goggles: "[Goggles] 0, 150, 3: 2 kinds, 8x minecraft:diamond, 12x minecraft:redstone" for the chest, the
+#   furnace's three stacks, "1 kinds, 9x minecraft:copper_ingot" for the hopper, then "sealed" for an unopened loot
+#   chest; screenshots cd-goggles-*
+# - repeater: screenshots cd-repeater-loading, -loaded (first person) and -aim (third person); "Test passed, count: 3"
+#   arrows from one shot (Multishot)
+# - sentinel: "[DevScript] target" lines with the zombie as the Sentinel's target, then "Test failed" for the
+#   zombie (it's dead) and the Sentinel's Health below 40
+# - law: "[Grudges] dndclasses:tinkers_guild OPEN at ... WARNING" for a Gnome (action bar "The Sentinel's gears
+#   grind ..."), then "... GRUDGE" for a Human, and the Sentinel's target is Dev
+# - hearth: /dndhome says Dev is in their own home's hearth (Cogsdeep), and "Test passed" for Regeneration
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+# A class, so the class picker doesn't open (and pause the game) once a race is set.
+/dndclass set @s wizard
+/clear @s dndclasses:class_guidebook
+wait 20
+closescreen
+/dm off
+/gamemode survival
+/clear @s
+/effect give @s resistance 100000 4 true
+/tp @s 0.5 150 0.5 0 20
+wait 40
+/fill -12 149 -12 12 149 12 minecraft:glass
+/fill -12 150 -12 12 153 12 minecraft:air
+/kill @e[type=!minecraft:player,distance=..20]
+# The Tinker's trades, as a Human then as a Gnome.
+/dndrace set @s human
+/summon dndclasses:gnome_tinker 0.5 150 2.5 {NoAI:1b,Rotation:[180f,0f],Tags:["cdtest"]}
+wait 20
+look 0 20
+use
+wait 10
+slots
+screenshot cd-trades-human
+closescreen
+/rep
+/dndrace set @s gnome
+wait 10
+use
+wait 10
+slots
+screenshot cd-trades-gnome
+closescreen
+/rep
+/kill @e[type=dndclasses:gnome_tinker,tag=cdtest]
+# Tinker's Goggles.
+/item replace entity @s armor.head with dndclasses:tinkers_goggles
+/dndrace set @s human
+/setblock 0 150 3 minecraft:chest{Items:[{Slot:0b,id:"minecraft:diamond",Count:5b},{Slot:4b,id:"minecraft:diamond",Count:3b},{Slot:7b,id:"minecraft:redstone",Count:12b}]}
+look 0 30
+wait 30
+clearchat
+screenshot cd-goggles-chest
+/setblock 0 150 3 minecraft:furnace{Items:[{Slot:0b,id:"minecraft:raw_iron",Count:7b},{Slot:1b,id:"minecraft:coal",Count:2b},{Slot:2b,id:"minecraft:iron_ingot",Count:4b}]}
+wait 30
+screenshot cd-goggles-furnace
+# The hopper's funnel is narrow: aim at its top.
+look 0 20
+/setblock 0 150 3 minecraft:hopper{Items:[{Slot:2b,id:"minecraft:copper_ingot",Count:9b}]}
+wait 30
+/setblock 0 150 3 minecraft:chest{LootTable:"dndclasses:chests/cogsdeep_gems"}
+wait 30
+screenshot cd-goggles-sealed
+/item replace entity @s armor.head with minecraft:air
+/setblock 0 150 3 minecraft:air
+# The Gnomish Repeater: loading poses and a triple shot.
+/clear @s
+/give @s dndclasses:gnomish_repeater{Enchantments:[{id:"minecraft:quick_charge",lvl:3},{id:"minecraft:multishot",lvl:1}]}
+/give @s minecraft:arrow 16
+hotbar 0
+look 0 0
+holduse on
+wait 5
+screenshot cd-repeater-loading
+wait 15
+holduse off
+wait 5
+screenshot cd-repeater-loaded
+perspective front
+wait 5
+screenshot cd-repeater-aim
+perspective first
+/kill @e[type=minecraft:arrow,distance=..40]
+use
+wait 2
+/execute if entity @e[type=minecraft:arrow,distance=..40]
+/clear @s
+/kill @e[type=minecraft:arrow,distance=..40]
+# A Clockwork Sentinel against a zombie.
+/gamemode creative
+/summon dndclasses:clockwork_sentinel 0.5 150 7.5
+/summon minecraft:zombie 0.5 150 -6.5 {Tags:["cdzombie"],PersistenceRequired:1b,ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+/tp @s 8.5 150 0.5 90 10
+wait 60
+target @e[type=dndclasses:clockwork_sentinel]
+hud off
+screenshot cd-sentinel-fight
+hud on
+wait 200
+target @e[type=dndclasses:clockwork_sentinel]
+/execute if entity @e[type=minecraft:zombie,tag=cdzombie]
+/data get entity @e[type=dndclasses:clockwork_sentinel,limit=1,sort=nearest] Health
+/kill @e[type=dndclasses:clockwork_sentinel,distance=..30]
+/kill @e[type=minecraft:item,distance=..30]
+/gamemode survival
+# The Tinkers' Guild law and the hearth, at the burrow found near 30000 30000.
+/tp @s 30000 160 30000
+wait 60
+# A new day, so today's kin-trust warning is owed again (the script never sets the time, so every run is a later day).
+/time add 24000
+/dndrace set @s gnome
+/dndhome cogsdeep commons
+waitserver 2
+wait 40
+# Calm any Sentinel still angry from an earlier run (anger is saved with the mob).
+/execute as @e[type=dndclasses:clockwork_sentinel,distance=..48] run data merge entity @s {AngerTime:0}
+/execute as @e[type=dndclasses:clockwork_sentinel,distance=..48] run data remove entity @s AngryAt
+wait 40
+/dndhome
+wait 80
+/execute if entity @s[nbt={ActiveEffects:[{Id:10}]}]
+/tp @s ~ ~ ~ ~ 40
+/execute at @s rotated ~ 0 run setblock ^ ^ ^1 minecraft:barrel
+wait 5
+use
+wait 10
+actionbar
+closescreen
+target @e[type=dndclasses:clockwork_sentinel,distance=..24]
+/dndrace set @s human
+wait 10
+/dndhome cogsdeep commons
+wait 20
+/tp @s ~ ~ ~ ~ 40
+use
+wait 10
+closescreen
+wait 20
+target @e[type=dndclasses:clockwork_sentinel,distance=..24]
+screenshot cd-law
+/execute at @s rotated ~ 0 run setblock ^ ^ ^1 minecraft:air
+quit

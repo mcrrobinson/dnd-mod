@@ -87,6 +87,8 @@
         "SavingThrowMixin"
     ],
     "client": [
+        "CrossbowRenderMixin",
+        "CrossbowArmPoseMixin",
         "DownedHudMixin",
         "DownedOutlineMixin",
         "DownedOutlineColorMixin",

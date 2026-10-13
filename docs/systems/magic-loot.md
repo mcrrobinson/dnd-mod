@@ -34,6 +34,9 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Brimstone sanctum](../structures/brimstone-sanctums.md) Refuge and market (`chests/brimstone_sanctum_refuge`, `_market`) | 5%: Uncommon | |
 | Brimstone sanctum den (`chests/brimstone_sanctum_den`) | 12%: Uncommon (80) / Rare (20) | |
 | Brimstone sanctum offering chest (`chests/brimstone_sanctum_altar`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | |
+| [Cogsdeep](../structures/cogsdeep.md) Commons, observatory and workshops (`chests/cogsdeep_commons`, `_workshop`) | 5%: Uncommon | |
+| Cogsdeep gem room (`chests/cogsdeep_gems`) | 12%: Uncommon (80) / Rare (20) | |
+| Cogsdeep clocktower strongbox (`chests/cogsdeep_vault`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | Gnomish Repeater 12%, Tinker's Goggles 12% (JSON) |
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
 | [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md), [Orc War Chief](../bosses/orc-war-chief.md) (player kill) | 50%: Rare | their trophies (boss drops) |
 | [Lich](../bosses/lich.md) (final kill), [Beholder](../bosses/beholder.md) (player kill) | 1 roll: Very Rare (80) / Legendary (20) | Tome of Clear Thought 10% each, plus their trophies |

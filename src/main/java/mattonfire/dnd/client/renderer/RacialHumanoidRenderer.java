@@ -10,6 +10,7 @@ import mattonfire.dnd.entity.DragonbornEntity;
 import mattonfire.dnd.entity.DragonbornTemplarEntity;
 import mattonfire.dnd.entity.ElfEntity;
 import mattonfire.dnd.entity.ElfMerchantEntity;
+import mattonfire.dnd.entity.GnomeTinkerEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.OrcChampionEntity;
 import mattonfire.dnd.entity.OrcEntity;
@@ -37,7 +38,7 @@ import net.minecraft.util.Identifier;
 /**
  * The racial NPC model kit: the player model (slim Alex arms or classic Steve ones) with the race's head
  * features, a per-entity scale, armour, and arm poses for held items and drawn bows. The settlement NPCs of
- * each race use it with their own skins: the elves, the Dragon Temple's Dragonborn, the Orc Strongholds' orcs and the Brimstone Sanctums' Tieflings. Head features (elf ears, and later orc
+ * each race use it with their own skins: the elves, the Dragon Temple's Dragonborn, the Orc Strongholds' orcs, the Brimstone Sanctums' Tieflings and Cogsdeep's gnomes. Head features (elf ears, and later orc
  * tusks, tiefling horns, a dragonborn snout) come from {@link RaceFeatures#renderHead}, the same code that
  * draws them on players, so NPCs and players of a race match.
  */
@@ -70,6 +71,9 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
         }
         if (look.race() == DndRace.TIEFLING) {
             this.addFeature(new TailFeature<>(this));
+        }
+        if (look.race() == DndRace.GNOME) {
+            this.addFeature(new NoseFeature<>(this));
         }
     }
 
@@ -174,6 +178,23 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
         return new RacialHumanoidRenderer<>(context, TIEFLING, npc -> PACTBROKER_SKIN);
     }
 
+    // ---- The gnomes ----
+
+    /** Gnomes: classic arms, the Small scale (0.65) and a big nose. */
+    public static final Look GNOME = new Look(false, DndRace.GNOME, 0.65F);
+    private static final Identifier[] GNOME_SKINS = new Identifier[GnomeTinkerEntity.VARIANTS];
+
+    static {
+        for (int i = 0; i < GNOME_SKINS.length; i++) {
+            GNOME_SKINS[i] = new Identifier(DnDClasses.MOD_ID, "textures/entity/gnome/gnome_" + i + ".png");
+        }
+    }
+
+    /** Tinkers: one of five skins (tunic colours, hair, beards), all with an apron and brass goggles. */
+    public static RacialHumanoidRenderer<GnomeTinkerEntity> gnome(EntityRendererFactory.Context context) {
+        return new RacialHumanoidRenderer<>(context, GNOME, npc -> GNOME_SKINS[Math.floorMod(npc.getVariant(), GNOME_SKINS.length)]);
+    }
+
     @Override
     public Identifier getTexture(T entity) {
         return this.texture.apply(entity);
@@ -220,6 +241,21 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
                            float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
             if (!entity.isInvisible()) {
                 RaceFeatures.renderTail(matrices, vertexConsumers, light, this.getContextModel().body, TINT);
+            }
+        }
+    }
+
+    /** A gnome's big nose, on the posed head, from the skin. */
+    private static final class NoseFeature<T extends MobEntity> extends FeatureRenderer<T, HumanoidModel<T>> {
+        NoseFeature(FeatureRendererContext<T, HumanoidModel<T>> context) {
+            super(context);
+        }
+
+        @Override
+        public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, T entity, float limbAngle,
+                           float limbDistance, float tickDelta, float animationProgress, float headYaw, float headPitch) {
+            if (!entity.isInvisible()) {
+                RaceFeatures.renderNose(matrices, vertexConsumers, light, this.getContextModel().head, this.getTexture(entity));
             }
         }
     }

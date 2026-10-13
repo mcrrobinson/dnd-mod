@@ -1,0 +1,69 @@
+# Cogsdeep placement survey and shots.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/cogsdeep-survey.txt (add -PdevWorld=<world> for
+# another seed; the survey area round -30000 -30000 must be unexplored so the chunks generate fresh: /place structure
+# fails for the mod's terrain-checked structures, so this finds natural burrows with /locate).
+# Checks, in <run dir>/logs/latest.log:
+# - the [CHAT] line of /locate (nearest burrow)
+# - "[CogsdeepSurvey] cogsdeep at X Y Z: biome minecraft:forest|flower_forest|meadow, 8 pieces (7 kinds), burrow floor
+#   y 11-16 (roof <= 30), ground off by >3 at <=3/16, water in rooms 0, ... neighbours within 5 chunks []: PASS" for
+#   every burrow found from a 3x3 grid of points 2000 blocks apart, then "[CogsdeepSurvey] n burrows, n pass, 0 fail"
+# - "[Home] Cogsdeep at chunk ..." from /dndhome cogsdeep; screenshots cd-top (aerial), cd-door, cd-observatory,
+#   cd-stair, cd-foot, cd-commons, cd-workshop, cd-westworkshop, cd-clocktower, cd-strongbox, cd-gems, cd-grotto
+# - "Test passed" for Tinkers and Sentinels near the Commons
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamemode spectator
+/time set noon
+/tp @s -30000 160 -30000
+wait 100
+/locate structure dndclasses:cogsdeep
+waitserver 2
+/dndhome cogsdeepsurvey 3 2000
+waitserver 2
+/dndhome cogsdeep top
+waitserver 2
+wait 300
+hud off
+screenshot cd-top
+/dndhome cogsdeep door
+wait 80
+screenshot cd-door
+/dndhome cogsdeep observatory
+wait 60
+screenshot cd-observatory
+/dndhome cogsdeep stair
+wait 60
+screenshot cd-stair
+/dndhome cogsdeep foot
+wait 60
+screenshot cd-foot
+/dndhome cogsdeep commons
+wait 80
+screenshot cd-commons
+/dndhome cogsdeep workshop
+wait 60
+screenshot cd-workshop
+/dndhome cogsdeep westworkshop
+wait 60
+screenshot cd-westworkshop
+/dndhome cogsdeep clocktower
+wait 60
+screenshot cd-clocktower
+/dndhome cogsdeep strongbox
+wait 60
+screenshot cd-strongbox
+/dndhome cogsdeep gems
+wait 60
+screenshot cd-gems
+/dndhome cogsdeep grotto
+wait 60
+screenshot cd-grotto
+hud on
+/dndhome cogsdeep commons
+wait 20
+/execute at @s if entity @e[type=dndclasses:gnome_tinker,distance=..48]
+/execute at @s if entity @e[type=dndclasses:clockwork_sentinel,distance=..48]
+quit

@@ -50,8 +50,6 @@ Dwarven Fortresses are the Dwarf home (see [Racial homes](../races/racial-homes.
 - an audience with the Dwarf King (right-click him with an empty hand), once per in-game day: 3 gold ingots or an enchanted iron tool
 - a Friendly (150) start with the Mountain Dwarves
 
-Gnomes also get the double barter roll here, and start at 100 (Friendly).
-
 ## Where to find it
 Meadow, Grove, Snowy Slopes, Jagged Peaks, Frozen Peaks, Stony Peaks, Windswept Hills, Windswept Gravelly Hills and Windswept Forest. Fortresses use a spacing of 16 chunks and a separation of 6, so they're fairly common in the mountains. The gate needs a steep mountainside with the ground in front clear, so not every spot in those biomes gets one.
 

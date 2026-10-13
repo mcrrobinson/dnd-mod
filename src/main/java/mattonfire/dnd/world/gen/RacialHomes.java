@@ -11,6 +11,7 @@ import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
 import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Reputation;
+import mattonfire.dnd.world.gen.burrow.CogsdeepStructures;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
 import mattonfire.dnd.world.gen.sanctum.BrimstoneSanctumStructures;
@@ -46,9 +47,8 @@ public final class RacialHomes {
 
     public static final Home HOBBIT_VILLAGE = register(new Home(id("hobbit_village"), DndRace.HALFLING, Set.of(),
             id("hobbits"), HobbitVillageStructures.INN, HomeBonuses::shireWelcomeBasket));
-    /** Gnomes get kin prices here until they have a home of their own. */
     public static final Home DWARVEN_FORTRESS = register(new Home(id("dwarven_fortress"), DndRace.DWARF,
-            Set.of(DndRace.GNOME), id("mountain_dwarves"), DwarvenFortressStructures.HALL, null));
+            Set.of(), id("mountain_dwarves"), DwarvenFortressStructures.HALL, null));
     /** The hearth is the Speaker's Hall up in the Heart Tree. */
     public static final Home ELVEN_ENCLAVE = register(new Home(id("elven_enclave"), DndRace.ELF, Set.of(),
             id("sylvan_court"), ElvenEnclaveStructures.HALL, null));
@@ -64,6 +64,9 @@ public final class RacialHomes {
      */
     public static final Home BRIMSTONE_SANCTUM = register(new Home(id("brimstone_sanctum"), DndRace.TIEFLING, Set.of(),
             id("brimstone_covenant"), BrimstoneSanctumStructures.PACT_HALL, null));
+    /** The hearth is the Commons at the foot of the spiral stair. */
+    public static final Home COGSDEEP = register(new Home(id("cogsdeep"), DndRace.GNOME, Set.of(),
+            id("tinkers_guild"), CogsdeepStructures.COMMONS, null));
 
     private RacialHomes() {
     }
@@ -73,7 +76,8 @@ public final class RacialHomes {
      *
      * @param structure  the structure id, e.g. {@code dndclasses:hobbit_village}
      * @param race       the home race: welcome, hearth, kin prices and kin trust
-     * @param priceKin   other races that also get kin prices (interim homes)
+     * @param priceKin   other races that also get kin prices (an interim home, as the fortresses were for Gnomes
+     *                   until Cogsdeep); none at present
      * @param faction    the faction that lives there; its members are the settlement's NPCs
      * @param hearth     the piece whose box is the hearth (the inn, the great hall)
      * @param firstVisit given to the home race on its first visit to each settlement, or null

@@ -1,0 +1,41 @@
+{
+  "parent": "minecraft:item/crossbow",
+  "textures": {
+    "layer0": "dndclasses:item/gnomish_repeater"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "pulling": 1
+      },
+      "model": "dndclasses:item/gnomish_repeater_pulling_0"
+    },
+    {
+      "predicate": {
+        "pulling": 1,
+        "pull": 0.58
+      },
+      "model": "dndclasses:item/gnomish_repeater_pulling_1"
+    },
+    {
+      "predicate": {
+        "pulling": 1,
+        "pull": 1.0
+      },
+      "model": "dndclasses:item/gnomish_repeater_pulling_2"
+    },
+    {
+      "predicate": {
+        "charged": 1
+      },
+      "model": "dndclasses:item/gnomish_repeater_arrow"
+    },
+    {
+      "predicate": {
+        "charged": 1,
+        "firework": 1
+      },
+      "model": "dndclasses:item/gnomish_repeater_firework"
+    }
+  ]
+}

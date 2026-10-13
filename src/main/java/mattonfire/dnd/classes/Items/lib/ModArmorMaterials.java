@@ -42,7 +42,9 @@ public enum ModArmorMaterials implements ArmorMaterial {
     DRACONIC_SCALE("draconic_scale", "draconic_scale", SoundEvents.ITEM_ARMOR_EQUIP_DIAMOND,
             () -> Ingredient.ofItems(Items.DIAMOND)),
     INFERNAL_REGALIA("infernal_regalia", "infernal_regalia", SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE,
-            () -> Ingredient.ofItems(Items.NETHERITE_SCRAP));
+            () -> Ingredient.ofItems(Items.NETHERITE_SCRAP)),
+    TINKERS_GOGGLES("tinkers_goggles", "tinkers_goggles", SoundEvents.ITEM_ARMOR_EQUIP_GOLD,
+            () -> Ingredient.ofItems(Items.COPPER_INGOT));
 
     // Same numbers as vanilla ArmorMaterials.NETHERITE.
     private static final int[] BASE_DURABILITY = { 13, 15, 16, 11 }; // boots, leggings, chestplate, helmet

@@ -131,6 +131,12 @@ public final class MagicLoot {
         chest("brimstone_sanctum_den", 0.12F, tier(u, 80), tier(r, 20));
         chest("brimstone_sanctum_altar", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
 
+        // Cogsdeep: the clocktower strongbox is locked at DC 15 and guarded by the Sentinels
+        chest("cogsdeep_commons", 0.05F, tier(u, 1));
+        chest("cogsdeep_workshop", 0.05F, tier(u, 1));
+        chest("cogsdeep_gems", 0.12F, tier(u, 80), tier(r, 20));
+        chest("cogsdeep_vault", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
+
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 

@@ -34,7 +34,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dragonborn Breath Weapon](races/breath-weapon.md): B breathes fire, frost (freezes water) or lightning (arcs) in a 6-block cone, 6 + level/2 damage, DEX save, 60 s cooldown that survives death
 - [d20 and combat racial traits](races/combat-traits.md): Halfling Lucky rerolls natural 1s (clover on the HUD), Half-Orc Savage Attacks (x2.5 crits) and Relentless Endurance (1 HP instead of dying, 10 min), Tiefling Hellish Rebuke (melee attackers burn, 20 s)
 - [Passive racial traits](races/passive-traits.md): Darkvision, half damage from fire (Tiefling) or your breath element (Dragonborn), Gnome -30% magic, Dwarf half poison and +20% mining with hidden doorways outlined, Elf Keen Senses and Trance, Halfling Second Breakfast, Gnome Tinker, Human +10% XP and +2 social checks
-- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves), Dragonborn (Dragon Temples), Half-Orcs (Orc Strongholds) and Tieflings (Brimstone Sanctums): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth, the Rally and the Trial of Strength, sanctum fire immunity and a free daily-refilled respawn anchor
+- [Racial homes](races/racial-homes.md): home settlements for Halflings (Hobbit Villages), Dwarves (Dwarven Fortresses), Elves (Elven Enclaves), Dragonborn (Dragon Temples), Half-Orcs (Orc Strongholds), Tieflings (Brimstone Sanctums) and Gnomes (Cogsdeep): welcome, hearth regeneration, 25% kin prices, kin-only racial gear, kin trust, the Dwarf King's audience, the temple's blessing and rebirth, the Rally and the Trial of Strength, sanctum fire immunity and a free daily-refilled respawn anchor
 
 ## Systems
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
@@ -79,6 +79,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dragonborn](mobs/dragonborn.md): breath-weapon Templars and the Elder merchant of the dragon temples
 - [Orcs](mobs/orcs.md): the Bloodtusk Horde's Warriors, crossbow Archers, the Quartermaster merchant and the Trial's Champion; hostile except to Half-Orcs, allied with goblins
 - [Tieflings](mobs/tieflings.md): fire-immune Exiles with Hellish Rebuke and fireballs, and the Pactbroker merchant with Tiefling, Warlock and Alchemist stock, of the Brimstone Sanctums
+- [Gnomes](mobs/gnomes.md): Small Gnome Tinkers who sell spyglasses, clocks and redstone (and Gnome-only gear), and the copper Clockwork Sentinels that guard Cogsdeep (PR #221)
 - [Elves](mobs/elves.md): Wood Elves, bow-armed Elf Wardens and the Speaker and Fletcher merchants of the elven enclaves
 - [Mimic](mobs/mimic.md): a chest that bites and grabs (STR save, jump to struggle free); hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs (STR saves, jump to struggle free); Druids can take its form
@@ -101,6 +102,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home
 - [Orc Strongholds](structures/orc-strongholds.md): palisaded badlands warcamps with a gatehouse, Great Longhouse, Fighting Pit, smithy and yurts; hostile except to Half-Orcs; the Trial of Strength makes you Blood-Sworn; the Half-Orc home
 - [Brimstone Sanctums](structures/brimstone-sanctums.md): walled Nether platforms on pillars in crimson forests and soul sand valleys, never over the lava sea; Pact Hall, Brass Market, Alchemist's den and the Refuge's respawn anchors; the Tiefling home
+- [Cogsdeep](structures/cogsdeep.md): gnome burrows under forests and meadows: a copper-domed observatory over a spiral stair down to y 11-30, workshops of unpowered contraptions, a clocktower, a gem room and a lush grotto; the Tinkers' law; the Gnome home (PR #221)
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested)
@@ -119,7 +121,8 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 
 ## Items
 - [Armor](items/armor.md): 14 class sets with full-set and matching-class bonuses; 5 racial sets (Elven Chain, Dwarven Plate, Orcish Warplate, Draconic Scale, Infernal Regalia) with race bonuses, sold as kin stock
-- [Racial weapons](items/racial-weapons.md): Elven Longbow (+20% arrow speed, built-in Power I), Dwarven Waraxe (+50% to goblins), Orcish Greataxe and Halfling Sling; kin-only trades
+- [Racial weapons](items/racial-weapons.md): Elven Longbow (+20% arrow speed, built-in Power I), Dwarven Waraxe (+50% to goblins), Orcish Greataxe, Halfling Sling and Gnomish Repeater (Quick Charge III, Multishot); kin-only trades
+- [Tinker's Goggles](items/tinkers-goggles.md): Gnome kin-stock helmet that shows what's inside the chest, barrel, hopper or furnace you look at (PR #221)
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute

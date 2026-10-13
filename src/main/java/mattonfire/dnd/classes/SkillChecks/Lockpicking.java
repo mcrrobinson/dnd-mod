@@ -73,6 +73,7 @@ public final class Lockpicking {
             "dndclasses:chests/dragon_temple_reliquary",
             "dndclasses:chests/orc_stronghold_hoard",
             "dndclasses:chests/brimstone_sanctum_altar",
+            "dndclasses:chests/cogsdeep_vault",
             "minecraft:chests/end_city_treasure",
             "minecraft:chests/bastion_treasure",
             "minecraft:chests/ancient_city",
@@ -134,6 +135,8 @@ public final class Lockpicking {
                 && !path.equals("chests/dragon_temple_cell")
                 && !path.equals("chests/orc_stronghold_yurt")
                 && !path.equals("chests/brimstone_sanctum_refuge")
+                && !path.equals("chests/cogsdeep_workshop")
+                && !path.equals("chests/cogsdeep_commons")
                 && !path.equals("chests/spawn_bonus_chest");
     }
 

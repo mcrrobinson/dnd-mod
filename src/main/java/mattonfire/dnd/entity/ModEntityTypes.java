@@ -198,6 +198,25 @@ public class ModEntityTypes {
                     .build()
     );
 
+    /** A Gnome Tinker of Cogsdeep: the player model at the Small scale (0.65), with a big nose. A merchant. */
+    public static final EntityType<GnomeTinkerEntity> GNOME_TINKER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "gnome_tinker"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, GnomeTinkerEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.4f, 1.25f))
+                    .build()
+    );
+
+    /** A Clockwork Sentinel of Cogsdeep: a copper golem at 0.75 of an iron golem's size. */
+    public static final EntityType<ClockworkSentinelEntity> CLOCKWORK_SENTINEL = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "clockwork_sentinel"),
+            FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, ClockworkSentinelEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.05f, 2.0f))
+                    .trackRangeChunks(10)
+                    .build()
+    );
+
     private static <T extends OrcEntity> EntityType<T> orc(String name, EntityType.EntityFactory<T> factory, float width, float height) {
         return Registry.register(Registries.ENTITY_TYPE, new Identifier(DnDClasses.MOD_ID, name),
                 FabricEntityTypeBuilder.create(SpawnGroup.CREATURE, factory)
@@ -286,6 +305,8 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(DRAGONBORN_ELDER, DragonbornElderEntity.createElderAttributes());
         FabricDefaultAttributeRegistry.register(TIEFLING_EXILE, TieflingExileEntity.createExileAttributes());
         FabricDefaultAttributeRegistry.register(TIEFLING_PACTBROKER, TieflingPactbrokerEntity.createPactbrokerAttributes());
+        FabricDefaultAttributeRegistry.register(GNOME_TINKER, GnomeTinkerEntity.createTinkerAttributes());
+        FabricDefaultAttributeRegistry.register(CLOCKWORK_SENTINEL, ClockworkSentinelEntity.createSentinelAttributes());
         FabricDefaultAttributeRegistry.register(ORC_WARRIOR, OrcWarriorEntity.createOrcWarriorAttributes());
         FabricDefaultAttributeRegistry.register(ORC_ARCHER, OrcArcherEntity.createOrcArcherAttributes());
         FabricDefaultAttributeRegistry.register(ORC_QUARTERMASTER, OrcQuartermasterEntity.createOrcQuartermasterAttributes());

@@ -1,0 +1,10 @@
+{
+  "role": "gnome_tinker",
+  "greeting": {
+    "default": "dialogue.dndclasses.gnome_tinker.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.gnome_tinker.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.gnome_tinker.greeting.friendly",
+    "honored": "dialogue.dndclasses.gnome_tinker.greeting.honored",
+    "exalted": "dialogue.dndclasses.gnome_tinker.greeting.exalted"
+  }
+}

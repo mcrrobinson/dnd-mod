@@ -5,7 +5,6 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.enemiesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -20,8 +19,8 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -107,7 +106,7 @@ public class BardSkills extends ClassSkills {
     /** Bardic Lore: added to Persuasion checks. */
     public static final int BARDIC_LORE_PERSUASION = 2;
     /** Server tick each inspired player's armor runs out. */
-    private static final Map<UUID, Integer> INSPIRED_UNTIL = new HashMap<>();
+    private static final Cooldowns INSPIRED = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -193,10 +192,6 @@ public class BardSkills extends ClassSkills {
 
     @Override
     public void register() {
-        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            INSPIRED_UNTIL.clear();
-        });
         BardCompanions.register();
         // Bardic Lore. Lore Bards also identify magic items on pickup (magic.Identify.lore).
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/bard_lore"), (player, c) -> {
@@ -205,17 +200,10 @@ public class BardSkills extends ClassSkills {
             }
         });
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (INSPIRED_UNTIL.isEmpty() || server.getTicks() % 20 != 0)
-                return;
-            int now = server.getTicks();
-            INSPIRED_UNTIL.entrySet().removeIf(entry -> {
-                ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
-                if (player != null && now < entry.getValue())
-                    return false;
-                if (player != null)
-                    setInspiredArmor(player, false);
-                return true; // Run out, or logged off (the modifier is temporary, so it went with them)
-            });
+            if (server.getTicks() % 20 == 0) {
+                // Run out, or logged off (the modifier is temporary, so it went with them)
+                INSPIRED.expire(server, player -> setInspiredArmor(player, false));
+            }
         });
         mattonfire.dnd.classes.Music.BardInstrumentSlot.register();
         // Kills by a bard's pets aren't the bard's own kills, so their XP is handed out here.
@@ -283,11 +271,10 @@ public class BardSkills extends ClassSkills {
     public static void combatInspiration(ServerPlayerEntity bard, List<PlayerEntity> listeners, int ticks) {
         if (Progression.classOf(bard) != DndCharacter.BARD || !Progression.current(bard).hasSubclass(VALOR))
             return;
-        int until = bard.getServer().getTicks() + ticks;
         for (PlayerEntity listener : listeners) {
             if (listener instanceof ServerPlayerEntity player) {
                 setInspiredArmor(player, true);
-                INSPIRED_UNTIL.put(player.getUuid(), until);
+                INSPIRED.start(player, ticks);
             }
         }
     }

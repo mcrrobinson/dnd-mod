@@ -2,8 +2,8 @@ package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.spawnSummon;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.startArea;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -14,11 +14,11 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.TimedArea;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.mixin.MobEntityAccessor;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -39,7 +39,6 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.particle.ParticleTypes;
-import net.minecraft.registry.RegistryKey;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.Team;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -49,7 +48,6 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 
 /**
  * Necromancer tree. Summons join the same scoreboard ally team as the root's
@@ -111,11 +109,6 @@ public class NecromancerSkills extends ClassSkills {
     // The class's own wither-on-hit is Wither I for 5 ticks, too short to ever deal damage.
     private static final int EMBRACE_WITHER_TICKS = 60;
 
-    /** A wither cloud left by Wither Cloud. */
-    private record Cloud(RegistryKey<World> world, Vec3d center, UUID owner, long endTime) {
-    }
-
-    private static final List<Cloud> CLOUDS = new ArrayList<>();
 
     @Override
     public DndCharacter dndClass() {
@@ -202,8 +195,6 @@ public class NecromancerSkills extends ClassSkills {
                 }
             }
         });
-
-        ServerTickEvents.END_WORLD_TICK.register(NecromancerSkills::tickClouds);
     }
 
     @Override
@@ -217,8 +208,7 @@ public class NecromancerSkills extends ClassSkills {
                 effects(player, SoundEvents.ENTITY_SKELETON_AMBIENT, ParticleTypes.SOUL, 20);
             }
             case "necromancer.wither_cloud" -> {
-                CLOUDS.add(new Cloud(world.getRegistryKey(), player.getPos(), player.getUuid(),
-                        world.getTime() + CLOUD_TICKS));
+                startArea(world, player.getUuid(), player.getPos(), CLOUD_TICKS, false, NecromancerSkills::witherCloud);
                 effects(player, SoundEvents.ENTITY_WITHER_SHOOT, ParticleTypes.LARGE_SMOKE, 30);
             }
             case "necromancer.army_of_the_dead" -> {
@@ -352,38 +342,29 @@ public class NecromancerSkills extends ClassSkills {
         return player != null && Progression.classOf(player) == DndCharacter.NECROMANCER ? player : null;
     }
 
-    private static void tickClouds(ServerWorld world) {
-        if (CLOUDS.isEmpty())
-            return;
-        long now = world.getTime();
-        CLOUDS.removeIf(cloud -> {
-            if (cloud.world() != world.getRegistryKey())
-                return false;
-            if (now >= cloud.endTime())
-                return true;
-            Vec3d c = cloud.center();
-            if (now % 4 == 0) {
-                world.spawnParticles(ParticleTypes.LARGE_SMOKE, c.x, c.y + 0.5, c.z, 12, CLOUD_RADIUS / 2, 0.3,
-                        CLOUD_RADIUS / 2, 0.01);
-                world.spawnParticles(ParticleTypes.SQUID_INK, c.x, c.y + 0.3, c.z, 4, CLOUD_RADIUS / 2, 0.2,
-                        CLOUD_RADIUS / 2, 0.01);
+    /** One tick of a Wither Cloud: smoke, and every second Wither II on the hostile mobs inside. */
+    private static void witherCloud(ServerWorld world, TimedArea cloud, long now) {
+        Vec3d c = cloud.center();
+        if (now % 4 == 0) {
+            world.spawnParticles(ParticleTypes.LARGE_SMOKE, c.x, c.y + 0.5, c.z, 12, CLOUD_RADIUS / 2, 0.3,
+                    CLOUD_RADIUS / 2, 0.01);
+            world.spawnParticles(ParticleTypes.SQUID_INK, c.x, c.y + 0.3, c.z, 4, CLOUD_RADIUS / 2, 0.2,
+                    CLOUD_RADIUS / 2, 0.01);
+        }
+        if (now % 20 == 0) {
+            // Only hostile mobs, and never your own summons.
+            Entity owner = world.getEntity(cloud.owner());
+            String team = cloud.owner().toString();
+            Box box = new Box(c, c).expand(CLOUD_RADIUS, 2, CLOUD_RADIUS);
+            for (LivingEntity mob : world.getEntitiesByClass(LivingEntity.class, box,
+                    e -> e instanceof Monster && e.isAlive()
+                            && (e.getScoreboardTeam() == null || !team.equals(e.getScoreboardTeam().getName()))
+                            && e.squaredDistanceTo(c) <= CLOUD_RADIUS * CLOUD_RADIUS)) {
+                mob.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, CLOUD_WITHER_TICKS, 1),
+                        owner);
             }
-            if (now % 20 == 0) {
-                // Only hostile mobs, and never your own summons.
-                Entity owner = world.getEntity(cloud.owner());
-                String team = cloud.owner().toString();
-                Box box = new Box(c, c).expand(CLOUD_RADIUS, 2, CLOUD_RADIUS);
-                for (LivingEntity mob : world.getEntitiesByClass(LivingEntity.class, box,
-                        e -> e instanceof Monster && e.isAlive()
-                                && (e.getScoreboardTeam() == null || !team.equals(e.getScoreboardTeam().getName()))
-                                && e.squaredDistanceTo(c) <= CLOUD_RADIUS * CLOUD_RADIUS)) {
-                    mob.addStatusEffect(new StatusEffectInstance(StatusEffects.WITHER, CLOUD_WITHER_TICKS, 1),
-                            owner);
-                }
-                world.playSound(null, c.x, c.y, c.z, SoundEvents.BLOCK_SOUL_SAND_STEP, SoundCategory.PLAYERS, 0.6F,
-                        0.6F);
-            }
-            return false;
-        });
+            world.playSound(null, c.x, c.y, c.z, SoundEvents.BLOCK_SOUL_SAND_STEP, SoundCategory.PLAYERS, 0.6F,
+                    0.6F);
+        }
     }
 }

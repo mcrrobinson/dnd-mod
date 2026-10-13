@@ -3,12 +3,12 @@ package mattonfire.dnd.classes.Obstacles.types;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.Obstacles.ObstacleAuras;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
 import mattonfire.dnd.classes.Obstacles.ObstacleState;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -76,15 +76,19 @@ public final class CrumblingLedgeType extends ObstacleType {
         return dndClass == DndCharacter.MONK ? MONK_CRUMBLE_TICKS : CRUMBLE_TICKS;
     }
 
+    /** Every tick: what's under each player's feet (no index lookup, so no {@link #auraRange()}). */
     @Override
-    public void registerEvents() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
-            for (ServerPlayerEntity player : world.getPlayers()) {
-                if (player.isOnGround() && !player.isSpectator() && !player.isCreative()) {
-                    checkFeet(world, player);
-                }
+    public int auraInterval() {
+        return 1;
+    }
+
+    @Override
+    public void auraTick(ServerWorld world, ObstacleAuras.Nearby nearby) {
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            if (player.isOnGround() && !player.isSpectator() && !player.isCreative()) {
+                checkFeet(world, player);
             }
-        });
+        }
     }
 
     /** Starts the crumble timer of each sealed ledge block under the player's feet. */
@@ -95,13 +99,11 @@ public final class CrumblingLedgeType extends ObstacleType {
             for (int z = MathHelper.floor(box.minZ); z <= MathHelper.floor(box.maxZ - 1.0E-6); z++) {
                 BlockPos pos = new BlockPos(x, y, z);
                 BlockState state = world.getBlockState(pos);
-                if (!(state.getBlock() instanceof ObstacleBlock block) || block.type() != this
-                        || state.get(ObstacleBlock.STATE) != ObstacleState.SEALED
-                        || world.getBlockTickScheduler().isQueued(pos, block)) {
+                if (!isSealedMine(state) || world.getBlockTickScheduler().isQueued(pos, state.getBlock())) {
                     continue;
                 }
                 int ticks = crumbleTicks(Progression.classOf(player));
-                world.scheduleBlockTick(pos, block, ticks);
+                world.scheduleBlockTick(pos, state.getBlock(), ticks);
                 world.playSound(null, pos, SoundEvents.BLOCK_GRAVEL_STEP, SoundCategory.BLOCKS, 1.0f, 0.6f);
                 world.spawnParticles(new BlockStateParticleEffect(ParticleTypes.FALLING_DUST,
                         Blocks.STONE_BRICKS.getDefaultState()), x + 0.5, y, z + 0.5, 6, 0.3, 0.0, 0.3, 0.0);

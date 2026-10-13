@@ -8,14 +8,11 @@ import org.joml.Vector3f;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
-import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
-import mattonfire.dnd.classes.Obstacles.ObstacleIndex;
+import mattonfire.dnd.classes.Obstacles.ObstacleAuras;
 import mattonfire.dnd.classes.Obstacles.ObstacleState;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -140,51 +137,45 @@ public final class MiasmaVentType extends ObstacleType {
     }
 
     @Override
-    public void registerEvents() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (world.getTime() % CHECK_INTERVAL != 0 || world.getPlayers().isEmpty()) {
-                return;
-            }
-            Set<BlockPos> vents = new HashSet<>();
-            ObstacleIndex index = ObstacleIndex.get(world);
-            for (ServerPlayerEntity player : world.getPlayers()) {
-                for (BlockPos pos : index.within(player.getBlockPos(), PARTICLE_RANGE)) {
-                    if (isSealedVent(world, pos)) {
-                        vents.add(pos);
-                    }
-                }
-                if (player.isCreative() || player.isSpectator() || !player.isAlive() || !inGas(world, player)) {
-                    continue;
-                }
-                if (gas(player, POISON_TICKS, NAUSEA_TICKS)) {
-                    player.sendMessage(Text.translatable(translationKey() + ".choking"), true);
-                } else if (world.getTime() % IMMUNE_MESSAGE_INTERVAL == 0) {
-                    player.sendMessage(Text.translatable(translationKey() + ".immune"), true);
-                }
-            }
-            for (BlockPos pos : vents) {
-                world.spawnParticles(GAS, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 10, 1.6, 0.8, 1.6,
-                        0.0);
-                world.spawnParticles(ParticleTypes.SNEEZE, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 3,
-                        0.2, 0.2, 0.2, 0.02);
-            }
-        });
+    public int auraInterval() {
+        return CHECK_INTERVAL;
     }
 
-    private boolean isSealedVent(ServerWorld world, BlockPos pos) {
-        BlockState state = world.getBlockState(pos);
-        return ObstacleBlock.isSealed(state) && ((ObstacleBlock) state.getBlock()).type() == this;
+    @Override
+    public int auraRange() {
+        return PARTICLE_RANGE;
+    }
+
+    @Override
+    public void auraTick(ServerWorld world, ObstacleAuras.Nearby nearby) {
+        Set<BlockPos> vents = new HashSet<>();
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            for (BlockPos pos : nearby.within(player, PARTICLE_RANGE)) {
+                if (isSealedMine(world.getBlockState(pos))) {
+                    vents.add(pos);
+                }
+            }
+            if (player.isCreative() || player.isSpectator() || !player.isAlive() || !inGas(world, player, nearby)) {
+                continue;
+            }
+            if (gas(player, POISON_TICKS, NAUSEA_TICKS)) {
+                player.sendMessage(Text.translatable(translationKey() + ".choking"), true);
+            } else if (world.getTime() % IMMUNE_MESSAGE_INTERVAL == 0) {
+                player.sendMessage(Text.translatable(translationKey() + ".immune"), true);
+            }
+        }
+        for (BlockPos pos : vents) {
+            world.spawnParticles(GAS, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5, 10, 1.6, 0.8, 1.6, 0.0);
+            world.spawnParticles(ParticleTypes.SNEEZE, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 3,
+                    0.2, 0.2, 0.2, 0.02);
+        }
     }
 
     /** Whether the player's body is within {@value #ZONE_RADIUS} blocks of a sealed vent. */
-    public boolean inGas(ServerWorld world, PlayerEntity player) {
+    private boolean inGas(ServerWorld world, ServerPlayerEntity player, ObstacleAuras.Nearby nearby) {
         Vec3d body = player.getPos().add(0.0, player.getHeight() / 2.0, 0.0);
-        for (BlockPos pos : ObstacleIndex.get(world).within(player.getBlockPos(), ZONE_RADIUS + 2)) {
-            if (Vec3d.ofCenter(pos).squaredDistanceTo(body) <= ZONE_RADIUS * ZONE_RADIUS && isSealedVent(world, pos)) {
-                return true;
-            }
-        }
-        return false;
+        return sealedAmong(world, nearby.within(player, ZONE_RADIUS + 2),
+                pos -> Vec3d.ofCenter(pos).squaredDistanceTo(body) <= ZONE_RADIUS * ZONE_RADIUS);
     }
 
     @Override

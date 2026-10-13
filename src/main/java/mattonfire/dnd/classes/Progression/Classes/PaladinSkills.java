@@ -4,11 +4,9 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +25,7 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.tag.DamageTypeTags;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.EntityGroup;
@@ -116,9 +115,9 @@ public class PaladinSkills extends ClassSkills {
     private static final UUID SHIELD_KNOCKBACK_UUID = UUID.fromString("8d0e6f43-2b7a-4c11-9e55-3f7a1c2d9b01");
 
     /** World time each player's timed buff ends at. */
-    private static final Map<UUID, Long> SACRED_WEAPON = new HashMap<>();
-    private static final Map<UUID, Long> DIVINE_SHIELD = new HashMap<>();
-    private static final Map<UUID, Long> AVENGING_ANGEL = new HashMap<>();
+    private static final Cooldowns SACRED_WEAPON = new Cooldowns();
+    private static final Cooldowns DIVINE_SHIELD = new Cooldowns();
+    private static final Cooldowns AVENGING_ANGEL = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -168,31 +167,18 @@ public class PaladinSkills extends ClassSkills {
         // Divine Shield's knockback resistance is an attribute, so it's dropped
         // here even if the player changed class meanwhile (no secondTick then).
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (DIVINE_SHIELD.isEmpty() || server.getTicks() % 20 != 0)
-                return;
-            long now = server.getOverworld().getTime();
-            DIVINE_SHIELD.entrySet().removeIf(entry -> {
-                if (now < entry.getValue())
-                    return false;
-                ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
-                if (player != null) {
-                    EntityAttributeInstance knockback = player
-                            .getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
-                    if (knockback != null)
-                        knockback.removeModifier(SHIELD_KNOCKBACK_UUID);
-                }
-                return true;
-            });
+            if (server.getTicks() % 20 == 0) {
+                DIVINE_SHIELD.expire(server, PaladinSkills::endDivineShield);
+            }
         });
     }
 
     @Override
     public boolean activate(ServerPlayerEntity player, SkillNode node) {
-        long now = ((ServerWorld) player.getWorld()).getTime();
         switch (node.id()) {
             case "paladin.sacred_weapon" -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, SACRED_WEAPON_TICKS, 0));
-                SACRED_WEAPON.put(player.getUuid(), now + SACRED_WEAPON_TICKS);
+                SACRED_WEAPON.start(player, SACRED_WEAPON_TICKS);
                 effects(player, SoundEvents.ITEM_FIRECHARGE_USE, ParticleTypes.FLAME, 30);
             }
             case "paladin.divine_shield" -> {
@@ -203,14 +189,14 @@ public class PaladinSkills extends ClassSkills {
                     knockback.addTemporaryModifier(new EntityAttributeModifier(SHIELD_KNOCKBACK_UUID,
                             "Divine Shield", 1.0, EntityAttributeModifier.Operation.ADDITION));
                 }
-                DIVINE_SHIELD.put(player.getUuid(), now + SHIELD_TICKS);
+                DIVINE_SHIELD.start(player, SHIELD_TICKS);
                 effects(player, SoundEvents.ITEM_SHIELD_BLOCK, ParticleTypes.ENCHANTED_HIT, 30);
             }
             case "paladin.avenging_angel" -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ANGEL_TICKS, 1));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, ANGEL_TICKS, 1));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, ANGEL_TICKS, 1));
-                AVENGING_ANGEL.put(player.getUuid(), now + ANGEL_TICKS);
+                AVENGING_ANGEL.start(player, ANGEL_TICKS);
                 burnUndead(player);
                 effects(player, SoundEvents.BLOCK_BEACON_ACTIVATE, ParticleTypes.END_ROD, 40);
             }
@@ -239,7 +225,7 @@ public class PaladinSkills extends ClassSkills {
         if (progress.hasPassive("paladin.divine_smite") && isUndead(target)) {
             amount += SMITE_BONUS;
         }
-        if (running(SACRED_WEAPON, player)) {
+        if (SACRED_WEAPON.active(player)) {
             target.setOnFireFor(SACRED_FIRE_SECONDS);
         }
         return amount;
@@ -278,7 +264,7 @@ public class PaladinSkills extends ClassSkills {
                 ally.removeStatusEffect(StatusEffects.SLOWNESS);
             }
         }
-        if (running(AVENGING_ANGEL, player)) {
+        if (AVENGING_ANGEL.active(player)) {
             burnUndead(player);
         }
     }
@@ -530,21 +516,17 @@ public class PaladinSkills extends ClassSkills {
         }
     }
 
-    /** Whether the player's timed buff is still going; forgets it once over. */
-    private static boolean running(Map<UUID, Long> buffs, PlayerEntity player) {
-        Long until = buffs.get(player.getUuid());
-        if (until == null)
-            return false;
-        if (player.getWorld().getTime() < until)
-            return true;
-        buffs.remove(player.getUuid());
-        return false;
+    /** Divine Shield has run out: drops its knockback resistance. */
+    private static void endDivineShield(ServerPlayerEntity player) {
+        EntityAttributeInstance knockback = player.getAttributeInstance(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE);
+        if (knockback != null)
+            knockback.removeModifier(SHIELD_KNOCKBACK_UUID);
     }
 
     @Override
     public void forget(ServerPlayerEntity player) {
-        long now = player.getWorld().getTime();
-        SACRED_WEAPON.values().removeIf(t -> now >= t);
-        AVENGING_ANGEL.values().removeIf(t -> now >= t);
+        SACRED_WEAPON.prune(player.getServer());
+        AVENGING_ANGEL.prune(player.getServer());
+        DIVINE_SHIELD.expire(player.getServer(), PaladinSkills::endDivineShield);
     }
 }

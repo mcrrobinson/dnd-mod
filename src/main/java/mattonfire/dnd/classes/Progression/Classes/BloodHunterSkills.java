@@ -3,13 +3,10 @@ package mattonfire.dnd.classes.Progression.Classes;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -17,6 +14,7 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.LivingEntity;
@@ -84,7 +82,7 @@ public class BloodHunterSkills extends ClassSkills {
     private static final float BLOOD_MOON_LIFESTEAL = 0.2F;
 
     /** Players with Blood Moon up, and the server tick it ends on. */
-    private static final Map<UUID, Integer> BLOOD_MOON = new HashMap<>();
+    private static final Cooldowns BLOOD_MOON = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -146,7 +144,7 @@ public class BloodHunterSkills extends ClassSkills {
                 effects(player, SoundEvents.ENTITY_WOLF_HOWL, ParticleTypes.ANGRY_VILLAGER, 20);
             }
             case "bloodhunter.blood_moon" -> {
-                BLOOD_MOON.put(player.getUuid(), player.getServer().getTicks() + BLOOD_MOON_TICKS);
+                BLOOD_MOON.start(player, BLOOD_MOON_TICKS);
                 player.sendMessage(Text.of("The Blood Moon rises."), true);
                 effects(player, SoundEvents.ENTITY_WITHER_SPAWN, ParticleTypes.CRIMSON_SPORE, 40);
             }
@@ -181,14 +179,7 @@ public class BloodHunterSkills extends ClassSkills {
     }
 
     private static boolean bloodMoonActive(PlayerEntity player) {
-        Integer end = BLOOD_MOON.get(player.getUuid());
-        if (end == null || player.getServer() == null)
-            return false;
-        if (player.getServer().getTicks() >= end) {
-            BLOOD_MOON.remove(player.getUuid());
-            return false;
-        }
-        return true;
+        return BLOOD_MOON.active(player);
     }
 
     @Override
@@ -272,17 +263,8 @@ public class BloodHunterSkills extends ClassSkills {
     }
 
     @Override
-    public void register() {
-        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            BLOOD_MOON.clear();
-        });
-    }
-
-    @Override
     public void forget(ServerPlayerEntity player) {
         stalkersProwess(player, false);
-        int now = player.getServer().getTicks();
-        BLOOD_MOON.values().removeIf(t -> now >= t);
+        BLOOD_MOON.prune(player.getServer());
     }
 }

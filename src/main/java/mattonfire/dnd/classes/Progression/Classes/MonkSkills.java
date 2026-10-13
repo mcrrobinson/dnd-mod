@@ -17,6 +17,7 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.ManaManager;
@@ -71,7 +72,7 @@ public class MonkSkills extends ClassSkills {
     private static final int UNARMORED_CHECK_TICKS = 5;
 
     private static final float QUIVERING_PALM_DAMAGE = 20.0F;
-    private static final long QUIVERING_PALM_TICKS = 200;
+    private static final int QUIVERING_PALM_TICKS = 200;
 
     public static final String OPEN_HAND = "monk.open_hand";
     public static final String DRUNKEN_MASTER = "monk.drunken_master";
@@ -131,7 +132,7 @@ public class MonkSkills extends ClassSkills {
 
     private static final Map<UUID, Combo> COMBOS = new HashMap<>();
     /** World time each player's Quivering Palm charge runs out. */
-    private static final Map<UUID, Long> QUIVERING_PALM = new HashMap<>();
+    private static final Cooldowns QUIVERING_PALM = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -416,7 +417,7 @@ public class MonkSkills extends ClassSkills {
                 effects(player, SoundEvents.ENTITY_PHANTOM_FLAP, ParticleTypes.CLOUD, 20);
             }
             case "monk.quivering_palm" -> {
-                QUIVERING_PALM.put(player.getUuid(), world.getTime() + QUIVERING_PALM_TICKS);
+                QUIVERING_PALM.start(player, QUIVERING_PALM_TICKS);
                 effects(player, SoundEvents.BLOCK_SCULK_SHRIEKER_SHRIEK, ParticleTypes.SCULK_SOUL, 20);
             }
             default -> {
@@ -454,8 +455,7 @@ public class MonkSkills extends ClassSkills {
         }
 
         // Quivering Palm: one charged hit, spent on the next strike.
-        Long palmUntil = QUIVERING_PALM.remove(player.getUuid());
-        if (palmUntil != null && now <= palmUntil) {
+        if (QUIVERING_PALM.take(player)) {
             amount += QUIVERING_PALM_DAMAGE;
             world.spawnParticles(ParticleTypes.SONIC_BOOM, target.getX(), target.getBodyY(0.5), target.getZ(), 1, 0,
                     0, 0, 0);

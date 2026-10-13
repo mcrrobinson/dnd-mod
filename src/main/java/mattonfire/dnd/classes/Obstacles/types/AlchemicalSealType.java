@@ -160,7 +160,7 @@ public final class AlchemicalSealType extends ObstacleType {
     private boolean gluedShut(World world, BlockPos pos) {
         for (Direction direction : Direction.values()) {
             BlockState state = world.getBlockState(pos.offset(direction));
-            if (ObstacleBlock.isSealed(state) && ((ObstacleBlock) state.getBlock()).type() == this) {
+            if (isSealedMine(state)) {
                 return true;
             }
         }

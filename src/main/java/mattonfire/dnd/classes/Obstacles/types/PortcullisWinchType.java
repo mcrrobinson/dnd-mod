@@ -32,14 +32,14 @@ import net.minecraft.util.math.BlockPos;
  * <li><b>Wedge</b> (Fighter only): a second success while the gate is up jams the winch, and the gate stays
  * up for good. The winch shows as wedged ({@code state=open}) until the obstacle is reset. It earns no
  * XP beyond the raise's.</li>
- * <li>Failure: the gate stays down. Natural 1: the handle whips back for {@value #FUMBLE_DAMAGE} damage.</li>
+ * <li>Failure: the gate stays down. Natural 1: the handle whips back for {@value #WHIP_DAMAGE} damage.</li>
  * </ul>
  * Resetting a wedged winch drops its portcullis.
  */
 public final class PortcullisWinchType extends WinchType {
     public static final int RAISE_TICKS = 80;
     public static final int TANK_RAISE_TICKS = 100;
-    public static final float FUMBLE_DAMAGE = 2.0f;
+    public static final float WHIP_DAMAGE = 2.0f;
     /** The portcullis must be within this many blocks of a hand-placed winch. */
     public static final int LINK_RADIUS = 6;
     /** Set once the winch has earned its XP (first raise or wedge); cleared by a reset. */
@@ -124,7 +124,7 @@ public final class PortcullisWinchType extends WinchType {
 
     @Override
     public void onFumble(ServerWorld world, BlockPos pos, ServerPlayerEntity player) {
-        player.damage(world.getDamageSources().generic(), FUMBLE_DAMAGE);
+        player.damage(world.getDamageSources().generic(), WHIP_DAMAGE);
         world.playSound(null, pos, SoundEvents.BLOCK_CHAIN_BREAK, SoundCategory.BLOCKS, 1.0f, 0.5f);
     }
 

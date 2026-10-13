@@ -2,15 +2,12 @@ package mattonfire.dnd.classes.Obstacles.types;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
-import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
-import mattonfire.dnd.classes.Obstacles.ObstacleIndex;
+import mattonfire.dnd.classes.Obstacles.ObstacleAuras;
 import mattonfire.dnd.classes.Obstacles.ObstacleState;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.entity.player.PlayerEntity;
@@ -85,32 +82,29 @@ public final class DreadWardType extends ObstacleType {
     }
 
     @Override
-    public void registerEvents() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (world.getTime() % CHECK_INTERVAL != 0) {
-                return;
+    public int auraInterval() {
+        return CHECK_INTERVAL;
+    }
+
+    @Override
+    public int auraRange() {
+        return ZONE_RADIUS + 3;
+    }
+
+    @Override
+    public void auraTick(ServerWorld world, ObstacleAuras.Nearby nearby) {
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            if (!player.isCreative() && !player.isSpectator() && player.isAlive() && inZone(world, player, nearby)) {
+                frighten(world, player);
             }
-            for (ServerPlayerEntity player : world.getPlayers()) {
-                if (!player.isCreative() && !player.isSpectator() && player.isAlive() && inZone(world, player)) {
-                    frighten(world, player);
-                }
-            }
-        });
+        }
     }
 
     /** Whether the player stands within the zone of a sealed Dread Ward. */
-    public boolean inZone(ServerWorld world, PlayerEntity player) {
+    private boolean inZone(ServerWorld world, ServerPlayerEntity player, ObstacleAuras.Nearby nearby) {
         Box body = player.getBoundingBox();
-        for (BlockPos pos : ObstacleIndex.get(world).within(player.getBlockPos(), ZONE_RADIUS + 3)) {
-            if (!new Box(pos).expand(ZONE_RADIUS).intersects(body)) {
-                continue;
-            }
-            BlockState state = world.getBlockState(pos);
-            if (ObstacleBlock.isSealed(state) && ((ObstacleBlock) state.getBlock()).type() == this) {
-                return true;
-            }
-        }
-        return false;
+        return sealedAmong(world, nearby.within(player, ZONE_RADIUS + 3),
+                pos -> new Box(pos).expand(ZONE_RADIUS).intersects(body));
     }
 
     /** A Paladin, or anyone within {@value #SHIELD_RADIUS} blocks of one, ignores the dread. */

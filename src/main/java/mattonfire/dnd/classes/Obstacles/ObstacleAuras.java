@@ -1,7 +1,10 @@
 package mattonfire.dnd.classes.Obstacles;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.joml.Vector3f;
@@ -24,7 +27,11 @@ import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.chunk.WorldChunk;
 
 /**
- * Per-player obstacle senses, ticked on the server:
+ * The single obstacle-aura tick. Each world tick it works out which auras are due, looks up each player's
+ * nearby obstacle blocks in the {@link ObstacleIndex} once (at the largest range any of them needs, see
+ * {@link Nearby}), and hands that to each due type's {@link ObstacleType#auraTick} in registration order (a
+ * Miasma Vent's gas, a Dread Ward's fear, a Fire Curtain's burn, a Crumbling Ledge's footing, a Guardian
+ * Beast's watch). Before those, the per-player obstacle senses:
  * <ul>
  * <li><b>Ranger passive Perception</b> (every {@value #PASSIVE_INTERVAL} ticks): each Hidden Door within
  * {@link HiddenDoorType#PASSIVE_RANGE} blocks of a Ranger, still hidden from them, is found if their passive
@@ -44,6 +51,9 @@ public final class ObstacleAuras {
     private static final DustParticleEffect OUTLINE = new DustParticleEffect(new Vector3f(1.0f, 0.82f, 0.25f), 0.8f);
     private static final DustParticleEffect GLINT = new DustParticleEffect(new Vector3f(1.0f, 0.9f, 0.35f), 0.6f);
 
+    /** Types with an aura, in registration order; filled on the first tick (after every type is registered). */
+    private static List<ObstacleType> auras;
+
     private ObstacleAuras() {
     }
 
@@ -51,20 +61,81 @@ public final class ObstacleAuras {
         ServerTickEvents.END_WORLD_TICK.register(ObstacleAuras::tick);
     }
 
+    /**
+     * Each player's indexed obstacle blocks this tick, looked up once per player (at {@code range}) and shared
+     * by every aura that asks.
+     */
+    public static final class Nearby {
+        private final ServerWorld world;
+        private final int range;
+        private final Map<ServerPlayerEntity, List<BlockPos>> byPlayer = new IdentityHashMap<>();
+
+        Nearby(ServerWorld world, int range) {
+            this.world = world;
+            this.range = range;
+        }
+
+        /**
+         * The obstacle blocks within {@code radius} blocks of the player's block position: the same set as
+         * {@link ObstacleIndex#within}, without another index lookup.
+         */
+        public List<BlockPos> within(ServerPlayerEntity player, int radius) {
+            if (radius > range) {
+                return ObstacleIndex.get(world).within(player.getBlockPos(), radius);
+            }
+            List<BlockPos> all = byPlayer.computeIfAbsent(player,
+                    p -> ObstacleIndex.get(world).within(p.getBlockPos(), range));
+            if (radius == range) {
+                return all;
+            }
+            BlockPos center = player.getBlockPos();
+            double max = (double) radius * radius;
+            List<BlockPos> found = new ArrayList<>();
+            for (BlockPos pos : all) {
+                if (pos.getSquaredDistance(center) <= max) {
+                    found.add(pos);
+                }
+            }
+            return found;
+        }
+    }
+
     private static void tick(ServerWorld world) {
+        if (auras == null) {
+            auras = ObstacleTypes.all().stream().filter(type -> type.auraInterval() > 0).toList();
+        }
         long time = world.getTime();
         boolean passive = time % PASSIVE_INTERVAL == 0;
         boolean outline = time % OUTLINE_INTERVAL == 0;
-        if (!passive && !outline) {
+        int range = Math.max(passive ? (int) Math.ceil(HiddenDoorType.PASSIVE_RANGE) : 0,
+                outline ? OUTLINE_RANGE : 0);
+        List<ObstacleType> due = new ArrayList<>(auras.size());
+        for (ObstacleType type : auras) {
+            if (time % type.auraInterval() == 0) {
+                due.add(type);
+                range = Math.max(range, type.auraRange());
+            }
+        }
+        if (!passive && !outline && due.isEmpty() || world.getPlayers().isEmpty()) {
             return;
         }
+        Nearby nearby = new Nearby(world, range);
+        if (passive || outline) {
+            senses(world, nearby, passive, outline);
+        }
+        for (ObstacleType type : due) {
+            type.auraTick(world, nearby);
+        }
+    }
+
+    private static void senses(ServerWorld world, Nearby nearby, boolean passive, boolean outline) {
         for (ServerPlayerEntity player : world.getPlayers(p -> p.isAlive() && !p.isSpectator())) {
             DndCharacter dndClass = D20.classOf(player);
             if (passive && dndClass == DndCharacter.RANGER && !player.isCreative()) {
-                rangerSenses(world, player);
+                rangerSenses(world, player, nearby);
             }
             if (outline) {
-                outlineKnownDoors(world, player);
+                outlineKnownDoors(world, player, nearby);
             }
             if (outline && (dndClass == DndCharacter.ROGUE || dndClass == DndCharacter.RANGER)) {
                 lockGlint(world, player);
@@ -73,10 +144,10 @@ public final class ObstacleAuras {
     }
 
     /** A Ranger's passive Perception against the hidden doors round them. */
-    private static void rangerSenses(ServerWorld world, ServerPlayerEntity ranger) {
+    private static void rangerSenses(ServerWorld world, ServerPlayerEntity ranger, Nearby nearby) {
         int range = (int) Math.ceil(HiddenDoorType.PASSIVE_RANGE);
         double rangeSq = HiddenDoorType.PASSIVE_RANGE * HiddenDoorType.PASSIVE_RANGE;
-        for (BlockPos pos : ObstacleIndex.get(world).within(ranger.getBlockPos(), range)) {
+        for (BlockPos pos : nearby.within(ranger, range)) {
             if (ranger.squaredDistanceTo(pos.toCenterPos()) > rangeSq) {
                 continue;
             }
@@ -93,9 +164,9 @@ public final class ObstacleAuras {
     }
 
     /** Gold outlines round the found doors this player knows about. */
-    private static void outlineKnownDoors(ServerWorld world, ServerPlayerEntity player) {
+    private static void outlineKnownDoors(ServerWorld world, ServerPlayerEntity player, Nearby nearby) {
         Set<BlockPos> done = new HashSet<>();
-        for (BlockPos pos : ObstacleIndex.get(world).within(player.getBlockPos(), OUTLINE_RANGE)) {
+        for (BlockPos pos : nearby.within(player, OUTLINE_RANGE)) {
             if (done.contains(pos)) {
                 continue;
             }

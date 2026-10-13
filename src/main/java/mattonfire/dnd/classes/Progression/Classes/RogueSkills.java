@@ -3,10 +3,7 @@ package mattonfire.dnd.classes.Progression.Classes;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
@@ -14,13 +11,13 @@ import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.AttackRolls;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.util.Identifier;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -66,7 +63,7 @@ public class RogueSkills extends ClassSkills {
     public static final int FAST_HANDS_BONUS = 3;
 
     /** Assassins with a Vanish critical waiting, and the server tick it lapses on. */
-    private static final Map<UUID, Integer> ASSASSINATE_UNTIL = new HashMap<>();
+    private static final Cooldowns ASSASSINATE = new Cooldowns();
 
     private static final int STEALTH_KILL_BONUS_XP = 4;
     private static final int SHADOWSTEP_RANGE = 12;
@@ -116,10 +113,6 @@ public class RogueSkills extends ClassSkills {
 
     @Override
     public void register() {
-        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            ASSASSINATE_UNTIL.clear();
-        });
         // Fast Hands, on the sheet so the lockpick roll (and its HUD and log) shows it. Ignoring class
         // restrictions when attuning comes with the attunement card.
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/rogue_thief"), (player, c) -> {
@@ -129,11 +122,7 @@ public class RogueSkills extends ClassSkills {
         });
         // Assassinate: the first melee swing out of Vanish is a critical.
         AttackRolls.registerAutoCrit((player, target) -> {
-            Integer until = ASSASSINATE_UNTIL.get(player.getUuid());
-            if (until == null || player.getServer() == null)
-                return null;
-            ASSASSINATE_UNTIL.remove(player.getUuid());
-            if (player.getServer().getTicks() > until || Progression.classOf(player) != DndCharacter.ROGUE
+            if (!ASSASSINATE.take(player) || Progression.classOf(player) != DndCharacter.ROGUE
                     || !Progression.current(player).hasSubclass(ASSASSIN))
                 return null;
             return "Assassinate";
@@ -149,14 +138,13 @@ public class RogueSkills extends ClassSkills {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, ticks, 0));
         if (player.getServer() != null && Progression.classOf(player) == DndCharacter.ROGUE
                 && Progression.current(player).hasSubclass(ASSASSIN)) {
-            ASSASSINATE_UNTIL.put(player.getUuid(), player.getServer().getTicks() + ticks + ASSASSINATE_WINDOW_TICKS);
+            ASSASSINATE.start(player, ticks + ASSASSINATE_WINDOW_TICKS);
         }
     }
 
     @Override
     public void forget(ServerPlayerEntity player) {
-        int now = player.getServer().getTicks();
-        ASSASSINATE_UNTIL.values().removeIf(t -> now > t);
+        ASSASSINATE.prune(player.getServer());
     }
 
     @Override

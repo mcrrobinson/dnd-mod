@@ -59,8 +59,6 @@ public final class ThornwallType extends ObstacleType {
     public static final int BURN_SECONDS = 20;
     public static final int CUT_TICKS = 40;
     public static final float CUT_DAMAGE = 1.0f;
-    public static final float STING_DAMAGE = 2.0f;
-    public static final float FUMBLE_DAMAGE = 4.0f;
     public static final int FUMBLE_SLOWNESS_TICKS = 60;
     /** Chance per block per second of setting the air beside it alight while it burns. */
     public static final float SPREAD_CHANCE = 0.3f;
@@ -249,8 +247,7 @@ public final class ThornwallType extends ObstacleType {
     public void registerEvents() {
         PlayerBlockBreakEvents.BEFORE.register((world, player, pos, state, blockEntity) -> {
             if (!(world instanceof ServerWorld serverWorld) || player.isCreative()
-                    || !(state.getBlock() instanceof ObstacleBlock block) || block.type() != this
-                    || state.get(ObstacleBlock.STATE) != ObstacleState.SEALED) {
+                    || !isSealedMine(state)) {
                 return true;
             }
             cut(serverWorld, pos, state, player);
@@ -267,8 +264,7 @@ public final class ThornwallType extends ObstacleType {
             return ActionResult.PASS;
         }
         BlockState state = world.getBlockState(hit.getBlockPos());
-        if (!(state.getBlock() instanceof ObstacleBlock block) || block.type() != this
-                || state.get(ObstacleBlock.STATE) != ObstacleState.SEALED) {
+        if (!isSealedMine(state)) {
             return ActionResult.PASS;
         }
         if (world instanceof ServerWorld serverWorld && ignite(serverWorld, hit.getBlockPos(), player)

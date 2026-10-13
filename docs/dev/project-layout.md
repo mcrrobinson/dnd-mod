@@ -9,7 +9,7 @@ Where things live in the code.
 | Class stats and picking | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java`, `classes/CharacterCreation.java`, `classes/ClassInfo.java` (reads `data/dndclasses/class_info.json`) |
 | Class passives | `classes/` (`Druid`, `Warlock`, `MonkHandler`, `PotionImmunity`) and `classes/Misc/` |
 | Class specials | `classes/Misc/PowerUpEffect.java`, `classes/Effects/` |
-| Class XP, skill trees, ranks, subclasses, bestiary, Attunement Table | `classes/Progression/` (`Progression`, `ClassProgress`, `ClassTrees`, `Ranks`, `Subclass`, and one `Classes/<Class>Skills.java` per class), `classes/Blocks/AttunementTableBlock.java` |
+| Class XP, skill trees, ranks, subclasses, bestiary, Attunement Table | `classes/Progression/` (`Progression`, `ClassProgress`, `ClassTrees`, `Ranks`, `Subclass`, and one `Classes/<Class>Skills.java` per class; `SkillHelpers` has the shared targeting, summons, timed area effects (`startArea`), thrown-potion watching (`onLanding`) and per-player `Cooldowns`), `classes/Blocks/AttunementTableBlock.java` |
 | Ability scores, proficiency, skills, saves | `classes/Abilities/` (`AbilityScores`, `CharacterSheet`, `ClassSaveFeatures`) |
 | d20 rolls: checks, saves, attack rolls, lockpicking, stealth, perception, study, traps | `classes/SkillChecks/` (`D20`, `SavingThrow`, `AttackRolls`, `Lockpicking`, `Stealth`, `Perception`, `Study`, `TrapDisarm`) |
 | Rests, charges, Hit Dice, party camps | `classes/Rest/` |

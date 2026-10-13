@@ -32,7 +32,6 @@ public final class HeavyBoulderType extends ObstacleType {
     public static final float BLAST_RESISTANCE = 6.0f;
     public static final int FAIL_SLOWNESS_TICKS = 100;
     public static final int FAIL_SLOWNESS_AMPLIFIER = 1;
-    public static final float FUMBLE_DAMAGE = 4.0f;
 
     public HeavyBoulderType(Identifier id) {
         super(id);
@@ -78,7 +77,7 @@ public final class HeavyBoulderType extends ObstacleType {
         int cleared = 0;
         for (Direction direction : Direction.values()) {
             BlockPos next = pos.offset(direction);
-            if (!(world.getBlockState(next).getBlock() instanceof ObstacleBlock block) || block.type() != this) {
+            if (!isMine(world.getBlockState(next))) {
                 continue;
             }
             for (BlockPos part : ObstacleGroups.group(world, next)) {

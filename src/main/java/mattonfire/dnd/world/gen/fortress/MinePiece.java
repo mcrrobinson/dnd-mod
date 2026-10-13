@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.Tier;
 import net.minecraft.block.AmethystClusterBlock;

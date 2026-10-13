@@ -1,18 +1,15 @@
 package mattonfire.dnd.world.gen.camp;
 
 import com.mojang.serialization.Codec;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.world.gen.StructureProximity;
+import mattonfire.dnd.world.gen.TerrainColumns;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructure;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
@@ -48,7 +45,7 @@ public class GoblinCampStructure extends Structure {
                 || StructureProximity.near(context, ElvenEnclaveStructures.SET, ElvenEnclaveStructure.CAMP_CLEARANCE)) {
             return Optional.empty();
         }
-        Columns columns = new Columns(context);
+        TerrainColumns columns = new TerrainColumns(context);
         if (columns.water(x, z) || !columns.biomeAllowed(x, z)) {
             return Optional.empty();
         }
@@ -71,36 +68,6 @@ public class GoblinCampStructure extends Structure {
         BlockPos center = new BlockPos(x, y, z);
         return Optional.of(new StructurePosition(center,
                 collector -> collector.addPiece(new GoblinCampPiece(center, context.random().nextLong()))));
-    }
-
-    /**
-     * Terrain samples for one site check: each column's surface (and, if asked, ocean floor) is read
-     * from the noise generator once, not again for every test that needs it.
-     */
-    private static final class Columns {
-        private final Context context;
-        private final Map<Long, Integer> ground = new HashMap<>();
-
-        Columns(Context context) {
-            this.context = context;
-        }
-
-        /** y of the top block, from the noise generator before anything is built. */
-        int ground(int x, int z) {
-            return this.ground.computeIfAbsent(ChunkPos.toLong(x, z), key -> this.context.chunkGenerator()
-                    .getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, this.context.world(), this.context.noiseConfig()) - 1);
-        }
-
-        boolean water(int x, int z) {
-            return this.context.chunkGenerator().getHeight(x, z, Heightmap.Type.OCEAN_FLOOR_WG, this.context.world(),
-                    this.context.noiseConfig()) < this.ground(x, z) + 1;
-        }
-
-        boolean biomeAllowed(int x, int z) {
-            return this.context.biomePredicate().test(this.context.biomeSource().getBiome(BiomeCoords.fromBlock(x),
-                    BiomeCoords.fromBlock(this.ground(x, z)), BiomeCoords.fromBlock(z),
-                    this.context.noiseConfig().getMultiNoiseSampler()));
-        }
     }
 
     @Override

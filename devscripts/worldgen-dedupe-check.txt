@@ -1,0 +1,56 @@
+# Generates one of each mod structure fresh, so two builds can be compared block for block (the worldgen piece
+# refactor must not change a single block). The spots are what worldgen-locate.txt finds in the dev world's seed.
+# Run on a fresh copy of the dev world each time, so every chunk here generates during the run:
+#   rm -rf run/saves/WGCheck && cp -r <pristine copy of run/saves/New World> run/saves/WGCheck
+#   timeout 900 ./gradlew runClient -PdevWorld=WGCheck -PdevScript=devscripts/worldgen-dedupe-check.txt
+# Then compare run/saves/WGCheck/region (and DIM-1/region) between the two builds: every chunk's block states and
+# block entities must match. Screenshots wg-<structure>.png show each one from above.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+hud off
+/tp @s 38112 160 40496 0 90
+wait 300
+screenshot wg-village
+/tp @s 39296 200 40240 0 90
+wait 300
+screenshot wg-fortress
+/tp @s 43152 160 42016 0 90
+wait 300
+screenshot wg-enclave
+/tp @s 32176 200 34352 0 90
+wait 300
+screenshot wg-temple
+/tp @s 35664 160 38688 0 90
+wait 300
+screenshot wg-stronghold
+/tp @s 38224 140 40768 0 90
+wait 300
+screenshot wg-cogsdeep
+/tp @s 39504 100 39536 0 90
+wait 300
+/tp @s 40448 100 39408 0 90
+wait 300
+/tp @s 38976 100 40528 0 90
+wait 300
+/tp @s 38304 140 39024 0 90
+wait 300
+screenshot wg-camp
+/tp @s 38656 240 41968 0 90
+wait 300
+screenshot wg-lair
+/tp @s 36736 240 43312 0 90
+wait 300
+/tp @s 39376 140 39392 0 90
+wait 300
+/execute in minecraft:the_nether run tp @s 7120 120 3632 0 90
+wait 300
+screenshot wg-sanctum
+hud on
+/execute in minecraft:overworld run tp @s 40000 200 40000
+wait 100
+quit

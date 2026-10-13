@@ -8,6 +8,7 @@ import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.LairDragonEntity;
 import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -245,8 +246,8 @@ public class LairPiece extends StructurePiece {
             Direction side = Direction.Type.HORIZONTAL.random(random);
             BlockPos at = chest.offset(side, 2);
             if (chunkBox.contains(at)) {
-                world.setBlockState(at, Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
-                world.setBlockState(at.up(), Blocks.AIR.getDefaultState(), Block.NOTIFY_LISTENERS);
+                world.setBlockState(at, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
+                world.setBlockState(at.up(), Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
                 MimicEntity mimic = MimicEntity.disguised(world.toServerWorld(), at, side, this.kind.hoard);
                 if (mimic != null) {
                     world.spawnEntity(mimic);
@@ -368,7 +369,7 @@ public class LairPiece extends StructurePiece {
 
     private static void set(StructureWorldAccess world, BlockBox chunkBox, BlockPos pos, BlockState state) {
         if (chunkBox.contains(pos)) {
-            world.setBlockState(pos, state, 2);
+            world.setBlockState(pos, state, PieceBlocks.UPDATE);
         }
     }
 
@@ -389,7 +390,7 @@ public class LairPiece extends StructurePiece {
             }
             Block rock = frost ? (i > 2 ? Blocks.STONE : r < 0.15F ? Blocks.PACKED_ICE : Blocks.SNOW_BLOCK)
                     : i > 0 ? Blocks.STONE : r < 0.15F ? Blocks.ANDESITE : r < 0.22F ? Blocks.GRAVEL : Blocks.STONE;
-            world.setBlockState(pos, rock.getDefaultState(), 2);
+            world.setBlockState(pos, rock.getDefaultState(), PieceBlocks.UPDATE);
             pos.move(Direction.DOWN);
         }
     }

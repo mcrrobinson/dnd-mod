@@ -32,7 +32,7 @@ Where things live in the code.
 | Dungeon Master tools | `dm/` (`encounter/` has the data-driven encounters) |
 | Hobbit Tavern (bounty board, ale, rooms) | `tavern/` |
 | Models, renderers, particles | `client/model/`, `client/renderer/`, `particle/` |
-| Structures and spawns | `world/gen/` (`village/`, `fortress/`, `lair/`, `camp/`, `beholder/`, `dungeon/`, `enclave/`, `temple/`, `stronghold/`, `sanctum/`, `ModSpawns.java`) |
+| Structures and spawns | `world/gen/` (`village/`, `fortress/`, `lair/`, `camp/`, `beholder/`, `dungeon/`, `enclave/`, `temple/`, `stronghold/`, `sanctum/`, `burrow/`, `ModSpawns.java`); shared piece code in `world/gen/ModPiece.java` (a piece's seed, `generate` and the `Builder` basics: `set`, `fill`, `get`, `propUp`, `container`, `chest`, `mimic`, `frame`, `npc`, ...), `FacingPiece.java` (turned the vanilla way), `OrientedPiece.java` (turned round a centre), `PieceBlocks.java` (block states, loot ids, the `UPDATE` flags) and `TerrainColumns.java` (cached height, water and biome samples for site checks); the `/dndhome` surveys share `classes/Commands/HomeCommandUtil.java` |
 | Data (loot, tags, structures, advancements, quests, dialogue, factions, saves, encounters) | `src/main/resources/data/dndclasses/` |
 | Assets (geo models, animations, textures, sounds, lang) | `src/main/resources/assets/dndclasses/` |
 

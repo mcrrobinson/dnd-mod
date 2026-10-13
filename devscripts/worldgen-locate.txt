@@ -1,0 +1,41 @@
+# Finds one of each mod structure far from the dev world's explored area (round 40000 40000, and 5000 5000 in the
+# Nether), for worldgen-dedupe-check.txt. Run on a fresh copy of the dev world (see that script).
+# Run: timeout 900 ./gradlew runClient -PdevWorld=WGCheck -PdevScript=devscripts/worldgen-locate.txt
+# Check: the [CHAT] "The nearest dndclasses:<id> is at [x, y, z]" lines in latest.log.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 40000 200 40000
+wait 40
+/locate structure dndclasses:hobbit_village
+waitserver 2
+/locate structure dndclasses:dwarven_fortress
+waitserver 2
+/locate structure dndclasses:elven_enclave
+waitserver 2
+/locate structure dndclasses:dragon_temple
+waitserver 2
+/locate structure dndclasses:orc_stronghold
+waitserver 2
+/locate structure dndclasses:cogsdeep
+waitserver 2
+/locate structure dndclasses:crypt
+waitserver 2
+/locate structure dndclasses:dwarven_ruin
+waitserver 2
+/locate structure dndclasses:goblin_warren
+waitserver 2
+/locate structure dndclasses:goblin_camp
+waitserver 2
+/locate structure dndclasses:dragon_lair
+waitserver 2
+/locate structure dndclasses:frost_lair
+waitserver 2
+/locate structure dndclasses:beholder_lair
+waitserver 2
+/execute in minecraft:the_nether run tp @s 5000 100 5000
+wait 40
+/locate structure dndclasses:brimstone_sanctum
+waitserver 2
+wait 40
+quit

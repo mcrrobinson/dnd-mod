@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.stronghold;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
@@ -36,7 +38,7 @@ public class GatehousePiece extends StrongholdPiece {
                 for (int dx = -1; dx <= 1; dx++) {
                     for (int dz = -1; dz <= 1; dz++) {
                         boolean corner = Math.abs(dx) == 1 && Math.abs(dz) == 1;
-                        b.set(x + dx, y, w + dz, log(corner ? Blocks.DARK_OAK_LOG : Blocks.STRIPPED_DARK_OAK_LOG, Direction.Axis.Y));
+                        b.set(x + dx, y, w + dz, pillar(corner ? Blocks.DARK_OAK_LOG : Blocks.STRIPPED_DARK_OAK_LOG, Direction.Axis.Y));
                     }
                 }
                 b.foundation(x, 0, w, Blocks.TERRACOTTA.getDefaultState(), 16);
@@ -66,11 +68,11 @@ public class GatehousePiece extends StrongholdPiece {
         }
         // The gate: posts, a lintel of logs and a row of skulls.
         for (int y = 1; y <= 5; y++) {
-            b.set(-2, y, w, log(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
-            b.set(2, y, w, log(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+            b.set(-2, y, w, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+            b.set(2, y, w, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
         }
         for (int x = -2; x <= 2; x++) {
-            b.set(x, 6, w, log(Blocks.DARK_OAK_LOG, Direction.Axis.X));
+            b.set(x, 6, w, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.X));
         }
         for (int x = -2; x <= 2; x++) {
             b.set(x, 7, w, x == 0 ? Blocks.WITHER_SKELETON_SKULL.getDefaultState() : skull(b.random));

@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.temple;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.classes.Race.DragonAncestry;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

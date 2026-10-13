@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.dungeon;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import java.util.List;
 import mattonfire.dnd.dungeon.RoomRole;
 import net.minecraft.block.Blocks;

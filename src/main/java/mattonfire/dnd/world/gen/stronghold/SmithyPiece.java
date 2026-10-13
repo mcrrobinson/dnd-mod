@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.stronghold;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -37,7 +39,7 @@ public class SmithyPiece extends StrongholdPiece {
         // Corner posts.
         for (int x : new int[]{A1, A2}) {
             for (int z : new int[]{B1, B2}) {
-                b.fill(x, 1, z, x, 4, z, log(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+                b.fill(x, 1, z, x, 4, z, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
             }
         }
         // The forge: a blackstone back wall, the furnaces and a lava channel in front of it.

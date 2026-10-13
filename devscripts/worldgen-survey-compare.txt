@@ -1,0 +1,32 @@
+# Runs each /dndhome acceptance survey once, small, round the spots worldgen-locate.txt finds in the dev world's
+# seed, so the survey output can be compared between two builds (the HomeCommandUtil refactor must not change it).
+# Run on a fresh copy of the dev world (see worldgen-dedupe-check.txt):
+#   timeout 900 ./gradlew runClient -PdevWorld=WGCheck -PdevScript=devscripts/worldgen-survey-compare.txt
+# Check: the "[StrongholdSurvey]", "[CogsdeepSurvey]", "[TempleSurvey]" and "[SanctumSurvey]" [CHAT] lines.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 35664 160 38688
+wait 100
+/dndhome strongholdsurvey 1
+waitserver 2
+/dndhome stronghold pit
+waitserver 2
+/tp @s 38224 140 40768
+wait 100
+/dndhome cogsdeepsurvey 1
+waitserver 2
+/dndhome cogsdeep commons
+waitserver 2
+/tp @s 32176 200 34352
+wait 100
+/dndhome templesurvey 1
+waitserver 2
+/execute in minecraft:the_nether run tp @s 7120 120 3632
+wait 100
+/dndhome sanctumsurvey 1
+waitserver 2
+/dndhome sanctum hall
+waitserver 2
+wait 40
+quit

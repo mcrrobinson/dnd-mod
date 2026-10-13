@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.sanctum;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

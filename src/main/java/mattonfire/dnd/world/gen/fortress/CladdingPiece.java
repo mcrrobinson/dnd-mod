@@ -1,6 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
 import java.util.List;
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -143,13 +144,13 @@ public class CladdingPiece extends StructurePiece {
                     } else {
                         state = ((MathHelper.hashCode(x, fy, z) >>> 24) & 7) == 0 ? Blocks.ANDESITE.getDefaultState() : Blocks.STONE.getDefaultState();
                     }
-                    world.setBlockState(pos, state, 2);
+                    world.setBlockState(pos, state, PieceBlocks.UPDATE);
                 }
                 // The top half of a tall plant that stood on the old ground would be left floating.
                 pos.setY(top + 1);
                 BlockState above = world.getBlockState(pos);
                 if (!above.isAir() && isOpen(above)) {
-                    world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                    world.setBlockState(pos, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
                 }
             }
         }

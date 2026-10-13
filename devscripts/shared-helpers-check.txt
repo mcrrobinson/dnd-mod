@@ -10,6 +10,11 @@
 wait 40
 closescreen
 include _reset.txt
+# A class and race keep the pickers (which pause the game) from opening mid-test
+/dndrace set @s human
+/dndclass set @s fighter
+wait 10
+closescreen
 /gamemode survival
 /gamerule doDaylightCycle false
 /difficulty normal
@@ -23,19 +28,23 @@ include _reset.txt
 /time set 1000
 /item replace entity @s hotbar.0 with dndclasses:wand_of_magic_missiles{dndclasses_magic:{charges:0,dawnDay:0L}}
 /item replace entity @s hotbar.1 with dndclasses:eye_of_the_tyrant{dndclasses_magic:{charges:0,dawnDay:0L}}
-wait 30
+closescreen
+waitserver 45
 /data get entity @s Inventory[{Slot:0b}].tag.dndclasses_magic
 /data get entity @s Inventory[{Slot:1b}].tag.dndclasses_magic
 /time add 24000
-wait 30
+closescreen
+waitserver 45
 /data get entity @s Inventory[{Slot:0b}].tag.dndclasses_magic
 /data get entity @s Inventory[{Slot:1b}].tag.dndclasses_magic
 /time add 24000
-wait 30
+closescreen
+waitserver 45
 /data get entity @s Inventory[{Slot:1b}].tag.dndclasses_magic
 screenshot helpers-dawn
 # --- Warhorn readyAt (MagicData.readyIn / setReadyAt) ---
 /clear @s
+/kill @e[type=item,distance=..20]
 /item replace entity @s hotbar.0 with dndclasses:warlords_warhorn
 hotbar 0
 look 0 0

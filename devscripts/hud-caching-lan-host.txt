@@ -1,0 +1,52 @@
+# Client HUD caching check (host side): the party HUD rows are built once per packet, so they must still
+# follow the guest's health, the boss bar squeeze and the Downed death-save row. Also checks a LAN guest can
+# join at all (DevScript turns the integrated server's online mode off once, on SERVER_STARTED).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/hud-caching-lan-host.txt
+# then, once the log says "Started serving on": timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevScript=devscripts/hud-caching-lan-guest.txt
+# Output: screenshots hudcache-party-{full,hurt,bossbar,nobossbar,downed,downed-saves,revived}.png; the log has "[DevScript] waitchat ... seen".
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule sendCommandFeedback false
+/time set 1000
+/weather clear
+/fill 100 199 100 110 199 110 minecraft:stone
+/fill 100 200 100 110 205 110 minecraft:air
+/tp @s 102.5 200 102.5 0 10
+/publish false survival 25617
+waitchat DevGuest_run_2 joined the game
+wait 60
+/tp @a[distance=1..] 105.5 200 106.5 180 0
+/gamemode survival @a[distance=1..]
+/effect clear @a[distance=1..]
+/party invite @a[distance=1..,limit=1]
+waitchat joined the party
+wait 40
+hud on
+screenshot hudcache-party-full
+/damage @a[distance=1..,limit=1] 9 minecraft:generic
+wait 30
+screenshot hudcache-party-hurt
+/bossbar add dndclasses:hudcache "HUD cache test boss bar"
+/bossbar set dndclasses:hudcache players @a
+wait 20
+screenshot hudcache-party-bossbar
+/bossbar remove dndclasses:hudcache
+wait 20
+screenshot hudcache-party-nobossbar
+/damage @a[distance=1..,limit=1] 15 minecraft:generic
+wait 40
+screenshot hudcache-party-downed
+wait 160
+screenshot hudcache-party-downed-saves
+/dndclass revive @a[distance=1..,limit=1]
+/effect give @a[distance=1..] minecraft:instant_health 1 5 true
+wait 40
+screenshot hudcache-party-revived
+/party leave
+/say hudcache-done
+wait 60
+quit

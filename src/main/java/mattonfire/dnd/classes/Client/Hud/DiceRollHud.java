@@ -219,39 +219,16 @@ public final class DiceRollHud {
         float fade = MathHelper.clamp((ROLL_TICKS + SHOW_TICKS - life) / FADE_TICKS, 0.0f, 1.0f);
         int alpha = Math.max(8, (int) (fade * 255)) << 24;
 
-        MutableText title = roll.label().copy().formatted(Formatting.BOLD);
-        for (D20.Bonus bonus : roll.bonuses()) {
-            title.append(Text.literal("  " + (bonus.amount() < 0 ? "" : "+") + bonus.amount() + " ")
-                    .append(bonus.label()).formatted(Formatting.GRAY).styled(st -> st.withBold(false)));
+        // The panel's text changes only when a roll arrives, the die lands, or the Lucky clover flashes, so it's
+        // built and measured then rather than every frame
+        boolean flash = !rolling && roll.rerolled() > 0 && age - ROLL_TICKS < LUCKY_FLASH_TICKS && (age / 3) % 2 == 0;
+        if (roll != linesRoll || detail != linesDetail || rolling != linesRolling || flash != linesFlash) {
+            buildLines(text, rolling, flash);
         }
-        Text sum;
-        Text outcome;
-        if (rolling) {
-            sum = Text.translatable("skill.dndclasses.rolling");
-            outcome = Text.empty();
-        } else {
-            MutableText line = Text.literal(Integer.toString(roll.natural()));
-            if (roll.natural2() > 0) {
-                line.append(Text.literal(" (" + roll.natural2() + ")").formatted(Formatting.DARK_GRAY))
-                        .append(Text.translatable(roll.mode() == Advantage.ADVANTAGE ? "skill.dndclasses.advantage"
-                                : "skill.dndclasses.disadvantage").formatted(Formatting.GRAY));
-            }
-            line.append(" " + (roll.modifier() < 0 ? "- " : "+ ") + Math.abs(roll.modifier()) + " = " + roll.total());
-            if (roll.dc() > 0 && !roll.secret()) {
-                line.append(Text.translatable("skill.dndclasses.vs_dc", roll.dc()));
-            }
-            if (roll.rerolled() > 0) {
-                // Halfling Lucky: a clover that flashes as the die settles
-                boolean flash = age - ROLL_TICKS < LUCKY_FLASH_TICKS && (age / 3) % 2 == 0;
-                line.append(Text.translatable("skill.dndclasses.lucky")
-                        .formatted(flash ? Formatting.WHITE : Formatting.GREEN));
-            }
-            sum = line;
-            outcome = roll.secret() ? detail.copy()
-                    : Text.translatable(roll.outcome().translationKey()).append(Text.literal(" - ").append(detail));
-        }
-
-        int textWidth = Math.max(text.getWidth(title), Math.max(text.getWidth(sum), text.getWidth(outcome)));
+        Text title = linesTitle;
+        Text sum = linesSum;
+        Text outcome = linesOutcome;
+        int textWidth = linesWidth;
         boolean twoDice = roll.natural2() > 0;
         int diceWidth = twoDice ? DIE_SIZE + 2 + SMALL_DIE_SIZE : DIE_SIZE;
         int width = diceWidth + 6 + textWidth;
@@ -317,6 +294,58 @@ public final class DiceRollHud {
                     (roll.secret() ? 0xD0D0D0 : roll.outcome().color()) | alpha);
         }
         RenderSystem.disableBlend();
+    }
+
+    /** The roll, detail and state the cached panel lines were built for (render thread only). */
+    private static D20.Roll linesRoll;
+    private static Text linesDetail;
+    private static boolean linesRolling;
+    private static boolean linesFlash;
+    private static Text linesTitle;
+    private static Text linesSum;
+    private static Text linesOutcome;
+    private static int linesWidth;
+
+    /** Builds and measures the panel's title, sum and outcome lines for the current roll. */
+    private static void buildLines(TextRenderer text, boolean rolling, boolean flash) {
+        MutableText title = roll.label().copy().formatted(Formatting.BOLD);
+        for (D20.Bonus bonus : roll.bonuses()) {
+            title.append(Text.literal("  " + (bonus.amount() < 0 ? "" : "+") + bonus.amount() + " ")
+                    .append(bonus.label()).formatted(Formatting.GRAY).styled(st -> st.withBold(false)));
+        }
+        Text sum;
+        Text outcome;
+        if (rolling) {
+            sum = Text.translatable("skill.dndclasses.rolling");
+            outcome = Text.empty();
+        } else {
+            MutableText line = Text.literal(Integer.toString(roll.natural()));
+            if (roll.natural2() > 0) {
+                line.append(Text.literal(" (" + roll.natural2() + ")").formatted(Formatting.DARK_GRAY))
+                        .append(Text.translatable(roll.mode() == Advantage.ADVANTAGE ? "skill.dndclasses.advantage"
+                                : "skill.dndclasses.disadvantage").formatted(Formatting.GRAY));
+            }
+            line.append(" " + (roll.modifier() < 0 ? "- " : "+ ") + Math.abs(roll.modifier()) + " = " + roll.total());
+            if (roll.dc() > 0 && !roll.secret()) {
+                line.append(Text.translatable("skill.dndclasses.vs_dc", roll.dc()));
+            }
+            if (roll.rerolled() > 0) {
+                // Halfling Lucky: a clover that flashes as the die settles
+                line.append(Text.translatable("skill.dndclasses.lucky")
+                        .formatted(flash ? Formatting.WHITE : Formatting.GREEN));
+            }
+            sum = line;
+            outcome = roll.secret() ? detail.copy()
+                    : Text.translatable(roll.outcome().translationKey()).append(Text.literal(" - ").append(detail));
+        }
+        linesTitle = title;
+        linesSum = sum;
+        linesOutcome = outcome;
+        linesWidth = Math.max(text.getWidth(title), Math.max(text.getWidth(sum), text.getWidth(outcome)));
+        linesRoll = roll;
+        linesDetail = detail;
+        linesRolling = rolling;
+        linesFlash = flash;
     }
 
     /**

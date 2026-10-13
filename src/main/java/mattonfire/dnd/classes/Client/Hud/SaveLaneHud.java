@@ -57,6 +57,14 @@ public final class SaveLaneHud {
         Text detail;
         int count;
         int age;
+        /**
+         * The fitted line and its width, built when the row arrives or changes (a merged save, the die landing,
+         * a new screen width), not every frame. Render thread only.
+         */
+        Text line;
+        int lineWidth;
+        boolean lineLanded;
+        int lineMaxText = -1;
 
         Row(D20.Roll roll, Text detail, int count) {
             this.roll = roll;
@@ -96,6 +104,7 @@ public final class SaveLaneHud {
                 row.detail = detail;
                 row.count += count;
                 row.age = SPIN_TICKS; // refresh without spinning again
+                row.line = null;
                 if (!roll.secret()) {
                     play(client, roll.outcome().sound(), natural ? 1.0f : QUIET);
                 }
@@ -255,8 +264,14 @@ public final class SaveLaneHud {
             float fade = MathHelper.clamp((SPIN_TICKS + HOLD_TICKS + FADE_TICKS - life) / FADE_TICKS, 0.0f, 1.0f);
             int alpha = Math.max(8, (int) (fade * 255)) << 24;
             int y = top + i * ROW_HEIGHT;
-            Text line = fit(text, row.roll, row.detail, row.count, !spinning, maxText);
-            int lineWidth = text.getWidth(line);
+            if (row.line == null || row.lineLanded == spinning || row.lineMaxText != maxText) {
+                row.line = fit(text, row.roll, row.detail, row.count, !spinning, maxText);
+                row.lineWidth = text.getWidth(row.line);
+                row.lineLanded = !spinning;
+                row.lineMaxText = maxText;
+            }
+            Text line = row.line;
+            int lineWidth = row.lineWidth;
             float scale = lineWidth > maxText && maxText > 0 ? Math.max(0.5f, maxText / (float) lineWidth) : 1.0f;
             int width = DIE_SIZE + 4 + MathHelper.ceil(lineWidth * scale);
             int x = Math.max(minX, Math.min(left, maxRight - width));

@@ -1,33 +1,15 @@
 package mattonfire.dnd.world.gen.burrow;
 
-import java.util.function.Consumer;
-import mattonfire.dnd.classes.DnDClasses;
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.world.gen.OrientedPiece;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ChainBlock;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.block.LanternBlock;
-import net.minecraft.block.PaneBlock;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.block.WallBlock;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.enums.BlockHalf;
-import net.minecraft.block.enums.SlabType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.entity.mob.PathAwareEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtHelper;
-import net.minecraft.state.property.Properties;
 import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
-import net.minecraft.util.BlockRotation;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -35,8 +17,6 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 /**
  * Base for the Cogsdeep pieces, laid out like the Brimstone Sanctum's: local {@code a} runs across (east when
@@ -49,7 +29,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
  * draw happens whether or not its block lands in the chunk. Each piece carries its burrow's key (the start
  * chunk, {@link ChunkPos#toLong}).
  */
-public abstract class CogsdeepPiece extends StructurePiece {
+public abstract class CogsdeepPiece extends OrientedPiece<CogsdeepPiece.Builder> {
     /** The chests and barrels of the two workshops. Not locked. */
     public static final Identifier WORKSHOP_LOOT = loot("cogsdeep_workshop");
     /** The gem-polishing room's chest (DC 10). */
@@ -59,104 +39,38 @@ public abstract class CogsdeepPiece extends StructurePiece {
     /** The chest in the Commons and the observatory's. Not locked. */
     public static final Identifier COMMONS_LOOT = loot("cogsdeep_commons");
 
-    protected final BlockPos center;
-    protected final Direction door;
-    protected final long seed;
     protected final long burrow;
 
     protected CogsdeepPiece(StructurePieceType type, BlockPos center, Direction door, long seed, long burrow,
                             int a1, int y1, int b1, int a2, int y2, int b2) {
-        super(type, 0, box(center, door, a1, y1, b1, a2, y2, b2));
-        this.center = center;
-        this.door = door;
-        this.seed = seed;
+        super(type, "Door", center, door, seed, a1, y1, b1, a2, y2, b2);
         this.burrow = burrow;
     }
 
     protected CogsdeepPiece(StructurePieceType type, NbtCompound nbt) {
-        super(type, nbt);
-        this.center = NbtHelper.toBlockPos(nbt.getCompound("Center"));
-        this.door = Direction.fromHorizontal(nbt.getInt("Door"));
-        this.seed = nbt.getLong("Seed");
+        super(type, "Door", nbt);
         this.burrow = nbt.getLong("Burrow");
     }
 
-    private static Identifier loot(String name) {
-        return new Identifier(DnDClasses.MOD_ID, "chests/" + name);
-    }
-
-    /** The rotation that turns "the door faces south" into the real door direction. */
-    public static BlockRotation rotation(Direction door) {
-        for (BlockRotation rotation : BlockRotation.values()) {
-            if (rotation.rotate(Direction.SOUTH) == door) {
-                return rotation;
-            }
-        }
-        return BlockRotation.NONE;
-    }
-
-    /** The world position of local (a, y, b) round {@code center} with the observatory door towards {@code door}. */
-    public static BlockPos at(BlockPos center, Direction door, int a, int y, int b) {
-        return center.add(new BlockPos(a, y, b).rotate(rotation(door)));
-    }
-
-    static BlockBox box(BlockPos center, Direction door, int a1, int y1, int b1, int a2, int y2, int b2) {
-        return BlockBox.create(at(center, door, a1, y1, b1), at(center, door, a2, y2, b2));
-    }
-
-    public BlockPos at(int a, int y, int b) {
-        return at(this.center, this.door, a, y, b);
-    }
-
     /** The piece's reference point: the stair axis at its floor (burrow rooms) or at the ground (observatory). */
+    @Override
     public BlockPos center() {
         return this.center;
     }
 
     public Direction door() {
-        return this.door;
+        return this.front;
     }
 
     @Override
     protected void writeNbt(StructureContext context, NbtCompound nbt) {
-        nbt.put("Center", NbtHelper.fromBlockPos(this.center));
-        nbt.putInt("Door", this.door.getHorizontal());
-        nbt.putLong("Seed", this.seed);
+        super.writeNbt(context, nbt);
         nbt.putLong("Burrow", this.burrow);
     }
 
     @Override
-    public final void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator,
-                               Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-        this.build(new Builder(world, chunkBox, Random.create(this.seed)));
-    }
-
-    protected abstract void build(Builder b);
-
-    // ---- Block state helpers (written as if the door faced south) ----
-
-    protected static BlockState stairs(Block block, Direction facing, boolean upsideDown) {
-        return block.getDefaultState().with(StairsBlock.FACING, facing)
-                .with(StairsBlock.HALF, upsideDown ? BlockHalf.TOP : BlockHalf.BOTTOM);
-    }
-
-    protected static BlockState slab(Block block, boolean top) {
-        return block.getDefaultState().with(SlabBlock.TYPE, top ? SlabType.TOP : SlabType.BOTTOM);
-    }
-
-    protected static BlockState lantern(boolean hanging) {
-        return Blocks.LANTERN.getDefaultState().with(LanternBlock.HANGING, hanging);
-    }
-
-    protected static BlockState facing(Block block, Direction facing) {
-        BlockState state = block.getDefaultState();
-        if (state.contains(Properties.HORIZONTAL_FACING)) {
-            return state.with(Properties.HORIZONTAL_FACING, facing);
-        }
-        if (state.contains(Properties.FACING)) {
-            return state.with(Properties.FACING, facing);
-        }
-        return state;
+    protected Builder builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
+        return new Builder(world, chunkBox, random);
     }
 
     /** The burrow's stonework: stone bricks with some cracked, mossy and tuff blocks. */
@@ -174,78 +88,15 @@ public abstract class CogsdeepPiece extends StructurePiece {
     }
 
     /** Places blocks, containers and folk for one chunk's slice of a piece, in local coordinates. */
-    protected class Builder {
-        final StructureWorldAccess world;
-        final BlockBox chunkBox;
-        final Random random;
-        private final BlockRotation rotation;
-
+    protected class Builder extends OrientedPiece<Builder>.Builder {
         Builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
-            this.world = world;
-            this.chunkBox = chunkBox;
-            this.random = random;
-            this.rotation = rotation(CogsdeepPiece.this.door);
+            super(world, chunkBox, random);
         }
 
-        BlockPos pos(int a, int y, int b) {
-            return CogsdeepPiece.this.at(a, y, b);
-        }
-
-        boolean chance(float p) {
-            return this.random.nextFloat() < p;
-        }
-
-        <T> T pick(T[] options) {
-            return options[this.random.nextInt(options.length)];
-        }
-
-        Direction dir(Direction local) {
-            return this.rotation.rotate(local);
-        }
-
-        void set(int a, int y, int b, BlockState state) {
-            BlockPos pos = this.pos(a, y, b);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            BlockState rotated = state.rotate(this.rotation);
-            this.world.setBlockState(pos, rotated, Block.NOTIFY_LISTENERS);
-            Block block = rotated.getBlock();
-            // Shapes that join up with their neighbours get fixed once the chunk is finished.
-            if (block instanceof PaneBlock || block instanceof StairsBlock || block instanceof WallBlock
-                    || block instanceof FenceBlock || block instanceof ChainBlock) {
-                this.world.getChunk(pos).markBlockForPostProcessing(pos);
-            }
-        }
-
-        void set(int a, int y, int b, Block block) {
-            this.set(a, y, b, block.getDefaultState());
-        }
-
-        BlockState get(int a, int y, int b) {
+        /** The block at local a/y/b, read even outside this chunk. */
+        @Override
+        public BlockState get(int a, int y, int b) {
             return this.world.getBlockState(this.pos(a, y, b));
-        }
-
-        boolean inChunk(int a, int y, int b) {
-            return this.chunkBox.contains(this.pos(a, y, b));
-        }
-
-        void fill(int a1, int y1, int b1, int a2, int y2, int b2, BlockState state) {
-            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-                for (int a = Math.min(a1, a2); a <= Math.max(a1, a2); a++) {
-                    for (int b = Math.min(b1, b2); b <= Math.max(b1, b2); b++) {
-                        this.set(a, y, b, state);
-                    }
-                }
-            }
-        }
-
-        void fill(int a1, int y1, int b1, int a2, int y2, int b2, Block block) {
-            this.fill(a1, y1, b1, a2, y2, b2, block.getDefaultState());
-        }
-
-        void air(int a1, int y1, int b1, int a2, int y2, int b2) {
-            this.fill(a1, y1, b1, a2, y2, b2, Blocks.AIR);
         }
 
         /**
@@ -284,28 +135,7 @@ public abstract class CogsdeepPiece extends StructurePiece {
          * (at most {@code max} blocks).
          */
         void foundation(int a, int y, int b, BlockState fill, int max) {
-            BlockPos.Mutable pos = this.pos(a, y - 1, b).mutableCopy();
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            for (int i = 0; i < max && pos.getY() > this.world.getBottomY(); i++) {
-                BlockState state = this.world.getBlockState(pos);
-                if (!state.isAir() && state.getFluidState().isEmpty() && !state.isReplaceable()) {
-                    return;
-                }
-                this.world.setBlockState(pos, fill, Block.NOTIFY_LISTENERS);
-                pos.move(Direction.DOWN);
-            }
-        }
-
-        /** A chest or barrel filled from a loot table when first opened. */
-        void container(int a, int y, int b, BlockState state, Identifier lootTable) {
-            long lootSeed = this.random.nextLong();
-            this.set(a, y, b, state);
-            BlockPos pos = this.pos(a, y, b);
-            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
-                container.setLootTable(lootTable, lootSeed);
-            }
+            this.propUp(a, y, b, fill, max, false);
         }
 
         /** A lantern hanging on a chain {@code chain} long from the ceiling block above {@code top}. */
@@ -314,40 +144,6 @@ public abstract class CogsdeepPiece extends StructurePiece {
                 this.set(a, y, b, Blocks.CHAIN);
             }
             this.set(a, top - chain, b, lantern(true));
-        }
-
-        /** An item frame on the face of the block behind it (or lying on the block below, facing up). */
-        void frame(int a, int y, int b, Direction facing, ItemStack stack) {
-            BlockPos pos = this.pos(a, y, b);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            ItemFrameEntity frame = new ItemFrameEntity(this.world.toServerWorld(), pos,
-                    facing.getAxis().isVertical() ? facing : this.dir(facing));
-            frame.setSilent(true);
-            frame.setHeldItemStack(stack, false);
-            frame.setSilent(false);
-            this.world.spawnEntity(frame);
-        }
-
-        /**
-         * A settlement NPC of {@code type} living here, keeping near this spot ({@code setup} sets its home and runs
-         * before it's added: worldgen saves entities straight away, so later changes would be lost).
-         */
-        <E extends PathAwareEntity> void npc(int a, int y, int b, EntityType<E> type, Consumer<E> setup) {
-            float yaw = this.random.nextFloat() * 360.0F;
-            BlockPos pos = this.pos(a, y, b);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            E npc = type.create(this.world.toServerWorld());
-            if (npc == null) {
-                return;
-            }
-            npc.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
-            npc.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-            setup.accept(npc);
-            this.world.spawnEntityAndPassengers(npc);
         }
 
         /** A Gnome Tinker keeping within {@code range} of this spot. */

@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.temple;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;

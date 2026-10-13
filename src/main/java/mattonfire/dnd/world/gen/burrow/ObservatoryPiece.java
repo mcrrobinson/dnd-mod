@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;

@@ -28,7 +28,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.structure.Structure;
 
 /** The Orc Stronghold parts of {@link DndHomeCommand}: teleports, the badlands survey and the Trial records. */
@@ -43,14 +42,7 @@ final class StrongholdCommands {
 
     /** The start of the nearest stronghold to {@code from} (within 100 chunks), or null. */
     private static StructureStart nearest(ServerWorld world, BlockPos from) {
-        BlockPos found = world.locateStructure(STRONGHOLDS, from, 100, false);
-        Structure structure = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(OrcStrongholdStructures.KEY);
-        if (found == null || structure == null) {
-            return null;
-        }
-        StructureStart start = world.getChunk(found.getX() >> 4, found.getZ() >> 4, ChunkStatus.STRUCTURE_STARTS)
-                .getStructureStart(structure);
-        return start != null && start.hasChildren() ? start : null;
+        return HomeCommandUtil.nearestStart(world, STRONGHOLDS, OrcStrongholdStructures.KEY, from);
     }
 
     static int teleport(CommandContext<ServerCommandSource> context, String spot) throws CommandSyntaxException {
@@ -125,40 +117,18 @@ final class StrongholdCommands {
      * have all its pieces. Returns the number that pass.
      */
     static int survey(CommandContext<ServerCommandSource> context, int grid, int spacing) {
-        ServerCommandSource source = context.getSource();
-        ServerWorld world = source.getWorld();
-        BlockPos center = BlockPos.ofFloored(source.getPosition());
-        Set<Long> seen = new HashSet<>();
-        int pass = 0;
-        int fail = 0;
-        int half = (grid - 1) / 2;
-        for (int gx = -half; gx <= grid - 1 - half; gx++) {
-            for (int gz = -half; gz <= grid - 1 - half; gz++) {
-                StructureStart start = nearest(world, center.add(gx * spacing, 0, gz * spacing));
-                if (start == null || !seen.add(start.getPos().toLong())) {
-                    continue;
-                }
-                BlockPos middle = start.getBoundingBox().getCenter();
-                boolean badlands = world.getBiome(middle).isIn(BiomeTags.IS_BADLANDS);
-                Set<Identifier> kinds = new HashSet<>();
-                start.getChildren().forEach(piece -> kinds.add(Registries.STRUCTURE_PIECE.getId(piece.getType())));
-                boolean ok = badlands && kinds.size() == PIECE_KINDS;
-                if (ok) {
-                    pass++;
-                } else {
-                    fail++;
-                }
-                String line = "[StrongholdSurvey] stronghold at " + middle.getX() + " " + middle.getY() + " " + middle.getZ()
-                        + ": biome " + world.getBiome(middle).getKey().map(k -> k.getValue().toString()).orElse("?")
-                        + ", " + start.getChildren().size() + " pieces (" + kinds.size() + " kinds): " + (ok ? "PASS" : "FAIL");
-                DnDClasses.LOGGER.info(line);
-                source.sendFeedback(Text.literal(line), false);
-            }
-        }
-        String summary = "[StrongholdSurvey] " + (pass + fail) + " strongholds, " + pass + " pass, " + fail + " fail";
-        DnDClasses.LOGGER.info(summary);
-        source.sendFeedback(Text.literal(summary), false);
-        return pass;
+        ServerWorld world = context.getSource().getWorld();
+        return HomeCommandUtil.survey(context.getSource(), grid, spacing, "[StrongholdSurvey]", "strongholds",
+                from -> nearest(world, from), start -> start.getPos().toLong(), start -> {
+                    BlockPos middle = start.getBoundingBox().getCenter();
+                    boolean badlands = world.getBiome(middle).isIn(BiomeTags.IS_BADLANDS);
+                    Set<Identifier> kinds = new HashSet<>();
+                    start.getChildren().forEach(piece -> kinds.add(Registries.STRUCTURE_PIECE.getId(piece.getType())));
+                    boolean ok = badlands && kinds.size() == PIECE_KINDS;
+                    return new HomeCommandUtil.Check(ok, "[StrongholdSurvey] stronghold at " + middle.getX() + " " + middle.getY()
+                            + " " + middle.getZ() + ": biome " + world.getBiome(middle).getKey().map(k -> k.getValue().toString()).orElse("?")
+                            + ", " + start.getChildren().size() + " pieces (" + kinds.size() + " kinds): " + (ok ? "PASS" : "FAIL"));
+                });
     }
 
     /** The hold the command's source stands in, or null (with an error). */

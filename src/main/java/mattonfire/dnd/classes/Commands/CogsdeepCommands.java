@@ -64,14 +64,7 @@ final class CogsdeepCommands {
 
     /** The start of the nearest burrow to {@code from} (within 100 chunks), or null. */
     private static StructureStart nearest(ServerWorld world, BlockPos from) {
-        BlockPos found = world.locateStructure(COGSDEEPS, from, 100, false);
-        Structure structure = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(CogsdeepStructures.KEY);
-        if (found == null || structure == null) {
-            return null;
-        }
-        StructureStart start = world.getChunk(found.getX() >> 4, found.getZ() >> 4, ChunkStatus.STRUCTURE_STARTS)
-                .getStructureStart(structure);
-        return start != null && start.hasChildren() ? start : null;
+        return HomeCommandUtil.nearestStart(world, COGSDEEPS, CogsdeepStructures.KEY, from);
     }
 
     private static <P extends StructurePiece> P piece(StructureStart start, Class<P> type, int nth) {
@@ -199,97 +192,75 @@ final class CogsdeepCommands {
 
     /** The acceptance survey (see the class notes). Generates each burrow's chunks to look. Returns the number that pass. */
     static int survey(CommandContext<ServerCommandSource> context, int grid, int spacing) {
-        ServerCommandSource source = context.getSource();
-        ServerWorld world = source.getWorld();
-        BlockPos center = BlockPos.ofFloored(source.getPosition());
-        Set<Long> seen = new HashSet<>();
-        int pass = 0;
-        int fail = 0;
-        int half = (grid - 1) / 2;
-        for (int gx = -half; gx <= grid - 1 - half; gx++) {
-            for (int gz = -half; gz <= grid - 1 - half; gz++) {
-                StructureStart start = nearest(world, center.add(gx * spacing, 0, gz * spacing));
-                if (start == null || !seen.add(start.getPos().toLong())) {
-                    continue;
-                }
-                ObservatoryPiece observatory = piece(start, ObservatoryPiece.class, 0);
-                CommonsPiece commons = piece(start, CommonsPiece.class, 0);
-                if (observatory == null || commons == null) {
-                    continue;
-                }
-                BlockPos door = observatory.center();
-                // The biome the generator placed it by (World.getBiome blurs the borders).
-                var biome = world.getBiomeForNoiseGen(door.getX() >> 2, door.getY() >> 2, door.getZ() >> 2);
-                String biomeId = biome.getKey().map(k -> k.getValue().toString()).orElse("?");
-                boolean biomeOk = biomeId.equals("minecraft:forest") || biomeId.equals("minecraft:flower_forest")
-                        || biomeId.equals("minecraft:meadow");
-                Set<Identifier> kinds = new HashSet<>();
-                start.getChildren().forEach(piece -> kinds.add(Registries.STRUCTURE_PIECE.getId(piece.getType())));
-                int floor = commons.center().getY();
-                int roof = floor + ClocktowerPiece.TOP;
-                // On the ground: the ground just outside the wall (8 blocks out), all round, is within 3 of the floor.
-                int offGround = 0;
-                for (int i = 0; i < 16; i++) {
-                    double angle = i * Math.PI / 8.0D;
-                    BlockPos out = door.add((int) Math.round(Math.cos(angle) * 8), 0, (int) Math.round(Math.sin(angle) * 8));
-                    if (Math.abs(ground(world, out) - door.getY()) > 3) {
-                        offGround++;
+        ServerWorld world = context.getSource().getWorld();
+        return HomeCommandUtil.survey(context.getSource(), grid, spacing, "[CogsdeepSurvey]", "burrows",
+                from -> nearest(world, from), start -> start.getPos().toLong(), start -> {
+                    ObservatoryPiece observatory = piece(start, ObservatoryPiece.class, 0);
+                    CommonsPiece commons = piece(start, CommonsPiece.class, 0);
+                    if (observatory == null || commons == null) {
+                        return null;
                     }
-                }
-                int water = 0;
-                for (StructurePiece piece : start.getChildren()) {
-                    if (piece instanceof GrottoPiece || piece instanceof ObservatoryPiece || !(piece instanceof CogsdeepPiece)) {
-                        continue;
-                    }
-                    BlockBox box = piece.getBoundingBox();
-                    for (BlockPos pos : BlockPos.iterate(box.getMinX() + 1, box.getMinY() + 1, box.getMinZ() + 1,
-                            box.getMaxX() - 1, box.getMaxY() - 1, box.getMaxZ() - 1)) {
-                        BlockState state = world.getBlockState(pos);
-                        if (!state.getFluidState().isEmpty()) {
-                            water++;
+                    BlockPos door = observatory.center();
+                    // The biome the generator placed it by (World.getBiome blurs the borders).
+                    var biome = world.getBiomeForNoiseGen(door.getX() >> 2, door.getY() >> 2, door.getZ() >> 2);
+                    String biomeId = biome.getKey().map(k -> k.getValue().toString()).orElse("?");
+                    boolean biomeOk = biomeId.equals("minecraft:forest") || biomeId.equals("minecraft:flower_forest")
+                            || biomeId.equals("minecraft:meadow");
+                    Set<Identifier> kinds = new HashSet<>();
+                    start.getChildren().forEach(piece -> kinds.add(Registries.STRUCTURE_PIECE.getId(piece.getType())));
+                    int floor = commons.center().getY();
+                    int roof = floor + ClocktowerPiece.TOP;
+                    // On the ground: the ground just outside the wall (8 blocks out), all round, is within 3 of the floor.
+                    int offGround = 0;
+                    for (int i = 0; i < 16; i++) {
+                        double angle = i * Math.PI / 8.0D;
+                        BlockPos out = door.add((int) Math.round(Math.cos(angle) * 8), 0, (int) Math.round(Math.sin(angle) * 8));
+                        if (Math.abs(ground(world, out) - door.getY()) > 3) {
+                            offGround++;
                         }
                     }
-                }
-                Set<String> neighbours = new TreeSet<>();
-                ChunkPos chunk = start.getPos();
-                int r = CogsdeepStructure.CLEARANCE;
-                for (int dx = -r; dx <= r; dx++) {
-                    for (int dz = -r; dz <= r; dz++) {
-                        Map<Structure, StructureStart> starts = world.getChunk(chunk.x + dx, chunk.z + dz, ChunkStatus.STRUCTURE_STARTS)
-                                .getStructureStarts();
-                        starts.forEach((structure, other) -> {
-                            if (other.hasChildren() && other != start) {
-                                String id = world.getRegistryManager().get(RegistryKeys.STRUCTURE).getId(structure).toString();
-                                if (IGNORED_NEIGHBOURS.stream().noneMatch(id::startsWith)) {
-                                    neighbours.add(id);
-                                }
+                    int water = 0;
+                    for (StructurePiece piece : start.getChildren()) {
+                        if (piece instanceof GrottoPiece || piece instanceof ObservatoryPiece || !(piece instanceof CogsdeepPiece)) {
+                            continue;
+                        }
+                        BlockBox box = piece.getBoundingBox();
+                        for (BlockPos pos : BlockPos.iterate(box.getMinX() + 1, box.getMinY() + 1, box.getMinZ() + 1,
+                                box.getMaxX() - 1, box.getMaxY() - 1, box.getMaxZ() - 1)) {
+                            BlockState state = world.getBlockState(pos);
+                            if (!state.getFluidState().isEmpty()) {
+                                water++;
                             }
-                        });
+                        }
                     }
-                }
-                Box area = new Box(commons.at(-40, -2, -40), commons.at(50, 20, 40)).expand(4);
-                int tinkers = world.getEntitiesByClass(GnomeTinkerEntity.class, area, e -> true).size();
-                int sentinels = world.getEntitiesByClass(ClockworkSentinelEntity.class, area, e -> true).size();
-                boolean ok = biomeOk && kinds.size() == PIECE_KINDS && floor >= CogsdeepStructure.MIN_FLOOR
-                        && floor <= CogsdeepStructure.MAX_FLOOR && roof <= 30 && offGround <= 4 && water == 0
-                        && neighbours.isEmpty();
-                if (ok) {
-                    pass++;
-                } else {
-                    fail++;
-                }
-                String line = "[CogsdeepSurvey] cogsdeep at " + door.getX() + " " + door.getY() + " " + door.getZ() + ": biome "
-                        + biomeId + ", " + start.getChildren().size() + " pieces (" + kinds.size() + " kinds), burrow floor y "
-                        + floor + " (roof " + roof + "), ground off by >3 at " + offGround + "/16, water in rooms " + water
-                        + ", " + tinkers + " tinkers, " + sentinels + " sentinels, neighbours within " + r + " chunks "
-                        + neighbours + ": " + (ok ? "PASS" : "FAIL");
-                DnDClasses.LOGGER.info(line);
-                source.sendFeedback(Text.literal(line), false);
-            }
-        }
-        String summary = "[CogsdeepSurvey] " + (pass + fail) + " burrows, " + pass + " pass, " + fail + " fail";
-        DnDClasses.LOGGER.info(summary);
-        source.sendFeedback(Text.literal(summary), false);
-        return pass;
+                    Set<String> neighbours = new TreeSet<>();
+                    ChunkPos chunk = start.getPos();
+                    int r = CogsdeepStructure.CLEARANCE;
+                    for (int dx = -r; dx <= r; dx++) {
+                        for (int dz = -r; dz <= r; dz++) {
+                            Map<Structure, StructureStart> starts = world.getChunk(chunk.x + dx, chunk.z + dz, ChunkStatus.STRUCTURE_STARTS)
+                                    .getStructureStarts();
+                            starts.forEach((structure, other) -> {
+                                if (other.hasChildren() && other != start) {
+                                    String id = world.getRegistryManager().get(RegistryKeys.STRUCTURE).getId(structure).toString();
+                                    if (IGNORED_NEIGHBOURS.stream().noneMatch(id::startsWith)) {
+                                        neighbours.add(id);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                    Box area = new Box(commons.at(-40, -2, -40), commons.at(50, 20, 40)).expand(4);
+                    int tinkers = world.getEntitiesByClass(GnomeTinkerEntity.class, area, e -> true).size();
+                    int sentinels = world.getEntitiesByClass(ClockworkSentinelEntity.class, area, e -> true).size();
+                    boolean ok = biomeOk && kinds.size() == PIECE_KINDS && floor >= CogsdeepStructure.MIN_FLOOR
+                            && floor <= CogsdeepStructure.MAX_FLOOR && roof <= 30 && offGround <= 4 && water == 0
+                            && neighbours.isEmpty();
+                    return new HomeCommandUtil.Check(ok, "[CogsdeepSurvey] cogsdeep at " + door.getX() + " " + door.getY() + " " + door.getZ() + ": biome "
+                            + biomeId + ", " + start.getChildren().size() + " pieces (" + kinds.size() + " kinds), burrow floor y "
+                            + floor + " (roof " + roof + "), ground off by >3 at " + offGround + "/16, water in rooms " + water
+                            + ", " + tinkers + " tinkers, " + sentinels + " sentinels, neighbours within " + r + " chunks "
+                            + neighbours + ": " + (ok ? "PASS" : "FAIL"));
+                });
     }
 }

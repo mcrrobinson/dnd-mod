@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles;
 import net.minecraft.block.Block;

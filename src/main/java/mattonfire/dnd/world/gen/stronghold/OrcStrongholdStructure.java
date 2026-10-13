@@ -2,16 +2,13 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import com.mojang.serialization.Codec;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
+import mattonfire.dnd.world.gen.TerrainColumns;
 import net.minecraft.structure.StructurePiecesCollector;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
 
@@ -57,7 +54,7 @@ public class OrcStrongholdStructure extends Structure {
         ChunkPos chunk = context.chunkPos();
         int x = chunk.getCenterX();
         int z = chunk.getCenterZ();
-        Columns columns = new Columns(context);
+        TerrainColumns columns = new TerrainColumns(context);
         if (columns.water(x, z) || !columns.biomeAllowed(x, z)) {
             return Optional.empty();
         }
@@ -98,32 +95,6 @@ public class OrcStrongholdStructure extends Structure {
             collector.addPiece(new YurtPiece(center, gate, random.nextLong(), hold, yurt[0], yurt[1]));
         }
         collector.addPiece(new GatehousePiece(center, gate, random.nextLong(), hold));
-    }
-
-    /** Terrain samples for one site check, read from the noise generator once per column. */
-    private static final class Columns {
-        private final Context context;
-        private final Map<Long, Integer> ground = new HashMap<>();
-
-        Columns(Context context) {
-            this.context = context;
-        }
-
-        int ground(int x, int z) {
-            return this.ground.computeIfAbsent(ChunkPos.toLong(x, z), key -> this.context.chunkGenerator()
-                    .getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, this.context.world(), this.context.noiseConfig()) - 1);
-        }
-
-        boolean water(int x, int z) {
-            return this.context.chunkGenerator().getHeight(x, z, Heightmap.Type.OCEAN_FLOOR_WG, this.context.world(),
-                    this.context.noiseConfig()) < this.ground(x, z) + 1;
-        }
-
-        boolean biomeAllowed(int x, int z) {
-            return this.context.biomePredicate().test(this.context.biomeSource().getBiome(BiomeCoords.fromBlock(x),
-                    BiomeCoords.fromBlock(this.ground(x, z)), BiomeCoords.fromBlock(z),
-                    this.context.noiseConfig().getMultiNoiseSampler()));
-        }
     }
 
     @Override

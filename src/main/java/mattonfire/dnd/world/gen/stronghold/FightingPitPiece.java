@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.stronghold;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -81,7 +83,7 @@ public class FightingPitPiece extends StrongholdPiece {
         }
         // The war drum on the far rim.
         int drumB = PB - RADIUS - 1;
-        b.set(PA, 1, drumB, log(Blocks.HAY_BLOCK, Direction.Axis.Y));
+        b.set(PA, 1, drumB, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
         b.set(PA, 2, drumB, Blocks.NOTE_BLOCK);
         b.set(PA, 3, drumB, Blocks.RED_BANNER.getDefaultState().with(BannerBlock.ROTATION, 0));
         b.set(PA - 1, 1, drumB, Blocks.DARK_OAK_FENCE);

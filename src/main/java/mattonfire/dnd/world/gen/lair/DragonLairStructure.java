@@ -1,11 +1,10 @@
 package mattonfire.dnd.world.gen.lair;
 
 import com.mojang.serialization.Codec;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.world.gen.TerrainColumns;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -13,8 +12,6 @@ import net.minecraft.structure.StructureSet;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.source.BiomeCoords;
 import net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement;
 import net.minecraft.world.gen.structure.Structure;
 import net.minecraft.world.gen.structure.StructureType;
@@ -57,9 +54,8 @@ public class DragonLairStructure extends Structure {
     @Override
     protected Optional<StructurePosition> getStructurePosition(Context context) {
         ChunkPos chunk = context.chunkPos();
-        // Each column's surface is read from the noise generator once per site check
-        Map<Long, Integer> heights = new HashMap<>();
-        if (!this.biomeAllowed(context, heights, chunk.getCenterX(), chunk.getCenterZ())) {
+        TerrainColumns columns = new TerrainColumns(context);
+        if (!columns.biomeAllowed(chunk.getCenterX(), chunk.getCenterZ())) {
             return Optional.empty();
         }
         // The highest point near the middle of the chunk...
@@ -70,7 +66,7 @@ public class DragonLairStructure extends Structure {
             for (int dz = -SEARCH; dz <= SEARCH; dz += STEP) {
                 int x = chunk.getCenterX() + dx;
                 int z = chunk.getCenterZ() + dz;
-                int y = ground(context, heights, x, z);
+                int y = columns.ground(x, z);
                 if (y > top) {
                     top = y;
                     bestX = x;
@@ -84,7 +80,7 @@ public class DragonLairStructure extends Structure {
         for (int radius : RINGS) {
             for (int i = 0; i < 8; i++) {
                 double angle = Math.PI * i / 4.0D;
-                int y = ground(context, heights, bestX + (int) Math.round(Math.cos(angle) * radius), bestZ + (int) Math.round(Math.sin(angle) * radius));
+                int y = columns.ground(bestX + (int) Math.round(Math.cos(angle) * radius), bestZ + (int) Math.round(Math.sin(angle) * radius));
                 if (y > top) {
                     return Optional.empty();
                 }
@@ -94,7 +90,7 @@ public class DragonLairStructure extends Structure {
                 }
             }
         }
-        if (drop < MIN_DROP * outer || !this.biomeAllowed(context, heights, bestX, bestZ)) {
+        if (drop < MIN_DROP * outer || !columns.biomeAllowed(bestX, bestZ)) {
             return Optional.empty();
         }
         if (this.kind == LairPiece.Kind.FROST && nearOtherStructure(context)) {
@@ -133,17 +129,6 @@ public class DragonLairStructure extends Structure {
             }
         }
         return false;
-    }
-
-    /** y of the top block, from the noise generator before anything is built. */
-    private static int ground(Context context, Map<Long, Integer> heights, int x, int z) {
-        return heights.computeIfAbsent(ChunkPos.toLong(x, z), key -> context.chunkGenerator()
-                .getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, context.world(), context.noiseConfig()) - 1);
-    }
-
-    private boolean biomeAllowed(Context context, Map<Long, Integer> heights, int x, int z) {
-        return context.biomePredicate().test(context.biomeSource().getBiome(BiomeCoords.fromBlock(x),
-                BiomeCoords.fromBlock(ground(context, heights, x, z)), BiomeCoords.fromBlock(z), context.noiseConfig().getMultiNoiseSampler()));
     }
 
     @Override

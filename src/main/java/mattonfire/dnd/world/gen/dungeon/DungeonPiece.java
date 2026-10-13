@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.dungeon;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import mattonfire.dnd.classes.Blocks.DungeonWardBlockEntity;
@@ -8,34 +10,23 @@ import mattonfire.dnd.classes.Blocks.HoardCofferBlockEntity;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.Tier;
-import mattonfire.dnd.dungeon.DungeonLoot;
 import mattonfire.dnd.classes.Registry.ModBlocks;
+import mattonfire.dnd.dungeon.DungeonLoot;
 import mattonfire.dnd.dungeon.RoomRole;
-import mattonfire.dnd.entity.MimicEntity;
-import net.minecraft.block.Block;
+import mattonfire.dnd.world.gen.ModPiece;
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.FenceBlock;
-import net.minecraft.block.PaneBlock;
-import net.minecraft.block.StairsBlock;
-import net.minecraft.block.WallBlock;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
-import net.minecraft.state.property.Properties;
 import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -50,7 +41,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * A piece is built once per chunk it overlaps, so all its randomness comes from its own seed.
  */
-public abstract class DungeonPiece extends StructurePiece {
+public abstract class DungeonPiece extends ModPiece<DungeonPiece.Builder> {
     /** How far down a floor gets propped up over caves. */
     private static final int MAX_FOUNDATION = 16;
     /** Doorways between rooms and corridors: 3 wide, 3 high. */
@@ -90,7 +81,6 @@ public abstract class DungeonPiece extends StructurePiece {
     }
 
     protected final Info info;
-    private final long seed;
     private final int roomId;
     @Nullable
     private final RoomRole role;
@@ -103,9 +93,8 @@ public abstract class DungeonPiece extends StructurePiece {
 
     protected DungeonPiece(StructurePieceType type, Info info, BlockBox box, long seed, int roomId, @Nullable RoomRole role,
                            int height, List<Door> doors) {
-        super(type, 0, box);
+        super(type, box, seed);
         this.info = info;
-        this.seed = seed;
         this.roomId = roomId;
         this.role = role;
         this.height = height;
@@ -115,7 +104,6 @@ public abstract class DungeonPiece extends StructurePiece {
     protected DungeonPiece(StructurePieceType type, NbtCompound nbt) {
         super(type, nbt);
         this.info = Info.read(nbt);
-        this.seed = nbt.getLong("Seed");
         this.roomId = nbt.contains("RoomId") ? nbt.getInt("RoomId") : -1;
         this.role = nbt.contains("Role") ? RoomRole.byName(nbt.getString("Role")) : null;
         this.height = nbt.getInt("Height");
@@ -130,8 +118,8 @@ public abstract class DungeonPiece extends StructurePiece {
 
     @Override
     protected void writeNbt(StructureContext context, NbtCompound nbt) {
+        super.writeNbt(context, nbt);
         this.info.write(nbt);
-        nbt.putLong("Seed", this.seed);
         if (this.roomId >= 0) {
             nbt.putInt("RoomId", this.roomId);
         }
@@ -251,14 +239,15 @@ public abstract class DungeonPiece extends StructurePiece {
     }
 
     @Override
-    public final void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator,
-                               Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-        Builder b = new Builder(world, chunkBox, Random.create(this.seed));
-        this.build(b);
-        b.placeWard();
+    protected Builder builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
+        return new Builder(world, chunkBox, random);
     }
 
-    protected abstract void build(Builder b);
+    /** The ward goes in once the room is built, with all its data. */
+    @Override
+    protected void finish(Builder b) {
+        b.placeWard();
+    }
 
     /** Shell, doorways and a ward under the middle of the floor: the start of every room. */
     protected void room(Builder b) {
@@ -267,30 +256,11 @@ public abstract class DungeonPiece extends StructurePiece {
         b.ward(this.width() / 2, -1, this.depth() / 2);
     }
 
-    protected static BlockState stairs(Block block, Direction facing, boolean upsideDown) {
-        return block.getDefaultState().with(StairsBlock.FACING, facing)
-                .with(StairsBlock.HALF, upsideDown ? BlockHalf.TOP : BlockHalf.BOTTOM);
-    }
-
-    protected static BlockState facing(Block block, Direction facing) {
-        BlockState state = block.getDefaultState();
-        if (state.contains(Properties.HORIZONTAL_FACING)) {
-            return state.with(Properties.HORIZONTAL_FACING, facing);
-        }
-        if (state.contains(Properties.FACING)) {
-            return state.with(Properties.FACING, facing);
-        }
-        return state;
-    }
-
     /**
      * Places one chunk's slice of a piece. Everything takes local coordinates; anything outside the
      * chunk is skipped, but random draws happen either way, so every chunk sees the same piece.
      */
-    protected class Builder {
-        final StructureWorldAccess world;
-        final BlockBox chunkBox;
-        final Random random;
+    protected class Builder extends ModPiece<Builder>.Builder {
         /**
          * Draws for theme dressing (CryptDressing), kept apart from {@link #random} so dressing a room
          * doesn't change its layout, chests or puzzle.
@@ -306,34 +276,15 @@ public abstract class DungeonPiece extends StructurePiece {
         mattonfire.dnd.dungeon.GateState gate;
 
         Builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
-            this.world = world;
-            this.chunkBox = chunkBox;
-            this.random = random;
+            super(world, chunkBox, random);
             this.dressing = Random.create(DungeonPiece.this.seed ^ 0x5EB0C0FFEEL);
             this.palette = DungeonPiece.this.info.theme().palette();
         }
 
-        BlockPos pos(int x, int y, int z) {
+        @Override
+        public BlockPos pos(int x, int y, int z) {
             BlockBox box = DungeonPiece.this.boundingBox;
             return new BlockPos(box.getMinX() + x, DungeonPiece.this.info.floorY() + y, box.getMinZ() + z);
-        }
-
-        boolean chance(float p) {
-            return this.random.nextFloat() < p;
-        }
-
-        void set(int x, int y, int z, BlockState state) {
-            BlockPos pos = this.pos(x, y, z);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            this.world.setBlockState(pos, state, Block.NOTIFY_LISTENERS);
-            Block block = state.getBlock();
-            // Shapes that join up with their neighbours get fixed once the chunk is finished.
-            if (block instanceof PaneBlock || block instanceof StairsBlock || block instanceof WallBlock
-                    || block instanceof FenceBlock || block == Blocks.CHAIN) {
-                this.world.getChunk(pos).markBlockForPostProcessing(pos);
-            }
         }
 
         /**
@@ -347,30 +298,6 @@ public abstract class DungeonPiece extends StructurePiece {
             }
             this.set(x, y, z, state);
             return true;
-        }
-
-        void set(int x, int y, int z, Block block) {
-            this.set(x, y, z, block.getDefaultState());
-        }
-
-        void fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) {
-            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-                for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-                    for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
-                        this.set(x, y, z, state);
-                    }
-                }
-            }
-        }
-
-        void air(int x1, int y1, int z1, int x2, int y2, int z2) {
-            this.fill(x1, y1, z1, x2, y2, z2, Blocks.AIR.getDefaultState());
-        }
-
-        @Nullable
-        BlockState get(int x, int y, int z) {
-            BlockPos pos = this.pos(x, y, z);
-            return this.chunkBox.contains(pos) ? this.world.getBlockState(pos) : null;
         }
 
         /**
@@ -404,18 +331,7 @@ public abstract class DungeonPiece extends StructurePiece {
 
         /** Props the bottom of the box up with the foundation block wherever there's air or liquid under it. */
         void foundation(int x, int z) {
-            BlockPos.Mutable pos = this.pos(x, -2, z).mutableCopy();
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            for (int i = 0; i < MAX_FOUNDATION && pos.getY() > this.world.getBottomY(); i++) {
-                BlockState state = this.world.getBlockState(pos);
-                if (!state.isAir() && state.getFluidState().isEmpty() && !state.isReplaceable()) {
-                    return;
-                }
-                this.world.setBlockState(pos, this.palette.foundation(), Block.NOTIFY_LISTENERS);
-                pos.move(Direction.DOWN);
-            }
+            this.propUp(x, -1, z, this.palette.foundation(), MAX_FOUNDATION, false);
         }
 
         /** Cuts every door of this piece through both wall layers, framed in trim. */
@@ -513,7 +429,7 @@ public abstract class DungeonPiece extends StructurePiece {
             if (this.ward == null || !this.chunkBox.contains(this.ward)) {
                 return;
             }
-            this.world.setBlockState(this.ward, ModBlocks.DUNGEON_WARD.getDefaultState(), Block.NOTIFY_LISTENERS);
+            this.world.setBlockState(this.ward, ModBlocks.DUNGEON_WARD.getDefaultState(), PieceBlocks.UPDATE);
             if (this.world.getBlockEntity(this.ward) instanceof DungeonWardBlockEntity ward) {
                 ward.setup(DungeonPiece.this.info.startKey(), DungeonPiece.this.roomId, DungeonPiece.this.role,
                         DungeonPiece.this.boundingBox, this.spawnPoints, DungeonPiece.this.summary);
@@ -540,18 +456,14 @@ public abstract class DungeonPiece extends StructurePiece {
         }
 
         /** A chest filled from a loot table when first opened, or now and then a mimic holding that loot. */
-        void chest(int x, int y, int z, Direction facing, Identifier lootTable) {
+        @Override
+        public void chest(int x, int y, int z, Direction facing, Identifier lootTable) {
             float mimicChance = DungeonPiece.this.info.theme() == DungeonTheme.DWARVEN_RUIN ? 0.15F : 0.08F;
             if (this.chance(mimicChance)) {
                 this.mimic(x, y, z, facing, lootTable);
                 return;
             }
-            long lootSeed = this.random.nextLong();
-            this.set(x, y, z, facing(Blocks.CHEST, facing));
-            BlockPos pos = this.pos(x, y, z);
-            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
-                container.setLootTable(lootTable, lootSeed);
-            }
+            super.chest(x, y, z, facing, lootTable);
             if (DungeonPiece.this.info.tier() >= 2 && this.chance(TrapCorridorPiece.NEEDLE_CHANCE)) {
                 TrapCorridorPiece.needle(DungeonPiece.this, this, x, y, z);
             }
@@ -562,12 +474,7 @@ public abstract class DungeonPiece extends StructurePiece {
          * are placed on purpose when the room's fight starts).
          */
         void plainChest(int x, int y, int z, Direction facing, Identifier lootTable) {
-            long lootSeed = this.random.nextLong();
-            this.set(x, y, z, facing(Blocks.CHEST, facing));
-            BlockPos pos = this.pos(x, y, z);
-            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
-                container.setLootTable(lootTable, lootSeed);
-            }
+            super.chest(x, y, z, facing, lootTable);
         }
 
         /** The vault's Hoard Coffer, tied to this dungeon (see HoardCofferBlockEntity). */
@@ -579,17 +486,5 @@ public abstract class DungeonPiece extends StructurePiece {
             }
         }
 
-        /** A mimic sitting where a chest would be, holding that chest's loot. */
-        void mimic(int x, int y, int z, Direction facing, Identifier lootTable) {
-            this.set(x, y, z, Blocks.AIR.getDefaultState());
-            BlockPos pos = this.pos(x, y, z);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            MimicEntity mimic = MimicEntity.disguised(this.world.toServerWorld(), pos, facing, lootTable);
-            if (mimic != null) {
-                this.world.spawnEntity(mimic);
-            }
-        }
     }
 }

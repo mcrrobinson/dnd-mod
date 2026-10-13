@@ -9,12 +9,12 @@ import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
-import net.minecraft.block.PillarBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.EntityType;
@@ -129,7 +129,7 @@ public class GoblinCampPiece extends StructurePiece {
         for (int side = -1; side <= 1; side += 2) {
             BlockPos post = this.at(gate, RADIUS, 2 * side, 0);
             for (int y = 1; y <= 3; y++) {
-                set(world, chunkBox, post.up(y), log(Blocks.SPRUCE_LOG, Direction.Axis.Y));
+                set(world, chunkBox, post.up(y), PieceBlocks.pillar(Blocks.SPRUCE_LOG, Direction.Axis.Y));
             }
             set(world, chunkBox, post.up(4), skull(random));
         }
@@ -147,7 +147,7 @@ public class GoblinCampPiece extends StructurePiece {
                 boolean seat = random.nextFloat() < 0.75F;
                 Direction.Axis axis = random.nextBoolean() ? Direction.Axis.X : Direction.Axis.Z;
                 if (seat) {
-                    set(world, chunkBox, this.at(2 * sx, 1, 2 * sz), log(Blocks.STRIPPED_SPRUCE_LOG, axis));
+                    set(world, chunkBox, this.at(2 * sx, 1, 2 * sz), PieceBlocks.pillar(Blocks.STRIPPED_SPRUCE_LOG, axis));
                 }
             }
         }
@@ -271,10 +271,10 @@ public class GoblinCampPiece extends StructurePiece {
             case 1 -> {
                 // A woodpile.
                 for (int a = 6; a <= 7; a++) {
-                    set(world, chunkBox, this.at(a * sx, 1, 6 * sz), log(Blocks.SPRUCE_LOG, Direction.Axis.Z));
-                    set(world, chunkBox, this.at(a * sx, 1, 7 * sz), log(Blocks.OAK_LOG, Direction.Axis.Z));
+                    set(world, chunkBox, this.at(a * sx, 1, 6 * sz), PieceBlocks.pillar(Blocks.SPRUCE_LOG, Direction.Axis.Z));
+                    set(world, chunkBox, this.at(a * sx, 1, 7 * sz), PieceBlocks.pillar(Blocks.OAK_LOG, Direction.Axis.Z));
                 }
-                set(world, chunkBox, this.at(6 * sx, 2, 6 * sz), log(Blocks.SPRUCE_LOG, Direction.Axis.Z));
+                set(world, chunkBox, this.at(6 * sx, 2, 6 * sz), PieceBlocks.pillar(Blocks.SPRUCE_LOG, Direction.Axis.Z));
                 set(world, chunkBox, this.at(7 * sx, 2, 7 * sz), Blocks.TORCH.getDefaultState());
             }
             case 2 -> {
@@ -322,7 +322,7 @@ public class GoblinCampPiece extends StructurePiece {
         }
         Block log = r2 < 0.4F ? Blocks.OAK_LOG : r2 < 0.55F ? Blocks.STRIPPED_SPRUCE_LOG : Blocks.SPRUCE_LOG;
         for (int y = 1; y <= height; y++) {
-            set(world, chunkBox, pos.up(y), log(log, Direction.Axis.Y));
+            set(world, chunkBox, pos.up(y), PieceBlocks.pillar(log, Direction.Axis.Y));
         }
         if (r < 0.06F) {
             set(world, chunkBox, pos.up(height + 1), Blocks.TORCH.getDefaultState());
@@ -355,10 +355,6 @@ public class GoblinCampPiece extends StructurePiece {
         return skull.getDefaultState().with(SkullBlock.ROTATION, random.nextInt(16));
     }
 
-    private static BlockState log(Block log, Direction.Axis axis) {
-        return log.getDefaultState().with(PillarBlock.AXIS, axis);
-    }
-
     private BlockPos at(int dx, int dy, int dz) {
         return this.center.add(dx, dy, dz);
     }
@@ -378,7 +374,7 @@ public class GoblinCampPiece extends StructurePiece {
 
     private static void set(StructureWorldAccess world, BlockBox chunkBox, BlockPos pos, BlockState state) {
         if (chunkBox.contains(pos)) {
-            world.setBlockState(pos, state, 2);
+            world.setBlockState(pos, state, PieceBlocks.UPDATE);
         }
     }
 
@@ -393,7 +389,7 @@ public class GoblinCampPiece extends StructurePiece {
             if (!state.isAir() && state.getFluidState().isEmpty() && !state.isReplaceable()) {
                 return;
             }
-            world.setBlockState(pos, Blocks.DIRT.getDefaultState(), 2);
+            world.setBlockState(pos, Blocks.DIRT.getDefaultState(), PieceBlocks.UPDATE);
             pos.move(Direction.DOWN);
         }
     }

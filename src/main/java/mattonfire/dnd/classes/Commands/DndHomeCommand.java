@@ -9,8 +9,6 @@ import mattonfire.dnd.world.gen.temple.SanctumPiece;
 import net.minecraft.structure.StructureStart;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import java.util.HashSet;
-import java.util.Set;
 import mattonfire.dnd.entity.DragonbornTrades;
 import mattonfire.dnd.world.gen.temple.DragonTempleStructure;
 import net.minecraft.registry.RegistryKeys;
@@ -165,39 +163,17 @@ public final class DndHomeCommand {
      * Returns the number of temples that pass; fails are logged too.
      */
     private static int templeSurvey(CommandContext<ServerCommandSource> context, int grid, int spacing) {
-        ServerCommandSource source = context.getSource();
-        ServerWorld world = source.getWorld();
-        BlockPos center = BlockPos.ofFloored(source.getPosition());
-        Set<Long> seen = new HashSet<>();
-        int pass = 0;
-        int fail = 0;
-        int half = (grid - 1) / 2;
-        for (int gx = -half; gx <= grid - 1 - half; gx++) {
-            for (int gz = -half; gz <= grid - 1 - half; gz++) {
-                BlockPos from = center.add(gx * spacing, 0, gz * spacing);
-                BlockPos temple = world.locateStructure(TEMPLES, from, 100, false);
-                if (temple == null || !seen.add(ChunkPos.toLong(temple.getX() >> 4, temple.getZ() >> 4))) {
-                    continue;
-                }
-                int dragon = chunkDistance(temple, world.locateStructure(DragonbornTrades.DRAGON_LAIR_MAPS, temple, 16, false));
-                int frost = chunkDistance(temple, world.locateStructure(DragonbornTrades.FROST_LAIR_MAPS, temple, 16, false));
-                boolean ok = Math.min(dragon, frost) <= DragonTempleStructure.LAIR_RADIUS;
-                if (ok) {
-                    pass++;
-                } else {
-                    fail++;
-                }
-                String line = "[TempleSurvey] temple at " + temple.getX() + " " + temple.getZ() + ": dragon lair "
-                        + (dragon == Integer.MAX_VALUE ? "none" : dragon + " chunks") + ", frost lair "
-                        + (frost == Integer.MAX_VALUE ? "none" : frost + " chunks") + ": " + (ok ? "PASS" : "FAIL");
-                mattonfire.dnd.classes.DnDClasses.LOGGER.info(line);
-                source.sendFeedback(Text.literal(line), false);
-            }
-        }
-        String summary = "[TempleSurvey] " + (pass + fail) + " temples, " + pass + " pass, " + fail + " fail";
-        mattonfire.dnd.classes.DnDClasses.LOGGER.info(summary);
-        source.sendFeedback(Text.literal(summary), false);
-        return pass;
+        ServerWorld world = context.getSource().getWorld();
+        return HomeCommandUtil.survey(context.getSource(), grid, spacing, "[TempleSurvey]", "temples",
+                from -> world.locateStructure(TEMPLES, from, HomeCommandUtil.SEARCH_CHUNKS, false),
+                temple -> ChunkPos.toLong(temple.getX() >> 4, temple.getZ() >> 4), temple -> {
+                    int dragon = chunkDistance(temple, world.locateStructure(DragonbornTrades.DRAGON_LAIR_MAPS, temple, 16, false));
+                    int frost = chunkDistance(temple, world.locateStructure(DragonbornTrades.FROST_LAIR_MAPS, temple, 16, false));
+                    boolean ok = Math.min(dragon, frost) <= DragonTempleStructure.LAIR_RADIUS;
+                    return new HomeCommandUtil.Check(ok, "[TempleSurvey] temple at " + temple.getX() + " " + temple.getZ()
+                            + ": dragon lair " + (dragon == Integer.MAX_VALUE ? "none" : dragon + " chunks") + ", frost lair "
+                            + (frost == Integer.MAX_VALUE ? "none" : frost + " chunks") + ": " + (ok ? "PASS" : "FAIL"));
+                });
     }
 
     /** Square distance in chunks between two structure positions, or MAX_VALUE if there's no second one. */

@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.enclave;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;

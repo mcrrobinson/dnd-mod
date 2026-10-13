@@ -1,0 +1,23 @@
+# Finds fresh structures with spiral stairs for stairs-walk checks: a beholder lair, an elven enclave and a crypt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/stairs-locate.txt
+# Checks: the /locate lines and /dungeon info (Entrance, the entrance room's centre and floor y) in the log.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode spectator
+/tp @s 200000 200 200000
+wait 100
+/locate structure dndclasses:beholder_lair
+waitserver 2
+/locate structure dndclasses:elven_enclave
+waitserver 2
+/tp @s 230000 200 170000
+wait 100
+/place structure dndclasses:crypt 230000 70 170000
+waitserver 2
+wait 200
+/dungeon info
+quit

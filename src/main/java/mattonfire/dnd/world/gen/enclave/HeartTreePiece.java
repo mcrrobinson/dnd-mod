@@ -72,6 +72,17 @@ public class HeartTreePiece extends EnclavePiece {
     }
 
     /**
+     * Which way the step in ring cell {@code i} faces: the way you come in going up (from cell i - 1). On a
+     * straight run that's the way it climbs; at a corner its raised half is then on the far side, so you step
+     * onto its low half, its back and the next step half a block at a time. Faced the way you leave, its raised
+     * half would lie across your way a whole block above the step below, and you'd have to jump. The first step
+     * is walked onto from the ground straight ahead, so it faces the way it climbs.
+     */
+    static Direction facing(int i) {
+        return i == 0 ? climb(0) : climb(i - 1);
+    }
+
+    /**
      * Local y of the stair block in ring cell {@code i}, or -1 where the stair doesn't pass. It climbs one
      * block a cell, less than once round, and its last step is level with the hall's floor.
      */
@@ -165,10 +176,10 @@ public class HeartTreePiece extends EnclavePiece {
             int x = RING[i][0];
             int z = RING[i][1];
             b.air(x, y + 1, z, x, y + 3, z);
-            b.set(x, y, z, stairs(Blocks.SPRUCE_STAIRS, climb(i), false));
+            b.set(x, y, z, stairs(Blocks.SPRUCE_STAIRS, facing(i), false));
             // Hold each step up with an upside-down stair under it (the first steps sit on the ground).
             if (y > 1) {
-                b.set(x, y - 1, z, stairs(Blocks.SPRUCE_STAIRS, climb(i).getOpposite(), true));
+                b.set(x, y - 1, z, stairs(Blocks.SPRUCE_STAIRS, facing(i).getOpposite(), true));
             } else {
                 b.anchor(x, y, z, Blocks.DIRT.getDefaultState());
             }
@@ -181,9 +192,11 @@ public class HeartTreePiece extends EnclavePiece {
                     b.set(x + ox, y + 1, z, Blocks.BIRCH_FENCE);
                     b.set(x, y + 1, z + oz, Blocks.BIRCH_FENCE);
                 }
-            }
-            if (i % 6 == 3) {
-                b.set(x, y + 3, z, lantern(true));
+                // Now and then a lantern on the rail. (Hung over the step, 3 up, it caught your head as you
+                // climbed onto the next step.)
+                if (i % 6 == 3) {
+                    b.set(x + ox, y + 2, z + oz, lantern(false));
+                }
             }
         }
     }

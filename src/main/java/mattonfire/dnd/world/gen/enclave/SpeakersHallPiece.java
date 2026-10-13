@@ -29,11 +29,15 @@ public class SpeakersHallPiece extends EnclavePiece {
         return c > HeartTreePiece.TRUNK && x * x + z * z <= (RADIUS + 0.9D) * (RADIUS + 0.9D);
     }
 
-    /** Where the stair comes up through the floor (open, so there's headroom over the top steps). */
+    /**
+     * Where the stair comes up through the floor (open, so there's headroom over the top steps). Climbing onto a
+     * step at y your head reaches into the block at y + 2, over that step and the one you come
+     * from, so the floor and the beam under it ({@code Y - 1}) are left out over every step from {@code Y - 4} up.
+     */
     private static boolean isStairwell(int x, int z) {
         int i = HeartTreePiece.ringIndex(x, z);
         int y = i >= 0 ? HeartTreePiece.stairY(i) : -1;
-        return y >= Y - 2;
+        return y >= Y - 4;
     }
 
     @Override

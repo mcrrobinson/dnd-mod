@@ -401,8 +401,9 @@ public final class RacePassives {
 
     /** Whether {@code viewer}'s Keen Senses outline {@code entity}: an Elf sneaking near a hostile mob. */
     public static boolean keenSenses(PlayerEntity viewer, Entity entity) {
-        return viewer != null && entity != viewer && entity instanceof Monster && entity.isAlive()
-                && viewer.isSneaking() && raceOf(viewer) == DndRace.ELF
+        // Asked for every rendered entity every frame: the viewer's own tests come first
+        return viewer != null && viewer.isSneaking() && raceOf(viewer) == DndRace.ELF && entity != viewer
+                && entity instanceof Monster && entity.isAlive()
                 && entity.squaredDistanceTo(viewer) <= KEEN_SENSES_RANGE * KEEN_SENSES_RANGE;
     }
 

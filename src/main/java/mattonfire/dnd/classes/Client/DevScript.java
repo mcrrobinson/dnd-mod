@@ -170,6 +170,7 @@ public final class DevScript {
     private static final int WAIT_CHAT_TIMEOUT = 20 * 60 * 5;
     /** Messages received since the last {@code waitchat} step finished (so one sent early still counts). */
     private static final List<String> RECEIVED = java.util.Collections.synchronizedList(new java.util.ArrayList<>());
+    private static final int RECEIVED_MAX = 500;
     private boolean mining;
     /** Server tick a {@code waitserver} step waits for, or -1. */
     private int waitServerUntil = -1;
@@ -256,9 +257,19 @@ public final class DevScript {
         PickerFlow.racePickerAllowed = false;
         ClientTickEvents.END_CLIENT_TICK.register(script::tick);
         net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.GAME
-                .register((message, overlay) -> RECEIVED.add(message.getString()));
+                .register((message, overlay) -> received(message.getString()));
         net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents.CHAT
-                .register((message, signed, sender, params, timestamp) -> RECEIVED.add(message.getString()));
+                .register((message, signed, sender, params, timestamp) -> received(message.getString()));
+    }
+
+    /** Keeps the last {@link #RECEIVED_MAX} messages for waitchat; the list is only cleared when a waitchat ends. */
+    private static void received(String message) {
+        synchronized (RECEIVED) {
+            RECEIVED.add(message);
+            if (RECEIVED.size() > RECEIVED_MAX) {
+                RECEIVED.subList(0, RECEIVED.size() - RECEIVED_MAX).clear();
+            }
+        }
     }
 
     /** Most nested {@code include}s, so a script that includes itself fails instead of looping. */

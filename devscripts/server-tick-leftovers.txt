@@ -1,0 +1,104 @@
+# Server tick leftovers: class attribute rules (ClassAttributeRules) and the charge trickle.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/server-tick-leftovers.txt
+# Expect in latest.log ([CHAT] lines):
+#  1. Monk: attack damage 0.75 bare, 0.4166 two ticks after putting on a diamond chestplate (8 armour), 0.75 again
+#     two ticks after taking it off (the penalty still follows armour every tick)
+#  2. Artificer, straight after /dndclass set: 0.75 (Artificer penalty), and no Monk modifier left
+#  3. Paladin: 1.0 in the overworld; in the Nether attack damage 0.5, armour 0, speed 0.08 (x0.8), "The Nether saps" on
+#     the action bar; back in the overworld 1.0 / 0.1 and "Your holy strength returns"
+#  4. No class: attack damage 1.0
+#  5. Fortress music: "[EventMusic] NONE -> NETHER_FORTRESS" at the dev world's fortress, and "-> NONE" on leaving
+#  6. Charge trickle (1 minute): 0/3 charges, then 1/3 after 62 s. trickleTicks in the saved data stays 0 while it
+#     counts (it is only saved when a charge is gained, on disconnect and on stop)
+#  7. Raid bars: stl-raid-100 "Goblin war party approaching - wave 1/3" over "...: 100/100"; stl-raid-55 the
+#     health bar at 55/100
+# Screenshots: stl-nether (Paladin in the Nether), stl-fortress.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndRests true
+/time set noon
+/clear @s
+/effect give @s minecraft:resistance 999 4 true
+/fill -3 149 -3 3 149 3 minecraft:stone
+/fill -3 150 -3 3 153 3 minecraft:air
+/tp @s 0.5 150 0.5 0 0
+# 1. Monk armour penalty
+/dndclass set @s monk
+/clear @s dndclasses:class_guidebook
+wait 2
+/attribute @s minecraft:generic.attack_damage get
+/item replace entity @s armor.chest with minecraft:diamond_chestplate
+wait 2
+/attribute @s minecraft:generic.attack_damage get
+/item replace entity @s armor.chest with minecraft:air
+wait 2
+/attribute @s minecraft:generic.attack_damage get
+# 2. Artificer right after the switch
+/dndclass set @s artificer
+/clear @s dndclasses:class_guidebook
+/attribute @s minecraft:generic.attack_damage get
+/attribute @s minecraft:generic.attack_damage modifier value get 5b0e7c2a-3d6f-4c1e-9a8b-6f2d1e0c4a71
+/attribute @s minecraft:generic.attack_damage modifier value get c4e2a9b1-6f3d-4b7e-8a15-2d9f0e6b7c38
+# 3. Paladin Nether weakness
+/dndclass set @s paladin
+/clear @s dndclasses:class_guidebook
+wait 2
+/attribute @s minecraft:generic.attack_damage get
+/execute in minecraft:the_nether run tp @s 0.5 200 0.5 0 0
+/execute in minecraft:the_nether run fill -3 199 -3 3 199 3 minecraft:stone
+wait 5
+/attribute @s minecraft:generic.attack_damage get
+/attribute @s minecraft:generic.armor get
+/attribute @s minecraft:generic.movement_speed get
+wait 20
+screenshot stl-nether
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 0
+wait 5
+/attribute @s minecraft:generic.attack_damage get
+/attribute @s minecraft:generic.movement_speed get
+# 4. No class
+/dndclass set @s none
+/attribute @s minecraft:generic.attack_damage get
+wait 60
+closescreen
+# 5. Fortress music: the cached fortress tag still finds the dev world's nearest Nether Fortress
+# (/locate structure minecraft:fortress from 0 0: 112 ~ -320; a /place'd one leaves no structure start)
+/gamemode spectator
+/execute in minecraft:the_nether run tp @s 112.5 70 -319.5 0 0
+wait 200
+screenshot stl-fortress
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 0
+wait 100
+/gamemode survival
+# 6. Charge trickle
+/gamerule dndChargeTrickleMinutes 1
+/dndclass set @s barbarian
+/clear @s dndclasses:class_guidebook
+/dndclass charges @s 0
+/dndclass charges @s
+wait 600
+/data get entity @s "mattonfire.dnd.classes".dndRest.trickleTicks
+/dndclass charges @s
+wait 640
+/dndclass charges @s
+/data get entity @s "mattonfire.dnd.classes".dndRest.trickleTicks
+/gamerule dndChargeTrickleMinutes 10
+/dndclass set @s none
+# No class opens the class picker
+wait 60
+closescreen
+# 7. Raid bar names (set only when the state, wave or shown health changes): the health bar follows /goblinraid health
+/difficulty normal
+/goblinraid start here
+wait 60
+screenshot stl-raid-100
+/goblinraid health 55
+wait 10
+screenshot stl-raid-55
+/goblinraid stop
+wait 10
+quit

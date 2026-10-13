@@ -29,6 +29,7 @@ import mattonfire.dnd.quest.QuestInstance;
 import mattonfire.dnd.quest.QuestManager;
 import mattonfire.dnd.quest.Quests;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.entity.Entity;
@@ -131,6 +132,7 @@ public final class DmWand {
             return ActionResult.SUCCESS;
         });
         ItemGroupEvents.modifyEntriesEvent(ModItemGroup.DND_CLASSES_ITEMGROUP).register(entries -> entries.add(ModItems.DM_WAND));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> LAST_USE.remove(handler.getPlayer().getUuid()));
     }
 
     public static boolean isWand(ItemStack stack) {

@@ -28,8 +28,8 @@ import net.minecraft.util.Formatting;
  * other held item cancels the attack.
  * - Damage output is scaled by worn armor: unarmored monks hit for 75% of
  * normal damage and every armor point lowers that further (full diamond is
- * 25%). Recomputed every tick so it follows equipment changes, and removed
- * as soon as the player is no longer a monk.
+ * 25%). Recomputed every tick for monks so it follows equipment changes, and
+ * removed on a class change ({@link ClassAttributeRules}).
  * - Double jump: the client does the jump (DoubleJumpMixin) and tells the
  * server, which checks it, resets the fall distance so the landing is
  * measured from the second jump, and shows the effect to nearby players.
@@ -68,10 +68,10 @@ public class MonkHandler {
             return ActionResult.FAIL;
         });
 
+        // Every tick for monks, so putting armour on lowers the damage straight away.
+        ClassAttributeRules.add(MonkHandler::updateDamageModifier, MonkHandler::isMonk);
+
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                updateDamageModifier(player);
-            }
             if (!AIR_JUMPS_USED.isEmpty()) {
                 AIR_JUMPS_USED.keySet().removeIf(uuid -> {
                     ServerPlayerEntity player = server.getPlayerManager().getPlayer(uuid);

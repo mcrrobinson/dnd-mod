@@ -43,7 +43,7 @@ import net.minecraft.world.gen.structure.Structure;
 /**
  * The Cogsdeep parts of {@link DndHomeCommand}:
  * <ul>
- * <li>{@code /dndhome cogsdeep [door|top|observatory|stair|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]}:
+ * <li>{@code /dndhome cogsdeep [door|top|observatory|ladder|telescope|slit|stair|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]}:
  * teleports you to that spot of the nearest burrow, looking at it.</li>
  * <li>{@code /dndhome cogsdeepsurvey [grid] [spacing]}: from a grid of points round you, finds the nearest burrow
  * to each and checks it (logged as {@code [CogsdeepSurvey]}): a forest, flower forest or meadow biome at the door,
@@ -110,8 +110,23 @@ final class CogsdeepCommands {
                 look = observatory.at(0, 3, 0);
             }
             case "observatory" -> {
-                stand = observatory.at(3, 0, 4);
+                stand = observatory.at(-3, 0, 4);
                 look = observatory.eyepiece();
+            }
+            case "telescope" -> {
+                // On the gallery behind the eyepiece, looking along the tube and out of the slit.
+                stand = observatory.at(0, ObservatoryPiece.GALLERY + 1, ObservatoryPiece.SCOPE_B + 1);
+                look = observatory.scopeEnd();
+            }
+            case "ladder" -> {
+                // At the foot of the gallery's ladder, facing it.
+                stand = observatory.at(-1, 0, ObservatoryPiece.SCOPE_B);
+                look = observatory.at(-1, ObservatoryPiece.GALLERY, ObservatoryPiece.SCOPE_B - 2);
+            }
+            case "slit" -> {
+                // In the air outside the dome, off to the side of the slit, looking at the tube poking out.
+                stand = observatory.at(3, 9, -13);
+                look = observatory.scopeEnd();
             }
             case "stair" -> {
                 // Halfway down, looking along the turn below.

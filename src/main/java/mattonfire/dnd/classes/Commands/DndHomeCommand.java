@@ -49,7 +49,7 @@ import net.minecraft.util.math.BlockPos;
  * /dndhome trialreset <players>: forgets today's lost Trial at the stronghold you stand in.
  * /dndhome sanctum [hall|offering|anchor|market|den|gate|top|side]: teleports you to that spot of the nearest
  * Brimstone Sanctum (in the Nether), looking at it.
- * /dndhome cogsdeep [door|top|observatory|stair|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]:
+ * /dndhome cogsdeep [door|top|observatory|ladder|telescope|slit|stair|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]:
  * teleports you to that spot of the nearest Cogsdeep, looking at it.
  * /dndhome cogsdeepsurvey [grid] [spacing]: finds the nearest Cogsdeep from a grid of points round you and checks
  * its biome, pieces, depth, ground, rooms and neighbours (logged as {@code [CogsdeepSurvey]}).

@@ -64,8 +64,13 @@ public class Featherfall {
         boolean airborne = !player.isOnGround() && !player.isTouchingWater() && !player.isInLava()
                 && !player.isClimbing() && !player.hasVehicle() && !player.isFallFlying()
                 && !player.getAbilities().flying && !player.isSpectator();
+        // The enchantment level walks the armour's NBT, so it's only read once the player is in the air.
+        if (!airborne || player.isSneaking()) {
+            SLOW_FALLING.remove(id);
+            return;
+        }
         int level = getLevel(player);
-        if (!airborne || player.isSneaking() || level < 2) {
+        if (level < 2) {
             SLOW_FALLING.remove(id);
             return;
         }

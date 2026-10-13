@@ -39,11 +39,14 @@ import net.minecraft.util.math.Vec3d;
  * (client sends C2S_WARLOCK_FIREBALL, see WarlockFireballMixin).
  * - Immune to fire, lava and fireball damage (DamageTypeTags.IS_FIRE).
  * - Hurt by water and rain (1 damage every 4s, never below 2 health).
- * - Special: breathes fire (DnDClasses.WARLOCK_FIREBREATH holds the world time it ends at).
+ * - Special: breathes fire ({@link #FIREBREATH_UNTIL} holds the world time it ends at).
  * Burns and hurts mobs in a beam, but not the Warlock's party or pets. Duration, reach,
  * damage and burn time come from WarlockSkills.FIRE_BREATH.
  */
 public class Warlock {
+    /** Players breathing fire, by UUID, and the world time their breath ends at. */
+    public static final Map<UUID, Long> FIREBREATH_UNTIL = new HashMap<>();
+
     public static final Identifier C2S_WARLOCK_FIREBALL = Identifier.of(DnDClasses.MOD_ID, "warlock_fireball");
 
     // Ticks between fireballs.
@@ -134,11 +137,11 @@ public class Warlock {
 
     /** Runs once per world; only handles the Warlocks that are in this world. */
     private static void tickFireBreath(ServerWorld world) {
-        if (DnDClasses.WARLOCK_FIREBREATH.isEmpty()) {
+        if (FIREBREATH_UNTIL.isEmpty()) {
             return;
         }
         long now = world.getTime();
-        DnDClasses.WARLOCK_FIREBREATH.entrySet().removeIf(entry -> {
+        FIREBREATH_UNTIL.entrySet().removeIf(entry -> {
             ServerPlayerEntity player = world.getServer().getPlayerManager().getPlayer(entry.getKey());
             if (player == null || player.isRemoved()) {
                 return true; // Went offline

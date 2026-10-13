@@ -49,6 +49,10 @@ import net.minecraft.util.math.BlockPos;
  * /dndhome trialreset <players>: forgets today's lost Trial at the stronghold you stand in.
  * /dndhome sanctum [hall|offering|anchor|market|den|gate|top|side]: teleports you to that spot of the nearest
  * Brimstone Sanctum (in the Nether), looking at it.
+ * /dndhome cogsdeep [door|top|observatory|stair|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]:
+ * teleports you to that spot of the nearest Cogsdeep, looking at it.
+ * /dndhome cogsdeepsurvey [grid] [spacing]: finds the nearest Cogsdeep from a grid of points round you and checks
+ * its biome, pieces, depth, ground, rooms and neighbours (logged as {@code [CogsdeepSurvey]}).
  * /dndhome sanctumsurvey [grid] [spacing]: from a grid of points round you in the Nether, finds the nearest
  * sanctum to each and checks its biome, pieces, that no lava lies under it and that it doesn't clip the ceiling
  * (logged as {@code [SanctumSurvey]}).
@@ -94,6 +98,17 @@ public final class DndHomeCommand {
                                 .executes(context -> SanctumCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 1500))
                                 .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
                                         .executes(context -> SanctumCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("cogsdeep")
+                        .executes(context -> CogsdeepCommands.teleport(context, "door"))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> CogsdeepCommands.teleport(context, StringArgumentType.getString(context, "spot")))))
+                .then(CommandManager.literal("cogsdeepsurvey")
+                        .executes(context -> CogsdeepCommands.survey(context, 3, 2000))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> CogsdeepCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 2000))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> CogsdeepCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
                                                 IntegerArgumentType.getInteger(context, "spacing"))))))
                 .then(CommandManager.literal("bloodsworn")
                         .then(CommandManager.argument("players", EntityArgumentType.players())

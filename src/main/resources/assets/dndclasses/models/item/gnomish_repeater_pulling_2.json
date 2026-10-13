@@ -1,0 +1,6 @@
+{
+  "parent": "dndclasses:item/gnomish_repeater",
+  "textures": {
+    "layer0": "dndclasses:item/gnomish_repeater_pulling_2"
+  }
+}

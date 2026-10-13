@@ -47,6 +47,7 @@ public final class RaceFeatures {
     private static ModelPart tusks;
     private static ModelPart snout;
     private static ModelPart tail;
+    private static ModelPart nose;
 
     private RaceFeatures() {
     }
@@ -96,6 +97,30 @@ public final class RaceFeatures {
         tusks = buildTusks();
         snout = buildSnout();
         tail = buildTail();
+        nose = buildNose();
+    }
+
+    /**
+     * Draws a gnome's big nose on a biped head, from the skin's own texture (the 2x3x2 cuboid's faces are in the
+     * unused 8x16 strip at 56, 16 of a 64x64 skin). The matrix stack must be in the model's space; {@code head} is
+     * the posed head part. Used by the Gnome Tinkers (players' skins don't have the strip, so they don't get one).
+     */
+    public static void renderNose(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light,
+            ModelPart head, Identifier skin) {
+        build();
+        matrices.push();
+        head.rotate(matrices);
+        nose.render(matrices, vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(skin)), light,
+                OverlayTexture.DEFAULT_UV);
+        matrices.pop();
+    }
+
+    /** A 2 wide, 3 tall nose standing 2 out from the face, under the eyes. */
+    private static ModelPart buildNose() {
+        ModelData data = new ModelData();
+        data.getRoot().addChild("nose", ModelPartBuilder.create().uv(56, 16).cuboid(-1f, -4f, -6f, 2f, 3f, 2f),
+                ModelTransform.NONE);
+        return TexturedModelData.of(data, 64, 64).createModel();
     }
 
     /**

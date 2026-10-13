@@ -72,7 +72,7 @@ The honored table (`gameplay/dwarf_barter_honored`) is the table below with diam
 
 The weights add up to 155, so a diamond comes up about once in 78 trades.
 
-**Dwarf players** (kin stock) also get an extra roll on `gameplay/dwarf_kin_stock` with every barter: usually nothing, but 1 in 25 times a [Dwarven Plate](../items/armor.md#racial-armor) piece (1% each) or a [Dwarven Waraxe](../items/racial-weapons.md#dwarven-waraxe) (2%). Gnomes, who get the fortress's kin prices for now, don't get this roll.
+**Dwarf players** (kin stock) also get an extra roll on `gameplay/dwarf_kin_stock` with every barter: usually nothing, but 1 in 25 times a [Dwarven Plate](../items/armor.md#racial-armor) piece (1% each) or a [Dwarven Waraxe](../items/racial-weapons.md#dwarven-waraxe) (2%).
 
 ### The Dwarf King
 Each fortress has a king on the throne. He's named "King" plus a dwarven name, has 64 health, and wears a golden crown and golden chestplate with a netherite axe in hand. The crown always drops when he dies.

@@ -1,0 +1,29 @@
+{
+  "name": "faction.dndclasses.tinkers_guild",
+  "color": "#C9A04A",
+  "members": "#dndclasses:faction/tinkers_guild",
+  "settlements": "#dndclasses:faction/tinkers_guild",
+  "start": 150,
+  "start_by_race": {
+    "dndclasses:gnome": 450
+  },
+  "rivals": {
+    "dndclasses:goblins": -0.5
+  },
+  "decay_per_day": 5,
+  "hit_member": -15,
+  "kill_member": -120,
+  "kill_member_overrides": {
+    "dndclasses:gnome_tinker": -200
+  },
+  "enemy_kills": {
+    "dndclasses:goblins": 1
+  },
+  "enemy_kill_overrides": {
+    "dndclasses:goblin_warlord": 25
+  },
+  "kill_cap": 30,
+  "trade": 1,
+  "trade_cap": 15,
+  "theft_witnessed": -40
+}

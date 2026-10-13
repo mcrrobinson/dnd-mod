@@ -1,5 +1,5 @@
 # Factions and Reputation
-Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the dragon temples, the Brimstone Covenant of the Nether's sanctums, the Bloodtusk Horde of the orc strongholds and goblins remember what you do. Each player has a standing from -1000 to +1000 with each faction, in six tiers from Hostile to Exalted. Killing goblins, defending a village, handing in bounties and trading raise it. Hitting or killing hobbits and dwarves, or being seen at the dwarven hoard, lowers it. Factions are data files, so new ones (the elves, orcs and others of the race settlements) need no code.
+Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the dragon temples, the Brimstone Covenant of the Nether's sanctums, the Tinkers' Guild of Cogsdeep, the Bloodtusk Horde of the orc strongholds and goblins remember what you do. Each player has a standing from -1000 to +1000 with each faction, in six tiers from Hostile to Exalted. Killing goblins, defending a village, handing in bounties and trading raise it. Hitting or killing hobbits and dwarves, or being seen at the dwarven hoard, lowers it. Factions are data files, so new ones (the elves, orcs and others of the race settlements) need no code.
 
 ![The action bar shows "+5 Hobbits of the Shire" and chat shows the standing rising to Friendly, then Honored](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/faction-rep/faction-rep-actionbar.png)
 
@@ -20,10 +20,11 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | Faction | Members | Settlements | Start | Rivals |
 |-|-|-|-|-|
 | Hobbits of the Shire (`dndclasses:hobbits`) | hobbits, innkeepers | hobbit villages | 0 (Neutral); Halflings 150 (Friendly) | goblins -0.5 |
-| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral); Dwarves 150, Gnomes 100 (Friendly) | goblins -0.5 |
+| Mountain Dwarves (`dndclasses:mountain_dwarves`) | mountain dwarves | dwarven fortresses | 0 (Neutral); Dwarves 150 (Friendly) | goblins -0.5 |
 | Sylvan Court (`dndclasses:sylvan_court`) | wood elves, Elf Wardens, the Speaker and the Fletcher | elven enclaves | 0 (Neutral); Elves 150 (Friendly) | goblins -0.5 |
 | The Dragonsworn (`dndclasses:dragonsworn`) | Dragonborn Templars, the Elder | dragon temples | 0 (Neutral); Dragonborn 150 (Friendly) | goblins -0.5 |
 | The Brimstone Covenant (`dndclasses:brimstone_covenant`) | Tiefling Exiles, the Pactbroker | brimstone sanctums | 0 (Neutral); Tieflings 150 (Friendly) | none |
+| The Tinkers' Guild (`dndclasses:tinkers_guild`) | Gnome Tinkers, Clockwork Sentinels | Cogsdeep burrows | 150 (Friendly); Gnomes 450 (Honored) | goblins -0.5 |
 | The Bloodtusk Horde (`dndclasses:bloodtusk_horde`) | Orc Warriors, Archers, the Quartermaster and the War Chief (not the Trial's Champion) | orc strongholds | -600 (Hostile); Half-Orcs 0 (Neutral) | hobbits -0.25, dwarves -0.25, Sylvan Court -0.25 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5, Sylvan Court -0.5, Dragonsworn -0.5 |
 

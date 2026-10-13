@@ -137,6 +137,7 @@ public final class MagicItems {
         register(MagicItemDef.of(ModItems.DWARVEN_WARAXE, MagicTier.UNCOMMON, MagicKind.WEAPON, "axe"));
         register(MagicItemDef.of(ModItems.ORCISH_GREATAXE, MagicTier.UNCOMMON, MagicKind.WEAPON, "axe"));
         register(MagicItemDef.of(ModItems.HALFLING_SLING, MagicTier.COMMON, MagicKind.WEAPON, "sling"));
+        register(MagicItemDef.of(ModItems.GNOMISH_REPEATER, MagicTier.UNCOMMON, MagicKind.WEAPON, "crossbow"));
         for (Item item : new Item[] { ModItems.DRACONIC_SCALE_HELMET, ModItems.DRACONIC_SCALE_CHESTPLATE,
                 ModItems.DRACONIC_SCALE_LEGGINGS, ModItems.DRACONIC_SCALE_BOOTS, ModItems.INFERNAL_REGALIA_HELMET,
                 ModItems.INFERNAL_REGALIA_CHESTPLATE, ModItems.INFERNAL_REGALIA_LEGGINGS,

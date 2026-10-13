@@ -137,6 +137,8 @@ public class ModItemGroup {
             entries.add(ModItems.GROG);
             entries.add(ModItems.GOBLIN_WAR_TOKEN);
             entries.add(ModItems.HALFLING_SLING);
+            entries.add(ModItems.GNOMISH_REPEATER);
+            entries.add(ModItems.TINKERS_GOGGLES);
             entries.add(ModItems.HOBBIT_SPAWN_EGG);
             entries.add(ModItems.MOUNTAIN_DWARF_SPAWN_EGG);
             entries.add(ModItems.WOOD_ELF_SPAWN_EGG);
@@ -147,6 +149,8 @@ public class ModItemGroup {
             entries.add(ModItems.DRAGONBORN_ELDER_SPAWN_EGG);
             entries.add(ModItems.TIEFLING_EXILE_SPAWN_EGG);
             entries.add(ModItems.TIEFLING_PACTBROKER_SPAWN_EGG);
+            entries.add(ModItems.GNOME_TINKER_SPAWN_EGG);
+            entries.add(ModItems.CLOCKWORK_SENTINEL_SPAWN_EGG);
             entries.add(ModItems.ORC_WARRIOR_SPAWN_EGG);
             entries.add(ModItems.ORC_ARCHER_SPAWN_EGG);
             entries.add(ModItems.ORC_QUARTERMASTER_SPAWN_EGG);

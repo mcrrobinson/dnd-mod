@@ -51,7 +51,7 @@ Five sets made by and for one race each, sold as kin stock in that race's home s
 | Orcish Warplate | nobody yet (the Orc Stronghold will sell it to Half-Orcs) | |
 | Infernal Regalia | the Pactbroker in a [Brimstone Sanctum](../structures/brimstone-sanctums.md), to Tieflings only: helmet 12, chestplate 20, leggings 18, boots 10 emeralds | |
 
-Kin prices (25% off) apply to these trades too. The racial weapons are on their own page: [Racial weapons](racial-weapons.md).
+Kin prices (25% off) apply to these trades too. The racial weapons are on their own page: [Racial weapons](racial-weapons.md). The Gnomes' kin stock is a single helmet, [Tinker's Goggles](tinkers-goggles.md), which shows what's inside the container you look at.
 
 ## Where to find it
 - The mod's creative tab. There are no crafting recipes yet.

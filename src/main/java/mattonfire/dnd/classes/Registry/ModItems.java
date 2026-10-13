@@ -782,6 +782,18 @@ public class ModItems {
         /** Slings a cobblestone for 4 damage, 0.8 s cooldown. */
         public static final Item HALFLING_SLING = registerItem("halfling_sling",
                 new mattonfire.dnd.classes.Items.racial.HalflingSlingItem(new FabricItemSettings().maxDamage(250)));
+        /** A crossbow; the Tinkers sell it with Quick Charge III and Multishot (GnomishRepeaterItem.create). */
+        public static final Item GNOMISH_REPEATER = registerItem("gnomish_repeater",
+                new mattonfire.dnd.classes.Items.racial.GnomishRepeaterItem(new FabricItemSettings().maxDamage(520)));
+        /** Shows what's inside a container you look at (TinkersGoggles). */
+        public static final Item TINKERS_GOGGLES = registerItem("tinkers_goggles",
+                new mattonfire.dnd.classes.Items.racial.TinkersGogglesItem(FAArmorAttributes.builder()
+                        .armor(1.0)
+                        .build()));
+        public static final Item GNOME_TINKER_SPAWN_EGG = registerItem("gnome_tinker_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GNOME_TINKER, 0x4E7A3E, 0xD6A840, new FabricItemSettings()));
+        public static final Item CLOCKWORK_SENTINEL_SPAWN_EGG = registerItem("clockwork_sentinel_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.CLOCKWORK_SENTINEL, 0xC46C4E, 0x4EA484, new FabricItemSettings()));
 
         /** Dropped by goblin warriors (25%); the orc Quartermaster buys 3 for 2 emeralds. */
         public static final Item GOBLIN_WAR_TOKEN = registerItem("goblin_war_token", new Item(new FabricItemSettings()));

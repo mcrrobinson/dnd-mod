@@ -354,14 +354,14 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         ServerWorld world = (ServerWorld) this.world;
         Identifier tableId = TierEffects.honoredBarter(tier) ? HONORED_BARTER_LOOT : BARTER_LOOT;
         LootTable table = world.getServer().getLootManager().getTable(tableId);
-        // Kin (Dwarves, and Gnomes for now) get the rarer of two rolls.
+        // Kin (Dwarves) get the rarer of two rolls.
         List<ItemStack> loot = new java.util.ArrayList<>(
                 KinPrices.barter(world, player, this, tableId, () -> this.rollBarter(world, table)));
         // Friends of the mountain sometimes get a second helping.
         if (this.random.nextFloat() < TierEffects.secondBarterRollChance(tier)) {
             loot.addAll(this.rollBarter(world, table));
         }
-        // Kin stock (Dwarves only, not the interim Gnome kin): the racial gear.
+        // Kin stock (Dwarves): the racial gear.
         if (KinStock.isKin(player, this)) {
             loot.addAll(this.rollBarter(world, world.getServer().getLootManager().getTable(KIN_STOCK_LOOT)));
         }

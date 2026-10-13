@@ -12,8 +12,7 @@ import net.minecraft.village.TradeOfferList;
  * Every offer has 12 uses and restocks each morning, like the merchants' other trades.
  * <p>
  * Dwarves have no merchant: their kin stock is the {@code gameplay/dwarf_kin_stock} barter table
- * ({@link MountainDwarfEntity}). Cogsdeep doesn't exist yet; its list ({@link #cogsdeep()}) waits here for
- * its vendor.
+ * ({@link MountainDwarfEntity}).
  */
 public final class KinStockOffers {
     private static final int MAX_USES = 12;
@@ -67,11 +66,15 @@ public final class KinStockOffers {
     }
 
     /**
-     * Hook for Cogsdeep's vendor (not built yet), to Gnomes. The Gnomish Repeater and Tinker's Goggles belong to
-     * the Cogsdeep ticket, so this is empty for now.
+     * Cogsdeep's Gnome Tinkers, to Gnomes: the Gnomish Repeater (a crossbow with Quick Charge III and Multishot,
+     * 14 emeralds) and Tinker's Goggles (10).
      */
     public static TradeOfferList cogsdeep() {
-        return new TradeOfferList();
+        TradeOfferList offers = new TradeOfferList();
+        offers.add(new TradeOffer(new ItemStack(Items.EMERALD, 14),
+                mattonfire.dnd.classes.Items.racial.GnomishRepeaterItem.create(), MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER));
+        offers.add(sell(10, ModItems.TINKERS_GOGGLES));
+        return offers;
     }
 
     private static TradeOfferList armor(Item helmet, int helmetPrice, Item chest, int chestPrice, Item legs,

@@ -55,7 +55,7 @@ public final class KinStock {
 
     /**
      * Whether {@code player} is of the home race of {@code npc}'s settlement. Kin stock is for the home race
-     * only: interim kin (Gnomes at the dwarven fortresses) get kin prices but not the racial gear.
+     * only: interim kin ({@link RacialHomes.Home#priceKin}) would get kin prices but not the racial gear.
      */
     public static boolean isKin(PlayerEntity player, Entity npc) {
         RacialHomes.Home home = RacialHomes.homeOfMember(npc);

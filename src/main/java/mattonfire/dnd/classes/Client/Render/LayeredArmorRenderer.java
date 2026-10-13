@@ -61,6 +61,8 @@ public final class LayeredArmorRenderer implements ArmorRenderer {
         LAYERS.put(ModArmorMaterials.ORCISH_WARPLATE, new int[][] { { 0, 1, 2 }, { 0, 1 } });
         LAYERS.put(ModArmorMaterials.DRACONIC_SCALE, new int[][] { { 1, 2 }, { 1 } });
         LAYERS.put(ModArmorMaterials.INFERNAL_REGALIA, new int[][] { { 0, 1, 2 }, { 0, 1, 2 } });
+        // Tinker's Goggles: a helmet only, drawn by tools/cogsdeep_textures.py
+        LAYERS.put(ModArmorMaterials.TINKERS_GOGGLES, new int[][] { { 1 }, {} });
         HAS_OVERLAYS.put(ModArmorMaterials.ROBE, true);
     }
 

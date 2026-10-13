@@ -9,6 +9,7 @@ import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.ClassTrees;
 import mattonfire.dnd.classes.Progression.Progression;
 import net.fabricmc.fabric.api.entity.event.v1.ServerPlayerEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.entity.effect.StatusEffect;
@@ -49,7 +50,12 @@ public final class Rests {
             RestSync.syncChanged(server);
         });
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> RestSync.sync(handler.getPlayer()));
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> RestSync.forget(handler.getPlayer()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            Charges.flushTrickle(handler.getPlayer());
+            RestSync.forget(handler.getPlayer());
+        });
+        // Before the players are saved on stop.
+        ServerLifecycleEvents.SERVER_STOPPING.register(Charges::flushAllTrickle);
         // ClassLifecycle copies dndRest to the new entity; the client has a new player too.
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> RestSync.sync(newPlayer));
     }

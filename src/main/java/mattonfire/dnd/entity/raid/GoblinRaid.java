@@ -137,6 +137,10 @@ public class GoblinRaid {
     private final ServerBossBar bar = new ServerBossBar(Text.empty(), BossBar.Color.RED, BossBar.Style.NOTCHED_10);
     /** The settlement's health, shown under the raid bar. */
     private final ServerBossBar healthBar = new ServerBossBar(Text.empty(), BossBar.Color.GREEN, BossBar.Style.PROGRESS);
+    /** The state and wave the raid bar's name was last set for, and the health the health bar's name shows. */
+    private State barNameState;
+    private int barNameWave = -1;
+    private int healthBarShown = Integer.MIN_VALUE;
     private SettlementHealth health = new SettlementHealth();
     /** The settlement's structure pieces, for sampling its buildings; null for a raid loaded from the save. */
     @Nullable
@@ -332,7 +336,9 @@ public class GoblinRaid {
                 this.lookoutsChecked = true;
                 this.lookouts(world, defenders);
             }
-            this.bar.setName(Text.translatable("raid.dndclasses.goblin.approaching", this.wave + 1, this.totalWaves));
+            if (this.barNamedFor(State.APPROACHING)) {
+                this.bar.setName(Text.translatable("raid.dndclasses.goblin.approaching", this.wave + 1, this.totalWaves));
+            }
             int delay = this.wave == 0 ? this.firstWaveDelay : WAVE_DELAY;
             this.bar.setPercent(1.0F - MathHelper.clamp((float) this.stateTicks / delay, 0.0F, 1.0F));
             if (--this.stateTicks <= 0) {
@@ -344,7 +350,9 @@ public class GoblinRaid {
         // Fighting
         this.stateTicks++;
         this.updateRaiders(world);
-        this.bar.setName(Text.translatable("raid.dndclasses.goblin.fighting", this.wave, this.totalWaves, this.placeName()));
+        if (this.barNamedFor(State.FIGHTING)) {
+            this.bar.setName(Text.translatable("raid.dndclasses.goblin.fighting", this.wave, this.totalWaves, this.placeName()));
+        }
         float health = 0.0F;
         float maxHealth = 0.0F;
         for (Raider raider : this.raiders.values()) {
@@ -688,11 +696,28 @@ public class GoblinRaid {
                 this.health.sampleSize(), this.kind.id, boxes.size());
     }
 
+    /**
+     * Whether the raid bar needs its name set for this state and the current wave. The names only
+     * change with them, so they aren't rebuilt every tick.
+     */
+    private boolean barNamedFor(State state) {
+        if (this.barNameState == state && this.barNameWave == this.wave) {
+            return false;
+        }
+        this.barNameState = state;
+        this.barNameWave = this.wave;
+        return true;
+    }
+
     private void updateHealthBar() {
         float fraction = this.health.get() / SettlementHealth.MAX;
-        this.healthBar.setName(Text.translatable("raid.dndclasses.goblin.health",
-                Text.translatable("raid.dndclasses.goblin.short." + this.kind.id), this.health.shown(),
-                (int) SettlementHealth.MAX));
+        int shown = this.health.shown();
+        if (shown != this.healthBarShown) {
+            this.healthBarShown = shown;
+            this.healthBar.setName(Text.translatable("raid.dndclasses.goblin.health",
+                    Text.translatable("raid.dndclasses.goblin.short." + this.kind.id), shown,
+                    (int) SettlementHealth.MAX));
+        }
         this.healthBar.setPercent(MathHelper.clamp(fraction, 0.0F, 1.0F));
         this.healthBar.setColor(fraction > 0.6F ? BossBar.Color.GREEN : fraction > 0.3F ? BossBar.Color.YELLOW : BossBar.Color.RED);
     }

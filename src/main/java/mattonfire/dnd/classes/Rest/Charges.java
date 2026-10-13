@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.Rest;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassSkills;
@@ -25,6 +26,9 @@ public final class Charges {
 
     /** Charge costs that replace {@link SkillNode#chargeCost()}, by node id (subclasses, items). */
     private static final Map<String, Integer> COST_OVERRIDES = new HashMap<>();
+
+    /** Trickle progress of online players, ahead of the saved {@link RestState#trickleTicks}. */
+    private static final Map<UUID, Integer> TRICKLE = new HashMap<>();
 
     private Charges() {
     }
@@ -119,13 +123,16 @@ public final class Charges {
         state.charges = oldClass == DndCharacter.NONE ? max : Math.min(state.charges, max);
         state.hitDiceSpent = 0;
         state.trickleTicks = 0;
+        TRICKLE.remove(player.getUuid());
         state.save(player);
         RestSync.sync(player);
     }
 
     /**
      * Once a second: players below their max who are alive count towards a free
-     * charge every {@code dndChargeTrickleMinutes}.
+     * charge every {@code dndChargeTrickleMinutes}. The count lives in {@link #TRICKLE}
+     * and is only written to {@link RestState} when a charge is gained, the player
+     * leaves or the server stops, not every second.
      */
     static void trickleSecond(MinecraftServer server) {
         if (!DndRules.rests(server.getOverworld())) {
@@ -142,19 +149,43 @@ public final class Charges {
             }
             int max = max(player);
             RestState state = RestState.get(player);
+            UUID uuid = player.getUuid();
+            Integer saved = TRICKLE.get(uuid);
+            int ticks = saved != null ? saved : state.trickleTicks;
             if (state.charges >= max) {
-                if (state.trickleTicks != 0) {
-                    state.trickleTicks = 0;
-                    state.save(player);
-                }
+                TRICKLE.put(uuid, 0);
                 continue;
             }
-            state.trickleTicks += 20;
-            if (state.trickleTicks >= needed) {
+            ticks += 20;
+            if (ticks >= needed) {
+                TRICKLE.put(uuid, 0);
                 state.trickleTicks = 0;
                 state.charges = Math.min(max, state.charges + 1);
+                state.save(player);
+            } else {
+                TRICKLE.put(uuid, ticks);
             }
+        }
+    }
+
+    /** Writes the player's unsaved trickle count to {@link RestState} and forgets it (disconnect). */
+    static void flushTrickle(ServerPlayerEntity player) {
+        Integer ticks = TRICKLE.remove(player.getUuid());
+        if (ticks == null) {
+            return;
+        }
+        RestState state = RestState.get(player);
+        if (state.trickleTicks != ticks) {
+            state.trickleTicks = ticks;
             state.save(player);
         }
+    }
+
+    /** Writes every online player's trickle count before the server saves them on stop. */
+    static void flushAllTrickle(MinecraftServer server) {
+        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+            flushTrickle(player);
+        }
+        TRICKLE.clear();
     }
 }

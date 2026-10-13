@@ -1,0 +1,16 @@
+# Charge trickle progress survives a relog (set side). Then run charge-trickle-relog-check.txt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/charge-trickle-relog-set.txt
+# Leaves a Barbarian with 0 charges who has counted 30 s towards the next one (gamerule dndChargeTrickleMinutes 1).
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule dndRests true
+/gamerule dndChargeTrickleMinutes 1
+/effect give @s minecraft:resistance 999 4 true
+/dndclass set @s barbarian
+/clear @s dndclasses:class_guidebook
+/dndclass charges @s 0
+wait 600
+/dndclass charges @s
+quit

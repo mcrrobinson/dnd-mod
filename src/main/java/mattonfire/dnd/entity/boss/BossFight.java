@@ -13,12 +13,14 @@ import net.minecraft.advancement.PlayerAdvancementTracker;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.boss.BossBar;
 import net.minecraft.entity.boss.ServerBossBar;
+import net.minecraft.scoreboard.AbstractTeam;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -64,6 +66,12 @@ public class BossFight {
     private Identifier advancement;
     private int phase;
     private boolean killed;
+    /** What the bar's name was last built from ({@link #updateName}). */
+    private boolean named;
+    @Nullable
+    private Text namedCustomName;
+    @Nullable
+    private AbstractTeam namedTeam;
 
     public BossFight(MobEntity boss, BossBar.Color color, BossBar.Style style) {
         this.boss = boss;
@@ -214,12 +222,28 @@ public class BossFight {
 
     private void updateBar() {
         this.bar.setPercent(this.boss.getHealth() / this.boss.getMaxHealth());
-        this.bar.setName(this.boss.getDisplayName());
+        this.updateName();
         this.bar.setColor(this.currentColor());
 
         boolean fighting = this.isFightingPlayer();
         BossBars.syncViewers(this.bar, (ServerWorld) this.boss.world, player -> fighting && this.inRange(player),
                 this::musicOn, this::musicOff);
+    }
+
+    /**
+     * Renames the bar when the boss's custom name or team changes; its display name is built from
+     * them (and the type), so it isn't rebuilt every tick.
+     */
+    private void updateName() {
+        Text customName = this.boss.getCustomName();
+        AbstractTeam team = this.boss.getScoreboardTeam();
+        if (this.named && customName == this.namedCustomName && team == this.namedTeam) {
+            return;
+        }
+        this.named = true;
+        this.namedCustomName = customName;
+        this.namedTeam = team;
+        this.bar.setName(this.boss.getDisplayName());
     }
 
     private boolean inRange(ServerPlayerEntity player) {
@@ -293,7 +317,8 @@ public class BossFight {
     /** Restores the phase without running its callback again (its effects were saved with the boss). */
     public void readNbt(NbtCompound nbt) {
         this.phase = Math.min(nbt.getInt(PHASE_NBT), this.phases.size());
-        this.bar.setName(this.boss.getDisplayName());
+        this.named = false;
+        this.updateName();
         this.bar.setColor(this.currentColor());
     }
 }

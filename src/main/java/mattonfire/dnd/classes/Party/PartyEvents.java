@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Party;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,6 +40,9 @@ public class PartyEvents {
     /** Fractional XP left over from splitting, per channel and player, so small orbs aren't lost. */
     private static final Map<String, Map<UUID, Double>> XP_REMAINDER = new HashMap<>();
 
+    /** The last party HUD payload each online player got, so an unchanged one isn't sent again. */
+    private static final Map<UUID, byte[]> LAST_HUD = new HashMap<>();
+
     public static void register() {
         // No friendly fire: party members (and their pets) can't hurt each other,
         // including with arrows, tridents, fireballs and thrown potions.
@@ -61,6 +65,8 @@ public class PartyEvents {
 
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
             UUID uuid = handler.getPlayer().getUuid();
+            // The client forgets its HUD on disconnect, so the next join must send it again.
+            LAST_HUD.remove(uuid);
             for (Map<UUID, Double> remainders : XP_REMAINDER.values()) {
                 remainders.remove(uuid);
             }
@@ -117,7 +123,10 @@ public class PartyEvents {
         }
     }
 
-    /** Sends every online party member the health, class and Downed status of the rest of their party. */
+    /**
+     * Sends every online party member the health, class and Downed status of the rest of their party,
+     * when it differs from what they last got.
+     */
     public static void syncHud(MinecraftServer server) {
         PartyManager manager = PartyManager.get(server);
         // Dungeon Masters don't show on the party HUD.
@@ -152,7 +161,7 @@ public class PartyEvents {
                 buf.writeByte(downed == null ? 0 : downed.passes());
                 buf.writeByte(downed == null ? 0 : downed.fails());
             }
-            ServerPlayNetworking.send(player, S2C_PARTY_HUD, buf);
+            sendHud(player, buf);
         }
     }
 
@@ -160,6 +169,16 @@ public class PartyEvents {
     public static void clearHud(ServerPlayerEntity player) {
         PacketByteBuf buf = PacketByteBufs.create();
         buf.writeVarInt(0);
-        ServerPlayNetworking.send(player, S2C_PARTY_HUD, buf);
+        sendHud(player, buf);
+    }
+
+    /** Sends a party HUD payload unless it's the same as the last one this player got. */
+    private static void sendHud(ServerPlayerEntity player, PacketByteBuf buf) {
+        byte[] payload = new byte[buf.readableBytes()];
+        buf.getBytes(buf.readerIndex(), payload);
+        byte[] last = LAST_HUD.put(player.getUuid(), payload);
+        if (last == null || !Arrays.equals(last, payload)) {
+            ServerPlayNetworking.send(player, S2C_PARTY_HUD, buf);
+        }
     }
 }

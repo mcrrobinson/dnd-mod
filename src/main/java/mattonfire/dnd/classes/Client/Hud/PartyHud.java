@@ -25,7 +25,7 @@ import net.minecraft.util.math.MathHelper;
 
 /**
  * Top-left list of the other party members with their role icon and a health bar each. The server
- * sends the data every half second (see {@link PartyEvents#syncHud}). A Downed member shows
+ * checks the data every half second and sends it when it changed (see {@link PartyEvents#syncHud}). A Downed member shows
  * "DOWNED" in red, or "STABLE" in yellow, in place of their HP, and their death saves ("●●○ ✕○○",
  * passes and fails) on a pulsing bar. While a boss bar is showing, the rows stop short of it and
  * long names are cut.

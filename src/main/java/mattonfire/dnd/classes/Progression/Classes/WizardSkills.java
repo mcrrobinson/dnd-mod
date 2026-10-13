@@ -31,6 +31,7 @@ import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Rest.RestState;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.EntityType;
@@ -166,6 +167,8 @@ public class WizardSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Swarms hold their world; don't keep a stopped server's world alive.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> SWARMS.clear());
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             tickSwarms();
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {

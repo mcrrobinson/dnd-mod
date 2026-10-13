@@ -1,41 +1,92 @@
 package mattonfire.dnd.client.renderer;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.entity.DragonPart;
 import mattonfire.dnd.entity.MultipartDragon;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.LivingEntity;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.server.integrated.IntegratedServer;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /**
  * Dev-only check that the server's dragon part shapes match the animated model: in single player it
- * reads the integrated server's copy of a dragon so the hitbox overlay can draw its shapes too (red,
+ * copies the integrated server's dragons so the hitbox overlay can draw their shapes too (red,
  * next to the client's green), and logs how far apart the two sets are. Off unless a DevScript
  * ({@code serverhitboxes on|measure}) or {@code -Ddndclasses.serverHitboxes=true} turns it on.
+ * <p>
+ * The server's entities are only read on the server thread: at the end of each server tick (while on) it
+ * publishes a snapshot of every dragon's part shapes, which the render and client threads read.
  */
 @Environment(EnvType.CLIENT)
 public final class ServerPartDebug {
-    public static boolean enabled = Boolean.getBoolean("dndclasses.serverHitboxes");
+    public static volatile boolean enabled = Boolean.getBoolean("dndclasses.serverHitboxes");
+
+    /** One server dragon at the end of a server tick: each part's shapes, position, body yaw and world time. */
+    public record ServerDragon(List<List<Box>> parts, Vec3d pos, float bodyYaw, long time) {
+    }
+
+    /** The last snapshot, by world and entity id (the integrated server shares entity ids with the client). */
+    private static volatile Map<RegistryKey<World>, Map<Integer, ServerDragon>> snapshot = Map.of();
 
     private ServerPartDebug() {
     }
 
-    /** The integrated server's copy of {@code clientEntity}, or null (multiplayer, not loaded). */
-    @Nullable
-    public static Entity serverCopy(Entity clientEntity) {
-        IntegratedServer server = MinecraftClient.getInstance().getServer();
-        if (server == null) {
-            return null;
+    public static void register() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            if (!enabled || !(server instanceof IntegratedServer)) {
+                if (!snapshot.isEmpty()) {
+                    snapshot = Map.of();
+                }
+                return;
+            }
+            Map<RegistryKey<World>, Map<Integer, ServerDragon>> worlds = new HashMap<>();
+            for (ServerWorld world : server.getWorlds()) {
+                Map<Integer, ServerDragon> dragons = new HashMap<>();
+                for (Entity entity : world.iterateEntities()) {
+                    if (entity instanceof MultipartDragon dragon) {
+                        dragons.put(entity.getId(), copy(world, entity, dragon));
+                    }
+                }
+                if (!dragons.isEmpty()) {
+                    worlds.put(world.getRegistryKey(), Map.copyOf(dragons));
+                }
+            }
+            snapshot = Map.copyOf(worlds);
+        });
+    }
+
+    private static ServerDragon copy(ServerWorld world, Entity entity, MultipartDragon dragon) {
+        DragonPart[] parts = dragon.getParts();
+        List<List<Box>> shapes = new ArrayList<>(parts.length);
+        for (DragonPart part : parts) {
+            shapes.add(List.copyOf(part.getShapes()));
         }
-        ServerWorld world = server.getWorld(clientEntity.world.getRegistryKey());
-        return world == null ? null : world.getEntityById(clientEntity.getId());
+        float yaw = entity instanceof LivingEntity living ? living.bodyYaw : entity.getYaw();
+        return new ServerDragon(List.copyOf(shapes), entity.getPos(), yaw, world.getTime());
+    }
+
+    /**
+     * The integrated server's copy of {@code clientEntity} from the last server tick's snapshot, or null
+     * (multiplayer, turned off, not a dragon, not loaded).
+     */
+    @Nullable
+    public static ServerDragon serverCopy(Entity clientEntity) {
+        Map<Integer, ServerDragon> dragons = snapshot.get(clientEntity.world.getRegistryKey());
+        return dragons == null ? null : dragons.get(clientEntity.getId());
     }
 
     /** Logs, for every dragon the client has, how far each server part is from the client part. */
@@ -44,17 +95,21 @@ public final class ServerPartDebug {
             return;
         }
         for (Entity entity : client.world.getEntities()) {
-            if (!(entity instanceof MultipartDragon dragon) || !(serverCopy(entity) instanceof MultipartDragon serverDragon)) {
+            if (!(entity instanceof MultipartDragon dragon)) {
+                continue;
+            }
+            ServerDragon server = serverCopy(entity);
+            if (server == null) {
                 continue;
             }
             DragonPart[] clientParts = dragon.getParts();
-            DragonPart[] serverParts = serverDragon.getParts();
+            List<List<Box>> serverParts = server.parts();
             double sum = 0, max = 0;
             String worst = "";
             int count = 0;
-            for (int i = 0; i < Math.min(clientParts.length, serverParts.length); i++) {
+            for (int i = 0; i < Math.min(clientParts.length, serverParts.size()); i++) {
                 Box c = union(clientParts[i].getShapes());
-                Box s = union(serverParts[i].getShapes());
+                Box s = union(serverParts.get(i));
                 if (c == null || s == null) {
                     continue;
                 }
@@ -66,15 +121,13 @@ public final class ServerPartDebug {
                     worst = clientParts[i].name;
                 }
             }
-            Entity serverEntity = (Entity) serverDragon;
-            float clientYaw = entity instanceof net.minecraft.entity.LivingEntity living ? living.bodyYaw : entity.getYaw();
-            float serverYaw = serverEntity instanceof net.minecraft.entity.LivingEntity living ? living.bodyYaw : serverEntity.getYaw();
+            float clientYaw = entity instanceof LivingEntity living ? living.bodyYaw : entity.getYaw();
             DnDClasses.LOGGER.info("[ServerPartDebug] {} client time {} server time {}: part centres {} apart on average, worst {} ({} blocks);"
                             + " dragon {} blocks apart, body yaw {} vs {}",
-                    entity.getType().getUntranslatedName(), client.world.getTime(), serverEntity.world.getTime(),
+                    entity.getType().getUntranslatedName(), client.world.getTime(), server.time(),
                     String.format("%.3f", count == 0 ? 0 : sum / count), worst, String.format("%.3f", max),
-                    String.format("%.3f", entity.getPos().distanceTo(serverEntity.getPos())),
-                    String.format("%.1f", clientYaw), String.format("%.1f", serverYaw));
+                    String.format("%.3f", entity.getPos().distanceTo(server.pos())),
+                    String.format("%.1f", clientYaw), String.format("%.1f", server.bodyYaw()));
         }
     }
 

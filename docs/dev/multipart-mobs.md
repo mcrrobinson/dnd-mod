@@ -23,7 +23,7 @@ How big GeckoLib mobs (the dragons) get extra hittable parts beyond their small 
 2. In the constructor, call `parts = LAYOUT.createParts(this)` and `setId(DragonPartLayout.reserveIds(parts))`. Override `setId` to call `DragonPartLayout.assignIds`.
 3. Call `LAYOUT.update(this, parts, flying)` every tick.
 4. Render it with a `DragonRenderer` (or a subclass).
-5. Check it with `devscripts/dragon-hitboxes.txt` (`hitboxes on` draws the part shapes as green boxes). `devscripts/dragon-hitboxes-server.txt` adds the server's shapes in red and logs the gap (`[ServerPartDebug]`); `dragon-hitboxes-hold.txt` (with `-PdevHidden=false`) leaves two flapping dragons up for you to fly round.
+5. Check it with `devscripts/dragon-hitboxes.txt` (`hitboxes on` draws the part shapes as green boxes). `devscripts/dragon-hitboxes-server.txt` adds the server's shapes in red and logs the gap (`[ServerPartDebug]`). The red shapes are a copy the server takes at the end of each of its ticks (it never reads server entities from the render thread), so they can trail the live server by up to a tick; `dragon-hitboxes-hold.txt` (with `-PdevHidden=false`) leaves two flapping dragons up for you to fly round.
 6. To have server parts follow the animations, add `.animations(...)` to the layout and drive the body animation with a `DragonAnimationController` (see `DragonFlightAnimation`).
 
 ## Known limitations

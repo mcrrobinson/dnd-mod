@@ -1,0 +1,15 @@
+# Client HUD caching check (guest side): joins hud-caching-lan-host.txt's LAN game on port 25617, accepts the
+# party invite, screenshots its own party HUD (the host's row) and leaves when the host is done.
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevScript=devscripts/hud-caching-lan-guest.txt
+wait 40
+closescreen
+/party leave
+waitchat [Accept]
+/party accept
+wait 40
+hud on
+screenshot hudcache-guest-party
+waitchat hudcache-done
+/party leave
+wait 20
+quit

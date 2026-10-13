@@ -34,9 +34,10 @@ public abstract class EntityRenderDispatcherMixin {
             }
         }
         // Dev check: the integrated server's shapes for the same dragon, in red
-        if (ServerPartDebug.enabled && ServerPartDebug.serverCopy(entity) instanceof MultipartDragon serverDragon) {
-            for (DragonPart part : serverDragon.getParts()) {
-                for (Box shape : part.getShapes()) {
+        ServerPartDebug.ServerDragon serverDragon = ServerPartDebug.enabled ? ServerPartDebug.serverCopy(entity) : null;
+        if (serverDragon != null) {
+            for (java.util.List<Box> part : serverDragon.parts()) {
+                for (Box shape : part) {
                     WorldRenderer.drawBox(matrices, vertices, shape.offset(-x, -y, -z), 1.0F, 0.15F, 0.15F, 1.0F);
                 }
             }

@@ -276,7 +276,7 @@ public final class OrcTrial {
                 won ? "won" : "lost", duel.hold(), why, player.getHealth());
         if (won) {
             records.setSworn(duel.hold(), player.getUuid(), true);
-            player.giveItemStack(new ItemStack(ModItems.ORCISH_GREATAXE));
+            player.getInventory().offerOrDrop(new ItemStack(ModItems.ORCISH_GREATAXE));
             Progression.addXp(player, CLASS_XP);
             Faction horde = Factions.get(FACTION);
             if (horde != null) {

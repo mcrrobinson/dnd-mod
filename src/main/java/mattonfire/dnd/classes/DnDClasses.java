@@ -79,9 +79,18 @@ public class DnDClasses implements ModInitializer {
                 player.networkHandler.sendPacket(subtitlePacket);
         }
 
-        public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount) {
-                for (int i = 0; i < particleCount; i++) {
-                        double time = world.getTime() % 360;
+        /**
+         * Draws one of {@code phases} interleaved subsets of a {@code particleCount}-point ring: point i is
+         * drawn on ticks where {@code i % phases == time % phases}. Called every tick, each point is redrawn
+         * every {@code phases} ticks, so the ring keeps all its points while sending 1/phases of the particle
+         * packets (each spawnParticles call is one packet per nearby player). Keep {@code phases} at or under
+         * the particle's shortest visible life so no point blinks out.
+         */
+        public static void createParticleRing(ServerWorld world, Vec3d center, double radius, int particleCount,
+                        int phases) {
+                long tick = world.getTime();
+                double time = tick % 360;
+                for (int i = (int) (tick % phases); i < particleCount; i += phases) {
                         double angle = 2 * Math.PI * i / particleCount + time * 0.01;
                         double x = center.x + radius * Math.cos(angle);
                         double z = center.z + radius * Math.sin(angle);

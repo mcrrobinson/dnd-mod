@@ -71,6 +71,8 @@ public final class ClassLifecycle {
             for (String key : oldData.getKeys()) {
                 newData.put(key, oldData.get(key).copy());
             }
+            // The copies are new tags, so cached progress wouldn't match them anyway; free it now.
+            Progression.invalidate(newPlayer);
         });
 
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {
@@ -146,6 +148,7 @@ public final class ClassLifecycle {
         player.clearStatusEffects();
         Druid.onClassReset(player);
         DndCharacter oldClass = classOf(player);
+        Progression.invalidate(player);
         if (player instanceof PlayerEntityExt ext) {
             ext.setDndClass(dndClass);
         }

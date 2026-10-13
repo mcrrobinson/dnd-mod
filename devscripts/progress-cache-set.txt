@@ -1,0 +1,72 @@
+# Server ClassProgress cache: every write path must show up in the next read. Run first, then
+# progress-cache-check.txt with the same -PdevUser (the relog):
+# timeout 300 ./gradlew runClient -PdevUser=CacheDev -PdevScript=devscripts/progress-cache-set.txt
+# timeout 300 ./gradlew runClient -PdevUser=CacheDev -PdevScript=devscripts/progress-cache-check.txt
+# Expect in latest.log ([CHAT] lines, in order):
+#  1. after the unlocks: unlocked [barbarian.bloodlust, barbarian.thick_skin], passives with both, armor 4.0
+#  2. thick_skin unequipped: passives [barbarian.bloodlust], armor 0.0; equipped again: both, armor 4.0
+#  3. subclass barbarian.berserker, ranks {barbarian.rage=2}, 310 xp
+#  4. as a Fighter: level 1, 0 xp, armor 0.0; back to Barbarian: the same line as 3, armor 4.0
+#  5. after dying and respawning: the same line as 3, armor 4.0
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule keepInventory true
+/time set noon
+/fill 0 149 0 8 149 8 minecraft:stone
+/fill 0 150 0 8 154 8 minecraft:air
+/tp @s 4.5 150 4.5 0 0
+/dndclass set @s fighter
+wait 5
+/dndclass resetprogress @s
+/dndclass set @s barbarian
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+/dndclass resetprogress @s
+/dndclass xp @s set 260
+/dndclass unlock @s barbarian.bloodlust
+/dndclass unlock @s barbarian.thick_skin
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+/dndclass equip @s barbarian.thick_skin
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+/dndclass equip @s barbarian.thick_skin
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+/dndclass subclass @s barbarian.berserker
+/dndclass rank @s barbarian.rage 2
+/dndclass xp @s add 50
+wait 5
+/dndclass progress @s
+/dndclass set @s fighter
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+/dndclass set @s barbarian
+wait 10
+closescreen
+/clear @s dndclasses:class_guidebook
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+/kill @s
+wait 20
+respawn
+wait 20
+closescreen
+wait 25
+/dndclass progress @s
+/attribute @s minecraft:generic.armor get
+wait 10
+quit

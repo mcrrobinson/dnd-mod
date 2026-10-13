@@ -31,6 +31,7 @@ import net.minecraft.world.Difficulty;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.World;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Goblin raids in one world: starts them, ticks them and saves them with the world.
@@ -48,7 +49,7 @@ public class GoblinRaids extends PersistentState {
     private static final int CHECK_INTERVAL = 600;
     private static final int RAID_CHANCE = 20;
     /** Three in-game days between raids on the same settlement. */
-    private static final long SETTLEMENT_COOLDOWN = 24000L * 3;
+    private static final long SETTLEMENT_COOLDOWN = 3 * GameTime.TICKS_PER_DAY;
     /** How close (blocks outside its bounds) a player must be for their settlement to be raided. */
     private static final int NEAR_SETTLEMENT = 32;
     /** Clearing a Goblin Warren calls off raids and quiets settlements within this many blocks of it... */
@@ -112,7 +113,7 @@ public class GoblinRaids extends PersistentState {
         BlockPos center = dungeon.bounds().getCenter();
         int called = get(world).quiet(world, center, WARREN_RADIUS, WARREN_QUIET);
         DnDClasses.LOGGER.info("[GoblinRaid] goblin warren {} cleared at {}: called off {} raid(s) within {} blocks; no raids there until day {}",
-                dungeon.startKey(), center.toShortString(), called, WARREN_RADIUS, (world.getTime() + WARREN_QUIET) / 24000L);
+                dungeon.startKey(), center.toShortString(), called, WARREN_RADIUS, GameTime.days(world.getTime() + WARREN_QUIET));
         for (ServerPlayerEntity player : participants) {
             player.sendMessage(Text.translatable("raid.dndclasses.goblin.warren_cleared").formatted(Formatting.GOLD), false);
         }

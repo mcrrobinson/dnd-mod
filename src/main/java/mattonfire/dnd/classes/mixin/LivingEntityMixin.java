@@ -25,6 +25,7 @@ import net.minecraft.item.SwordItem;
 import net.minecraft.world.World;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.registry.tag.TagKey;
+import mattonfire.dnd.world.GameTime;
 
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends Entity {
@@ -57,9 +58,7 @@ public abstract class LivingEntityMixin extends Entity {
                 }
             }
 
-            // Check if it's night (time between 13000 and 23000)
-            long time = player.getWorld().getTimeOfDay() % 24000;
-            boolean isNight = time >= 13000 && time <= 23000;
+            boolean isNight = GameTime.isNight(player.getWorld());
 
             // Check if using a sword
             if (player.getMainHandStack().getItem() instanceof SwordItem) {

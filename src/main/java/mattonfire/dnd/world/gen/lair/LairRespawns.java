@@ -8,6 +8,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.PersistentState;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * When each dragon lair's Lightning Chaser was last killed, so the lair's spawn override waits
@@ -16,7 +17,7 @@ import net.minecraft.world.PersistentState;
 public class LairRespawns extends PersistentState {
     private static final String ID = DnDClasses.MOD_ID + "_lair_respawns";
     /** Three in-game days. */
-    public static final long RESPAWN_COOLDOWN = 24000L * 3;
+    public static final long RESPAWN_COOLDOWN = 3 * GameTime.TICKS_PER_DAY;
 
     /** Lair centre (BlockPos.asLong) -> game time its chaser was killed. */
     private final Map<Long, Long> lastKill = new HashMap<>();

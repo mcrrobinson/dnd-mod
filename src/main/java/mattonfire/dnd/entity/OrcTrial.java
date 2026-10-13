@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import mattonfire.dnd.entity.boss.BossBars;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Race.DndRace;
@@ -44,6 +45,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The Trial of Strength at an Orc Stronghold's Fighting Pit. A Half-Orc (or anyone Honored with the
@@ -154,7 +156,7 @@ public final class OrcTrial {
     private static void beat(ServerPlayerEntity player, ServerWorld world, FightingPitPiece pit) {
         world.playSound(null, pit.drum(), SoundEvents.BLOCK_NOTE_BLOCK_BASEDRUM.value(), SoundCategory.BLOCKS, 2.0F, 0.6F);
         long hold = pit.hold();
-        long today = world.getTimeOfDay() / 24000L;
+        long today = GameTime.day(world);
         BloodSworn records = BloodSworn.get(world);
         String refusal = null;
         if (player.isCreative() || player.isSpectator()) {
@@ -248,14 +250,8 @@ public final class OrcTrial {
                     champion.setTarget(player);
                 }
                 if (server.getTicks() % 10 == 0) {
-                    for (ServerPlayerEntity viewer : duel.world().getPlayers()) {
-                        boolean near = viewer.getBlockPos().isWithinDistance(duel.middle(), BAR_RANGE);
-                        if (near && !duel.bar().getPlayers().contains(viewer)) {
-                            duel.bar().addPlayer(viewer);
-                        } else if (!near && duel.bar().getPlayers().contains(viewer)) {
-                            duel.bar().removePlayer(viewer);
-                        }
-                    }
+                    BossBars.syncViewers(duel.bar(), duel.world(),
+                            viewer -> viewer.getBlockPos().isWithinDistance(duel.middle(), BAR_RANGE));
                 }
             }
         }
@@ -288,7 +284,7 @@ public final class OrcTrial {
             world.playSound(null, player.getBlockPos(), SoundEvents.EVENT_RAID_HORN.value(), SoundCategory.PLAYERS, 2.0F, 1.0F);
             onTrialWon.accept(player, duel.hold());
         } else {
-            records.setLost(duel.hold(), player.getUuid(), world.getTimeOfDay() / 24000L);
+            records.setLost(duel.hold(), player.getUuid(), GameTime.day(world));
             if (player.isAlive()) {
                 title(player, Text.translatable("message.dndclasses.trial.lost").formatted(Formatting.GRAY),
                         Text.translatable("message.dndclasses.trial.lost.subtitle").formatted(Formatting.GRAY));

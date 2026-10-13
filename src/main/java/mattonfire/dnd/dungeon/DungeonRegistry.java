@@ -34,6 +34,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.PersistentState;
 import net.minecraft.world.gen.structure.Structure;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Every dungeon this world has seen, saved with the world ({@code data/dndclasses_dungeons.dat}
@@ -50,7 +51,7 @@ public class DungeonRegistry extends PersistentState {
 
     private static final int WARD_SEARCH_CHUNKS = 4;
     /** A cleared dungeon fills up again after 7 in-game days (on the game clock or the day clock)... */
-    public static final long REPOPULATE_TICKS = 7L * 24000L;
+    public static final long REPOPULATE_TICKS = 7 * GameTime.TICKS_PER_DAY;
     /** ...once nobody has been inside it for 30 s. */
     public static final long REPOPULATE_EMPTY_TICKS = 600L;
     private static final int REPOPULATE_CHECK_INTERVAL = 100;

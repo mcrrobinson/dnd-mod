@@ -3,15 +3,14 @@ package mattonfire.dnd.entity;
 import static mattonfire.dnd.entity.NpcTrades.sell;
 import static mattonfire.dnd.entity.NpcTrades.buy;
 
+import mattonfire.dnd.dungeon.DungeonMaps;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
-import net.minecraft.item.FilledMapItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
-import net.minecraft.item.map.MapState;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.RegistryKeys;
@@ -76,10 +75,6 @@ public final class DragonbornTrades {
         if (target == null) {
             return null;
         }
-        ItemStack map = FilledMapItem.createMap(world, target.getX(), target.getZ(), (byte) 2, true, true);
-        FilledMapItem.fillExplorationMap(world, map);
-        MapState.addDecorationsNbt(map, target, "+", MapIcon.Type.RED_X);
-        map.setCustomName(Text.translatable(name));
-        return map;
+        return DungeonMaps.explorerMap(world, target, "+", MapIcon.Type.RED_X, Text.translatable(name));
     }
 }

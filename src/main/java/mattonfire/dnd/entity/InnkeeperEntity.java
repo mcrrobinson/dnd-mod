@@ -31,6 +31,7 @@ import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The hobbit who keeps the village inn. Stays behind the bar, sells food and drink for emeralds
@@ -196,12 +197,10 @@ public class InnkeeperEntity extends HobbitEntity implements SettlementMerchant 
      */
     private void giveFreeRoom(ServerPlayerEntity player) {
         ItemStack key = new ItemStack(Tavern.ROOM_KEY);
-        RoomKeyItem.stamp(key, this.innName(), this.innBox(), this.world.getTimeOfDay() / 24000L);
+        RoomKeyItem.stamp(key, this.innName(), this.innBox(), GameTime.day(this.world));
         TavernRooms.markRented(player);
         this.holdRoomKeyOffer();
-        if (!player.giveItemStack(key)) {
-            player.dropItem(key, false);
-        }
+        player.getInventory().offerOrDrop(key);
         player.sendMessage(Text.translatable("tavern.dndclasses.room.free", this.getDisplayName())
                 .formatted(Formatting.GOLD), false);
         mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Reputation] {} gave {} a free room (Honored with the hobbits)",
@@ -261,9 +260,7 @@ public class InnkeeperEntity extends HobbitEntity implements SettlementMerchant 
         if (offer == this.honoredOffer) {
             // The round comes with a cake, on the house.
             ItemStack cake = new ItemStack(Items.CAKE);
-            if (!player.giveItemStack(cake)) {
-                player.dropItem(cake, false);
-            }
+            player.getInventory().offerOrDrop(cake);
             player.sendMessage(Text.translatable("entity.dndclasses.innkeeper.honored_round").formatted(Formatting.GOLD), true);
         }
         if (InnkeeperTrades.isRoomKey(offer)) {
@@ -278,7 +275,7 @@ public class InnkeeperEntity extends HobbitEntity implements SettlementMerchant 
     public void onSellingItem(ItemStack stack) {
         // The key in the output slot is the one the customer takes: write the inn and today on it.
         if (!this.world.isClient && stack.isOf(Tavern.ROOM_KEY)) {
-            RoomKeyItem.stamp(stack, this.innName(), this.innBox(), this.world.getTimeOfDay() / 24000L);
+            RoomKeyItem.stamp(stack, this.innName(), this.innBox(), GameTime.day(this.world));
         }
     }
 

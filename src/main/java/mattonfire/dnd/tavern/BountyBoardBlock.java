@@ -166,9 +166,7 @@ public class BountyBoardBlock extends BlockWithEntity {
             return ActionResult.CONSUME;
         }
         world.setBlockState(pos, state.with(NOTICES[slot], false));
-        if (!player.giveItemStack(notice)) {
-            player.dropItem(notice, false);
-        }
+        player.getInventory().offerOrDrop(notice);
         player.sendMessage(Text.translatable("bounty.dndclasses.take", bounty.title()).formatted(Formatting.GOLD), false);
         player.sendMessage(bounty.description().copy().formatted(Formatting.GRAY, Formatting.ITALIC), false);
         world.playSound(null, pos, SoundEvents.ITEM_BOOK_PAGE_TURN, SoundCategory.BLOCKS, 1.0F, 1.0F);
@@ -187,9 +185,7 @@ public class BountyBoardBlock extends BlockWithEntity {
         }
         world.setBlockState(pos, state.with(NOTICES[slot], false));
         ItemStack lead = QuestLeadItem.create(quest.id(), quest.title());
-        if (!player.giveItemStack(lead)) {
-            player.dropItem(lead, false);
-        }
+        player.getInventory().offerOrDrop(lead);
         mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Quests] {} took a rumour of {}", player.getEntityName(), quest.id());
         player.sendMessage(Text.translatable("bounty.dndclasses.rumour.take", quest.title()).formatted(Formatting.GOLD), false);
         player.sendMessage(Text.translatable("bounty.dndclasses.rumour.hint").formatted(Formatting.GRAY, Formatting.ITALIC), false);

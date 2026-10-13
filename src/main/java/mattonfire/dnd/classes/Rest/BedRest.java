@@ -18,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Long rests in beds. A player who gets into bed with a long rest available
@@ -30,7 +31,7 @@ import net.minecraft.util.math.BlockPos;
  * on.</li>
  * </ul>
  * Getting up early or being woken by damage gives nothing. The rest counts for the day the player
- * got into bed ({@link Rests#day}), so the night of day N records N and the next night works again.
+ * got into bed ({@link GameTime#day(net.minecraft.server.MinecraftServer)}), so the night of day N records N and the next night works again.
  * <p>
  * Hooks for later rests: {@link #RULE} lets a system (tavern Room Keys) turn a particular bed into a
  * different kind of rest (source and time asleep), and {@link #onSleepersWoken} is called by
@@ -129,7 +130,7 @@ public final class BedRest {
             return;
         }
         Rule rule = RULE.invoker().rule(player, bed);
-        SESSIONS.put(player.getUuid(), new Session(rule == null ? Rule.BED : rule, Rests.day(player)));
+        SESSIONS.put(player.getUuid(), new Session(rule == null ? Rule.BED : rule, GameTime.day(player.getServer())));
         RestSync.setSession(player, RestKind.LONG, 0, rule == null ? BED_TICKS : rule.asleepTicks());
     }
 

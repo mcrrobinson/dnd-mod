@@ -7,6 +7,9 @@ import org.jetbrains.annotations.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
+import net.minecraft.world.World;
+
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The magic state of one stack, kept in the sub-compound {@value #KEY} of its NBT (1.19.4 has no item
@@ -19,10 +22,13 @@ import net.minecraft.nbt.NbtElement;
  * <li>{@code uuid}: this item's bond id; {@code attunedTo}: the bonded player (attunement ticket)</li>
  * <li>{@code plus}: the +1/+2/+3 of generic magic gear</li>
  * <li>{@code charges}: for wands and other charged items</li>
+ * <li>{@code dawnDay}: the day number of the last dawn recharge ({@link #newDawn})</li>
+ * <li>item-specific cooldown keys holding the world time the item is ready again ({@link #readyIn})</li>
  * </ul>
  */
 public final class MagicData {
     public static final String KEY = "dndclasses_magic";
+    private static final String DAWN_DAY = "dawnDay";
 
     private MagicData() {
     }
@@ -171,6 +177,48 @@ public final class MagicData {
 
     public static void setCharges(ItemStack stack, int charges) {
         getOrCreate(stack).putInt("charges", charges);
+    }
+
+    // --- cooldowns and dawn recharges ---
+
+    /**
+     * Ticks until the item is ready again: the world time ({@code getTime}) stored under {@code key} minus
+     * {@code now}, or 0 when that time has passed or none is stored. Never writes NBT.
+     */
+    public static long readyIn(ItemStack stack, String key, long now) {
+        NbtCompound nbt = get(stack);
+        return nbt == null ? 0 : Math.max(0, nbt.getLong(key) - now);
+    }
+
+    /** Stores the world time ({@code getTime}) at which the item is ready again under {@code key}. */
+    public static void setReadyAt(ItemStack stack, String key, long time) {
+        getOrCreate(stack).putLong(key, time);
+    }
+
+    /** Clears the cooldown stored under {@code key}: the item is ready now. */
+    public static void clearReadyAt(ItemStack stack, String key) {
+        NbtCompound nbt = get(stack);
+        if (nbt != null)
+            nbt.remove(key);
+    }
+
+    /**
+     * Dawn recharge, for items that regain charges each dawn while carried: true once each time the day number
+     * on {@code world}'s clock moves forward since the last call (not when {@code /time set} goes backwards).
+     * The first call only remembers today's day number.
+     */
+    public static boolean newDawn(ItemStack stack, World world) {
+        long day = GameTime.day(world);
+        NbtCompound nbt = getOrCreate(stack);
+        if (!nbt.contains(DAWN_DAY)) {
+            nbt.putLong(DAWN_DAY, day);
+            return false;
+        }
+        long stored = nbt.getLong(DAWN_DAY);
+        if (day == stored)
+            return false;
+        nbt.putLong(DAWN_DAY, day);
+        return day > stored;
     }
 
     /**

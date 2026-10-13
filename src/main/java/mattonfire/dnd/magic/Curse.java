@@ -39,6 +39,7 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Curses on magic items (design section 3.6). A cursed item binds to whoever equips it (armor) or holds it for
@@ -262,7 +263,7 @@ public enum Curse {
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
         if (!data.contains(RINGS_CALL_SINCE))
             return 0;
-        return Math.max(0, (player.getWorld().getTimeOfDay() - data.getLong(RINGS_CALL_SINCE)) / 24000L);
+        return Math.max(0, GameTime.days(player.getWorld().getTimeOfDay() - data.getLong(RINGS_CALL_SINCE)));
     }
 
     /** The Ring's Call: -2 max health per day attuned (max -10); the clock starts when it takes hold. */

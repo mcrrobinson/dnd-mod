@@ -23,6 +23,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Picks the mod's music for game events, in priority order: boss fight, low health, dungeon,
@@ -253,8 +254,7 @@ public class EventMusic {
         if (travelling) {
             return Event.TRAVEL;
         }
-        long timeOfDay = player.world.getTimeOfDay() % 24000L;
-        if (timeOfDay >= 13000L && timeOfDay < 23000L) {
+        if (GameTime.isNight(player.world)) {
             return Event.NIGHT;
         }
         return Event.NONE;

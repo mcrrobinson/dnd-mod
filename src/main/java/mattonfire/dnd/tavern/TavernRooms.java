@@ -23,6 +23,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Rented tavern rooms. A player holding a valid {@link RoomKeyItem} can sleep in any bed inside the
@@ -91,7 +92,7 @@ public final class TavernRooms {
     /** A valid key in the player's inventory that opens this bed, or null. */
     @Nullable
     public static ItemStack keyFor(ServerPlayerEntity player, BlockPos bed) {
-        long today = Rests.day(player);
+        long today = GameTime.day(player.getServer());
         PlayerInventory inventory = player.getInventory();
         for (int i = 0; i < inventory.size(); i++) {
             ItemStack stack = inventory.getStack(i);
@@ -126,11 +127,11 @@ public final class TavernRooms {
             return false;
         }
         var data = ((IEntityDataSaver) player).getPersistentData();
-        return data.contains(RENTED_DAY) && data.getLong(RENTED_DAY) == Rests.day(serverPlayer);
+        return data.contains(RENTED_DAY) && data.getLong(RENTED_DAY) == GameTime.day(serverPlayer.getServer());
     }
 
     /** Records that the player rented a room today. */
     public static void markRented(ServerPlayerEntity player) {
-        ((IEntityDataSaver) player).getPersistentData().putLong(RENTED_DAY, Rests.day(player));
+        ((IEntityDataSaver) player).getPersistentData().putLong(RENTED_DAY, GameTime.day(player.getServer()));
     }
 }

@@ -7,6 +7,7 @@ import mattonfire.dnd.classes.Obstacles.StructureObstacles;
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -126,16 +127,16 @@ public class BeholderCavernPiece extends StructurePiece {
                     double s = this.shape(dx, dy, dz);
                     float n = BeholderLairStructures.noise(this.seed, x, y, z);
                     if (dy > 0 && s < 1.0) {
-                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
                     } else if (dy == 0 && s < 1.0) {
-                        world.setBlockState(pos, floor(dx, dz, n), 2);
+                        world.setBlockState(pos, floor(dx, dz, n), PieceBlocks.UPDATE);
                     } else if (dy >= 0 && s < innerWall) {
-                        world.setBlockState(pos, wall(dy, n), 2);
+                        world.setBlockState(pos, wall(dy, n), PieceBlocks.UPDATE);
                     } else if (s < outerWall) {
                         // The rest of the shell, and under the floor: only fill gaps (caves, water, lava)
                         BlockState state = world.getBlockState(pos);
                         if (state.isAir() || !state.getFluidState().isEmpty() || state.isReplaceable()) {
-                            world.setBlockState(pos, Blocks.DEEPSLATE.getDefaultState(), 2);
+                            world.setBlockState(pos, Blocks.DEEPSLATE.getDefaultState(), PieceBlocks.UPDATE);
                         }
                     }
                 }
@@ -378,7 +379,7 @@ public class BeholderCavernPiece extends StructurePiece {
 
     private static void set(StructureWorldAccess world, BlockBox chunkBox, BlockPos pos, BlockState state) {
         if (chunkBox.contains(pos)) {
-            world.setBlockState(pos, state, 2);
+            world.setBlockState(pos, state, PieceBlocks.UPDATE);
         }
     }
 }

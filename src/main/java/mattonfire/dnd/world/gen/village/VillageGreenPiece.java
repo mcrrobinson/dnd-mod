@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.village;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 
@@ -120,17 +122,17 @@ public class VillageGreenPiece extends HobbitPiece {
                 }
             }
         }
-        b.fill(C, 1, C, C + 1, 9, C + 1, log(Blocks.OAK_LOG, Direction.Axis.Y));
+        b.fill(C, 1, C, C + 1, 9, C + 1, pillar(Blocks.OAK_LOG, Direction.Axis.Y));
         // Roots
-        b.set(C - 1, 1, C, log(Blocks.OAK_LOG, Direction.Axis.X));
-        b.set(C + 2, 1, C + 1, log(Blocks.OAK_LOG, Direction.Axis.X));
-        b.set(C + 1, 1, C - 1, log(Blocks.OAK_LOG, Direction.Axis.Z));
-        b.set(C, 1, C + 2, log(Blocks.OAK_LOG, Direction.Axis.Z));
+        b.set(C - 1, 1, C, pillar(Blocks.OAK_LOG, Direction.Axis.X));
+        b.set(C + 2, 1, C + 1, pillar(Blocks.OAK_LOG, Direction.Axis.X));
+        b.set(C + 1, 1, C - 1, pillar(Blocks.OAK_LOG, Direction.Axis.Z));
+        b.set(C, 1, C + 2, pillar(Blocks.OAK_LOG, Direction.Axis.Z));
         // Boughs
-        b.fill(C + 2, 7, C, C + 4, 8, C, log(Blocks.OAK_LOG, Direction.Axis.X));
-        b.fill(C - 3, 8, C + 1, C - 1, 8, C + 1, log(Blocks.OAK_LOG, Direction.Axis.X));
-        b.fill(C + 1, 8, C + 2, C + 1, 8, C + 4, log(Blocks.OAK_LOG, Direction.Axis.Z));
-        b.fill(C, 7, C - 3, C, 7, C - 1, log(Blocks.OAK_LOG, Direction.Axis.Z));
+        b.fill(C + 2, 7, C, C + 4, 8, C, pillar(Blocks.OAK_LOG, Direction.Axis.X));
+        b.fill(C - 3, 8, C + 1, C - 1, 8, C + 1, pillar(Blocks.OAK_LOG, Direction.Axis.X));
+        b.fill(C + 1, 8, C + 2, C + 1, 8, C + 4, pillar(Blocks.OAK_LOG, Direction.Axis.Z));
+        b.fill(C, 7, C - 3, C, 7, C - 1, pillar(Blocks.OAK_LOG, Direction.Axis.Z));
 
         // Lanterns hanging from the underside of the canopy.
         for (int i = 0; i < 12; i++) {

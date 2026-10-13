@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.village;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;

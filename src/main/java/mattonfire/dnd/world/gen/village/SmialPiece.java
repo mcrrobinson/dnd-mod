@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.village;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -195,9 +197,9 @@ public class SmialPiece extends HobbitPiece {
 
         // Ceiling beams and the posts holding them up.
         for (int z = iz0 + 1; z <= iz1; z += 3) {
-            b.fill(cx - h, 5, z, cx + h, 5, z, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X));
-            b.fill(x0, 1, z, x0, 4, z, log(Blocks.SPRUCE_LOG, Direction.Axis.Y));
-            b.fill(x1, 1, z, x1, 4, z, log(Blocks.SPRUCE_LOG, Direction.Axis.Y));
+            b.fill(cx - h, 5, z, cx + h, 5, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X));
+            b.fill(x0, 1, z, x0, 4, z, pillar(Blocks.SPRUCE_LOG, Direction.Axis.Y));
+            b.fill(x1, 1, z, x1, 4, z, pillar(Blocks.SPRUCE_LOG, Direction.Axis.Y));
         }
 
         // Partitions for the pantry (left) and bedroom (right), with a doorway near the front.

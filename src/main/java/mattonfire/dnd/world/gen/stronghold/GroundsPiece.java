@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.stronghold;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -99,7 +101,7 @@ public class GroundsPiece extends StrongholdPiece {
                 : r2 < 0.55F ? Blocks.DARK_OAK_LOG : Blocks.STRIPPED_DARK_OAK_LOG;
         for (int y = 1; y <= WALL_HEIGHT; y++) {
             b.set(x, y, z, log == Blocks.DARK_OAK_LOG || log == Blocks.STRIPPED_DARK_OAK_LOG
-                    ? log(log, Direction.Axis.Y) : log.getDefaultState());
+                    ? pillar(log, Direction.Axis.Y) : log.getDefaultState());
         }
         if (r < 0.7F) {
             b.set(x, WALL_HEIGHT + 1, z, stake());
@@ -112,7 +114,7 @@ public class GroundsPiece extends StrongholdPiece {
     private void totem(Builder b, int x, int z) {
         BlockState skull = skull(b.random);
         for (int y = 1; y <= 4; y++) {
-            b.set(x, y, z, log(y % 2 == 0 ? Blocks.STRIPPED_DARK_OAK_LOG : Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+            b.set(x, y, z, pillar(y % 2 == 0 ? Blocks.STRIPPED_DARK_OAK_LOG : Blocks.DARK_OAK_LOG, Direction.Axis.Y));
         }
         b.set(x, 3, z + 1, Blocks.CARVED_PUMPKIN.getDefaultState().with(net.minecraft.block.CarvedPumpkinBlock.FACING, Direction.SOUTH));
         b.set(x - 1, 4, z, Blocks.DARK_OAK_FENCE);
@@ -124,10 +126,10 @@ public class GroundsPiece extends StrongholdPiece {
     /** A heap of bones round a skull. */
     private void boneHeap(Builder b, int x, int z) {
         BlockState skull = skull(b.random);
-        b.set(x, 1, z, log(Blocks.BONE_BLOCK, Direction.Axis.Y));
-        b.set(x + 1, 1, z, log(Blocks.BONE_BLOCK, Direction.Axis.X));
-        b.set(x, 1, z + 1, log(Blocks.BONE_BLOCK, Direction.Axis.Z));
-        b.set(x, 2, z, log(Blocks.BONE_BLOCK, Direction.Axis.Y));
+        b.set(x, 1, z, pillar(Blocks.BONE_BLOCK, Direction.Axis.Y));
+        b.set(x + 1, 1, z, pillar(Blocks.BONE_BLOCK, Direction.Axis.X));
+        b.set(x, 1, z + 1, pillar(Blocks.BONE_BLOCK, Direction.Axis.Z));
+        b.set(x, 2, z, pillar(Blocks.BONE_BLOCK, Direction.Axis.Y));
         b.set(x - 1, 1, z, skull);
         b.set(x, 3, z, Blocks.SKELETON_SKULL.getDefaultState());
     }

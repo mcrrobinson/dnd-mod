@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.village;
 
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LanternBlock;
@@ -83,9 +84,9 @@ public class PathPiece extends StructurePiece {
             BlockPos ground = new BlockPos(x, world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
             BlockState state = world.getBlockState(ground);
             if (state.getFluidState().isIn(FluidTags.WATER)) {
-                world.setBlockState(ground, Blocks.SPRUCE_PLANKS.getDefaultState(), 2);
+                world.setBlockState(ground, Blocks.SPRUCE_PLANKS.getDefaultState(), PieceBlocks.UPDATE);
             } else if (state.isIn(BlockTags.DIRT) || state.isOf(Blocks.SAND) || state.isOf(Blocks.GRAVEL)) {
-                world.setBlockState(ground, (roll < 0.85F ? Blocks.DIRT_PATH : Blocks.COARSE_DIRT).getDefaultState(), 2);
+                world.setBlockState(ground, (roll < 0.85F ? Blocks.DIRT_PATH : Blocks.COARSE_DIRT).getDefaultState(), PieceBlocks.UPDATE);
                 clearPlant(world, ground.up());
             }
         }
@@ -98,8 +99,8 @@ public class PathPiece extends StructurePiece {
             BlockPos ground = new BlockPos(x, world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
             if (world.getBlockState(ground).isIn(BlockTags.DIRT)) {
                 clearPlant(world, ground.up());
-                world.setBlockState(ground.up(), Blocks.OAK_FENCE.getDefaultState(), 2);
-                world.setBlockState(ground.up(2), Blocks.LANTERN.getDefaultState().with(LanternBlock.HANGING, false), 2);
+                world.setBlockState(ground.up(), Blocks.OAK_FENCE.getDefaultState(), PieceBlocks.UPDATE);
+                world.setBlockState(ground.up(2), Blocks.LANTERN.getDefaultState().with(LanternBlock.HANGING, false), PieceBlocks.UPDATE);
             }
         }
     }
@@ -109,9 +110,9 @@ public class PathPiece extends StructurePiece {
         if (plant.isAir() || !plant.getMaterial().isReplaceable() && !plant.isIn(BlockTags.FLOWERS)) {
             return;
         }
-        world.setBlockState(pos, Blocks.AIR.getDefaultState(), 2);
+        world.setBlockState(pos, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
         if (plant.contains(TallPlantBlock.HALF) && plant.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER) {
-            world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), 2);
+            world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
         }
     }
 }

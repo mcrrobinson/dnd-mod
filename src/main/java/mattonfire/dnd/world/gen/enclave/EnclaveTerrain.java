@@ -1,17 +1,6 @@
 package mattonfire.dnd.world.gen.enclave;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Predicate;
-import net.minecraft.registry.entry.RegistryEntry;
-import net.minecraft.util.math.ChunkPos;
-import net.minecraft.world.HeightLimitView;
-import net.minecraft.world.Heightmap;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.source.BiomeCoords;
-import net.minecraft.world.biome.source.BiomeSource;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
-import net.minecraft.world.gen.noise.NoiseConfig;
+import mattonfire.dnd.world.gen.TerrainColumns;
 import net.minecraft.world.gen.structure.Structure;
 
 /** Terrain heights from the noise generator, before anything (trees included) is built, cached per column. */
@@ -24,42 +13,23 @@ final class EnclaveTerrain {
     /** How many of the 24 samples may be wet, too steep or out of the forest. */
     private static final int MAX_BAD = 4;
 
-    private final ChunkGenerator generator;
-    private final HeightLimitView world;
-    private final NoiseConfig noise;
-    private final BiomeSource biomes;
-    private final Predicate<RegistryEntry<Biome>> biomeAllowed;
-    private final Map<Long, int[]> cache = new HashMap<>();
+    private final TerrainColumns columns;
 
     EnclaveTerrain(Structure.Context context) {
-        this.generator = context.chunkGenerator();
-        this.world = context.world();
-        this.noise = context.noiseConfig();
-        this.biomes = context.biomeSource();
-        this.biomeAllowed = context.biomePredicate();
+        this.columns = new TerrainColumns(context);
     }
 
     boolean biomeAllowed(int x, int z) {
-        RegistryEntry<Biome> biome = this.biomes.getBiome(BiomeCoords.fromBlock(x), BiomeCoords.fromBlock(this.ground(x, z)),
-                BiomeCoords.fromBlock(z), this.noise.getMultiNoiseSampler());
-        return this.biomeAllowed.test(biome);
-    }
-
-    private int[] sample(int x, int z) {
-        return this.cache.computeIfAbsent(ChunkPos.toLong(x, z), key -> {
-            int surface = this.generator.getHeight(x, z, Heightmap.Type.WORLD_SURFACE_WG, this.world, this.noise);
-            int floor = this.generator.getHeight(x, z, Heightmap.Type.OCEAN_FLOOR_WG, this.world, this.noise);
-            return new int[]{surface - 1, floor < surface ? 1 : 0};
-        });
+        return this.columns.biomeAllowed(x, z);
     }
 
     /** y of the top block (water surface included). */
     int ground(int x, int z) {
-        return this.sample(x, z)[0];
+        return this.columns.ground(x, z);
     }
 
     boolean water(int x, int z) {
-        return this.sample(x, z)[1] == 1;
+        return this.columns.water(x, z);
     }
 
     /** Dry, fairly level (within {@link #MAX_RISE}) and forested out to radius 24. */

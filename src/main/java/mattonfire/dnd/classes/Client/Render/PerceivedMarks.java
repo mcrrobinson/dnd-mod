@@ -18,8 +18,10 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.Entity;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
+import net.minecraft.world.World;
 
 /**
  * Things this player perceived ({@link Perception#S2C_PERCEIVED}), drawn for them only: breathing puffs over a
@@ -39,7 +41,11 @@ public final class PerceivedMarks {
 
     private static final Map<Integer, Mark> BREATHING = new HashMap<>();
     private static final Map<Integer, Mark> OUTLINED = new HashMap<>();
-    private static final Map<BlockPos, Mark> BLOCKS = new HashMap<>();
+    /** A marked block in one world: the same coordinates in another dimension are a different block. */
+    private record BlockMark(RegistryKey<World> world, BlockPos pos) {
+    }
+
+    private static final Map<BlockMark, Mark> BLOCKS = new HashMap<>();
 
     private PerceivedMarks() {
     }
@@ -58,7 +64,7 @@ public final class PerceivedMarks {
                 long until = ticks <= 0 ? Long.MAX_VALUE : client.world.getTime() + ticks;
                 Mark mark = new Mark(kind, until);
                 if (pos != null) {
-                    BLOCKS.put(pos, mark);
+                    BLOCKS.put(new BlockMark(client.world.getRegistryKey(), pos), mark);
                 } else if (kind == Perception.Mark.BREATH) {
                     BREATHING.put(id, mark);
                 } else {
@@ -104,12 +110,14 @@ public final class PerceivedMarks {
                 breathe(world, entity);
             }
         }
-        for (Iterator<Map.Entry<BlockPos, Mark>> it = BLOCKS.entrySet().iterator(); it.hasNext();) {
-            Map.Entry<BlockPos, Mark> e = it.next();
+        RegistryKey<World> here = world.getRegistryKey();
+        for (Iterator<Map.Entry<BlockMark, Mark>> it = BLOCKS.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<BlockMark, Mark> e = it.next();
             if (e.getValue().until() <= now) {
                 it.remove();
-            } else if (now % 5 == 0) {
-                box(world, new Box(e.getKey()));
+            } else if (now % 5 == 0 && e.getKey().world() == here) {
+                // A mark from another dimension waits (and expires) there rather than drawing at these coordinates
+                box(world, new Box(e.getKey().pos()));
             }
         }
     }

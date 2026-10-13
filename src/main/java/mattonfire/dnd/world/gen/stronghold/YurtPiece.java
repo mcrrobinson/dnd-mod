@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.stronghold;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -71,15 +73,15 @@ public class YurtPiece extends StrongholdPiece {
         for (int y = 1; y < HEIGHT; y++) {
             b.set(this.ya, y, this.yb, Blocks.SPRUCE_FENCE);
         }
-        b.set(this.ya, HEIGHT, this.yb, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
+        b.set(this.ya, HEIGHT, this.yb, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
         // Beds of straw and a chest of supplies at the back, a cauldron by the door.
         int backA = this.ya - (int) Math.round(da * 3);
         int backB = this.yb - (int) Math.round(db * 3);
         b.container(backA, 1, backB, facing(Blocks.CHEST, Direction.getFacing(da, 0.0D, db)), YURT_LOOT);
         int sideA = this.ya + (int) Math.round(db * 2);
         int sideB = this.yb - (int) Math.round(da * 2);
-        b.set(sideA, 1, sideB, log(Blocks.HAY_BLOCK, Direction.Axis.Y));
-        b.set(this.ya - (int) Math.round(db * 2), 1, this.yb + (int) Math.round(da * 2), log(Blocks.HAY_BLOCK, Direction.Axis.Y));
+        b.set(sideA, 1, sideB, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
+        b.set(this.ya - (int) Math.round(db * 2), 1, this.yb + (int) Math.round(da * 2), pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
         b.set(this.ya + (int) Math.round(da * 2), 1, this.yb + (int) Math.round(db * 2), Blocks.CAULDRON);
     }
 }

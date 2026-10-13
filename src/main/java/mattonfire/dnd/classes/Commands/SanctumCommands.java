@@ -26,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.biome.BiomeKeys;
-import net.minecraft.world.chunk.ChunkStatus;
 import net.minecraft.world.gen.structure.Structure;
 
 /**
@@ -55,14 +54,7 @@ final class SanctumCommands {
 
     /** The start of the nearest sanctum to {@code from} (within 100 chunks), or null. */
     private static StructureStart nearest(ServerWorld world, BlockPos from) {
-        BlockPos found = world.locateStructure(SANCTUMS, from, 100, false);
-        Structure structure = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(BrimstoneSanctumStructures.KEY);
-        if (found == null || structure == null) {
-            return null;
-        }
-        StructureStart start = world.getChunk(found.getX() >> 4, found.getZ() >> 4, ChunkStatus.STRUCTURE_STARTS)
-                .getStructureStart(structure);
-        return start != null && start.hasChildren() ? start : null;
+        return HomeCommandUtil.nearestStart(world, SANCTUMS, BrimstoneSanctumStructures.KEY, from);
     }
 
     static int teleport(CommandContext<ServerCommandSource> context, String spot) throws CommandSyntaxException {
@@ -151,63 +143,44 @@ final class SanctumCommands {
      * Generates the sanctum's chunks to look. Returns the number that pass.
      */
     static int survey(CommandContext<ServerCommandSource> context, int grid, int spacing) {
-        ServerCommandSource source = context.getSource();
-        ServerWorld world = source.getWorld();
-        BlockPos center = BlockPos.ofFloored(source.getPosition());
-        Set<Long> seen = new HashSet<>();
-        int pass = 0;
-        int fail = 0;
-        int half = (grid - 1) / 2;
-        for (int gx = -half; gx <= grid - 1 - half; gx++) {
-            for (int gz = -half; gz <= grid - 1 - half; gz++) {
-                StructureStart start = nearest(world, center.add(gx * spacing, 0, gz * spacing));
-                if (start == null || !seen.add(start.getPos().toLong()) || !(start.getChildren().get(0) instanceof BrimstonePiece first)) {
-                    continue;
-                }
-                BlockPos middle = first.center();
-                var biome = world.getBiome(middle.up());
-                boolean biomeOk = biome.matchesKey(BiomeKeys.CRIMSON_FOREST) || biome.matchesKey(BiomeKeys.SOUL_SAND_VALLEY);
-                Set<Identifier> kinds = new HashSet<>();
-                start.getChildren().forEach(piece -> kinds.add(Registries.STRUCTURE_PIECE.getId(piece.getType())));
-                int r = BrimstoneSanctumStructure.PLATFORM;
-                int columns = 0;
-                int lava = 0;
-                int cut = 0;
-                int roof = middle.getY() + 16;
-                for (int dx = -r; dx <= r; dx++) {
-                    for (int dz = -r; dz <= r; dz++) {
-                        if (dx * dx + dz * dz > (r + 0.5D) * (r + 0.5D)) {
-                            continue;
-                        }
-                        columns++;
-                        BlockPos top = middle.add(dx, 0, dz);
-                        if (lavaBelow(world, top)) {
-                            lava++;
-                        }
-                        BlockState above = world.getBlockState(new BlockPos(top.getX(), roof, top.getZ()));
-                        if (!above.isAir() && above.getFluidState().isEmpty()) {
-                            cut++;
+        ServerWorld world = context.getSource().getWorld();
+        return HomeCommandUtil.survey(context.getSource(), grid, spacing, "[SanctumSurvey]", "sanctums",
+                from -> nearest(world, from), start -> start.getPos().toLong(), start -> {
+                    if (!(start.getChildren().get(0) instanceof BrimstonePiece first)) {
+                        return null;
+                    }
+                    BlockPos middle = first.center();
+                    var biome = world.getBiome(middle.up());
+                    boolean biomeOk = biome.matchesKey(BiomeKeys.CRIMSON_FOREST) || biome.matchesKey(BiomeKeys.SOUL_SAND_VALLEY);
+                    Set<Identifier> kinds = new HashSet<>();
+                    start.getChildren().forEach(piece -> kinds.add(Registries.STRUCTURE_PIECE.getId(piece.getType())));
+                    int r = BrimstoneSanctumStructure.PLATFORM;
+                    int columns = 0;
+                    int lava = 0;
+                    int cut = 0;
+                    int roof = middle.getY() + 16;
+                    for (int dx = -r; dx <= r; dx++) {
+                        for (int dz = -r; dz <= r; dz++) {
+                            if (dx * dx + dz * dz > (r + 0.5D) * (r + 0.5D)) {
+                                continue;
+                            }
+                            columns++;
+                            BlockPos top = middle.add(dx, 0, dz);
+                            if (lavaBelow(world, top)) {
+                                lava++;
+                            }
+                            BlockState above = world.getBlockState(new BlockPos(top.getX(), roof, top.getZ()));
+                            if (!above.isAir() && above.getFluidState().isEmpty()) {
+                                cut++;
+                            }
                         }
                     }
-                }
-                boolean ok = biomeOk && kinds.size() == PIECE_KINDS && lava == 0 && cut <= columns * MAX_CUT;
-                if (ok) {
-                    pass++;
-                } else {
-                    fail++;
-                }
-                String line = "[SanctumSurvey] sanctum at " + middle.getX() + " " + middle.getY() + " " + middle.getZ()
-                        + ": biome " + biome.getKey().map(k -> k.getValue().toString()).orElse("?")
-                        + ", " + start.getChildren().size() + " pieces (" + kinds.size() + " kinds), lava under " + lava
-                        + " of " + columns + " columns, cut ceiling over " + cut + ": " + (ok ? "PASS" : "FAIL");
-                DnDClasses.LOGGER.info(line);
-                source.sendFeedback(Text.literal(line), false);
-            }
-        }
-        String summary = "[SanctumSurvey] " + (pass + fail) + " sanctums, " + pass + " pass, " + fail + " fail";
-        DnDClasses.LOGGER.info(summary);
-        source.sendFeedback(Text.literal(summary), false);
-        return pass;
+                    boolean ok = biomeOk && kinds.size() == PIECE_KINDS && lava == 0 && cut <= columns * MAX_CUT;
+                    return new HomeCommandUtil.Check(ok, "[SanctumSurvey] sanctum at " + middle.getX() + " " + middle.getY() + " " + middle.getZ()
+                            + ": biome " + biome.getKey().map(k -> k.getValue().toString()).orElse("?")
+                            + ", " + start.getChildren().size() + " pieces (" + kinds.size() + " kinds), lava under " + lava
+                            + " of " + columns + " columns, cut ceiling over " + cut + ": " + (ok ? "PASS" : "FAIL"));
+                });
     }
 
     /** Whether lava lies under the platform block at {@code top}, through its pillars and the air below. */

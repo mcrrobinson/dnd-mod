@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.enclave;
 
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.FluidTags;
@@ -44,7 +45,7 @@ public class EnclaveGroundsPiece extends StructurePiece {
             for (int z = minZ; z <= maxZ; z++) {
                 pos.set(x, world.getTopY(Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, x, z) - 1, z);
                 while (pos.getY() > world.getBottomY() && world.getFluidState(pos).isIn(FluidTags.LAVA)) {
-                    world.setBlockState(pos, Blocks.WATER.getDefaultState(), 2);
+                    world.setBlockState(pos, Blocks.WATER.getDefaultState(), PieceBlocks.UPDATE);
                     pos.move(0, -1, 0);
                 }
             }

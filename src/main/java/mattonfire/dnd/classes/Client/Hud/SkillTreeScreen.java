@@ -3,7 +3,9 @@ package mattonfire.dnd.classes.Client.Hud;
 import mattonfire.dnd.classes.Rest.Charges;
 import mattonfire.dnd.classes.Rest.RestSnapshot;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.ClassInfo;
@@ -43,6 +45,10 @@ public class SkillTreeScreen extends Screen {
     private static final int PANEL_WIDTH = 260;
     private static final int PANEL_HEIGHT = 226;
     private static final int NODE_SIZE = 22;
+    /** Skill node icon stacks by item id (several nodes can share one), made once rather than every frame. */
+    private static final Map<String, ItemStack> NODE_ICONS = new HashMap<>();
+    /** Spawn egg stack per bestiary entity id ({@link ItemStack#EMPTY} for none), made once. */
+    private static final Map<String, ItemStack> EGG_ICONS = new HashMap<>();
     private static final int COL_SPACING = 80;
     private static final int ROW_SPACING = 32;
 
@@ -303,7 +309,8 @@ public class SkillTreeScreen extends Screen {
         fill(matrices, x - frame, y - frame, x + NODE_SIZE + frame, y + NODE_SIZE + frame, border);
         fill(matrices, x, y, x + NODE_SIZE, y + NODE_SIZE, unlocked ? 0xFF2A2440 : 0xFF18181E);
 
-        ItemStack icon = new ItemStack(Registries.ITEM.get(new Identifier(node.icon())));
+        ItemStack icon = NODE_ICONS.computeIfAbsent(node.icon(),
+                item -> new ItemStack(Registries.ITEM.get(new Identifier(item))));
         itemRenderer.renderInGui(matrices, icon, x + 3, y + 3);
         matrices.push();
         matrices.translate(0, 0, 200); // Over the item
@@ -692,9 +699,12 @@ public class SkillTreeScreen extends Screen {
             fill(matrices, x, y, x + CELL_WIDTH - 2, y + CELL_HEIGHT - 1, background);
             fill(matrices, x, y, x + 1, y + CELL_HEIGHT - 1, unlocked ? GREEN : available ? GOLD : 0xFF303038);
 
-            Item egg = eggFor(id);
-            if (egg != null) {
-                itemRenderer.renderInGui(matrices, new ItemStack(egg), x + 2, y);
+            ItemStack egg = EGG_ICONS.computeIfAbsent(id, entityId -> {
+                Item item = eggFor(entityId);
+                return item == null ? ItemStack.EMPTY : new ItemStack(item);
+            });
+            if (!egg.isEmpty()) {
+                itemRenderer.renderInGui(matrices, egg, x + 2, y);
             }
             String name = textRenderer.trimToWidth(Progression.entityName(id), CELL_WIDTH - 24);
             textRenderer.drawWithShadow(matrices, name, x + 20, y + 5,

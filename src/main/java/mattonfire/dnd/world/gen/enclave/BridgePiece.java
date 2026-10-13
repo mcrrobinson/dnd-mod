@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.enclave;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.block.Blocks;

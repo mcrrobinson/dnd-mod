@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.block.Blocks;

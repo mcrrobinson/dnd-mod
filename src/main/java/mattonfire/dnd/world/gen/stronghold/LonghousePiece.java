@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.stronghold;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -62,7 +64,7 @@ public class LonghousePiece extends StrongholdPiece {
                 for (int y = 1; y < top; y++) {
                     if (endWall || longWall && y <= 3) {
                         boolean post = longWall && (x + A) % 4 == 0 || endWall && longWall;
-                        b.set(x, y, z, post ? log(Blocks.DARK_OAK_LOG, Direction.Axis.Y) : Blocks.SPRUCE_PLANKS.getDefaultState());
+                        b.set(x, y, z, post ? pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y) : Blocks.SPRUCE_PLANKS.getDefaultState());
                     } else {
                         b.set(x, y, z, Blocks.AIR);
                     }
@@ -85,14 +87,14 @@ public class LonghousePiece extends StrongholdPiece {
         b.fill(-1, 0, RIDGE, 1, 0, RIDGE + 2, Blocks.BLACKSTONE);
         b.set(0, 1, RIDGE + 1, Blocks.CAMPFIRE);
         for (int z = RIDGE - 1; z <= RIDGE + 3; z++) {
-            b.set(-4, 1, z, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Z));
-            b.set(4, 1, z, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Z));
+            b.set(-4, 1, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Z));
+            b.set(4, 1, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Z));
         }
         // War drums.
         for (int side = -1; side <= 1; side += 2) {
-            b.set(side * 8, 1, FRONT - 2, log(Blocks.HAY_BLOCK, Direction.Axis.Y));
+            b.set(side * 8, 1, FRONT - 2, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
             b.set(side * 8, 2, FRONT - 2, Blocks.NOTE_BLOCK);
-            b.set(side * 8, 1, BACK + 3, log(Blocks.HAY_BLOCK, Direction.Axis.Y));
+            b.set(side * 8, 1, BACK + 3, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
             b.set(side * 8, 2, BACK + 3, Blocks.NOTE_BLOCK);
         }
         // Lanterns hung from the ridge.

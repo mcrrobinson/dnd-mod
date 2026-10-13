@@ -121,6 +121,69 @@ public final class PartyHud {
         return memberIds.contains(uuid);
     }
 
+    /**
+     * A member's row, built and measured once per packet ({@link #rows}); render only draws it. The trimmed name
+     * also depends on the row width (boss bar, window size), so it's cut again only when that width changes.
+     */
+    private static final class Row {
+        final Member member;
+        final PartyRole role;
+        final int icon;
+        final String name;
+        final Text status;
+        final int statusWidth;
+        /** The death saves of an unstable Downed member, else null. */
+        final Text saves;
+        final int savesWidth;
+        /** Width the rows need for this one: icon, name, gap and status. */
+        final int naturalWidth;
+        int trimmedFor = -1;
+        String trimmed;
+
+        Row(TextRenderer text, Member member) {
+            this.member = member;
+            this.role = roleOf(member.classId());
+            this.icon = role != null ? PartyRole.ICON_SIZE + 2 : 0;
+            this.name = nameOf(member);
+            this.status = statusOf(member);
+            this.statusWidth = text.getWidth(status);
+            boolean showSaves = member.online() && member.maxHealth() > 0 && member.isDowned() && !member.isStable();
+            this.saves = showSaves ? savesOf(member) : null;
+            this.savesWidth = showSaves ? text.getWidth(saves) : 0;
+            this.naturalWidth = icon + text.getWidth(name) + 6 + statusWidth - 2;
+        }
+
+        String trimmedName(TextRenderer text, int width) {
+            if (trimmedFor != width) {
+                trimmed = trim(text, name, width + 2 - statusWidth - 4 - icon);
+                trimmedFor = width;
+            }
+            return trimmed;
+        }
+    }
+
+    /** The members the rows were built from, and the rows (render thread only). */
+    private static List<Member> rowsFor = List.of();
+    private static List<Row> rows = List.of();
+    private static int rowsWidth;
+
+    /** The rows for {@code current}, rebuilt only when a new packet replaced the list. */
+    private static List<Row> rows(TextRenderer text, List<Member> current) {
+        if (current != rowsFor) {
+            List<Row> built = new ArrayList<>(current.size());
+            int width = BAR_WIDTH;
+            for (Member member : current) {
+                Row row = new Row(text, member);
+                built.add(row);
+                width = Math.max(width, row.naturalWidth);
+            }
+            rows = built;
+            rowsWidth = width;
+            rowsFor = current;
+        }
+        return rows;
+    }
+
     private static void render(MatrixStack matrices) {
         MinecraftClient client = MinecraftClient.getInstance();
         List<Member> current = members;
@@ -131,11 +194,8 @@ public final class PartyHud {
         TextRenderer text = client.textRenderer;
 
         // Rows share one width, wide enough that no name runs into its health text.
-        int width = BAR_WIDTH;
-        for (Member member : current) {
-            int icon = roleOf(member.classId()) != null ? PartyRole.ICON_SIZE + 2 : 0;
-            width = Math.max(width, icon + text.getWidth(nameOf(member)) + 6 + text.getWidth(statusOf(member)) - 2);
-        }
+        List<Row> currentRows = rows(text, current);
+        int width = rowsWidth;
         // Stop short of the boss bars (top centre); names that don't fit are cut below
         if (!((BossBarHudAccessor) client.inGameHud.getBossBarHud()).dndclasses$getBossBars().isEmpty()) {
             int bossLeft = client.getWindow().getScaledWidth() / 2 - BOSS_BAR_HALF_WIDTH;
@@ -143,20 +203,18 @@ public final class PartyHud {
         }
 
         int y = Y;
-        for (Member member : current) {
-            Text status = statusOf(member);
-            int icon = roleOf(member.classId()) != null ? PartyRole.ICON_SIZE + 2 : 0;
-            String name = trim(text, nameOf(member), width + 2 - text.getWidth(status) - 4 - icon);
+        for (Row row : currentRows) {
+            Member member = row.member;
+            String name = row.trimmedName(text, width);
             int nameColor = !member.online() ? 0x777777 : member.nearby() ? 0xFFFFFF : 0xAAAAAA;
-            PartyRole role = roleOf(member.classId());
             int nameX = X;
-            if (role != null) {
-                RoleIcon.draw(matrices, X, y, role);
+            if (row.role != null) {
+                RoleIcon.draw(matrices, X, y, row.role);
                 nameX += PartyRole.ICON_SIZE + 2;
             }
             text.drawWithShadow(matrices, name, nameX, y, nameColor);
 
-            text.drawWithShadow(matrices, status, X + width + 2 - text.getWidth(status), y,
+            text.drawWithShadow(matrices, row.status, X + width + 2 - row.statusWidth, y,
                     member.online() ? 0xFF5555 : 0x555555);
 
             int barY = y + 10;
@@ -169,13 +227,11 @@ public final class PartyHud {
                     // at its left end on a dark backing, so the name line stays as narrow as a health row and
                     // the red crosses don't vanish into the red strip.
                     int barStart = X;
-                    if (!member.isStable()) {
-                        Text saves = savesOf(member);
-                        int savesWidth = text.getWidth(saves);
-                        DrawableHelper.fill(matrices, X - 1, barY - 2, X + savesWidth + 1, barY + BAR_HEIGHT + 2,
-                                0xE0000000);
-                        text.drawWithShadow(matrices, saves, X, barY - 1, 0xFFFFFF);
-                        barStart = X + savesWidth + 3;
+                    if (row.saves != null) {
+                        DrawableHelper.fill(matrices, X - 1, barY - 2, X + row.savesWidth + 1,
+                                barY + BAR_HEIGHT + 2, 0xE0000000);
+                        text.drawWithShadow(matrices, row.saves, X, barY - 1, 0xFFFFFF);
+                        barStart = X + row.savesWidth + 3;
                     }
                     float pulse = 0.5f + 0.5f * MathHelper.sin((client.player.age + client.getTickDelta()) * 0.3f);
                     int alpha = 0x60 + (int) (0x9F * pulse);

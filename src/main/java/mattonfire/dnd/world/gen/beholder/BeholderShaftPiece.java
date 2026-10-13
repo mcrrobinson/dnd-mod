@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.beholder;
 
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LanternBlock;
@@ -75,7 +76,7 @@ public class BeholderShaftPiece extends StructurePiece {
                     float n = BeholderLairStructures.noise(this.seed, pos.getX(), y, pos.getZ());
                     BlockState state = this.blockAt(dx, y, dz, n);
                     if (state != null) {
-                        world.setBlockState(pos, state, 2);
+                        world.setBlockState(pos, state, PieceBlocks.UPDATE);
                     }
                 }
             }

@@ -193,10 +193,11 @@ public final class DevScript {
         registerAutoJoin();
         registerScript();
         // Dev clients have no real Mojang login, so a world opened to LAN must not check logins,
-        // otherwise a second test client (-PdevServer) gets kicked
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.getServer() != null && client.getServer().isOnlineMode()) {
-                client.getServer().setOnlineMode(false);
+        // otherwise a second test client (-PdevServer) gets kicked. The integrated server turns online mode on
+        // in its setup, before SERVER_STARTED, and nothing turns it back on, so once per world is enough.
+        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            if (server instanceof net.minecraft.server.integrated.IntegratedServer && server.isOnlineMode()) {
+                server.setOnlineMode(false);
             }
         });
     }
@@ -758,10 +759,14 @@ public final class DevScript {
         for (net.minecraft.entity.player.PlayerEntity p : client.world.getPlayers()) {
             logSize("client", p);
         }
-        if (client.getServer() != null) {
-            for (net.minecraft.entity.player.PlayerEntity p : client.getServer().getPlayerManager().getPlayerList()) {
-                logSize("server", p);
-            }
+        net.minecraft.server.MinecraftServer server = client.getServer();
+        if (server != null) {
+            // Server players are read on the server's own thread, like logTargets
+            server.execute(() -> {
+                for (net.minecraft.entity.player.PlayerEntity p : server.getPlayerManager().getPlayerList()) {
+                    logSize("server", p);
+                }
+            });
         }
     }
 

@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.fortress;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.DyeColor;

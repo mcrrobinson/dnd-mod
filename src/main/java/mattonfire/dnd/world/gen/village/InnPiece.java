@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.village;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.InnkeeperEntity;
 import mattonfire.dnd.tavern.Tavern;
 import net.minecraft.block.Block;
@@ -61,7 +63,7 @@ public class InnPiece extends HobbitPiece {
             }
         }
         for (int[] p : new int[][]{{1, 1}, {13, 1}, {1, 9}, {13, 9}}) {
-            b.fill(p[0], 1, p[1], p[0], 4, p[1], log(Blocks.SPRUCE_LOG, Direction.Axis.Y));
+            b.fill(p[0], 1, p[1], p[0], 4, p[1], pillar(Blocks.SPRUCE_LOG, Direction.Axis.Y));
         }
         b.air(2, 1, 2, 12, 4, 8);
 
@@ -99,14 +101,14 @@ public class InnPiece extends HobbitPiece {
             int front = k;
             int rear = 10 - k;
             for (int x = 0; x < WIDTH; x++) {
-                b.set(x, y, front, log(Blocks.HAY_BLOCK, Direction.Axis.X));
-                b.set(x, y, rear, log(Blocks.HAY_BLOCK, Direction.Axis.X));
+                b.set(x, y, front, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
+                b.set(x, y, rear, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
             }
             for (int z = front + 1; z < rear; z++) {
                 if (k == 0) {
                     b.fill(1, y, z, 13, y, z, Blocks.OAK_PLANKS);
-                    b.set(0, y, z, log(Blocks.HAY_BLOCK, Direction.Axis.X));
-                    b.set(WIDTH - 1, y, z, log(Blocks.HAY_BLOCK, Direction.Axis.X));
+                    b.set(0, y, z, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
+                    b.set(WIDTH - 1, y, z, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
                 } else {
                     b.set(1, y, z, Blocks.OAK_PLANKS);
                     b.set(13, y, z, Blocks.OAK_PLANKS);

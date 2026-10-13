@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.village;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
@@ -92,6 +94,6 @@ public class OrchardPiece extends HobbitPiece {
                 }
             }
         }
-        b.fill(x, 1, z, x, 4, z, log(Blocks.OAK_LOG, Direction.Axis.Y));
+        b.fill(x, 1, z, x, 4, z, pillar(Blocks.OAK_LOG, Direction.Axis.Y));
     }
 }

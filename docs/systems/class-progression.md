@@ -175,6 +175,7 @@ None. XP per level is `ClassProgress.LEVEL_XP`; rank costs and default levels ar
 
 ## For developers
 - **Storage:** `ClassProgress.ranks` (node id to rank, missing = 1), `learned` and `bestiary` (entity ids), all in `toNbt`/`fromNbt`, so saving, syncing and the death/End copy need nothing extra. `pointsSpent()` counts rank points.
+- **Server cache:** `Progression.get`/`current`/`hasPassive` return a cached `ClassProgress` per player and class, parsed once and reused while the player's data compound and the class's saved tag are the same objects. `save` writes a new tag and re-caches; death/End copies, `readNbt` and resets make new objects, so the cache can't go stale. The result is shared: change progress only through `Progression`'s methods (they save). `Progression.invalidate` frees a player's entries (disconnect, class change, death copy; `SERVER_STOPPED` clears all). `devscripts/progress-cache-set.txt` + `progress-cache-check.txt` cover unlock, equip, rank, subclass, class switch, death and a relog.
 - **Declaring ranks:** one `Ranks` per ability, in a static field of the class's `ClassSkills` subclass:
   ```java
   public static final Ranks SUPER_REGEN = Ranks.of("fighter.super_regen")

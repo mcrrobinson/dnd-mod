@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.sanctum;
 
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

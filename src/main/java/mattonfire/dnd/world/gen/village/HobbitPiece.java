@@ -1,9 +1,11 @@
 package mattonfire.dnd.world.gen.village;
 
-import mattonfire.dnd.classes.DnDClasses;
+import static mattonfire.dnd.world.gen.PieceBlocks.*;
+
+import java.util.function.Consumer;
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
-import net.minecraft.block.BedBlock;
+import mattonfire.dnd.world.gen.FacingPiece;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -11,42 +13,21 @@ import net.minecraft.block.CandleBlock;
 import net.minecraft.block.CropBlock;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceGateBlock;
-import net.minecraft.block.LanternBlock;
-import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.PaneBlock;
-import net.minecraft.block.PillarBlock;
-import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.WallBlock;
-import net.minecraft.block.entity.BeehiveBlockEntity;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.LootableContainerBlockEntity;
-import net.minecraft.block.enums.BedPart;
-import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
-import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.decoration.ItemFrameEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.Registries;
-import net.minecraft.structure.StructureContext;
-import net.minecraft.structure.StructurePiece;
 import net.minecraft.structure.StructurePieceType;
-import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
-import net.minecraft.world.gen.StructureAccessor;
-import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 /**
  * Base for the hobbit village pieces. Pieces are designed in local coordinates: x runs across the
@@ -57,7 +38,7 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
  * A piece is built once per chunk it overlaps, so all of its randomness comes from its own seed
  * (never the per-chunk random), which keeps every chunk's slice of it in agreement.
  */
-public abstract class HobbitPiece extends StructurePiece {
+public abstract class HobbitPiece extends FacingPiece<HobbitPiece.Builder> {
     protected static final Direction OUT = Direction.SOUTH;
     protected static final Direction IN = Direction.NORTH;
 
@@ -66,21 +47,12 @@ public abstract class HobbitPiece extends StructurePiece {
     protected static final Identifier HARVEST = loot("hobbit_harvest");
     protected static final Identifier ALE = loot("hobbit_ale");
 
-    private final long seed;
-
     protected HobbitPiece(StructurePieceType type, BlockBox box, Direction facing, long seed) {
-        super(type, 0, box);
-        this.seed = seed;
-        this.setOrientation(facing);
+        super(type, box, facing, seed);
     }
 
     protected HobbitPiece(StructurePieceType type, NbtCompound nbt) {
         super(type, nbt);
-        this.seed = nbt.getLong("Seed");
-    }
-
-    private static Identifier loot(String name) {
-        return new Identifier(DnDClasses.MOD_ID, "chests/" + name);
     }
 
     /**
@@ -101,18 +73,6 @@ public abstract class HobbitPiece extends StructurePiece {
         return new BlockBox(minX, y, minZ, minX + sizeX - 1, y + height - 1, minZ + sizeZ - 1);
     }
 
-    protected int width() {
-        return this.getFacing().getAxis() == Direction.Axis.Z ? this.boundingBox.getBlockCountX() : this.boundingBox.getBlockCountZ();
-    }
-
-    protected int depth() {
-        return this.getFacing().getAxis() == Direction.Axis.Z ? this.boundingBox.getBlockCountZ() : this.boundingBox.getBlockCountX();
-    }
-
-    protected int height() {
-        return this.boundingBox.getBlockCountY();
-    }
-
     /** Local x of the entrance on the front edge; paths lead to the block just in front of it. */
     protected int entranceX() {
         return this.width() / 2;
@@ -124,58 +84,12 @@ public abstract class HobbitPiece extends StructurePiece {
     }
 
     @Override
-    protected void writeNbt(StructureContext context, NbtCompound nbt) {
-        nbt.putLong("Seed", this.seed);
-    }
-
-    @Override
-    public final void generate(StructureWorldAccess world, StructureAccessor structureAccessor, ChunkGenerator chunkGenerator,
-                               Random random, BlockBox chunkBox, ChunkPos chunkPos, BlockPos pivot) {
-        this.build(new Builder(world, chunkBox, Random.create(this.seed)));
-    }
-
-    protected abstract void build(Builder b);
-
-    // ---- Block state helpers (written facing north) ----
-
-    protected static BlockState stairs(Block block, Direction facing, boolean upsideDown) {
-        return block.getDefaultState().with(StairsBlock.FACING, facing)
-                .with(StairsBlock.HALF, upsideDown ? BlockHalf.TOP : BlockHalf.BOTTOM);
-    }
-
-    protected static BlockState topSlab(Block block) {
-        return block.getDefaultState().with(SlabBlock.TYPE, SlabType.TOP);
-    }
-
-    protected static BlockState bottomSlab(Block block) {
-        return block.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
-    }
-
-    protected static BlockState log(Block block, Direction.Axis axis) {
-        return block.getDefaultState().with(PillarBlock.AXIS, axis);
-    }
-
-    protected static BlockState leaves(Block block) {
-        return block.getDefaultState().with(LeavesBlock.PERSISTENT, true);
-    }
-
-    protected static BlockState lantern(boolean hanging) {
-        return Blocks.LANTERN.getDefaultState().with(LanternBlock.HANGING, hanging);
+    protected Builder builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
+        return new Builder(world, chunkBox, random);
     }
 
     protected static BlockState ripe(Block crop) {
         return ((CropBlock) crop).withAge(((CropBlock) crop).getMaxAge());
-    }
-
-    protected static BlockState facing(Block block, Direction facing) {
-        BlockState state = block.getDefaultState();
-        if (state.contains(net.minecraft.state.property.Properties.HORIZONTAL_FACING)) {
-            return state.with(net.minecraft.state.property.Properties.HORIZONTAL_FACING, facing);
-        }
-        if (state.contains(net.minecraft.state.property.Properties.FACING)) {
-            return state.with(net.minecraft.state.property.Properties.FACING, facing);
-        }
-        return state;
     }
 
     private static final Block[] FLOWERS = {
@@ -193,77 +107,21 @@ public abstract class HobbitPiece extends StructurePiece {
      * Places blocks, containers and entities for one chunk's slice of a piece. Everything takes
      * local coordinates; anything outside the chunk is skipped, but random draws happen either way.
      */
-    protected class Builder {
-        final StructureWorldAccess world;
-        final BlockBox chunkBox;
-        final Random random;
-
+    protected class Builder extends FacingPiece<Builder>.Builder {
         Builder(StructureWorldAccess world, BlockBox chunkBox, Random random) {
-            this.world = world;
-            this.chunkBox = chunkBox;
-            this.random = random;
+            super(world, chunkBox, random);
         }
 
-        BlockPos pos(int x, int y, int z) {
-            return HobbitPiece.this.offsetPos(x, y, z);
+        /** The village never marked fences or chains for post-processing; kept so villages generate as before. */
+        @Override
+        protected boolean joinsNeighbours(Block block) {
+            return block instanceof PaneBlock || block instanceof StairsBlock || block instanceof WallBlock;
         }
 
-        boolean contains(int x, int y, int z) {
-            return this.chunkBox.contains(this.pos(x, y, z));
-        }
-
-        /** Turns a direction written facing north into the piece's real direction. */
-        Direction dir(Direction local) {
-            if (local.getAxis() == Direction.Axis.Y) {
-                return local;
-            }
-            return HobbitPiece.this.getRotation().rotate(HobbitPiece.this.getMirror().apply(local));
-        }
-
-        boolean chance(float p) {
-            return this.random.nextFloat() < p;
-        }
-
-        <T> T pick(T[] options) {
-            return options[this.random.nextInt(options.length)];
-        }
-
-        void set(int x, int y, int z, BlockState state) {
-            HobbitPiece.this.addBlock(this.world, state, x, y, z, this.chunkBox);
-            Block block = state.getBlock();
-            // Shapes that join up with their neighbours get fixed once the chunk is finished.
-            if (block instanceof PaneBlock || block instanceof StairsBlock || block instanceof WallBlock) {
-                BlockPos pos = this.pos(x, y, z);
-                if (this.chunkBox.contains(pos)) {
-                    this.world.getChunk(pos).markBlockForPostProcessing(pos);
-                }
-            }
-        }
-
-        void set(int x, int y, int z, Block block) {
-            this.set(x, y, z, block.getDefaultState());
-        }
-
-        BlockState get(int x, int y, int z) {
+        /** The block at local x/y/z, or air outside this chunk. */
+        @Override
+        public BlockState get(int x, int y, int z) {
             return HobbitPiece.this.getBlockAt(this.world, x, y, z, this.chunkBox);
-        }
-
-        void fill(int x1, int y1, int z1, int x2, int y2, int z2, BlockState state) {
-            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-                for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-                    for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
-                        this.set(x, y, z, state);
-                    }
-                }
-            }
-        }
-
-        void fill(int x1, int y1, int z1, int x2, int y2, int z2, Block block) {
-            this.fill(x1, y1, z1, x2, y2, z2, block.getDefaultState());
-        }
-
-        void air(int x1, int y1, int z1, int x2, int y2, int z2) {
-            this.fill(x1, y1, z1, x2, y2, z2, Blocks.AIR);
         }
 
         /** Sets the ground block at y = 0 and fills any gap beneath it with dirt. */
@@ -332,9 +190,9 @@ public abstract class HobbitPiece extends StructurePiece {
         void roundDoor(int x, int y, int z, Block door, Block planks) {
             this.fill(x - 1, y, z, x + 1, y + 2, z, planks);
             this.door(x, y, z, door, IN);
-            this.fill(x - 2, y, z, x - 2, y + 2, z, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
-            this.fill(x + 2, y, z, x + 2, y + 2, z, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
-            this.fill(x - 1, y + 3, z, x + 1, y + 3, z, log(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X));
+            this.fill(x - 2, y, z, x - 2, y + 2, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
+            this.fill(x + 2, y, z, x + 2, y + 2, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
+            this.fill(x - 1, y + 3, z, x + 1, y + 3, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X));
             this.set(x - 2, y + 3, z, stairs(Blocks.SPRUCE_STAIRS, Direction.WEST, true));
             this.set(x + 2, y + 3, z, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, true));
             // A knob on the right-hand panel.
@@ -350,62 +208,6 @@ public abstract class HobbitPiece extends StructurePiece {
 
         void gate(int x, int y, int z, Block gate, Direction facing) {
             this.set(x, y, z, gate.getDefaultState().with(FenceGateBlock.FACING, facing));
-        }
-
-        /** A bed with its foot at x/y/z and its head one block towards {@code facing}. */
-        void bed(int x, int y, int z, Direction facing, DyeColor color) {
-            Block bed = Registries.BLOCK.get(new Identifier(color.getName() + "_bed"));
-            BlockState state = bed.getDefaultState().with(BedBlock.FACING, facing);
-            this.set(x, y, z, state.with(BedBlock.PART, BedPart.FOOT));
-            this.set(x + facing.getOffsetX(), y, z - facing.getOffsetZ(), state.with(BedBlock.PART, BedPart.HEAD));
-        }
-
-        /** A chest or barrel filled from a loot table when first opened. */
-        void container(int x, int y, int z, BlockState state, Identifier lootTable) {
-            long lootSeed = this.random.nextLong();
-            this.set(x, y, z, state);
-            BlockPos pos = this.pos(x, y, z);
-            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof LootableContainerBlockEntity container) {
-                container.setLootTable(lootTable, lootSeed);
-            }
-        }
-
-        void barrel(int x, int y, int z, Direction facing, Identifier lootTable) {
-            this.container(x, y, z, facing(Blocks.BARREL, facing), lootTable);
-        }
-
-        void chest(int x, int y, int z, Direction facing, Identifier lootTable) {
-            this.container(x, y, z, facing(Blocks.CHEST, facing), lootTable);
-        }
-
-        /** A beehive dripping with honey, with a few bees living in it. */
-        void beehive(int x, int y, int z, Direction facing, int bees) {
-            this.set(x, y, z, facing(Blocks.BEEHIVE, facing).with(net.minecraft.block.BeehiveBlock.HONEY_LEVEL, 5));
-            BlockPos pos = this.pos(x, y, z);
-            int[] ticks = new int[bees];
-            for (int i = 0; i < bees; i++) {
-                ticks[i] = this.random.nextInt(599);
-            }
-            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof BeehiveBlockEntity hive) {
-                for (int t : ticks) {
-                    NbtCompound bee = new NbtCompound();
-                    bee.putString("id", Registries.ENTITY_TYPE.getId(EntityType.BEE).toString());
-                    hive.addBee(bee, t, false);
-                }
-            }
-        }
-
-        /** An item frame on the face of the block behind it (or lying on the block below, facing up). */
-        void frame(int x, int y, int z, Direction facing, ItemStack stack) {
-            BlockPos pos = this.pos(x, y, z);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            ItemFrameEntity frame = new ItemFrameEntity(this.world.toServerWorld(), pos, this.dir(facing));
-            frame.setSilent(true);
-            frame.setHeldItemStack(stack, false);
-            frame.setSilent(false);
-            this.world.spawnEntity(frame);
         }
 
         /** A plate of food on the table top below. */
@@ -440,22 +242,12 @@ public abstract class HobbitPiece extends StructurePiece {
         }
 
         /** Places a hobbit and lets {@code setup} change it before it's added (e.g. the village elder). */
-        void hobbit(int x, int y, int z, EntityType<? extends HobbitEntity> type,
-                    java.util.function.Consumer<HobbitEntity> setup) {
-            float yaw = this.random.nextFloat() * 360.0F;
-            BlockPos pos = this.pos(x, y, z);
-            if (!this.chunkBox.contains(pos)) {
-                return;
-            }
-            HobbitEntity hobbit = type.create(this.world.toServerWorld());
-            if (hobbit == null) {
-                return;
-            }
-            hobbit.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
-            hobbit.initialize(this.world, this.world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
-            hobbit.setHome(pos);
-            setup.accept(hobbit);
-            this.world.spawnEntityAndPassengers(hobbit);
+        void hobbit(int x, int y, int z, EntityType<? extends HobbitEntity> type, Consumer<HobbitEntity> setup) {
+            BlockPos home = this.pos(x, y, z);
+            this.npc(x, y, z, type, hobbit -> {
+                hobbit.setHome(home);
+                setup.accept(hobbit);
+            });
         }
     }
 }

@@ -6,7 +6,7 @@ import mattonfire.dnd.classes.Blocks.TrapBlocks;
 import mattonfire.dnd.classes.Blocks.TrapKind;
 import mattonfire.dnd.classes.Blocks.TrapTriggerBlockEntity;
 import mattonfire.dnd.dungeon.RoomRole;
-import net.minecraft.block.Block;
+import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -219,7 +219,7 @@ public class TrapCorridorPiece extends DungeonPiece {
         if (!b.chunkBox.contains(pos)) {
             return;
         }
-        b.world.setBlockState(pos, TrapBlocks.TRAP_TRIGGER.getDefaultState(), Block.NOTIFY_LISTENERS);
+        b.world.setBlockState(pos, TrapBlocks.TRAP_TRIGGER.getDefaultState(), PieceBlocks.UPDATE);
         if (b.world.getBlockEntity(pos) instanceof TrapTriggerBlockEntity trap) {
             trap.setup(kind, info.startKey(), info.tier(), linked, crumbles, ladder, ladderFacing);
         }

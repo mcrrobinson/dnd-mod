@@ -6,6 +6,7 @@ import java.util.Set;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
 import mattonfire.dnd.faction.FactionEvents;
+import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.faction.TierEffects;
 import mattonfire.dnd.world.gen.RacialHomes;
 import mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures;
@@ -191,7 +192,10 @@ public final class SettlementGrudges {
         return Verdict.WARNING;
     }
 
-    /** Every settlement guard (dwarf, Elf Warden, Dragonborn Templar, Tiefling Exile or Clockwork Sentinel) within {@code range} of {@code pos} drops its grudge against {@code player}. */
+    /**
+     * Every settlement guard ({@link SettlementGuard}: dwarf, Elf Warden, Dragonborn Templar, Tiefling Exile, orc or
+     * Clockwork Sentinel) within {@code range} of {@code pos} drops its grudge against {@code player}.
+     */
     public static void forgive(PlayerEntity player, BlockPos pos, double range) {
         forgive(player, new Box(pos).expand(range));
     }
@@ -200,12 +204,10 @@ public final class SettlementGrudges {
     public static int forgive(PlayerEntity player, Box area) {
         int forgiven = 0;
         for (MobEntity guard : player.world.getEntitiesByClass(MobEntity.class, area,
-                mob -> mob.isAlive() && (mob instanceof MountainDwarfEntity || mob instanceof ElfWardenEntity
-                        || mob instanceof DragonbornTemplarEntity || mob instanceof TieflingExileEntity
-                        || mob instanceof ClockworkSentinelEntity))) {
-            net.minecraft.entity.mob.Angerable angerable = (net.minecraft.entity.mob.Angerable) guard;
-            if (angerable.shouldAngerAt(player) || guard.getTarget() == player) {
-                angerable.stopAnger();
+                mob -> mob.isAlive() && mob instanceof SettlementGuard)) {
+            SettlementGuard settlementGuard = (SettlementGuard) guard;
+            if (settlementGuard.shouldAngerAt(player) || guard.getTarget() == player) {
+                settlementGuard.stopAnger();
                 forgiven++;
             }
         }
@@ -218,14 +220,13 @@ public final class SettlementGrudges {
      * dwarf stands, not only inside a fortress. Help them drive off a goblin raid and every dwarf of the
      * fortress forgives you ({@link #forgive}).
      */
-    private static final class DwarfRules implements Rules {
+    private static final class DwarfRules extends GuardRules<MountainDwarfEntity> {
         /** The rooms whose chests a Dwarf may open. The treasury, hall and throne room stay off limits. */
         private static final Set<StructurePieceType> KIN_ROOMS = Set.of(DwarvenFortressStructures.FORGE,
                 DwarvenFortressStructures.BARRACKS, DwarvenFortressStructures.BREWHALL, DwarvenFortressStructures.MINE);
 
-        @Override
-        public String id() {
-            return "dndclasses:mountain_dwarves";
+        DwarfRules() {
+            super(FactionIds.MOUNTAIN_DWARVES, MountainDwarfEntity.class, () -> ModEntityTypes.MOUNTAIN_DWARF);
         }
 
         @Override
@@ -239,21 +240,10 @@ public final class SettlementGrudges {
             return blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity;
         }
 
-        /** 16 blocks, 24 for players the dwarves already distrust (Unfriendly or worse). */
+        /** Any dwarf in range who can see the player (16 blocks, 24 for players they distrust, Unfriendly or worse). */
         @Override
-        public double witnessRange(PlayerEntity player) {
-            return TierEffects.witnessRange(TierEffects.tierWith(player, ModEntityTypes.MOUNTAIN_DWARF));
-        }
-
-        @Override
-        public List<MountainDwarfEntity> witnesses(PlayerEntity player, BlockPos pos) {
-            return player.world.getEntitiesByClass(MountainDwarfEntity.class,
-                    new Box(pos).expand(this.witnessRange(player)), dwarf -> dwarf.canSee(player));
-        }
-
-        @Override
-        public void provoke(MobEntity guard, PlayerEntity player) {
-            ((MountainDwarfEntity) guard).provoke(player);
+        protected boolean canWitness(MountainDwarfEntity dwarf, PlayerEntity player) {
+            return dwarf.canSee(player);
         }
 
         @Override
@@ -274,8 +264,8 @@ public final class SettlementGrudges {
                 return Verdict.GRUDGE;
             }
             if (offence == Offence.OPEN) {
-                RacialHomes.Visit visit = RacialHomes.homeAt(player.getWorld(), pos);
-                if (visit != null && visit.home() == RacialHomes.DWARVEN_FORTRESS) {
+                RacialHomes.Visit visit = RacialHomes.visitOf(player.getWorld(), pos, RacialHomes.DWARVEN_FORTRESS);
+                if (visit != null) {
                     for (StructurePieceType room : KIN_ROOMS) {
                         if (visit.pieceAt(pos, room) != null) {
                             return Verdict.TRUSTED;

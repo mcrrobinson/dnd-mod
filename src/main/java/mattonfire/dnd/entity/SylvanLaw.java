@@ -1,8 +1,7 @@
 package mattonfire.dnd.entity;
 
-import java.util.List;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
-import mattonfire.dnd.faction.TierEffects;
+import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.world.gen.RacialHomes;
 import mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures;
 import net.fabricmc.fabric.api.entity.event.v1.ServerEntityCombatEvents;
@@ -28,7 +27,6 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,8 +42,9 @@ import org.jetbrains.annotations.Nullable;
  * Kin trust: an Elf's first tree-block offence each in-game day is forgiven with a warning. Helping drive
  * off a goblin raid on the enclave forgives everything ({@link SettlementGrudges#forgive}).
  */
-final class SylvanLaw implements SettlementGrudges.Rules {
+final class SylvanLaw extends GuardRules<ElfEntity> {
     SylvanLaw() {
+        super(FactionIds.SYLVAN_COURT, ElfEntity.class, () -> ModEntityTypes.ELF_WARDEN);
     }
 
     /** Hooks the offences the block break and open events don't cover: animal kills and fire. */
@@ -84,8 +83,7 @@ final class SylvanLaw implements SettlementGrudges.Rules {
 
     @Nullable
     private static RacialHomes.Visit enclave(ServerWorld world, BlockPos pos) {
-        RacialHomes.Visit visit = RacialHomes.homeAt(world, pos);
-        return visit != null && visit.home() == RacialHomes.ELVEN_ENCLAVE ? visit : null;
+        return RacialHomes.visitOf(world, pos, RacialHomes.ELVEN_ENCLAVE);
     }
 
     static boolean inEnclave(ServerWorld world, BlockPos pos) {
@@ -107,11 +105,6 @@ final class SylvanLaw implements SettlementGrudges.Rules {
     }
 
     @Override
-    public String id() {
-        return "dndclasses:sylvan_court";
-    }
-
-    @Override
     public boolean protects(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
                             SettlementGrudges.Offence offence) {
         if (!(world instanceof ServerWorld serverWorld)) {
@@ -125,28 +118,6 @@ final class SylvanLaw implements SettlementGrudges.Rules {
             }
             case HARM, FIRE -> inEnclave(serverWorld, pos);
         };
-    }
-
-    /** 16 blocks, adjusted for the player's standing with the Sylvan Court (as for the dwarves). */
-    @Override
-    public double witnessRange(PlayerEntity player) {
-        return TierEffects.witnessRange(TierEffects.tierWith(player, ModEntityTypes.ELF_WARDEN));
-    }
-
-    @Override
-    public List<ElfEntity> witnesses(PlayerEntity player, BlockPos pos) {
-        return player.world.getEntitiesByClass(ElfEntity.class, new Box(pos).expand(this.witnessRange(player)),
-                elf -> elf.isAlive() && elf.canSee(player));
-    }
-
-    @Override
-    public void provoke(MobEntity guard, PlayerEntity player) {
-        if (guard instanceof ElfWardenEntity warden) {
-            warden.provoke(player);
-        } else {
-            guard.getLookControl().lookAt(player);
-            guard.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, guard.getSoundPitch());
-        }
     }
 
     @Override

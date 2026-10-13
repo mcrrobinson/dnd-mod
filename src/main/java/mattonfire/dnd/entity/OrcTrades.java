@@ -1,12 +1,13 @@
 package mattonfire.dnd.entity;
 
+import static mattonfire.dnd.entity.NpcTrades.sell;
+import static mattonfire.dnd.entity.NpcTrades.buy;
+
 import mattonfire.dnd.classes.Registry.ModItems;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.math.random.Random;
-import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
 /**
@@ -20,9 +21,6 @@ import net.minecraft.village.TradeOfferList;
  * </ul>
  */
 public final class OrcTrades {
-    private static final int MAX_USES = 12;
-    private static final int MERCHANT_XP = 2;
-    private static final float PRICE_MULTIPLIER = 0.05F;
 
     private OrcTrades() {
     }
@@ -39,14 +37,5 @@ public final class OrcTrades {
         offers.add(buy(Items.IRON_INGOT, 4, 1));
         offers.add(buy(ModItems.GOBLIN_WAR_TOKEN, 3, 2));
         return offers;
-    }
-
-    private static TradeOffer sell(int emeralds, ItemStack stack) {
-        return new TradeOffer(new ItemStack(Items.EMERALD, emeralds), stack, MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
-    }
-
-    private static TradeOffer buy(ItemConvertible item, int count, int emeralds) {
-        return new TradeOffer(new ItemStack(item, count), new ItemStack(Items.EMERALD, emeralds), MAX_USES, MERCHANT_XP,
-                PRICE_MULTIPLIER);
     }
 }

@@ -54,9 +54,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -69,7 +67,7 @@ import org.jetbrains.annotations.Nullable;
  * kin nearby) it and its kin fight back with their axes. Hand one a gold ingot and it trades
  * something from the mountain's depths for it. What angers them is in {@link SettlementGrudges}.
  */
-public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
+public class MountainDwarfEntity extends PathAwareEntity implements GuardAnger {
     public static final int VARIANTS = 6;
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(MountainDwarfEntity.class, TrackedDataHandlerRegistry.INTEGER);
 
@@ -78,7 +76,6 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     public static final Identifier HONORED_BARTER_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_barter_honored");
     /** Kin stock: an extra roll for Dwarves only, usually nothing, sometimes Dwarven Plate or the Waraxe. */
     public static final Identifier KIN_STOCK_LOOT = new Identifier(DnDClasses.MOD_ID, "gameplay/dwarf_kin_stock");
-    private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
     /** How long after hitting a dwarf a player still counts as its kin's enemy. */
     private static final int KIN_GRUDGE_TICKS = 20 * 10;
     private static final int HOME_RANGE = 32;
@@ -97,9 +94,7 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
 
     @Nullable
     private BlockPos home;
-    private int angerTime;
-    @Nullable
-    private UUID angryAt;
+    private final GuardAnger.State anger = new GuardAnger.State();
     private int barterCooldown;
     /** Game time this dwarf was last saved (0 if unknown), read back on load for {@link FortressForgiveness}. */
     private long savedAt;
@@ -210,17 +205,10 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
         this.setHealth(this.getMaxHealth());
     }
 
-    /**
-     * This dwarf saw {@code player} meddling with the fortress (see {@link SettlementGrudges}) and turns on
-     * them, with a growl if it wasn't angry already.
-     */
-    public void provoke(PlayerEntity player) {
-        if (!this.shouldAngerAt(player)) {
-            this.playSound(SoundEvents.ENTITY_VINDICATOR_AMBIENT, 1.0F, this.getSoundPitch());
-        }
-        this.setAngryAt(player.getUuid());
-        this.chooseRandomAngerTime();
-        this.setTarget(player);
+    /** The dwarf's growl as it turns on a player meddling with the fortress (see {@link SettlementGrudges}). */
+    @Override
+    public void provokeShout() {
+        this.playSound(SoundEvents.ENTITY_VINDICATOR_AMBIENT, 1.0F, this.getSoundPitch());
     }
 
     /**
@@ -257,8 +245,7 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     /** Angry at the player it holds a grudge against, and at anyone Hostile with the dwarves, on sight. */
     @Override
     public boolean shouldAngerAt(LivingEntity entity) {
-        return Angerable.super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
-                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
+        return GuardAnger.super.shouldAngerAt(entity) || SettlementGuard.attacksOnSight(this, entity);
     }
 
     @Override
@@ -384,29 +371,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements Angerable {
     // ---- Angerable ----
 
     @Override
-    public int getAngerTime() {
-        return this.angerTime;
-    }
-
-    @Override
-    public void setAngerTime(int angerTime) {
-        this.angerTime = angerTime;
-    }
-
-    @Nullable
-    @Override
-    public UUID getAngryAt() {
-        return this.angryAt;
-    }
-
-    @Override
-    public void setAngryAt(@Nullable UUID angryAt) {
-        this.angryAt = angryAt;
-    }
-
-    @Override
-    public void chooseRandomAngerTime() {
-        this.setAngerTime(ANGER_TIME.get(this.random));
+    public GuardAnger.State angerState() {
+        return this.anger;
     }
 
     // ---- Sounds: a villager, but deeper and gruffer ----

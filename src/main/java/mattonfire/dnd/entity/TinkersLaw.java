@@ -1,8 +1,6 @@
 package mattonfire.dnd.entity;
 
-import java.util.List;
-import mattonfire.dnd.classes.Race.RaceLifecycle;
-import mattonfire.dnd.faction.TierEffects;
+import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.world.gen.RacialHomes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,11 +11,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,17 +20,13 @@ import org.jetbrains.annotations.Nullable;
  * see you takes offence, and the Sentinels turn on you, if inside the burrow you open or break a chest or barrel,
  * or break one of the workshops' contraptions (a piston, observer, redstone lamp, dispenser, dropper, hopper,
  * repeater, comparator, note block or lightning rod). Striking a gnome or a Sentinel is the other grudge
- * ({@link GnomeTinkerEntity#defend}).
+ * ({@link SettlementNpcEntity#callGuards}).
  *
  * <p>Kin trust: a Gnome's first offence each in-game day only gets a warning.
  */
-final class TinkersLaw implements SettlementGrudges.Rules {
+final class TinkersLaw extends GuardRules<MobEntity> {
     TinkersLaw() {
-    }
-
-    @Override
-    public String id() {
-        return "dndclasses:tinkers_guild";
+        super(FactionIds.TINKERS_GUILD, MobEntity.class, () -> ModEntityTypes.CLOCKWORK_SENTINEL);
     }
 
     @Override
@@ -51,8 +41,7 @@ final class TinkersLaw implements SettlementGrudges.Rules {
         if (!container && !contraption) {
             return false;
         }
-        RacialHomes.Visit visit = RacialHomes.homeAt(serverWorld, pos);
-        return visit != null && visit.home() == RacialHomes.COGSDEEP;
+        return RacialHomes.visitOf(serverWorld, pos, RacialHomes.COGSDEEP) != null;
     }
 
     /** The workshops' machinery. */
@@ -63,43 +52,14 @@ final class TinkersLaw implements SettlementGrudges.Rules {
                 || state.isOf(Blocks.NOTE_BLOCK) || state.isOf(Blocks.LIGHTNING_ROD);
     }
 
-    /** 16 blocks, adjusted for the player's standing with the Tinkers' Guild. */
+    /** The burrow's folk: its gnomes and its Sentinels. */
     @Override
-    public double witnessRange(PlayerEntity player) {
-        return TierEffects.witnessRange(TierEffects.tierWith(player, ModEntityTypes.CLOCKWORK_SENTINEL));
-    }
-
-    @Override
-    public List<MobEntity> witnesses(PlayerEntity player, BlockPos pos) {
-        return player.world.getEntitiesByClass(MobEntity.class, new Box(pos).expand(this.witnessRange(player)),
-                npc -> (npc instanceof GnomeTinkerEntity || npc instanceof ClockworkSentinelEntity) && npc.isAlive()
-                        && npc.canSee(player));
-    }
-
-    @Override
-    public void provoke(MobEntity guard, PlayerEntity player) {
-        if (guard instanceof ClockworkSentinelEntity sentinel) {
-            sentinel.provoke(player);
-        } else {
-            this.warn(guard, player);
-        }
-    }
-
-    @Override
-    public void warn(MobEntity guard, PlayerEntity player) {
-        guard.getLookControl().lookAt(player);
-        guard.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, guard.getSoundPitch());
+    protected boolean canWitness(MobEntity npc, PlayerEntity player) {
+        return (npc instanceof GnomeTinkerEntity || npc instanceof ClockworkSentinelEntity) && super.canWitness(npc, player);
     }
 
     @Override
     public SettlementGrudges.Verdict judge(ServerPlayerEntity player, BlockPos pos, SettlementGrudges.Offence offence) {
-        if (!RacialHomes.COGSDEEP.isHomeOf(RaceLifecycle.activeRaceOf(player))) {
-            return SettlementGrudges.Verdict.GRUDGE;
-        }
-        SettlementGrudges.Verdict verdict = SettlementGrudges.dailyWarning(player, this);
-        if (verdict == SettlementGrudges.Verdict.WARNING) {
-            player.sendMessage(Text.translatable("message.dndclasses.home.cogsdeep_warning").formatted(Formatting.GOLD), true);
-        }
-        return verdict;
+        return this.kinWarning(player, RacialHomes.COGSDEEP, "message.dndclasses.home.cogsdeep_warning");
     }
 }

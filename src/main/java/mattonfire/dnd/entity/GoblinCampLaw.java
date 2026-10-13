@@ -2,6 +2,7 @@ package mattonfire.dnd.entity;
 
 import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.world.gen.camp.GoblinCampPiece;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -39,7 +40,7 @@ final class GoblinCampLaw implements SettlementGrudges.Rules {
 
     @Override
     public String id() {
-        return "dndclasses:goblins";
+        return FactionIds.GOBLINS.toString();
     }
 
     @Override

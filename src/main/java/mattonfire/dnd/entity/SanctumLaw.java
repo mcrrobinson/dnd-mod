@@ -1,22 +1,14 @@
 package mattonfire.dnd.entity;
 
-import java.util.List;
-import mattonfire.dnd.classes.Race.RaceLifecycle;
-import mattonfire.dnd.faction.TierEffects;
+import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.world.gen.RacialHomes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvents;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,13 +19,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Kin trust: a Tiefling's first offence each in-game day only gets a warning.
  */
-final class SanctumLaw implements SettlementGrudges.Rules {
+final class SanctumLaw extends GuardRules<TieflingEntity> {
     SanctumLaw() {
-    }
-
-    @Override
-    public String id() {
-        return "dndclasses:brimstone_covenant";
+        super(FactionIds.BRIMSTONE_COVENANT, TieflingEntity.class, () -> ModEntityTypes.TIEFLING_EXILE);
     }
 
     @Override
@@ -44,46 +32,11 @@ final class SanctumLaw implements SettlementGrudges.Rules {
                 || !(blockEntity instanceof ChestBlockEntity || blockEntity instanceof BarrelBlockEntity)) {
             return false;
         }
-        RacialHomes.Visit visit = RacialHomes.homeAt(serverWorld, pos);
-        return visit != null && visit.home() == RacialHomes.BRIMSTONE_SANCTUM;
-    }
-
-    /** 16 blocks, adjusted for the player's standing with the Brimstone Covenant. */
-    @Override
-    public double witnessRange(PlayerEntity player) {
-        return TierEffects.witnessRange(TierEffects.tierWith(player, ModEntityTypes.TIEFLING_EXILE));
-    }
-
-    @Override
-    public List<TieflingEntity> witnesses(PlayerEntity player, BlockPos pos) {
-        return player.world.getEntitiesByClass(TieflingEntity.class, new Box(pos).expand(this.witnessRange(player)),
-                npc -> npc.isAlive() && npc.canSee(player));
-    }
-
-    @Override
-    public void provoke(MobEntity guard, PlayerEntity player) {
-        if (guard instanceof TieflingExileEntity exile) {
-            exile.provoke(player);
-        } else {
-            this.warn(guard, player);
-        }
-    }
-
-    @Override
-    public void warn(MobEntity guard, PlayerEntity player) {
-        guard.getLookControl().lookAt(player);
-        guard.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, guard.getSoundPitch());
+        return RacialHomes.visitOf(serverWorld, pos, RacialHomes.BRIMSTONE_SANCTUM) != null;
     }
 
     @Override
     public SettlementGrudges.Verdict judge(ServerPlayerEntity player, BlockPos pos, SettlementGrudges.Offence offence) {
-        if (!RacialHomes.BRIMSTONE_SANCTUM.isHomeOf(RaceLifecycle.activeRaceOf(player))) {
-            return SettlementGrudges.Verdict.GRUDGE;
-        }
-        SettlementGrudges.Verdict verdict = SettlementGrudges.dailyWarning(player, this);
-        if (verdict == SettlementGrudges.Verdict.WARNING) {
-            player.sendMessage(Text.translatable("message.dndclasses.home.sanctum_warning").formatted(Formatting.GOLD), true);
-        }
-        return verdict;
+        return this.kinWarning(player, RacialHomes.BRIMSTONE_SANCTUM, "message.dndclasses.home.sanctum_warning");
     }
 }

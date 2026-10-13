@@ -2,26 +2,22 @@ package mattonfire.dnd.entity;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Race.BreathWeapon;
 import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
-import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
 import net.minecraft.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -40,12 +36,10 @@ import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.util.TimeHelper;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.ServerWorldAccess;
@@ -60,20 +54,17 @@ import org.jetbrains.annotations.Nullable;
  * save DC {@link #BREATH_DC} for half, every {@link #BREATH_COOLDOWN} ticks. It turns on a player who strikes
  * a Dragonborn, or whom it sees break the temple's law ({@link TempleLaw}).
  */
-public class DragonbornTemplarEntity extends DragonbornEntity implements Angerable {
+public class DragonbornTemplarEntity extends DragonbornEntity implements GuardAnger {
     public static final int HUNT_RANGE = 24;
     public static final double BREATH_RANGE = 5.0D;
     public static final float BREATH_DAMAGE = 5.0F;
     public static final int BREATH_COOLDOWN = 10 * 20;
     public static final int BREATH_DC = 12;
     private static final double COS_HALF_ANGLE = Math.cos(Math.toRadians(BreathWeapon.HALF_ANGLE_DEG));
-    private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
     private static final String SAVE_LABEL = "save.dndclasses.templar_breath";
     private static final String SAVE_TAG = "templar_breath";
 
-    private int angerTime;
-    @Nullable
-    private UUID angryAt;
+    private final GuardAnger.State anger = new GuardAnger.State();
     /** The age at which the next breath is ready. */
     private int breathReadyAge;
 
@@ -102,16 +93,10 @@ public class DragonbornTemplarEntity extends DragonbornEntity implements Angerab
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
 
-        this.targetSelector.add(1, new RevengeGoal(this, DragonbornEntity.class).setGroupRevenge());
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, MobEntity.class, 5, true, false,
+        SettlementGuard.addTargetGoals(this.targetSelector, this, DragonbornEntity.class,
                 entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)
                         && !(entity instanceof MimicEntity mimic && mimic.isDormant())
-                        && this.nearHome(entity)));
-    }
-
-    private boolean nearHome(LivingEntity entity) {
-        return this.getHome() == null || entity.getBlockPos().isWithinDistance(this.getHome(), HUNT_RANGE);
+                        && this.nearHome(entity, HUNT_RANGE));
     }
 
     @Override
@@ -137,30 +122,22 @@ public class DragonbornTemplarEntity extends DragonbornEntity implements Angerab
         return 10;
     }
 
-    /** This Templar saw {@code player} wrong the temple, or strike one of its folk, and turns on them. */
-    public void provoke(PlayerEntity player) {
-        if (!this.shouldAngerAt(player)) {
-            this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch() * 0.8F);
-        }
-        this.setAngryAt(player.getUuid());
-        this.chooseRandomAngerTime();
-        this.setTarget(player);
+    /** The Templar's shout as it turns on a player who wronged the temple or struck one of its folk. */
+    @Override
+    public void provokeShout() {
+        this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch() * 0.8F);
     }
 
-    // Templars only turn on players who wronged them, and never on their own folk.
+    // Guards only turn on players who wronged them, and never on their own folk.
     @Override
     protected boolean mayTarget(LivingEntity target) {
-        if (target instanceof PlayerEntity player) {
-            return player == this.getAttacker() || this.shouldAngerAt(player);
-        }
-        return !(target instanceof DragonbornEntity);
+        return SettlementGuard.mayTarget(this, target, DragonbornEntity.class);
     }
 
     /** Angry at the player it holds a grudge against, and at anyone Hostile with the Dragonsworn, on sight. */
     @Override
     public boolean shouldAngerAt(LivingEntity entity) {
-        return Angerable.super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
-                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
+        return GuardAnger.super.shouldAngerAt(entity) || SettlementGuard.attacksOnSight(this, entity);
     }
 
     @Override
@@ -255,29 +232,8 @@ public class DragonbornTemplarEntity extends DragonbornEntity implements Angerab
     // ---- Angerable ----
 
     @Override
-    public int getAngerTime() {
-        return this.angerTime;
-    }
-
-    @Override
-    public void setAngerTime(int angerTime) {
-        this.angerTime = angerTime;
-    }
-
-    @Nullable
-    @Override
-    public UUID getAngryAt() {
-        return this.angryAt;
-    }
-
-    @Override
-    public void setAngryAt(@Nullable UUID angryAt) {
-        this.angryAt = angryAt;
-    }
-
-    @Override
-    public void chooseRandomAngerTime() {
-        this.setAngerTime(ANGER_TIME.get(this.random));
+    public GuardAnger.State angerState() {
+        return this.anger;
     }
 
     @Override

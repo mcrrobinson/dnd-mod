@@ -38,7 +38,7 @@ public final class DwarfGrudges {
     public static final int FORTRESS_RADIUS = 128;
     /** The least standing a clear gives with the Mountain Dwarves. */
     public static final int REPUTATION = 60;
-    private static final Identifier FACTION = new Identifier(DnDClasses.MOD_ID, "mountain_dwarves");
+    private static final Identifier FACTION = mattonfire.dnd.faction.FactionIds.MOUNTAIN_DWARVES;
     private static final TagKey<Structure> FORTRESSES = TagKey.of(RegistryKeys.STRUCTURE,
             new Identifier(DnDClasses.MOD_ID, "faction/mountain_dwarves"));
 

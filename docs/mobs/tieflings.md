@@ -60,7 +60,7 @@ Only in Brimstone Sanctums, where Exiles also spawn naturally on the platform (u
 - Exiles don't use Hellish Rebuke's 20 s cooldown: every melee hit on them burns the attacker.
 
 ## For developers
-- `entity/TieflingEntity` (base: variant, names, home and range, `setTarget` filter, Hellish Rebuke in `damage`, `defend`), `TieflingExileEntity` (`Angerable`, `FireballGoal`, `throwFireball`, `hunts`), `TieflingPactbrokerEntity` (`Merchant`, `ROLE_TAG`, three gated stocks), `TieflingTrades`, `SanctumLaw`.
+- `entity/TieflingEntity` (base, a `SettlementNpcEntity`: variant, names, home and one range day and night, `setTarget` filter, Hellish Rebuke in `afterHurt`, Exiles called in `callGuards`), `TieflingExileEntity` (`GuardAnger`, `FireballGoal`, `throwFireball`, `hunts`), `TieflingPactbrokerEntity` (`NpcMerchant`, `ROLE_TAG`, three gated stocks), `TieflingTrades`, `SanctumLaw`.
 - `KinStock` now takes an audience (`KinStock(factory, audience, nbtKey)`, `shownTo`), so one merchant can keep several gated stocks: the Pactbroker's kin stock (`KinStockOffers.brimstoneSanctum`, NBT `KinOffers`), Warlock stock (`WarlockOffers`) and Alchemist stock (`AlchemistOffers`).
 - Logs `[BrimstoneSanctum] <name> rebuked <attacker> (fire 4 s)` and `[BrimstoneSanctum] Exile <name> threw a fireball at <target> (<d> blocks)`.
 - Renderer: `RacialHumanoidRenderer.tiefling` / `pactbroker` (`Look TIEFLING`), with a `TailFeature` drawing `RaceFeatures.renderTail` on the posed body.

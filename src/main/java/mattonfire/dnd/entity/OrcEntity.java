@@ -1,6 +1,5 @@
 package mattonfire.dnd.entity;
 
-import java.util.UUID;
 import mattonfire.dnd.world.gen.RacialHomes;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -29,10 +28,8 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
-import net.minecraft.util.TimeHelper;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -46,7 +43,7 @@ import org.jetbrains.annotations.Nullable;
  * who strikes an orc (every orc within 16 blocks joins in), and hobbits, dwarves, elves and villagers near
  * home. Never goblins: the horde and the goblins are allies, and neither targets the other.
  */
-public abstract class OrcEntity extends PathAwareEntity implements Angerable {
+public abstract class OrcEntity extends PathAwareEntity implements GuardAnger {
     public static final int VARIANTS = 6;
     private static final TrackedData<Integer> VARIANT = DataTracker.registerData(OrcEntity.class, TrackedDataHandlerRegistry.INTEGER);
     /** Orcs this close to a struck orc join the fight. */
@@ -55,7 +52,6 @@ public abstract class OrcEntity extends PathAwareEntity implements Angerable {
     public static final int HUNT_RANGE = 24;
     /** Hold key for an orc that doesn't know its hold yet. */
     public static final long NO_HOLD = Long.MIN_VALUE;
-    private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
 
     private static final String[] FIRST_NAMES = {
             "Dench", "Feng", "Gell", "Henk", "Holg", "Imsh", "Keth", "Krusk", "Mhurren", "Ront", "Shump", "Thokk",
@@ -71,9 +67,7 @@ public abstract class OrcEntity extends PathAwareEntity implements Angerable {
     private BlockPos home;
     private int homeRange = 16;
     private long hold = NO_HOLD;
-    private int angerTime;
-    @Nullable
-    private UUID angryAt;
+    private final GuardAnger.State anger = new GuardAnger.State();
 
     protected OrcEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -178,17 +172,21 @@ public abstract class OrcEntity extends PathAwareEntity implements Angerable {
         return !OrcHostility.isAlly(target);
     }
 
-    /** This orc saw {@code player} wrong the hold, or strike one of its folk, and turns on them. */
+    /**
+     * This orc saw {@code player} wrong the hold, or strike one of its folk, and turns on them; not while they fight
+     * the Trial of Strength (except the Champion).
+     */
+    @Override
     public void provoke(PlayerEntity player) {
         if (OrcTrial.isDueling(player) && !(this instanceof OrcChampionEntity)) {
             return;
         }
-        if (!this.shouldAngerAt(player)) {
-            this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_ANGRY, 1.0F, this.getSoundPitch());
-        }
-        this.setAngryAt(player.getUuid());
-        this.chooseRandomAngerTime();
-        this.setTarget(player);
+        GuardAnger.super.provoke(player);
+    }
+
+    @Override
+    public void provokeShout() {
+        this.playSound(SoundEvents.ENTITY_PIGLIN_BRUTE_ANGRY, 1.0F, this.getSoundPitch());
     }
 
     @Override
@@ -229,8 +227,9 @@ public abstract class OrcEntity extends PathAwareEntity implements Angerable {
                 super.setTarget(null);
             }
             if (this.hold == NO_HOLD && this.age % 100 == 0) {
-                RacialHomes.Visit visit = RacialHomes.homeAt((ServerWorld) this.world, this.home != null ? this.home : this.getBlockPos());
-                if (visit != null && visit.home() == RacialHomes.ORC_STRONGHOLD) {
+                RacialHomes.Visit visit = RacialHomes.visitOf((ServerWorld) this.world,
+                        this.home != null ? this.home : this.getBlockPos(), RacialHomes.ORC_STRONGHOLD);
+                if (visit != null) {
                     this.hold = visit.id();
                 }
             }
@@ -240,29 +239,8 @@ public abstract class OrcEntity extends PathAwareEntity implements Angerable {
     // ---- Angerable ----
 
     @Override
-    public int getAngerTime() {
-        return this.angerTime;
-    }
-
-    @Override
-    public void setAngerTime(int angerTime) {
-        this.angerTime = angerTime;
-    }
-
-    @Nullable
-    @Override
-    public UUID getAngryAt() {
-        return this.angryAt;
-    }
-
-    @Override
-    public void setAngryAt(@Nullable UUID angryAt) {
-        this.angryAt = angryAt;
-    }
-
-    @Override
-    public void chooseRandomAngerTime() {
-        this.setAngerTime(ANGER_TIME.get(this.random));
+    public GuardAnger.State angerState() {
+        return this.anger;
     }
 
     // ---- Sounds: a piglin brute's, deeper ----

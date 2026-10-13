@@ -1,9 +1,7 @@
 package mattonfire.dnd.entity;
 
 import java.util.EnumSet;
-import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
@@ -11,12 +9,10 @@ import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.entity.ai.RangedAttackMob;
-import net.minecraft.entity.ai.goal.ActiveTargetGoal;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.ai.goal.LongDoorInteractGoal;
 import net.minecraft.entity.ai.goal.LookAroundGoal;
 import net.minecraft.entity.ai.goal.LookAtEntityGoal;
-import net.minecraft.entity.ai.goal.RevengeGoal;
 import net.minecraft.entity.ai.goal.SwimGoal;
 import net.minecraft.entity.ai.goal.WanderAroundFarGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -37,8 +33,6 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TimeHelper;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.LocalDifficulty;
 import net.minecraft.world.ServerWorldAccess;
@@ -51,19 +45,16 @@ import org.jetbrains.annotations.Nullable;
  * drawing for {@link #DRAW_TICKS} ticks a shot, and switches to its iron sword when one gets within 3
  * blocks. It turns on a player who strikes an elf, or whom it sees breaking Sylvan Law ({@link SylvanLaw}).
  */
-public class ElfWardenEntity extends ElfEntity implements Angerable, RangedAttackMob {
+public class ElfWardenEntity extends ElfEntity implements GuardAnger, RangedAttackMob {
     public static final int HUNT_RANGE = 24;
     public static final int DRAW_TICKS = 30;
     /** Forest green, for the Warden's leathers. */
     public static final int LEATHER_COLOR = 0x2F5D2A;
-    private static final UniformIntProvider ANGER_TIME = TimeHelper.betweenSeconds(30, 50);
     private static final double MELEE_RANGE = 3.0D;
     private static final double KEEP_MIN = 8.0D;
     private static final double KEEP_MAX = 12.0D;
 
-    private int angerTime;
-    @Nullable
-    private UUID angryAt;
+    private final GuardAnger.State anger = new GuardAnger.State();
     private ItemStack bow = new ItemStack(Items.BOW);
     private ItemStack sword = new ItemStack(Items.IRON_SWORD);
 
@@ -90,16 +81,10 @@ public class ElfWardenEntity extends ElfEntity implements Angerable, RangedAttac
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 8.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
 
-        this.targetSelector.add(1, new RevengeGoal(this, ElfEntity.class).setGroupRevenge());
-        this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
-        this.targetSelector.add(3, new ActiveTargetGoal<>(this, MobEntity.class, 5, true, false,
+        SettlementGuard.addTargetGoals(this.targetSelector, this, ElfEntity.class,
                 entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)
                         && !(entity instanceof MimicEntity mimic && mimic.isDormant())
-                        && this.nearHome(entity)));
-    }
-
-    private boolean nearHome(LivingEntity entity) {
-        return this.getHome() == null || entity.getBlockPos().isWithinDistance(this.getHome(), HUNT_RANGE);
+                        && this.nearHome(entity, HUNT_RANGE));
     }
 
     @Override
@@ -150,33 +135,22 @@ public class ElfWardenEntity extends ElfEntity implements Angerable, RangedAttac
         this.world.spawnEntity(arrow);
     }
 
-    /**
-     * This Warden saw {@code player} breaking Sylvan Law, or striking one of its folk, and turns on them,
-     * with a shout if it wasn't angry already.
-     */
-    public void provoke(PlayerEntity player) {
-        if (!this.shouldAngerAt(player)) {
-            this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch() * 0.8F);
-        }
-        this.setAngryAt(player.getUuid());
-        this.chooseRandomAngerTime();
-        this.setTarget(player);
+    /** The Warden's shout as it turns on a player who broke Sylvan Law or struck one of its folk. */
+    @Override
+    public void provokeShout() {
+        this.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, this.getSoundPitch() * 0.8F);
     }
 
-    // Wardens only turn on players who wronged them, and never on their own folk.
+    // Guards only turn on players who wronged them, and never on their own folk.
     @Override
     protected boolean mayTarget(LivingEntity target) {
-        if (target instanceof PlayerEntity player) {
-            return player == this.getAttacker() || this.shouldAngerAt(player);
-        }
-        return !(target instanceof ElfEntity);
+        return SettlementGuard.mayTarget(this, target, ElfEntity.class);
     }
 
     /** Angry at the player it holds a grudge against, and at anyone Hostile with the Sylvan Court, on sight. */
     @Override
     public boolean shouldAngerAt(LivingEntity entity) {
-        return Angerable.super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
-                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
+        return GuardAnger.super.shouldAngerAt(entity) || SettlementGuard.attacksOnSight(this, entity);
     }
 
     @Override
@@ -190,29 +164,8 @@ public class ElfWardenEntity extends ElfEntity implements Angerable, RangedAttac
     // ---- Angerable ----
 
     @Override
-    public int getAngerTime() {
-        return this.angerTime;
-    }
-
-    @Override
-    public void setAngerTime(int angerTime) {
-        this.angerTime = angerTime;
-    }
-
-    @Nullable
-    @Override
-    public UUID getAngryAt() {
-        return this.angryAt;
-    }
-
-    @Override
-    public void setAngryAt(@Nullable UUID angryAt) {
-        this.angryAt = angryAt;
-    }
-
-    @Override
-    public void chooseRandomAngerTime() {
-        this.setAngerTime(ANGER_TIME.get(this.random));
+    public GuardAnger.State angerState() {
+        return this.anger;
     }
 
     @Override

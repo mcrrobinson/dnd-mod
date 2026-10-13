@@ -82,9 +82,8 @@ public final class TempleShrine {
 
     /** Whether {@code pos} is in the sanctum of a Dragon Temple (where the altars are). */
     public static boolean atAltar(ServerWorld world, BlockPos pos) {
-        RacialHomes.Visit visit = RacialHomes.homeAt(world, pos);
-        return visit != null && visit.home() == RacialHomes.DRAGON_TEMPLE
-                && visit.pieceAt(pos, DragonTempleStructures.SANCTUM) != null;
+        RacialHomes.Visit visit = RacialHomes.visitOf(world, pos, RacialHomes.DRAGON_TEMPLE);
+        return visit != null && visit.pieceAt(pos, DragonTempleStructures.SANCTUM) != null;
     }
 
     private static ActionResult use(ServerPlayerEntity player, BlockPos pos, DragonAncestry altar) {

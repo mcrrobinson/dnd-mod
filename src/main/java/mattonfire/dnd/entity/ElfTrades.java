@@ -1,5 +1,8 @@
 package mattonfire.dnd.entity;
 
+import static mattonfire.dnd.entity.NpcTrades.sell;
+import static mattonfire.dnd.entity.NpcTrades.buy;
+
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.world.gen.enclave.Moonwell;
@@ -8,7 +11,6 @@ import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.FilledMapItem;
-import net.minecraft.item.ItemConvertible;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
@@ -33,9 +35,6 @@ import net.minecraft.world.gen.structure.Structure;
  * Elves only ({@link KinStockOffers#elvenSpeaker()}).
  */
 public final class ElfTrades {
-    private static final int MAX_USES = 12;
-    private static final int MERCHANT_XP = 2;
-    private static final float PRICE_MULTIPLIER = 0.05F;
     /** Where the Speaker's explorer map can lead: dragon and beholder lairs. */
     public static final TagKey<Structure> MAP_TARGETS = TagKey.of(RegistryKeys.STRUCTURE,
             new Identifier(DnDClasses.MOD_ID, "elf_speaker_maps"));
@@ -119,14 +118,5 @@ public final class ElfTrades {
         MapState.addDecorationsNbt(map, target, "+", MapIcon.Type.RED_X);
         map.setCustomName(Text.translatable("item.dndclasses.elf_lair_map"));
         return map;
-    }
-
-    private static TradeOffer sell(int emeralds, ItemStack stack) {
-        return new TradeOffer(new ItemStack(Items.EMERALD, emeralds), stack, MAX_USES, MERCHANT_XP, PRICE_MULTIPLIER);
-    }
-
-    private static TradeOffer buy(ItemConvertible item, int count) {
-        return new TradeOffer(new ItemStack(item, count), new ItemStack(Items.EMERALD), MAX_USES, MERCHANT_XP,
-                PRICE_MULTIPLIER);
     }
 }

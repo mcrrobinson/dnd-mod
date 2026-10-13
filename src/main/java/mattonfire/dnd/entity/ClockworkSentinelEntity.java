@@ -1,6 +1,5 @@
 package mattonfire.dnd.entity;
 
-import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
@@ -44,14 +43,14 @@ import org.jetbrains.annotations.Nullable;
  * <p>It's an {@link IronGolemEntity} underneath (the model, the attack swing, the crack textures, anger), with
  * the golem's village goals swapped for these.
  */
-public class ClockworkSentinelEntity extends IronGolemEntity {
+public class ClockworkSentinelEntity extends IronGolemEntity implements SettlementGuard {
     public static final double HEALTH = 40.0D;
     public static final int HUNT_RANGE = 20;
     public static final float HEALTH_PER_INGOT = 10.0F;
 
     @Nullable
     private BlockPos home;
-    private int range = 12;
+    private int homeRange = 12;
 
     public ClockworkSentinelEntity(EntityType<? extends IronGolemEntity> entityType, World world) {
         super(entityType, world);
@@ -94,8 +93,8 @@ public class ClockworkSentinelEntity extends IronGolemEntity {
     /** Ties the Sentinel to a spot it keeps within {@code range} of. */
     public void setHome(BlockPos home, int range) {
         this.home = home.toImmutable();
-        this.range = range;
-        this.setPositionTarget(this.home, this.range);
+        this.homeRange = range;
+        this.setPositionTarget(this.home, this.homeRange);
     }
 
     @Nullable
@@ -108,19 +107,15 @@ public class ClockworkSentinelEntity extends IronGolemEntity {
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         this.setPersistent();
         if (this.home == null) {
-            this.setHome(this.getBlockPos(), this.range);
+            this.setHome(this.getBlockPos(), this.homeRange);
         }
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
     }
 
-    /** This Sentinel saw {@code player} wrong the burrow, or strike its folk, and turns on them. */
-    public void provoke(PlayerEntity player) {
-        if (!this.shouldAngerAt(player)) {
-            this.playSound(SoundEvents.BLOCK_BELL_USE, 0.8F, 1.6F);
-        }
-        this.setAngryAt(player.getUuid());
-        this.chooseRandomAngerTime();
-        this.setTarget(player);
+    /** The Sentinel's bell as it turns on a player who wronged the burrow or struck its folk. */
+    @Override
+    public void provokeShout() {
+        this.playSound(SoundEvents.BLOCK_BELL_USE, 0.8F, 1.6F);
     }
 
     // The mod gives every mob a player-targeting goal; Sentinels only turn on players who wronged the burrow.
@@ -138,8 +133,7 @@ public class ClockworkSentinelEntity extends IronGolemEntity {
     /** Angry at the player it holds a grudge against, and at anyone Hostile with the Tinkers' Guild, on sight. */
     @Override
     public boolean shouldAngerAt(LivingEntity entity) {
-        return super.shouldAngerAt(entity) || entity instanceof PlayerEntity player && this.canTarget(player)
-                && TierEffects.attacksOnSight(TierEffects.tierWith(player, this));
+        return super.shouldAngerAt(entity) || SettlementGuard.attacksOnSight(this, entity);
     }
 
     @Override
@@ -156,7 +150,7 @@ public class ClockworkSentinelEntity extends IronGolemEntity {
     protected void mobTick() {
         super.mobTick();
         if (this.age % 100 == 0 && this.home != null) {
-            this.setPositionTarget(this.home, this.range);
+            this.setPositionTarget(this.home, this.homeRange);
         }
         // A player it no longer holds a grudge against (forgiven, or their standing rose) is let go.
         if (this.age % 20 == 0 && this.getTarget() instanceof PlayerEntity player && player != this.getAttacker()
@@ -202,7 +196,7 @@ public class ClockworkSentinelEntity extends IronGolemEntity {
     @Override
     public void writeCustomDataToNbt(NbtCompound nbt) {
         super.writeCustomDataToNbt(nbt);
-        nbt.putInt("HomeRange", this.range);
+        nbt.putInt("HomeRange", this.homeRange);
         if (this.home != null) {
             nbt.put("Home", NbtHelper.fromBlockPos(this.home));
         }
@@ -212,10 +206,10 @@ public class ClockworkSentinelEntity extends IronGolemEntity {
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         if (nbt.contains("HomeRange")) {
-            this.range = nbt.getInt("HomeRange");
+            this.homeRange = nbt.getInt("HomeRange");
         }
         if (nbt.contains("Home")) {
-            this.setHome(NbtHelper.toBlockPos(nbt.getCompound("Home")), this.range);
+            this.setHome(NbtHelper.toBlockPos(nbt.getCompound("Home")), this.homeRange);
         }
     }
 }

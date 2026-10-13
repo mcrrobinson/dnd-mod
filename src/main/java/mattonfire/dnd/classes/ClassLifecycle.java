@@ -153,6 +153,7 @@ public final class ClassLifecycle {
             ext.setDndClass(dndClass);
         }
         ClassStats.apply(player, dndClass);
+        ClassAttributeRules.apply(player);
         // Race modifiers stay through a class change; re-applying is idempotent.
         RaceStats.apply(player);
         Float health = ClassStats.pickHealth(dndClass);

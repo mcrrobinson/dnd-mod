@@ -1,0 +1,13 @@
+# Charge trickle progress survives a relog (check side, after charge-trickle-relog-set.txt).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/charge-trickle-relog-check.txt
+# Expect: trickleTicks about 600 in the saved data straight after joining, and 1/3 charges about 30 s later.
+wait 40
+closescreen
+/data get entity @s "mattonfire.dnd.classes".dndRest.trickleTicks
+/dndclass charges @s
+wait 640
+/dndclass charges @s
+/gamerule dndChargeTrickleMinutes 10
+/dndclass set @s none
+wait 10
+quit

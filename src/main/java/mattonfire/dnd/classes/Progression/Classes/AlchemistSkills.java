@@ -18,6 +18,7 @@ import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -177,6 +178,9 @@ public class AlchemistSkills extends ClassSkills {
         PlayerBlockBreakEvents.AFTER.register(AlchemistSkills::philosophersTouch);
 
         ServerTickEvents.END_SERVER_TICK.register(server -> tickTransmute());
+        // Clouds hold their entities (and so their world); drop them with the server. Flasks in flight are
+        // SkillHelpers.onLanding's, which drops them itself.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> TRANSMUTE_CLOUDS.clear());
     }
 
     @Override

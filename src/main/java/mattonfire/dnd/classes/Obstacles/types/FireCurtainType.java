@@ -2,14 +2,11 @@ package mattonfire.dnd.classes.Obstacles.types;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
-import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
-import mattonfire.dnd.classes.Obstacles.ObstacleIndex;
+import mattonfire.dnd.classes.Obstacles.ObstacleAuras;
 import mattonfire.dnd.classes.Obstacles.ObstacleState;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.minecraft.block.BlockState;
 import net.minecraft.block.EntityShapeContext;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.Entity;
@@ -34,7 +31,7 @@ import net.minecraft.util.math.Box;
  * <li>So does anyone with Fire Resistance, the fallback. A Fighter, Paladin or Artificer can't drink the
  * potion (their potion immunity), but an Alchemist's Transmute cloud of it still covers them, as that's an
  * ability. Creative and spectator players and fire-immune mobs pass too.</li>
- * <li>Anyone else finds it solid: it drives them back, and touching it burns ({@value #STING_DAMAGE} fire
+ * <li>Anyone else finds it solid: it drives them back, and touching it burns ({@value ObstacleType#STING_DAMAGE} fire
  * damage and {@value #BURN_SECONDS} s alight, every {@value #STING_INTERVAL} ticks).</li>
  * </ul>
  * Water doesn't douse it, and it never burns out. It can't be broken; {@code /dndobstacle open} puts it out.
@@ -42,11 +39,12 @@ import net.minecraft.util.math.Box;
  * client predicts the same collision the server checks.
  */
 public final class FireCurtainType extends ObstacleType {
-    public static final float STING_DAMAGE = 2.0f;
     public static final int BURN_SECONDS = 3;
     public static final int STING_INTERVAL = 10;
     /** How close (blocks) to a sealed curtain block counts as touching it. */
     private static final double TOUCH_MARGIN = 0.2;
+    /** Curtain blocks this close (blocks) to the player are checked for touching. */
+    private static final int TOUCH_RANGE = 3;
 
     public FireCurtainType(Identifier id) {
         super(id);
@@ -104,32 +102,28 @@ public final class FireCurtainType extends ObstacleType {
     }
 
     @Override
-    public void registerEvents() {
-        ServerTickEvents.END_WORLD_TICK.register(world -> {
-            if (world.getTime() % STING_INTERVAL != 0) {
-                return;
+    public int auraInterval() {
+        return STING_INTERVAL;
+    }
+
+    @Override
+    public int auraRange() {
+        return TOUCH_RANGE;
+    }
+
+    @Override
+    public void auraTick(ServerWorld world, ObstacleAuras.Nearby nearby) {
+        for (ServerPlayerEntity player : world.getPlayers()) {
+            if (player.isAlive() && !canPass(player) && touching(world, player, nearby)) {
+                scorch(world, player);
             }
-            for (ServerPlayerEntity player : world.getPlayers()) {
-                if (player.isAlive() && !canPass(player) && touching(world, player)) {
-                    scorch(world, player);
-                }
-            }
-        });
+        }
     }
 
     /** Whether the player is up against (or inside) a sealed curtain block. */
-    private boolean touching(ServerWorld world, PlayerEntity player) {
+    private boolean touching(ServerWorld world, ServerPlayerEntity player, ObstacleAuras.Nearby nearby) {
         Box body = player.getBoundingBox().expand(TOUCH_MARGIN);
-        for (BlockPos pos : ObstacleIndex.get(world).within(player.getBlockPos(), 3)) {
-            if (!new Box(pos).intersects(body)) {
-                continue;
-            }
-            BlockState state = world.getBlockState(pos);
-            if (ObstacleBlock.isSealed(state) && ((ObstacleBlock) state.getBlock()).type() == this) {
-                return true;
-            }
-        }
-        return false;
+        return sealedAmong(world, nearby.within(player, TOUCH_RANGE), pos -> new Box(pos).intersects(body));
     }
 
     private void scorch(ServerWorld world, ServerPlayerEntity player) {

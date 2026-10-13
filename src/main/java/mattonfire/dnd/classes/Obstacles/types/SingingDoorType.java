@@ -251,7 +251,7 @@ public final class SingingDoorType extends ObstacleType {
         for (BlockPos pos : BlockPos.iterate(key.add(-KEY_RANGE, -KEY_RANGE, -KEY_RANGE),
                 key.add(KEY_RANGE, KEY_RANGE, KEY_RANGE))) {
             BlockState state = world.getBlockState(pos);
-            if (ObstacleBlock.isSealed(state) && ((ObstacleBlock) state.getBlock()).type() == this) {
+            if (isSealedMine(state)) {
                 List<BlockPos> group = ObstacleGroups.group(world, pos.toImmutable());
                 if (keys(world, group).contains(key)) {
                     return group;

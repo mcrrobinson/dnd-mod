@@ -26,7 +26,6 @@ import net.minecraft.util.math.BlockPos;
  */
 public final class ArcaneSealType extends ObstacleType {
     public static final float BACKLASH_DAMAGE = 2.0f;
-    public static final float FUMBLE_DAMAGE = 4.0f;
     public static final int FUMBLE_WEAKNESS_TICKS = 200;
     public static final float BREAK_DAMAGE = 6.0f;
     public static final int BREAK_WEAKNESS_TICKS = 600;

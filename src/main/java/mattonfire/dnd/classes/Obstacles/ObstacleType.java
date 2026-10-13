@@ -2,6 +2,7 @@ package mattonfire.dnd.classes.Obstacles;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
@@ -28,6 +29,11 @@ import org.jetbrains.annotations.Nullable;
  * and the roll lines {@code .success}, {@code .critical}, {@code .failure} and {@code .fumble}.
  */
 public abstract class ObstacleType {
+    /** A failed check's usual sting (damage). */
+    public static final float STING_DAMAGE = 2.0f;
+    /** A natural 1's usual sting (damage). */
+    public static final float FUMBLE_DAMAGE = 4.0f;
+
     private final Identifier id;
 
     protected ObstacleType(Identifier id) {
@@ -40,6 +46,29 @@ public abstract class ObstacleType {
 
     public final String translationKey() {
         return "obstacle." + id.getNamespace() + "." + id.getPath();
+    }
+
+    /** Whether {@code state} is a block of this obstacle type, in any state. */
+    public final boolean isMine(BlockState state) {
+        return state.getBlock() instanceof ObstacleBlock block && block.type() == this;
+    }
+
+    /** Whether {@code state} is a sealed block of this obstacle type. */
+    public final boolean isSealedMine(BlockState state) {
+        return isMine(state) && state.get(ObstacleBlock.STATE) == ObstacleState.SEALED;
+    }
+
+    /**
+     * Whether any of {@code candidates} (say, {@link ObstacleAuras.Nearby#within}) passing {@code where} is a
+     * sealed block of this type. {@code where} is tested first, so it should be the cheap geometry check.
+     */
+    public final boolean sealedAmong(ServerWorld world, List<BlockPos> candidates, Predicate<BlockPos> where) {
+        for (BlockPos pos : candidates) {
+            if (where.test(pos) && isSealedMine(world.getBlockState(pos))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -287,6 +316,30 @@ public abstract class ObstacleType {
 
     /** An explosion has just removed the block at {@code pos} (already air). */
     public void onExploded(ServerWorld world, BlockPos pos) {
+    }
+
+    /**
+     * How often (ticks) {@link #auraTick} runs, or 0 for a type with no aura. Ticks on which no aura is due
+     * cost nothing.
+     */
+    public int auraInterval() {
+        return 0;
+    }
+
+    /**
+     * How far round each player (blocks) {@link #auraTick} asks {@link ObstacleAuras.Nearby} for obstacle
+     * blocks. The index is looked up once per player per tick at the largest range any due aura asks for.
+     */
+    public int auraRange() {
+        return 0;
+    }
+
+    /**
+     * The type's aura, every {@link #auraInterval()} ticks in each world with players (world time a multiple of
+     * it), from the single obstacle-aura tick ({@link ObstacleAuras}). {@code nearby} holds each player's
+     * indexed obstacle blocks within {@link #auraRange()}.
+     */
+    public void auraTick(ServerWorld world, ObstacleAuras.Nearby nearby) {
     }
 
     /** Registers any server events the type needs. Called once, from {@link ObstacleTypes#register()}. */

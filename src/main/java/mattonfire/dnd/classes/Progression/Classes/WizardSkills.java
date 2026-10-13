@@ -2,10 +2,9 @@ package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.startArea;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,10 +27,10 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.TimedArea;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Rest.RestState;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.EntityType;
@@ -107,8 +106,6 @@ public class WizardSkills extends ClassSkills {
 
     private static final Map<UUID, Ward> WARDS = new HashMap<>();
 
-    /** Meteor Swarms still falling. Server thread only. */
-    private static final List<Swarm> SWARMS = new ArrayList<>();
 
     @Override
     public DndCharacter dndClass() {
@@ -167,10 +164,7 @@ public class WizardSkills extends ClassSkills {
 
     @Override
     public void register() {
-        // Swarms hold their world; don't keep a stopped server's world alive.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> SWARMS.clear());
         ServerTickEvents.END_SERVER_TICK.register(server -> {
-            tickSwarms();
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
                 if (Progression.classOf(player) == DndCharacter.WIZARD) {
                     removeHeavyArmor(player);
@@ -232,7 +226,9 @@ public class WizardSkills extends ClassSkills {
             }
             case "wizard.meteor_swarm" -> {
                 HitResult hit = player.raycast(METEOR_RANGE, 0, false);
-                SWARMS.add(new Swarm(world, player.getUuid(), hit.getPos(), METEOR_SWARM_TICKS));
+                // One tick longer, so the last meteor falls on its final tick
+                startArea(world, player.getUuid(), hit.getPos(), METEOR_SWARM_TICKS + 1, true,
+                        WizardSkills::meteorSwarm);
                 effects(player, SoundEvents.ENTITY_BLAZE_SHOOT, ParticleTypes.FLAME, 30);
             }
             default -> {
@@ -376,18 +372,10 @@ public class WizardSkills extends ClassSkills {
                 || source.isOf(DamageTypes.INDIRECT_MAGIC);
     }
 
-    private static void tickSwarms() {
-        Iterator<Swarm> it = SWARMS.iterator();
-        while (it.hasNext()) {
-            Swarm swarm = it.next();
-            PlayerEntity owner = swarm.world.getPlayerByUuid(swarm.owner);
-            if (owner == null || swarm.ticksLeft-- <= 0) {
-                it.remove();
-                continue;
-            }
-            if (swarm.ticksLeft % METEOR_INTERVAL_TICKS == 0) {
-                dropMeteor(swarm.world, owner, swarm.center);
-            }
+    /** One tick of a Meteor Swarm: a meteor every few ticks, the last on its final tick. */
+    private static void meteorSwarm(ServerWorld world, TimedArea swarm, long now) {
+        if ((METEOR_SWARM_TICKS - swarm.age(now)) % METEOR_INTERVAL_TICKS == 0) {
+            dropMeteor(world, world.getPlayerByUuid(swarm.owner()), swarm.center());
         }
     }
 
@@ -410,20 +398,6 @@ public class WizardSkills extends ClassSkills {
         world.spawnEntity(meteor);
         world.playSound(null, top.x, top.y, top.z, SoundEvents.ENTITY_GHAST_SHOOT, SoundCategory.PLAYERS, 0.6F,
                 0.8F);
-    }
-
-    private static class Swarm {
-        final ServerWorld world;
-        final UUID owner;
-        final Vec3d center;
-        int ticksLeft;
-
-        Swarm(ServerWorld world, UUID owner, Vec3d center, int ticksLeft) {
-            this.world = world;
-            this.owner = owner;
-            this.center = center;
-            this.ticksLeft = ticksLeft;
-        }
     }
 
     /**

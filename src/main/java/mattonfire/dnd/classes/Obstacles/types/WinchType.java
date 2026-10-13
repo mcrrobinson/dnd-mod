@@ -61,7 +61,7 @@ public abstract class WinchType extends ObstacleType {
      */
     public boolean link(BlockView world, BlockPos winch, BlockPos targetPos) {
         if (!isTarget(world, targetPos) || !(world.getBlockEntity(winch) instanceof ObstacleBlockEntity be)
-                || !(world.getBlockState(winch).getBlock() instanceof ObstacleBlock block) || block.type() != this) {
+                || !isMine(world.getBlockState(winch))) {
             return false;
         }
         be.data().put(TARGET_KEY, NbtHelper.fromBlockPos(targetPos));

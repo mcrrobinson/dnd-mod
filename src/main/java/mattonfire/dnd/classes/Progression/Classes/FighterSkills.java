@@ -3,9 +3,7 @@ package mattonfire.dnd.classes.Progression.Classes;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DnDClasses;
@@ -13,7 +11,6 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.ManaManager;
 import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Progression.Progression;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.registry.tag.DamageTypeTags;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.util.Identifier;
@@ -22,6 +19,7 @@ import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -70,12 +68,11 @@ public class FighterSkills extends ClassSkills {
     public static final int SUPERIOR_CRITICAL_RANGE = 18;
     /** Combat Superiority: at most one mana pip from shield blocks this often. */
     public static final int COMBAT_SUPERIORITY_COOLDOWN_TICKS = 5 * 20;
-    private static final Map<UUID, Integer> SUPERIORITY_READY = new HashMap<>();
+    private static final Cooldowns SUPERIORITY = new Cooldowns();
 
-    /** Server tick each player's buff or cooldown ends at. */
-    private static final Map<UUID, Integer> RIPOSTE_UNTIL = new HashMap<>();
-    private static final Map<UUID, Integer> SECOND_WIND_READY = new HashMap<>();
-    private static final Map<UUID, Integer> INDOMITABLE_UNTIL = new HashMap<>();
+    private static final Cooldowns RIPOSTE = new Cooldowns();
+    private static final Cooldowns SECOND_WIND = new Cooldowns();
+    private static final Cooldowns INDOMITABLE = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -151,13 +148,6 @@ public class FighterSkills extends ClassSkills {
 
     @Override
     public void register() {
-        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            SUPERIORITY_READY.clear();
-            RIPOSTE_UNTIL.clear();
-            SECOND_WIND_READY.clear();
-            INDOMITABLE_UNTIL.clear();
-        });
         // Superior Critical, on the sheet so the attack roll (and its HUD and log) uses it.
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/fighter_champion"), (player, c) -> {
             if (Progression.classOf(player) == DndCharacter.FIGHTER
@@ -178,10 +168,9 @@ public class FighterSkills extends ClassSkills {
                 || !Progression.current(player).hasSubclass(BATTLE_MASTER)) {
             return;
         }
-        int now = fighter.getServer().getTicks();
-        if (now < SUPERIORITY_READY.getOrDefault(fighter.getUuid(), 0) || ManaManager.hasFullMana(fighter))
+        if (!SUPERIORITY.ready(fighter) || ManaManager.hasFullMana(fighter))
             return;
-        SUPERIORITY_READY.put(fighter.getUuid(), now + COMBAT_SUPERIORITY_COOLDOWN_TICKS);
+        SUPERIORITY.start(fighter, COMBAT_SUPERIORITY_COOLDOWN_TICKS);
         ManaManager.regenerateMana(fighter);
         DnDClasses.LOGGER.debug("[Subclass] Combat Superiority: {} +1 mana, now {}", fighter.getEntityName(),
                 ManaManager.getMana(fighter));
@@ -191,7 +180,6 @@ public class FighterSkills extends ClassSkills {
 
     @Override
     public boolean activate(ServerPlayerEntity player, SkillNode node) {
-        int now = player.getServer().getTicks();
         switch (node.id()) {
             case "fighter.action_surge" -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, ACTION_SURGE_TICKS, 1));
@@ -200,13 +188,13 @@ public class FighterSkills extends ClassSkills {
                 effects(player, SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP, ParticleTypes.CRIT, 30);
             }
             case "fighter.riposte" -> {
-                RIPOSTE_UNTIL.put(player.getUuid(), now + RIPOSTE_TICKS);
+                RIPOSTE.start(player, RIPOSTE_TICKS);
                 effects(player, SoundEvents.ITEM_SHIELD_BLOCK, ParticleTypes.ENCHANTED_HIT, 20);
             }
             case "fighter.indomitable" -> {
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, INDOMITABLE_TICKS, 1));
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, INDOMITABLE_TICKS, 1));
-                INDOMITABLE_UNTIL.put(player.getUuid(), now + INDOMITABLE_TICKS);
+                INDOMITABLE.start(player, INDOMITABLE_TICKS);
                 setKnockbackImmune(player, true);
                 effects(player, SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE, ParticleTypes.TOTEM_OF_UNDYING, 30);
             }
@@ -243,10 +231,9 @@ public class FighterSkills extends ClassSkills {
 
     @Override
     public float modifyTakenDamage(PlayerEntity player, ClassProgress progress, DamageSource source, float amount) {
-        Integer until = RIPOSTE_UNTIL.get(player.getUuid());
-        if (until != null && player.getServer() != null && player.getServer().getTicks() < until
-                && !source.isOf(DamageTypes.THORNS) && source.getAttacker() instanceof LivingEntity attacker
-                && source.getSource() == attacker && attacker != player) {
+        if (RIPOSTE.active(player) && !source.isOf(DamageTypes.THORNS)
+                && source.getAttacker() instanceof LivingEntity attacker && source.getSource() == attacker
+                && attacker != player) {
             // Thorns damage, so two riposting Fighters don't bounce it back and forth.
             attacker.damage(player.getDamageSources().thorns(player), amount * RIPOSTE_REFLECT);
         }
@@ -255,23 +242,17 @@ public class FighterSkills extends ClassSkills {
 
     @Override
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
-        UUID id = player.getUuid();
-        int now = player.getServer().getTicks();
-
         if (progress.hasPassive("fighter.second_wind") && player.isAlive()
-                && player.getHealth() < player.getMaxHealth() * SECOND_WIND_THRESHOLD
-                && now >= SECOND_WIND_READY.getOrDefault(id, 0)) {
+                && player.getHealth() < player.getMaxHealth() * SECOND_WIND_THRESHOLD && SECOND_WIND.ready(player)) {
             player.heal(SECOND_WIND_HEAL);
-            SECOND_WIND_READY.put(id, now + SECOND_WIND_COOLDOWN_TICKS);
+            SECOND_WIND.start(player, SECOND_WIND_COOLDOWN_TICKS);
             effects(player, SoundEvents.ENTITY_PLAYER_LEVELUP, ParticleTypes.HEART, 8);
         }
 
-        Integer indomitable = INDOMITABLE_UNTIL.get(id);
-        if (indomitable != null && now >= indomitable) {
-            INDOMITABLE_UNTIL.remove(id);
+        if (INDOMITABLE.finished(player)) {
             setKnockbackImmune(player, false);
         }
-        RIPOSTE_UNTIL.values().removeIf(t -> now >= t);
+        RIPOSTE.prune(player.getServer());
     }
 
     /** Indomitable's full knockback resistance; a temporary modifier, so a relog also clears it. */
@@ -289,13 +270,12 @@ public class FighterSkills extends ClassSkills {
     @Override
     public void forget(ServerPlayerEntity player) {
         UUID id = player.getUuid();
-        int now = player.getServer().getTicks();
         // Indomitable is only ended by secondTick, which stops once the player isn't a Fighter.
-        if (INDOMITABLE_UNTIL.remove(id) != null) {
+        if (INDOMITABLE.remove(id)) {
             setKnockbackImmune(player, false);
         }
-        RIPOSTE_UNTIL.remove(id);
-        SECOND_WIND_READY.values().removeIf(t -> now >= t);
-        SUPERIORITY_READY.values().removeIf(t -> now >= t);
+        RIPOSTE.remove(id);
+        SECOND_WIND.prune(player.getServer());
+        SUPERIORITY.prune(player.getServer());
     }
 }

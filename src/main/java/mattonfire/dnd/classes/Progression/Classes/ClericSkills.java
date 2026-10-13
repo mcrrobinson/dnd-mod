@@ -5,18 +5,15 @@ import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.enemiesNear;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
 import mattonfire.dnd.classes.Progression.SkillNode;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.Block;
@@ -114,7 +111,7 @@ public class ClericSkills extends ClassSkills {
     private static final int DISCIPLE_ABSORPTION_TICKS = 200;
 
     /** Server tick each player's Preserve Life is ready again at. */
-    private static final Map<UUID, Integer> PRESERVE_LIFE_READY = new HashMap<>();
+    private static final Cooldowns PRESERVE_LIFE = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -154,10 +151,6 @@ public class ClericSkills extends ClassSkills {
 
     @Override
     public void register() {
-        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            PRESERVE_LIFE_READY.clear();
-        });
         PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
             if (!(player instanceof ServerPlayerEntity serverPlayer) || player.isCreative()
                     || Progression.classOf(player) != DndCharacter.CLERIC || !isOre(state)) {
@@ -261,18 +254,16 @@ public class ClericSkills extends ClassSkills {
                 || player.getHealth() >= player.getMaxHealth() * PRESERVE_LIFE_THRESHOLD) {
             return;
         }
-        int now = player.getServer().getTicks();
-        if (now < PRESERVE_LIFE_READY.getOrDefault(player.getUuid(), 0)) {
+        if (!PRESERVE_LIFE.ready(player)) {
             return;
         }
-        PRESERVE_LIFE_READY.put(player.getUuid(), now + PRESERVE_LIFE_COOLDOWN);
+        PRESERVE_LIFE.start(player, PRESERVE_LIFE_COOLDOWN);
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, discipleOfLife(player, 100), 1));
         effects(player, SoundEvents.ENTITY_PLAYER_LEVELUP, ParticleTypes.HEART, 8);
     }
 
     @Override
     public void forget(ServerPlayerEntity player) {
-        int now = player.getServer().getTicks();
-        PRESERVE_LIFE_READY.values().removeIf(t -> now >= t);
+        PRESERVE_LIFE.prune(player.getServer());
     }
 }

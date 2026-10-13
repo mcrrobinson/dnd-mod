@@ -2,21 +2,18 @@ package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.hostilesNear;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.startArea;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.AttributeBonus;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
+import mattonfire.dnd.classes.Progression.SkillHelpers.TimedArea;
 import mattonfire.dnd.classes.Progression.SkillNode;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -33,7 +30,6 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.hit.HitResult;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class RangerSkills extends ClassSkills {
@@ -79,14 +75,8 @@ public class RangerSkills extends ClassSkills {
     public static final int COLOSSUS_SLAYER_COOLDOWN_TICKS = 20;
     /** Planar Warrior: damage dealt in the Nether and the End is multiplied by this. */
     public static final float PLANAR_WARRIOR_MULTIPLIER = 1.2F;
-    /** World time each Hunter's Colossus Slayer is ready again. */
-    private static final Map<UUID, Long> COLOSSUS_READY = new HashMap<>();
-
-    /** A Rain of Arrows still falling. */
-    private record Rain(UUID owner, ServerWorld world, Vec3d center, long endTime) {
-    }
-
-    private static final List<Rain> RAINS = new ArrayList<>();
+    /** Each Hunter's Colossus Slayer cooldown. */
+    private static final Cooldowns COLOSSUS = new Cooldowns();
 
     @Override
     public DndCharacter dndClass() {
@@ -125,13 +115,6 @@ public class RangerSkills extends ClassSkills {
     }
 
     @Override
-    public void register() {
-        ServerTickEvents.END_WORLD_TICK.register(RangerSkills::tickRains);
-        // Drop rains (and their world references) when a world is closed.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> RAINS.clear());
-    }
-
-    @Override
     public List<AttributeBonus> attributeBonuses() {
         return List.of(new AttributeBonus("ranger.natural_explorer", EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.1,
                 EntityAttributeModifier.Operation.MULTIPLY_BASE));
@@ -164,7 +147,7 @@ public class RangerSkills extends ClassSkills {
                 HitResult hit = player.raycast(RAIN_RANGE, 1.0F, false);
                 if (hit.getType() == HitResult.Type.MISS)
                     return false; // Nothing to aim at; no mana spent
-                RAINS.add(new Rain(player.getUuid(), world, hit.getPos(), world.getTime() + RAIN_TICKS));
+                startArea(world, player.getUuid(), hit.getPos(), RAIN_TICKS, true, RangerSkills::rain);
                 world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_CROSSBOW_SHOOT, SoundCategory.PLAYERS,
                         1.0F, 0.6F);
             }
@@ -176,30 +159,21 @@ public class RangerSkills extends ClassSkills {
     }
 
     /** Drops this tick's arrows for every rain in the world. */
-    private static void tickRains(ServerWorld world) {
-        if (RAINS.isEmpty())
-            return;
-        long now = world.getTime();
-        RAINS.removeIf(rain -> {
-            if (rain.world() != world)
-                return false;
-            PlayerEntity owner = world.getPlayerByUuid(rain.owner());
-            if (now >= rain.endTime() || owner == null)
-                return true;
-            for (int i = 0; i < RAIN_ARROWS_PER_TICK; i++) {
-                double angle = world.random.nextDouble() * Math.PI * 2;
-                double r = Math.sqrt(world.random.nextDouble()) * RAIN_RADIUS;
-                ArrowEntity arrow = new ArrowEntity(world, rain.center().x + Math.cos(angle) * r,
-                        rain.center().y + RAIN_HEIGHT, rain.center().z + Math.sin(angle) * r);
-                arrow.setOwner(owner);
-                arrow.setVelocity(0, -1, 0, RAIN_SPEED, 2.0F);
-                arrow.setDamage(RAIN_ARROW_DAMAGE / RAIN_SPEED); // Arrow damage scales with speed
-                arrow.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
-                arrow.addCommandTag(RAIN_TAG);
-                world.spawnEntity(arrow);
-            }
-            return false;
-        });
+    /** One tick of a Rain of Arrows: a few arrows from above, somewhere in its circle. */
+    private static void rain(ServerWorld world, TimedArea rain, long now) {
+        PlayerEntity owner = world.getPlayerByUuid(rain.owner());
+        for (int i = 0; i < RAIN_ARROWS_PER_TICK; i++) {
+            double angle = world.random.nextDouble() * Math.PI * 2;
+            double r = Math.sqrt(world.random.nextDouble()) * RAIN_RADIUS;
+            ArrowEntity arrow = new ArrowEntity(world, rain.center().x + Math.cos(angle) * r,
+                    rain.center().y + RAIN_HEIGHT, rain.center().z + Math.sin(angle) * r);
+            arrow.setOwner(owner);
+            arrow.setVelocity(0, -1, 0, RAIN_SPEED, 2.0F);
+            arrow.setDamage(RAIN_ARROW_DAMAGE / RAIN_SPEED); // Arrow damage scales with speed
+            arrow.pickupType = PersistentProjectileEntity.PickupPermission.DISALLOWED;
+            arrow.addCommandTag(RAIN_TAG);
+            world.spawnEntity(arrow);
+        }
     }
 
     private static boolean isArrow(DamageSource source) {
@@ -223,9 +197,8 @@ public class RangerSkills extends ClassSkills {
         }
         // Colossus Slayer: checked before this hit lands, so the target was already hurt.
         if (arrow && progress.hasSubclass(HUNTER) && target.getHealth() < target.getMaxHealth()) {
-            long now = player.getWorld().getTime();
-            if (now >= COLOSSUS_READY.getOrDefault(player.getUuid(), 0L)) {
-                COLOSSUS_READY.put(player.getUuid(), now + COLOSSUS_SLAYER_COOLDOWN_TICKS);
+            if (COLOSSUS.ready(player)) {
+                COLOSSUS.start(player, COLOSSUS_SLAYER_COOLDOWN_TICKS);
                 amount += COLOSSUS_SLAYER_DAMAGE;
             }
         }
@@ -259,8 +232,7 @@ public class RangerSkills extends ClassSkills {
 
     @Override
     public void forget(ServerPlayerEntity player) {
-        long now = player.getWorld().getTime();
-        COLOSSUS_READY.values().removeIf(t -> now >= t);
+        COLOSSUS.prune(player.getServer());
     }
 
     @Override

@@ -13,10 +13,10 @@ import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Skill;
 import mattonfire.dnd.classes.Items.InstrumentItem;
 import mattonfire.dnd.classes.Misc.BardCompanions;
+import mattonfire.dnd.classes.Obstacles.ObstacleAuras;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlock;
 import mattonfire.dnd.classes.Obstacles.ObstacleBlockEntity;
 import mattonfire.dnd.classes.Obstacles.ObstacleGroups;
-import mattonfire.dnd.classes.Obstacles.ObstacleIndex;
 import mattonfire.dnd.classes.Obstacles.ObstacleInteractions;
 import mattonfire.dnd.classes.Obstacles.ObstacleState;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
@@ -24,7 +24,6 @@ import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import mattonfire.dnd.entity.OwlbearEntity;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
@@ -369,8 +368,17 @@ public final class GuardianBeastType extends ObstacleType {
     // ---- Events ----
 
     @Override
+    public int auraInterval() {
+        return TICK_INTERVAL;
+    }
+
+    @Override
+    public int auraRange() {
+        return TICK_RANGE;
+    }
+
+    @Override
     public void registerEvents() {
-        ServerTickEvents.END_WORLD_TICK.register(this::tick);
         UseEntityCallback.EVENT.register(this::useBeast);
         ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) -> {
             if (entity.getWorld() instanceof ServerWorld world && entity instanceof MobEntity mob) {
@@ -387,9 +395,7 @@ public final class GuardianBeastType extends ObstacleType {
             return ActionResult.PASS;
         }
         BlockPos post = postOf(entity);
-        if (post == null || !ObstacleBlock.isSealed(world.getBlockState(post))
-                || !(world.getBlockState(post).getBlock() instanceof ObstacleBlock block) || block.type() != this
-                || !accepts(player, player.getMainHandStack())) {
+        if (post == null || !isSealedMine(world.getBlockState(post)) || !accepts(player, player.getMainHandStack())) {
             return ActionResult.PASS;
         }
         ObstacleInteractions.use(serverWorld, post, this, serverPlayer);
@@ -400,7 +406,7 @@ public final class GuardianBeastType extends ObstacleType {
     private void slain(ServerWorld world, MobEntity mob) {
         BlockPos post = postOf(mob);
         if (post == null || !(world.getBlockEntity(post) instanceof ObstacleBlockEntity be)
-                || !(world.getBlockState(post).getBlock() instanceof ObstacleBlock block) || block.type() != this) {
+                || !isMine(world.getBlockState(post))) {
             return;
         }
         int bound = be.data().getList(BEASTS_KEY, NbtElement.INT_ARRAY_TYPE).size();
@@ -413,19 +419,17 @@ public final class GuardianBeastType extends ObstacleType {
         }
     }
 
-    private void tick(ServerWorld world) {
-        if (world.getTime() % TICK_INTERVAL != 0 || world.getPlayers().isEmpty()) {
-            return;
-        }
+    /** Each post near a player, once: sealed, its beasts guard it; open, they stand aside. */
+    @Override
+    public void auraTick(ServerWorld world, ObstacleAuras.Nearby nearby) {
         Set<BlockPos> seen = new HashSet<>();
-        ObstacleIndex index = ObstacleIndex.get(world);
         for (ServerPlayerEntity player : world.getPlayers()) {
-            for (BlockPos pos : index.within(player.getBlockPos(), TICK_RANGE)) {
+            for (BlockPos pos : nearby.within(player, TICK_RANGE)) {
                 if (!world.isChunkLoaded(pos) || !seen.add(pos)) {
                     continue;
                 }
                 BlockState state = world.getBlockState(pos);
-                if (state.getBlock() instanceof ObstacleBlock block && block.type() == this) {
+                if (isMine(state)) {
                     tickPost(world, pos, state.get(ObstacleBlock.STATE) == ObstacleState.SEALED);
                 }
             }

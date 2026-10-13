@@ -35,8 +35,6 @@ import org.jetbrains.annotations.Nullable;
  * counting once. The count is kept in the group's {@code Data.Doused} and cleared when it reseals.
  */
 public final class HolyWardType extends ObstacleType {
-    public static final float STING_DAMAGE = 2.0f;
-    public static final float FUMBLE_DAMAGE = 4.0f;
     public static final int FUMBLE_BLINDNESS_TICKS = 60;
     public static final int POTIONS_TO_OPEN = 3;
     /** How close to a ward block a thrown potion must burst. */
@@ -129,7 +127,7 @@ public final class HolyWardType extends ObstacleType {
         double bestDistance = DOUSE_RADIUS * DOUSE_RADIUS;
         for (BlockPos pos : ObstacleIndex.get(world).within(BlockPos.ofFloored(at), (int) Math.ceil(DOUSE_RADIUS) + 1)) {
             BlockState state = world.getBlockState(pos);
-            if (!ObstacleBlock.isSealed(state) || ((ObstacleBlock) state.getBlock()).type() != this) {
+            if (!isSealedMine(state)) {
                 continue;
             }
             double distance = Vec3d.ofCenter(pos).squaredDistanceTo(at);

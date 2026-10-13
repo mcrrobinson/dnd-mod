@@ -137,8 +137,7 @@ public final class DesecratedAltarType extends ObstacleType {
                 continue;
             }
             BlockState state = world.getBlockState(pos);
-            if (state.getBlock() instanceof ObstacleBlock block && block.type() == this
-                    && state.get(ObstacleBlock.STATE) == ObstacleState.OPEN) {
+            if (isMine(state) && state.get(ObstacleBlock.STATE) == ObstacleState.OPEN) {
                 return true;
             }
         }

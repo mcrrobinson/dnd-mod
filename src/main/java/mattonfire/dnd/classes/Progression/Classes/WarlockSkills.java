@@ -2,8 +2,8 @@ package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.lookTarget;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.startArea;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +19,8 @@ import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Ranks;
+import mattonfire.dnd.classes.Progression.SkillHelpers.Cooldowns;
+import mattonfire.dnd.classes.Progression.SkillHelpers.TimedArea;
 import mattonfire.dnd.classes.Progression.SkillNode;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -63,8 +65,8 @@ public class WarlockSkills extends ClassSkills {
     public static final int ENTROPIC_WARD_COOLDOWN_TICKS = 60 * 20;
 
     /** Server tick each player's Dark One's Own Luck / Entropic Ward is ready again. */
-    private static final Map<UUID, Integer> LUCK_READY = new HashMap<>();
-    private static final Map<UUID, Integer> WARD_READY = new HashMap<>();
+    private static final Cooldowns LUCK = new Cooldowns();
+    private static final Cooldowns WARD = new Cooldowns();
 
     private static final int FIRE_KILL_BONUS_XP = 2;
     private static final int NETHER_KILL_BONUS_XP = 1;
@@ -85,13 +87,10 @@ public class WarlockSkills extends ClassSkills {
 
     /** Hexed mob -> who hexed it and when it wears off. */
     private static final Map<UUID, Hex> HEXES = new HashMap<>();
-    private static final List<Hellgate> HELLGATES = new ArrayList<>();
 
     private record Hex(UUID owner, long endTime) {
     }
 
-    private record Hellgate(UUID owner, World world, Vec3d center, long endTime) {
-    }
 
     @Override
     public DndCharacter dndClass() {
@@ -138,40 +137,22 @@ public class WarlockSkills extends ClassSkills {
             if (!(player instanceof ServerPlayerEntity warlock) || Progression.classOf(player) != DndCharacter.WARLOCK
                     || !Progression.current(player).hasSubclass(FIEND))
                 return null;
-            int now = warlock.getServer().getTicks();
-            if (now < LUCK_READY.getOrDefault(warlock.getUuid(), 0))
+            if (!LUCK.ready(warlock))
                 return null;
-            LUCK_READY.put(warlock.getUuid(), now + DARK_ONES_LUCK_COOLDOWN_TICKS);
+            LUCK.start(warlock, DARK_ONES_LUCK_COOLDOWN_TICKS);
             warlock.sendMessage(Text.literal("Dark One's Own Luck: you roll again").formatted(Formatting.DARK_RED),
                     false);
             warlock.getWorld().playSound(null, warlock.getBlockPos(), SoundEvents.ENTITY_BLAZE_AMBIENT,
                     SoundCategory.PLAYERS, 0.6F, 0.7F);
             return "Dark One's Own Luck";
         });
-        // Don't carry hexes or fire rings (and their worlds) into the next singleplayer session
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            HEXES.clear();
-            HELLGATES.clear();
-            // Cooldowns count server ticks, which restart at 0 with the next world
-            LUCK_READY.clear();
-            WARD_READY.clear();
-        });
+        // Don't carry hexes into the next singleplayer session
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> HEXES.clear());
         ServerTickEvents.END_WORLD_TICK.register(world -> {
             long now = world.getTime();
             if (!HEXES.isEmpty() && now % 20 == 0) {
                 HEXES.values().removeIf(hex -> now >= hex.endTime());
             }
-            HELLGATES.removeIf(gate -> {
-                if (gate.world() != world)
-                    return false; // Ticked by its own world
-                if (now >= gate.endTime())
-                    return true;
-                if (now % 5 == 0)
-                    ringParticles(world, gate.center());
-                if (now % 20 == 0)
-                    burnInside(world, gate);
-                return false;
-            });
         });
     }
 
@@ -202,8 +183,7 @@ public class WarlockSkills extends ClassSkills {
                         SoundCategory.PLAYERS, 1.0F, 0.8F);
             }
             case "warlock.hellgate" -> {
-                HELLGATES.add(new Hellgate(player.getUuid(), world, player.getPos(),
-                        world.getTime() + HELLGATE_TICKS));
+                startArea(world, player.getUuid(), player.getPos(), HELLGATE_TICKS, false, WarlockSkills::hellgate);
                 player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, HELLGATE_TICKS, 0));
                 ringParticles(world, player.getPos());
                 effects(player, SoundEvents.ENTITY_BLAZE_SHOOT, ParticleTypes.LAVA, 20);
@@ -260,10 +240,9 @@ public class WarlockSkills extends ClassSkills {
         if (!(player instanceof ServerPlayerEntity warlock) || Progression.classOf(player) != DndCharacter.WARLOCK
                 || !Progression.current(player).hasSubclass(GREAT_OLD_ONE))
             return false;
-        int now = warlock.getServer().getTicks();
-        if (now < WARD_READY.getOrDefault(warlock.getUuid(), 0))
+        if (!WARD.ready(warlock))
             return false;
-        WARD_READY.put(warlock.getUuid(), now + ENTROPIC_WARD_COOLDOWN_TICKS);
+        WARD.start(warlock, ENTROPIC_WARD_COOLDOWN_TICKS);
         warlock.sendMessage(Text.literal("Entropic Ward turns the shot aside").formatted(Formatting.DARK_PURPLE),
                 true);
         DnDClasses.LOGGER.debug("[Subclass] Entropic Ward: {} dodged a projectile", warlock.getEntityName());
@@ -272,9 +251,8 @@ public class WarlockSkills extends ClassSkills {
 
     @Override
     public void forget(ServerPlayerEntity player) {
-        int now = player.getServer().getTicks();
-        LUCK_READY.values().removeIf(t -> now >= t);
-        WARD_READY.values().removeIf(t -> now >= t);
+        LUCK.prune(player.getServer());
+        WARD.prune(player.getServer());
     }
 
     private static void beamParticles(ServerWorld world, Vec3d from, Vec3d to) {
@@ -295,8 +273,16 @@ public class WarlockSkills extends ClassSkills {
         }
     }
 
+    /** One tick of a Hellgate: its ring of flame, and every second the burn inside. */
+    private static void hellgate(ServerWorld world, TimedArea gate, long now) {
+        if (now % 5 == 0)
+            ringParticles(world, gate.center());
+        if (now % 20 == 0)
+            burnInside(world, gate);
+    }
+
     /** Sets everything inside the ring alight, with fire damage credited to the caster. */
-    private static void burnInside(ServerWorld world, Hellgate gate) {
+    private static void burnInside(ServerWorld world, TimedArea gate) {
         Entity owner = world.getEntity(gate.owner());
         DamageSource source = new DamageSource(
                 world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(DamageTypes.IN_FIRE), owner);

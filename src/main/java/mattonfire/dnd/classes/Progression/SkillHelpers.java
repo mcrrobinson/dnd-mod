@@ -1,11 +1,14 @@
 package mattonfire.dnd.classes.Progression;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -15,6 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
@@ -25,12 +29,21 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 
-/** Shared bits for skills: finding targets, effects and temporary summons. */
+/**
+ * Shared bits for skills: finding targets, effects, temporary summons, timed area effects
+ * ({@link #startArea}), thrown things to watch until they land ({@link #onLanding}) and per-player
+ * timers ({@link Cooldowns}).
+ */
 public final class SkillHelpers {
     private static final String SUMMON_TAG = "dndclasses.summon";
 
     /** Summoned entities and the world time they vanish at. */
     private static final Map<UUID, Long> SUMMONS = new HashMap<>();
+
+    /** Timed area effects still running, in every world. Server thread only. */
+    private static final List<TimedArea> AREAS = new ArrayList<>();
+    /** Thrown things being watched until they land. Server thread only. */
+    private static final List<Tracked> TRACKED = new ArrayList<>();
 
     private SkillHelpers() {
     }
@@ -49,6 +62,17 @@ public final class SkillHelpers {
             if (entity.getCommandTags().contains(SUMMON_TAG) && !SUMMONS.containsKey(entity.getUuid())) {
                 entity.discard();
             }
+        });
+        ServerTickEvents.END_WORLD_TICK.register(SkillHelpers::tickAreas);
+        // Runs before the class skills' own server ticks (registered after this), so a Transmute cloud
+        // spawned by a landing flask is pulsed the same tick.
+        ServerTickEvents.END_SERVER_TICK.register(server -> tickTracked());
+        // Areas hold their worlds, and cooldowns count server ticks, which restart at 0 with the next
+        // singleplayer world: carry neither into the next session.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            AREAS.clear();
+            TRACKED.clear();
+            Cooldowns.ALL.forEach(Cooldowns::clear);
         });
         ServerTickEvents.END_WORLD_TICK.register(world -> {
             if (SUMMONS.isEmpty())
@@ -124,5 +148,183 @@ public final class SkillHelpers {
         player.getWorld().playSound(null, player.getBlockPos(), sound, SoundCategory.PLAYERS, 1.0F, 1.0F);
         ((ServerWorld) player.getWorld()).spawnParticles(particle, player.getX(), player.getY() + 1, player.getZ(),
                 count, 1.0, 0.6, 1.0, 0.05);
+    }
+
+    // ---- Timed area effects ----
+
+    /** What a timed area does each tick it's up (world time {@code now}). */
+    @FunctionalInterface
+    public interface AreaTick {
+        void tick(ServerWorld world, TimedArea area, long now);
+    }
+
+    /**
+     * An area effect at a fixed spot for a while (a Rain of Arrows, a Hellgate, a Wither Cloud, a Meteor
+     * Swarm). It ticks at the end of its world's tick, from the tick after it starts until world time
+     * {@code end} (exclusive), or until its owner leaves that world if {@code endsWithOwner}.
+     */
+    public record TimedArea(ServerWorld world, UUID owner, Vec3d center, long start, long end, boolean endsWithOwner,
+            AreaTick tick) {
+        /** Ticks since it started (1 on its first tick). */
+        public long age(long now) {
+            return now - start;
+        }
+    }
+
+    /** Starts a timed area effect lasting {@code ticks} ticks; see {@link TimedArea}. */
+    public static TimedArea startArea(ServerWorld world, UUID owner, Vec3d center, int ticks, boolean endsWithOwner,
+            AreaTick tick) {
+        long now = world.getTime();
+        TimedArea area = new TimedArea(world, owner, center, now, now + ticks, endsWithOwner, tick);
+        AREAS.add(area);
+        return area;
+    }
+
+    private static void tickAreas(ServerWorld world) {
+        if (AREAS.isEmpty())
+            return;
+        long now = world.getTime();
+        AREAS.removeIf(area -> {
+            if (area.world() != world)
+                return false; // Ticked by its own world
+            if (now >= area.end() || area.endsWithOwner() && world.getPlayerByUuid(area.owner()) == null)
+                return true;
+            area.tick().tick(world, area, now);
+            return false;
+        });
+    }
+
+    // ---- Thrown things ----
+
+    private record Tracked(Entity entity, int maxAge, Consumer<Entity> onLanded) {
+    }
+
+    /**
+     * Watches a thrown potion (or any projectile that's discarded where it hits) and runs {@code onLanded}
+     * where it lands. It's dropped without landing if it's unloaded or still flying after {@code maxAge}
+     * ticks.
+     */
+    public static void onLanding(Entity thrown, int maxAge, Consumer<Entity> onLanded) {
+        TRACKED.add(new Tracked(thrown, maxAge, onLanded));
+    }
+
+    private static void tickTracked() {
+        if (TRACKED.isEmpty())
+            return;
+        TRACKED.removeIf(tracked -> {
+            Entity entity = tracked.entity();
+            // A potion is discarded when it shatters
+            if (entity.getRemovalReason() == Entity.RemovalReason.DISCARDED) {
+                tracked.onLanded().accept(entity);
+                return true;
+            }
+            // Unloaded, or flew off without landing
+            return entity.isRemoved() || entity.age > tracked.maxAge();
+        });
+    }
+
+    // ---- Per-player timers ----
+
+    /**
+     * Per-player timers for a skill's cooldown or timed buff, on one clock (server ticks) with one rule: a
+     * timer started for {@code n} ticks at tick {@code t} runs while the tick is below {@code t + n}. Every
+     * instance is cleared when the server stops. Only read on the server: with no server (the client), a
+     * player has no timer running.
+     */
+    public static final class Cooldowns {
+        private static final List<Cooldowns> ALL = new ArrayList<>();
+
+        /** Server tick each player's timer ends at. */
+        private final Map<UUID, Integer> ends = new HashMap<>();
+
+        public Cooldowns() {
+            ALL.add(this);
+        }
+
+        /** Starts (or restarts) the player's timer, running {@code ticks} ticks from now. */
+        public void start(PlayerEntity player, int ticks) {
+            MinecraftServer server = player.getServer();
+            if (server != null) {
+                ends.put(player.getUuid(), server.getTicks() + ticks);
+            }
+        }
+
+        /** Whether the player's timer is running. Forgets it once it's over. */
+        public boolean active(PlayerEntity player) {
+            Integer end = ends.get(player.getUuid());
+            if (end == null)
+                return false;
+            MinecraftServer server = player.getServer();
+            if (server == null)
+                return false;
+            if (server.getTicks() < end)
+                return true;
+            ends.remove(player.getUuid());
+            return false;
+        }
+
+        /** Whether the player is off cooldown: no timer running. */
+        public boolean ready(PlayerEntity player) {
+            return !active(player);
+        }
+
+        /** Ticks left on the player's timer, 0 if none. */
+        public int remaining(PlayerEntity player) {
+            Integer end = ends.get(player.getUuid());
+            MinecraftServer server = player.getServer();
+            return end == null || server == null ? 0 : Math.max(0, end - server.getTicks());
+        }
+
+        /** Uses up a one-shot timer (a charged strike): forgets it, and returns whether it was still running. */
+        public boolean take(PlayerEntity player) {
+            boolean running = active(player);
+            ends.remove(player.getUuid());
+            return running;
+        }
+
+        /**
+         * Whether the player had a timer that has now run out; forgets it. For buffs that need undoing when
+         * they end.
+         */
+        public boolean finished(PlayerEntity player) {
+            return ends.containsKey(player.getUuid()) && !active(player);
+        }
+
+        /** Forgets the player's timer. Returns whether there was one. */
+        public boolean remove(UUID id) {
+            return ends.remove(id) != null;
+        }
+
+        /** Forgets every timer that has run out. */
+        public void prune(MinecraftServer server) {
+            int now = server.getTicks();
+            ends.values().removeIf(end -> now >= end);
+        }
+
+        /**
+         * Forgets every timer that has run out or whose player has logged off, calling {@code onEnd} for the
+         * online players whose timer ran out (to undo a temporary modifier, which a log-off drops anyway).
+         */
+        public void expire(MinecraftServer server, Consumer<ServerPlayerEntity> onEnd) {
+            if (ends.isEmpty())
+                return;
+            int now = server.getTicks();
+            ends.entrySet().removeIf(entry -> {
+                ServerPlayerEntity player = server.getPlayerManager().getPlayer(entry.getKey());
+                if (player != null && now < entry.getValue())
+                    return false;
+                if (player != null)
+                    onEnd.accept(player);
+                return true;
+            });
+        }
+
+        public boolean isEmpty() {
+            return ends.isEmpty();
+        }
+
+        private void clear() {
+            ends.clear();
+        }
     }
 }

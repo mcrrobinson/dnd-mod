@@ -2,13 +2,12 @@ package mattonfire.dnd.classes.Progression.Classes;
 
 import static mattonfire.dnd.classes.Progression.SkillHelpers.alliesNear;
 import static mattonfire.dnd.classes.Progression.SkillHelpers.effects;
+import static mattonfire.dnd.classes.Progression.SkillHelpers.onLanding;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
@@ -120,12 +119,8 @@ public class AlchemistSkills extends ClassSkills {
     private record Cloud(AreaEffectCloudEntity entity, Brew brew, Set<UUID> instantDone) {
     }
 
-    /** Transmute flasks in flight; each becomes a cloud where it shatters. */
-    private static final Map<PotionEntity, Brew> TRANSMUTE_FLASKS = new HashMap<>();
+    /** Transmute clouds on the ground. Their flasks in flight are watched by {@code SkillHelpers.onLanding}. */
     private static final List<Cloud> TRANSMUTE_CLOUDS = new ArrayList<>();
-
-    /** Volatile flasks in flight; each explodes when it shatters. */
-    private static final Set<PotionEntity> FLASKS = new HashSet<>();
 
     @Override
     public DndCharacter dndClass() {
@@ -183,27 +178,9 @@ public class AlchemistSkills extends ClassSkills {
         PlayerBlockBreakEvents.AFTER.register(AlchemistSkills::philosophersTouch);
 
         ServerTickEvents.END_SERVER_TICK.register(server -> tickTransmute());
-        // Flasks and clouds in flight hold their entities (and so their world); drop them with the server.
-        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
-            TRANSMUTE_FLASKS.clear();
-            TRANSMUTE_CLOUDS.clear();
-            FLASKS.clear();
-        });
-
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            if (FLASKS.isEmpty())
-                return;
-            FLASKS.removeIf(flask -> {
-                // A potion is discarded when it shatters
-                if (flask.getRemovalReason() == Entity.RemovalReason.DISCARDED) {
-                    flask.getWorld().createExplosion(flask.getOwner(), flask.getX(), flask.getY(), flask.getZ(),
-                            FLASK_POWER, World.ExplosionSourceType.NONE);
-                    return true;
-                }
-                // Unloaded, or flew off without landing
-                return flask.isRemoved() || flask.age > FLASK_MAX_AGE;
-            });
-        });
+        // Clouds hold their entities (and so their world); drop them with the server. Flasks in flight are
+        // SkillHelpers.onLanding's, which drops them itself.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> TRANSMUTE_CLOUDS.clear());
     }
 
     @Override
@@ -217,7 +194,10 @@ public class AlchemistSkills extends ClassSkills {
                 flask.setItem(flaskItem);
                 flask.setVelocity(player, player.getPitch(), player.getYaw(), -20.0F, 1.0F, 1.0F);
                 world.spawnEntity(flask);
-                FLASKS.add(flask);
+                // Explodes where it shatters
+                onLanding(flask, FLASK_MAX_AGE, landed -> landed.getWorld().createExplosion(
+                        ((PotionEntity) landed).getOwner(), landed.getX(), landed.getY(), landed.getZ(), FLASK_POWER,
+                        World.ExplosionSourceType.NONE));
                 world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_SPLASH_POTION_THROW,
                         SoundCategory.PLAYERS, 1.0F, 0.8F);
             }
@@ -309,8 +289,10 @@ public class AlchemistSkills extends ClassSkills {
         flask.setItem(flaskItem);
         flask.setVelocity(player, player.getPitch(), player.getYaw(), -20.0F, 0.6F, 1.0F);
         world.spawnEntity(flask);
-        TRANSMUTE_FLASKS.put(flask, new Brew(player.getUuid(), buffs, harms, color,
-                (float) TRANSMUTE.get(player, "Radius"), TRANSMUTE.ticks(player, "Cloud")));
+        Brew brew = new Brew(player.getUuid(), buffs, harms, color, (float) TRANSMUTE.get(player, "Radius"),
+                TRANSMUTE.ticks(player, "Cloud"));
+        // Becomes a cloud where it shatters
+        onLanding(flask, FLASK_MAX_AGE, landed -> spawnCloud((ServerWorld) landed.getWorld(), landed, brew));
 
         effects(player, SoundEvents.ENTITY_LINGERING_POTION_THROW, ParticleTypes.WITCH, 20);
         return true;
@@ -324,17 +306,6 @@ public class AlchemistSkills extends ClassSkills {
     }
 
     private static void tickTransmute() {
-        if (!TRANSMUTE_FLASKS.isEmpty()) {
-            TRANSMUTE_FLASKS.entrySet().removeIf(entry -> {
-                PotionEntity flask = entry.getKey();
-                // A potion is discarded when it shatters
-                if (flask.getRemovalReason() == Entity.RemovalReason.DISCARDED) {
-                    spawnCloud((ServerWorld) flask.getWorld(), flask, entry.getValue());
-                    return true;
-                }
-                return flask.isRemoved() || flask.age > FLASK_MAX_AGE;
-            });
-        }
         if (TRANSMUTE_CLOUDS.isEmpty())
             return;
         TRANSMUTE_CLOUDS.removeIf(cloud -> {

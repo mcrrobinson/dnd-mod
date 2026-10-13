@@ -1,0 +1,38 @@
+# Orc trial duel bar across dimensions (BossBars.syncViewers), host side. Run with orc-trial-bar-guest.txt:
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/orc-trial-bar-host.txt
+#   then: timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevUser=DevGuest -PdevScript=devscripts/orc-trial-bar-guest.txt
+# The host starts the Trial of Strength and brings the guest to the pit (the guest sees the duel bar), then
+# sends the guest to the Nether: the bar must go (it used to stay, the duel only checked the pit's world).
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/difficulty normal
+/time set 6000
+/gamerule doDaylightCycle false
+/dndrace set @s halforc
+/rep @s dndclasses:bloodtusk_horde set 0
+/dndhome trialreset @s
+/publish false survival 25617
+waitchat DevGuest joined the game
+wait 40
+/effect give @a minecraft:resistance 200 4 true
+/dndhome stronghold pit
+waitserver 2
+wait 60
+use
+wait 40
+/tp DevGuest @s
+wait 40
+/say step-bar
+wait 60
+/execute in minecraft:the_nether run fill -1 129 -1 1 131 1 minecraft:air
+/execute in minecraft:the_nether run setblock 0 128 0 minecraft:glass
+/execute in minecraft:the_nether run tp DevGuest 0.5 129 0.5
+wait 60
+/say step-nether
+wait 80
+/say step-done
+wait 40
+/dndhome trialreset @s
+quit

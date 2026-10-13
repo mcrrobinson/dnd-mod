@@ -22,14 +22,23 @@ public final class DungeonMaps {
     }
 
     public static ItemStack create(ServerWorld world, DungeonState dungeon) {
-        BlockPos entrance = dungeon.entrance();
-        ItemStack map = FilledMapItem.createMap(world, entrance.getX(), entrance.getZ(), SCALE, true, true);
-        FilledMapItem.fillExplorationMap(world, map);
-        MapState.addDecorationsNbt(map, entrance, "dungeon", MapIcon.Type.RED_X);
-        map.setCustomName(Text.translatable("item.dndclasses.dungeon_map", dungeon.name())
-                .styled(style -> style.withItalic(false)));
+        ItemStack map = explorerMap(world, dungeon.entrance(), "dungeon", MapIcon.Type.RED_X,
+                Text.translatable("item.dndclasses.dungeon_map", dungeon.name()).styled(style -> style.withItalic(false)));
         NbtCompound nbt = map.getOrCreateNbt();
         nbt.putLong(START_KEY, dungeon.startKey());
+        return map;
+    }
+
+    /**
+     * A vanilla explorer-style map centred on {@code target} (scale {@value #SCALE}, the terrain already drawn)
+     * with an {@code icon} there under the decoration id {@code id}, named {@code name}. Shared by dungeon maps,
+     * quest reveal maps and the elf and dragonborn lair maps.
+     */
+    public static ItemStack explorerMap(ServerWorld world, BlockPos target, String id, MapIcon.Type icon, Text name) {
+        ItemStack map = FilledMapItem.createMap(world, target.getX(), target.getZ(), SCALE, true, true);
+        FilledMapItem.fillExplorationMap(world, map);
+        MapState.addDecorationsNbt(map, target, id, icon);
+        map.setCustomName(name);
         return map;
     }
 

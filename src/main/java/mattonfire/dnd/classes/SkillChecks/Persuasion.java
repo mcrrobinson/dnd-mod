@@ -18,6 +18,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.VillagerProfession;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * A Bard can sneak + right-click a villager with an empty hand to persuade it (a Persuasion check from
@@ -46,7 +47,7 @@ public final class Persuasion {
     /** True if {@code player} already tried to persuade {@code villager} today (Insight reads this). */
     public static boolean triedToday(PlayerEntity player, Entity villager) {
         Long lastDay = LAST_TRIED.get(villager.getUuidAsString() + "/" + player.getUuidAsString());
-        return lastDay != null && lastDay == player.getWorld().getTimeOfDay() / 24000L;
+        return lastDay != null && lastDay == GameTime.day(player.getWorld());
     }
 
     /**
@@ -83,7 +84,7 @@ public final class Persuasion {
                 return ActionResult.PASS;
             }
 
-            long day = world.getTimeOfDay() / 24000L;
+            long day = GameTime.day(world);
             String key = villager.getUuidAsString() + "/" + player.getUuidAsString();
             Long lastDay = LAST_TRIED.get(key);
             if (lastDay != null && lastDay == day) {

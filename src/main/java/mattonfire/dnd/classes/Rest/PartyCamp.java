@@ -34,6 +34,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Party camps: a night-time long rest anywhere, around a lit campfire, with a watch roll and the risk of
@@ -110,7 +111,7 @@ public final class PartyCamp {
         this.server = founder.getServer();
         this.world = founder.getWorld().getRegistryKey();
         this.campfire = campfire.toImmutable();
-        this.startedDay = Rests.day(founder);
+        this.startedDay = GameTime.day(founder.getServer());
     }
 
     // ---------------------------------------------------------------- public API
@@ -125,9 +126,9 @@ public final class PartyCamp {
         return camp != null && camp.phase == Phase.AMBUSH;
     }
 
-    /** Whether it's camping time: the vanilla sleep window on the overworld clock (as {@link Rests#day}). */
+    /** Whether it's camping time: the vanilla sleep window on the overworld clock (as {@link GameTime#day(net.minecraft.server.MinecraftServer)}). */
     public static boolean isNight(MinecraftServer server) {
-        long time = server.getOverworld().getTimeOfDay() % Rests.TICKS_PER_DAY;
+        long time = GameTime.timeOfDay(server.getOverworld());
         return time >= NIGHT_START && time <= NIGHT_END;
     }
 

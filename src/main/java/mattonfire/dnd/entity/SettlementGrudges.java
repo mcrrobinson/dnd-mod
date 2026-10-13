@@ -30,6 +30,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * Settlements that defend their things. Each {@link Rules} says what a settlement protects, who guards
@@ -183,7 +184,7 @@ public final class SettlementGrudges {
     public static Verdict dailyWarning(ServerPlayerEntity player, Rules rules) {
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
         NbtCompound trust = data.getCompound(KIN_TRUST_KEY);
-        long today = player.getServer().getOverworld().getTimeOfDay() / 24000L;
+        long today = GameTime.day(player.getServer());
         if (trust.contains(rules.id()) && trust.getLong(rules.id()) == today) {
             return Verdict.GRUDGE;
         }

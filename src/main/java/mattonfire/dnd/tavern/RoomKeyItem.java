@@ -12,6 +12,7 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * A key to a rented tavern room, bought from an innkeeper. It remembers the inn (its name and
@@ -83,7 +84,7 @@ public class RoomKeyItem extends Item {
             tooltip.add(Text.translatable("item.dndclasses.room_key.blank").formatted(Formatting.GRAY));
             return;
         }
-        long today = world == null ? day(stack) : world.getTimeOfDay() / 24000L;
+        long today = world == null ? day(stack) : GameTime.day(world);
         if (day(stack) != today) {
             tooltip.add(Text.translatable("item.dndclasses.room_key.expired").formatted(Formatting.RED));
             return;

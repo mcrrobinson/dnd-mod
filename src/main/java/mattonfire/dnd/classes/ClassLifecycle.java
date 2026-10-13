@@ -24,6 +24,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.Identifier;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The one server-side path for a player's class:
@@ -194,7 +195,7 @@ public final class ClassLifecycle {
         mattonfire.dnd.classes.Obstacles.ObstacleInteractions.forget(player.getUuid(), player.getWorld().getTime());
         mattonfire.dnd.classes.Obstacles.HiddenSearch.forget(player.getUuid());
         mattonfire.dnd.classes.Obstacles.VanillaTraps.forget(player.getUuid());
-        Persuasion.pruneOldDays(server.getOverworld().getTimeOfDay() / 24000L);
+        Persuasion.pruneOldDays(GameTime.day(server));
         PartyManager.get(server).forgetInvites(player.getUuid(), server.getTicks());
     }
 

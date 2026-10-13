@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import mattonfire.dnd.entity.boss.BossBars;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.entity.SettlementGrudges;
@@ -377,19 +378,16 @@ public class GoblinRaid {
     }
 
     private void updateBarPlayers(ServerWorld world, List<ServerPlayerEntity> defenders) {
-        for (ServerPlayerEntity player : List.copyOf(this.bar.getPlayers())) {
-            if (player.isRemoved() || player.world != world || !defenders.contains(player)) {
-                this.removeBarPlayer(player);
+        BossBars.syncViewers(this.bar, world, defenders::contains, player -> {
+            this.healthBar.addPlayer(player);
+            if (this.state != State.VICTORY) {
+                BossMusic.send(player, this.bar.getUuid(), ModSounds.MUSIC_GOBLIN_RAID);
             }
-        }
+        }, player -> {
+            this.healthBar.removePlayer(player);
+            BossMusic.send(player, this.bar.getUuid(), null);
+        });
         for (ServerPlayerEntity player : defenders) {
-            if (!this.bar.getPlayers().contains(player)) {
-                this.bar.addPlayer(player);
-                this.healthBar.addPlayer(player);
-                if (this.state != State.VICTORY) {
-                    BossMusic.send(player, this.bar.getUuid(), ModSounds.MUSIC_GOBLIN_RAID);
-                }
-            }
             if (!player.isCreative() && !mattonfire.dnd.dm.DungeonMaster.isDm(player)) {
                 this.participants.add(player.getUuid());
             }
@@ -865,9 +863,7 @@ public class GoblinRaid {
                         .random(world.random)
                         .build(LootContextTypes.GIFT))) {
                     given++;
-                    if (!player.giveItemStack(stack)) {
-                        player.dropItem(stack, false);
-                    }
+                    player.getInventory().offerOrDrop(stack);
                 }
             }
             DnDClasses.LOGGER.info("[GoblinRaid] raid {} reward for {}: {} loot roll(s), {} stack(s)", this.id,

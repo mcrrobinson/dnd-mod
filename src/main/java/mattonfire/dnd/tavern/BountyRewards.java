@@ -151,14 +151,14 @@ public final class BountyRewards {
         notice.decrement(1);
         ServerWorld world = player.getWorld();
 
-        give(player, new ItemStack(Items.EMERALD, emeralds));
+        player.getInventory().offerOrDrop(new ItemStack(Items.EMERALD, emeralds));
         LootTable table = world.getServer().getLootManager().getTable(bounty.tier.lootTable);
         List<ItemStack> spoils = table.generateLoot(new LootContext.Builder(world)
                 .parameter(LootContextParameters.ORIGIN, where)
                 .parameter(LootContextParameters.THIS_ENTITY, player)
                 .random(player.getRandom())
                 .build(LootContextTypes.GIFT));
-        spoils.forEach(stack -> give(player, stack));
+        spoils.forEach(stack -> player.getInventory().offerOrDrop(stack));
         player.addExperience(bounty.xp);
         Progression.addXp(player, bounty.classXp);
         mattonfire.dnd.faction.FactionEvents.bountyClaimed(player, bounty.tier, net.minecraft.util.math.BlockPos.ofFloored(where));
@@ -166,11 +166,5 @@ public final class BountyRewards {
         player.sendMessage(Text.translatable("bounty.dndclasses.claimed", bounty.title()).formatted(Formatting.GOLD), false);
         world.playSound(null, where.x, where.y, where.z, SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.8F, 1.2F);
         return true;
-    }
-
-    private static void give(ServerPlayerEntity player, ItemStack stack) {
-        if (!player.giveItemStack(stack)) {
-            player.dropItem(stack, false);
-        }
     }
 }

@@ -136,9 +136,7 @@ public final class DungeonBounties {
             player.sendMessage(Text.translatable("bounty.dndclasses.dungeon.none").formatted(Formatting.GRAY), true);
             return false;
         }
-        if (!player.giveItemStack(map)) {
-            player.dropItem(map, false);
-        }
+        player.getInventory().offerOrDrop(map);
         Text name = dungeonName(notice);
         if (name != null) {
             player.sendMessage(Text.translatable("bounty.dndclasses.dungeon.bound", name,

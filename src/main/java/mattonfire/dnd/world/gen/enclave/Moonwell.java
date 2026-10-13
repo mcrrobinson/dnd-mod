@@ -25,6 +25,7 @@ import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * The Moonwell's gift. Moonwater is a potion of Regeneration II (20 s) and Night Vision (2 minutes). An
@@ -35,9 +36,6 @@ import net.minecraft.util.math.BlockPos;
 public final class Moonwell {
     public static final int REGENERATION_TICKS = 20 * 20;
     public static final int NIGHT_VISION_TICKS = 20 * 120;
-    /** Night runs from dusk (13000) to dawn (23000) of each in-game day. */
-    public static final int DUSK = 13000;
-    public static final int DAWN = 23000;
     private static final String NIGHT_KEY = "DndMoonwaterNight";
     private static final int COLOR = 0xC6DDFF;
 
@@ -53,11 +51,6 @@ public final class Moonwell {
         stack.getOrCreateNbt().putInt(PotionUtil.CUSTOM_POTION_COLOR_KEY, COLOR);
         stack.setCustomName(Text.translatable("item.dndclasses.moonwater").styled(style -> style.withItalic(false)));
         return stack;
-    }
-
-    public static boolean isNight(ServerWorld world) {
-        long time = world.getTimeOfDay() % 24000L;
-        return time >= DUSK && time < DAWN;
     }
 
     public static void register() {
@@ -85,7 +78,7 @@ public final class Moonwell {
 
     private static TypedActionResult<ItemStack> draw(ServerPlayerEntity player, ItemStack stack, BlockPos pos) {
         ServerWorld world = player.getWorld();
-        if (!isNight(world)) {
+        if (!GameTime.isNight(world)) {
             hint(player, "message.dndclasses.moonwell.day");
             return TypedActionResult.pass(stack);
         }
@@ -94,7 +87,7 @@ public final class Moonwell {
             return TypedActionResult.pass(stack);
         }
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
-        long night = world.getTimeOfDay() / 24000L;
+        long night = GameTime.day(world);
         if (data.contains(NIGHT_KEY) && data.getLong(NIGHT_KEY) == night) {
             hint(player, "message.dndclasses.moonwell.drawn");
             return TypedActionResult.pass(stack);
@@ -104,9 +97,7 @@ public final class Moonwell {
             stack.decrement(1);
         }
         ItemStack moonwater = moonwater();
-        if (!player.giveItemStack(moonwater)) {
-            player.dropItem(moonwater, false);
-        }
+        player.getInventory().offerOrDrop(moonwater);
         world.playSound(null, pos, SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, SoundCategory.BLOCKS, 1.0F, 1.2F);
         world.spawnParticles(ParticleTypes.END_ROD, pos.getX() + 0.5D, pos.getY() + 1.0D, pos.getZ() + 0.5D, 12, 0.4D, 0.3D, 0.4D, 0.02D);
         player.sendMessage(Text.translatable("message.dndclasses.moonwell.drawn_free").formatted(Formatting.AQUA), true);

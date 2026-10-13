@@ -1,5 +1,6 @@
 package mattonfire.dnd.classes.Rest;
 
+import mattonfire.dnd.world.GameTime;
 import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
@@ -27,7 +28,6 @@ public final class Rests {
     public static final int SHORT_RESTS_PER_LONG = 2;
     /** World ticks between the end of one short rest and the start of the next (3 minutes). */
     public static final int SHORT_REST_COOLDOWN = 3 * 60 * 20;
-    public static final long TICKS_PER_DAY = 24000L;
 
     /** Cleared by a long rest; Bad Omen and curses stay. */
     private static final List<StatusEffect> LONG_REST_CLEARS = List.of(StatusEffects.POISON, StatusEffects.WITHER,
@@ -54,11 +54,6 @@ public final class Rests {
         ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> RestSync.sync(newPlayer));
     }
 
-    /** Today's in-game day number, from the overworld clock. */
-    public static long day(ServerPlayerEntity player) {
-        return player.getServer().getOverworld().getTimeOfDay() / TICKS_PER_DAY;
-    }
-
     private static long now(ServerPlayerEntity player) {
         return player.getServer().getOverworld().getTime();
     }
@@ -82,7 +77,7 @@ public final class Rests {
 
     /** Why the player can't start a long rest now, or null if they can. */
     public static Text canLongRest(ServerPlayerEntity player) {
-        return canLongRest(player, day(player));
+        return canLongRest(player, GameTime.day(player.getServer()));
     }
 
     /**
@@ -125,7 +120,7 @@ public final class Rests {
 
     /** Applies a rest's benefits on its own, counting today as the day it started. */
     public static void complete(ServerPlayerEntity player, RestKind kind, RestSource source) {
-        complete(player, kind, source, List.of(player), day(player));
+        complete(player, kind, source, List.of(player), GameTime.day(player.getServer()));
     }
 
     /**

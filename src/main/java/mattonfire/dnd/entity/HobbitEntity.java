@@ -162,9 +162,7 @@ public class HobbitEntity extends SettlementNpcEntity {
         this.giftCooldown = cooldown;
         this.giftWait = cooldown;
         ItemStack gift = new ItemStack(SNACKS[this.random.nextInt(SNACKS.length)], 1 + this.random.nextInt(3));
-        if (!player.giveItemStack(gift)) {
-            player.dropItem(gift, false);
-        }
+        player.getInventory().offerOrDrop(gift);
         this.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, this.getSoundPitch());
         ((ServerWorld) this.world).spawnParticles(ParticleTypes.HEART, this.getX(), this.getEyeY() + 0.4D, this.getZ(),
                 3, 0.3D, 0.2D, 0.3D, 0.0D);

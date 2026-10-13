@@ -37,6 +37,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.math.Box;
 import net.minecraft.village.VillageGossipType;
 import net.minecraft.village.VillagerProfession;
+import mattonfire.dnd.world.GameTime;
 
 /**
  * What a race gets at its own home ({@link RacialHomes}), checked once a second for each player:
@@ -156,9 +157,9 @@ public final class HomeBonuses {
 
     /** A Halfling's first visit to a hobbit village: 1 cake, 4 cookies and 2 mugs of ale. */
     static void shireWelcomeBasket(ServerPlayerEntity player) {
-        give(player, new ItemStack(Items.CAKE));
-        give(player, new ItemStack(Items.COOKIE, 4));
-        give(player, new ItemStack(Tavern.ALE, 2));
+        player.getInventory().offerOrDrop(new ItemStack(Items.CAKE));
+        player.getInventory().offerOrDrop(new ItemStack(Items.COOKIE, 4));
+        player.getInventory().offerOrDrop(new ItemStack(Tavern.ALE, 2));
         player.sendMessage(Text.translatable("message.dndclasses.home.shire_basket").formatted(Formatting.GREEN), false);
         player.playSound(SoundEvents.ENTITY_PLAYER_LEVELUP, SoundCategory.PLAYERS, 0.6F, 1.4F);
     }
@@ -184,7 +185,7 @@ public final class HomeBonuses {
             return;
         }
         NbtCompound data = ((IEntityDataSaver) player).getPersistentData();
-        long today = player.getServer().getOverworld().getTimeOfDay() / 24000L;
+        long today = GameTime.day(player.getServer());
         if (data.contains(AUDIENCE_KEY) && data.getLong(AUDIENCE_KEY) == today) {
             king.playSound(SoundEvents.ENTITY_VILLAGER_NO, 1.0F, king.getSoundPitch());
             player.sendMessage(Text.translatable("message.dndclasses.home.king_busy", king.getDisplayName())
@@ -201,7 +202,7 @@ public final class HomeBonuses {
         }
         Text message = Text.translatable("message.dndclasses.home.king_audience", king.getDisplayName(),
                 gift.getCount(), gift.getName()).formatted(Formatting.GOLD);
-        give(player, gift);
+        player.getInventory().offerOrDrop(gift);
         king.playSound(SoundEvents.ENTITY_VILLAGER_YES, 1.0F, king.getSoundPitch());
         player.sendMessage(message, false);
         onKingAudience.accept(player, king);
@@ -221,11 +222,5 @@ public final class HomeBonuses {
             return;
         }
         villager.getGossip().startGossip(player.getUuid(), VillageGossipType.MINOR_POSITIVE, HUMAN_KIN_GOSSIP);
-    }
-
-    private static void give(PlayerEntity player, ItemStack stack) {
-        if (!player.giveItemStack(stack)) {
-            player.dropItem(stack, false);
-        }
     }
 }

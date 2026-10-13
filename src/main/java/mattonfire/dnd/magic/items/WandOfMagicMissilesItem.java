@@ -15,7 +15,6 @@ import net.minecraft.entity.mob.Monster;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -42,7 +41,6 @@ public class WandOfMagicMissilesItem extends Item {
     public static final double RANGE = 24.0;
     /** Half-angle of the aiming cone. */
     public static final double CONE_DEGREES = 30.0;
-    private static final String DAWN_KEY = "dawnDay";
 
     public WandOfMagicMissilesItem(Settings settings) {
         super(settings);
@@ -161,18 +159,8 @@ public class WandOfMagicMissilesItem extends Item {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (world.isClient || world.getTime() % 20 != 0)
             return;
-        long day = world.getTimeOfDay() / 24000L;
-        NbtCompound nbt = MagicData.getOrCreate(stack);
-        if (!nbt.contains(DAWN_KEY)) {
-            nbt.putLong(DAWN_KEY, day);
-            return;
-        }
-        long stored = nbt.getLong(DAWN_KEY);
-        if (day != stored) {
-            nbt.putLong(DAWN_KEY, day);
-            if (day > stored) // not when /time set goes backwards
-                recharge(stack, world.getRandom());
-        }
+        if (MagicData.newDawn(stack, world))
+            recharge(stack, world.getRandom());
     }
 
     @Override

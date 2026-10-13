@@ -16,7 +16,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileUtil;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.particle.DustParticleEffect;
 import net.minecraft.particle.ParticleEffect;
 import net.minecraft.particle.ParticleTypes;
@@ -49,7 +48,6 @@ public class EyeOfTheTyrantItem extends Item {
     public static final int PARALYSIS_SECONDS = 3;
     public static final int TELEKINESIS_SECONDS = 3;
     public static final float DISINTEGRATION_DAMAGE = 12.0F;
-    private static final String DAWN_KEY = "dawnDay";
 
     public enum Ray {
         PARALYSIS(new Vector3f(0.4F, 0.8F, 1.0F)),
@@ -154,18 +152,8 @@ public class EyeOfTheTyrantItem extends Item {
     public void inventoryTick(ItemStack stack, World world, Entity entity, int slot, boolean selected) {
         if (world.isClient || world.getTime() % 20 != 0)
             return;
-        long day = world.getTimeOfDay() / 24000L;
-        NbtCompound nbt = MagicData.getOrCreate(stack);
-        if (!nbt.contains(DAWN_KEY)) {
-            nbt.putLong(DAWN_KEY, day);
-            return;
-        }
-        long stored = nbt.getLong(DAWN_KEY);
-        if (day != stored) {
-            nbt.putLong(DAWN_KEY, day);
-            if (day > stored)
-                recharge(stack);
-        }
+        if (MagicData.newDawn(stack, world))
+            recharge(stack);
     }
 
     @Override

@@ -218,16 +218,8 @@ public class BossFight {
         this.bar.setColor(this.currentColor());
 
         boolean fighting = this.isFightingPlayer();
-        for (ServerPlayerEntity player : List.copyOf(this.bar.getPlayers())) {
-            if (!fighting || !this.inRange(player)) {
-                this.removePlayer(player);
-            }
-        }
-        if (fighting) {
-            for (ServerPlayerEntity player : ((ServerWorld) this.boss.world).getPlayers(this::inRange)) {
-                this.addPlayer(player);
-            }
-        }
+        BossBars.syncViewers(this.bar, (ServerWorld) this.boss.world, player -> fighting && this.inRange(player),
+                this::musicOn, this::musicOff);
     }
 
     private boolean inRange(ServerPlayerEntity player) {
@@ -235,13 +227,15 @@ public class BossFight {
                 && player.squaredDistanceTo(this.boss) < this.range * this.range;
     }
 
-    private void addPlayer(ServerPlayerEntity player) {
-        if (this.bar.getPlayers().contains(player)) {
-            return;
-        }
-        this.bar.addPlayer(player);
+    private void musicOn(ServerPlayerEntity player) {
         if (this.music != null) {
             BossMusic.send(player, this.bar.getUuid(), this.music);
+        }
+    }
+
+    private void musicOff(ServerPlayerEntity player) {
+        if (this.music != null) {
+            BossMusic.send(player, this.bar.getUuid(), null);
         }
     }
 
@@ -250,9 +244,7 @@ public class BossFight {
             return;
         }
         this.bar.removePlayer(player);
-        if (this.music != null) {
-            BossMusic.send(player, this.bar.getUuid(), null);
-        }
+        this.musicOff(player);
     }
 
     /** Call from the boss's onStoppedTrackingBy(player). */

@@ -1,0 +1,52 @@
+# Cogsdeep's observatory telescope: the gallery, the tube out through the dome's slit, from inside and outside.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/cogsdeep-telescope.txt
+# Use fresh land (change the /tp below) after changing the observatory: a burrow generated once keeps its blocks.
+# Checks: screenshots cdt-inside (from the floor), cdt-inside-high, cdt-eyepiece (on the gallery), cdt-slit and
+# cdt-slit-close (outside the dome), cdt-top; the ladder: "Pos" after climbing is on the gallery (y = floor + 5).
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode creative
+/time set 6000
+/weather clear
+/tp @s -96000 200 -160000
+wait 100
+/dndhome cogsdeep observatory
+waitserver 2
+wait 300
+/dndhome cogsdeep observatory
+wait 40
+hud off
+screenshot cdt-inside
+/gamemode spectator
+/tp @s ^ ^3 ^1
+wait 20
+screenshot cdt-inside-high
+/dndhome cogsdeep telescope
+wait 20
+screenshot cdt-eyepiece
+/dndhome cogsdeep slit
+wait 80
+screenshot cdt-slit
+/tp @s ^ ^ ^5
+wait 20
+screenshot cdt-slit-close
+/dndhome cogsdeep top
+wait 60
+screenshot cdt-top
+hud on
+# Up the ladder onto the gallery, without jumping.
+/gamemode survival
+/dndhome cogsdeep ladder
+wait 20
+/data get entity @s Pos
+walk on
+wait 60
+walk off
+/data get entity @s Pos
+screenshot cdt-ladder-top
+/gamemode creative
+quit

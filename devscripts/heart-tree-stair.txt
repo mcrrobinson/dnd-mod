@@ -1,0 +1,77 @@
+# Walks the Elven Enclave Heart Tree's spiral stair up to the Speaker's Hall and back down, without jumping.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/heart-tree-stair.txt
+# The enclave nearest 200000 200000 in the dev world (see stairs-locate.txt); its Heart Tree is at 202840 197352,
+# base y 83 (`/dndhome pieces` there: elven_heart_tree minY + 4), so step i is at ring cell i, y 84 + i.
+# Checks: every `walkto` line says "reached", one block higher (or lower) each step, ending at y 106 on the
+# hall and back at y 85 on the first step.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/dm off
+/gamemode survival
+/gamerule fallDamage false
+/effect give @s minecraft:resistance 99999 255 true
+/effect give @s minecraft:saturation 99999 10 true
+/time set 6000
+/weather clear
+/tp @s 202843.5 120 197349.5
+wait 200
+# Forest leaves grown over the stair (a separate bug) are cleared first, so only the steps are tested.
+/fill 202836 85 197348 202844 106 197356 minecraft:air replace #minecraft:leaves
+/tp @s 202843.5 85 197349.5
+wait 40
+/data get entity @s Pos
+walkto 202843 197350 80
+walkto 202843 197351 80
+walkto 202843 197352 80
+walkto 202843 197353 80
+walkto 202843 197354 80
+walkto 202843 197355 80
+walkto 202842 197355 80
+walkto 202841 197355 80
+walkto 202840 197355 80
+walkto 202839 197355 80
+walkto 202838 197355 80
+walkto 202837 197355 80
+walkto 202837 197354 80
+walkto 202837 197353 80
+walkto 202837 197352 80
+walkto 202837 197351 80
+walkto 202837 197350 80
+walkto 202837 197349 80
+walkto 202838 197349 80
+walkto 202839 197349 80
+walkto 202840 197349 80
+walkto 202841 197349 80
+/data get entity @s Pos
+hud off
+screenshot heart-tree-stair-top
+hud on
+walkto 202840 197349 80
+walkto 202839 197349 80
+walkto 202838 197349 80
+walkto 202837 197349 80
+walkto 202837 197350 80
+walkto 202837 197351 80
+walkto 202837 197352 80
+walkto 202837 197353 80
+walkto 202837 197354 80
+walkto 202837 197355 80
+walkto 202838 197355 80
+walkto 202839 197355 80
+walkto 202840 197355 80
+walkto 202841 197355 80
+walkto 202842 197355 80
+walkto 202843 197355 80
+walkto 202843 197354 80
+walkto 202843 197353 80
+walkto 202843 197352 80
+walkto 202843 197351 80
+walkto 202843 197350 80
+walkto 202843 197349 80
+/data get entity @s Pos
+/gamerule fallDamage true
+/effect clear @s
+quit

@@ -16,9 +16,11 @@ import net.minecraft.util.math.Direction;
 /**
  * The observatory on the surface, Cogsdeep's front door: a round tower of stone bricks {@link #RADIUS} blocks
  * across the middle, {@link #WALL_HEIGHT} high with glass windows, under a hemispherical dome of cut copper that
- * weathers green over time, slit open to the north for the telescope (a lightning rod tube on a fence tripod with
- * an end rod eyepiece) and topped with a lightning rod. Inside: a spruce floor, the stairwell in the middle
- * ({@link ShaftPiece}), a cartography desk with a spyglass, a lectern, bookshelves and a chest. Trees and
+ * weathers green over time, with a slit 3 wide open to the north from just above the walls up over the top,
+ * topped with a lightning rod. The telescope stands on a spruce gallery against the north wall, {@link #GALLERY} up a ladder:
+ * an end rod eyepiece and a tube of {@link #TUBE} lightning rods on a fence tripod, level with the bottom of the
+ * slit, running out through it so its end pokes out of the dome. Inside: a spruce floor, the stairwell in the
+ * middle ({@link ShaftPiece}), a cartography desk with a spyglass, a lectern, bookshelves and a chest. Trees and
  * plants round it are cleared; the floor sits on a foundation down to the ground.
  *
  * <p>y = 0 is where you stand on the floor (the ground's first air in the middle).
@@ -32,8 +34,15 @@ public class ObservatoryPiece extends CogsdeepPiece {
     /** Trees and plants are cleared out to this radius, this high. */
     static final int CLEAR_RADIUS = 9;
     static final int CLEAR_HEIGHT = 16;
-    /** The telescope's tripod, at a/b. */
-    static final int SCOPE_B = -5;
+    /** The gallery's floor block (you stand one above it), and its south edge (b; it runs to the north wall). */
+    public static final int GALLERY = 4;
+    static final int GALLERY_B = -2;
+    /** The telescope: the tube's height (the slit's lowest row), its eyepiece at a/b, and how many rods long. */
+    static final int SCOPE_Y = DOME_BASE + 1;
+    public static final int SCOPE_B = -4;
+    static final int TUBE = 4;
+    /** Half the slit's width: it's 3 blocks wide. */
+    static final int SLIT = 1;
 
     public ObservatoryPiece(BlockPos center, Direction door, long seed, long burrow) {
         super(CogsdeepStructures.OBSERVATORY, center, door, seed, burrow, -CLEAR_RADIUS, -8, -CLEAR_RADIUS - 4,
@@ -46,7 +55,12 @@ public class ObservatoryPiece extends CogsdeepPiece {
 
     /** The telescope's eyepiece, in the world. */
     public BlockPos eyepiece() {
-        return this.at(0, 2, SCOPE_B + 1);
+        return this.at(0, SCOPE_Y, SCOPE_B);
+    }
+
+    /** The telescope tube's far end, outside the dome, in the world. */
+    public BlockPos scopeEnd() {
+        return this.at(0, SCOPE_Y, SCOPE_B - TUBE);
     }
 
     /** Just outside the door, in the world. */
@@ -106,7 +120,7 @@ public class ObservatoryPiece extends CogsdeepPiece {
             b.set(a, 3, c, Blocks.GLASS_PANE);
         }
 
-        // The dome: a shell of cut copper on the walls, slit open to the north.
+        // The dome: a shell of cut copper on the walls, with a slit 3 wide open to the north.
         for (int a = -7; a <= 7; a++) {
             for (int c = -7; c <= 7; c++) {
                 for (int y = DOME_BASE; y <= DOME_BASE + 7; y++) {
@@ -114,7 +128,7 @@ public class ObservatoryPiece extends CogsdeepPiece {
                     if (d > DOME) {
                         continue;
                     }
-                    boolean slit = a == 0 && c < 0 && y > DOME_BASE + 1;
+                    boolean slit = Math.abs(a) <= SLIT && c < 0 && y > DOME_BASE;
                     if (d > DOME - 1.15D && !slit) {
                         b.set(a, y, c, cutCopper(b));
                     } else {
@@ -160,12 +174,38 @@ public class ObservatoryPiece extends CogsdeepPiece {
         b.set(-1, 0, 7, Blocks.STONE_BRICK_WALL);
         b.set(1, 0, 7, Blocks.STONE_BRICK_WALL);
 
-        // The telescope: a copper tube on a fence tripod, aimed out of the slit, with an end rod eyepiece.
-        b.set(0, 0, SCOPE_B, Blocks.SPRUCE_FENCE);
-        b.set(0, 1, SCOPE_B, Blocks.SPRUCE_FENCE);
-        b.set(0, 2, SCOPE_B, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.NORTH));
-        b.set(0, 2, SCOPE_B + 1, facing(Blocks.END_ROD, Direction.SOUTH));
-        b.set(-1, 0, SCOPE_B, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, false));
+        // The gallery: spruce planks from the north wall out over the stairwell's rail, on log posts, railed with
+        // fences on its open sides, with a ladder up the wall through a gap in its floor.
+        for (int a = -2; a <= 2; a++) {
+            for (int c = -6; c <= GALLERY_B; c++) {
+                if (r(a, c) > RADIUS - 1.0D || a == -1 && c == SCOPE_B - 1) {
+                    continue;
+                }
+                b.set(a, GALLERY, c, Blocks.SPRUCE_PLANKS);
+                // (Where the dome's shell already comes down to the gallery, it's the rail.)
+                boolean dome = Math.sqrt(a * a + c * c + (GALLERY + 1 - DOME_BASE) * (GALLERY + 1 - DOME_BASE)) > DOME - 1.15D;
+                if ((c == GALLERY_B || Math.abs(a) == 2) && !dome) {
+                    b.set(a, GALLERY + 1, c, Blocks.SPRUCE_FENCE);
+                }
+            }
+        }
+        for (int a = -2; a <= 2; a += 4) {
+            for (int y = 0; y < GALLERY; y++) {
+                b.set(a, y, SCOPE_B, Blocks.SPRUCE_LOG);
+            }
+        }
+        for (int y = 0; y <= GALLERY; y++) {
+            b.set(-1, y, SCOPE_B - 1, facing(Blocks.LADDER, Direction.SOUTH));
+        }
+
+        // The telescope: an end rod eyepiece at head height for someone standing on the gallery, then a tube of
+        // lightning rods on a fence tripod, out through the slit, the last rods clear of the dome.
+        b.set(0, SCOPE_Y, SCOPE_B, facing(Blocks.END_ROD, Direction.SOUTH));
+        for (int i = 1; i <= TUBE; i++) {
+            b.set(0, SCOPE_Y, SCOPE_B - i, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.NORTH));
+        }
+        b.set(0, GALLERY + 1, SCOPE_B - 1, Blocks.SPRUCE_FENCE);
+        b.set(1, GALLERY + 1, SCOPE_B - 1, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, false));
 
         // A cartography desk with a spyglass lying on it, a lectern, bookshelves and the chest.
         b.set(4, 0, -3, Blocks.CARTOGRAPHY_TABLE);

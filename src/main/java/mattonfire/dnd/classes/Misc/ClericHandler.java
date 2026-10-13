@@ -37,6 +37,13 @@ public class ClericHandler {
     private static final double SOLO_RING_RADIUS = 2;
     private static final int BASE_HASTE = 2;
     private static final int DEEP_DELVER_HASTE = 3;
+    /** Ticks between Deep Delver checks while Haste is still running. */
+    private static final int HASTE_RECHECK = 20;
+    /**
+     * The Sanctuary ring draws a third of its points each tick (each point every 3 ticks): a third of the
+     * particle packets. 3 is the shortest visible life of an enchanted-hit particle, so the ring stays whole.
+     */
+    private static final int RING_PHASES = 3;
 
     public static void register() {
         ServerTickEvents.END_WORLD_TICK.register(ClericHandler::onWorldTick);
@@ -77,16 +84,20 @@ public class ClericHandler {
                 continue;
             }
 
-            // Deep Delver (skill tree) raises Haste III to Haste IV.
-            int haste = Progression.hasPassive(player, "cleric.deep_delver") ? DEEP_DELVER_HASTE : BASE_HASTE;
-            refreshEffect(player, StatusEffects.HASTE, haste);
+            // Deep Delver (skill tree) raises Haste III to Haste IV. Reading the passive parses the class
+            // progress NBT, so only do it when Haste needs (re)applying, or once a second to pick up a change.
+            StatusEffectInstance haste = player.getStatusEffect(StatusEffects.HASTE);
+            if (haste == null || haste.getDuration() < REFRESH_BELOW || world.getTime() % HASTE_RECHECK == 0) {
+                refreshEffect(player, StatusEffects.HASTE,
+                        Progression.hasPassive(player, "cleric.deep_delver") ? DEEP_DELVER_HASTE : BASE_HASTE);
+            }
             refreshEffect(player, StatusEffects.NIGHT_VISION, 0);
 
             if (player.hasStatusEffect(ModEffects.MOB_REPEL)) {
                 // The ring shows how far the party share reaches at the Cleric's Sanctuary rank.
                 double reach = ClericSkills.sanctuaryPartyReach(player);
                 DnDClasses.createParticleRing(world, player.getPos(), reach > 0 ? reach : SOLO_RING_RADIUS,
-                        reach > 0 ? 100 : 20);
+                        reach > 0 ? 100 : 20, RING_PHASES);
 
                 clearTargets(world, player);
             }

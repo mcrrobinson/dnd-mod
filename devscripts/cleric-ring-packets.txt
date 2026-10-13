@@ -1,0 +1,71 @@
+# Cleric Sanctuary ring and Haste after the packet cut (refactor/cleric-ring-packets).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/cleric-ring-packets.txt
+# Expect in latest.log:
+#   haste-base: ActiveEffects holds minecraft:haste (Id 3) Amplifier 2b and night_vision (Id 16)
+#   haste-delver: after unlocking cleric.deep_delver, haste Amplifier 3b (within a second)
+#   haste-removed: after /dndclass resetprogress, haste back to Amplifier 2b
+# Screenshots (HUD hidden, ring at the feet): ring-solo-a/b/c (rank I, 2 blocks, third person, 1 tick apart),
+# ring-iv-a/b/c (rank IV, 16 blocks, first person).
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set midnight
+/tp @s 0.5 160 0.5 0 25
+wait 20
+/fill -24 149 -24 24 149 24 minecraft:stone
+/fill -24 150 -24 24 160 24 minecraft:air
+/kill @e[type=!minecraft:player,distance=..40]
+/tp @s 0.5 150 0.5 0 25
+/dndclass set @s cleric
+/clear @s dndclasses:class_guidebook
+wait 10
+closescreen
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+/gamemode survival
+wait 30
+/say haste-base
+/data get entity @s ActiveEffects
+# Deep Delver: Forge Domain path prospector -> radiance -> deep_delver
+/dndclass unlock @s cleric.prospector
+/dndclass unlock @s cleric.radiance
+/dndclass unlock @s cleric.deep_delver
+wait 25
+/say haste-delver
+/data get entity @s ActiveEffects
+/dndclass resetprogress @s
+/dndclass xp @s set 2700
+wait 25
+/say haste-removed
+/data get entity @s ActiveEffects
+# Rank I ring (Sanctuary only covers the Cleric): 2 blocks
+/effect give @s dndclasses:mob_repel 60 0
+hud off
+perspective back
+wait 10
+screenshot ring-solo-a
+wait 1
+screenshot ring-solo-b
+wait 1
+screenshot ring-solo-c
+perspective first
+# Rank IV ring: 16 blocks, seen from above
+/dndclass rank @s cleric.sanctuary 4
+/tp @s 0.5 150 0.5 0 30
+wait 10
+screenshot ring-iv-a
+wait 1
+screenshot ring-iv-b
+wait 1
+screenshot ring-iv-c
+hud on
+/effect clear @s
+/dndclass resetprogress @s
+/dndclass set @s none
+/clear @s dndclasses:class_guidebook
+wait 10
+closescreen
+quit

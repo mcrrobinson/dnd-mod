@@ -11,6 +11,8 @@ import mattonfire.dnd.classes.Abilities.Ability;
 import mattonfire.dnd.classes.Abilities.RollKind;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.SkillChecks.D20;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -53,6 +55,13 @@ public final class RemoveCurse {
                     if (player.isSneaking() && player.getMainHandStack().isEmpty())
                         cleric(player, player);
                 }));
+        // A cooldown still running survives a relog; spent ones are dropped. Server ticks restart with the
+        // server, so nothing carries over to the next world.
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            int now = server.getTicks();
+            RETRY_AT.values().removeIf(retryAt -> retryAt <= now);
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> RETRY_AT.clear());
     }
 
     /** The DC to break a curse on an item of this tier. */

@@ -19,7 +19,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * Behaviour that isn't an attribute lives elsewhere: Cleric haste in ClericHandler,
  * Monk weapon rules in MonkHandler, Paladin potion/crafting bans in mixins, Ranger
  * zoom and sword ban in RangerBowZoomMixin/RangerSwordPickupMixin, Warlock fire in
- * Warlock, Artificer damage in ArtificerDamage, Druid hearts in Druid.
+ * Warlock, Artificer damage in ArtificerDamage (via ClassAttributeRules), Druid hearts in Druid.
  */
 public final class ClassStats {
     /**

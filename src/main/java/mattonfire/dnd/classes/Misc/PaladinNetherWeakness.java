@@ -2,11 +2,11 @@ package mattonfire.dnd.classes.Misc;
 
 import java.util.UUID;
 
+import mattonfire.dnd.classes.ClassAttributeRules;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Classes.PaladinSkills;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.attribute.EntityAttribute;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
@@ -20,9 +20,9 @@ import net.minecraft.world.World;
  * Paladins are very weak in the Nether: while there they deal half damage, have
  * half armor and move 20% slower. Status effects can't be used because
  * Paladins are immune to them (LivingEntityMixin), so this uses temporary
- * attribute modifiers that are re-checked every tick and dropped as soon as the
- * player leaves the Nether or stops being a Paladin. The Hellforged skill
- * switches it off.
+ * attribute modifiers kept in step by {@link ClassAttributeRules}: added on
+ * entering the Nether, dropped on leaving it or on a class change, and re-checked
+ * every second (the Hellforged skill switches it off).
  */
 public class PaladinNetherWeakness {
     private static final UUID ATTACK_UUID = UUID.fromString("5b3c1d2e-7a41-4f0e-9c6b-0a1d2e3f4a51");
@@ -31,11 +31,7 @@ public class PaladinNetherWeakness {
     private static final String NAME = "Paladin nether weakness";
 
     public static void register() {
-        ServerTickEvents.END_SERVER_TICK.register(server -> {
-            for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                update(player);
-            }
-        });
+        ClassAttributeRules.add(PaladinNetherWeakness::update);
     }
 
     private static void update(ServerPlayerEntity player) {

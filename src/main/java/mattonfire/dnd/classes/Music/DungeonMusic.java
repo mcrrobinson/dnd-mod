@@ -14,6 +14,7 @@ import mattonfire.dnd.dungeon.DungeonRegistry;
 import mattonfire.dnd.dungeon.DungeonState;
 import mattonfire.dnd.world.gen.dungeon.DungeonStructure;
 import mattonfire.dnd.world.gen.dungeon.DungeonTheme;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -68,6 +69,9 @@ public class DungeonMusic {
     private static final Set<UUID> IN_DUNGEON = new HashSet<>();
     private static final Set<UUID> NEAR_FORTRESS = new HashSet<>();
     private static final Map<UUID, Byte> THEME = new HashMap<>();
+    /** {@link #fortresses} cache: the registry it was built from and the tag's structures. */
+    private static Registry<Structure> fortressRegistry;
+    private static Set<Structure> fortressSet = Set.of();
 
     public static void register() {
         ServerTickEvents.END_WORLD_TICK.register(world -> {
@@ -89,6 +93,9 @@ public class DungeonMusic {
             NEAR_FORTRESS.remove(handler.player.getUuid());
             THEME.remove(handler.player.getUuid());
         });
+        // Tags can change on /reload, and a stopped server's registry shouldn't stay referenced.
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register((server, resources, success) -> forgetFortresses());
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> forgetFortresses());
         DungeonEvents.ROOM_CLEARED.register((world, dungeon, room, players) -> {
             // The boss room opening after the kill gets the dungeon fanfare instead
             if (!dungeon.isCleared()) {
@@ -96,6 +103,11 @@ public class DungeonMusic {
             }
         });
         DungeonEvents.CLEARED.register((world, dungeon, participants) -> sting(participants, STING_DUNGEON_CLEARED));
+    }
+
+    private static void forgetFortresses() {
+        fortressRegistry = null;
+        fortressSet = Set.of();
     }
 
     /** The theme byte the client gets: 0 for none or a theme without its own track, else ordinal + 1. */
@@ -143,10 +155,20 @@ public class DungeonMusic {
         }
     }
 
-    private static boolean isNearFortress(ServerWorld world, BlockPos pos) {
+    /** The structures in the fortress tag, built once per structure registry (cleared on reload and stop). */
+    private static Set<Structure> fortresses(ServerWorld world) {
         Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
-        Set<Structure> fortresses = new HashSet<>();
-        registry.iterateEntries(FORTRESSES).forEach(entry -> fortresses.add(entry.value()));
+        if (registry != fortressRegistry) {
+            Set<Structure> set = new HashSet<>();
+            registry.iterateEntries(FORTRESSES).forEach(entry -> set.add(entry.value()));
+            fortressRegistry = registry;
+            fortressSet = Set.copyOf(set);
+        }
+        return fortressSet;
+    }
+
+    private static boolean isNearFortress(ServerWorld world, BlockPos pos) {
+        Set<Structure> fortresses = fortresses(world);
         if (fortresses.isEmpty()) {
             return false;
         }

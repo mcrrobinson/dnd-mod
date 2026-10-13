@@ -161,6 +161,8 @@ public class DnDClasses implements ModInitializer {
                                 new SuperStrengthStatusEffect());
 
                 FAArmorEffectHandler.register();
+                // Class attribute modifiers (Paladin Nether weakness, Artificer damage, Monk armour penalty)
+                ClassAttributeRules.register();
                 mattonfire.dnd.classes.Misc.PaladinNetherWeakness.register();
                 mattonfire.dnd.classes.Misc.ArtificerDamage.register();
                 mattonfire.dnd.classes.Misc.ClericHandler.register();

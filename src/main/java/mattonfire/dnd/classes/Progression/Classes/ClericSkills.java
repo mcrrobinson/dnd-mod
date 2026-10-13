@@ -16,6 +16,7 @@ import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.tag.convention.v1.ConventionalBlockTags;
 import net.minecraft.block.Block;
@@ -153,6 +154,10 @@ public class ClericSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            PRESERVE_LIFE_READY.clear();
+        });
         PlayerBlockBreakEvents.AFTER.register((world, player, pos, state, blockEntity) -> {
             if (!(player instanceof ServerPlayerEntity serverPlayer) || player.isCreative()
                     || Progression.classOf(player) != DndCharacter.CLERIC || !isOre(state)) {

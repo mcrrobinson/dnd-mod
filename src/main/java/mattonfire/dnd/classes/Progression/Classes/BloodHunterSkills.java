@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
 import net.minecraft.entity.attribute.EntityAttributeModifier;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -268,6 +269,14 @@ public class BloodHunterSkills extends ClassSkills {
                 mob.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 40, 0, true, false), player);
             }
         }
+    }
+
+    @Override
+    public void register() {
+        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            BLOOD_MOON.clear();
+        });
     }
 
     @Override

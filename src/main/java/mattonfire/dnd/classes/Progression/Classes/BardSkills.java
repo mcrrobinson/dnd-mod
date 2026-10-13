@@ -21,6 +21,7 @@ import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Ranks;
 import mattonfire.dnd.classes.Progression.SkillNode;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.attribute.EntityAttributeInstance;
@@ -192,6 +193,10 @@ public class BardSkills extends ClassSkills {
 
     @Override
     public void register() {
+        // Cooldowns count server ticks, which restart at 0 with the next singleplayer world; don't carry them over.
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            INSPIRED_UNTIL.clear();
+        });
         BardCompanions.register();
         // Bardic Lore. Lore Bards also identify magic items on pickup (magic.Identify.lore).
         AbilityScores.register(new Identifier(DnDClasses.MOD_ID, "subclass/bard_lore"), (player, c) -> {

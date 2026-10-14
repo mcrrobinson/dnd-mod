@@ -3,6 +3,7 @@
 #   then: timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevUser=DevGuest -PdevScript=devscripts/orc-trial-bar-guest.txt
 # The host starts the Trial of Strength and brings the guest to the pit (the guest sees the duel bar), then
 # sends the guest to the Nether: the bar must go (it used to stay, the duel only checked the pit's world).
+# Then brings the guest back to the pit, still mid-duel: the bar must come back.
 wait 40
 closescreen
 include _reset.txt
@@ -36,6 +37,11 @@ wait 60
 /execute in minecraft:the_nether run tp DevGuest 0.5 129 0.5
 wait 60
 /say step-nether
+wait 80
+# Back near the pit while the duel is still on: the bar must come back
+/execute in minecraft:overworld run tp DevGuest @s
+wait 60
+/say step-back
 wait 80
 /say step-done
 wait 40

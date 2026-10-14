@@ -57,7 +57,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code waitserver <ticks>} pauses until the integrated server has run that many more ticks. {@code wait}
  *     counts client ticks, which keep going while the server is busy (e.g. a long {@code /dndhome ...survey});
  *     {@code waitserver 2} after such a command waits for it to finish. A client joined to another game
- *     ({@code -PdevServer}) has no integrated server, so it falls back to {@code wait}</li>
+ *     ({@code -PdevServer}) has no integrated server, so it falls back to {@code wait}. A pausing screen stops the
+ *     server's ticks: the step then logs the screen and gives up after 5 seconds paused</li>
  * <li>{@code screenshot <name>} saves {@code run/screenshots/<name>.png}</li>
  * <li>{@code hitboxes on|off} toggles hitbox rendering (F3+B)</li>
  * <li>{@code serverhitboxes on|off} also draws the integrated server's dragon part shapes (red);
@@ -174,6 +175,10 @@ public final class DevScript {
     private boolean mining;
     /** Server tick a {@code waitserver} step waits for, or -1. */
     private int waitServerUntil = -1;
+    /** Client ticks a {@code waitserver} step has spent with the game paused. */
+    private int waitServerPausedTicks;
+    /** How long a {@code waitserver} step waits on a paused game (its server ticks stop) before giving up. */
+    private static final int WAIT_SERVER_PAUSED_TIMEOUT = 100;
     /** The last action bar message logged, so each one is logged once. */
     private String lastActionBar;
     /** Block centre a {@code walkto} step walks to (x, z), or null; its ticks left. */
@@ -339,8 +344,23 @@ public final class DevScript {
         }
         if (this.waitServerUntil >= 0) {
             if (client.getServer() != null && client.getServer().getTicks() < this.waitServerUntil) {
-                return;
+                // A pausing screen (e.g. the class picker, which reopens while the player has no class) stops
+                // the integrated server's ticks, so the wait would never end: say which screen, then give up
+                if (!client.isPaused()) {
+                    this.waitServerPausedTicks = 0;
+                    return;
+                }
+                if (this.waitServerPausedTicks++ == 0) {
+                    DnDClasses.LOGGER.warn("[DevScript] waitserver: the game is paused by {}, so the server doesn't tick",
+                            client.currentScreen == null ? "?" : client.currentScreen.getClass().getSimpleName());
+                }
+                if (this.waitServerPausedTicks < WAIT_SERVER_PAUSED_TIMEOUT) {
+                    return;
+                }
+                DnDClasses.LOGGER.warn("[DevScript] waitserver timed out: still paused after {} client ticks",
+                        WAIT_SERVER_PAUSED_TIMEOUT);
             }
+            this.waitServerPausedTicks = 0;
             DnDClasses.LOGGER.info("[DevScript] waitserver done at server tick {}",
                     client.getServer() == null ? "?" : client.getServer().getTicks());
             this.waitServerUntil = -1;

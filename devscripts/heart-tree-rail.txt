@@ -1,0 +1,454 @@
+# Checks the Heart Tree stair rail: every birch fence post beside the steps stands on a stripped birch stringer
+# block (it floated in the air once the forest round the stair was cleared, PR #237). Runs on the dev world's
+# enclave at 43152 42016 (Heart Tree origin 43160 66 42024, see enclave-spawns-locate.txt). For a freshly generated
+# enclave, copy the dev world and delete its region, entities and poi files r.83..85.81..83 first:
+#   cp -r "run/saves/New World" run/saves/HeartFix && rm run/saves/HeartFix/{region,entities,poi}/r.8[345].8[123].mca
+#   timeout 400 ./gradlew runClient -PdevWorld=HeartFix -PdevScript=devscripts/heart-tree-rail.txt
+# Expect in latest.log: 20 "hr:post-ok" lines (one per post, steps 1-14; the corner steps have 3), no "hr:floating" lines, and
+# "hr:regrowth" then "Test passed" lines after the chunks reload (EnclaveRegrowth leaves the stringer alone).
+# Screenshots hr-side-east.png, hr-side-south.png and hr-below.png show the rail from the side and from under it.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 43160 160 42024 0 90
+wait 400
+/tp @s 43160 90 42024 0 90
+wait 100
+/say hr:posts
+/execute if block 43164 68 42020 minecraft:birch_fence unless block 43164 67 42020 minecraft:stripped_birch_wood run say hr:floating 43164 68 42020
+/execute if block 43164 68 42020 minecraft:birch_fence if block 43164 67 42020 minecraft:stripped_birch_wood run say hr:post-ok 43164 68 42020
+/execute if block 43164 68 42021 minecraft:birch_fence unless block 43164 67 42021 minecraft:stripped_birch_wood run say hr:floating 43164 68 42021
+/execute if block 43164 68 42021 minecraft:birch_fence if block 43164 67 42021 minecraft:stripped_birch_wood run say hr:post-ok 43164 68 42021
+/execute if block 43163 68 42020 minecraft:birch_fence unless block 43163 67 42020 minecraft:stripped_birch_wood run say hr:floating 43163 68 42020
+/execute if block 43163 68 42020 minecraft:birch_fence if block 43163 67 42020 minecraft:stripped_birch_wood run say hr:post-ok 43163 68 42020
+/execute if block 43164 69 42022 minecraft:birch_fence unless block 43164 68 42022 minecraft:stripped_birch_wood run say hr:floating 43164 69 42022
+/execute if block 43164 69 42022 minecraft:birch_fence if block 43164 68 42022 minecraft:stripped_birch_wood run say hr:post-ok 43164 69 42022
+/execute if block 43164 70 42023 minecraft:birch_fence unless block 43164 69 42023 minecraft:stripped_birch_wood run say hr:floating 43164 70 42023
+/execute if block 43164 70 42023 minecraft:birch_fence if block 43164 69 42023 minecraft:stripped_birch_wood run say hr:post-ok 43164 70 42023
+/execute if block 43164 71 42024 minecraft:birch_fence unless block 43164 70 42024 minecraft:stripped_birch_wood run say hr:floating 43164 71 42024
+/execute if block 43164 71 42024 minecraft:birch_fence if block 43164 70 42024 minecraft:stripped_birch_wood run say hr:post-ok 43164 71 42024
+/execute if block 43164 72 42025 minecraft:birch_fence unless block 43164 71 42025 minecraft:stripped_birch_wood run say hr:floating 43164 72 42025
+/execute if block 43164 72 42025 minecraft:birch_fence if block 43164 71 42025 minecraft:stripped_birch_wood run say hr:post-ok 43164 72 42025
+/execute if block 43164 73 42026 minecraft:birch_fence unless block 43164 72 42026 minecraft:stripped_birch_wood run say hr:floating 43164 73 42026
+/execute if block 43164 73 42026 minecraft:birch_fence if block 43164 72 42026 minecraft:stripped_birch_wood run say hr:post-ok 43164 73 42026
+/execute if block 43164 74 42028 minecraft:birch_fence unless block 43164 73 42028 minecraft:stripped_birch_wood run say hr:floating 43164 74 42028
+/execute if block 43164 74 42028 minecraft:birch_fence if block 43164 73 42028 minecraft:stripped_birch_wood run say hr:post-ok 43164 74 42028
+/execute if block 43164 74 42027 minecraft:birch_fence unless block 43164 73 42027 minecraft:stripped_birch_wood run say hr:floating 43164 74 42027
+/execute if block 43164 74 42027 minecraft:birch_fence if block 43164 73 42027 minecraft:stripped_birch_wood run say hr:post-ok 43164 74 42027
+/execute if block 43163 74 42028 minecraft:birch_fence unless block 43163 73 42028 minecraft:stripped_birch_wood run say hr:floating 43163 74 42028
+/execute if block 43163 74 42028 minecraft:birch_fence if block 43163 73 42028 minecraft:stripped_birch_wood run say hr:post-ok 43163 74 42028
+/execute if block 43162 75 42028 minecraft:birch_fence unless block 43162 74 42028 minecraft:stripped_birch_wood run say hr:floating 43162 75 42028
+/execute if block 43162 75 42028 minecraft:birch_fence if block 43162 74 42028 minecraft:stripped_birch_wood run say hr:post-ok 43162 75 42028
+/execute if block 43161 76 42028 minecraft:birch_fence unless block 43161 75 42028 minecraft:stripped_birch_wood run say hr:floating 43161 76 42028
+/execute if block 43161 76 42028 minecraft:birch_fence if block 43161 75 42028 minecraft:stripped_birch_wood run say hr:post-ok 43161 76 42028
+/execute if block 43160 77 42028 minecraft:birch_fence unless block 43160 76 42028 minecraft:stripped_birch_wood run say hr:floating 43160 77 42028
+/execute if block 43160 77 42028 minecraft:birch_fence if block 43160 76 42028 minecraft:stripped_birch_wood run say hr:post-ok 43160 77 42028
+/execute if block 43159 78 42028 minecraft:birch_fence unless block 43159 77 42028 minecraft:stripped_birch_wood run say hr:floating 43159 78 42028
+/execute if block 43159 78 42028 minecraft:birch_fence if block 43159 77 42028 minecraft:stripped_birch_wood run say hr:post-ok 43159 78 42028
+/execute if block 43158 79 42028 minecraft:birch_fence unless block 43158 78 42028 minecraft:stripped_birch_wood run say hr:floating 43158 79 42028
+/execute if block 43158 79 42028 minecraft:birch_fence if block 43158 78 42028 minecraft:stripped_birch_wood run say hr:post-ok 43158 79 42028
+/execute if block 43156 80 42028 minecraft:birch_fence unless block 43156 79 42028 minecraft:stripped_birch_wood run say hr:floating 43156 80 42028
+/execute if block 43156 80 42028 minecraft:birch_fence if block 43156 79 42028 minecraft:stripped_birch_wood run say hr:post-ok 43156 80 42028
+/execute if block 43156 80 42027 minecraft:birch_fence unless block 43156 79 42027 minecraft:stripped_birch_wood run say hr:floating 43156 80 42027
+/execute if block 43156 80 42027 minecraft:birch_fence if block 43156 79 42027 minecraft:stripped_birch_wood run say hr:post-ok 43156 80 42027
+/execute if block 43157 80 42028 minecraft:birch_fence unless block 43157 79 42028 minecraft:stripped_birch_wood run say hr:floating 43157 80 42028
+/execute if block 43157 80 42028 minecraft:birch_fence if block 43157 79 42028 minecraft:stripped_birch_wood run say hr:post-ok 43157 80 42028
+/execute if block 43156 81 42026 minecraft:birch_fence unless block 43156 80 42026 minecraft:stripped_birch_wood run say hr:floating 43156 81 42026
+/execute if block 43156 81 42026 minecraft:birch_fence if block 43156 80 42026 minecraft:stripped_birch_wood run say hr:post-ok 43156 81 42026
+/say hr:upper
+/execute if block 43156 81 42020 minecraft:birch_fence if block 43156 80 42020 minecraft:air run say hr:floating-upper 43156 81 42020
+/execute if block 43156 82 42020 minecraft:birch_fence if block 43156 81 42020 minecraft:air run say hr:floating-upper 43156 82 42020
+/execute if block 43156 83 42020 minecraft:birch_fence if block 43156 82 42020 minecraft:air run say hr:floating-upper 43156 83 42020
+/execute if block 43156 84 42020 minecraft:birch_fence if block 43156 83 42020 minecraft:air run say hr:floating-upper 43156 84 42020
+/execute if block 43156 85 42020 minecraft:birch_fence if block 43156 84 42020 minecraft:air run say hr:floating-upper 43156 85 42020
+/execute if block 43156 86 42020 minecraft:birch_fence if block 43156 85 42020 minecraft:air run say hr:floating-upper 43156 86 42020
+/execute if block 43156 87 42020 minecraft:birch_fence if block 43156 86 42020 minecraft:air run say hr:floating-upper 43156 87 42020
+/execute if block 43156 88 42020 minecraft:birch_fence if block 43156 87 42020 minecraft:air run say hr:floating-upper 43156 88 42020
+/execute if block 43156 89 42020 minecraft:birch_fence if block 43156 88 42020 minecraft:air run say hr:floating-upper 43156 89 42020
+/execute if block 43156 90 42020 minecraft:birch_fence if block 43156 89 42020 minecraft:air run say hr:floating-upper 43156 90 42020
+/execute if block 43156 91 42020 minecraft:birch_fence if block 43156 90 42020 minecraft:air run say hr:floating-upper 43156 91 42020
+/execute if block 43156 81 42021 minecraft:birch_fence if block 43156 80 42021 minecraft:air run say hr:floating-upper 43156 81 42021
+/execute if block 43156 82 42021 minecraft:birch_fence if block 43156 81 42021 minecraft:air run say hr:floating-upper 43156 82 42021
+/execute if block 43156 83 42021 minecraft:birch_fence if block 43156 82 42021 minecraft:air run say hr:floating-upper 43156 83 42021
+/execute if block 43156 84 42021 minecraft:birch_fence if block 43156 83 42021 minecraft:air run say hr:floating-upper 43156 84 42021
+/execute if block 43156 85 42021 minecraft:birch_fence if block 43156 84 42021 minecraft:air run say hr:floating-upper 43156 85 42021
+/execute if block 43156 86 42021 minecraft:birch_fence if block 43156 85 42021 minecraft:air run say hr:floating-upper 43156 86 42021
+/execute if block 43156 87 42021 minecraft:birch_fence if block 43156 86 42021 minecraft:air run say hr:floating-upper 43156 87 42021
+/execute if block 43156 88 42021 minecraft:birch_fence if block 43156 87 42021 minecraft:air run say hr:floating-upper 43156 88 42021
+/execute if block 43156 89 42021 minecraft:birch_fence if block 43156 88 42021 minecraft:air run say hr:floating-upper 43156 89 42021
+/execute if block 43156 90 42021 minecraft:birch_fence if block 43156 89 42021 minecraft:air run say hr:floating-upper 43156 90 42021
+/execute if block 43156 91 42021 minecraft:birch_fence if block 43156 90 42021 minecraft:air run say hr:floating-upper 43156 91 42021
+/execute if block 43156 81 42022 minecraft:birch_fence if block 43156 80 42022 minecraft:air run say hr:floating-upper 43156 81 42022
+/execute if block 43156 82 42022 minecraft:birch_fence if block 43156 81 42022 minecraft:air run say hr:floating-upper 43156 82 42022
+/execute if block 43156 83 42022 minecraft:birch_fence if block 43156 82 42022 minecraft:air run say hr:floating-upper 43156 83 42022
+/execute if block 43156 84 42022 minecraft:birch_fence if block 43156 83 42022 minecraft:air run say hr:floating-upper 43156 84 42022
+/execute if block 43156 85 42022 minecraft:birch_fence if block 43156 84 42022 minecraft:air run say hr:floating-upper 43156 85 42022
+/execute if block 43156 86 42022 minecraft:birch_fence if block 43156 85 42022 minecraft:air run say hr:floating-upper 43156 86 42022
+/execute if block 43156 87 42022 minecraft:birch_fence if block 43156 86 42022 minecraft:air run say hr:floating-upper 43156 87 42022
+/execute if block 43156 88 42022 minecraft:birch_fence if block 43156 87 42022 minecraft:air run say hr:floating-upper 43156 88 42022
+/execute if block 43156 89 42022 minecraft:birch_fence if block 43156 88 42022 minecraft:air run say hr:floating-upper 43156 89 42022
+/execute if block 43156 90 42022 minecraft:birch_fence if block 43156 89 42022 minecraft:air run say hr:floating-upper 43156 90 42022
+/execute if block 43156 91 42022 minecraft:birch_fence if block 43156 90 42022 minecraft:air run say hr:floating-upper 43156 91 42022
+/execute if block 43156 81 42023 minecraft:birch_fence if block 43156 80 42023 minecraft:air run say hr:floating-upper 43156 81 42023
+/execute if block 43156 82 42023 minecraft:birch_fence if block 43156 81 42023 minecraft:air run say hr:floating-upper 43156 82 42023
+/execute if block 43156 83 42023 minecraft:birch_fence if block 43156 82 42023 minecraft:air run say hr:floating-upper 43156 83 42023
+/execute if block 43156 84 42023 minecraft:birch_fence if block 43156 83 42023 minecraft:air run say hr:floating-upper 43156 84 42023
+/execute if block 43156 85 42023 minecraft:birch_fence if block 43156 84 42023 minecraft:air run say hr:floating-upper 43156 85 42023
+/execute if block 43156 86 42023 minecraft:birch_fence if block 43156 85 42023 minecraft:air run say hr:floating-upper 43156 86 42023
+/execute if block 43156 87 42023 minecraft:birch_fence if block 43156 86 42023 minecraft:air run say hr:floating-upper 43156 87 42023
+/execute if block 43156 88 42023 minecraft:birch_fence if block 43156 87 42023 minecraft:air run say hr:floating-upper 43156 88 42023
+/execute if block 43156 89 42023 minecraft:birch_fence if block 43156 88 42023 minecraft:air run say hr:floating-upper 43156 89 42023
+/execute if block 43156 90 42023 minecraft:birch_fence if block 43156 89 42023 minecraft:air run say hr:floating-upper 43156 90 42023
+/execute if block 43156 91 42023 minecraft:birch_fence if block 43156 90 42023 minecraft:air run say hr:floating-upper 43156 91 42023
+/execute if block 43156 81 42024 minecraft:birch_fence if block 43156 80 42024 minecraft:air run say hr:floating-upper 43156 81 42024
+/execute if block 43156 82 42024 minecraft:birch_fence if block 43156 81 42024 minecraft:air run say hr:floating-upper 43156 82 42024
+/execute if block 43156 83 42024 minecraft:birch_fence if block 43156 82 42024 minecraft:air run say hr:floating-upper 43156 83 42024
+/execute if block 43156 84 42024 minecraft:birch_fence if block 43156 83 42024 minecraft:air run say hr:floating-upper 43156 84 42024
+/execute if block 43156 85 42024 minecraft:birch_fence if block 43156 84 42024 minecraft:air run say hr:floating-upper 43156 85 42024
+/execute if block 43156 86 42024 minecraft:birch_fence if block 43156 85 42024 minecraft:air run say hr:floating-upper 43156 86 42024
+/execute if block 43156 87 42024 minecraft:birch_fence if block 43156 86 42024 minecraft:air run say hr:floating-upper 43156 87 42024
+/execute if block 43156 88 42024 minecraft:birch_fence if block 43156 87 42024 minecraft:air run say hr:floating-upper 43156 88 42024
+/execute if block 43156 89 42024 minecraft:birch_fence if block 43156 88 42024 minecraft:air run say hr:floating-upper 43156 89 42024
+/execute if block 43156 90 42024 minecraft:birch_fence if block 43156 89 42024 minecraft:air run say hr:floating-upper 43156 90 42024
+/execute if block 43156 91 42024 minecraft:birch_fence if block 43156 90 42024 minecraft:air run say hr:floating-upper 43156 91 42024
+/execute if block 43156 81 42025 minecraft:birch_fence if block 43156 80 42025 minecraft:air run say hr:floating-upper 43156 81 42025
+/execute if block 43156 82 42025 minecraft:birch_fence if block 43156 81 42025 minecraft:air run say hr:floating-upper 43156 82 42025
+/execute if block 43156 83 42025 minecraft:birch_fence if block 43156 82 42025 minecraft:air run say hr:floating-upper 43156 83 42025
+/execute if block 43156 84 42025 minecraft:birch_fence if block 43156 83 42025 minecraft:air run say hr:floating-upper 43156 84 42025
+/execute if block 43156 85 42025 minecraft:birch_fence if block 43156 84 42025 minecraft:air run say hr:floating-upper 43156 85 42025
+/execute if block 43156 86 42025 minecraft:birch_fence if block 43156 85 42025 minecraft:air run say hr:floating-upper 43156 86 42025
+/execute if block 43156 87 42025 minecraft:birch_fence if block 43156 86 42025 minecraft:air run say hr:floating-upper 43156 87 42025
+/execute if block 43156 88 42025 minecraft:birch_fence if block 43156 87 42025 minecraft:air run say hr:floating-upper 43156 88 42025
+/execute if block 43156 89 42025 minecraft:birch_fence if block 43156 88 42025 minecraft:air run say hr:floating-upper 43156 89 42025
+/execute if block 43156 90 42025 minecraft:birch_fence if block 43156 89 42025 minecraft:air run say hr:floating-upper 43156 90 42025
+/execute if block 43156 91 42025 minecraft:birch_fence if block 43156 90 42025 minecraft:air run say hr:floating-upper 43156 91 42025
+/execute if block 43156 81 42026 minecraft:birch_fence if block 43156 80 42026 minecraft:air run say hr:floating-upper 43156 81 42026
+/execute if block 43156 82 42026 minecraft:birch_fence if block 43156 81 42026 minecraft:air run say hr:floating-upper 43156 82 42026
+/execute if block 43156 83 42026 minecraft:birch_fence if block 43156 82 42026 minecraft:air run say hr:floating-upper 43156 83 42026
+/execute if block 43156 84 42026 minecraft:birch_fence if block 43156 83 42026 minecraft:air run say hr:floating-upper 43156 84 42026
+/execute if block 43156 85 42026 minecraft:birch_fence if block 43156 84 42026 minecraft:air run say hr:floating-upper 43156 85 42026
+/execute if block 43156 86 42026 minecraft:birch_fence if block 43156 85 42026 minecraft:air run say hr:floating-upper 43156 86 42026
+/execute if block 43156 87 42026 minecraft:birch_fence if block 43156 86 42026 minecraft:air run say hr:floating-upper 43156 87 42026
+/execute if block 43156 88 42026 minecraft:birch_fence if block 43156 87 42026 minecraft:air run say hr:floating-upper 43156 88 42026
+/execute if block 43156 89 42026 minecraft:birch_fence if block 43156 88 42026 minecraft:air run say hr:floating-upper 43156 89 42026
+/execute if block 43156 90 42026 minecraft:birch_fence if block 43156 89 42026 minecraft:air run say hr:floating-upper 43156 90 42026
+/execute if block 43156 91 42026 minecraft:birch_fence if block 43156 90 42026 minecraft:air run say hr:floating-upper 43156 91 42026
+/execute if block 43156 81 42027 minecraft:birch_fence if block 43156 80 42027 minecraft:air run say hr:floating-upper 43156 81 42027
+/execute if block 43156 82 42027 minecraft:birch_fence if block 43156 81 42027 minecraft:air run say hr:floating-upper 43156 82 42027
+/execute if block 43156 83 42027 minecraft:birch_fence if block 43156 82 42027 minecraft:air run say hr:floating-upper 43156 83 42027
+/execute if block 43156 84 42027 minecraft:birch_fence if block 43156 83 42027 minecraft:air run say hr:floating-upper 43156 84 42027
+/execute if block 43156 85 42027 minecraft:birch_fence if block 43156 84 42027 minecraft:air run say hr:floating-upper 43156 85 42027
+/execute if block 43156 86 42027 minecraft:birch_fence if block 43156 85 42027 minecraft:air run say hr:floating-upper 43156 86 42027
+/execute if block 43156 87 42027 minecraft:birch_fence if block 43156 86 42027 minecraft:air run say hr:floating-upper 43156 87 42027
+/execute if block 43156 88 42027 minecraft:birch_fence if block 43156 87 42027 minecraft:air run say hr:floating-upper 43156 88 42027
+/execute if block 43156 89 42027 minecraft:birch_fence if block 43156 88 42027 minecraft:air run say hr:floating-upper 43156 89 42027
+/execute if block 43156 90 42027 minecraft:birch_fence if block 43156 89 42027 minecraft:air run say hr:floating-upper 43156 90 42027
+/execute if block 43156 91 42027 minecraft:birch_fence if block 43156 90 42027 minecraft:air run say hr:floating-upper 43156 91 42027
+/execute if block 43156 81 42028 minecraft:birch_fence if block 43156 80 42028 minecraft:air run say hr:floating-upper 43156 81 42028
+/execute if block 43156 82 42028 minecraft:birch_fence if block 43156 81 42028 minecraft:air run say hr:floating-upper 43156 82 42028
+/execute if block 43156 83 42028 minecraft:birch_fence if block 43156 82 42028 minecraft:air run say hr:floating-upper 43156 83 42028
+/execute if block 43156 84 42028 minecraft:birch_fence if block 43156 83 42028 minecraft:air run say hr:floating-upper 43156 84 42028
+/execute if block 43156 85 42028 minecraft:birch_fence if block 43156 84 42028 minecraft:air run say hr:floating-upper 43156 85 42028
+/execute if block 43156 86 42028 minecraft:birch_fence if block 43156 85 42028 minecraft:air run say hr:floating-upper 43156 86 42028
+/execute if block 43156 87 42028 minecraft:birch_fence if block 43156 86 42028 minecraft:air run say hr:floating-upper 43156 87 42028
+/execute if block 43156 88 42028 minecraft:birch_fence if block 43156 87 42028 minecraft:air run say hr:floating-upper 43156 88 42028
+/execute if block 43156 89 42028 minecraft:birch_fence if block 43156 88 42028 minecraft:air run say hr:floating-upper 43156 89 42028
+/execute if block 43156 90 42028 minecraft:birch_fence if block 43156 89 42028 minecraft:air run say hr:floating-upper 43156 90 42028
+/execute if block 43156 91 42028 minecraft:birch_fence if block 43156 90 42028 minecraft:air run say hr:floating-upper 43156 91 42028
+/execute if block 43157 81 42020 minecraft:birch_fence if block 43157 80 42020 minecraft:air run say hr:floating-upper 43157 81 42020
+/execute if block 43157 82 42020 minecraft:birch_fence if block 43157 81 42020 minecraft:air run say hr:floating-upper 43157 82 42020
+/execute if block 43157 83 42020 minecraft:birch_fence if block 43157 82 42020 minecraft:air run say hr:floating-upper 43157 83 42020
+/execute if block 43157 84 42020 minecraft:birch_fence if block 43157 83 42020 minecraft:air run say hr:floating-upper 43157 84 42020
+/execute if block 43157 85 42020 minecraft:birch_fence if block 43157 84 42020 minecraft:air run say hr:floating-upper 43157 85 42020
+/execute if block 43157 86 42020 minecraft:birch_fence if block 43157 85 42020 minecraft:air run say hr:floating-upper 43157 86 42020
+/execute if block 43157 87 42020 minecraft:birch_fence if block 43157 86 42020 minecraft:air run say hr:floating-upper 43157 87 42020
+/execute if block 43157 88 42020 minecraft:birch_fence if block 43157 87 42020 minecraft:air run say hr:floating-upper 43157 88 42020
+/execute if block 43157 89 42020 minecraft:birch_fence if block 43157 88 42020 minecraft:air run say hr:floating-upper 43157 89 42020
+/execute if block 43157 90 42020 minecraft:birch_fence if block 43157 89 42020 minecraft:air run say hr:floating-upper 43157 90 42020
+/execute if block 43157 91 42020 minecraft:birch_fence if block 43157 90 42020 minecraft:air run say hr:floating-upper 43157 91 42020
+/execute if block 43157 81 42028 minecraft:birch_fence if block 43157 80 42028 minecraft:air run say hr:floating-upper 43157 81 42028
+/execute if block 43157 82 42028 minecraft:birch_fence if block 43157 81 42028 minecraft:air run say hr:floating-upper 43157 82 42028
+/execute if block 43157 83 42028 minecraft:birch_fence if block 43157 82 42028 minecraft:air run say hr:floating-upper 43157 83 42028
+/execute if block 43157 84 42028 minecraft:birch_fence if block 43157 83 42028 minecraft:air run say hr:floating-upper 43157 84 42028
+/execute if block 43157 85 42028 minecraft:birch_fence if block 43157 84 42028 minecraft:air run say hr:floating-upper 43157 85 42028
+/execute if block 43157 86 42028 minecraft:birch_fence if block 43157 85 42028 minecraft:air run say hr:floating-upper 43157 86 42028
+/execute if block 43157 87 42028 minecraft:birch_fence if block 43157 86 42028 minecraft:air run say hr:floating-upper 43157 87 42028
+/execute if block 43157 88 42028 minecraft:birch_fence if block 43157 87 42028 minecraft:air run say hr:floating-upper 43157 88 42028
+/execute if block 43157 89 42028 minecraft:birch_fence if block 43157 88 42028 minecraft:air run say hr:floating-upper 43157 89 42028
+/execute if block 43157 90 42028 minecraft:birch_fence if block 43157 89 42028 minecraft:air run say hr:floating-upper 43157 90 42028
+/execute if block 43157 91 42028 minecraft:birch_fence if block 43157 90 42028 minecraft:air run say hr:floating-upper 43157 91 42028
+/execute if block 43158 81 42020 minecraft:birch_fence if block 43158 80 42020 minecraft:air run say hr:floating-upper 43158 81 42020
+/execute if block 43158 82 42020 minecraft:birch_fence if block 43158 81 42020 minecraft:air run say hr:floating-upper 43158 82 42020
+/execute if block 43158 83 42020 minecraft:birch_fence if block 43158 82 42020 minecraft:air run say hr:floating-upper 43158 83 42020
+/execute if block 43158 84 42020 minecraft:birch_fence if block 43158 83 42020 minecraft:air run say hr:floating-upper 43158 84 42020
+/execute if block 43158 85 42020 minecraft:birch_fence if block 43158 84 42020 minecraft:air run say hr:floating-upper 43158 85 42020
+/execute if block 43158 86 42020 minecraft:birch_fence if block 43158 85 42020 minecraft:air run say hr:floating-upper 43158 86 42020
+/execute if block 43158 87 42020 minecraft:birch_fence if block 43158 86 42020 minecraft:air run say hr:floating-upper 43158 87 42020
+/execute if block 43158 88 42020 minecraft:birch_fence if block 43158 87 42020 minecraft:air run say hr:floating-upper 43158 88 42020
+/execute if block 43158 89 42020 minecraft:birch_fence if block 43158 88 42020 minecraft:air run say hr:floating-upper 43158 89 42020
+/execute if block 43158 90 42020 minecraft:birch_fence if block 43158 89 42020 minecraft:air run say hr:floating-upper 43158 90 42020
+/execute if block 43158 91 42020 minecraft:birch_fence if block 43158 90 42020 minecraft:air run say hr:floating-upper 43158 91 42020
+/execute if block 43158 81 42028 minecraft:birch_fence if block 43158 80 42028 minecraft:air run say hr:floating-upper 43158 81 42028
+/execute if block 43158 82 42028 minecraft:birch_fence if block 43158 81 42028 minecraft:air run say hr:floating-upper 43158 82 42028
+/execute if block 43158 83 42028 minecraft:birch_fence if block 43158 82 42028 minecraft:air run say hr:floating-upper 43158 83 42028
+/execute if block 43158 84 42028 minecraft:birch_fence if block 43158 83 42028 minecraft:air run say hr:floating-upper 43158 84 42028
+/execute if block 43158 85 42028 minecraft:birch_fence if block 43158 84 42028 minecraft:air run say hr:floating-upper 43158 85 42028
+/execute if block 43158 86 42028 minecraft:birch_fence if block 43158 85 42028 minecraft:air run say hr:floating-upper 43158 86 42028
+/execute if block 43158 87 42028 minecraft:birch_fence if block 43158 86 42028 minecraft:air run say hr:floating-upper 43158 87 42028
+/execute if block 43158 88 42028 minecraft:birch_fence if block 43158 87 42028 minecraft:air run say hr:floating-upper 43158 88 42028
+/execute if block 43158 89 42028 minecraft:birch_fence if block 43158 88 42028 minecraft:air run say hr:floating-upper 43158 89 42028
+/execute if block 43158 90 42028 minecraft:birch_fence if block 43158 89 42028 minecraft:air run say hr:floating-upper 43158 90 42028
+/execute if block 43158 91 42028 minecraft:birch_fence if block 43158 90 42028 minecraft:air run say hr:floating-upper 43158 91 42028
+/execute if block 43159 81 42020 minecraft:birch_fence if block 43159 80 42020 minecraft:air run say hr:floating-upper 43159 81 42020
+/execute if block 43159 82 42020 minecraft:birch_fence if block 43159 81 42020 minecraft:air run say hr:floating-upper 43159 82 42020
+/execute if block 43159 83 42020 minecraft:birch_fence if block 43159 82 42020 minecraft:air run say hr:floating-upper 43159 83 42020
+/execute if block 43159 84 42020 minecraft:birch_fence if block 43159 83 42020 minecraft:air run say hr:floating-upper 43159 84 42020
+/execute if block 43159 85 42020 minecraft:birch_fence if block 43159 84 42020 minecraft:air run say hr:floating-upper 43159 85 42020
+/execute if block 43159 86 42020 minecraft:birch_fence if block 43159 85 42020 minecraft:air run say hr:floating-upper 43159 86 42020
+/execute if block 43159 87 42020 minecraft:birch_fence if block 43159 86 42020 minecraft:air run say hr:floating-upper 43159 87 42020
+/execute if block 43159 88 42020 minecraft:birch_fence if block 43159 87 42020 minecraft:air run say hr:floating-upper 43159 88 42020
+/execute if block 43159 89 42020 minecraft:birch_fence if block 43159 88 42020 minecraft:air run say hr:floating-upper 43159 89 42020
+/execute if block 43159 90 42020 minecraft:birch_fence if block 43159 89 42020 minecraft:air run say hr:floating-upper 43159 90 42020
+/execute if block 43159 91 42020 minecraft:birch_fence if block 43159 90 42020 minecraft:air run say hr:floating-upper 43159 91 42020
+/execute if block 43159 81 42028 minecraft:birch_fence if block 43159 80 42028 minecraft:air run say hr:floating-upper 43159 81 42028
+/execute if block 43159 82 42028 minecraft:birch_fence if block 43159 81 42028 minecraft:air run say hr:floating-upper 43159 82 42028
+/execute if block 43159 83 42028 minecraft:birch_fence if block 43159 82 42028 minecraft:air run say hr:floating-upper 43159 83 42028
+/execute if block 43159 84 42028 minecraft:birch_fence if block 43159 83 42028 minecraft:air run say hr:floating-upper 43159 84 42028
+/execute if block 43159 85 42028 minecraft:birch_fence if block 43159 84 42028 minecraft:air run say hr:floating-upper 43159 85 42028
+/execute if block 43159 86 42028 minecraft:birch_fence if block 43159 85 42028 minecraft:air run say hr:floating-upper 43159 86 42028
+/execute if block 43159 87 42028 minecraft:birch_fence if block 43159 86 42028 minecraft:air run say hr:floating-upper 43159 87 42028
+/execute if block 43159 88 42028 minecraft:birch_fence if block 43159 87 42028 minecraft:air run say hr:floating-upper 43159 88 42028
+/execute if block 43159 89 42028 minecraft:birch_fence if block 43159 88 42028 minecraft:air run say hr:floating-upper 43159 89 42028
+/execute if block 43159 90 42028 minecraft:birch_fence if block 43159 89 42028 minecraft:air run say hr:floating-upper 43159 90 42028
+/execute if block 43159 91 42028 minecraft:birch_fence if block 43159 90 42028 minecraft:air run say hr:floating-upper 43159 91 42028
+/execute if block 43160 81 42020 minecraft:birch_fence if block 43160 80 42020 minecraft:air run say hr:floating-upper 43160 81 42020
+/execute if block 43160 82 42020 minecraft:birch_fence if block 43160 81 42020 minecraft:air run say hr:floating-upper 43160 82 42020
+/execute if block 43160 83 42020 minecraft:birch_fence if block 43160 82 42020 minecraft:air run say hr:floating-upper 43160 83 42020
+/execute if block 43160 84 42020 minecraft:birch_fence if block 43160 83 42020 minecraft:air run say hr:floating-upper 43160 84 42020
+/execute if block 43160 85 42020 minecraft:birch_fence if block 43160 84 42020 minecraft:air run say hr:floating-upper 43160 85 42020
+/execute if block 43160 86 42020 minecraft:birch_fence if block 43160 85 42020 minecraft:air run say hr:floating-upper 43160 86 42020
+/execute if block 43160 87 42020 minecraft:birch_fence if block 43160 86 42020 minecraft:air run say hr:floating-upper 43160 87 42020
+/execute if block 43160 88 42020 minecraft:birch_fence if block 43160 87 42020 minecraft:air run say hr:floating-upper 43160 88 42020
+/execute if block 43160 89 42020 minecraft:birch_fence if block 43160 88 42020 minecraft:air run say hr:floating-upper 43160 89 42020
+/execute if block 43160 90 42020 minecraft:birch_fence if block 43160 89 42020 minecraft:air run say hr:floating-upper 43160 90 42020
+/execute if block 43160 91 42020 minecraft:birch_fence if block 43160 90 42020 minecraft:air run say hr:floating-upper 43160 91 42020
+/execute if block 43160 81 42028 minecraft:birch_fence if block 43160 80 42028 minecraft:air run say hr:floating-upper 43160 81 42028
+/execute if block 43160 82 42028 minecraft:birch_fence if block 43160 81 42028 minecraft:air run say hr:floating-upper 43160 82 42028
+/execute if block 43160 83 42028 minecraft:birch_fence if block 43160 82 42028 minecraft:air run say hr:floating-upper 43160 83 42028
+/execute if block 43160 84 42028 minecraft:birch_fence if block 43160 83 42028 minecraft:air run say hr:floating-upper 43160 84 42028
+/execute if block 43160 85 42028 minecraft:birch_fence if block 43160 84 42028 minecraft:air run say hr:floating-upper 43160 85 42028
+/execute if block 43160 86 42028 minecraft:birch_fence if block 43160 85 42028 minecraft:air run say hr:floating-upper 43160 86 42028
+/execute if block 43160 87 42028 minecraft:birch_fence if block 43160 86 42028 minecraft:air run say hr:floating-upper 43160 87 42028
+/execute if block 43160 88 42028 minecraft:birch_fence if block 43160 87 42028 minecraft:air run say hr:floating-upper 43160 88 42028
+/execute if block 43160 89 42028 minecraft:birch_fence if block 43160 88 42028 minecraft:air run say hr:floating-upper 43160 89 42028
+/execute if block 43160 90 42028 minecraft:birch_fence if block 43160 89 42028 minecraft:air run say hr:floating-upper 43160 90 42028
+/execute if block 43160 91 42028 minecraft:birch_fence if block 43160 90 42028 minecraft:air run say hr:floating-upper 43160 91 42028
+/execute if block 43161 81 42020 minecraft:birch_fence if block 43161 80 42020 minecraft:air run say hr:floating-upper 43161 81 42020
+/execute if block 43161 82 42020 minecraft:birch_fence if block 43161 81 42020 minecraft:air run say hr:floating-upper 43161 82 42020
+/execute if block 43161 83 42020 minecraft:birch_fence if block 43161 82 42020 minecraft:air run say hr:floating-upper 43161 83 42020
+/execute if block 43161 84 42020 minecraft:birch_fence if block 43161 83 42020 minecraft:air run say hr:floating-upper 43161 84 42020
+/execute if block 43161 85 42020 minecraft:birch_fence if block 43161 84 42020 minecraft:air run say hr:floating-upper 43161 85 42020
+/execute if block 43161 86 42020 minecraft:birch_fence if block 43161 85 42020 minecraft:air run say hr:floating-upper 43161 86 42020
+/execute if block 43161 87 42020 minecraft:birch_fence if block 43161 86 42020 minecraft:air run say hr:floating-upper 43161 87 42020
+/execute if block 43161 88 42020 minecraft:birch_fence if block 43161 87 42020 minecraft:air run say hr:floating-upper 43161 88 42020
+/execute if block 43161 89 42020 minecraft:birch_fence if block 43161 88 42020 minecraft:air run say hr:floating-upper 43161 89 42020
+/execute if block 43161 90 42020 minecraft:birch_fence if block 43161 89 42020 minecraft:air run say hr:floating-upper 43161 90 42020
+/execute if block 43161 91 42020 minecraft:birch_fence if block 43161 90 42020 minecraft:air run say hr:floating-upper 43161 91 42020
+/execute if block 43161 81 42028 minecraft:birch_fence if block 43161 80 42028 minecraft:air run say hr:floating-upper 43161 81 42028
+/execute if block 43161 82 42028 minecraft:birch_fence if block 43161 81 42028 minecraft:air run say hr:floating-upper 43161 82 42028
+/execute if block 43161 83 42028 minecraft:birch_fence if block 43161 82 42028 minecraft:air run say hr:floating-upper 43161 83 42028
+/execute if block 43161 84 42028 minecraft:birch_fence if block 43161 83 42028 minecraft:air run say hr:floating-upper 43161 84 42028
+/execute if block 43161 85 42028 minecraft:birch_fence if block 43161 84 42028 minecraft:air run say hr:floating-upper 43161 85 42028
+/execute if block 43161 86 42028 minecraft:birch_fence if block 43161 85 42028 minecraft:air run say hr:floating-upper 43161 86 42028
+/execute if block 43161 87 42028 minecraft:birch_fence if block 43161 86 42028 minecraft:air run say hr:floating-upper 43161 87 42028
+/execute if block 43161 88 42028 minecraft:birch_fence if block 43161 87 42028 minecraft:air run say hr:floating-upper 43161 88 42028
+/execute if block 43161 89 42028 minecraft:birch_fence if block 43161 88 42028 minecraft:air run say hr:floating-upper 43161 89 42028
+/execute if block 43161 90 42028 minecraft:birch_fence if block 43161 89 42028 minecraft:air run say hr:floating-upper 43161 90 42028
+/execute if block 43161 91 42028 minecraft:birch_fence if block 43161 90 42028 minecraft:air run say hr:floating-upper 43161 91 42028
+/execute if block 43162 81 42020 minecraft:birch_fence if block 43162 80 42020 minecraft:air run say hr:floating-upper 43162 81 42020
+/execute if block 43162 82 42020 minecraft:birch_fence if block 43162 81 42020 minecraft:air run say hr:floating-upper 43162 82 42020
+/execute if block 43162 83 42020 minecraft:birch_fence if block 43162 82 42020 minecraft:air run say hr:floating-upper 43162 83 42020
+/execute if block 43162 84 42020 minecraft:birch_fence if block 43162 83 42020 minecraft:air run say hr:floating-upper 43162 84 42020
+/execute if block 43162 85 42020 minecraft:birch_fence if block 43162 84 42020 minecraft:air run say hr:floating-upper 43162 85 42020
+/execute if block 43162 86 42020 minecraft:birch_fence if block 43162 85 42020 minecraft:air run say hr:floating-upper 43162 86 42020
+/execute if block 43162 87 42020 minecraft:birch_fence if block 43162 86 42020 minecraft:air run say hr:floating-upper 43162 87 42020
+/execute if block 43162 88 42020 minecraft:birch_fence if block 43162 87 42020 minecraft:air run say hr:floating-upper 43162 88 42020
+/execute if block 43162 89 42020 minecraft:birch_fence if block 43162 88 42020 minecraft:air run say hr:floating-upper 43162 89 42020
+/execute if block 43162 90 42020 minecraft:birch_fence if block 43162 89 42020 minecraft:air run say hr:floating-upper 43162 90 42020
+/execute if block 43162 91 42020 minecraft:birch_fence if block 43162 90 42020 minecraft:air run say hr:floating-upper 43162 91 42020
+/execute if block 43162 81 42028 minecraft:birch_fence if block 43162 80 42028 minecraft:air run say hr:floating-upper 43162 81 42028
+/execute if block 43162 82 42028 minecraft:birch_fence if block 43162 81 42028 minecraft:air run say hr:floating-upper 43162 82 42028
+/execute if block 43162 83 42028 minecraft:birch_fence if block 43162 82 42028 minecraft:air run say hr:floating-upper 43162 83 42028
+/execute if block 43162 84 42028 minecraft:birch_fence if block 43162 83 42028 minecraft:air run say hr:floating-upper 43162 84 42028
+/execute if block 43162 85 42028 minecraft:birch_fence if block 43162 84 42028 minecraft:air run say hr:floating-upper 43162 85 42028
+/execute if block 43162 86 42028 minecraft:birch_fence if block 43162 85 42028 minecraft:air run say hr:floating-upper 43162 86 42028
+/execute if block 43162 87 42028 minecraft:birch_fence if block 43162 86 42028 minecraft:air run say hr:floating-upper 43162 87 42028
+/execute if block 43162 88 42028 minecraft:birch_fence if block 43162 87 42028 minecraft:air run say hr:floating-upper 43162 88 42028
+/execute if block 43162 89 42028 minecraft:birch_fence if block 43162 88 42028 minecraft:air run say hr:floating-upper 43162 89 42028
+/execute if block 43162 90 42028 minecraft:birch_fence if block 43162 89 42028 minecraft:air run say hr:floating-upper 43162 90 42028
+/execute if block 43162 91 42028 minecraft:birch_fence if block 43162 90 42028 minecraft:air run say hr:floating-upper 43162 91 42028
+/execute if block 43163 81 42020 minecraft:birch_fence if block 43163 80 42020 minecraft:air run say hr:floating-upper 43163 81 42020
+/execute if block 43163 82 42020 minecraft:birch_fence if block 43163 81 42020 minecraft:air run say hr:floating-upper 43163 82 42020
+/execute if block 43163 83 42020 minecraft:birch_fence if block 43163 82 42020 minecraft:air run say hr:floating-upper 43163 83 42020
+/execute if block 43163 84 42020 minecraft:birch_fence if block 43163 83 42020 minecraft:air run say hr:floating-upper 43163 84 42020
+/execute if block 43163 85 42020 minecraft:birch_fence if block 43163 84 42020 minecraft:air run say hr:floating-upper 43163 85 42020
+/execute if block 43163 86 42020 minecraft:birch_fence if block 43163 85 42020 minecraft:air run say hr:floating-upper 43163 86 42020
+/execute if block 43163 87 42020 minecraft:birch_fence if block 43163 86 42020 minecraft:air run say hr:floating-upper 43163 87 42020
+/execute if block 43163 88 42020 minecraft:birch_fence if block 43163 87 42020 minecraft:air run say hr:floating-upper 43163 88 42020
+/execute if block 43163 89 42020 minecraft:birch_fence if block 43163 88 42020 minecraft:air run say hr:floating-upper 43163 89 42020
+/execute if block 43163 90 42020 minecraft:birch_fence if block 43163 89 42020 minecraft:air run say hr:floating-upper 43163 90 42020
+/execute if block 43163 91 42020 minecraft:birch_fence if block 43163 90 42020 minecraft:air run say hr:floating-upper 43163 91 42020
+/execute if block 43163 81 42028 minecraft:birch_fence if block 43163 80 42028 minecraft:air run say hr:floating-upper 43163 81 42028
+/execute if block 43163 82 42028 minecraft:birch_fence if block 43163 81 42028 minecraft:air run say hr:floating-upper 43163 82 42028
+/execute if block 43163 83 42028 minecraft:birch_fence if block 43163 82 42028 minecraft:air run say hr:floating-upper 43163 83 42028
+/execute if block 43163 84 42028 minecraft:birch_fence if block 43163 83 42028 minecraft:air run say hr:floating-upper 43163 84 42028
+/execute if block 43163 85 42028 minecraft:birch_fence if block 43163 84 42028 minecraft:air run say hr:floating-upper 43163 85 42028
+/execute if block 43163 86 42028 minecraft:birch_fence if block 43163 85 42028 minecraft:air run say hr:floating-upper 43163 86 42028
+/execute if block 43163 87 42028 minecraft:birch_fence if block 43163 86 42028 minecraft:air run say hr:floating-upper 43163 87 42028
+/execute if block 43163 88 42028 minecraft:birch_fence if block 43163 87 42028 minecraft:air run say hr:floating-upper 43163 88 42028
+/execute if block 43163 89 42028 minecraft:birch_fence if block 43163 88 42028 minecraft:air run say hr:floating-upper 43163 89 42028
+/execute if block 43163 90 42028 minecraft:birch_fence if block 43163 89 42028 minecraft:air run say hr:floating-upper 43163 90 42028
+/execute if block 43163 91 42028 minecraft:birch_fence if block 43163 90 42028 minecraft:air run say hr:floating-upper 43163 91 42028
+/execute if block 43164 81 42020 minecraft:birch_fence if block 43164 80 42020 minecraft:air run say hr:floating-upper 43164 81 42020
+/execute if block 43164 82 42020 minecraft:birch_fence if block 43164 81 42020 minecraft:air run say hr:floating-upper 43164 82 42020
+/execute if block 43164 83 42020 minecraft:birch_fence if block 43164 82 42020 minecraft:air run say hr:floating-upper 43164 83 42020
+/execute if block 43164 84 42020 minecraft:birch_fence if block 43164 83 42020 minecraft:air run say hr:floating-upper 43164 84 42020
+/execute if block 43164 85 42020 minecraft:birch_fence if block 43164 84 42020 minecraft:air run say hr:floating-upper 43164 85 42020
+/execute if block 43164 86 42020 minecraft:birch_fence if block 43164 85 42020 minecraft:air run say hr:floating-upper 43164 86 42020
+/execute if block 43164 87 42020 minecraft:birch_fence if block 43164 86 42020 minecraft:air run say hr:floating-upper 43164 87 42020
+/execute if block 43164 88 42020 minecraft:birch_fence if block 43164 87 42020 minecraft:air run say hr:floating-upper 43164 88 42020
+/execute if block 43164 89 42020 minecraft:birch_fence if block 43164 88 42020 minecraft:air run say hr:floating-upper 43164 89 42020
+/execute if block 43164 90 42020 minecraft:birch_fence if block 43164 89 42020 minecraft:air run say hr:floating-upper 43164 90 42020
+/execute if block 43164 91 42020 minecraft:birch_fence if block 43164 90 42020 minecraft:air run say hr:floating-upper 43164 91 42020
+/execute if block 43164 81 42021 minecraft:birch_fence if block 43164 80 42021 minecraft:air run say hr:floating-upper 43164 81 42021
+/execute if block 43164 82 42021 minecraft:birch_fence if block 43164 81 42021 minecraft:air run say hr:floating-upper 43164 82 42021
+/execute if block 43164 83 42021 minecraft:birch_fence if block 43164 82 42021 minecraft:air run say hr:floating-upper 43164 83 42021
+/execute if block 43164 84 42021 minecraft:birch_fence if block 43164 83 42021 minecraft:air run say hr:floating-upper 43164 84 42021
+/execute if block 43164 85 42021 minecraft:birch_fence if block 43164 84 42021 minecraft:air run say hr:floating-upper 43164 85 42021
+/execute if block 43164 86 42021 minecraft:birch_fence if block 43164 85 42021 minecraft:air run say hr:floating-upper 43164 86 42021
+/execute if block 43164 87 42021 minecraft:birch_fence if block 43164 86 42021 minecraft:air run say hr:floating-upper 43164 87 42021
+/execute if block 43164 88 42021 minecraft:birch_fence if block 43164 87 42021 minecraft:air run say hr:floating-upper 43164 88 42021
+/execute if block 43164 89 42021 minecraft:birch_fence if block 43164 88 42021 minecraft:air run say hr:floating-upper 43164 89 42021
+/execute if block 43164 90 42021 minecraft:birch_fence if block 43164 89 42021 minecraft:air run say hr:floating-upper 43164 90 42021
+/execute if block 43164 91 42021 minecraft:birch_fence if block 43164 90 42021 minecraft:air run say hr:floating-upper 43164 91 42021
+/execute if block 43164 81 42022 minecraft:birch_fence if block 43164 80 42022 minecraft:air run say hr:floating-upper 43164 81 42022
+/execute if block 43164 82 42022 minecraft:birch_fence if block 43164 81 42022 minecraft:air run say hr:floating-upper 43164 82 42022
+/execute if block 43164 83 42022 minecraft:birch_fence if block 43164 82 42022 minecraft:air run say hr:floating-upper 43164 83 42022
+/execute if block 43164 84 42022 minecraft:birch_fence if block 43164 83 42022 minecraft:air run say hr:floating-upper 43164 84 42022
+/execute if block 43164 85 42022 minecraft:birch_fence if block 43164 84 42022 minecraft:air run say hr:floating-upper 43164 85 42022
+/execute if block 43164 86 42022 minecraft:birch_fence if block 43164 85 42022 minecraft:air run say hr:floating-upper 43164 86 42022
+/execute if block 43164 87 42022 minecraft:birch_fence if block 43164 86 42022 minecraft:air run say hr:floating-upper 43164 87 42022
+/execute if block 43164 88 42022 minecraft:birch_fence if block 43164 87 42022 minecraft:air run say hr:floating-upper 43164 88 42022
+/execute if block 43164 89 42022 minecraft:birch_fence if block 43164 88 42022 minecraft:air run say hr:floating-upper 43164 89 42022
+/execute if block 43164 90 42022 minecraft:birch_fence if block 43164 89 42022 minecraft:air run say hr:floating-upper 43164 90 42022
+/execute if block 43164 91 42022 minecraft:birch_fence if block 43164 90 42022 minecraft:air run say hr:floating-upper 43164 91 42022
+/execute if block 43164 81 42023 minecraft:birch_fence if block 43164 80 42023 minecraft:air run say hr:floating-upper 43164 81 42023
+/execute if block 43164 82 42023 minecraft:birch_fence if block 43164 81 42023 minecraft:air run say hr:floating-upper 43164 82 42023
+/execute if block 43164 83 42023 minecraft:birch_fence if block 43164 82 42023 minecraft:air run say hr:floating-upper 43164 83 42023
+/execute if block 43164 84 42023 minecraft:birch_fence if block 43164 83 42023 minecraft:air run say hr:floating-upper 43164 84 42023
+/execute if block 43164 85 42023 minecraft:birch_fence if block 43164 84 42023 minecraft:air run say hr:floating-upper 43164 85 42023
+/execute if block 43164 86 42023 minecraft:birch_fence if block 43164 85 42023 minecraft:air run say hr:floating-upper 43164 86 42023
+/execute if block 43164 87 42023 minecraft:birch_fence if block 43164 86 42023 minecraft:air run say hr:floating-upper 43164 87 42023
+/execute if block 43164 88 42023 minecraft:birch_fence if block 43164 87 42023 minecraft:air run say hr:floating-upper 43164 88 42023
+/execute if block 43164 89 42023 minecraft:birch_fence if block 43164 88 42023 minecraft:air run say hr:floating-upper 43164 89 42023
+/execute if block 43164 90 42023 minecraft:birch_fence if block 43164 89 42023 minecraft:air run say hr:floating-upper 43164 90 42023
+/execute if block 43164 91 42023 minecraft:birch_fence if block 43164 90 42023 minecraft:air run say hr:floating-upper 43164 91 42023
+/execute if block 43164 81 42024 minecraft:birch_fence if block 43164 80 42024 minecraft:air run say hr:floating-upper 43164 81 42024
+/execute if block 43164 82 42024 minecraft:birch_fence if block 43164 81 42024 minecraft:air run say hr:floating-upper 43164 82 42024
+/execute if block 43164 83 42024 minecraft:birch_fence if block 43164 82 42024 minecraft:air run say hr:floating-upper 43164 83 42024
+/execute if block 43164 84 42024 minecraft:birch_fence if block 43164 83 42024 minecraft:air run say hr:floating-upper 43164 84 42024
+/execute if block 43164 85 42024 minecraft:birch_fence if block 43164 84 42024 minecraft:air run say hr:floating-upper 43164 85 42024
+/execute if block 43164 86 42024 minecraft:birch_fence if block 43164 85 42024 minecraft:air run say hr:floating-upper 43164 86 42024
+/execute if block 43164 87 42024 minecraft:birch_fence if block 43164 86 42024 minecraft:air run say hr:floating-upper 43164 87 42024
+/execute if block 43164 88 42024 minecraft:birch_fence if block 43164 87 42024 minecraft:air run say hr:floating-upper 43164 88 42024
+/execute if block 43164 89 42024 minecraft:birch_fence if block 43164 88 42024 minecraft:air run say hr:floating-upper 43164 89 42024
+/execute if block 43164 90 42024 minecraft:birch_fence if block 43164 89 42024 minecraft:air run say hr:floating-upper 43164 90 42024
+/execute if block 43164 91 42024 minecraft:birch_fence if block 43164 90 42024 minecraft:air run say hr:floating-upper 43164 91 42024
+/execute if block 43164 81 42025 minecraft:birch_fence if block 43164 80 42025 minecraft:air run say hr:floating-upper 43164 81 42025
+/execute if block 43164 82 42025 minecraft:birch_fence if block 43164 81 42025 minecraft:air run say hr:floating-upper 43164 82 42025
+/execute if block 43164 83 42025 minecraft:birch_fence if block 43164 82 42025 minecraft:air run say hr:floating-upper 43164 83 42025
+/execute if block 43164 84 42025 minecraft:birch_fence if block 43164 83 42025 minecraft:air run say hr:floating-upper 43164 84 42025
+/execute if block 43164 85 42025 minecraft:birch_fence if block 43164 84 42025 minecraft:air run say hr:floating-upper 43164 85 42025
+/execute if block 43164 86 42025 minecraft:birch_fence if block 43164 85 42025 minecraft:air run say hr:floating-upper 43164 86 42025
+/execute if block 43164 87 42025 minecraft:birch_fence if block 43164 86 42025 minecraft:air run say hr:floating-upper 43164 87 42025
+/execute if block 43164 88 42025 minecraft:birch_fence if block 43164 87 42025 minecraft:air run say hr:floating-upper 43164 88 42025
+/execute if block 43164 89 42025 minecraft:birch_fence if block 43164 88 42025 minecraft:air run say hr:floating-upper 43164 89 42025
+/execute if block 43164 90 42025 minecraft:birch_fence if block 43164 89 42025 minecraft:air run say hr:floating-upper 43164 90 42025
+/execute if block 43164 91 42025 minecraft:birch_fence if block 43164 90 42025 minecraft:air run say hr:floating-upper 43164 91 42025
+/execute if block 43164 81 42026 minecraft:birch_fence if block 43164 80 42026 minecraft:air run say hr:floating-upper 43164 81 42026
+/execute if block 43164 82 42026 minecraft:birch_fence if block 43164 81 42026 minecraft:air run say hr:floating-upper 43164 82 42026
+/execute if block 43164 83 42026 minecraft:birch_fence if block 43164 82 42026 minecraft:air run say hr:floating-upper 43164 83 42026
+/execute if block 43164 84 42026 minecraft:birch_fence if block 43164 83 42026 minecraft:air run say hr:floating-upper 43164 84 42026
+/execute if block 43164 85 42026 minecraft:birch_fence if block 43164 84 42026 minecraft:air run say hr:floating-upper 43164 85 42026
+/execute if block 43164 86 42026 minecraft:birch_fence if block 43164 85 42026 minecraft:air run say hr:floating-upper 43164 86 42026
+/execute if block 43164 87 42026 minecraft:birch_fence if block 43164 86 42026 minecraft:air run say hr:floating-upper 43164 87 42026
+/execute if block 43164 88 42026 minecraft:birch_fence if block 43164 87 42026 minecraft:air run say hr:floating-upper 43164 88 42026
+/execute if block 43164 89 42026 minecraft:birch_fence if block 43164 88 42026 minecraft:air run say hr:floating-upper 43164 89 42026
+/execute if block 43164 90 42026 minecraft:birch_fence if block 43164 89 42026 minecraft:air run say hr:floating-upper 43164 90 42026
+/execute if block 43164 91 42026 minecraft:birch_fence if block 43164 90 42026 minecraft:air run say hr:floating-upper 43164 91 42026
+/execute if block 43164 81 42027 minecraft:birch_fence if block 43164 80 42027 minecraft:air run say hr:floating-upper 43164 81 42027
+/execute if block 43164 82 42027 minecraft:birch_fence if block 43164 81 42027 minecraft:air run say hr:floating-upper 43164 82 42027
+/execute if block 43164 83 42027 minecraft:birch_fence if block 43164 82 42027 minecraft:air run say hr:floating-upper 43164 83 42027
+/execute if block 43164 84 42027 minecraft:birch_fence if block 43164 83 42027 minecraft:air run say hr:floating-upper 43164 84 42027
+/execute if block 43164 85 42027 minecraft:birch_fence if block 43164 84 42027 minecraft:air run say hr:floating-upper 43164 85 42027
+/execute if block 43164 86 42027 minecraft:birch_fence if block 43164 85 42027 minecraft:air run say hr:floating-upper 43164 86 42027
+/execute if block 43164 87 42027 minecraft:birch_fence if block 43164 86 42027 minecraft:air run say hr:floating-upper 43164 87 42027
+/execute if block 43164 88 42027 minecraft:birch_fence if block 43164 87 42027 minecraft:air run say hr:floating-upper 43164 88 42027
+/execute if block 43164 89 42027 minecraft:birch_fence if block 43164 88 42027 minecraft:air run say hr:floating-upper 43164 89 42027
+/execute if block 43164 90 42027 minecraft:birch_fence if block 43164 89 42027 minecraft:air run say hr:floating-upper 43164 90 42027
+/execute if block 43164 91 42027 minecraft:birch_fence if block 43164 90 42027 minecraft:air run say hr:floating-upper 43164 91 42027
+/execute if block 43164 81 42028 minecraft:birch_fence if block 43164 80 42028 minecraft:air run say hr:floating-upper 43164 81 42028
+/execute if block 43164 82 42028 minecraft:birch_fence if block 43164 81 42028 minecraft:air run say hr:floating-upper 43164 82 42028
+/execute if block 43164 83 42028 minecraft:birch_fence if block 43164 82 42028 minecraft:air run say hr:floating-upper 43164 83 42028
+/execute if block 43164 84 42028 minecraft:birch_fence if block 43164 83 42028 minecraft:air run say hr:floating-upper 43164 84 42028
+/execute if block 43164 85 42028 minecraft:birch_fence if block 43164 84 42028 minecraft:air run say hr:floating-upper 43164 85 42028
+/execute if block 43164 86 42028 minecraft:birch_fence if block 43164 85 42028 minecraft:air run say hr:floating-upper 43164 86 42028
+/execute if block 43164 87 42028 minecraft:birch_fence if block 43164 86 42028 minecraft:air run say hr:floating-upper 43164 87 42028
+/execute if block 43164 88 42028 minecraft:birch_fence if block 43164 87 42028 minecraft:air run say hr:floating-upper 43164 88 42028
+/execute if block 43164 89 42028 minecraft:birch_fence if block 43164 88 42028 minecraft:air run say hr:floating-upper 43164 89 42028
+/execute if block 43164 90 42028 minecraft:birch_fence if block 43164 89 42028 minecraft:air run say hr:floating-upper 43164 90 42028
+/execute if block 43164 91 42028 minecraft:birch_fence if block 43164 90 42028 minecraft:air run say hr:floating-upper 43164 91 42028
+closescreen
+hud off
+/tp @s 43169 74 42024 90 10
+wait 40
+screenshot hr-side-east
+/tp @s 43160 78 42030 180 35
+wait 40
+screenshot hr-side-south
+/tp @s 43166 67.2 42025 120 -55
+wait 40
+screenshot hr-below
+hud on
+/say hr:away
+/tp @s 45160 160 42024 0 90
+wait 600
+/tp @s 43160 90 42024 0 90
+wait 200
+/say hr:regrowth
+/execute if block 43164 67 42020 minecraft:stripped_birch_wood
+/execute if block 43164 67 42021 minecraft:stripped_birch_wood
+/execute if block 43163 67 42020 minecraft:stripped_birch_wood
+/execute if block 43164 68 42022 minecraft:stripped_birch_wood
+/execute if block 43164 69 42023 minecraft:stripped_birch_wood
+/execute if block 43164 70 42024 minecraft:stripped_birch_wood
+/execute if block 43164 71 42025 minecraft:stripped_birch_wood
+/execute if block 43164 72 42026 minecraft:stripped_birch_wood
+/execute if block 43164 73 42028 minecraft:stripped_birch_wood
+/execute if block 43164 73 42027 minecraft:stripped_birch_wood
+/execute if block 43163 73 42028 minecraft:stripped_birch_wood
+/execute if block 43162 74 42028 minecraft:stripped_birch_wood
+/execute if block 43161 75 42028 minecraft:stripped_birch_wood
+/execute if block 43160 76 42028 minecraft:stripped_birch_wood
+/execute if block 43159 77 42028 minecraft:stripped_birch_wood
+/execute if block 43158 78 42028 minecraft:stripped_birch_wood
+/execute if block 43156 79 42028 minecraft:stripped_birch_wood
+/execute if block 43156 79 42027 minecraft:stripped_birch_wood
+/execute if block 43157 79 42028 minecraft:stripped_birch_wood
+/execute if block 43156 80 42026 minecraft:stripped_birch_wood
+quit

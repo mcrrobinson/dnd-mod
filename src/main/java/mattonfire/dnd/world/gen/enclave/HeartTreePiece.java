@@ -198,14 +198,16 @@ public class HeartTreePiece extends EnclavePiece {
             } else {
                 b.anchor(x, y, z, Blocks.DIRT.getDefaultState());
             }
-            // Rail on the outside, except where the stair passes the bridge deck.
-            if (y < ElvenEnclavePlanner.DECK - 1 || y > ElvenEnclavePlanner.DECK + 1) {
+            // Rail on the outside, except where the stair passes the bridge deck. The deck's headroom (DECK + 1 to
+            // DECK + 3 over its inner ring) would cut the posts just above it off their stringer, so the rail
+            // starts again above that.
+            if (y < ElvenEnclavePlanner.DECK - 1 || y > ElvenEnclavePlanner.DECK + 3) {
                 int ox = Math.abs(x) == TRUNK + 1 ? Integer.signum(x) : 0;
                 int oz = Math.abs(z) == TRUNK + 1 ? Integer.signum(z) : 0;
-                b.set(x + ox, y + 1, z + oz, Blocks.BIRCH_FENCE);
+                this.railPost(b, x + ox, y, z + oz);
                 if (ox != 0 && oz != 0) {
-                    b.set(x + ox, y + 1, z, Blocks.BIRCH_FENCE);
-                    b.set(x, y + 1, z + oz, Blocks.BIRCH_FENCE);
+                    this.railPost(b, x + ox, y, z);
+                    this.railPost(b, x, y, z + oz);
                 }
                 // Now and then a lantern on the rail. (Hung over the step, 3 up, it caught your head as you
                 // climbed onto the next step.)
@@ -213,6 +215,20 @@ public class HeartTreePiece extends EnclavePiece {
                     b.set(x + ox, y + 2, z + oz, lantern(false));
                 }
             }
+        }
+    }
+
+    /**
+     * A rail post beside the step at local y {@code y}: a birch fence one up, standing on a stripped birch stringer
+     * level with the step, so the rail doesn't float in the air once the forest round the stair is cleared away.
+     * Stripped wood isn't forest growth ({@link #isForest}), so {@link #clearRegrowth} leaves it. The lowest
+     * posts are filled down to the ground like the first steps.
+     */
+    private void railPost(Builder b, int x, int y, int z) {
+        b.set(x, y, z, Blocks.STRIPPED_BIRCH_WOOD);
+        b.set(x, y + 1, z, Blocks.BIRCH_FENCE);
+        if (y <= 1) {
+            b.anchor(x, y, z, Blocks.DIRT.getDefaultState());
         }
     }
 

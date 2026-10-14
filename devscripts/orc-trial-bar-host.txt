@@ -11,14 +11,19 @@ include _reset.txt
 /time set 6000
 /gamerule doDaylightCycle false
 /dndrace set @s halforc
+# With no class, the race change reopens the class picker, which pauses the game
+wait 5
+closescreen
 /rep @s dndclasses:bloodtusk_horde set 0
-/dndhome trialreset @s
 /publish false survival 25617
 waitchat DevGuest joined the game
 wait 40
 /effect give @a minecraft:resistance 200 4 true
 /dndhome stronghold pit
 waitserver 2
+# Forget an earlier run's Trial in this world: a loss today (the clock is stopped) or a win (Blood-Sworn)
+/dndhome trialreset @s
+/dndhome bloodsworn @s false
 wait 60
 use
 wait 40

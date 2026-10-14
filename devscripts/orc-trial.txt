@@ -5,10 +5,12 @@
 # - "[OrcTrial] <player> started the Trial ..." then "... lost the Trial ... (yielded), health 3.0" after
 #   /damage @s 40 (the player is alive at 3 HP), then "refused (tomorrow)" on the next beat
 # - after /dndhome trialreset: "started" again, and "... won the Trial ... (champion yielded)" after the
-#   Champion takes /damage 60; "Blood and Thunder" in chat; the Orcish Greataxe in the slots dump
+#   Champion takes /damage 60; "Blood and Thunder" in chat (only on the world's first win); the Orcish Greataxe in the slots dump
 # - screenshots trial-bar (the duel bar), trial-lost, trial-won
 # - each drum "use" logs "use -> block minecraft:note_block": /dndhome stronghold pit aims at the drum's near
 #   face (aiming at its middle from the pit floor hit the hay bale under it)
+# - no "[DevScript] waitserver: the game is paused" warning (the class picker reopening after /dndrace set used
+#   to pause the game, so waitserver never finished)
 wait 40
 closescreen
 include _reset.txt
@@ -18,13 +20,25 @@ include _reset.txt
 /gamerule doDaylightCycle false
 /effect give @s resistance 10 4 true
 /dndrace set @s human
+# With no class, the race change reopens the class picker, which pauses the game
+wait 5
+closescreen
 /dndhome stronghold pit
 waitserver 2
 wait 60
 use
 wait 20
 /dndrace set @s halforc
+# With no class, the race change reopens the class picker, which pauses the game
+wait 5
+closescreen
 /rep @s dndclasses:bloodtusk_horde set 0
+# Forget an earlier run's Trial in this world: a loss today (the clock is stopped) or a win (Blood-Sworn)
+/dndhome trialreset @s
+/dndhome bloodsworn @s false
+# Aim again: the teleport aims from the eye height, which changed with the race
+/dndhome stronghold pit
+waitserver 2
 wait 20
 /effect clear @s
 /effect give @s instant_health 1 5 true
@@ -36,6 +50,9 @@ screenshot trial-bar
 wait 20
 screenshot trial-lost
 /data get entity @s Health
+# The Champion may have knocked the player off the aim
+/dndhome stronghold pit
+waitserver 2
 wait 40
 use
 wait 20

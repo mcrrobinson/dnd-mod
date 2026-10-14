@@ -147,7 +147,7 @@ public final class ClassLifecycle {
             skills.forget(player);
         }
         player.clearStatusEffects();
-        Druid.onClassReset(player);
+        DruidRules.onClassReset(player);
         DndCharacter oldClass = classOf(player);
         Progression.invalidate(player);
         if (player instanceof PlayerEntityExt ext) {

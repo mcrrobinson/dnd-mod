@@ -66,5 +66,5 @@ Every player can use these. No op is needed.
   - Other XP systems share through `shareXp(player, amount, channel, grant)`. For example `ProgressionEvents.onKill` calls `PartyEvents.shareXp(player, xp, PartyEvents.XP_PROGRESSION, Progression::addXp)`.
 - `mixin/ExperienceOrbEntityMixin.java`: redirects the orb's `addExperience` call to `shareXp`.
 - `Client/Hud/PartyHud.java`: the client receiver and HUD drawing.
-- The Cleric change is in `Misc/PowerUpEffect.java` and `Misc/ClericHandler.java`.
+- The Cleric change is in `Misc/PowerUpEffect.java` and `ClericRules.java`.
 - To test with two players, follow the LAN steps in `CLAUDE.md` (`devscripts/lan-host-check.txt` and `lan-guest-check.txt`).

@@ -16,8 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
  * so it is safe to repeat on every join and respawn: it never touches effects or
  * health. Server-safe (no client classes).
  *
- * Behaviour that isn't an attribute lives elsewhere: Cleric haste in ClericHandler,
- * Monk weapon rules in MonkHandler, Paladin potion/crafting bans in mixins, Ranger
+ * Behaviour that isn't an attribute lives elsewhere: Cleric haste in ClericRules,
+ * Monk weapon rules in MonkRules, Paladin potion/crafting bans in mixins, Ranger
  * zoom and sword ban in RangerBowZoomMixin/RangerSwordPickupMixin, Warlock fire in
  * Warlock, Artificer damage in ArtificerDamage (via ClassAttributeRules), Druid hearts in Druid.
  */
@@ -89,8 +89,8 @@ public final class ClassStats {
         setBase(player, EntityAttributes.GENERIC_ATTACK_SPEED, stats.attackSpeed());
         setBase(player, EntityAttributes.GENERIC_LUCK, stats.luck());
         if (dndClass == DndCharacter.DRUID && player instanceof ServerPlayerEntity serverPlayer) {
-            // Extra hearts from tamed animals; kept up to date by Druid.serverTick.
-            Druid.updateAnimalHearts(serverPlayer);
+            // Extra hearts from tamed animals; kept up to date by DruidRules.serverTick.
+            DruidRules.updateAnimalHearts(serverPlayer);
         }
         capHealth(player);
     }

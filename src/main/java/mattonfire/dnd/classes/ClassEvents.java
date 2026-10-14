@@ -63,7 +63,7 @@ public final class ClassEvents {
                         }
                 });
 
-                // Warlock fire breath ticks in Warlock.register().
+                // Warlock fire breath ticks in WarlockRules.register().
 
                 ServerTickEvents.END_WORLD_TICK.register(serverWorld -> {
                         {

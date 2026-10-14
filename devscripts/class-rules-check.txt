@@ -1,0 +1,83 @@
+# Class base rules smoke check: one readout per *Rules class (ClericRules, MonkRules, WarlockRules, DruidRules).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/class-rules-check.txt
+# Expect in latest.log:
+#   CLERIC: ActiveEffects with Haste (Id 3, Amplifier 2) and Night Vision (Id 16).
+#   MONK: armor damage modifier -0.25 bare, about -0.583 in a diamond chestplate; the action bar says
+#         "Monks can only fight with a staff or bare fists!" after attacking with a sword.
+#   WARLOCK: Health stays 20.0 after 4 fire damage.
+#   DRUID: Health climbs back from 10.0 in daylight (natural regeneration is off).
+wait 40
+closescreen
+include _reset.txt
+/gamerule naturalRegeneration false
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/time set noon
+/gamemode creative
+/clear @s
+/tp @s 500 151 500 0 0
+wait 40
+/fill 485 150 485 515 150 515 minecraft:stone
+/fill 485 151 485 515 165 515 minecraft:air
+/tp @s 500 151 500 0 0
+/kill @e[tag=classrules]
+wait 10
+/gamemode survival
+wait 20
+
+/say CLERIC
+/dndclass set @s cleric
+/clear @s dndclasses:class_guidebook
+wait 20
+/data get entity @s ActiveEffects
+include _reset.txt
+
+/say MONK
+/dndclass set @s monk
+/clear @s dndclasses:class_guidebook
+wait 10
+/attribute @s minecraft:generic.attack_damage modifier value get 5b0e7c2a-3d6f-4c1e-9a8b-6f2d1e0c4a71
+/item replace entity @s armor.chest with minecraft:diamond_chestplate
+wait 5
+/attribute @s minecraft:generic.attack_damage modifier value get 5b0e7c2a-3d6f-4c1e-9a8b-6f2d1e0c4a71
+/item replace entity @s armor.chest with minecraft:air
+/summon minecraft:zombie 500 151 502 {NoAI:1b,NoGravity:1b,Rotation:[180f,0f],Tags:["classrules"]}
+/item replace entity @s hotbar.0 with minecraft:iron_sword
+hotbar 0
+/tp @s 500 151 500 0 10
+wait 10
+attack
+wait 5
+actionbar
+/kill @e[tag=classrules]
+/clear @s
+include _reset.txt
+
+/say WARLOCK
+/dndclass set @s warlock
+/clear @s dndclasses:class_guidebook
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/data get entity @s Health
+/damage @s 4 minecraft:in_fire
+wait 5
+/data get entity @s Health
+include _reset.txt
+
+/say DRUID
+/dndclass set @s druid
+/clear @s dndclasses:class_guidebook
+/effect give @s minecraft:instant_health 1 5
+wait 10
+/damage @s 10 minecraft:generic
+wait 2
+/data get entity @s Health
+wait 100
+/data get entity @s Health
+screenshot class-rules-druid
+include _reset.txt
+/gamerule naturalRegeneration true
+/gamerule doDaylightCycle true
+/gamerule doMobSpawning true
+quit

@@ -43,7 +43,7 @@ public abstract class DoubleJumpMixin {
                                 --jumpCount;
                                 player.jump();
 
-                                // The server resets it too (MonkHandler), which is what counts for damage.
+                                // The server resets it too (MonkRules), which is what counts for damage.
                                 player.fallDistance = 0;
 
                                 DoubleJumpEffect.play(player);

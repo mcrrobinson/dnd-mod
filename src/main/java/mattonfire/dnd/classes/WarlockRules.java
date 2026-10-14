@@ -43,7 +43,7 @@ import net.minecraft.util.math.Vec3d;
  * Burns and hurts mobs in a beam, but not the Warlock's party or pets. Duration, reach,
  * damage and burn time come from WarlockSkills.FIRE_BREATH.
  */
-public class Warlock {
+public class WarlockRules {
     /** Players breathing fire, by UUID, and the world time their breath ends at. */
     public static final Map<UUID, Long> FIREBREATH_UNTIL = new HashMap<>();
 
@@ -66,9 +66,9 @@ public class Warlock {
     }
 
     public static void register() {
-        ServerPlayNetworking.registerGlobalReceiver(C2S_WARLOCK_FIREBALL, Warlock::receiveFireballRequest);
+        ServerPlayNetworking.registerGlobalReceiver(C2S_WARLOCK_FIREBALL, WarlockRules::receiveFireballRequest);
 
-        ServerTickEvents.END_WORLD_TICK.register(Warlock::tickFireBreath);
+        ServerTickEvents.END_WORLD_TICK.register(WarlockRules::tickFireBreath);
 
         ServerPlayConnectionEvents.DISCONNECT
                 .register((handler, server) -> FIREBALL_READY_TICK.remove(handler.getPlayer().getUuid()));

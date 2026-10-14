@@ -7,7 +7,7 @@ Where things live in the code.
 | Mod entry point (registration order) | `classes/DnDClasses.java` |
 | Class rules and mana regen (item bans, Necromancer wither, Blood Hunter fire, Lunge), the power-up key, packet ids | `classes/ClassEvents.java`, `classes/PowerUpRequests.java`, `classes/ClassPackets.java`, `classes/ManaManager.java` |
 | Class stats and picking | `classes/ClassStats.java`, `classes/ClassLifecycle.java`, `classes/DndCharacter.java`, `classes/CharacterCreation.java`, `classes/ClassInfo.java` (reads `data/dndclasses/class_info.json`) |
-| Class passives | `classes/` (`Druid`, `Warlock`, `MonkHandler`, `PotionImmunity`) and `classes/Misc/` |
+| Class base rules and passives (what every member of a class gets, before the skill tree) | `classes/` (`ClericRules`, `DruidRules`, `MonkRules`, `WarlockRules`, `PotionImmunity`) and `classes/Misc/`; the skill-tree side of each class is its `Progression/Classes/<Class>Skills.java` |
 | Class specials | `classes/Misc/PowerUpEffect.java`, `classes/Effects/` |
 | Class XP, skill trees, ranks, subclasses, bestiary, Attunement Table | `classes/Progression/` (`Progression`, `ClassProgress`, `ClassTrees`, `Ranks`, `Subclass`, and one `Classes/<Class>Skills.java` per class; `SkillHelpers` has the shared targeting, summons, timed area effects (`startArea`), thrown-potion watching (`onLanding`) and per-player `Cooldowns`), `classes/Blocks/AttunementTableBlock.java` |
 | Ability scores, proficiency, skills, saves | `classes/Abilities/` (`AbilityScores`, `CharacterSheet`, `ClassSaveFeatures`) |
@@ -48,7 +48,7 @@ What each `build.gradle` dependency is for. Jars in `libs/` resolve through the 
 | GeckoLib 4.2 | animated mobs, class armor, the player armor model | `modImplementation`; players install it (`depends` in `fabric.mod.json`) |
 | LibGui (`libs/LibGui-7.1.1+1.19.4.jar`) | GUI screens | `modImplementation include` (bundled); its deps Jankson-Fabric, libninepatch and Jankson are `modLocalRuntime`/`localRuntime` because the dev runtime doesn't load nested jars |
 | reach-entity-attributes 2.3.2 | the race attack-reach modifier (`Race/RaceStats`) | `modImplementation include` (bundled) |
-| Identity (`libs/identity-2.7.0-1.19.4-fabric-dev-build-2.jar`) | Druid Wild Shape, Blood Hunter possession (`Druid`, `Misc/BloodHunterIdentityCompat`) | `modImplementation`; optional for players (`recommends`) |
+| Identity (`libs/identity-2.7.0-1.19.4-fabric-dev-build-2.jar`) | Druid Wild Shape, Blood Hunter possession (`DruidRules`, `Misc/BloodHunterIdentityCompat`) | `modImplementation`; optional for players (`recommends`) |
 | Architectury, omega-config (`libs/omega-config-base-1.3.0+1.19.2.jar`) | nothing in this mod; Identity needs them, so the dev client loads them | `modLocalRuntime` (not bundled, not on the compile classpath) |
 
 ## Tools

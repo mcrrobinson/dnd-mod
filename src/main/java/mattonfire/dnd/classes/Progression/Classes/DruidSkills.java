@@ -12,7 +12,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.Druid;
+import mattonfire.dnd.classes.DruidRules;
 import mattonfire.dnd.classes.ManaManager;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -38,11 +38,11 @@ import net.minecraft.sound.SoundEvents;
 
 /**
  * Druid skills. Beast Bond, Photosynthesis and Tidecaller are checked in
- * {@link Druid} and {@code PlayerEntityMixin}.
+ * {@link DruidRules} and {@code PlayerEntityMixin}.
  */
 public class DruidSkills extends ClassSkills {
     /**
-     * The root special; fired by {@code PowerUpEffect} through {@link Druid#transform}. The rank sets the
+     * The root special; fired by {@code PowerUpEffect} through {@link DruidRules#transform}. The rank sets the
      * form's duration (today's 30 s at full rank) and the highest form tier that can be unlocked.
      */
     public static final Ranks WILD_SHAPE = Ranks.of("druid.wild_shape")
@@ -154,7 +154,7 @@ public class DruidSkills extends ClassSkills {
     /** Animals and wild beasts (the {@code #dndclasses:druid_forms} tag), like the Druid's old kill list. */
     @Override
     public boolean learnsFrom(LivingEntity killed) {
-        return killed instanceof AnimalEntity || killed.getType().isIn(Druid.DRUID_FORMS);
+        return killed instanceof AnimalEntity || killed.getType().isIn(DruidRules.DRUID_FORMS);
     }
 
     /**
@@ -175,7 +175,7 @@ public class DruidSkills extends ClassSkills {
     @Override
     public int killXp(ServerPlayerEntity player, LivingEntity killed, DamageSource source) {
         int xp = killed instanceof AnimalEntity ? ANIMAL_KILL_XP : 0;
-        if (killed instanceof Monster && Druid.isTransformed(player)) {
+        if (killed instanceof Monster && DruidRules.isTransformed(player)) {
             xp += FORM_KILL_BONUS_XP;
         }
         return xp;
@@ -185,7 +185,7 @@ public class DruidSkills extends ClassSkills {
     public float modifyDealtDamage(PlayerEntity player, ClassProgress progress, LivingEntity target,
             DamageSource source, float amount) {
         // Primal Strike: the form's own attacks, not arrows or skills.
-        if (progress.hasSubclass(MOON) && source.getSource() == player && Druid.isTransformed(player)) {
+        if (progress.hasSubclass(MOON) && source.getSource() == player && DruidRules.isTransformed(player)) {
             return amount + PRIMAL_STRIKE_DAMAGE;
         }
         return amount;
@@ -207,7 +207,7 @@ public class DruidSkills extends ClassSkills {
 
     @Override
     public void secondTick(ServerPlayerEntity player, ClassProgress progress) {
-        if (progress.hasPassive("druid.hardy_form") && Druid.isTransformed(player)) {
+        if (progress.hasPassive("druid.hardy_form") && DruidRules.isTransformed(player)) {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 40, 0, true, false, true));
         }
         // Natural Recovery: time on natural ground adds up; every 30 seconds of it is a mana pip.

@@ -34,7 +34,7 @@ import net.minecraft.util.Formatting;
  * server, which checks it, resets the fall distance so the landing is
  * measured from the second jump, and shows the effect to nearby players.
  */
-public class MonkHandler {
+public class MonkRules {
 
     private static final UUID DAMAGE_MODIFIER_ID = UUID.fromString("5b0e7c2a-3d6f-4c1e-9a8b-6f2d1e0c4a71");
     private static final String DAMAGE_MODIFIER_NAME = "Monk armor damage penalty";
@@ -69,7 +69,7 @@ public class MonkHandler {
         });
 
         // Every tick for monks, so putting armour on lowers the damage straight away.
-        ClassAttributeRules.add(MonkHandler::updateDamageModifier, MonkHandler::isMonk);
+        ClassAttributeRules.add(MonkRules::updateDamageModifier, MonkRules::isMonk);
 
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             if (!AIR_JUMPS_USED.isEmpty()) {

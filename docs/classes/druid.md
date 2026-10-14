@@ -77,12 +77,12 @@ How the features work:
 - The Call of the Wild wolves vanish when their time is up, or if their chunk unloads.
 
 ## For developers
-- All mechanics: `Druid.java` (hearts, `lightTick`, `transform`, `availableForms`, `cycleForm`). Swimming: `mixin/PlayerEntityMixin.tick`.
+- All mechanics: `DruidRules.java` (hearts, `lightTick`, `transform`, `availableForms`, `cycleForm`). Swimming: `mixin/PlayerEntityMixin.tick`.
 - Forms come from the shared bestiary (`ClassProgress.learned` / `bestiary`, see [Class progression](../systems/class-progression.md)). `availableForms` keeps unlocked entries whose tier is within Wild Shape's rank, so locked or unknown forms never come up.
 - Ranks: `DruidSkills.WILD_SHAPE` (`Duration` per rank, plus the tier text). Tiers: `DruidSkills.bestiaryRank` (sets `TIER_2`, `TIER_3`, non-`minecraft` namespace = tier IV). No tags, so the client's table agrees with the server.
 - Persistent NBT: the picked form in `druidChosenForm` (missing = random) and the active form's end time in `druidFormExpiry`. `ClassLifecycle` copies them on death and End exit.
-- Sneak + power-up is caught in `PowerUpRequests.handle` before the mana check (`Druid.cycleForm`), only while Wild Shape is the equipped active.
+- Sneak + power-up is caught in `PowerUpRequests.handle` before the mana check (`DruidRules.cycleForm`), only while Wild Shape is the equipped active.
 - Old saves: the pre-bestiary `druidKilledAnimals` list becomes learned but locked creatures (`Progression.get`); unlock them at a table.
 - Test: `devscripts/druid-wild-shape.txt`.
-- Skill tree: `Progression/Classes/DruidSkills.java`. Beast Bond, Photosynthesis and Tidecaller are checked in `Druid` and `PlayerEntityMixin`.
+- Skill tree: `Progression/Classes/DruidSkills.java`. Beast Bond, Photosynthesis and Tidecaller are checked in `DruidRules` and `PlayerEntityMixin`.
 - Mobs in the `#dndclasses:druid_forms` entity tag are learned when killed, like animals.

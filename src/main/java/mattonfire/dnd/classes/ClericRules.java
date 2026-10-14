@@ -1,10 +1,7 @@
-package mattonfire.dnd.classes.Misc;
+package mattonfire.dnd.classes;
 
 import org.jetbrains.annotations.Nullable;
 
-import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
 import mattonfire.dnd.classes.Progression.Classes.ClericSkills;
 import mattonfire.dnd.classes.Registry.ModEffects;
@@ -26,7 +23,7 @@ import net.minecraft.server.world.ServerWorld;
  * Cleric passives: permanent Haste and Night Vision, the circle of ignoring
  * mobs while MOB_REPEL is active, and Remove Curse on a player ({@link RemoveCurse}).
  */
-public class ClericHandler {
+public class ClericRules {
 
     // Night vision starts flickering under 200 ticks, so refresh before that.
     private static final int REFRESH_BELOW = 220;
@@ -46,7 +43,7 @@ public class ClericHandler {
     private static final int RING_PHASES = 3;
 
     public static void register() {
-        ServerTickEvents.END_WORLD_TICK.register(ClericHandler::onWorldTick);
+        ServerTickEvents.END_WORLD_TICK.register(ClericRules::onWorldTick);
         // Remove Curse: sneak + right-click a player with an empty hand (sneak + use on the air is the
         // client's C2S_SELF packet, see RemoveCurse)
         UseEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {

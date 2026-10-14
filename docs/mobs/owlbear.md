@@ -72,7 +72,7 @@ Killing an owlbear as a [Druid](../classes/druid.md) adds it to the Druid's best
 - Data:
   - `loot_tables/entities/owlbear.json`
   - the spawns and spawn restriction, in `world/gen/ModSpawns.java`
-  - the `#dndclasses:druid_forms` entity tag. The Druid (`classes/Druid.java`) records kills of animals and of anything in this tag, so add a mob to the tag to make it a Druid form.
+  - the `#dndclasses:druid_forms` entity tag. The Druid (`classes/DruidRules.java`) records kills of animals and of anything in this tag, so add a mob to the tag to make it a Druid form.
 - Devscripts:
   - `devscripts/owlbear.txt`: look screenshots, plus a fight against a survival player
   - `devscripts/grab-saves.txt`: hug and charge saves with `forceroll`, struggling out of a hug

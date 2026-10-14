@@ -7,7 +7,7 @@ import java.util.List;
 import io.netty.buffer.Unpooled;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.Druid;
+import mattonfire.dnd.classes.DruidRules;
 import mattonfire.dnd.classes.Damages.ModDamageTypes;
 import mattonfire.dnd.classes.Goals.FollowSummonerGoal;
 import mattonfire.dnd.classes.Progression.SkillHelpers;
@@ -279,7 +279,7 @@ public class PowerUpEffect {
                 RogueSkills.vanish(player);
                 break;
             case DRUID:
-                if (!(player instanceof ServerPlayerEntity serverPlayer) || !Druid.transform(serverPlayer))
+                if (!(player instanceof ServerPlayerEntity serverPlayer) || !DruidRules.transform(serverPlayer))
                     return false; // Nothing to transform into, keep the mana
                 break;
             case NECROMANCER:
@@ -288,7 +288,7 @@ public class PowerUpEffect {
                 break;
             case WARLOCK:
                 // Breathe fire; duration, reach, damage and burn time scale with the rank.
-                mattonfire.dnd.classes.Warlock.FIREBREATH_UNTIL.put(player.getUuid(),
+                mattonfire.dnd.classes.WarlockRules.FIREBREATH_UNTIL.put(player.getUuid(),
                         player.getWorld().getTime() + WarlockSkills.FIRE_BREATH.ticks(player, "Duration"));
 
                 break;

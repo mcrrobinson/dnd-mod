@@ -39,6 +39,9 @@ public abstract class EnclavePiece extends ModPiece<EnclavePiece.Builder> {
     protected static final Identifier TALAN_LOOT = loot("elven_enclave_talan");
     public static final Identifier HEART_LOOT = loot("elven_enclave_heart");
 
+    /** How far above its spot an elf may be moved to stand on higher ground ({@link Builder#elf}). */
+    static final int MAX_STEP_UP = 8;
+
     protected final int ox;
     protected final int oy;
     protected final int oz;
@@ -191,10 +194,33 @@ public abstract class EnclavePiece extends ModPiece<EnclavePiece.Builder> {
             this.set(x, y, z, this.pick(FLOWERS));
         }
 
-        /** An elf of {@code type} standing at local x/y/z, at home there. */
+        /**
+         * An elf of {@code type} standing at local x/y/z, at home there. Where the ground there is higher than
+         * the piece's (pieces like the Heart Tree don't level the ground at their foot), it stands on top of it
+         * instead, so it isn't spawned inside the ground.
+         */
         void elf(int x, int y, int z, EntityType<? extends ElfEntity> type) {
-            BlockPos home = this.pos(x, y, z);
-            this.npc(x, y, z, type, elf -> elf.setHome(home));
+            int standY = this.standY(x, y, z);
+            BlockPos home = this.pos(x, standY, z);
+            this.npc(x, standY, z, type, elf -> elf.setHome(home));
+        }
+
+        /** The lowest local y from {@code y} up (at most {@link #MAX_STEP_UP} up) with room to stand; {@code y} if none. */
+        int standY(int x, int y, int z) {
+            if (!this.inChunk(x, y, z)) {
+                return y;
+            }
+            for (int dy = 0; dy <= MAX_STEP_UP; dy++) {
+                if (this.isOpen(x, y + dy, z) && this.isOpen(x, y + dy + 1, z)) {
+                    return y + dy;
+                }
+            }
+            return y;
+        }
+
+        private boolean isOpen(int x, int y, int z) {
+            BlockPos pos = this.pos(x, y, z);
+            return this.world.getBlockState(pos).getCollisionShape(this.world, pos).isEmpty();
         }
     }
 }

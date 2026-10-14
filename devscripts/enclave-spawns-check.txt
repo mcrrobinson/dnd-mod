@@ -1,0 +1,42 @@
+# Checks the two Elven Enclave spawn fixes on the enclave at 43152 42016 in the dev world's seed (Heart Tree
+# origin 43160 66 42024, from enclave-spawns-locate.txt). Run on a fresh copy of the dev world so the enclave
+# generates during the run:
+#   rm -rf run/saves/EnclaveFix && cp -r <pristine copy of run/saves/New World> run/saves/EnclaveFix
+#   timeout 400 ./gradlew runClient -PdevWorld=EnclaveFix -PdevScript=devscripts/enclave-spawns-check.txt
+# Expect in latest.log:
+# - es:elf: the Wood Elf at the Heart Tree's foot (local -5 1 2) stands in the open: "Test passed" for air at
+#   its feet and head, Pos near 43155 69 42026 (it spawned at 43155 67 42026, inside the dirt, before).
+# - es:stair / es:deck: "No blocks were filled": no forest leaves in the stair's shaft (out to the deck's edge, ground
+#   to hall) or over the deck. Before the fix 37 leaves filled the ring round the trunk.
+# Loading an enclave generated before the fix clears its stair too (debug.log: "[EnclaveRegrowth] cleared").
+# Screenshots es-stair-*.png show the stair from the east and the south.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 43160 160 42024 0 90
+wait 400
+/tp @s 43155 90 42026 0 90
+wait 100
+/say es:elf
+/execute as @e[type=dndclasses:wood_elf,x=43155,y=69,z=42026,sort=nearest,limit=1] run data get entity @s Pos
+/execute as @e[type=dndclasses:wood_elf,x=43155,y=69,z=42026,sort=nearest,limit=1] at @s if block ~ ~ ~ minecraft:air
+/execute as @e[type=dndclasses:wood_elf,x=43155,y=69,z=42026,sort=nearest,limit=1] at @s if block ~ ~1 ~ minecraft:air
+closescreen
+hud off
+/tp @s 43167 72 42024 90 15
+wait 40
+screenshot es-stair-east
+/tp @s 43160 72 42031 180 15
+wait 40
+screenshot es-stair-south
+hud on
+/say es:stair
+/fill 43154 67 42018 43166 91 42030 minecraft:air replace #minecraft:leaves[persistent=false]
+/say es:deck
+/fill 43154 83 42018 43166 85 42030 minecraft:air replace #minecraft:leaves[persistent=false]
+quit

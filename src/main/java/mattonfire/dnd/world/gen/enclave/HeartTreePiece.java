@@ -8,7 +8,10 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.CaveVines;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.world.chunk.WorldChunk;
 
 /**
  * The Heart Tree in the middle of the enclave: a 5x5 trunk of birch wood with stripped-birch inlays,
@@ -32,6 +35,13 @@ public class HeartTreePiece extends EnclavePiece {
     static final int REACH = CANOPY_RADIUS + 1;
     /** The ground the trunk, roots and stair take up, which the ground pieces keep off. */
     static final int FOOTPRINT = DECK_OUT + 1;
+
+    /**
+     * The shaft kept clear of the forest's trees round the stair: out to the deck's edge (Chebyshev distance), from the
+     * ground up to headroom over the last step.
+     */
+    static final int STAIR_SHAFT = DECK_OUT;
+    static final int STAIR_SHAFT_TOP = HALL + 3;
 
     /** The stair's ring at Chebyshev distance 3, in walking order (clockwise seen from above). */
     private static final int[][] RING = ring(TRUNK + 1);
@@ -104,7 +114,10 @@ public class HeartTreePiece extends EnclavePiece {
     @Override
     protected void build(Builder b) {
         // The forest's own trees are left to mingle with ours (clearing a box out of them leaves cut-off
-        // walls of leaves); the stair, deck and hall clear their own headroom.
+        // walls of leaves), except round the stair, which they'd bury; the deck and hall clear their own
+        // headroom. Trees from neighbouring chunks that decorate later are cleared when the chunk loads
+        // (clearRegrowth).
+        b.clearForest(-STAIR_SHAFT, 1, -STAIR_SHAFT, STAIR_SHAFT, STAIR_SHAFT_TOP, STAIR_SHAFT);
         this.trunk(b);
         this.roots(b);
         this.stair(b);
@@ -201,6 +214,28 @@ public class HeartTreePiece extends EnclavePiece {
                 }
             }
         }
+    }
+
+    /** Clears forest growth from the stair's shaft and the deck's headroom (as {@link #build} does), grown in since. */
+    @Override
+    int clearRegrowth(ServerWorld world, WorldChunk chunk) {
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        int cleared = 0;
+        for (int x = -STAIR_SHAFT; x <= STAIR_SHAFT; x++) {
+            for (int z = -STAIR_SHAFT; z <= STAIR_SHAFT; z++) {
+                for (int y = 1; y <= STAIR_SHAFT_TOP; y++) {
+                    cleared += this.clearRegrowthAt(world, chunk, pos, x, y, z);
+                }
+            }
+        }
+        for (int x = -DECK_OUT; x <= DECK_OUT; x++) {
+            for (int z = -DECK_OUT; z <= DECK_OUT; z++) {
+                for (int dy = 1; isDeck(x, z) && dy <= 3; dy++) {
+                    cleared += this.clearRegrowthAt(world, chunk, pos, x, ElvenEnclavePlanner.DECK + dy, z);
+                }
+            }
+        }
+        return cleared;
     }
 
     /** Whether local x/z is on the bridge deck round the trunk. */

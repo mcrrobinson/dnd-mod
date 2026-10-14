@@ -20,7 +20,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.chunk.WorldChunk;
 
 /**
  * Base for the elven enclave pieces. Each piece is built round an origin (its middle, on the ground
@@ -102,6 +104,31 @@ public abstract class EnclavePiece extends ModPiece<EnclavePiece.Builder> {
             return path.endsWith("_log") && !path.startsWith("stripped_");
         }
         return block == Blocks.VINE || block == Blocks.BEE_NEST;
+    }
+
+    /**
+     * Clears forest growth (see {@link #isForest}) out of the walkways this piece keeps open, in one chunk that
+     * has just loaded. Forest trees from a neighbouring chunk that decorates after this piece's slice was built
+     * can grow their leaves into it; by the time a chunk is loaded in full, every neighbour has decorated
+     * ({@link EnclaveRegrowth}). Returns how many blocks it cleared; nothing to clear by default.
+     */
+    int clearRegrowth(ServerWorld world, WorldChunk chunk) {
+        return 0;
+    }
+
+    /** Clears local x/y/z if it's in {@code chunk} and holds forest growth; 1 if it did, else 0. */
+    protected int clearRegrowthAt(ServerWorld world, WorldChunk chunk, BlockPos.Mutable pos, int x, int y, int z) {
+        pos.set(this.ox + x, this.oy + y, this.oz + z);
+        if ((pos.getX() >> 4) != chunk.getPos().x || (pos.getZ() >> 4) != chunk.getPos().z) {
+            return 0;
+        }
+        if (!isForest(chunk.getBlockState(pos))) {
+            return 0;
+        }
+        // Straight into the chunk: it isn't in the world yet, so the world can't set it.
+        chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false);
+        world.getChunkManager().getLightingProvider().checkBlock(pos);
+        return 1;
     }
 
     protected static final Block[] FLOWERS = {

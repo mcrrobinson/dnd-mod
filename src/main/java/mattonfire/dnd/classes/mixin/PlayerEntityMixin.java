@@ -1,7 +1,7 @@
 package mattonfire.dnd.classes.mixin;
 
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.Druid;
+import mattonfire.dnd.classes.DruidRules;
 import mattonfire.dnd.classes.Downed.Downed;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
@@ -232,7 +232,7 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         if (player instanceof PlayerEntityExt) {
             PlayerEntityExt playerEntity = (PlayerEntityExt) player;
             if (!world.isClient && this.age % 20 == 0 && player instanceof ServerPlayerEntity serverPlayer) {
-                Druid.serverTick(serverPlayer);
+                DruidRules.serverTick(serverPlayer);
             }
             // The passive lookup parses the class progress out of NBT on the server, so it comes last.
             if (playerEntity.getDndClass() == DndCharacter.DRUID && isSubmergedIn(FluidTags.WATER)
@@ -285,7 +285,7 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
 
             // Druids regenerate in the light and get hungry in the dark.
             if (playerEntity.getDndClass() == DndCharacter.DRUID && !world.isClient && this.age % 20 == 0) {
-                Druid.lightTick((PlayerEntity) entity);
+                DruidRules.lightTick((PlayerEntity) entity);
             }
         }
 

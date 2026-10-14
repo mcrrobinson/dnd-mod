@@ -20,7 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Misc.BardCompanions;
 import mattonfire.dnd.classes.Misc.BloodHunterControl;
-import mattonfire.dnd.classes.Misc.ClericHandler;
+import mattonfire.dnd.classes.ClericRules;
 import mattonfire.dnd.classes.Obstacles.types.GuardianBeastType;
 import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.entity.LichEntity;
@@ -62,7 +62,7 @@ public abstract class ActiveTargetGoalMixin extends TrackTargetGoalMixin {
         }
         // The same players MobEntityMixin keeps out of setTarget (a Cleric's circle, a Bard companion's friends,
         // a calmed guardian beast). That refusal swaps the target for null, so it would clear the old one too.
-        if (ClericHandler.isRepellingMobs(target) || BardCompanions.blocksTarget(this.mob, target)
+        if (ClericRules.isRepellingMobs(target) || BardCompanions.blocksTarget(this.mob, target)
                 || GuardianBeastType.blocksTarget(this.mob, target)) {
             return true;
         }

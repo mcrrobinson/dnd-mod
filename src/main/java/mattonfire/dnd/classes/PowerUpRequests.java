@@ -48,7 +48,7 @@ public final class PowerUpRequests {
                         int cost = skill == null ? DnDClasses.MANA_ICONS
                                         : mattonfire.dnd.classes.Progression.ClassSkills.manaCostFor(progress, skill);
                         // Sneak + power-up picks the Druid's Wild Shape form; free, so before the mana check.
-                        if (Druid.cycleForm(player)) {
+                        if (DruidRules.cycleForm(player)) {
                                 return;
                         }
                         int mana = ManaManager.getMana(player);

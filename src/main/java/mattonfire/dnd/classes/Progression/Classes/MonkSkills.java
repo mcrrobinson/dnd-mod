@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.MonkHandler;
+import mattonfire.dnd.classes.MonkRules;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
@@ -248,7 +248,7 @@ public class MonkSkills extends ClassSkills {
 
         // Armor weakens the rush like any other Monk strike; unarmored is full damage.
         float damage = (float) (FLURRY_RUSH.get(player, "Damage")
-                * MonkHandler.damageMultiplier(player.getArmor()) / MonkHandler.damageMultiplier(0));
+                * MonkRules.damageMultiplier(player.getArmor()) / MonkRules.damageMultiplier(0));
         RUSHES.put(player.getUuid(), new Rush(world.getRegistryKey(), player.getPos(), player.getYaw(),
                 player.getPitch(), order, damage, world.getTime()));
 

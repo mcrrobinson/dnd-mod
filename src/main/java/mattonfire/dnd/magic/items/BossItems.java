@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
-import mattonfire.dnd.classes.Warlock;
+import mattonfire.dnd.classes.WarlockRules;
 import mattonfire.dnd.classes.Abilities.Ability;
 import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.RollKind;
@@ -326,7 +326,7 @@ public final class BossItems {
     /** Water and rain hurt the Heart's bearer: 1 damage every 2 s, never below 2 HP (Warlocks already suffer). */
     private static void heartWet(ServerPlayerEntity player) {
         if (!player.isTouchingWaterOrRain() || player.isCreative() || player.isSpectator()
-                || Warlock.isWarlock(player)) {
+                || WarlockRules.isWarlock(player)) {
             HEART_WET.remove(player.getUuid());
             return;
         }

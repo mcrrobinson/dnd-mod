@@ -66,6 +66,6 @@ How the features work:
 - `/dndclass set <player> warlock` (see [Admin commands](../systems/admin-commands.md)).
 
 ## For developers
-- Fireballs, fire immunity and wet damage: `Warlock.java` (`FIREBALL_COOLDOWN_TICKS`, `WET_DAMAGE_INTERVAL_TICKS`) with `mixin/WarlockFireballMixin` (client). Fire breath: `Warlock.tickFireBreath` (end times in `DnDClasses.WARLOCK_FIREBREATH`, in world time); per-rank values in `WarlockSkills.FIRE_BREATH`, read each tick. `S2C_WARLOCK_FIREBREATH` carries the end time and the reach, and the client draws your own flames that far until that world time.
-- Skill tree: `Progression/Classes/WarlockSkills.java`. `Warlock` reads `WarlockSkills.INFERNAL_FIREBALLS` for the cooldown.
+- Fireballs, fire immunity and wet damage: `WarlockRules.java` (`FIREBALL_COOLDOWN_TICKS`, `WET_DAMAGE_INTERVAL_TICKS`) with `mixin/WarlockFireballMixin` (client). Fire breath: `WarlockRules.tickFireBreath` (end times in `WarlockRules.FIREBREATH_UNTIL`, in world time); per-rank values in `WarlockSkills.FIRE_BREATH`, read each tick. `S2C_WARLOCK_FIREBREATH` carries the end time and the reach, and the client draws your own flames that far until that world time.
+- Skill tree: `Progression/Classes/WarlockSkills.java`. `WarlockRules` reads `WarlockSkills.INFERNAL_FIREBALLS` for the cooldown.
 - Devscripts: `devscripts/warlock-passive.txt`, `devscripts/warlock-ranks.txt` (Fire Breath ranks).

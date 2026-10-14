@@ -165,8 +165,8 @@ public class DnDClasses implements ModInitializer {
                 ClassAttributeRules.register();
                 mattonfire.dnd.classes.Misc.PaladinNetherWeakness.register();
                 mattonfire.dnd.classes.Misc.ArtificerDamage.register();
-                mattonfire.dnd.classes.Misc.ClericHandler.register();
-                MonkHandler.register();
+                ClericRules.register();
+                MonkRules.register();
 
                 ModSounds.registerSounds();
                 mattonfire.dnd.classes.Music.DungeonMusic.register();
@@ -189,7 +189,7 @@ public class DnDClasses implements ModInitializer {
                                 ModPotions.FREEZE_POTION.value());
 
                 // Register doublejump registry.
-                // The double-jump packet is handled in MonkHandler.register().
+                // The double-jump packet is handled in MonkRules.register().
 
                 // Register powerup registry.
                 PowerUpRequests.register();
@@ -229,7 +229,7 @@ public class DnDClasses implements ModInitializer {
                 Invulnerability.register();
 
                 BloodHunterControl.register();
-                Warlock.register();
+                WarlockRules.register();
                 Progression.register();
                 ClassLifecycle.register();
                 CharacterCreation.register();

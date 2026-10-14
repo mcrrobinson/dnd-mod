@@ -32,7 +32,7 @@ import net.minecraft.util.TypeFilter;
  * darkness hunger, and Wild Shape into animals the druid has killed and
  * unlocked in the bestiary.
  */
-public class Druid {
+public class DruidRules {
     // Extra hearts from tamed animals.
     public static final UUID ANIMAL_HEARTS_UUID = UUID.fromString("5f6c1f0e-3a2b-4d8e-9a71-0d4b3c2e1a77");
     public static final int MAX_ANIMAL_HEARTS = 5;

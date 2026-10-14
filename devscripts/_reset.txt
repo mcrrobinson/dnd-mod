@@ -3,6 +3,8 @@
 # Downed player, a race with another eye height (a Dwarf's `use` at pitch 30 hits the floor), a class, effects.
 # It leaves the player alive, with no race and no class (no Class Guidebook), and no effects. Set the race and
 # class the script needs after it. Gamerules, gamemode, inventory and the world are left alone.
+# With no class, a later /dndrace set reopens the class picker, which pauses a single-player game (wait and
+# waitserver then stall): follow it with `wait 5` and `closescreen`, or set a class.
 respawn
 wait 5
 /dndclass revive @s

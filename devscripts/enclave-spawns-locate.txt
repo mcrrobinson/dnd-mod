@@ -1,0 +1,18 @@
+# Finds the pieces of the Elven Enclave at 43152 42016 in the dev world's seed (worldgen-dedupe-check.txt) and
+# where its Wood Elves stand. Run on a fresh world copy, so the enclave generates during the run.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 43152 160 42016 0 90
+wait 400
+/tp @s 43152 90 42016 0 90
+wait 100
+/dndhome pieces
+/execute as @e[type=dndclasses:wood_elf,distance=..80] run data get entity @s Pos
+/execute as @e[type=dndclasses:elf_warden,distance=..80] run data get entity @s Pos
+quit

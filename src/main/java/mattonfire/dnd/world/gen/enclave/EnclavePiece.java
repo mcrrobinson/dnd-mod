@@ -20,7 +20,9 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.chunk.WorldChunk;
 
 /**
  * Base for the elven enclave pieces. Each piece is built round an origin (its middle, on the ground
@@ -38,6 +40,9 @@ import net.minecraft.world.StructureWorldAccess;
 public abstract class EnclavePiece extends ModPiece<EnclavePiece.Builder> {
     protected static final Identifier TALAN_LOOT = loot("elven_enclave_talan");
     public static final Identifier HEART_LOOT = loot("elven_enclave_heart");
+
+    /** How far above its spot an elf may be moved to stand on higher ground ({@link Builder#elf}). */
+    static final int MAX_STEP_UP = 8;
 
     protected final int ox;
     protected final int oy;
@@ -99,6 +104,31 @@ public abstract class EnclavePiece extends ModPiece<EnclavePiece.Builder> {
             return path.endsWith("_log") && !path.startsWith("stripped_");
         }
         return block == Blocks.VINE || block == Blocks.BEE_NEST;
+    }
+
+    /**
+     * Clears forest growth (see {@link #isForest}) out of the walkways this piece keeps open, in one chunk that
+     * has just loaded. Forest trees from a neighbouring chunk that decorates after this piece's slice was built
+     * can grow their leaves into it; by the time a chunk is loaded in full, every neighbour has decorated
+     * ({@link EnclaveRegrowth}). Returns how many blocks it cleared; nothing to clear by default.
+     */
+    int clearRegrowth(ServerWorld world, WorldChunk chunk) {
+        return 0;
+    }
+
+    /** Clears local x/y/z if it's in {@code chunk} and holds forest growth; 1 if it did, else 0. */
+    protected int clearRegrowthAt(ServerWorld world, WorldChunk chunk, BlockPos.Mutable pos, int x, int y, int z) {
+        pos.set(this.ox + x, this.oy + y, this.oz + z);
+        if ((pos.getX() >> 4) != chunk.getPos().x || (pos.getZ() >> 4) != chunk.getPos().z) {
+            return 0;
+        }
+        if (!isForest(chunk.getBlockState(pos))) {
+            return 0;
+        }
+        // Straight into the chunk: it isn't in the world yet, so the world can't set it.
+        chunk.setBlockState(pos, Blocks.AIR.getDefaultState(), false);
+        world.getChunkManager().getLightingProvider().checkBlock(pos);
+        return 1;
     }
 
     protected static final Block[] FLOWERS = {
@@ -191,10 +221,33 @@ public abstract class EnclavePiece extends ModPiece<EnclavePiece.Builder> {
             this.set(x, y, z, this.pick(FLOWERS));
         }
 
-        /** An elf of {@code type} standing at local x/y/z, at home there. */
+        /**
+         * An elf of {@code type} standing at local x/y/z, at home there. Where the ground there is higher than
+         * the piece's (pieces like the Heart Tree don't level the ground at their foot), it stands on top of it
+         * instead, so it isn't spawned inside the ground.
+         */
         void elf(int x, int y, int z, EntityType<? extends ElfEntity> type) {
-            BlockPos home = this.pos(x, y, z);
-            this.npc(x, y, z, type, elf -> elf.setHome(home));
+            int standY = this.standY(x, y, z);
+            BlockPos home = this.pos(x, standY, z);
+            this.npc(x, standY, z, type, elf -> elf.setHome(home));
+        }
+
+        /** The lowest local y from {@code y} up (at most {@link #MAX_STEP_UP} up) with room to stand; {@code y} if none. */
+        int standY(int x, int y, int z) {
+            if (!this.inChunk(x, y, z)) {
+                return y;
+            }
+            for (int dy = 0; dy <= MAX_STEP_UP; dy++) {
+                if (this.isOpen(x, y + dy, z) && this.isOpen(x, y + dy + 1, z)) {
+                    return y + dy;
+                }
+            }
+            return y;
+        }
+
+        private boolean isOpen(int x, int y, int z) {
+            BlockPos pos = this.pos(x, y, z);
+            return this.world.getBlockState(pos).getCollisionShape(this.world, pos).isEmpty();
         }
     }
 }

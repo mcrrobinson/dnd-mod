@@ -122,6 +122,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
                 mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures.register();
+                mattonfire.dnd.world.gen.enclave.EnclaveRegrowth.register();
                 mattonfire.dnd.world.gen.enclave.Moonwell.register();
                 mattonfire.dnd.world.gen.temple.DragonTempleStructures.register();
                 mattonfire.dnd.world.gen.temple.TempleShrine.register();

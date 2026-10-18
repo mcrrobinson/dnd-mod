@@ -48,6 +48,17 @@ public final class ModBlockFamilies {
             .stoneShapes().build();
     /** Bark grown into a wall, with leaves, tendrils and tiny flowers sprouting from it: elves grow their homes. */
     public static final BlockFamily LIVING_WOOD = BlockFamily.builder("living_wood", Blocks.BIRCH_WOOD).build();
+    // --- Dwarven Fortresses ---
+    /** Runic brick carved with one large rune in a gold frame: fortress pillar caps and door frames. */
+    public static final BlockFamily CHISELED_RUNIC_DEEPSLATE_BRICKS = BlockFamily
+            .builder("chiseled_runic_deepslate_bricks", Blocks.CHISELED_DEEPSLATE).build();
+    /** Heat-blackened brick with ember mortar, for the fortress forges. Gives off a little light. */
+    public static final BlockFamily FORGE_BRICKS = BlockFamily
+            .builder("forge_bricks", FabricBlockSettings.copyOf(Blocks.BRICKS).luminance(state -> 3)).stairs().slab()
+            .build();
+    /** A fluted dark stone column with gold run into its cracks; lies along an axis like a log. */
+    public static final BlockFamily GOLD_VEINED_PILLAR = BlockFamily
+            .builder("gold_veined_pillar", Blocks.POLISHED_DEEPSLATE).axisBase().build();
 
     private ModBlockFamilies() {
     }

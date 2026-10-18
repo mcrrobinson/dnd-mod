@@ -27,6 +27,8 @@ public class ModItemGroup {
             }
             // --- Brimstone Sanctums ---
             SanctumBlocks.all().forEach(entries::add);
+            // --- Dwarven Fortresses ---
+            DwarvenBlocks.all().forEach(entries::add);
         });
         // Example of adding to existing Item Group
         ItemGroupEvents.modifyEntriesEvent(DND_CLASSES_ITEMGROUP).register(entries -> {

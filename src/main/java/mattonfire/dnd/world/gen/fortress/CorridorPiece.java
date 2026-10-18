@@ -32,7 +32,7 @@ public class CorridorPiece extends FortressPiece {
         b.shell(WIDTH, HEIGHT, DEPTH, Blocks.POLISHED_DEEPSLATE.getDefaultState());
         b.air(1, 1, 0, 3, 4, 0);
         b.air(1, 1, DEPTH - 1, 3, 4, DEPTH - 1);
-        b.fill(2, 0, 0, 2, 0, DEPTH - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(2, 0, 0, 2, 0, DEPTH - 1, RUNIC.base());
         for (int z = 0; z < DEPTH; z++) {
             b.set(1, 4, z, stairs(Blocks.DEEPSLATE_TILE_STAIRS, Direction.EAST, true));
             b.set(3, 4, z, stairs(Blocks.DEEPSLATE_TILE_STAIRS, Direction.WEST, true));

@@ -15,9 +15,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 /**
- * The great hall: a long, high hall of polished deepslate with two rows of gold-capped pillars
- * hung with banners, chandeliers down the middle, feasting tables, and doorways down both sides
- * to the rest of the fortress.
+ * The great hall: a long, high hall of runic brick with two rows of gold-veined pillars hung with
+ * banners, ancestor statues set into the walls, chandeliers down the middle, feasting tables, and
+ * doorways under clan crests down both sides to the rest of the fortress.
  */
 public class HallPiece extends FortressPiece {
     private static final int WIDTH = 17;
@@ -85,7 +85,7 @@ public class HallPiece extends FortressPiece {
                     b.set(x, 0, z, Blocks.DEEPSLATE_TILES);
                 }
             }
-            b.fill(MID - 1, 0, z, MID + 1, 0, z, Blocks.POLISHED_BLACKSTONE_BRICKS);
+            b.fill(MID - 1, 0, z, MID + 1, 0, z, RUNIC.base());
             b.fill(MID - 1, 1, z, MID + 1, 1, z, Blocks.RED_CARPET);
             // A gold band round the walls and a coved ceiling.
             b.set(0, 6, z, Blocks.GILDED_BLACKSTONE);
@@ -100,9 +100,26 @@ public class HallPiece extends FortressPiece {
 
         b.doorway(MID, 0, 5, 7);
         b.doorway(MID, length - 1, 5, 7);
+        b.crest(MID, 9, 0, IN);
+        b.crest(MID, 9, length - 1, OUT);
         for (int z : this.exitZs()) {
             this.sideDoorway(b, 0, z);
             this.sideDoorway(b, WIDTH - 1, z);
+            b.crest(0, 6, z, Direction.EAST);
+            b.crest(WIDTH - 1, 6, z, Direction.WEST);
+        }
+
+        // Ancestor statues set into the walls of the bays without doorways, on chiseled plinths.
+        for (int z = FIRST_PILLAR + BAY / 2; z <= length - 5; z += BAY) {
+            for (int az = z; az <= z + 1; az++) {
+                if (this.nearExit(az, 3)) {
+                    continue;
+                }
+                b.set(0, 2, az, chiseledRunic());
+                b.ancestor(0, 3, az, Direction.EAST);
+                b.set(WIDTH - 1, 2, az, chiseledRunic());
+                b.ancestor(WIDTH - 1, 3, az, Direction.WEST);
+            }
         }
 
         // Pillars, each with a banner on its aisle side and a lamp on the wall behind it.
@@ -113,9 +130,9 @@ public class HallPiece extends FortressPiece {
                 boolean west = x < MID;
                 b.banner(west ? x + 1 : x - 1, 9, z, west ? Direction.EAST : Direction.WEST, colour);
             }
-            b.set(1, 5, z, bottomSlab(Blocks.POLISHED_BLACKSTONE_SLAB));
+            b.set(1, 5, z, slab(RUNIC, false));
             b.set(1, 4, z, lantern(true));
-            b.set(WIDTH - 2, 5, z, bottomSlab(Blocks.POLISHED_BLACKSTONE_SLAB));
+            b.set(WIDTH - 2, 5, z, slab(RUNIC, false));
             b.set(WIDTH - 2, 4, z, lantern(true));
             b.banner(1, 9, z, Direction.EAST, colour);
             b.banner(WIDTH - 2, 9, z, Direction.WEST, colour);
@@ -150,14 +167,14 @@ public class HallPiece extends FortressPiece {
         }
     }
 
-    /** A three-wide, four-tall doorway in a side wall (constant x). */
+    /** A three-wide, four-tall doorway in a side wall (constant x), framed in chiseled runic brick. */
     private void sideDoorway(Builder b, int x, int z) {
         b.air(x, 1, z - 1, x, 4, z + 1);
-        b.fill(x, 1, z - 2, x, 4, z - 2, pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y));
-        b.fill(x, 1, z + 2, x, 4, z + 2, pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y));
-        b.fill(x, 5, z - 2, x, 5, z + 2, Blocks.GILDED_BLACKSTONE);
-        b.set(x, 4, z - 1, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.SOUTH, true));
-        b.set(x, 4, z + 1, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.NORTH, true));
+        b.fill(x, 1, z - 2, x, 4, z - 2, chiseledRunic());
+        b.fill(x, 1, z + 2, x, 4, z + 2, chiseledRunic());
+        b.fill(x, 5, z - 2, x, 5, z + 2, chiseledRunic());
+        b.set(x, 4, z - 1, stairs(RUNIC, Direction.SOUTH, true));
+        b.set(x, 4, z + 1, stairs(RUNIC, Direction.NORTH, true));
     }
 
     private void tableTop(Builder b, int x, int z) {

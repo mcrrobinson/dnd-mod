@@ -20,6 +20,7 @@ import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import mattonfire.dnd.classes.Registry.ModEntities;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import mattonfire.dnd.classes.Registry.ModItemGroup;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModPotions;
@@ -182,6 +183,7 @@ public class DnDClasses implements ModInitializer {
                 ModBlockFamilies.register();
                 mattonfire.dnd.classes.Registry.SanctumBlocks.register();
                 mattonfire.dnd.classes.Registry.ElvenBlocks.register();
+                DwarvenBlocks.register();
                 mattonfire.dnd.classes.Blocks.TrapBlocks.register();
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();

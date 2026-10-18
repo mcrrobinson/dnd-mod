@@ -2,7 +2,10 @@ package mattonfire.dnd.world.gen.fortress;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Blocks.dwarven.WaystoneBlock;
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockBox;
@@ -11,9 +14,9 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 /**
- * The great gate: a paved terrace with braziers and guards in front of a towering deepslate
- * facade set into the mountainside, flanked by gold-capped pillars and banners, with a gilded
- * doorway under a raised portcullis and a crest above it.
+ * The great gate: a paved terrace with braziers, guards and a waystone in front of a towering runic
+ * brick facade set into the mountainside, flanked by gold-veined pillars and banners, with a chiseled
+ * runic doorway under a raised portcullis and the clan crest above it.
  */
 public class GatePiece extends FortressPiece {
     private static final int WIDTH = 21;
@@ -47,18 +50,18 @@ public class GatePiece extends FortressPiece {
                 b.air(x, 1, z, x, HEIGHT - 1, z);
             }
         }
-        b.fill(MID - 1, 0, 0, MID + 1, 0, FACADE - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(MID - 1, 0, 0, MID + 1, 0, FACADE - 1, RUNIC.base());
         for (int x = 0; x < WIDTH; x++) {
             if (Math.abs(x - MID) > 3) {
-                b.set(x, 1, 0, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+                b.set(x, 1, 0, wall(RUNIC));
             }
         }
         for (int z = 1; z < FACADE; z++) {
-            b.set(0, 1, z, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
-            b.set(WIDTH - 1, 1, z, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+            b.set(0, 1, z, wall(RUNIC));
+            b.set(WIDTH - 1, 1, z, wall(RUNIC));
         }
         for (int x : new int[]{0, MID - 4, MID + 4, WIDTH - 1}) {
-            b.set(x, 1, 0, Blocks.POLISHED_BLACKSTONE_BRICKS);
+            b.set(x, 1, 0, chiseledRunic());
             b.set(x, 2, 0, lantern(false));
         }
         b.brazier(2, 1, 2);
@@ -75,8 +78,8 @@ public class GatePiece extends FortressPiece {
             }
         }
         // Base course, string course and a gold band.
-        b.fill(0, 1, FACADE, WIDTH - 1, 1, FACADE, Blocks.POLISHED_BLACKSTONE_BRICKS);
-        b.fill(0, 11, FACADE, WIDTH - 1, 11, FACADE, Blocks.CHISELED_DEEPSLATE);
+        b.fill(0, 1, FACADE, WIDTH - 1, 1, FACADE, RUNIC.base());
+        b.fill(0, 11, FACADE, WIDTH - 1, 11, FACADE, chiseledRunic());
         b.fill(0, 15, FACADE, WIDTH - 1, 15, FACADE, Blocks.GILDED_BLACKSTONE);
         // Cornice overhanging the terrace, and battlements along the top.
         for (int x = 0; x < WIDTH; x++) {
@@ -88,25 +91,25 @@ public class GatePiece extends FortressPiece {
 
         // The passage, five wide and seven tall, with a portcullis drawn up into the arch.
         b.air(MID - 2, 1, FACADE, MID + 2, 7, DEPTH - 1);
-        b.fill(MID - 2, 0, FACADE, MID + 2, 0, DEPTH - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(MID - 2, 0, FACADE, MID + 2, 0, DEPTH - 1, RUNIC.base());
         b.fill(MID - 1, 1, FACADE, MID + 1, 1, DEPTH - 1, Blocks.RED_CARPET);
         b.fill(MID - 2, 7, FACADE + 1, MID + 2, 7, FACADE + 1, Blocks.IRON_BARS);
-        b.set(MID - 2, 7, FACADE, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.EAST, true));
-        b.set(MID + 2, 7, FACADE, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.WEST, true));
+        b.set(MID - 2, 7, FACADE, stairs(RUNIC, Direction.EAST, true));
+        b.set(MID + 2, 7, FACADE, stairs(RUNIC, Direction.WEST, true));
         b.set(MID, 7, DEPTH - 2, lantern(true));
-        // Gilded door frame.
-        b.fill(MID - 3, 1, FACADE, MID - 3, 8, FACADE, Blocks.GILDED_BLACKSTONE);
-        b.fill(MID + 3, 1, FACADE, MID + 3, 8, FACADE, Blocks.GILDED_BLACKSTONE);
-        b.fill(MID - 3, 8, FACADE, MID + 3, 8, FACADE, Blocks.GILDED_BLACKSTONE);
+        // Chiseled runic door frame with a gold keystone.
+        b.fill(MID - 3, 1, FACADE, MID - 3, 8, FACADE, chiseledRunic());
+        b.fill(MID + 3, 1, FACADE, MID + 3, 8, FACADE, chiseledRunic());
+        b.fill(MID - 3, 8, FACADE, MID + 3, 8, FACADE, chiseledRunic());
         b.set(MID, 8, FACADE, Blocks.GOLD_BLOCK);
 
-        // The crest above the door: a gold rune in a chiselled lozenge.
-        b.set(MID, 13, FACADE, Blocks.GOLD_BLOCK);
+        // The clan crest above the door, in a gilded lozenge.
+        b.crest(MID, 13, FACADE, OUT);
         for (int[] p : new int[][]{{-1, 12}, {1, 12}, {-1, 14}, {1, 14}, {-2, 13}, {2, 13}}) {
             b.set(MID + p[0], p[1], FACADE, Blocks.GILDED_BLACKSTONE);
         }
-        b.set(MID, 12, FACADE, Blocks.CHISELED_DEEPSLATE);
-        b.set(MID, 14, FACADE, Blocks.CHISELED_DEEPSLATE);
+        b.set(MID, 12, FACADE, chiseledRunic());
+        b.set(MID, 14, FACADE, chiseledRunic());
 
         // Pillars standing out in front of the facade, with banners between them and the door.
         for (int x : new int[]{4, WIDTH - 5}) {
@@ -116,11 +119,11 @@ public class GatePiece extends FortressPiece {
         b.banner(MID - 5, 10, FACADE - 1, OUT, banner);
         b.banner(MID + 5, 10, FACADE - 1, OUT, banner);
         b.set(MID - 5, 6, FACADE - 1, lantern(false));
-        b.set(MID - 5, 5, FACADE - 1, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+        b.set(MID - 5, 5, FACADE - 1, wall(RUNIC));
         b.set(MID + 5, 6, FACADE - 1, lantern(false));
-        b.set(MID + 5, 5, FACADE - 1, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
-        b.fill(MID - 5, 1, FACADE - 1, MID - 5, 4, FACADE - 1, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
-        b.fill(MID + 5, 1, FACADE - 1, MID + 5, 4, FACADE - 1, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+        b.set(MID + 5, 5, FACADE - 1, wall(RUNIC));
+        b.fill(MID - 5, 1, FACADE - 1, MID - 5, 4, FACADE - 1, wall(RUNIC));
+        b.fill(MID + 5, 1, FACADE - 1, MID + 5, 4, FACADE - 1, wall(RUNIC));
 
         // Arrow slits.
         for (int x : new int[]{2, WIDTH - 3}) {
@@ -129,5 +132,9 @@ public class GatePiece extends FortressPiece {
 
         b.dwarf(MID - 3, 1, 2);
         b.dwarf(MID + 3, 1, 2);
+
+        // The waystone beside the approach, naming the hold to whoever comes up to the gate.
+        b.set(MID + 2, 1, 1, facing(DwarvenBlocks.WAYSTONE, OUT));
+        b.set(MID + 2, 2, 1, facing(DwarvenBlocks.WAYSTONE, OUT).with(WaystoneBlock.HALF, DoubleBlockHalf.UPPER));
     }
 }

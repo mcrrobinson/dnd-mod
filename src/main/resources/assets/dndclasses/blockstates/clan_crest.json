@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/clan_crest"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/clan_crest",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/clan_crest",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/clan_crest",
+      "y": 270
+    }
+  }
+}

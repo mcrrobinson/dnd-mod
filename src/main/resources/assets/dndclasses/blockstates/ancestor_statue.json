@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/ancestor_statue"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/ancestor_statue",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/ancestor_statue",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/ancestor_statue",
+      "y": 270
+    }
+  }
+}

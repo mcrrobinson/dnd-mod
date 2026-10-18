@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_horizontal",
+  "textures": {
+    "end": "dndclasses:block/gold_veined_pillar_top",
+    "side": "dndclasses:block/gold_veined_pillar"
+  }
+}

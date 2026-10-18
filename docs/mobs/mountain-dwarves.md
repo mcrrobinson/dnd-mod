@@ -64,13 +64,14 @@ The honored table (`gameplay/dwarf_barter_honored`) is the table below with diam
 | Redstone | 4-10 | 15 |
 | Amethyst shard | 2-6 | 12 |
 | Polished deepslate | 8-16 | 10 |
+| [Runic Deepslate Bricks](../dev/building-blocks.md) | 8-16 | 8 |
 | Lantern | 1-3 | 8 |
 | Emerald | 1-2 | 6 |
 | Iron pickaxe, randomly enchanted | 1 | 4 |
 | Iron axe, randomly enchanted | 1 | 3 |
 | Diamond | 1 | 2 |
 
-The weights add up to 155, so a diamond comes up about once in 78 trades.
+The weights add up to 163, so a diamond comes up about once in 82 trades.
 
 **Dwarf players** (kin stock) also get an extra roll on `gameplay/dwarf_kin_stock` with every barter: usually nothing, but 1 in 25 times a [Dwarven Plate](../items/armor.md#racial-armor) piece (1% each) or a [Dwarven Waraxe](../items/racial-weapons.md#dwarven-waraxe) (2%).
 

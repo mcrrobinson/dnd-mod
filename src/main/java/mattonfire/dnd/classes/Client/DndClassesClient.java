@@ -264,6 +264,10 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getTranslucent(),
                 mattonfire.dnd.classes.Registry.ElvenBlocks.translucentBlocks().toArray(net.minecraft.block.Block[]::new));
+        // Dwarven Fortresses: the Mithral Lattice has see-through gaps
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.DwarvenBlocks.MITHRAL_LATTICE);
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

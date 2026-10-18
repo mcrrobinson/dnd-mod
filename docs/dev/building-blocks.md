@@ -1,7 +1,7 @@
 # Building blocks
 Decorative block families: a material plus its shapes (stairs, slab, wall, ...), registered from one Java call, with their resources written by a Python script. This is the groundwork for the Building Blocks cards, which each add their structure's materials and swap them into the pieces.
 
-The first family is **Runic Deepslate Bricks** (base, stairs, slab and wall), the dwarves' fortress stone: deepslate bricks with gold-inlaid runes. It's craftable (8 deepslate bricks round a gold nugget make 8) and listed in the **DnD Building Blocks** creative tab. It isn't placed in any structure yet; the Dwarven Fortresses card does that.
+The first family is **Runic Deepslate Bricks** (base, stairs, slab and wall), the dwarves' fortress stone: deepslate bricks with gold-inlaid runes. It's craftable (8 deepslate bricks round a gold nugget make 8) and listed in the **DnD Building Blocks** creative tab. The [Dwarven Fortresses](../structures/dwarven-fortresses.md#building-blocks) are built from it, with their other blocks.
 
 ## How it works
 - A family is declared in `ModBlockFamilies` with `BlockFamily.builder(name, vanillaBlock)`. Every shape copies the vanilla block's settings (hardness, blast resistance, tool requirement, sound, map colour).
@@ -59,5 +59,5 @@ Merchant offers are built in each merchant's `*Trades` class (`TieflingTrades.pa
 - `classes/Registry/ModItemGroup.java`: `BUILDING_BLOCKS_ITEMGROUP`
 - `classes/Client/DndClassesClient.java`: doors and trapdoors on the cutout render layer (`BlockFamily.cutoutBlocks()`)
 - `world/gen/PieceBlocks.java`: the placement helpers
-- `tools/block_families.py`: the resources; `tools/dwarven_block_textures.py`: the Runic Deepslate Bricks texture
+- `tools/block_families.py`: the resources; `tools/dwarven_block_textures.py`: the Dwarven Fortresses textures, `tools/dwarven_blocks.py`: the resources of their one-off blocks (`DwarvenBlocks`)
 - `devscripts/block-families.txt`: places the sample family's shapes, checks the drops and the stonecutter, and takes screenshots

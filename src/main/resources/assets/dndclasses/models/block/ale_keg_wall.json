@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "dndclasses:block/ale_keg_wall",
+    "side": "dndclasses:block/ale_keg_wall_side",
+    "top": "dndclasses:block/ale_keg_wall_side"
+  }
+}

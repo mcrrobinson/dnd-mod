@@ -1,0 +1,41 @@
+# Survey of a dwarven fortress generated with the Dwarven Fortresses building blocks (docs/structures/dwarven-fortresses.md).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/dwarven-blocks-fortress.txt
+# Uses the dev world's fortress at 27200, -33024 (gate facing east; found with /locate from 30000, -30000 and
+# listed with /dndhome pieces from inside it). Elsewhere, put another fortress's piece boxes into the /tp lines.
+# Check: screenshots fortress-after-gate, -gate-close, -hall, -hall-side, -throne, -treasury, -forge, -brewhall:
+# runic brick walls, gold-veined pillars, clan crests over the gate, throne and doorways, ancestor statues, the
+# waystone on the terrace, forge bricks, ale keg walls, coin heaps and mithral grilles.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/effect give @s minecraft:night_vision 600 0 true
+hud off
+/tp @s 27230.5 111 -33015.5 90 12
+wait 600
+screenshot fortress-after-gate
+/tp @s 27221.5 107 -33015.5 90 5
+wait 40
+screenshot fortress-after-gate-close
+/tp @s 27204.5 109 -33015.5 90 8
+wait 60
+screenshot fortress-after-hall
+/tp @s 27191.5 108 -33015.5 180 5
+wait 40
+screenshot fortress-after-hall-side
+/tp @s 27173.5 109 -33015.5 90 10
+wait 40
+screenshot fortress-after-throne
+/tp @s 27156.5 109 -33015.5 90 25
+wait 40
+screenshot fortress-after-treasury
+/tp @s 27197.5 108 -33000.5 0 25
+wait 40
+screenshot fortress-after-forge
+/tp @s 27183.5 108 -33000.5 0 25
+wait 40
+screenshot fortress-after-brewhall
+hud on
+quit

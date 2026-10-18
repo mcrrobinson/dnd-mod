@@ -111,6 +111,21 @@
         },
         {
           "type": "minecraft:item",
+          "name": "dndclasses:runic_deepslate_bricks",
+          "weight": 8,
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 8,
+                "max": 16
+              }
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
           "name": "minecraft:lantern",
           "weight": 8,
           "functions": [

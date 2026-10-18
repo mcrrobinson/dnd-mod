@@ -97,7 +97,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits
 - [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
-- [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls with a Dwarf King and treasury
+- [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls of runic brick with a Dwarf King, a coin-heaped treasury and their own building blocks (clan crests, ancestor statues, forge bricks, a waystone naming the hold)
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home
 - [Orc Strongholds](structures/orc-strongholds.md): palisaded badlands warcamps with a gatehouse, Great Longhouse, Fighting Pit, smithy and yurts; hostile except to Half-Orcs; the Trial of Strength makes you Blood-Sworn; the Half-Orc home

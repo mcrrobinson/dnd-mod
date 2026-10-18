@@ -14,6 +14,7 @@ import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.ChestBlockEntity;
@@ -233,7 +234,8 @@ public final class SettlementGrudges {
         @Override
         public boolean protects(World world, BlockPos pos, BlockState state, @Nullable BlockEntity blockEntity,
                                 Offence offence) {
-            return isHoard(blockEntity) || offence == Offence.BREAK && state.isOf(Blocks.GOLD_BLOCK);
+            return isHoard(blockEntity) || offence == Offence.BREAK
+                    && (state.isOf(Blocks.GOLD_BLOCK) || state.isOf(DwarvenBlocks.TREASURY_COIN_PILE));
         }
 
         /** Chests (trapped ones too) and barrels; not hoppers, dispensers, shulker boxes and the like. */

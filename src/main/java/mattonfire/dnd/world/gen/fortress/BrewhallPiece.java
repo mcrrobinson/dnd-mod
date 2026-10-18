@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.fortress;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.item.ItemStack;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * A mead hall: walls lined with stacked ale casks, a long table laid with roasts and mugs, and a
- * roaring hearth at the back.
+ * roaring forge-brick hearth at the back between walls of ale kegs.
  */
 public class BrewhallPiece extends FortressPiece {
     private static final int WIDTH = 13;
@@ -75,14 +76,18 @@ public class BrewhallPiece extends FortressPiece {
             b.set(MID + 2, 1, z, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, false));
         }
 
+        // Ale kegs filling the back wall either side of the hearth.
+        b.fill(1, 1, back, MID - 3, 4, back, facing(DwarvenBlocks.ALE_KEG_WALL, OUT));
+        b.fill(MID + 3, 1, back, WIDTH - 2, 4, back, facing(DwarvenBlocks.ALE_KEG_WALL, OUT));
+
         // The hearth in the back wall.
-        b.fill(MID - 2, 1, back - 1, MID + 2, 4, back - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(MID - 2, 1, back - 1, MID + 2, 4, back - 1, FORGE_BRICKS.base());
         b.set(MID, 1, back - 1, Blocks.CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, OUT));
         b.air(MID, 2, back - 1, MID, 2, back - 1);
-        b.fill(MID, 3, back - 1, MID, HEIGHT - 1, back - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(MID, 3, back - 1, MID, HEIGHT - 1, back - 1, FORGE_BRICKS.base());
         b.set(MID - 1, 1, back - 1, facing(Blocks.SMOKER, OUT));
         b.set(MID + 1, 1, back - 1, facing(Blocks.SMOKER, OUT));
-        b.fill(MID - 2, 5, back - 2, MID + 2, 5, back - 2, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, OUT, true));
+        b.fill(MID - 2, 5, back - 2, MID + 2, 5, back - 2, stairs(FORGE_BRICKS, OUT, true));
         b.set(MID - 2, 6, back - 2, lantern(false));
         b.set(MID + 2, 6, back - 2, lantern(false));
 

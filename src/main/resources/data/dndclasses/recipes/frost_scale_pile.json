@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:frost_dragon_scale"
+    }
+  },
+  "pattern": [
+    "###"
+  ],
+  "result": {
+    "count": 3,
+    "item": "dndclasses:frost_scale_pile"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,15 @@
+# Finds a dragon lair and a frost lair in ground nobody has visited yet, so they generate with the lair building
+# blocks (lair-blocks-survey.txt then looks them over).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/lair-blocks-locate.txt
+# Check: the "[CHAT] The nearest dndclasses:..." lines in latest.log.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s -40000 220 40000
+wait 40
+/locate structure dndclasses:dragon_lair
+waitserver 2
+/locate structure dndclasses:frost_lair
+waitserver 2
+wait 20
+quit

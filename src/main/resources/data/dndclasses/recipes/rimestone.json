@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:stone"
+    },
+    "I": {
+      "item": "minecraft:blue_ice"
+    }
+  },
+  "pattern": [
+    "###",
+    "#I#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:rimestone"
+  },
+  "show_notification": true
+}

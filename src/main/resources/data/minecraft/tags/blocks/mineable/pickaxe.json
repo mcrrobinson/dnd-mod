@@ -109,6 +109,14 @@
     "dndclasses:sarcophagus",
     "dndclasses:lich_sigil_floor",
     "dndclasses:phylactery_pedestal",
-    "dndclasses:crude_glyph_daub"
+    "dndclasses:crude_glyph_daub",
+    "dndclasses:fulgurite",
+    "dndclasses:rimestone",
+    "dndclasses:rimestone_bricks",
+    "dndclasses:rimestone_brick_stairs",
+    "dndclasses:rimestone_brick_slab",
+    "dndclasses:rimestone_brick_wall",
+    "dndclasses:fulgurite_spike",
+    "dndclasses:hoarfrost_crystal"
   ]
 }

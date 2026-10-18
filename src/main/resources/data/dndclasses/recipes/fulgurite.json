@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:sand"
+    },
+    "R": {
+      "item": "minecraft:lightning_rod"
+    }
+  },
+  "pattern": [
+    "###",
+    "#R#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:fulgurite"
+  },
+  "show_notification": true
+}

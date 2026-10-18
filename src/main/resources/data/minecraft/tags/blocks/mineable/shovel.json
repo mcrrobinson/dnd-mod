@@ -3,6 +3,8 @@
   "values": [
     "dndclasses:treasury_coin_pile",
     "dndclasses:smial_turf_wall",
-    "dndclasses:goblin_junk_pile"
+    "dndclasses:goblin_junk_pile",
+    "dndclasses:storm_scale_pile",
+    "dndclasses:frost_scale_pile"
   ]
 }

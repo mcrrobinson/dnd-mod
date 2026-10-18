@@ -2038,5 +2038,21 @@
     "block.minecraft.banner.dndclasses.goblin_skull.brown": "Brown Goblin Skull",
     "block.minecraft.banner.dndclasses.goblin_skull.green": "Green Goblin Skull",
     "block.minecraft.banner.dndclasses.goblin_skull.red": "Red Goblin Skull",
-    "block.minecraft.banner.dndclasses.goblin_skull.black": "Black Goblin Skull"
+    "block.minecraft.banner.dndclasses.goblin_skull.black": "Black Goblin Skull",
+    "block.dndclasses.fulgurite": "Fulgurite",
+    "block.dndclasses.rimestone": "Rimestone",
+    "block.dndclasses.rimestone_bricks": "Rimestone Bricks",
+    "block.dndclasses.rimestone_brick_stairs": "Rimestone Brick Stairs",
+    "block.dndclasses.rimestone_brick_slab": "Rimestone Brick Slab",
+    "block.dndclasses.rimestone_brick_wall": "Rimestone Brick Wall",
+    "block.dndclasses.dragon_nest": "Dragon Nest",
+    "block.dndclasses.dragon_nest_slab": "Dragon Nest Slab",
+    "block.dndclasses.fulgurite_spike": "Fulgurite Spike",
+    "block.dndclasses.storm_glass": "Storm Glass",
+    "block.dndclasses.storm_glass_pane": "Storm Glass Pane",
+    "block.dndclasses.hoarfrost_crystal": "Hoarfrost Crystal",
+    "block.dndclasses.storm_scale_pile": "Shed Storm Scales",
+    "block.dndclasses.frost_scale_pile": "Shed Frost Scales",
+    "item.dndclasses.storm_dragon_scale": "Storm Dragon Scale",
+    "item.dndclasses.frost_dragon_scale": "Frost Dragon Scale"
 }

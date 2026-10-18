@@ -5,10 +5,14 @@ import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.StructureObstacles;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
+import mattonfire.dnd.classes.Registry.LairBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.LairDragonEntity;
 import mattonfire.dnd.entity.MimicEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.world.gen.PieceBlocks;
+import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,6 +46,12 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
  * A {@link Kind#FROST} lair (the Frost Drake's, on Frozen Peaks) has the same shape in snow and
  * ice: a snowy floor with a ring of blue ice, a rim of packed ice and snow, ice spires instead of
  * the standing stones, and a snow-filled nest heaped with gold and diamond blocks.
+ * <p>
+ * Both are dressed with the lair building blocks: a woven Dragon Nest floor heaped with Treasury Coin Piles and the
+ * dragon's shed scales; Fulgurite and Fulgurite Spikes where the lightning struck, and Storm Glass in the standing
+ * stones; Rimestone in the frost lair's rim and spires, and Hoarfrost Crystals round the nest and on the spires.
+ * Where they go is picked by {@link #noise}, a hash of the position, not the piece's random, so the random sequence
+ * (and so the layout of half-generated lairs from older versions) is unchanged.
  * <p>
  * Against the rim, north or south of the nest (the dragons stand east and west), a deepslate cairn holds a
  * second hoard chest behind a 2x2x2 Heavy Boulder (Hard): only a Barbarian heaves it aside, anyone else
@@ -157,12 +167,15 @@ public class LairPiece extends StructurePiece {
                     set(world, chunkBox, pos, frostFloor(d, r));
                     float drift = random.nextFloat();
                     if (d > RADIUS - 1.5D) {
-                        // The rim: a low wall of packed ice, drifted with snow.
-                        set(world, chunkBox, pos.up(), (r < 0.55F ? Blocks.PACKED_ICE : r < 0.7F ? Blocks.BLUE_ICE
-                                : Blocks.SNOW_BLOCK).getDefaultState());
+                        // The rim: a low wall of rimestone and packed ice, drifted with snow.
+                        set(world, chunkBox, pos.up(), (r < 0.3F ? ModBlockFamilies.RIMESTONE_BRICKS.base()
+                                : r < 0.45F ? ModBlockFamilies.RIMESTONE.base() : r < 0.6F ? Blocks.PACKED_ICE
+                                : r < 0.7F ? Blocks.BLUE_ICE : Blocks.SNOW_BLOCK).getDefaultState());
                     } else if (d > 3.6D && drift < 0.18F) {
                         // Snow drifted across the floor.
                         set(world, chunkBox, pos.up(), Blocks.SNOW.getDefaultState().with(SnowBlock.LAYERS, 1 + (int) (drift * 11.0F)));
+                    } else {
+                        this.roundTheNest(world, chunkBox, pos, d, true);
                     }
                     continue;
                 }
@@ -171,6 +184,8 @@ public class LairPiece extends StructurePiece {
                     // The rim: a low wall of weathered brick.
                     set(world, chunkBox, pos.up(), (r < 0.3F ? Blocks.CRACKED_STONE_BRICKS : r < 0.45F ? Blocks.MOSSY_STONE_BRICKS
                             : Blocks.STONE_BRICKS).getDefaultState());
+                } else {
+                    this.roundTheNest(world, chunkBox, pos, d, false);
                 }
             }
         }
@@ -182,7 +197,7 @@ public class LairPiece extends StructurePiece {
             double angle = turn + Math.PI * 2.0D * i / STONES;
             int sx = cx + (int) Math.round(Math.cos(angle) * (RADIUS - 1));
             int sz = cz + (int) Math.round(Math.sin(angle) * (RADIUS - 1));
-            iceSpire(world, chunkBox, new BlockPos(sx, y0, sz), random);
+            this.iceSpire(world, chunkBox, new BlockPos(sx, y0, sz), random);
         }
         for (int i = 0; !frost && i < STONES; i++) {
             double angle = turn + Math.PI * 2.0D * i / STONES;
@@ -193,10 +208,13 @@ public class LairPiece extends StructurePiece {
             for (int y = 1; y <= height; y++) {
                 float r = random.nextFloat();
                 BlockState stone = y == 1 ? Blocks.CHISELED_STONE_BRICKS.getDefaultState()
+                        // A band of storm glass under the copper cap, where the lightning comes down.
+                        : y == height && !broken ? LairBlocks.STORM_GLASS.getDefaultState()
                         : r < 0.2F ? Blocks.CRACKED_STONE_BRICKS.getDefaultState()
                         : Blocks.POLISHED_ANDESITE.getDefaultState();
                 set(world, chunkBox, new BlockPos(sx, y0 + y, sz), stone);
             }
+            this.struckGround(world, chunkBox, new BlockPos(sx, y0, sz));
             if (!broken) {
                 Block cap = random.nextBoolean() ? Blocks.OXIDIZED_CUT_COPPER : Blocks.WEATHERED_CUT_COPPER;
                 set(world, chunkBox, new BlockPos(sx, y0 + height + 1, sz), cap.getDefaultState());
@@ -211,16 +229,27 @@ public class LairPiece extends StructurePiece {
                 float r = random.nextFloat();
                 int h = random.nextInt(3);
                 BlockPos pos = new BlockPos(cx + dx, y0, cz + dz);
+                float n = noise(pos, 1);
                 if (d > 2.5D && d <= 3.6D) {
-                    set(world, chunkBox, pos.up(), nestLog(dx, dz, r));
+                    // Logs, and woven nest, round the ring.
+                    set(world, chunkBox, pos.up(), n < 0.35F ? ModBlockFamilies.DRAGON_NEST.base().getDefaultState()
+                            : nestLog(dx, dz, r));
                     if (h > 0) {
-                        set(world, chunkBox, pos.up(2), r < 0.5F ? Blocks.BONE_BLOCK.getDefaultState() : nestLog(dz, dx, r));
+                        set(world, chunkBox, pos.up(2), r < 0.5F ? Blocks.BONE_BLOCK.getDefaultState()
+                                : n > 0.6F ? ModBlockFamilies.DRAGON_NEST.slab().getDefaultState() : nestLog(dz, dx, r));
                     }
                 } else if (d <= 2.5D && (dx != 0 || dz != 0) && r < 0.45F) {
-                    set(world, chunkBox, pos.up(), (frost
-                            ? r < 0.07F ? Blocks.DIAMOND_BLOCK : r < 0.2F ? Blocks.GOLD_BLOCK : r < 0.26F ? Blocks.RAW_GOLD_BLOCK : Blocks.SNOW_BLOCK
-                            : r < 0.08F ? Blocks.RAW_GOLD_BLOCK : r < 0.2F ? Blocks.GOLD_BLOCK
-                            : r < 0.3F ? Blocks.RAW_COPPER_BLOCK : Blocks.HAY_BLOCK).getDefaultState());
+                    // The hoard: gold and gems, heaps of coins and the dragon's shed scales.
+                    if (frost ? r >= 0.26F : r >= 0.2F) {
+                        set(world, chunkBox, pos.up(), n < 0.5F ? coins(3 + (int) (n * 10.0F)) : scales(frost, 1 + (int) ((n - 0.5F) * 8.0F)));
+                    } else {
+                        set(world, chunkBox, pos.up(), (frost
+                                ? r < 0.07F ? Blocks.DIAMOND_BLOCK : r < 0.2F ? Blocks.GOLD_BLOCK : Blocks.RAW_GOLD_BLOCK
+                                : r < 0.08F ? Blocks.RAW_GOLD_BLOCK : Blocks.GOLD_BLOCK).getDefaultState());
+                    }
+                } else if (d <= 2.5D && (dx != 0 || dz != 0) && n < 0.6F) {
+                    // Loose coins round the heaps.
+                    set(world, chunkBox, pos.up(), coins(1 + (int) (n * 5.0F)));
                 }
             }
         }
@@ -305,59 +334,133 @@ public class LairPiece extends StructurePiece {
         world.spawnEntityAndPassengers(dragon);
     }
 
-    /** The floor at distance d from the middle: straw in the nest, scorched stone, a ring of runes. */
+    /** The floor at distance d from the middle: the woven nest, scorched stone and fulgurite, a ring of runes. */
     private static BlockState floor(double d, float r) {
         if (d <= 2.5D) {
-            return (r < 0.5F ? Blocks.COARSE_DIRT : Blocks.PACKED_MUD).getDefaultState();
+            return ModBlockFamilies.DRAGON_NEST.base().getDefaultState();
         }
         if (d > 6.5D && d <= 7.5D) {
             return (r < 0.25F ? Blocks.CHISELED_DEEPSLATE : Blocks.DEEPSLATE_TILES).getDefaultState();
         }
-        // Scorch marks where the lightning has come down.
-        if (r < 0.1F) {
+        // Scorch marks and fulgurite where the lightning has come down.
+        if (r < 0.06F) {
             return Blocks.BLACKSTONE.getDefaultState();
         }
         if (r < 0.16F) {
-            return Blocks.SMOOTH_BASALT.getDefaultState();
+            return ModBlockFamilies.FULGURITE.base().getDefaultState();
         }
         return (r < 0.45F ? Blocks.ANDESITE : r < 0.7F ? Blocks.POLISHED_ANDESITE : Blocks.STONE_BRICKS).getDefaultState();
     }
 
-    /** A frost lair's floor: a snowy nest, snow and ice, and a ring of blue ice where the storm lair has its runes. */
+    /** A frost lair's floor: the woven nest, snow, ice and rimestone, and a ring of blue ice where the storm lair has its runes. */
     private static BlockState frostFloor(double d, float r) {
         if (d <= 2.5D) {
-            return (r < 0.75F ? Blocks.SNOW_BLOCK : Blocks.PACKED_ICE).getDefaultState();
+            return ModBlockFamilies.DRAGON_NEST.base().getDefaultState();
         }
         if (d > 6.5D && d <= 7.5D) {
             return (r < 0.6F ? Blocks.BLUE_ICE : Blocks.PACKED_ICE).getDefaultState();
         }
-        return (r < 0.2F ? Blocks.PACKED_ICE : r < 0.3F ? Blocks.CALCITE : Blocks.SNOW_BLOCK).getDefaultState();
+        return (r < 0.2F ? Blocks.PACKED_ICE : r < 0.3F ? ModBlockFamilies.RIMESTONE.base() : Blocks.SNOW_BLOCK).getDefaultState();
     }
 
     /**
      * A spire of ice standing on the rim: a packed ice column veined with blue ice, thick at the foot
-     * and tipped with blue ice. A quarter of them have snapped off short.
+     * and tipped with blue ice, on a rimestone footing. A quarter of them have snapped off short. Hoarfrost
+     * crystals grow on its buttresses and sides.
      */
-    private static void iceSpire(StructureWorldAccess world, BlockBox chunkBox, BlockPos foot, Random random) {
+    private void iceSpire(StructureWorldAccess world, BlockBox chunkBox, BlockPos foot, Random random) {
         boolean broken = random.nextFloat() < 0.25F;
         int height = broken ? 2 + random.nextInt(2) : 6 + random.nextInt(4);
         int buttress = broken ? 1 : 1 + height / 3;
         for (int y = 1; y <= height; y++) {
             float r = random.nextFloat();
             boolean tip = !broken && y > height - 2;
-            BlockState ice = (tip || r < 0.25F ? Blocks.BLUE_ICE : Blocks.PACKED_ICE).getDefaultState();
+            BlockState ice = (y == 1 ? ModBlockFamilies.RIMESTONE_BRICKS.base()
+                    : tip || r < 0.25F ? Blocks.BLUE_ICE : Blocks.PACKED_ICE).getDefaultState();
             BlockPos at = foot.up(y);
             set(world, chunkBox, at, ice);
-            if (y <= buttress) {
-                for (Direction side : Direction.Type.HORIZONTAL) {
+            for (Direction side : Direction.Type.HORIZONTAL) {
+                BlockPos beside = at.offset(side);
+                if (y <= buttress) {
                     // Every side draws the same randoms in every chunk
                     boolean place = random.nextFloat() < 0.8F;
                     if (place) {
-                        set(world, chunkBox, at.offset(side), Blocks.PACKED_ICE.getDefaultState());
+                        set(world, chunkBox, beside, (y == 1 && noise(beside, 2) < 0.5F
+                                ? ModBlockFamilies.RIMESTONE.base() : Blocks.PACKED_ICE).getDefaultState());
+                        if (y == buttress && noise(beside, 3) < 0.45F) {
+                            set(world, chunkBox, beside.up(), crystal(Direction.UP));
+                        }
                     }
+                } else if (y < height && noise(beside, 4) < 0.12F) {
+                    set(world, chunkBox, beside, crystal(side));
                 }
             }
         }
+    }
+
+    /**
+     * Dressing on the floor round the nest at distance d: shed scales in both lairs, then fulgurite spikes (storm)
+     * or hoarfrost crystals (frost) further out. {@code floor} is the floor block; this sets the one above it.
+     */
+    private void roundTheNest(StructureWorldAccess world, BlockBox chunkBox, BlockPos floor, double d, boolean frost) {
+        if (d <= 3.6D) {
+            return;
+        }
+        float n = noise(floor, 5);
+        if (d <= 5.5D && n < 0.22F) {
+            set(world, chunkBox, floor.up(), scales(frost, 1 + (int) (n * 9.0F)));
+        } else if (frost && d <= 6.5D && n > 0.9F) {
+            set(world, chunkBox, floor.up(), crystal(Direction.UP));
+        } else if (!frost && d > 4.5D && (d <= 6.5D || d > 7.5D) && n > 0.95F) {
+            set(world, chunkBox, floor.up(), LairBlocks.FULGURITE_SPIKE.getDefaultState());
+        }
+    }
+
+    /** Where lightning struck a standing stone: fulgurite in the floor round its foot, and a spike or two. */
+    private void struckGround(StructureWorldAccess world, BlockBox chunkBox, BlockPos stone) {
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                BlockPos at = stone.add(dx, 0, dz);
+                double d = Math.sqrt(Math.pow(at.getX() - this.center.getX(), 2) + Math.pow(at.getZ() - this.center.getZ(), 2));
+                if ((dx == 0 && dz == 0) || d > RADIUS - 1.5D) {
+                    continue;
+                }
+                float n = noise(at, 6);
+                if (n < 0.75F) {
+                    set(world, chunkBox, at, ModBlockFamilies.FULGURITE.base().getDefaultState());
+                }
+                if (n < 0.2F) {
+                    set(world, chunkBox, at.up(), LairBlocks.FULGURITE_SPIKE.getDefaultState());
+                }
+            }
+        }
+    }
+
+    /** A Treasury Coin Pile (the dwarves' block, reused for hoards) of 1-8 layers. */
+    private static BlockState coins(int layers) {
+        return DwarvenBlocks.TREASURY_COIN_PILE.getDefaultState().with(SnowBlock.LAYERS, Math.max(1, Math.min(8, layers)));
+    }
+
+    /** The lair's dragon's shed scales, 1-8 layers. */
+    private static BlockState scales(boolean frost, int layers) {
+        return (frost ? LairBlocks.FROST_SCALE_PILE : LairBlocks.STORM_SCALE_PILE).getDefaultState()
+                .with(SnowBlock.LAYERS, Math.max(1, Math.min(8, layers)));
+    }
+
+    private static BlockState crystal(Direction facing) {
+        return LairBlocks.HOARFROST_CRYSTAL.getDefaultState().with(AmethystClusterBlock.FACING, facing);
+    }
+
+    /**
+     * A number in [0, 1) from this lair's seed, the position and {@code salt}: the same in every chunk, and it
+     * leaves the piece's random sequence alone.
+     */
+    private float noise(BlockPos pos, int salt) {
+        long h = this.seed + salt * 0x9E3779B97F4A7C15L + pos.asLong() * 0xBF58476D1CE4E5B9L;
+        h = (h ^ (h >>> 30)) * 0xBF58476D1CE4E5B9L;
+        h = (h ^ (h >>> 27)) * 0x94D049BB133111EBL;
+        h ^= h >>> 31;
+        return (h >>> 40) / (float) (1L << 24);
     }
 
     private static BlockState nestLog(int dx, int dz, float r) {

@@ -281,6 +281,13 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.CryptBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        // Dragon & Frost lairs: fulgurite spikes and hoarfrost crystals cut out, Storm Glass tinted
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.LairBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getTranslucent(),
+                mattonfire.dnd.classes.Registry.LairBlocks.translucentBlocks().toArray(net.minecraft.block.Block[]::new));
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

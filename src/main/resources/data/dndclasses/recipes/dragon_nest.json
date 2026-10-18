@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": {
+      "item": "minecraft:stick"
+    },
+    "B": {
+      "item": "minecraft:bone"
+    }
+  },
+  "pattern": [
+    "SBS",
+    "BSB",
+    "SBS"
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:dragon_nest"
+  },
+  "show_notification": true
+}

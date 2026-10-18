@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:glass"
+    },
+    "S": {
+      "item": "dndclasses:storm_dragon_scale"
+    }
+  },
+  "pattern": [
+    "###",
+    "#S#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:storm_glass"
+  },
+  "show_notification": true
+}

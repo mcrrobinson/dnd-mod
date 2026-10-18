@@ -28,7 +28,8 @@
          "functions": [{"function": "minecraft:enchant_randomly"}]},
         {"type": "minecraft:item", "name": "minecraft:iron_axe", "weight": 3,
          "functions": [{"function": "minecraft:enchant_randomly"}]},
-        {"type": "minecraft:item", "name": "minecraft:diamond", "weight": 2}
+        {"type": "minecraft:item", "name": "minecraft:diamond", "weight": 2},
+        {"type": "minecraft:item", "name": "dndclasses:clan_anvil_banner_pattern", "weight": 4}
       ]
     }
   ]

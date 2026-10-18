@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.village;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.InnkeeperEntity;
 import mattonfire.dnd.tavern.Tavern;
@@ -213,6 +214,8 @@ public class InnPiece extends HobbitPiece {
         }
         b.ground(7, 0, Blocks.DIRT_PATH);
 
+        // The inn's banner beside the door: the Green Dragon, green on yellow.
+        b.banner(5, 4, 0, OUT, DyeColor.YELLOW, ModBannerPatterns.GREEN_DRAGON.in(DyeColor.GREEN));
         b.set(4, 1, 0, Blocks.OAK_SIGN.getDefaultState().with(SignBlock.ROTATION, 0));
         b.set(4, 2, 0, Blocks.AIR);
         BlockPos sign = b.pos(4, 1, 0);

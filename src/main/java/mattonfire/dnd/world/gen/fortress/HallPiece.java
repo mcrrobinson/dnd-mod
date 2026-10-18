@@ -4,6 +4,7 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import net.minecraft.block.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -125,17 +126,19 @@ public class HallPiece extends FortressPiece {
         // Pillars, each with a banner on its aisle side and a lamp on the wall behind it.
         for (int z = FIRST_PILLAR; z <= length - 5; z += BAY) {
             DyeColor colour = colours[((z - FIRST_PILLAR) / BAY) % 2];
+            // The clan's anvil on every banner, in the hall's other colour.
+            ModBannerPatterns.Layer anvil = ModBannerPatterns.CLAN_ANVIL.in(colours[((z - FIRST_PILLAR) / BAY + 1) % 2]);
             for (int x : PILLAR_X) {
                 b.column(x, z, top - 1);
                 boolean west = x < MID;
-                b.banner(west ? x + 1 : x - 1, 9, z, west ? Direction.EAST : Direction.WEST, colour);
+                b.banner(west ? x + 1 : x - 1, 9, z, west ? Direction.EAST : Direction.WEST, colour, anvil);
             }
             b.set(1, 5, z, slab(RUNIC, false));
             b.set(1, 4, z, lantern(true));
             b.set(WIDTH - 2, 5, z, slab(RUNIC, false));
             b.set(WIDTH - 2, 4, z, lantern(true));
-            b.banner(1, 9, z, Direction.EAST, colour);
-            b.banner(WIDTH - 2, 9, z, Direction.WEST, colour);
+            b.banner(1, 9, z, Direction.EAST, colour, anvil);
+            b.banner(WIDTH - 2, 9, z, Direction.WEST, colour, anvil);
         }
 
         // Chandeliers down the middle, and froglights set into the ceiling between them.

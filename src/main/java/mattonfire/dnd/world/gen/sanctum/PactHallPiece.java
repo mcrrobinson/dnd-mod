@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.sanctum;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.SanctumBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -10,6 +11,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CandleBlock;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -126,6 +128,11 @@ public class PactHallPiece extends BrimstonePiece {
         b.container(0, 1, BACK + 1, facing(Blocks.CHEST, Direction.SOUTH), ALTAR_LOOT);
         b.fill(-2, 1, BACK + 1, -2, 3, BACK + 1, Blocks.CRYING_OBSIDIAN);
         b.fill(2, 1, BACK + 1, 2, 3, BACK + 1, Blocks.CRYING_OBSIDIAN);
+
+        // The pact's banners either side of the altar: the horned pentagram, red on black.
+        for (int x = -3; x <= 3; x += 6) {
+            b.banner(x, 5, BACK + 1, Direction.SOUTH, DyeColor.BLACK, ModBannerPatterns.INFERNAL_PACT.in(DyeColor.RED));
+        }
 
         // Soul-fire chandeliers from the ridge, a censer on a chain either side of each.
         for (int z : new int[] {ALTAR_B + 3, FRONT - 3}) {

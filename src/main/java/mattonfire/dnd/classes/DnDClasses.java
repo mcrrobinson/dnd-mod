@@ -15,6 +15,7 @@ import mattonfire.dnd.classes.Items.lib.FAArmorEffectHandler;
 import mattonfire.dnd.classes.Misc.BloodHunterControl;
 import mattonfire.dnd.classes.Progression.Abilities;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
@@ -192,6 +193,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();
                 mattonfire.dnd.classes.Registry.GoblinBlocks.register();
                 mattonfire.dnd.classes.Blocks.TrapBlocks.register();
+                ModBannerPatterns.register();
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();
 

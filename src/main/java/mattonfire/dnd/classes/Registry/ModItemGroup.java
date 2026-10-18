@@ -195,5 +195,8 @@ public class ModItemGroup {
             entries.add(ModItems.GOBLIN_WARRIOR_SPAWN_EGG);
             entries.add(ModItems.GELATINOUS_CUBE_SPAWN_EGG);
         });
+        // --- Racial banner patterns ---
+        ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP).register(entries ->
+                ModBannerPatterns.all().forEach(pattern -> entries.add(pattern.item())));
     }
 }

@@ -3,16 +3,15 @@ package mattonfire.dnd.world.gen.stronghold;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.function.Consumer;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.entity.OrcEntity;
 import mattonfire.dnd.world.gen.OrientedPiece;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SkullBlock;
-import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePieceType;
 import net.minecraft.util.DyeColor;
@@ -86,23 +85,10 @@ public abstract class StrongholdPiece extends OrientedPiece<StrongholdPiece.Buil
             this.propUp(a, y, b, fill, max, true);
         }
 
-        /** A red war banner with a black skull and border (a wall banner on the block behind it). */
+        /** A red war banner with the black Bloodtusk and a black border (a wall banner on the block behind it). */
         void warBanner(int a, int y, int b, Direction facing) {
-            this.set(a, y, b, Blocks.RED_WALL_BANNER.getDefaultState().with(net.minecraft.block.WallBannerBlock.FACING, facing));
-            BlockPos pos = this.pos(a, y, b);
-            if (this.chunkBox.contains(pos) && this.world.getBlockEntity(pos) instanceof BannerBlockEntity banner) {
-                NbtList patterns = new NbtList();
-                for (String pattern : new String[]{"bo", "sku"}) {
-                    NbtCompound entry = new NbtCompound();
-                    entry.putString("Pattern", pattern);
-                    entry.putInt("Color", DyeColor.BLACK.getId());
-                    patterns.add(entry);
-                }
-                NbtCompound nbt = new NbtCompound();
-                nbt.put("Patterns", patterns);
-                banner.readNbt(nbt);
-                banner.markDirty();
-            }
+            this.banner(a, y, b, facing, DyeColor.RED, new ModBannerPatterns.Layer("bo", DyeColor.BLACK),
+                    ModBannerPatterns.BLOODTUSK.in(DyeColor.BLACK));
         }
 
         <E extends OrcEntity> void orc(int a, int y, int b, EntityType<E> type, BlockPos home, int range) {

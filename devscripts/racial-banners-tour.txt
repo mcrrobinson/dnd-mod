@@ -1,0 +1,95 @@
+# Screenshots the racial banners where the structures hang them, at the fresh structures
+# racial-banners-locate.txt found (dev world; racial-banners-pieces.txt lists their pieces). Run it once on
+# main in a copy of the run dir for the "before" shots and once on the branch for "after":
+#   timeout 900 ./gradlew runClient -PdevScript=devscripts/racial-banners-tour.txt [-PdevRunDir=run-before]
+# Check: <run dir>/screenshots/rb-*.png, and the "[Home] ..." lines of the /dndhome teleports in latest.log.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+# Orc Stronghold: the gatehouse's war banners and the Fighting Pit's drum banner
+/tp @s 55136 200 60288
+wait 200
+/dndhome stronghold gate
+waitserver 2
+wait 300
+/tp @s ^ ^4 ^-10
+/tp @s ~ ~ ~ ~ -8
+wait 60
+screenshot rb-stronghold-gate
+# the pit's drum banner (the drum is at 55144 99 60301)
+/tp @s 55144.5 101.5 60296 0 10
+wait 60
+screenshot rb-stronghold-pit-north
+# Dwarven Fortress: the gate (facing west) and the great hall
+/tp @s 59170 93 60760.5 -90 8
+wait 300
+screenshot rb-fortress-gate
+/tp @s 59197 87 60760.5 -90 3
+wait 100
+screenshot rb-fortress-hall
+# Elven Enclave: the Moonwell's corner banners
+/tp @s 56840.5 66 61982 180 12
+wait 300
+screenshot rb-enclave-moonwell
+# Hobbit village: the Green Dragon inn, from both sides
+/tp @s 59601 86 59667.5 90 8
+wait 300
+screenshot rb-inn-east
+/tp @s 59575 86 59667.5 -90 8
+wait 60
+screenshot rb-inn-west
+/tp @s 59579 84 59667.5 -90 5
+wait 20
+screenshot rb-inn-sign
+# Goblin camp: from the four sides
+/tp @s 58920.5 82 62034 0 30
+wait 300
+screenshot rb-camp-north
+/tp @s 58942 82 62056.5 90 30
+wait 60
+screenshot rb-camp-east
+/tp @s 58920.5 82 62078 180 30
+wait 60
+screenshot rb-camp-south
+/tp @s 58899 82 62056.5 -90 30
+wait 60
+screenshot rb-camp-west
+# the gate (south) and the chief's tent behind it
+/tp @s 58920.5 72 62075 180 8
+wait 20
+screenshot rb-camp-gate
+# Dragon Temple: the sanctum's breath altars
+/tp @s 58336 200 64080
+wait 200
+/dndhome temple
+waitserver 2
+wait 300
+# from in front of the Ember altar (58309 153 64096), looking west at the three altars' banners
+/tp @s 58317.5 155 64096.5 90 8
+wait 40
+screenshot rb-temple-sanctum
+# Cogsdeep: the observatory door
+/tp @s 57872 200 61568
+wait 200
+/dndhome cogsdeep door
+waitserver 2
+wait 300
+/tp @s ^ ^1 ^-4
+/tp @s ~ ~ ~ ~ -12
+wait 40
+screenshot rb-cogsdeep-door
+# Brimstone Sanctum: the Pact Hall
+/execute in minecraft:the_nether run tp @s 6192 100 7392
+wait 200
+/dndhome sanctum hall
+waitserver 2
+wait 300
+screenshot rb-sanctum-hall
+/execute in minecraft:overworld run tp @s 0 200 0
+wait 20
+hud on
+quit

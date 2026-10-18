@@ -1,0 +1,44 @@
+# Lists the pieces of the fresh fortress, enclave and hobbit village racial-banners-locate.txt found, and takes an
+# aerial shot of each and of the goblin camp, so racial-banners-tour.txt can aim at their banners.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/racial-banners-pieces.txt
+# Check: "[Home] piece ..." lines in latest.log.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/tp @s 59184 200 60752
+wait 300
+/execute positioned over world_surface run tp @s ~ ~2 ~
+waitserver 2
+/dndhome pieces
+/tp @s ~ 60 ~
+/dndhome pieces
+/tp @s ~ 90 ~
+/dndhome pieces
+/tp @s ~ 120 ~
+/dndhome pieces
+/tp @s 56848 200 61968
+wait 300
+/execute positioned over world_surface run tp @s ~ ~2 ~
+waitserver 2
+/dndhome pieces
+/tp @s ~ 70 ~
+/dndhome pieces
+/tp @s ~ 100 ~
+/dndhome pieces
+/tp @s 59552 200 59648
+wait 300
+/execute positioned over world_surface run tp @s ~ ~2 ~
+waitserver 2
+/dndhome pieces
+/tp @s ~ 70 ~
+/dndhome pieces
+/tp @s 58912 200 62048 0 90
+wait 300
+hud off
+screenshot rb-camp-top
+/execute positioned over world_surface run tp @s ~ ~2 ~
+/data get entity @s Pos
+quit

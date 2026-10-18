@@ -84,6 +84,7 @@ Some actions roll a d20 plus your [ability score](docs/systems/ability-scores.md
 - [Magic items](docs/systems/magic-items.md): D&D rarity tiers shown by name colour, +1/+2/+3 weapons and armor, attunement, unidentified loot and curses.
 - [Named magic items](docs/items/magic-items.md): the Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, protective rings and amulets, the Doss Lute and the Tome of Clear Thought.
 - [Bard instruments](docs/items/bard-instruments.md): the Lute, War Drum and Flute. When a Bard plays one, every player within 16 blocks gets Regeneration, Strength or Speed for 30 seconds.
+- [Racial banner patterns](docs/items/banner-patterns.md): a loom pattern for each racial home and the goblins, flown on their structures' banners and sold by their merchants.
 
 ### Enchantments
 Lunge, Invulnerability, Tree Feller, Grid Miner, Returning, Vampiric, Smite Dragons and Featherfall, which only an Artificer can roll at an enchanting table. See [Enchantments](docs/enchantments/README.md).

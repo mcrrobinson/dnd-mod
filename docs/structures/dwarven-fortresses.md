@@ -4,13 +4,15 @@ Fortresses carved into mountainsides, home to the [Mountain Dwarves](../mobs/mou
 ![The gate of a dwarven fortress on a snowy peak](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/dwarven-blocks/fortress2-gate.png)
 
 ## How it works
-You find a fortress by its **great gate**: a tall facade of Runic Deepslate Bricks at the foot of a mountainside, with the Clan Crest over a chiseled runic doorway and a raised portcullis between gold-veined pillars and banners. It opens onto a terrace with braziers, guards and a **Waystone**: right-click it and it names the hold ("Here stands Ironfist Hold") and tells you your standing with the Mountain Dwarves.
+You find a fortress by its **great gate**: a tall facade of Runic Deepslate Bricks at the foot of a mountainside, with the Clan Crest over a chiseled runic doorway and a raised portcullis between gold-veined pillars and banners bearing the gold [Clan Anvil](../items/banner-patterns.md). It opens onto a terrace with braziers, guards and a **Waystone**: right-click it and it names the hold ("Here stands Ironfist Hold") and tells you your standing with the Mountain Dwarves.
 
 Behind the gate everything runs straight back into the rock:
 
-1. **The great hall**, a long hall of gold-veined pillars with chandeliers, banners, feasting tables, a red carpet and ancestor statues set into the walls. Four to six dwarves stand about in it. It has two or three doorways down each side, each under a clan crest.
+1. **The great hall**, a long hall of gold-veined pillars with chandeliers, Clan Anvil banners (each bay in one of the hall's two colours, the anvil in the other), feasting tables, a red carpet and ancestor statues set into the walls. Four to six dwarves stand about in it. It has two or three doorways down each side, each under a clan crest.
 2. **The throne room**, where the Dwarf King sits on a gold throne on a stepped dais under the clan crest, between mithral grilles, with his ancestors looking on and guards.
 3. **The treasury**, through a narrow door behind the throne, behind a mithral grille, heaped with coins.
+
+![The great hall's Clan Anvil banners, red anvils on gold and gold on red](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/fortress-hall-after.png)
 
 Each side doorway leads down a short corridor to a room. A fortress has four or six of them and always has at least one of each kind:
 

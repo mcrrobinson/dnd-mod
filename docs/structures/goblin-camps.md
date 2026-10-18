@@ -31,6 +31,7 @@ Goblin war camps in Overworld forests and plains: a levelled clearing inside a c
 ![The camp gate: skull-topped posts, the dirt track and the chief's tent across the fire](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/goblin-camp-gate.png)
 
 ![The gate posts hung with Goblin Skull banners](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/camp-gate-after.png)
+![A Warlord's standard on the chief's tent: a black Goblin Skull banner with a red border](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/warlord-standard.png)
 
 ## Where to find it
 Mine the building blocks out of a camp (each drops itself, except the junk pile's junk) or craft them. Goblins don't trade, so no merchant sells them.

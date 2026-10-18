@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "group": "planks",
+  "key": {
+    "#": {
+      "item": "dndclasses:stripped_heartwood_log"
+    }
+  },
+  "pattern": [
+    "#"
+  ],
+  "result": {
+    "count": 4,
+    "item": "dndclasses:heartwood_planks"
+  },
+  "show_notification": true
+}

@@ -5,6 +5,7 @@ import static mattonfire.dnd.entity.NpcTrades.buy;
 
 import mattonfire.dnd.dungeon.DungeonMaps;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.world.gen.enclave.Moonwell;
 import net.minecraft.enchantment.Enchantment;
@@ -44,8 +45,8 @@ public final class ElfTrades {
     }
 
     /**
-     * The Fletcher: arrows, tipped arrows, enchanted bows, Power III and the Elven Longbow; buys sticks,
-     * feathers and string.
+     * The Fletcher: arrows, tipped arrows, enchanted bows, Power III, the Elven Longbow and Heartwood logs; buys
+     * sticks, feathers and string.
      */
     static TradeOfferList fletcher(Random random) {
         TradeOfferList offers = new TradeOfferList();
@@ -57,6 +58,7 @@ public final class ElfTrades {
         offers.add(sell(6, bow));
         offers.add(sell(14, EnchantedBookItem.forEnchantment(new EnchantmentLevelEntry(Enchantments.POWER, 3))));
         offers.add(elvenLongbow());
+        offers.add(heartwood());
         offers.add(buy(Items.STICK, 32));
         offers.add(buy(Items.FEATHER, 12));
         offers.add(buy(Items.STRING, 14));
@@ -68,14 +70,36 @@ public final class ElfTrades {
         return sell(16, new ItemStack(ModItems.ELVEN_LONGBOW));
     }
 
-    /** Adds the trades a saved Fletcher from an older version doesn't have yet (the Elven Longbow). */
+    /** 8 Heartwood Logs (the Heart Tree's wood) for 4 emeralds (3 with the Elves' kin price). */
+    private static TradeOffer heartwood() {
+        return sell(4, ModBlockFamilies.HEARTWOOD_LOG.base(), 8);
+    }
+
+    /** 8 Moonstone Bricks for 3 emeralds (2 with the Elves' kin price). */
+    private static TradeOffer moonstone() {
+        return sell(3, ModBlockFamilies.MOONSTONE_BRICKS.base(), 8);
+    }
+
+    /**
+     * Adds the trades a saved merchant from an older version doesn't have yet: the Fletcher's Elven Longbow and
+     * Heartwood, the Speaker's Moonstone Bricks.
+     */
     static void addMissing(TradeOfferList offers, boolean speaker) {
         if (!speaker && offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModItems.ELVEN_LONGBOW))) {
             offers.add(elvenLongbow());
         }
+        if (!speaker && offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModBlockFamilies.HEARTWOOD_LOG.base().asItem()))) {
+            offers.add(heartwood());
+        }
+        if (speaker && offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModBlockFamilies.MOONSTONE_BRICKS.base().asItem()))) {
+            offers.add(moonstone());
+        }
     }
 
-    /** The Speaker: Moonwater, a different enchanted book each day, an explorer map to a lair, glow berries. */
+    /**
+     * The Speaker: Moonwater, a different enchanted book each day, glow berries, an explorer map to a lair and
+     * Moonstone Bricks.
+     */
     static TradeOfferList speaker(ServerWorld world, BlockPos pos, Random random) {
         TradeOfferList offers = new TradeOfferList();
         offers.add(sell(3, Moonwell.moonwater()));
@@ -85,6 +109,7 @@ public final class ElfTrades {
         if (map != null) {
             offers.add(sell(14, map));
         }
+        offers.add(moonstone());
         return offers;
     }
 

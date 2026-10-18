@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.enclave;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
@@ -15,7 +16,8 @@ import net.minecraft.util.math.Direction;
 
 /**
  * A talan: a treetop platform 7x7 on a giant birch with a 3x3 trunk, at the bridge deck's height
- * ({@link ElvenEnclavePlanner#DECK} above the Heart Tree's foot, so 10-22 above its own ground). A ladder
+ * ({@link ElvenEnclavePlanner#DECK} above the Heart Tree's foot, so 10-22 above its own ground). Above the
+ * platform the trunk is Living Wood, the home grown round it, with leaves and tendrils sprouting from it. A ladder
  * runs up the trunk's north face, vines hang down the others, and a canopy roofs the platform. Each is
  * furnished as a dwelling (bedroll and chest), a scout post (cartography table and barrel) or a herbalist's
  * (brewing stand and flower pots).
@@ -56,7 +58,8 @@ public class TalanPiece extends EnclavePiece {
             for (int x = -1; x <= 1; x++) {
                 for (int z = -1; z <= 1; z++) {
                     boolean corner = x != 0 && z != 0;
-                    b.set(x, y, z, !corner && (x != 0 || z != 0) && y % 4 == 1 ? Blocks.STRIPPED_BIRCH_WOOD : Blocks.BIRCH_WOOD);
+                    b.set(x, y, z, y > p ? ModBlockFamilies.LIVING_WOOD.base()
+                            : !corner && (x != 0 || z != 0) && y % 4 == 1 ? Blocks.STRIPPED_BIRCH_WOOD : Blocks.BIRCH_WOOD);
                 }
             }
         }

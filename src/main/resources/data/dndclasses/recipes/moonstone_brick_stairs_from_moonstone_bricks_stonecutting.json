@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:moonstone_bricks"
+  },
+  "result": "dndclasses:moonstone_brick_stairs"
+}

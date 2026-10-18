@@ -255,6 +255,15 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.SanctumBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        // Elven Enclave blocks: rope planks, glimmercaps and moonpetals cut out, Silverleaf like leaves, Starglass tinted
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.ElvenBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(
+                mattonfire.dnd.classes.Registry.ElvenBlocks.SILVERLEAF, net.minecraft.client.render.RenderLayer.getCutoutMipped());
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getTranslucent(),
+                mattonfire.dnd.classes.Registry.ElvenBlocks.translucentBlocks().toArray(net.minecraft.block.Block[]::new));
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

@@ -1,4 +1,18 @@
 {
   "replace": false,
-  "values": ["dndclasses:attunement_table"]
+  "values": [
+    "dndclasses:attunement_table",
+    "dndclasses:heartwood_log",
+    "dndclasses:heartwood_wood",
+    "dndclasses:stripped_heartwood_log",
+    "dndclasses:heartwood_planks",
+    "dndclasses:heartwood_stairs",
+    "dndclasses:heartwood_slab",
+    "dndclasses:heartwood_fence",
+    "dndclasses:heartwood_fence_gate",
+    "dndclasses:heartwood_door",
+    "dndclasses:heartwood_trapdoor",
+    "dndclasses:living_wood",
+    "dndclasses:woven_rope_plank"
+  ]
 }

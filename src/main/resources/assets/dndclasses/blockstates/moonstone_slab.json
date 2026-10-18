@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/moonstone_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/moonstone"
+    },
+    "type=top": {
+      "model": "dndclasses:block/moonstone_slab_top"
+    }
+  }
+}

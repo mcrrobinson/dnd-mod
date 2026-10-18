@@ -4,6 +4,11 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.HashSet;
 import java.util.Set;
+
+import mattonfire.dnd.classes.Blocks.elven.WovenRopePlankBlock;
+import mattonfire.dnd.classes.Registry.ElvenBlocks;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
@@ -12,10 +17,10 @@ import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * A rope bridge between two platforms, one block wide: birch slabs with fence handrails, sagging one block
- * in the middle (in half-slab steps, so it can be walked without jumping). The walkway runs along a
- * 4-connected line of cells at the bridge deck's height; at each end the platform's rail is cut away
- * where the bridge lands. Cells are in world x/z; the origin is (0, deck, 0).
+ * A rope bridge between two platforms, one block wide: a deck of Woven Rope Planks with fence handrails, sagging
+ * one block in the middle (in half-block steps, like slabs, so it can be walked without jumping). The walkway
+ * runs along a 4-connected line of cells at the bridge deck's height; at each end the platform's rail is cut
+ * away where the bridge lands. Cells are in world x/z; the origin is (0, deck, 0).
  */
 public class BridgePiece extends EnclavePiece {
     /** World x, z of each walkway cell, in order. */
@@ -81,11 +86,12 @@ public class BridgePiece extends EnclavePiece {
             int x = this.cells[2 * i];
             int z = this.cells[2 * i + 1];
             int sag = sag(i, count);
-            // Level 0: a top slab at deck height, flush with the platforms; 1: a bottom slab; 2: a top slab one lower.
+            // Level 0: a top-half plank at deck height, flush with the platforms; 1: a bottom-half one; 2: a top-half
+            // one a block lower.
             int slabY = sag == 2 ? -1 : 0;
             int railY = sag == 2 ? 0 : 1;
             b.air(x, slabY + 1, z, x, slabY + 3, z);
-            b.set(x, slabY, z, slab(Blocks.BIRCH_SLAB, sag != 1));
+            b.set(x, slabY, z, this.plank(i, count, sag != 1));
             for (Direction d : Direction.Type.HORIZONTAL) {
                 int nx = x + d.getOffsetX();
                 int nz = z + d.getOffsetZ();
@@ -103,5 +109,14 @@ public class BridgePiece extends EnclavePiece {
                 }
             }
         }
+    }
+
+    /** The deck plank for cell {@code i}, in the top or bottom half, lying along the way the walkway runs there. */
+    private BlockState plank(int i, int count, boolean top) {
+        int j = i + 1 < count ? i + 1 : i - 1;
+        boolean alongX = j >= 0 && this.cells[2 * j] != this.cells[2 * i];
+        return ElvenBlocks.WOVEN_ROPE_PLANK.getDefaultState()
+                .with(WovenRopePlankBlock.HALF, top ? BlockHalf.TOP : BlockHalf.BOTTOM)
+                .with(WovenRopePlankBlock.AXIS, alongX ? Direction.Axis.X : Direction.Axis.Z);
     }
 }

@@ -25,8 +25,8 @@ Each trade has 12 uses and restocks every morning. Prices follow your [standing]
 
 | Merchant | Sells | Buys for 1 emerald |
 |-|-|-|
-| Fletcher | 16 arrows for 1 emerald; 4 tipped arrows of Slowness or of Poison for 2; a bow with Power I-II for 6; a Power III book for 14; the [Elven Longbow](../items/racial-weapons.md#elven-longbow) for 16 | 32 sticks, 12 feathers, 14 string |
-| Speaker | Moonwater for 3; one random enchanted book a day for 12-20; an explorer map to the nearest unexplored dragon or beholder lair for 14; glow berries for 1. **Elves only:** [Elven Chain](../items/armor.md#racial-armor) helmet 10, chestplate 16, leggings 14, boots 8 | - |
+| Fletcher | 16 arrows for 1 emerald; 4 tipped arrows of Slowness or of Poison for 2; a bow with Power I-II for 6; a Power III book for 14; the [Elven Longbow](../items/racial-weapons.md#elven-longbow) for 16; 8 [Heartwood Logs](../items/elven-building-blocks.md) for 4 | 32 sticks, 12 feathers, 14 string |
+| Speaker | Moonwater for 3; one random enchanted book a day for 12-20; an explorer map to the nearest unexplored dragon or beholder lair for 14; glow berries for 1; 8 [Moonstone Bricks](../items/elven-building-blocks.md) for 3. **Elves only:** [Elven Chain](../items/armor.md#racial-armor) helmet 10, chestplate 16, leggings 14, boots 8 | - |
 
 The Speaker's Elven Chain is kin stock: only Elf players see those four offers (after the others), and everyone else gets the normal list.
 

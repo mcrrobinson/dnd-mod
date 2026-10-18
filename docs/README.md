@@ -127,6 +127,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
 - [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
+- [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves (PR #241)
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

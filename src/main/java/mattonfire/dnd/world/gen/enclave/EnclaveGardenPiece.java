@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.enclave;
 
+import mattonfire.dnd.classes.Registry.ElvenBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SweetBerryBushBlock;
@@ -7,7 +8,10 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.Direction;
 
-/** A flower garden: beds of woodland flowers, sweet berry bushes and sometimes (40%) a beehive on a post. */
+/**
+ * A flower garden: beds of woodland flowers, Moonpetals and Glimmercaps, sweet berry bushes and sometimes (40%) a
+ * beehive on a post.
+ */
 public class EnclaveGardenPiece extends EnclavePiece {
     static final int REACH = 3;
 
@@ -33,6 +37,10 @@ public class EnclaveGardenPiece extends EnclavePiece {
                 float n = this.noise(x, 1, z);
                 if (n < 0.25F) {
                     b.set(x, 1, z, Blocks.SWEET_BERRY_BUSH.getDefaultState().with(SweetBerryBushBlock.AGE, 3));
+                } else if (n < 0.37F) {
+                    b.set(x, 1, z, ElvenBlocks.MOONPETAL);
+                } else if (n < 0.47F) {
+                    b.set(x, 1, z, ElvenBlocks.GLIMMERCAP);
                 } else if (n < 0.85F) {
                     b.flower(x, 1, z);
                 }

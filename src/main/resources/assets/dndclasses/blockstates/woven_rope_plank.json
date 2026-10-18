@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "axis=z,half=bottom": {
+      "model": "dndclasses:block/woven_rope_plank_bottom"
+    },
+    "axis=x,half=bottom": {
+      "model": "dndclasses:block/woven_rope_plank_bottom",
+      "y": 90
+    },
+    "axis=z,half=top": {
+      "model": "dndclasses:block/woven_rope_plank_top"
+    },
+    "axis=x,half=top": {
+      "model": "dndclasses:block/woven_rope_plank_top",
+      "y": 90
+    }
+  }
+}

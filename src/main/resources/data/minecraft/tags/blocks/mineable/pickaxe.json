@@ -34,6 +34,16 @@
     "dndclasses:contract_lectern",
     "dndclasses:sulphur_vent",
     "dndclasses:soulfire_sconce",
-    "dndclasses:chain_hung_censer"
+    "dndclasses:chain_hung_censer",
+    "dndclasses:moonstone",
+    "dndclasses:moonstone_stairs",
+    "dndclasses:moonstone_slab",
+    "dndclasses:moonstone_wall",
+    "dndclasses:polished_moonstone",
+    "dndclasses:moonstone_bricks",
+    "dndclasses:moonstone_brick_stairs",
+    "dndclasses:moonstone_brick_slab",
+    "dndclasses:moonstone_brick_wall",
+    "dndclasses:sylvan_glyph_stone"
   ]
 }

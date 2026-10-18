@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "dndclasses:block/moonstone",
+    "side": "dndclasses:block/moonstone",
+    "top": "dndclasses:block/moonstone"
+  }
+}

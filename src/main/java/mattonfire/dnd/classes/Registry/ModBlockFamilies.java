@@ -1,6 +1,9 @@
 package mattonfire.dnd.classes.Registry;
 
+import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
+import net.minecraft.block.BlockSetType;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.WoodType;
 
 /**
  * The mod's decorative building materials (see {@link BlockFamily} and docs/dev/building-blocks.md). Each one
@@ -22,6 +25,29 @@ public final class ModBlockFamilies {
     public static final BlockFamily HELLBRASS = BlockFamily.builder("hellbrass", Blocks.COPPER_BLOCK).build();
     public static final BlockFamily CUT_HELLBRASS = BlockFamily.builder("cut_hellbrass", Blocks.CUT_COPPER)
             .stairs().slab().build();
+    // --- Elven Enclaves ---
+    /** The Heart Tree's own wood: silver-white bark, pale cream planks with a curving gold-green grain. */
+    public static final BlockFamily HEARTWOOD_LOG = BlockFamily.builder("heartwood_log", Blocks.BIRCH_LOG)
+            .axisBase().build();
+    /** Heartwood bark on every side, as the Heart Tree's trunk and boughs are built. */
+    public static final BlockFamily HEARTWOOD_WOOD = BlockFamily.builder("heartwood_wood", Blocks.BIRCH_WOOD)
+            .axisBase().build();
+    public static final BlockFamily STRIPPED_HEARTWOOD_LOG = BlockFamily
+            .builder("stripped_heartwood_log", Blocks.STRIPPED_BIRCH_LOG).axisBase().build();
+    public static final BlockFamily HEARTWOOD_PLANKS = BlockFamily.builder("heartwood_planks", Blocks.BIRCH_PLANKS)
+            .stem("heartwood").stairs().slab().fence().fenceGate(WoodType.BIRCH).door(BlockSetType.BIRCH)
+            .trapdoor(BlockSetType.BIRCH).build();
+    /** Pale stone that holds moonlight: it glows faintly (light 4). */
+    public static final BlockFamily MOONSTONE = BlockFamily
+            .builder("moonstone", FabricBlockSettings.copyOf(Blocks.CALCITE).luminance(state -> 4)).stoneShapes()
+            .build();
+    public static final BlockFamily POLISHED_MOONSTONE = BlockFamily
+            .builder("polished_moonstone", FabricBlockSettings.copyOf(Blocks.CALCITE).luminance(state -> 4)).build();
+    public static final BlockFamily MOONSTONE_BRICKS = BlockFamily
+            .builder("moonstone_bricks", FabricBlockSettings.copyOf(Blocks.CALCITE).luminance(state -> 4))
+            .stoneShapes().build();
+    /** Bark grown into a wall, with leaves, tendrils and tiny flowers sprouting from it: elves grow their homes. */
+    public static final BlockFamily LIVING_WOOD = BlockFamily.builder("living_wood", Blocks.BIRCH_WOOD).build();
 
     private ModBlockFamilies() {
     }

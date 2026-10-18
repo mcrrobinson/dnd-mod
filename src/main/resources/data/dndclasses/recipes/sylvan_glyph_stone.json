@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "L": {
+      "item": "minecraft:glow_lichen"
+    },
+    "M": {
+      "item": "minecraft:mossy_cobblestone"
+    }
+  },
+  "pattern": [
+    "L",
+    "M",
+    "M"
+  ],
+  "result": {
+    "item": "dndclasses:sylvan_glyph_stone"
+  },
+  "show_notification": true
+}

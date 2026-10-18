@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "dndclasses:block/sylvan_glyph_stone_lower"
+    },
+    "half=upper": {
+      "model": "dndclasses:block/sylvan_glyph_stone_upper"
+    }
+  }
+}

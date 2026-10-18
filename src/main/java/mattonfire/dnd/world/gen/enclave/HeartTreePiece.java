@@ -2,11 +2,14 @@ package mattonfire.dnd.world.gen.enclave;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ElvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
-import net.minecraft.block.BlockState;
+import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CaveVines;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
@@ -14,11 +17,12 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.world.chunk.WorldChunk;
 
 /**
- * The Heart Tree in the middle of the enclave: a 5x5 trunk of birch wood with stripped-birch inlays,
- * {@link #HEIGHT} tall, roots flaring out 3 blocks at the base and a canopy of birch and flowering azalea
- * leaves {@link #CANOPY_RADIUS} across, hung with glow berries and lanterns. A spiral stair winds once
- * round the trunk, past the bridge deck at {@link ElvenEnclavePlanner#DECK} up to the Speaker's Hall at
- * {@link #HALL} (built by {@link SpeakersHallPiece}).
+ * The Heart Tree in the middle of the enclave: a 5x5 trunk of Heartwood with stripped-Heartwood inlays,
+ * {@link #HEIGHT} tall, roots flaring out 3 blocks at the base with Glimmercaps round them, and a canopy of
+ * Silverleaf {@link #CANOPY_RADIUS} across, hung with glow berries and lanterns. A Heartwood spiral stair
+ * winds once round the trunk, past the bridge deck at {@link ElvenEnclavePlanner#DECK} (Heartwood planks,
+ * edged with Polished Moonstone) up to the Speaker's Hall at {@link #HALL} (built by {@link SpeakersHallPiece}).
+ * Heartwood wood and stripped logs aren't forest growth ({@link #isForest}), so clearing never takes them.
  */
 public class HeartTreePiece extends EnclavePiece {
     public static final int HEIGHT = 34;
@@ -42,6 +46,12 @@ public class HeartTreePiece extends EnclavePiece {
      */
     static final int STAIR_SHAFT = DECK_OUT;
     static final int STAIR_SHAFT_TOP = HALL + 3;
+
+    /** The Heart Tree's own wood (bark all round), its stripped inlays and beams, deck planks and rails. */
+    private static final Block WOOD = ModBlockFamilies.HEARTWOOD_WOOD.base();
+    private static final Block STRIPPED = ModBlockFamilies.STRIPPED_HEARTWOOD_LOG.base();
+    private static final Block PLANKS = ModBlockFamilies.HEARTWOOD_PLANKS.base();
+    private static final Block FENCE = ModBlockFamilies.HEARTWOOD_PLANKS.fence();
 
     /** The stair's ring at Chebyshev distance 3, in walking order (clockwise seen from above). */
     private static final int[][] RING = ring(TRUNK + 1);
@@ -124,6 +134,7 @@ public class HeartTreePiece extends EnclavePiece {
         this.deck(b);
         this.branches(b);
         this.canopy(b);
+        this.glimmercaps(b);
         // A warden and a wood elf at the foot of the tree.
         b.elf(5, 1, 0, ModEntityTypes.ELF_WARDEN);
         b.elf(-5, 1, 2, ModEntityTypes.WOOD_ELF);
@@ -147,7 +158,7 @@ public class HeartTreePiece extends EnclavePiece {
                     boolean face = Math.abs(x) == TRUNK || Math.abs(z) == TRUNK;
                     // Pale stripped inlays climbing the middle of each face.
                     boolean inlay = face && (x == 0 || z == 0) && y % 6 >= 3 && y % 6 <= 4;
-                    b.set(x, y, z, inlay || !face ? Blocks.STRIPPED_BIRCH_WOOD : Blocks.BIRCH_WOOD);
+                    b.set(x, y, z, inlay || !face ? STRIPPED : WOOD);
                 }
             }
         }
@@ -174,14 +185,14 @@ public class HeartTreePiece extends EnclavePiece {
                     if (i >= 0 && stairY(i) >= 0 && stairY(i) <= y + 2) {
                         continue;
                     }
-                    b.set(x, y, z, Blocks.BIRCH_WOOD);
+                    b.set(x, y, z, WOOD);
                 }
                 b.anchor(x, 0, z, Blocks.ROOTED_DIRT.getDefaultState());
             }
         }
     }
 
-    /** The spiral stair: spruce stairs on the ring round the trunk, a fence rail on the outside. */
+    /** The spiral stair: Heartwood stairs on the ring round the trunk, a fence rail on the outside. */
     private void stair(Builder b) {
         for (int i = 0; i < RING.length; i++) {
             int y = stairY(i);
@@ -191,10 +202,10 @@ public class HeartTreePiece extends EnclavePiece {
             int x = RING[i][0];
             int z = RING[i][1];
             b.air(x, y + 1, z, x, y + 3, z);
-            b.set(x, y, z, stairs(Blocks.SPRUCE_STAIRS, facing(i), false));
+            b.set(x, y, z, stairs(ModBlockFamilies.HEARTWOOD_PLANKS, facing(i), false));
             // Hold each step up with an upside-down stair under it (the first steps sit on the ground).
             if (y > 1) {
-                b.set(x, y - 1, z, stairs(Blocks.SPRUCE_STAIRS, facing(i).getOpposite(), true));
+                b.set(x, y - 1, z, stairs(ModBlockFamilies.HEARTWOOD_PLANKS, facing(i).getOpposite(), true));
             } else {
                 b.anchor(x, y, z, Blocks.DIRT.getDefaultState());
             }
@@ -219,14 +230,14 @@ public class HeartTreePiece extends EnclavePiece {
     }
 
     /**
-     * A rail post beside the step at local y {@code y}: a birch fence one up, standing on a stripped birch stringer
+     * A rail post beside the step at local y {@code y}: a Heartwood fence one up, standing on a stripped Heartwood stringer
      * level with the step, so the rail doesn't float in the air once the forest round the stair is cleared away.
-     * Stripped wood isn't forest growth ({@link #isForest}), so {@link #clearRegrowth} leaves it. The lowest
+     * A stripped log isn't forest growth ({@link #isForest}), so {@link #clearRegrowth} leaves it. The lowest
      * posts are filled down to the ground like the first steps.
      */
     private void railPost(Builder b, int x, int y, int z) {
-        b.set(x, y, z, Blocks.STRIPPED_BIRCH_WOOD);
-        b.set(x, y + 1, z, Blocks.BIRCH_FENCE);
+        b.set(x, y, z, STRIPPED);
+        b.set(x, y + 1, z, FENCE);
         if (y <= 1) {
             b.anchor(x, y, z, Blocks.DIRT.getDefaultState());
         }
@@ -260,7 +271,10 @@ public class HeartTreePiece extends EnclavePiece {
         return c >= DECK_IN && c <= DECK_OUT && x * x + z * z <= (DECK_OUT + 1.6D) * (DECK_OUT + 1.6D);
     }
 
-    /** The bridge deck round the trunk, railed on its outer edge; bridges cut through the rail where they land. */
+    /**
+     * The bridge deck round the trunk, Heartwood planks edged with Polished Moonstone and railed on its outer edge;
+     * bridges cut through the rail where they land.
+     */
     private void deck(Builder b) {
         int y = ElvenEnclavePlanner.DECK;
         for (int x = -DECK_OUT; x <= DECK_OUT; x++) {
@@ -268,11 +282,11 @@ public class HeartTreePiece extends EnclavePiece {
                 if (!isDeck(x, z)) {
                     continue;
                 }
-                b.set(x, y, z, Blocks.BIRCH_PLANKS);
+                b.set(x, y, z, PLANKS);
                 b.air(x, y + 1, z, x, y + 3, z);
                 // Beams underneath along the axes and diagonals.
                 if (x == 0 || z == 0 || Math.abs(x) == Math.abs(z)) {
-                    b.set(x, y - 1, z, Blocks.STRIPPED_BIRCH_WOOD);
+                    b.set(x, y - 1, z, STRIPPED);
                 }
                 boolean edge = false;
                 for (Direction d : Direction.Type.HORIZONTAL) {
@@ -283,7 +297,8 @@ public class HeartTreePiece extends EnclavePiece {
                     }
                 }
                 if (edge) {
-                    b.set(x, y + 1, z, Blocks.BIRCH_FENCE);
+                    b.set(x, y, z, ModBlockFamilies.POLISHED_MOONSTONE.base());
+                    b.set(x, y + 1, z, FENCE);
                 }
             }
         }
@@ -294,7 +309,7 @@ public class HeartTreePiece extends EnclavePiece {
         // Struts from the trunk to under the deck's corners.
         for (int[] c : new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}) {
             for (int s = 1; s < 3; s++) {
-                b.set(c[0] * (TRUNK + 1 + s), y - 3 + s, c[1] * (TRUNK + 1 + s), Blocks.STRIPPED_BIRCH_WOOD);
+                b.set(c[0] * (TRUNK + 1 + s), y - 3 + s, c[1] * (TRUNK + 1 + s), STRIPPED);
             }
         }
     }
@@ -308,7 +323,7 @@ public class HeartTreePiece extends EnclavePiece {
                 int x = (int) Math.round(Math.cos(angle) * s);
                 int z = (int) Math.round(Math.sin(angle) * s);
                 int y = start + s / 2;
-                b.set(x, y, z, Blocks.BIRCH_WOOD);
+                b.set(x, y, z, WOOD);
             }
         }
     }
@@ -322,12 +337,10 @@ public class HeartTreePiece extends EnclavePiece {
                     double dy = (y - CANOPY_Y) / (double) CANOPY_HALF_HEIGHT;
                     double d = (x * x + z * z) / (double) (r * r) + dy * dy;
                     float n = this.noise(x, y, z);
-                    if (d > 1.0D - 0.25D * n || this.inTrunk(x, y, z) || b.get(x, y, z).isOf(Blocks.BIRCH_WOOD)) {
+                    if (d > 1.0D - 0.25D * n || this.inTrunk(x, y, z) || b.get(x, y, z).isOf(WOOD)) {
                         continue;
                     }
-                    BlockState leaf = n < 0.18F ? leaves(Blocks.FLOWERING_AZALEA_LEAVES)
-                            : n < 0.26F ? leaves(Blocks.AZALEA_LEAVES) : leaves(Blocks.BIRCH_LEAVES);
-                    b.set(x, y, z, leaf);
+                    b.set(x, y, z, leaves(ElvenBlocks.SILVERLEAF));
                     lowest = Math.min(lowest, y);
                 }
                 // Nothing hangs over the hall and its stair.
@@ -346,6 +359,27 @@ public class HeartTreePiece extends EnclavePiece {
                 } else if (hang > 0.95F) {
                     b.set(x, lowest - 1, z, Blocks.CHAIN);
                     b.set(x, lowest - 2, z, lantern(true));
+                }
+            }
+        }
+    }
+
+    /**
+     * Glimmercaps round the roots: on about a fifth of the forest floor 4-7 blocks out from the middle, wherever
+     * the ground (any dirt, grass or moss, at most 3 up from the tree's foot) has room above it.
+     */
+    private void glimmercaps(Builder b) {
+        for (int x = -FOOTPRINT; x <= FOOTPRINT; x++) {
+            for (int z = -FOOTPRINT; z <= FOOTPRINT; z++) {
+                int c = Math.max(Math.abs(x), Math.abs(z));
+                if (c < TRUNK + 2 || this.noise(x, -11, z) > 0.2F) {
+                    continue;
+                }
+                for (int y = 1; y <= 4; y++) {
+                    if (b.get(x, y, z).isAir() && b.get(x, y - 1, z).isIn(BlockTags.DIRT)) {
+                        b.set(x, y, z, ElvenBlocks.GLIMMERCAP);
+                        break;
+                    }
                 }
             }
         }

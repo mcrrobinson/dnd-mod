@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.gen.enclave;
 
+import mattonfire.dnd.classes.Registry.ElvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Blocks;
@@ -9,7 +11,8 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The Moonwell, on the forest floor by the Heart Tree: a 5x5 pool two deep over a glass floor lit by sea
- * lanterns, rimmed with calcite and amethyst clusters, with a white banner on a post at each corner. Fill a
+ * lanterns, rimmed with Moonstone Bricks capped with Polished Moonstone and amethyst clusters, ringed with
+ * Moonpetals, with a white banner on a post at each corner. Fill a
  * glass bottle from it at night for Moonwater ({@link mattonfire.dnd.world.gen.enclave.Moonwell}).
  */
 public class MoonwellPiece extends EnclavePiece {
@@ -46,13 +49,20 @@ public class MoonwellPiece extends EnclavePiece {
                     b.set(x, -3, z, Blocks.SEA_LANTERN);
                     b.anchor(x, -3, z, Blocks.CALCITE.getDefaultState());
                 } else if (c == POOL + 1) {
-                    b.fill(x, -3, z, x, 0, z, Blocks.CALCITE);
+                    b.fill(x, -3, z, x, -1, z, ModBlockFamilies.MOONSTONE_BRICKS.base());
+                    b.set(x, 0, z, ModBlockFamilies.POLISHED_MOONSTONE.base());
                     b.anchor(x, -3, z, Blocks.DIRT.getDefaultState());
                     if ((x + z) % 2 == 0) {
                         b.set(x, 1, z, Blocks.AMETHYST_CLUSTER.getDefaultState().with(AmethystClusterBlock.FACING, Direction.UP));
                     }
                 } else {
                     b.ground(x, z, this.noise(x, 0, z) < 0.4F ? Blocks.MOSS_BLOCK.getDefaultState() : Blocks.GRASS_BLOCK.getDefaultState());
+                    // Moonpetals round the well (not by the corner posts or where the warden stands).
+                    boolean post = Math.abs(x) == REACH && Math.abs(z) == REACH;
+                    boolean warden = x == 0 && z == -REACH;
+                    if (!post && !warden && this.noise(x, 1, z) < 0.45F) {
+                        b.set(x, 1, z, ElvenBlocks.MOONPETAL);
+                    }
                 }
             }
         }

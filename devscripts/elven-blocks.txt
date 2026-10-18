@@ -1,0 +1,232 @@
+# Elven Enclave building blocks (Building Blocks: Elven Enclaves). Places every block in three rows high in the air
+# for close-ups by day and night, then checks the behaviours. Run:
+#   timeout 400 ./gradlew runClient --offline -PdevScript=devscripts/elven-blocks.txt
+# Expect in latest.log ("Test passed" after each eb: line unless noted):
+# - eb:moonpetal-day, eb:moonpetal-night: a moonpetal placed by day is shut, and open 200 ticks after nightfall
+# - eb:drop-*: mining (setblock destroy) drops the block; glyph stone: both halves go, one item; starglass: none
+#   (needs silk touch, so that line says "Test failed")
+# - eb:strip: an axe strips a Heartwood Log; eb:glyph-place: the glyph stone item stands both halves
+# - eb:trade-fletcher / eb:trade-speaker: "offer" lines selling 8 heartwood_log for 4 and 8 moonstone_bricks for 3
+# Screenshots eb-heartwood, eb-moonstone, eb-misc (day), eb-*-night, eb-bridge-walk.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/time set 6000
+/tp @s 43009 160 41820
+wait 100
+/fill 42997 149 41797 43022 154 41803 minecraft:air
+/fill 42997 149 41797 43022 149 41803 minecraft:grass_block
+/setblock 43000 150 41800 dndclasses:heartwood_log
+/setblock 43002 150 41800 dndclasses:heartwood_wood
+/setblock 43004 150 41800 dndclasses:stripped_heartwood_log
+/setblock 43006 150 41800 dndclasses:heartwood_planks
+/setblock 43008 150 41800 dndclasses:heartwood_stairs[facing=south]
+/setblock 43010 150 41800 dndclasses:heartwood_slab
+/setblock 43012 150 41800 dndclasses:heartwood_fence
+/setblock 43014 150 41800 dndclasses:heartwood_fence_gate
+/setblock 43016 150 41800 dndclasses:heartwood_door[half=lower,facing=north]
+/setblock 43016 151 41800 dndclasses:heartwood_door[half=upper,facing=north]
+/setblock 43018 150 41800 dndclasses:heartwood_trapdoor[half=bottom]
+/fill 42997 149 41817 43022 154 41823 minecraft:air
+/fill 42997 149 41817 43022 149 41823 minecraft:grass_block
+/setblock 43000 150 41820 dndclasses:moonstone
+/setblock 43002 150 41820 dndclasses:moonstone_stairs[facing=south]
+/setblock 43004 150 41820 dndclasses:moonstone_slab
+/setblock 43006 150 41820 dndclasses:moonstone_wall
+/setblock 43008 150 41820 dndclasses:polished_moonstone
+/setblock 43010 150 41820 dndclasses:moonstone_bricks
+/setblock 43012 150 41820 dndclasses:moonstone_brick_stairs[facing=south]
+/setblock 43014 150 41820 dndclasses:moonstone_brick_slab
+/setblock 43016 150 41820 dndclasses:moonstone_brick_wall
+/setblock 43018 150 41820 dndclasses:living_wood
+/fill 42997 149 41837 43022 154 41843 minecraft:air
+/fill 42997 149 41837 43022 149 41843 minecraft:grass_block
+/setblock 43000 150 41840 dndclasses:silverleaf[persistent=true]
+/setblock 43002 150 41840 dndclasses:woven_rope_plank[half=bottom,axis=z]
+/setblock 43004 150 41840 dndclasses:woven_rope_plank[half=top,axis=x]
+/setblock 43006 150 41840 dndclasses:sylvan_glyph_stone[half=lower]
+/setblock 43006 151 41840 dndclasses:sylvan_glyph_stone[half=upper]
+/setblock 43008 150 41840 dndclasses:glimmercap
+/setblock 43010 150 41840 dndclasses:moonpetal[open=false]
+/setblock 43012 150 41840 dndclasses:moonpetal[open=true]
+/setblock 43014 150 41840 dndclasses:starglass
+/fill 43016 150 41840 43017 151 41840 dndclasses:starglass_pane[east=true,west=true]
+/setblock 43016 150 41840 dndclasses:starglass_pane[east=true]
+/setblock 43016 151 41840 dndclasses:starglass_pane[east=true]
+/setblock 43017 150 41840 dndclasses:starglass_pane[west=true]
+/setblock 43017 151 41840 dndclasses:starglass_pane[west=true]
+/setblock 43018 150 41840 dndclasses:heartwood_wood
+/gamemode spectator
+hud off
+/tp @s 43009.5 153 41793.5 0 22
+wait 40
+screenshot eb-heartwood
+/tp @s 43009.5 153 41813.5 0 22
+wait 40
+screenshot eb-moonstone
+/tp @s 43009.5 153 41833.5 0 22
+wait 40
+screenshot eb-misc
+/time set 18000
+/tp @s 43009.5 153 41793.5 0 22
+wait 40
+screenshot eb-heartwood-night
+/tp @s 43009.5 153 41813.5 0 22
+wait 40
+screenshot eb-moonstone-night
+/tp @s 43009.5 153 41833.5 0 22
+wait 40
+screenshot eb-misc-night
+hud on
+/time set 6000
+/setblock 43030 149 41800 minecraft:grass_block
+/setblock 43030 150 41800 dndclasses:moonpetal
+waitserver 5
+/say eb:moonpetal-day
+/execute if block 43030 150 41800 dndclasses:moonpetal[open=false]
+/time set 14000
+waitserver 230
+/say eb:moonpetal-night
+/execute if block 43030 150 41800 dndclasses:moonpetal[open=true]
+/time set 6000
+/fill 42997 149 41857 43022 154 41863 minecraft:air
+/fill 42997 149 41857 43022 149 41863 minecraft:grass_block
+/kill @e[type=item,distance=..400]
+/setblock 43000 150 41860 dndclasses:heartwood_planks
+/setblock 43000 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-heartwood_planks
+/execute positioned 43000 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:heartwood_planks"}}]
+/setblock 43003 150 41860 dndclasses:moonstone_bricks
+/setblock 43003 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-moonstone_bricks
+/execute positioned 43003 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:moonstone_bricks"}}]
+/setblock 43006 150 41860 dndclasses:woven_rope_plank
+/setblock 43006 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-woven_rope_plank
+/execute positioned 43006 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:woven_rope_plank"}}]
+/setblock 43009 150 41860 dndclasses:glimmercap
+/setblock 43009 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-glimmercap
+/execute positioned 43009 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:glimmercap"}}]
+/setblock 43012 150 41860 dndclasses:living_wood
+/setblock 43012 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-living_wood
+/execute positioned 43012 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:living_wood"}}]
+/setblock 43015 150 41860 dndclasses:starglass
+/setblock 43015 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-starglass
+/execute positioned 43015 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:starglass"}}]
+/setblock 43020 150 41860 dndclasses:sylvan_glyph_stone[half=lower]
+/setblock 43020 151 41860 dndclasses:sylvan_glyph_stone[half=upper]
+/setblock 43020 150 41860 minecraft:air destroy
+waitserver 5
+/say eb:drop-glyph
+/execute positioned 43020 150 41860 if entity @e[type=item,distance=..2,nbt={Item:{id:"dndclasses:sylvan_glyph_stone",Count:1b}}]
+/say eb:drop-glyph-upper-gone
+/execute if block 43020 151 41860 minecraft:air
+/fill 42997 149 41877 43010 154 41883 minecraft:air
+/fill 42997 149 41877 43010 149 41883 minecraft:grass_block
+/setblock 43000 150 41882 dndclasses:heartwood_log
+/tp @s 43000.5 150 41880.5 0 20
+/gamemode survival
+/clear @s
+/item replace entity @s hotbar.0 with minecraft:iron_axe
+/item replace entity @s hotbar.1 with dndclasses:sylvan_glyph_stone
+hotbar 0
+wait 10
+use
+waitserver 5
+/say eb:strip
+/execute if block 43000 150 41882 dndclasses:stripped_heartwood_log
+/tp @s 43005.5 150 41880.5 0 50
+hotbar 1
+wait 10
+use
+waitserver 5
+/say eb:glyph-place
+/execute positioned 43005 150 41881 if block ~ ~ ~ dndclasses:sylvan_glyph_stone[half=lower] if block ~ ~1 ~ dndclasses:sylvan_glyph_stone[half=upper]
+/execute positioned 43005 150 41882 if block ~ ~ ~ dndclasses:sylvan_glyph_stone[half=lower] if block ~ ~1 ~ dndclasses:sylvan_glyph_stone[half=upper]
+/clear @s
+/gamemode spectator
+/fill 42997 149 41897 43014 154 41903 minecraft:air
+/fill 42998 149 41899 43000 149 41901 dndclasses:heartwood_planks
+/fill 43010 149 41899 43012 149 41901 dndclasses:heartwood_planks
+/setblock 43001 149 41900 dndclasses:woven_rope_plank[half=top,axis=x]
+/setblock 43001 150 41899 minecraft:birch_fence
+/setblock 43001 150 41901 minecraft:birch_fence
+/setblock 43002 149 41900 dndclasses:woven_rope_plank[half=bottom,axis=x]
+/setblock 43002 150 41899 minecraft:birch_fence
+/setblock 43002 150 41901 minecraft:birch_fence
+/setblock 43003 149 41900 dndclasses:woven_rope_plank[half=bottom,axis=x]
+/setblock 43003 150 41899 minecraft:birch_fence
+/setblock 43003 150 41901 minecraft:birch_fence
+/setblock 43004 148 41900 dndclasses:woven_rope_plank[half=top,axis=x]
+/setblock 43004 149 41899 minecraft:birch_fence
+/setblock 43004 149 41901 minecraft:birch_fence
+/setblock 43005 148 41900 dndclasses:woven_rope_plank[half=top,axis=x]
+/setblock 43005 149 41899 minecraft:birch_fence
+/setblock 43005 149 41901 minecraft:birch_fence
+/setblock 43006 148 41900 dndclasses:woven_rope_plank[half=top,axis=x]
+/setblock 43006 149 41899 minecraft:birch_fence
+/setblock 43006 149 41901 minecraft:birch_fence
+/setblock 43007 149 41900 dndclasses:woven_rope_plank[half=bottom,axis=x]
+/setblock 43007 150 41899 minecraft:birch_fence
+/setblock 43007 150 41901 minecraft:birch_fence
+/setblock 43008 149 41900 dndclasses:woven_rope_plank[half=bottom,axis=x]
+/setblock 43008 150 41899 minecraft:birch_fence
+/setblock 43008 150 41901 minecraft:birch_fence
+/setblock 43009 149 41900 dndclasses:woven_rope_plank[half=top,axis=x]
+/setblock 43009 150 41899 minecraft:birch_fence
+/setblock 43009 150 41901 minecraft:birch_fence
+hud off
+/tp @s 42999.5 151 41900.5 -90 25
+wait 40
+screenshot eb-bridge-walk
+/tp @s 43005.5 152 41894.5 0 25
+wait 40
+screenshot eb-bridge-side
+hud on
+/fill 42997 149 41917 43010 154 41923 minecraft:air
+/fill 42997 149 41917 43010 149 41923 minecraft:stone
+/summon dndclasses:elf_fletcher 43004 150 41922 {Tags:["ebf"],NoAI:1b,Rotation:[180f,0f]}
+/summon dndclasses:elf_speaker 43000 150 41922 {Tags:["ebs"],NoAI:1b,Rotation:[180f,0f]}
+/tp @s 43004.5 150 41920.5 0 15
+/gamemode survival
+/dndrace set @s human
+wait 5
+closescreen
+/tp @s 43004.5 150 41920.5 0 15
+wait 20
+use
+wait 20
+/say eb:trade-fletcher
+slots
+screenshot eb-trade-fletcher
+closescreen
+/tp @s 43000.5 150 41920.5 0 15
+wait 20
+use
+wait 60
+/say eb:trade-speaker
+slots
+screenshot eb-trade-speaker
+closescreen
+/kill @e[tag=ebf]
+/kill @e[tag=ebs]
+/dndrace set @s none
+wait 5
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle true
+/gamerule doMobSpawning true
+quit

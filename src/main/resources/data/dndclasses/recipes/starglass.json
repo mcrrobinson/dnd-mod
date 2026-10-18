@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:glass"
+    },
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    }
+  },
+  "pattern": [
+    "###",
+    "#G#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:starglass"
+  },
+  "show_notification": true
+}

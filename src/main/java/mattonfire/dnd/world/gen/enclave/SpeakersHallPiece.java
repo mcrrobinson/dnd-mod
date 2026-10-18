@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen.enclave;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ElvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -10,8 +12,9 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The Speaker's Hall: a round platform 11 across at {@link HeartTreePiece#HALL} on the Heart Tree, under
- * its canopy. Birch floor with moss carpet, twelve bookshelves set into the trunk, an enchanting table, a
- * lectern, a loom and the Heart Tree chest (locked, DC 15). The Speaker keeps to it. This piece's box is the
+ * its canopy. Heartwood floor with a ring of Moonstone Bricks inlaid in it and moss carpet, a Starglass Pane
+ * balustrade round the edge, the trunk grown over with Living Wood at the hall's height, twelve bookshelves set
+ * into it, an enchanting table, a lectern, a loom and the Heart Tree chest (locked, DC 15). The Speaker keeps to it. This piece's box is the
  * elves' hearth ({@link mattonfire.dnd.world.gen.RacialHomes}). Shares its origin with the Heart Tree.
  */
 public class SpeakersHallPiece extends EnclavePiece {
@@ -52,9 +55,11 @@ public class SpeakersHallPiece extends EnclavePiece {
                 if (isStairwell(x, z)) {
                     continue;
                 }
-                b.set(x, Y, z, Blocks.BIRCH_PLANKS);
+                // A ring of moonstone inlaid in the floor, round the trunk.
+                boolean inlay = Math.abs(Math.sqrt(x * x + z * z) - 4.0D) < 0.5D;
+                b.set(x, Y, z, inlay ? ModBlockFamilies.MOONSTONE_BRICKS.base() : ModBlockFamilies.HEARTWOOD_PLANKS.base());
                 b.air(x, Y + 1, z, x, Y + 3, z);
-                b.set(x, Y - 1, z, Blocks.STRIPPED_BIRCH_WOOD);
+                b.set(x, Y - 1, z, ModBlockFamilies.STRIPPED_HEARTWOOD_LOG.base());
                 boolean edge = false;
                 for (Direction d : Direction.Type.HORIZONTAL) {
                     int nx = x + d.getOffsetX();
@@ -64,10 +69,22 @@ public class SpeakersHallPiece extends EnclavePiece {
                     }
                 }
                 if (edge) {
-                    b.set(x, Y + 1, z, Blocks.BIRCH_FENCE);
+                    b.set(x, Y + 1, z, ElvenBlocks.STARGLASS_PANE);
                 } else if (this.noise(x, Y, z) < 0.45F) {
                     b.set(x, Y + 1, z, Blocks.MOSS_CARPET);
                 }
+            }
+        }
+        // The trunk round the hall is grown over with living wood (its rounded corners stay out).
+        for (int y = Y + 1; y <= Y + 3; y++) {
+            for (int s = -HeartTreePiece.TRUNK; s <= HeartTreePiece.TRUNK; s++) {
+                if (Math.abs(s) == HeartTreePiece.TRUNK) {
+                    continue;
+                }
+                b.set(s, y, -HeartTreePiece.TRUNK, ModBlockFamilies.LIVING_WOOD.base());
+                b.set(s, y, HeartTreePiece.TRUNK, ModBlockFamilies.LIVING_WOOD.base());
+                b.set(-HeartTreePiece.TRUNK, y, s, ModBlockFamilies.LIVING_WOOD.base());
+                b.set(HeartTreePiece.TRUNK, y, s, ModBlockFamilies.LIVING_WOOD.base());
             }
         }
         // Twelve bookshelves set into the trunk's faces.

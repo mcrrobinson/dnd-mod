@@ -1,0 +1,86 @@
+# Survey of the dev world's elven enclave (Heart Tree origin 43160 66 42024, see enclave-spawns-locate.txt) for the
+# Elven Enclave building blocks. Run it on the dev world for the old enclave ("before"), and on a copy with the
+# enclave's regions deleted so it generates again with the new blocks ("after"):
+#   cp -r "run/saves/New World" run/saves/ElvenFresh && rm run/saves/ElvenFresh/{region,entities,poi}/r.8[345].8[123].mca
+#   timeout 400 ./gradlew runClient --offline -PdevWorld=ElvenFresh -PdevScript=devscripts/elven-blocks-survey.txt
+# Logs the pieces (/dndhome pieces) and takes screenshots es-top, es-side, es-hall, es-deck, es-base, es-well,
+# es-garden, es-bridge, es-glyph-east, es-night. es:glyph-* lines count glyph stone blocks along each side of the grounds
+# (43124-43189 x 41992-42051; "Successfully cloned 2 blocks" per stone, "No blocks were cloned" where none stands).
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 43160 160 42024 0 90
+wait 400
+/tp @s 43160 90 42024 0 90
+wait 100
+/dndhome pieces
+hud off
+/tp @s 43160 135 42024 0 90
+wait 100
+closescreen
+screenshot es-top
+/tp @s 43186 97 42050 135 20
+wait 100
+closescreen
+screenshot es-side
+/tp @s 43160 93 42029 180 35
+wait 60
+closescreen
+screenshot es-hall
+/tp @s 43165 86 42024 90 15
+wait 60
+closescreen
+screenshot es-deck
+/tp @s 43170 70 42034 135 15
+wait 60
+closescreen
+screenshot es-base
+/tp @s 43138.5 80 42007.5 0 45
+wait 60
+closescreen
+screenshot es-well
+/tp @s 43177.5 74 41993.5 0 45
+wait 60
+closescreen
+screenshot es-garden
+/tp @s 43163.5 86 42002.5 0 30
+wait 60
+closescreen
+screenshot es-bridge
+hud on
+/say es:glyph-north
+/clone 43152 55 41994 43160 90 41994 43152 250 41994 filtered dndclasses:sylvan_glyph_stone
+/say es:glyph-south
+/clone 43152 55 42049 43160 90 42049 43152 250 42049 filtered dndclasses:sylvan_glyph_stone
+/say es:glyph-west
+/clone 43126 55 42017 43126 90 42025 43126 250 42017 filtered dndclasses:sylvan_glyph_stone
+/say es:glyph-east
+/clone 43187 55 42017 43187 90 42025 43187 250 42017 filtered dndclasses:sylvan_glyph_stone
+/fill 43152 250 41994 43160 285 41994 minecraft:air
+/fill 43152 250 42049 43160 285 42049 minecraft:air
+/fill 43126 250 42017 43126 285 42025 minecraft:air
+/fill 43187 250 42017 43187 285 42025 minecraft:air
+hud off
+/execute positioned 43187 0 42021 positioned over motion_blocking_no_leaves run tp @s ~3.5 ~1 ~0.5 90 25
+wait 40
+closescreen
+screenshot es-glyph-east
+/time set 18000
+/tp @s 43186 97 42050 135 20
+wait 60
+closescreen
+screenshot es-night
+hud on
+/time set 6000
+/gamerule doDaylightCycle true
+/gamerule doMobSpawning true
+quit

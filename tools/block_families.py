@@ -82,6 +82,23 @@ FAMILIES = [
                                                            'B': 'minecraft:blaze_powder'}, 'count': 4}),
     Family('cut_hellbrass', 'Cut Hellbrass', ['stairs', 'slab'],
            craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:hellbrass'}, 'count': 4}),
+    # --- Elven Enclaves ---
+    Family('heartwood_log', 'Heartwood Log', [], material='wood', axis=True),
+    Family('heartwood_wood', 'Heartwood Wood', [], material='wood', axis=True,
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:heartwood_log'}, 'count': 3}),
+    Family('stripped_heartwood_log', 'Stripped Heartwood Log', [], material='wood', axis=True),
+    Family('heartwood_planks', 'Heartwood Planks', ['stairs', 'slab', 'fence', 'fence_gate', 'door', 'trapdoor'],
+           material='wood', stem='heartwood', stem_title='Heartwood',
+           craft={'pattern': ['#'], 'key': {'#': 'dndclasses:heartwood_log'}, 'count': 4}),
+    Family('moonstone', 'Moonstone', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['###', '#A#', '###'], 'key': {'#': 'minecraft:calcite', 'A': 'minecraft:amethyst_shard'},
+                  'count': 8}),
+    Family('polished_moonstone', 'Polished Moonstone', [],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:moonstone'}, 'count': 4}),
+    Family('moonstone_bricks', 'Moonstone Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:polished_moonstone'}, 'count': 4}),
+    Family('living_wood', 'Living Wood', [], material='wood',
+           craft={'pattern': ['V', '#'], 'key': {'V': 'minecraft:vine', '#': 'minecraft:birch_wood'}, 'count': 1}),
 ]
 
 

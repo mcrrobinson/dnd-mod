@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left_open",
+  "textures": {
+    "bottom": "dndclasses:block/heartwood_door_bottom",
+    "top": "dndclasses:block/heartwood_door_top"
+  }
+}

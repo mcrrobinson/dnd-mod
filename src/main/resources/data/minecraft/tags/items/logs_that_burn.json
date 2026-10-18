@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:heartwood_log",
+    "dndclasses:heartwood_wood",
+    "dndclasses:stripped_heartwood_log",
+    "dndclasses:living_wood"
+  ]
+}

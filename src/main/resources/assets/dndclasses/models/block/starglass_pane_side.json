@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_glass_pane_side",
+  "textures": {
+    "edge": "dndclasses:block/starglass_pane_top",
+    "pane": "dndclasses:block/starglass"
+  }
+}

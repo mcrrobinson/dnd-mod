@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import net.minecraft.block.BedBlock;
@@ -15,7 +16,7 @@ import net.minecraft.util.math.Direction;
  * turn of the stair winding down round the pillar in the middle. A brick fireplace with a campfire on the north
  * wall (its flue stops under the ceiling, so the shell stays sealed), two bunks and bookshelves on the west, a
  * long table with stools, the Tinker's counter of barrels and a lectern in the south-east, the burrow's chest,
- * and lanterns on chains. Doorways lead east and west to the
+ * lanterns on chains, glowcrystal lamps in the walls and pipework along the ceiling. Doorways lead east and west to the
  * workshops, north to the clocktower and south to the gem room. A Tinker and a Clockwork Sentinel live here.
  */
 public class CommonsPiece extends CogsdeepPiece {
@@ -45,12 +46,12 @@ public class CommonsPiece extends CogsdeepPiece {
     @Override
     protected void build(Builder b) {
         b.room(-HALF, -HALF, HALF, HALF, TOP, Blocks.SPRUCE_PLANKS);
-        // A ring of polished andesite round the stair's foot, copper inlay at its edge.
+        // A ring of gnomish bricks round the stair's foot, copper inlay at its edge.
         for (int a = -HALF + 1; a <= HALF - 1; a++) {
             for (int c = -HALF + 1; c <= HALF - 1; c++) {
                 int ring = Math.max(Math.abs(a), Math.abs(c));
                 if (ring == 3) {
-                    b.set(a, -1, c, Blocks.POLISHED_ANDESITE);
+                    b.set(a, -1, c, GNOMISH_BRICKS.base());
                 } else if (ring == 4 && (a + c) % 2 == 0) {
                     b.set(a, -1, c, Blocks.CUT_COPPER);
                 }
@@ -101,6 +102,13 @@ public class CommonsPiece extends CogsdeepPiece {
         for (int[] spot : new int[][]{{-5, -5}, {5, -5}, {-5, 5}, {5, 5}}) {
             b.hangingLantern(spot[0], TOP - 1, spot[1], 1);
         }
+        // Glowcrystal lamps set into the walls round the hall.
+        for (int[] spot : new int[][]{{8, 2, -4}, {8, 2, 4}, {-8, 3, -4}, {-8, 3, 2}, {2, 2, -8}, {6, 2, -8}, {-4, 2, 8}, {4, 2, 8}}) {
+            b.set(spot[0], spot[1], spot[2], glowcrystal(b));
+        }
+        // Pipework along the ceiling down both sides, wall to wall.
+        b.pipes(6, TOP - 1, -7, 6, 7);
+        b.pipes(-6, TOP - 1, -6, -6, 7);
 
         b.tinker(5, 0, 4, 6);
         b.sentinel(-5, 0, 2, 10);

@@ -65,6 +65,23 @@
     "dndclasses:round_door_frame_stone_stairs",
     "dndclasses:round_door_frame_stone_slab",
     "dndclasses:round_door_keystone",
-    "dndclasses:hearth_stone"
+    "dndclasses:hearth_stone",
+    "dndclasses:riveted_brass",
+    "dndclasses:cut_riveted_brass",
+    "dndclasses:cut_riveted_brass_stairs",
+    "dndclasses:cut_riveted_brass_slab",
+    "dndclasses:gnomish_bricks",
+    "dndclasses:gnomish_brick_stairs",
+    "dndclasses:gnomish_brick_slab",
+    "dndclasses:gnomish_brick_wall",
+    "dndclasses:cogwork_panel",
+    "dndclasses:gearwall",
+    "dndclasses:pipework",
+    "dndclasses:glowcrystal_red",
+    "dndclasses:glowcrystal_blue",
+    "dndclasses:glowcrystal_green",
+    "dndclasses:glowcrystal_amber",
+    "dndclasses:clockface",
+    "dndclasses:telescope_lens"
   ]
 }

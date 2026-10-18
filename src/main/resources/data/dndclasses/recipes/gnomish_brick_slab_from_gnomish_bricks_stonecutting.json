@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:gnomish_bricks"
+  },
+  "result": "dndclasses:gnomish_brick_slab"
+}

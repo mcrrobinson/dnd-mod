@@ -101,6 +101,15 @@ public final class ModBlockFamilies {
     /** A bale of dried pipe-weed leaves, tied with twine (hoe, like hay). */
     public static final BlockFamily PIPEWEED_BUNDLE = BlockFamily.builder("pipeweed_bundle", Blocks.HAY_BLOCK).axisBase()
             .build();
+    // --- Cogsdeep ---
+    /** Gnome craft: warm brass plates with rivets along their edges (cut copper's hardness and sound). */
+    public static final BlockFamily RIVETED_BRASS = BlockFamily.builder("riveted_brass", CogsdeepBlocks.brass()).build();
+    /** Riveted Brass cut into small plates, with stairs and slabs, like cut copper. */
+    public static final BlockFamily CUT_RIVETED_BRASS = BlockFamily
+            .builder("cut_riveted_brass", CogsdeepBlocks.brass()).stairs().slab().build();
+    /** Cogsdeep's walls: small, rounded pale-grey bricks, gnome-sized. */
+    public static final BlockFamily GNOMISH_BRICKS = BlockFamily
+            .builder("gnomish_bricks", Blocks.STONE_BRICKS).stoneShapes().build();
 
     private ModBlockFamilies() {
     }

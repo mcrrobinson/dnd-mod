@@ -1,0 +1,138 @@
+# Checks Cogsdeep's building blocks (docs/structures/cogsdeep-blocks.md): a showcase, the pipework joining up, the
+# clockface keeping time, drops, recipes, the blueprint table's grid and the Tinker's new offers.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/cogsdeep-blocks.txt
+# Expect in latest.log:
+# - "Test passed" for each /execute if block line (pipework east/west/up joins, no join up to a solid block, the
+#   clockface at hour=3 at 3:30 pm)
+# - each /loot line drops its own block ("Dropped 1 [...]"); "Unlocked"/"No new recipes" for each /recipe line
+# - the blueprint table: a crafting grid ("slots" after placing logs shows Oak Log in slot 1 and 4 Oak Planks in 0)
+# - the Tinker: after `trade 11`, 8 Riveted Brass in the merchant result slot (2)
+# Screenshots: cogsdeep-blocks-showcase, -close-gears, -close-clock, -night, -blueprint, -tinker
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/fill 18 149 -2 34 149 10 minecraft:smooth_stone
+/fill 18 150 -2 34 156 10 minecraft:air
+# The showcase wall: materials, cogs, gears, gems, the clock, the table, the telescope
+/fill 20 150 8 20 151 8 dndclasses:riveted_brass
+/fill 21 150 8 21 151 8 dndclasses:cut_riveted_brass
+/fill 22 150 8 22 151 8 dndclasses:gnomish_bricks
+/fill 23 150 8 23 151 8 dndclasses:cogwork_panel
+/fill 24 150 8 26 151 8 dndclasses:gearwall
+/setblock 27 150 8 dndclasses:glowcrystal_red
+/setblock 28 150 8 dndclasses:glowcrystal_blue
+/setblock 27 151 8 dndclasses:glowcrystal_green
+/setblock 28 151 8 dndclasses:glowcrystal_amber
+/setblock 29 150 8 dndclasses:gnomish_bricks
+/setblock 29 151 8 dndclasses:clockface[facing=north,hour=2]
+/setblock 30 150 8 dndclasses:blueprint_table[facing=north]
+/setblock 31 151 8 minecraft:lightning_rod[facing=north]
+/setblock 31 151 7 dndclasses:telescope_lens[facing=north]
+/setblock 20 150 7 dndclasses:cut_riveted_brass_stairs[facing=south]
+/setblock 21 150 7 dndclasses:cut_riveted_brass_slab
+/setblock 22 150 7 dndclasses:gnomish_brick_stairs[facing=south]
+/setblock 23 150 7 dndclasses:gnomish_brick_slab
+/setblock 19 150 7 dndclasses:gnomish_brick_wall
+/setblock 19 151 7 dndclasses:gnomish_brick_wall[up=true]
+/fill 20 152 8 30 152 8 dndclasses:pipework[east=true,west=true]
+/setblock 31 152 8 dndclasses:pipework[west=true,down=true]
+/setblock 31 152 7 minecraft:air
+# Pipework joining up: each placed pipe updates the one before it; a wall on the side joins, a block above doesn't
+/setblock 26 150 3 dndclasses:pipework
+/setblock 27 150 3 dndclasses:pipework
+/setblock 28 150 3 dndclasses:pipework
+/setblock 25 150 3 minecraft:stone
+/setblock 26 151 3 dndclasses:pipework
+/setblock 28 151 3 minecraft:stone
+/execute if block 26 150 3 dndclasses:pipework[east=true,west=true,up=true]
+/execute if block 27 150 3 dndclasses:pipework[east=true]
+/execute if block 28 150 3 dndclasses:pipework[up=false]
+# The clockface: set at hour 0 at day time 9500 (3:30 pm), a random tick (sped up here) puts the hand to 3. (Its
+# hourly block tick was checked on a fresh world: placed at 8990 it turned to 3 at 9001. On a rerun the tick left
+# queued at that spot from the last run stands in for it, so this checks the random tick instead.)
+/time set 9500
+/setblock 29 152 3 dndclasses:clockface[facing=north,hour=0]
+/gamerule randomTickSpeed 4096
+waitserver 10
+/gamerule randomTickSpeed 3
+/execute if block 29 152 3 dndclasses:clockface[hour=3]
+/gamerule doDaylightCycle false
+/time set noon
+/tp @s 25.5 151 1.5 0 12
+wait 40
+hud off
+screenshot cogsdeep-blocks-showcase
+/tp @s 24.0 151 5.6 0 15
+wait 10
+screenshot cogsdeep-blocks-close-gears
+/tp @s 29.5 151 5.6 0 15
+wait 10
+screenshot cogsdeep-blocks-close-clock
+/time set midnight
+/tp @s 25.5 151 1.5 0 12
+wait 20
+screenshot cogsdeep-blocks-night
+/time set noon
+hud on
+# Drops: /loot simulates mining each block
+/loot spawn 25 153 2 mine 20 151 8 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 21 150 7 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 23 151 8 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 24 151 8 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 27 150 8 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 29 151 8 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 30 150 8 minecraft:diamond_axe
+/loot spawn 25 153 2 mine 31 151 7 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 26 150 3 minecraft:diamond_pickaxe
+/loot spawn 25 153 2 mine 19 150 7 minecraft:diamond_pickaxe
+/kill @e[type=minecraft:item,distance=..30]
+# Recipes parse and exist
+/recipe give @s dndclasses:riveted_brass
+/recipe give @s dndclasses:cut_riveted_brass
+/recipe give @s dndclasses:cut_riveted_brass_from_riveted_brass_stonecutting
+/recipe give @s dndclasses:gnomish_bricks
+/recipe give @s dndclasses:cogwork_panel
+/recipe give @s dndclasses:gearwall
+/recipe give @s dndclasses:pipework
+/recipe give @s dndclasses:clockface
+/recipe give @s dndclasses:glowcrystal_amber
+/recipe give @s dndclasses:blueprint_table
+/recipe give @s dndclasses:telescope_lens
+# The blueprint table opens a crafting grid (slots 0 result, 1-9 grid, 10-36 inventory, 37-45 hotbar)
+/gamemode survival
+/clear @s
+/give @s minecraft:oak_log 2
+/tp @s 30.5 150 6.2 0 28
+wait 10
+use
+wait 10
+slot 37
+slot 1
+wait 5
+slots
+screenshot cogsdeep-blocks-blueprint
+closescreen
+/clear @s
+# The Tinker's building-block offers (indexes 11-13, after the redstone)
+/summon dndclasses:gnome_tinker 25.5 150 4.5
+wait 5
+/data merge entity @e[type=dndclasses:gnome_tinker,limit=1,sort=nearest] {NoAI:1b,Rotation:[180f,0f]}
+/give @s minecraft:emerald 16
+/tp @s 25.5 150 2.5 0 20
+wait 10
+use
+wait 10
+trade 11
+wait 5
+slots
+screenshot cogsdeep-blocks-tinker
+closescreen
+/kill @e[type=dndclasses:gnome_tinker,distance=..20]
+/clear @s
+/gamemode creative
+quit

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:cut_riveted_brass"
+  },
+  "result": "dndclasses:cut_riveted_brass_stairs"
+}

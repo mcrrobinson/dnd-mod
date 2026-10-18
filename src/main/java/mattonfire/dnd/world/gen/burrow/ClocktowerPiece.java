@@ -1,24 +1,22 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
 import net.minecraft.block.BellBlock;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.GrindstoneBlock;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.enums.Attachment;
-import net.minecraft.block.enums.WallMountLocation;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
  * The clocktower room north of the Commons: 13 by 17 and {@link #TOP} high, the tallest room in the burrow. The
- * north wall holds a great clock face of calcite with a copper rim, glowstone marks at the quarters, blackstone
- * hands at ten to twelve and a working clock in an item frame at its hub. A copper pendulum hangs on a long chain,
- * a bell from the ceiling, grindstone gears turn (or would) on the side walls, and a spruce gallery runs along both
+ * north wall holds a great clock face of calcite with a cut riveted brass rim, glowstone marks at the quarters,
+ * blackstone hands at ten to twelve and a Clockface showing the real time at its hub. A brass pendulum hangs on a
+ * long chain, a bell from the ceiling, three rows of turning gearwall run along the side walls, and a spruce gallery runs along both
  * side walls at y {@link #GALLERY}, reached by a ladder, with the burrow's strongbox (a DC 15 lock) at the far
  * end of the east one. A
  * Clockwork Sentinel keeps the room.
@@ -54,9 +52,9 @@ public class ClocktowerPiece extends CogsdeepPiece {
 
     @Override
     protected void build(Builder b) {
-        b.room(-HALF, FAR, HALF, NEAR, TOP, Blocks.POLISHED_ANDESITE);
+        b.room(-HALF, FAR, HALF, NEAR, TOP, GNOMISH_BRICKS.base());
         b.doorway(0, NEAR, true, 3, 4);
-        // A checker of andesite and deepslate tiles.
+        // A checker of gnomish bricks and deepslate tiles.
         for (int a = -HALF + 1; a < HALF; a++) {
             for (int c = FAR + 1; c < NEAR; c++) {
                 if ((a + c) % 2 == 0) {
@@ -72,7 +70,7 @@ public class ClocktowerPiece extends CogsdeepPiece {
                 if (r > FACE) {
                     continue;
                 }
-                b.set(a, y, FAR, r > FACE - 1.0D ? Blocks.CUT_COPPER : Blocks.CALCITE);
+                b.set(a, y, FAR, r > FACE - 1.0D ? CUT_RIVETED_BRASS.base() : Blocks.CALCITE);
             }
         }
         // Hour marks: glowstone at twelve, three, six and nine.
@@ -85,22 +83,20 @@ public class ClocktowerPiece extends CogsdeepPiece {
         // The hands: the minute hand to twelve, the hour hand to ten.
         hand(b, 0.0D, 3.2D);
         hand(b, -Math.PI / 3.0D, 2.2D);
-        b.set(0, HUB_Y, FAR, Blocks.POLISHED_BLACKSTONE);
-        b.frame(0, HUB_Y, FAR + 1, Direction.SOUTH, new ItemStack(Items.CLOCK));
+        // At the hub, a Clockface that keeps the real time.
+        b.set(0, HUB_Y, FAR, facing(CogsdeepBlocks.CLOCKFACE, Direction.SOUTH));
 
         // The pendulum: a long chain with a copper bob, and a bell from the ceiling.
         b.fill(0, 3, FAR + 4, 0, TOP - 1, FAR + 4, Blocks.CHAIN);
-        b.set(0, 2, FAR + 4, Blocks.CUT_COPPER);
+        b.set(0, 2, FAR + 4, RIVETED_BRASS.base());
         b.set(0, TOP - 1, NEAR - 6, Blocks.BELL.getDefaultState().with(BellBlock.ATTACHMENT, Attachment.CEILING)
                 .with(BellBlock.FACING, Direction.SOUTH));
 
-        // Grindstone gears up the side walls.
-        for (int c = FAR + 3; c <= NEAR - 3; c += 4) {
-            for (int wall : new int[]{-1, 1}) {
-                Direction facingIn = wall < 0 ? Direction.EAST : Direction.WEST;
-                int y = 2 + Math.floorMod(c, 3);
-                b.set(wall * (HALF - 1), y, c, Blocks.GRINDSTONE.getDefaultState().with(GrindstoneBlock.FACE, WallMountLocation.WALL)
-                        .with(GrindstoneBlock.FACING, facingIn));
+        // The mechanism: rows of turning gearwall along both side walls, under the gallery.
+        for (int c = FAR + 2; c <= NEAR - 2; c++) {
+            for (int y = 2; y <= 4; y++) {
+                b.set(-HALF, y, c, CogsdeepBlocks.GEARWALL);
+                b.set(HALF, y, c, CogsdeepBlocks.GEARWALL);
             }
         }
 

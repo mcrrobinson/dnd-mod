@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import net.minecraft.block.AmethystClusterBlock;
@@ -14,8 +15,8 @@ import net.minecraft.util.math.Direction;
 /**
  * The gem-polishing room south of the Commons: 13 by 15, 5 high, with a calcite and smooth basalt floor.
  * Polishing benches of grindstones and stonecutters line both side walls, end rods for lamps; down the middle,
- * calcite pedestals show off amethyst clusters and buds between panes of tinted glass. The gem chest (a DC 10
- * lock) stands at the far wall. A Tinker works here.
+ * calcite pedestals show off amethyst clusters and buds between panes of tinted glass. Glowcrystals of every
+ * colour are set into the walls over the benches and flank the gem chest (a DC 10 lock) at the far wall. A Tinker works here.
  */
 public class GemRoomPiece extends CogsdeepPiece {
     public static final int HALF = 7;
@@ -57,6 +58,8 @@ public class GemRoomPiece extends CogsdeepPiece {
                 b.set(a, 0, c + 1, facing(Blocks.STONECUTTER, in));
                 b.set(a, 0, c + 2, slab(Blocks.SMOOTH_STONE_SLAB, true));
                 b.set(a, 1, c + 2, facing(Blocks.END_ROD, Direction.UP));
+                // A glowcrystal set into the wall over each bench.
+                b.set(wall * HALF, 2, c + 1, glowcrystal(b));
             }
         }
         // Pedestals of calcite with amethyst on show, between tinted glass.
@@ -70,8 +73,8 @@ public class GemRoomPiece extends CogsdeepPiece {
                 }
             }
         }
-        b.set(-3, 0, FAR - 1, Blocks.AMETHYST_BLOCK);
-        b.set(3, 0, FAR - 1, Blocks.AMETHYST_BLOCK);
+        b.set(-3, 0, FAR - 1, glowcrystal(b));
+        b.set(3, 0, FAR - 1, glowcrystal(b));
         b.container(0, 0, FAR - 1, facing(Blocks.CHEST, Direction.NORTH), GEM_LOOT);
         for (int c = NEAR + 3; c < FAR; c += 5) {
             b.hangingLantern(0, TOP - 1, c, 1);

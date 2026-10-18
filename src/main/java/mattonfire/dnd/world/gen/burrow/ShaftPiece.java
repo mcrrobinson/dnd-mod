@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import net.minecraft.block.Block;
@@ -87,9 +88,9 @@ public class ShaftPiece extends CogsdeepPiece {
                 for (int c = -3; c <= 3; c++) {
                     int ring = Math.max(Math.abs(a), Math.abs(c));
                     if (ring <= 1) {
-                        b.set(a, y, c, Blocks.POLISHED_ANDESITE);
+                        b.set(a, y, c, GNOMISH_BRICKS.base());
                     } else if (ring == 2) {
-                        b.set(a, y, c, y == -1 ? Blocks.POLISHED_ANDESITE : Blocks.AIR);
+                        b.set(a, y, c, y == -1 ? GNOMISH_BRICKS.base() : Blocks.AIR);
                     } else if (y >= WALLS_FROM && y < top) {
                         b.set(a, y, c, masonry(b));
                     } else if (y == top) {
@@ -111,9 +112,9 @@ public class ShaftPiece extends CogsdeepPiece {
                 climb = Direction.NORTH;
             }
             Direction in = Direction.fromVector(s[0] - down[0], 0, s[2] - down[1]);
-            b.set(s[0], s[1], s[2], step(Blocks.STONE_BRICK_STAIRS, climb, in));
+            b.set(s[0], s[1], s[2], step(GNOMISH_BRICKS.stairs(), climb, in));
             if (s[1] - 1 >= 0) {
-                b.set(s[0], s[1] - 1, s[2], Blocks.STONE_BRICKS);
+                b.set(s[0], s[1] - 1, s[2], GNOMISH_BRICKS.base());
             }
             // Glowstone in the pillar beside every few steps.
             if (i % LIGHT_EVERY == 2) {
@@ -132,7 +133,7 @@ public class ShaftPiece extends CogsdeepPiece {
         }
         b.set(RING[RING.length - 1][0], top + 1, RING[RING.length - 1][1], Blocks.SPRUCE_FENCE);
         // The pillar stands a block proud of the floor, with a copper beacon on top.
-        b.fill(-1, top + 1, -1, 1, top + 1, 1, Blocks.POLISHED_ANDESITE);
+        b.fill(-1, top + 1, -1, 1, top + 1, 1, GNOMISH_BRICKS.base());
         b.set(0, top + 2, 0, Blocks.COPPER_BLOCK);
         b.set(0, top + 3, 0, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP));
     }

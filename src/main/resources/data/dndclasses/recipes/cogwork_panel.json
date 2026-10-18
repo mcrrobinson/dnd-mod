@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:riveted_brass"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    " # ",
+    "#R#",
+    " # "
+  ],
+  "result": {
+    "count": 4,
+    "item": "dndclasses:cogwork_panel"
+  },
+  "show_notification": true
+}

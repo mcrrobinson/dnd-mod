@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "N": {
+      "item": "minecraft:gold_nugget"
+    }
+  },
+  "pattern": [
+    "CNC",
+    "NCN",
+    "CNC"
+  ],
+  "result": {
+    "count": 4,
+    "item": "dndclasses:riveted_brass"
+  },
+  "show_notification": true
+}

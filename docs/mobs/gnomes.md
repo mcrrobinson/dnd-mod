@@ -32,6 +32,9 @@ Every Tinker keeps a shop. Each trade has 12 uses and restocks every morning. Pr
 | a sticky piston | 3 |
 | 2 redstone lamps | 2 |
 | a hopper | 3 |
+| 8 [Riveted Brass](../structures/cogsdeep-blocks.md) | 2 |
+| 16 [Gnomish Bricks](../structures/cogsdeep-blocks.md) | 2 |
+| 4 [Cogwork Panels](../structures/cogsdeep-blocks.md) | 3 |
 | **Gnomes only:** the [Gnomish Repeater](../items/racial-weapons.md#gnomish-repeater), with Quick Charge III and Multishot | 14 |
 | **Gnomes only:** [Tinker's Goggles](../items/tinkers-goggles.md) | 10 |
 
@@ -42,7 +45,7 @@ Every Tinker keeps a shop. Each trade has 12 uses and restocks every morning. Pr
 | 3 iron ingots | 1 |
 | 12 redstone dust | 1 |
 
-The Gnome-only offers come last: a Human sees 15 trades, a Gnome 17.
+The Gnome-only offers come last: a Human sees 18 trades, a Gnome 20. (A Tinker saved before the building blocks were added gets those three offers added at the end of its list.)
 
 ### Dialogue
 Tinkers have the quest-giver role `gnome_tinker` (`dialogue/gnome_tinker.json`, with a greeting for each standing tier). Quests whose `giver` is `gnome_tinker` are offered by any of them; with nothing to say, right-clicking one opens its trades. See [NPC dialogue](../systems/dialogue.md).

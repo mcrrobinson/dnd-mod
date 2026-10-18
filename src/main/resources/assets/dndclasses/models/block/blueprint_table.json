@@ -1,0 +1,10 @@
+{
+  "parent": "minecraft:block/orientable_with_bottom",
+  "textures": {
+    "top": "dndclasses:block/blueprint_table_top",
+    "bottom": "minecraft:block/spruce_planks",
+    "side": "dndclasses:block/blueprint_table_side",
+    "front": "dndclasses:block/blueprint_table_front",
+    "particle": "dndclasses:block/blueprint_table_side"
+  }
+}

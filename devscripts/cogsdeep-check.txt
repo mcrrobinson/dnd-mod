@@ -3,7 +3,7 @@
 # Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/cogsdeep-check.txt (the second half needs a burrow
 # near 30000 30000; cogsdeep-survey.txt finds one there in the dev world).
 # Checks, in <run dir>/logs/latest.log:
-# - trades: as a Human the Tinker lists 15 offers, no Repeater or Goggles; as a Gnome 17, the last two the Gnomish
+# - trades: as a Human the Tinker lists 18 offers, no Repeater or Goggles; as a Gnome 20, the last two the Gnomish
 #   Repeater (14 emeralds, 10 at kin price) and Tinker's Goggles (10, 7), every price lower (kin -25% plus Honored)
 # - rep: "The Tinkers' Guild" Friendly (150) for a Human, Honored (450) for a Gnome
 # - goggles: "[Goggles] 0, 150, 3: 2 kinds, 8x minecraft:diamond, 12x minecraft:redstone" for the chest, the

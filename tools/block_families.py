@@ -151,6 +151,14 @@ FAMILIES = [
     Family('pipeweed_bundle', 'Pipe-weed Bundle', [], axis=True, tool='hoe', cut=False,
            craft={'pattern': ['FFF', 'FSF', 'FFF'], 'key': {'F': 'minecraft:fern', 'S': 'minecraft:string'},
                   'count': 1}),
+    # --- Cogsdeep ---
+    Family('riveted_brass', 'Riveted Brass', [],
+           craft={'pattern': ['CNC', 'NCN', 'CNC'], 'key': {'C': 'minecraft:copper_ingot',
+                                                           'N': 'minecraft:gold_nugget'}, 'count': 4}),
+    Family('cut_riveted_brass', 'Cut Riveted Brass', ['stairs', 'slab'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:riveted_brass'}, 'count': 4}),
+    Family('gnomish_bricks', 'Gnomish Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'minecraft:stone_bricks'}, 'count': 4}),
 ]
 
 

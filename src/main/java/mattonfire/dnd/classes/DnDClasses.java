@@ -186,6 +186,7 @@ public class DnDClasses implements ModInitializer {
                 DwarvenBlocks.register();
                 mattonfire.dnd.classes.Registry.OrcBuildingBlocks.register();
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.register();
+                mattonfire.dnd.classes.Registry.CogsdeepBlocks.register();
                 mattonfire.dnd.classes.Blocks.TrapBlocks.register();
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();

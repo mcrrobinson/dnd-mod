@@ -1,14 +1,14 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ComparatorBlock;
 import net.minecraft.block.HopperBlock;
 import net.minecraft.block.LightningRodBlock;
-import net.minecraft.block.ObserverBlock;
 import net.minecraft.block.RailBlock;
-import net.minecraft.block.RedstoneLampBlock;
 import net.minecraft.block.RepeaterBlock;
 import net.minecraft.block.enums.RailShape;
 import net.minecraft.nbt.NbtCompound;
@@ -18,10 +18,11 @@ import net.minecraft.util.math.Direction;
 
 /**
  * One of the two workshop halls either side of the Commons ({@link #side} +1 east, -1 west): 17 by 11, 6 high,
- * with a stone floor. Benches of cosmetic contraptions line both long walls, every one unpowered: piston and
- * observer towers crowned with redstone lamps, droppers feeding hoppers into barrels, repeater and comparator
- * lines on smooth stone, sticky pistons against slime, note blocks, lightning-rod coils and tool benches. Down the
- * middle stand two machine islands either side of the aisle. The east hall opens onto the lush grotto; the west
+ * with a stone floor, a band of cut riveted brass under the ceiling and two runs of pipework along it. Benches of
+ * cosmetic contraptions line both long walls, every one unpowered, a cogwork panel in the wall above each: piston
+ * and cogwork towers crowned with glowcrystal lamps, droppers feeding hoppers into barrels, repeater and comparator
+ * lines on smooth stone, sticky pistons against slime, note blocks, lightning-rod coils on brass and tool benches.
+ * Down the middle stand two machine islands on brass housings either side of the aisle, and a blueprint table. The east hall opens onto the lush grotto; the west
  * hall ends in a forge of furnaces and a blast furnace. A Tinker and a Clockwork Sentinel work here.
  */
 public class WorkshopPiece extends CogsdeepPiece {
@@ -69,12 +70,23 @@ public class WorkshopPiece extends CogsdeepPiece {
                 b.set(s * a, -1, c, Blocks.SMOOTH_STONE);
             }
         }
+        // A band of cut riveted brass round the walls under the ceiling.
+        for (int a = NEAR; a <= FAR; a++) {
+            b.set(s * a, TOP - 1, -HALF_WIDTH, CUT_RIVETED_BRASS.base());
+            b.set(s * a, TOP - 1, HALF_WIDTH, CUT_RIVETED_BRASS.base());
+        }
+        for (int c = -HALF_WIDTH; c <= HALF_WIDTH; c++) {
+            b.set(s * NEAR, TOP - 1, c, CUT_RIVETED_BRASS.base());
+            b.set(s * FAR, TOP - 1, c, CUT_RIVETED_BRASS.base());
+        }
         b.doorway(s * NEAR, 0, false, 3, 4);
 
         // Benches against both long walls, one contraption every three blocks.
         for (int a = NEAR + 2; a <= FAR - 3; a += 3) {
             for (int wall : new int[]{-1, 1}) {
                 this.contraption(b, s * a, wall * (HALF_WIDTH - 1), wall, b.random.nextInt(8));
+                // A cogwork panel set into the wall above each bench.
+                b.set(s * a, 3, wall * HALF_WIDTH, CogsdeepBlocks.COGWORK_PANEL);
             }
         }
         // Two machine islands either side of the aisle.
@@ -102,6 +114,11 @@ public class WorkshopPiece extends CogsdeepPiece {
         for (int a = NEAR + 3; a < FAR; a += 5) {
             b.hangingLantern(s * a, TOP - 1, 0, 1);
         }
+        // Pipework along the ceiling, wall to wall, either side of the lanterns.
+        b.pipes(s * (NEAR + 1), TOP - 1, -3, s * (FAR - 1), -3);
+        b.pipes(s * (NEAR + 1), TOP - 1, 3, s * (FAR - 1), 3);
+        // The hall's blueprint table, by the first machine island.
+        b.set(s * (NEAR + 9), 0, -3, facing(CogsdeepBlocks.BLUEPRINT_TABLE, Direction.SOUTH));
 
         b.tinker(s * (NEAR + 8), 0, 0, 8);
         b.sentinel(s * (FAR - 4), 0, 0, 12);
@@ -115,10 +132,10 @@ public class WorkshopPiece extends CogsdeepPiece {
         Direction out = wall < 0 ? Direction.SOUTH : Direction.NORTH;
         switch (kind) {
             case 0 -> {
-                // A piston tower: piston, observer, redstone lamp.
+                // A piston tower: piston, cogwork, a glowcrystal lamp.
                 b.set(a, 0, c, facing(Blocks.PISTON, Direction.UP));
-                b.set(a, 1, c, Blocks.OBSERVER.getDefaultState().with(ObserverBlock.FACING, out));
-                b.set(a, 2, c, Blocks.REDSTONE_LAMP.getDefaultState().with(RedstoneLampBlock.LIT, false));
+                b.set(a, 1, c, CogsdeepBlocks.COGWORK_PANEL);
+                b.set(a, 2, c, glowcrystal(b));
             }
             case 1 -> {
                 // A dropper feeding a hopper into a barrel of parts.
@@ -137,8 +154,8 @@ public class WorkshopPiece extends CogsdeepPiece {
                 b.set(a + 1, 1, c, Blocks.COMPARATOR.getDefaultState().with(ComparatorBlock.FACING, Direction.WEST));
             }
             case 3 -> {
-                // A sticky piston shoving at a slime block, an observer behind it.
-                b.set(a - 1, 0, c, Blocks.OBSERVER.getDefaultState().with(ObserverBlock.FACING, Direction.EAST));
+                // A sticky piston shoving at a slime block, a cogwork housing behind it.
+                b.set(a - 1, 0, c, CogsdeepBlocks.COGWORK_PANEL);
                 b.set(a, 0, c, facing(Blocks.STICKY_PISTON, Direction.EAST));
                 b.set(a + 1, 0, c, Blocks.SLIME_BLOCK);
             }
@@ -146,11 +163,11 @@ public class WorkshopPiece extends CogsdeepPiece {
                 // Note blocks under a lamp.
                 b.set(a, 0, c, Blocks.NOTE_BLOCK);
                 b.set(a + 1, 0, c, Blocks.NOTE_BLOCK);
-                b.set(a, 1, c, Blocks.REDSTONE_LAMP);
+                b.set(a, 1, c, glowcrystal(b));
             }
             case 5 -> {
-                // A lightning-rod coil on a copper block, chains from the ceiling.
-                b.set(a, 0, c, Blocks.COPPER_BLOCK);
+                // A lightning-rod coil on a brass housing, chains from the ceiling.
+                b.set(a, 0, c, RIVETED_BRASS.base());
                 b.set(a, 1, c, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP));
                 b.set(a, 2, c, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP));
                 b.fill(a, 3, c, a, TOP - 1, c, Blocks.CHAIN);
@@ -164,26 +181,26 @@ public class WorkshopPiece extends CogsdeepPiece {
             default -> {
                 // A dispenser over a rail stub.
                 b.set(a, 1, c, facing(Blocks.DISPENSER, out));
-                b.set(a, 0, c, Blocks.POLISHED_ANDESITE);
+                b.set(a, 0, c, CUT_RIVETED_BRASS.base());
                 b.set(a, 0, c - wall, Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.EAST_WEST));
             }
         }
     }
 
-    /** A machine island two blocks deep: a piston and observer frame round two lamps, a rail loop on top. */
+    /** A machine island two blocks deep on a brass housing: pistons and cogwork round two lamps, a rail loop on top. */
     private void island(Builder b, int a, int c) {
         int dc = c < 0 ? -1 : 1;
         for (int i = -1; i <= 1; i++) {
-            b.set(a + i, 0, c, Blocks.POLISHED_ANDESITE);
-            b.set(a + i, 0, c + dc, Blocks.POLISHED_ANDESITE);
+            b.set(a + i, 0, c, CUT_RIVETED_BRASS.base());
+            b.set(a + i, 0, c + dc, CUT_RIVETED_BRASS.base());
         }
         b.set(a - 1, 1, c, facing(Blocks.PISTON, Direction.UP));
         b.set(a + 1, 1, c, facing(Blocks.STICKY_PISTON, Direction.UP));
-        b.set(a, 1, c, Blocks.OBSERVER.getDefaultState().with(ObserverBlock.FACING, Direction.NORTH));
-        b.set(a, 2, c, Blocks.REDSTONE_LAMP);
+        b.set(a, 1, c, CogsdeepBlocks.COGWORK_PANEL);
+        b.set(a, 2, c, glowcrystal(b));
         b.set(a - 1, 1, c + dc, Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.EAST_WEST));
         b.set(a, 1, c + dc, Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.EAST_WEST));
         b.set(a + 1, 1, c + dc, Blocks.RAIL.getDefaultState().with(RailBlock.SHAPE, RailShape.EAST_WEST));
-        b.set(a + 1, 2, c, Blocks.REDSTONE_LAMP);
+        b.set(a + 1, 2, c, glowcrystal(b));
     }
 }

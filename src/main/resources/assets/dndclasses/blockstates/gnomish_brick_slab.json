@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/gnomish_brick_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/gnomish_bricks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/gnomish_brick_slab_top"
+    }
+  }
+}

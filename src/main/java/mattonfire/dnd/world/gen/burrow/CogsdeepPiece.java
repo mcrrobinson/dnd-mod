@@ -1,7 +1,10 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Blocks.PipeworkBlock;
+import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.world.gen.OrientedPiece;
 import net.minecraft.block.Block;
@@ -73,12 +76,18 @@ public abstract class CogsdeepPiece extends OrientedPiece<CogsdeepPiece.Builder>
         return new Builder(world, chunkBox, random);
     }
 
-    /** The burrow's stonework: stone bricks with some cracked, mossy and tuff blocks. */
+    /** The burrow's stonework: Gnomish Bricks with a few tuff and mossy stone bricks. */
     protected static Block masonry(Builder b) {
         float r = b.random.nextFloat();
-        return r < 0.07F ? Blocks.CRACKED_STONE_BRICKS : r < 0.13F ? Blocks.MOSSY_STONE_BRICKS
-                : r < 0.17F ? Blocks.TUFF : Blocks.STONE_BRICKS;
+        return r < 0.05F ? Blocks.MOSSY_STONE_BRICKS : r < 0.09F ? Blocks.TUFF : GNOMISH_BRICKS.base();
     }
+
+    /** A Glowcrystal of a random colour (light 12). */
+    protected static Block glowcrystal(Builder b) {
+        return b.pick(GLOWCRYSTAL_COLOURS);
+    }
+
+    private static final Block[] GLOWCRYSTAL_COLOURS = CogsdeepBlocks.GLOWCRYSTALS.values().toArray(Block[]::new);
 
     /** Copper going green: mostly cut copper, some of it already exposed, weathered or oxidised. */
     protected static Block cutCopper(Builder b) {
@@ -118,6 +127,16 @@ public abstract class CogsdeepPiece extends OrientedPiece<CogsdeepPiece.Builder>
                     }
                 }
             }
+        }
+
+        /** Pipework from local (a1, y, b1) to (a2, y, b2), a straight run; it joins up once the chunk is done. */
+        void pipes(int a1, int y, int b1, int a2, int b2) {
+            this.fill(a1, y, b1, a2, y, b2, CogsdeepBlocks.PIPEWORK.getDefaultState());
+        }
+
+        @Override
+        protected boolean joinsNeighbours(Block block) {
+            return super.joinsNeighbours(block) || block instanceof PipeworkBlock;
         }
 
         /** A doorway {@code width} wide (odd) and {@code height} high through the wall at a/b, along the a or b axis. */

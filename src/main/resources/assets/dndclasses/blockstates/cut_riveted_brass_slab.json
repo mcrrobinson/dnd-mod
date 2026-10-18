@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/cut_riveted_brass_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/cut_riveted_brass"
+    },
+    "type=top": {
+      "model": "dndclasses:block/cut_riveted_brass_slab_top"
+    }
+  }
+}

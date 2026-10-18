@@ -142,5 +142,8 @@ public class GnomeTinkerEntity extends SettlementNpcEntity implements Settlement
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.merchant.read(nbt);
+        if (this.merchant.savedOffers() != null) {
+            TinkerTrades.addMissing(this.merchant.savedOffers());
+        }
     }
 }

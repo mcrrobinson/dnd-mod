@@ -1,7 +1,9 @@
 package mattonfire.dnd.world.gen.burrow;
 
+import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
@@ -16,13 +18,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * The observatory on the surface, Cogsdeep's front door: a round tower of stone bricks {@link #RADIUS} blocks
- * across the middle, {@link #WALL_HEIGHT} high with glass windows, under a hemispherical dome of cut copper that
- * weathers green over time, with a slit 3 wide open to the north from just above the walls up over the top,
- * topped with a lightning rod. The telescope stands on a spruce gallery against the north wall, {@link #GALLERY} up a ladder:
- * an end rod eyepiece and a tube of {@link #TUBE} lightning rods on a fence tripod, level with the bottom of the
- * slit, running out through it so its end pokes out of the dome. Inside: a spruce floor, the stairwell in the
- * middle ({@link ShaftPiece}), a cartography desk with a spyglass, a lectern, bookshelves and a chest. Trees and
+ * The observatory on the surface, Cogsdeep's front door: a round tower of gnomish bricks {@link #RADIUS} blocks
+ * across the middle, {@link #WALL_HEIGHT} high with glass windows, framed in riveted brass at its foot and top,
+ * under a hemispherical dome of cut copper that weathers green over time, with a slit 3 wide open to the north from
+ * just above the walls up over the top, topped with a lightning rod. The telescope stands on a spruce gallery
+ * against the north wall, {@link #GALLERY} up a ladder: an end rod eyepiece and a tube of lightning rods ending in a
+ * Telescope Lens ({@link #TUBE} blocks) on a fence tripod, level with the bottom of the slit, running out through it
+ * so its end pokes out of the dome. Inside: a spruce floor, the stairwell in the middle ({@link ShaftPiece}), a
+ * cartography desk with a spyglass, a lectern, bookshelves and a chest. Trees and
  * plants round it are cleared; the floor sits on a foundation down to the ground.
  *
  * <p>y = 0 is where you stand on the floor (the ground's first air in the middle).
@@ -104,11 +107,12 @@ public class ObservatoryPiece extends CogsdeepPiece {
                 }
                 boolean wall = r > RADIUS - 1.0D;
                 // Floor (and a foundation down to the ground).
-                b.set(a, -1, c, wall ? Blocks.POLISHED_ANDESITE : r > 4.4D && r <= 5.4D ? Blocks.CUT_COPPER : Blocks.SPRUCE_PLANKS);
-                b.foundation(a, -1, c, Blocks.STONE_BRICKS.getDefaultState(), 8);
+                b.set(a, -1, c, wall ? RIVETED_BRASS.base() : r > 4.4D && r <= 5.4D ? CUT_RIVETED_BRASS.base() : Blocks.SPRUCE_PLANKS);
+                b.foundation(a, -1, c, GNOMISH_BRICKS.base().getDefaultState(), 8);
                 if (wall) {
+                    // Gnomish bricks in a brass frame: a riveted brass footing, a cut brass course under the dome.
                     for (int y = 0; y < WALL_HEIGHT; y++) {
-                        b.set(a, y, c, y == 0 ? Blocks.POLISHED_ANDESITE : masonry(b));
+                        b.set(a, y, c, y == 0 ? RIVETED_BRASS.base() : y == WALL_HEIGHT - 1 ? CUT_RIVETED_BRASS.base() : masonry(b));
                     }
                 }
             }
@@ -168,13 +172,13 @@ public class ObservatoryPiece extends CogsdeepPiece {
             }
         }
 
-        // Lanterns on stone posts either side of the door.
+        // Lanterns on gnomish brick posts either side of the door.
         b.set(-1, 2, 7, Blocks.LANTERN);
         b.set(1, 2, 7, Blocks.LANTERN);
-        b.set(-1, 1, 7, Blocks.STONE_BRICK_WALL);
-        b.set(1, 1, 7, Blocks.STONE_BRICK_WALL);
-        b.set(-1, 0, 7, Blocks.STONE_BRICK_WALL);
-        b.set(1, 0, 7, Blocks.STONE_BRICK_WALL);
+        b.set(-1, 1, 7, GNOMISH_BRICKS.wall());
+        b.set(1, 1, 7, GNOMISH_BRICKS.wall());
+        b.set(-1, 0, 7, GNOMISH_BRICKS.wall());
+        b.set(1, 0, 7, GNOMISH_BRICKS.wall());
 
         // The gallery: spruce planks from the north wall out over the stairwell's rail, on log posts, railed with
         // fences on its open sides, with a ladder up the wall through a gap in its floor.
@@ -201,11 +205,12 @@ public class ObservatoryPiece extends CogsdeepPiece {
         }
 
         // The telescope: an end rod eyepiece at head height for someone standing on the gallery, then a tube of
-        // lightning rods on a fence tripod, out through the slit, the last rods clear of the dome.
+        // lightning rods on a fence tripod, out through the slit, ending in the lens clear of the dome.
         b.set(0, SCOPE_Y, SCOPE_B, facing(Blocks.END_ROD, Direction.SOUTH));
-        for (int i = 1; i <= TUBE; i++) {
+        for (int i = 1; i < TUBE; i++) {
             b.set(0, SCOPE_Y, SCOPE_B - i, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.NORTH));
         }
+        b.set(0, SCOPE_Y, SCOPE_B - TUBE, facing(CogsdeepBlocks.TELESCOPE_LENS, Direction.NORTH));
         b.set(0, GALLERY + 1, SCOPE_B - 1, Blocks.SPRUCE_FENCE);
         b.set(1, GALLERY + 1, SCOPE_B - 1, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, false));
 

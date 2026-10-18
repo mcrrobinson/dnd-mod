@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "dndclasses:block/cut_riveted_brass",
+    "side": "dndclasses:block/cut_riveted_brass",
+    "top": "dndclasses:block/cut_riveted_brass"
+  }
+}

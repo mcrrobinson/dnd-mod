@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "dndclasses:block/clockface_11",
+    "side": "dndclasses:block/cut_riveted_brass",
+    "top": "dndclasses:block/cut_riveted_brass"
+  }
+}

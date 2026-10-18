@@ -1,5 +1,6 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
 import mattonfire.dnd.faction.FactionIds;
 import mattonfire.dnd.world.gen.RacialHomes;
 import net.minecraft.block.BlockState;
@@ -19,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
  * Cogsdeep's grudge rules ({@link SettlementGrudges}). Every gnome and Clockwork Sentinel within 16 blocks who can
  * see you takes offence, and the Sentinels turn on you, if inside the burrow you open or break a chest or barrel,
  * or break one of the workshops' contraptions (a piston, observer, redstone lamp, dispenser, dropper, hopper,
- * repeater, comparator, note block or lightning rod). Striking a gnome or a Sentinel is the other grudge
+ * repeater, comparator, note block or lightning rod) or the burrow's clockwork (a cogwork panel, gearwall,
+ * clockface, glowcrystal, pipework, blueprint table or telescope lens). Striking a gnome or a Sentinel is the other grudge
  * ({@link SettlementNpcEntity#callGuards}).
  *
  * <p>Kin trust: a Gnome's first offence each in-game day only gets a warning.
@@ -49,7 +51,15 @@ final class TinkersLaw extends GuardRules<MobEntity> {
         return state.isOf(Blocks.PISTON) || state.isOf(Blocks.STICKY_PISTON) || state.isOf(Blocks.OBSERVER)
                 || state.isOf(Blocks.REDSTONE_LAMP) || state.isOf(Blocks.DISPENSER) || state.isOf(Blocks.DROPPER)
                 || state.isOf(Blocks.HOPPER) || state.isOf(Blocks.REPEATER) || state.isOf(Blocks.COMPARATOR)
-                || state.isOf(Blocks.NOTE_BLOCK) || state.isOf(Blocks.LIGHTNING_ROD);
+                || state.isOf(Blocks.NOTE_BLOCK) || state.isOf(Blocks.LIGHTNING_ROD) || isClockwork(state);
+    }
+
+    /** Cogsdeep's own machinery blocks. */
+    static boolean isClockwork(BlockState state) {
+        return state.isOf(CogsdeepBlocks.COGWORK_PANEL) || state.isOf(CogsdeepBlocks.GEARWALL)
+                || state.isOf(CogsdeepBlocks.CLOCKFACE) || state.isOf(CogsdeepBlocks.PIPEWORK)
+                || state.isOf(CogsdeepBlocks.BLUEPRINT_TABLE) || state.isOf(CogsdeepBlocks.TELESCOPE_LENS)
+                || CogsdeepBlocks.GLOWCRYSTALS.containsValue(state.getBlock());
     }
 
     /** The burrow's folk: its gnomes and its Sentinels. */

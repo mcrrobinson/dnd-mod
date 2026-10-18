@@ -94,8 +94,8 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
 
 ## Structures
-- [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits, dressed with fulgurite, storm glass, a woven dragon nest, coin piles and shed scales that drop dragon scales (PR #250)
-- [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source; rimestone, hoarfrost crystals and shed frost scales (PR #250)
+- [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits, dressed with fulgurite, storm glass, a woven dragon nest, coin piles and shed scales that drop dragon scales
+- [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source; rimestone, hoarfrost crystals and shed frost scales
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls of runic brick with a Dwarf King, a coin-heaped treasury and their own building blocks (clan crests, ancestor statues, forge bricks, a waystone naming the hold)
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
@@ -105,7 +105,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Cogsdeep](structures/cogsdeep.md): gnome burrows under forests and meadows: a copper-domed observatory over a spiral stair down to y 11-30, workshops of unpowered contraptions, a clocktower, a gem room and a lush grotto; the Tinkers' law; the Gnome home
 - [Cogsdeep building blocks](structures/cogsdeep-blocks.md): Riveted Brass, Gnomish Bricks, animated Cogwork Panels and Gearwalls, Pipework, Glowcrystals, a Clockface that keeps the time, the Blueprint Table and Telescope Lens; swapped into the burrow, sold by Tinkers
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
-- [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains; the goblin building blocks (Patchwork Hide, Scrap-lashed Planks, junk piles, glyph daubs, Rope-and-Bone Fence, War Order Board), also used in Goblin Warrens (PR #248)
+- [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains; the goblin building blocks (Patchwork Hide, Scrap-lashed Planks, junk piles, glyph daubs, Rope-and-Bone Fence, War Order Board), also used in Goblin Warrens
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested)
 - [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow, Goblin Warrens behind a cave mouth and deep Dwarven Ruins under a collapsed gatehouse, with a planned route to the Lich, the Goblin Warlord or the Beholder, a vault, theme dressing and a Challenge tier
 
@@ -127,13 +127,13 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Staffs](items/staffs.md): elemental staffs of Fire, Ice and Lightning, and the Monk Staff
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
-- [Racial banner patterns](items/banner-patterns.md): eight loom patterns (Bloodtusk, Clan Anvil, Sylvan Leaf, Three Breaths, Infernal Pact, Gnome Cog, Green Dragon, Goblin Skull) hung in their homes' structures, sold by kin merchants, the goblin skull dropped by the Warlord (PR #249)
+- [Racial banner patterns](items/banner-patterns.md): eight loom patterns (Bloodtusk, Clan Anvil, Sylvan Leaf, Three Breaths, Infernal Pact, Gnome Cog, Green Dragon, Goblin Skull) hung in their homes' structures, sold by kin merchants, the goblin skull dropped by the Warlord
 - [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
 - [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves
 - [Hobbit building blocks](items/hobbit-building-blocks.md): Thatch, Mossy Thatch, Wattle and Daub, Smial Turf Wall, Round Door Frame Stone, Hearth Stone, Pipe-weed Bundle; the Larder Shelf (9 slots) and Ale Cask (glass bottle for a Mug of Ale, 4 mugs, refills); hanging herbs and onions
-- [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons (PR #247)
-- [Dwarven Ruin & Beholder lair blocks](items/ruin-blocks.md): Fallen Runic Bricks (cracked, mossy), Collapsed Rubble layers, Tarnished Gilding, Ray-glazed Stone, Petrified Remains and Eye-Stalk Growths, placed in the Ruin and the lair (PR #251)
-- [Adventuring blocks](items/adventuring-blocks.md): Bedrolls (a long rest like a bed, no spawn point), the Adventurer's Signpost naming a dungeon and its Challenge tier, Wanted Posters, Tavern Tables and Benches in oak, spruce, dark oak and Heartwood (PR #252)
+- [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons
+- [Dwarven Ruin & Beholder lair blocks](items/ruin-blocks.md): Fallen Runic Bricks (cracked, mossy), Collapsed Rubble layers, Tarnished Gilding, Ray-glazed Stone, Petrified Remains and Eye-Stalk Growths, placed in the Ruin and the lair
+- [Adventuring blocks](items/adventuring-blocks.md): Bedrolls (a long rest like a bed, no spawn point), the Adventurer's Signpost naming a dungeon and its Challenge tier, Wanted Posters, Tavern Tables and Benches in oak, spruce, dark oak and Heartwood
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

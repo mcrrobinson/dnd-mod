@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/bloodtusk_mud_brick_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/bloodtusk_mud_bricks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/bloodtusk_mud_brick_slab_top"
+    }
+  }
+}

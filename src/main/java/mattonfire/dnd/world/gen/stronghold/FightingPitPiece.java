@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -11,9 +13,11 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The Fighting Pit in the middle of the hold: round, radius {@link #RADIUS}, sunk {@link #DEPTH} blocks, with
- * a sand floor, mud-brick walls, a fence ring round the rim, steps down on the gate side, and the war drum on
- * the far rim (a note block on a hay bale under a red banner). Right-clicking the drum from inside the pit
- * starts the Trial of Strength ({@link mattonfire.dnd.entity.OrcTrial}).
+ * a sand floor, walls of Bloodtusk Mud Bricks (daubed with red ochre handprints) and plain mud, a fence ring
+ * round the rim, Bloodtusk mud brick steps down on the gate side, and the War Drum on the far rim under a red
+ * banner. Right-clicking the drum from inside the pit starts the Trial of Strength
+ * ({@link mattonfire.dnd.entity.OrcTrial}); holds generated before the War Drum have a note block on a hay
+ * bale there instead ({@link #legacyDrum()}).
  */
 public class FightingPitPiece extends StrongholdPiece {
     public static final int RADIUS = 7;
@@ -30,9 +34,14 @@ public class FightingPitPiece extends StrongholdPiece {
         super(OrcStrongholdStructures.PIT, nbt);
     }
 
-    /** The war drum's note block, in the world. */
+    /** The War Drum, in the world. */
     public BlockPos drum() {
-        return this.at(PA, 2, PB - RADIUS - 1);
+        return this.at(PA, 1, PB - RADIUS - 1);
+    }
+
+    /** Where holds generated before the War Drum have their drum (a note block on a hay bale), in the world. */
+    public BlockPos legacyDrum() {
+        return this.drum().up();
     }
 
     /** Where a fighter stands on the pit floor, {@code offset} blocks from the middle towards the gate. */
@@ -61,7 +70,8 @@ public class FightingPitPiece extends StrongholdPiece {
                     b.set(a, -DEPTH, bb, r < 0.85F ? Blocks.SAND : Blocks.RED_SAND);
                     b.foundation(a, -DEPTH, bb, Blocks.SANDSTONE.getDefaultState(), 8);
                 } else if (d <= RADIUS + 1.5D) {
-                    Block wall = r < 0.7F ? Blocks.MUD_BRICKS : r < 0.85F ? Blocks.PACKED_MUD : Blocks.RED_TERRACOTTA;
+                    Block wall = r < 0.45F ? ModBlockFamilies.BLOODTUSK_MUD_BRICKS.base() : r < 0.7F ? Blocks.MUD_BRICKS
+                            : r < 0.85F ? Blocks.PACKED_MUD : Blocks.RED_TERRACOTTA;
                     b.fill(a, -DEPTH, bb, a, 0, bb, wall);
                     boolean entry = Math.abs(x) <= 1 && z > 0;
                     boolean drum = x == 0 && z < 0;
@@ -76,16 +86,15 @@ public class FightingPitPiece extends StrongholdPiece {
         }
         // Steps down on the gate side.
         for (int x = -1; x <= 1; x++) {
-            b.fill(PA + x, -DEPTH + 1, PB + RADIUS, PA + x, -DEPTH + 1, PB + RADIUS, Blocks.MUD_BRICKS);
-            b.set(PA + x, -DEPTH + 2, PB + RADIUS, stairs(Blocks.MUD_BRICK_STAIRS, Direction.SOUTH, false));
-            b.set(PA + x, -DEPTH + 1, PB + RADIUS - 1, stairs(Blocks.MUD_BRICK_STAIRS, Direction.SOUTH, false));
-            b.set(PA + x, 0, PB + RADIUS + 1, stairs(Blocks.MUD_BRICK_STAIRS, Direction.SOUTH, false));
+            b.fill(PA + x, -DEPTH + 1, PB + RADIUS, PA + x, -DEPTH + 1, PB + RADIUS, ModBlockFamilies.BLOODTUSK_MUD_BRICKS.base());
+            b.set(PA + x, -DEPTH + 2, PB + RADIUS, stairs(ModBlockFamilies.BLOODTUSK_MUD_BRICKS, Direction.SOUTH, false));
+            b.set(PA + x, -DEPTH + 1, PB + RADIUS - 1, stairs(ModBlockFamilies.BLOODTUSK_MUD_BRICKS, Direction.SOUTH, false));
+            b.set(PA + x, 0, PB + RADIUS + 1, stairs(ModBlockFamilies.BLOODTUSK_MUD_BRICKS, Direction.SOUTH, false));
         }
         // The war drum on the far rim.
         int drumB = PB - RADIUS - 1;
-        b.set(PA, 1, drumB, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
-        b.set(PA, 2, drumB, Blocks.NOTE_BLOCK);
-        b.set(PA, 3, drumB, Blocks.RED_BANNER.getDefaultState().with(BannerBlock.ROTATION, 0));
+        b.set(PA, 1, drumB, OrcBuildingBlocks.WAR_DRUM);
+        b.set(PA, 2, drumB, Blocks.RED_BANNER.getDefaultState().with(BannerBlock.ROTATION, 0));
         b.set(PA - 1, 1, drumB, Blocks.DARK_OAK_FENCE);
         b.set(PA + 1, 1, drumB, Blocks.DARK_OAK_FENCE);
         // Torches on posts round the rim.

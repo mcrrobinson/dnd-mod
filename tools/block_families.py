@@ -30,7 +30,8 @@ class Family:
     name:     the base block's id path (runic_deepslate_bricks)
     title:    its English name (Runic Deepslate Bricks)
     shapes:   any of SHAPES
-    material: 'stone' (pickaxe, stonecutter) or 'wood' (axe, wooden_* tags and recipe groups)
+    material: 'stone' (pickaxe, stonecutter), 'wood' (axe, wooden_* tags and recipe groups) or 'hide' (axe,
+              the plain shape tags, no stonecutter)
     stem:     the shapes' id prefix; default the name minus "s" for bricks/tiles, as in BlockFamily.Builder
     axis:     the base lies along an axis like a log (textures <name> and <name>_top)
     top, bottom: separate top/bottom textures for a cube base (cube_bottom_top; also used by stairs/slab)
@@ -63,6 +64,9 @@ class Family:
 
     def wooden(self):
         return self.material == 'wood'
+
+    def tool(self):
+        return 'pickaxe' if self.material == 'stone' else 'axe'
 
 
 FAMILIES = [
@@ -108,6 +112,21 @@ FAMILIES = [
     Family('gold_veined_pillar', 'Gold-Veined Pillar', [], axis=True,
            craft={'pattern': ['#', 'G', '#'], 'key': {'#': 'minecraft:polished_deepslate', 'G': 'minecraft:gold_ingot'},
                   'count': 3}),
+    # --- Orc Strongholds ---
+    Family('tanned_hide', 'Tanned Hide', ['stairs', 'slab'], material='hide',
+           craft={'pattern': ['##', '##'], 'key': {'#': 'minecraft:leather'}, 'count': 2}),
+    Family('pale_tanned_hide', 'Pale Tanned Hide', ['stairs', 'slab'], material='hide',
+           craft={'pattern': ['###', '#B#', '###'], 'key': {'#': 'dndclasses:tanned_hide',
+                                                           'B': 'minecraft:bone_meal'}, 'count': 8}),
+    Family('grey_tanned_hide', 'Grey Tanned Hide', ['stairs', 'slab'], material='hide',
+           craft={'pattern': ['###', '#D#', '###'], 'key': {'#': 'dndclasses:tanned_hide',
+                                                           'D': 'minecraft:light_gray_dye'}, 'count': 8}),
+    Family('painted_hide', 'Painted Hide', [], material='hide', top='tanned_hide',
+           craft={'pattern': ['R', '#'], 'key': {'R': 'minecraft:red_dye', '#': 'dndclasses:tanned_hide'}}),
+    Family('bloodtusk_mud_bricks', 'Bloodtusk Mud Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['###', '#R#', '###'], 'key': {'#': 'minecraft:mud_bricks',
+                                                           'R': 'minecraft:red_dye'}, 'count': 8}),
+    Family('smithy_slag', 'Smithy Slag', []),
 ]
 
 
@@ -377,7 +396,7 @@ def gen_recipes(f):
         result = ref(f.id(shape))
         key = {'W': base, '#': 'minecraft:stick'} if shape in ('fence', 'fence_gate') else {'#': base}
         shaped(f.id(shape), pattern, key, result, count, category, group if f.wooden() else None)
-        if cut and not f.wooden():
+        if cut and f.material == 'stone':
             stonecut(f'{f.id(shape)}_from_{f.name}_stonecutting', base, result, cut)
 
 
@@ -414,7 +433,7 @@ def gen_tags():
     for f in FAMILIES:
         for shape in [None] + f.shapes:
             block = ref(f.id(shape))
-            tags.setdefault(('blocks', 'mineable/' + ('axe' if f.wooden() else 'pickaxe')), []).append(block)
+            tags.setdefault(('blocks', 'mineable/' + f.tool()), []).append(block)
             for tag in shape_tags(f, shape):
                 tags.setdefault(('blocks', tag), []).append(block)
                 tags.setdefault(('items', tag), []).append(block)

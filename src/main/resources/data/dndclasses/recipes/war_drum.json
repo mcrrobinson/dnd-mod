@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "H": {
+      "item": "dndclasses:tanned_hide"
+    },
+    "B": {
+      "item": "minecraft:barrel"
+    }
+  },
+  "pattern": [
+    "H",
+    "B"
+  ],
+  "result": {
+    "item": "dndclasses:war_drum"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,166 @@
+# Checks the Orc Stronghold building blocks (docs/structures/orc-strongholds.md, "Building blocks").
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/orc-blocks.txt
+# Expect in latest.log:
+# - each /loot line drops its own block (2 hide slabs from the double slab)
+# - stakes: the husk pressed against a stake from outside has lost health (its own movement makes the
+#   game check what it touches) ("Health" below 20), the husk on the
+#   inside and the orc on the outside haven't
+# - "[WarDrum] beat at ... rallied 2" (the orc and the Half-Orc player), then "(cooling down" for the second
+#   beat (a right click) and the third (a left click); the orc and the player have Strength (Id 5), the husk
+#   has no ActiveEffects
+# - the Quartermaster's offers include 8 dndclasses:tanned_hide
+# - each /recipe line unlocks 1 recipe ("No new recipes were learned" once an earlier run has unlocked them)
+# Screenshots: orc-blocks-display (every block on a platform), orc-blocks-close, orc-blocks-drum (the drum and
+# stakes up close)
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/kill @e[tag=orcblk]
+/fill 38 149 -4 80 149 10 minecraft:smooth_sandstone
+/fill 38 150 -4 80 156 10 minecraft:air
+# A backdrop of the materials, shapes on top and in front
+/setblock 40 150 8 dndclasses:tanned_hide
+/setblock 41 150 8 dndclasses:pale_tanned_hide
+/setblock 42 150 8 dndclasses:grey_tanned_hide
+/setblock 43 150 8 dndclasses:painted_hide
+/setblock 44 150 8 dndclasses:bloodtusk_mud_bricks
+/setblock 45 150 8 dndclasses:smithy_slag
+/setblock 46 150 8 dndclasses:war_totem[facing=north]
+/setblock 47 150 8 dndclasses:war_drum
+/setblock 48 150 8 minecraft:dark_oak_planks
+/setblock 48 150 7 dndclasses:tusk_rack[facing=north]
+/setblock 40 151 8 dndclasses:tanned_hide_stairs[facing=north]
+/setblock 41 151 8 dndclasses:pale_tanned_hide_slab[type=bottom]
+/setblock 42 151 8 dndclasses:grey_tanned_hide_stairs[facing=south]
+/setblock 43 151 8 dndclasses:tanned_hide_slab[type=double]
+/setblock 44 151 8 dndclasses:bloodtusk_mud_brick_stairs[facing=north]
+/setblock 45 151 8 dndclasses:bloodtusk_mud_brick_slab[type=bottom]
+/setblock 46 151 8 dndclasses:war_totem[facing=north]
+/setblock 46 152 8 minecraft:skeleton_skull[rotation=0]
+# Stake walls in a run with a corner, a mud brick wall; carpets and the rug on the floor
+/setblock 40 150 5 dndclasses:sharpened_stake_wall[facing=north]
+/setblock 41 150 5 dndclasses:sharpened_stake_wall[facing=north]
+/setblock 42 150 5 dndclasses:sharpened_stake_wall[facing=north]
+/setblock 42 150 6 dndclasses:sharpened_stake_wall[facing=north]
+/setblock 44 150 5 dndclasses:bloodtusk_mud_brick_wall
+/setblock 45 150 5 dndclasses:bloodtusk_mud_brick_wall
+/setblock 41 151 5 minecraft:stone
+/setblock 41 151 5 minecraft:air
+/setblock 43 150 5 minecraft:stone
+/setblock 43 150 5 minecraft:air
+/setblock 44 151 5 minecraft:stone
+/setblock 44 151 5 minecraft:air
+/setblock 40 150 3 dndclasses:tanned_hide_carpet
+/setblock 41 150 3 dndclasses:pale_tanned_hide_carpet
+/setblock 42 150 3 dndclasses:grey_tanned_hide_carpet
+/fill 44 150 2 46 150 4 dndclasses:hide_rug
+/tp @s 44.5 152 -1.5 0 25
+wait 20
+closescreen
+hud off
+# Give the chunks out here time to load and render
+wait 120
+screenshot orc-blocks-display
+/tp @s 46.5 151.5 4.5 0 20
+wait 20
+screenshot orc-blocks-close
+hud on
+# Drops: /loot simulates mining each block with an axe (pickaxe for the bricks and slag)
+/loot spawn 44 152 0 mine 40 150 8 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 43 151 8 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 43 150 8 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 44 150 8 minecraft:diamond_pickaxe
+/loot spawn 44 152 0 mine 45 150 8 minecraft:diamond_pickaxe
+/loot spawn 44 152 0 mine 46 150 8 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 47 150 8 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 48 150 7 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 40 150 5 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 40 150 3 minecraft:diamond_axe
+/loot spawn 44 152 0 mine 44 150 3 minecraft:diamond_axe
+/kill @e[type=minecraft:item,distance=..60]
+# Stakes: a husk against the outside (south) of one, a husk against the inside of another, an orc outside a third
+/setblock 60 150 0 dndclasses:sharpened_stake_wall[facing=south]
+/setblock 63 150 0 dndclasses:sharpened_stake_wall[facing=south]
+/setblock 66 150 0 dndclasses:sharpened_stake_wall[facing=south]
+# The mobs keep their AI (NoAI mobs don't move at all, so they never touch a block) but can't walk off
+/summon minecraft:husk 60.5 150 1.06 {Tags:["orcblk","outside"],PersistenceRequired:1b,Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.0d}]}
+/summon minecraft:husk 63.5 150 -0.06 {Tags:["orcblk","inside"],PersistenceRequired:1b,Attributes:[{Name:"minecraft:generic.movement_speed",Base:0.0d}]}
+/summon dndclasses:orc_warrior 66.5 150 1.06
+/tag @e[type=dndclasses:orc_warrior,limit=1,sort=nearest,x=66,y=150,z=1] add orcblk
+/data merge entity @e[type=dndclasses:orc_warrior,tag=orcblk,limit=1] {PersistenceRequired:1b}
+/attribute @e[type=dndclasses:orc_warrior,tag=orcblk,limit=1] minecraft:generic.movement_speed base set 0
+/tp @e[type=dndclasses:orc_warrior,tag=orcblk] 66.5 150 1.06
+waitserver 60
+/data get entity @e[tag=outside,limit=1] Health
+/data get entity @e[tag=inside,limit=1] Health
+/data get entity @e[type=dndclasses:orc_warrior,tag=orcblk,limit=1] Health
+/attribute @e[type=dndclasses:orc_warrior,tag=orcblk,limit=1] minecraft:generic.max_health get
+# War drum: an orc and a husk nearby, beaten by a Half-Orc player
+/kill @e[tag=orcblk]
+/setblock 70 150 0 dndclasses:war_drum
+/summon dndclasses:orc_warrior 73.5 150 0.5
+/tag @e[type=dndclasses:orc_warrior,limit=1,sort=nearest,x=73,y=150,z=0] add orcblk
+/data merge entity @e[type=dndclasses:orc_warrior,tag=orcblk,limit=1] {NoAI:1b,PersistenceRequired:1b}
+/summon minecraft:husk 73.5 150 3.5 {NoAI:1b,Tags:["orcblk"],PersistenceRequired:1b}
+/dndrace set @s halforc
+wait 5
+closescreen
+/gamemode survival
+/effect give @s resistance 60 4 true
+/tp @s 70.5 150 -2.0 0 30
+waitserver 2
+wait 10
+use
+waitserver 5
+/data get entity @e[type=dndclasses:orc_warrior,tag=orcblk,limit=1] ActiveEffects
+/data get entity @e[type=minecraft:husk,tag=orcblk,limit=1] ActiveEffects
+/data get entity @s ActiveEffects
+hud off
+/tp @s 71.5 151 -2.5 -25 25
+wait 10
+screenshot orc-blocks-drum
+/tp @s 70.5 150 -2.0 0 30
+hud on
+use
+waitserver 5
+attack
+waitserver 5
+/execute if block 70 150 0 dndclasses:war_drum
+/gamemode creative
+# The Quartermaster sells Tanned Hide (his offers are made the first time a customer looks)
+/summon dndclasses:orc_quartermaster 76.5 150 0.5
+/tag @e[type=dndclasses:orc_quartermaster,limit=1,sort=nearest,x=76,y=150,z=0] add orcblk
+/data merge entity @e[type=dndclasses:orc_quartermaster,tag=orcblk,limit=1] {NoAI:1b,PersistenceRequired:1b}
+/gamemode survival
+/tp @s 76.5 150 -1.5 0 10
+# A Half-Orc starts Neutral with the horde (an earlier run may have left them Hostile, and then he refuses)
+/rep @s dndclasses:bloodtusk_horde set 0
+# NPCs open their dialogue for an empty hand; with an item in hand the Quartermaster trades
+/item replace entity @s weapon.mainhand with minecraft:stick
+waitserver 2
+wait 10
+use
+wait 20
+closescreen
+/data get entity @e[type=dndclasses:orc_quartermaster,tag=orcblk,limit=1] Offers.Recipes
+/gamemode creative
+/kill @e[tag=orcblk]
+# Recipes parse and exist
+/recipe give @s dndclasses:tanned_hide
+/recipe give @s dndclasses:pale_tanned_hide
+/recipe give @s dndclasses:grey_tanned_hide
+/recipe give @s dndclasses:painted_hide
+/recipe give @s dndclasses:tanned_hide_carpet
+/recipe give @s dndclasses:hide_rug
+/recipe give @s dndclasses:bloodtusk_mud_bricks
+/recipe give @s dndclasses:war_totem
+/recipe give @s dndclasses:sharpened_stake_wall
+/recipe give @s dndclasses:tusk_rack
+/recipe give @s dndclasses:war_drum
+wait 20
+quit

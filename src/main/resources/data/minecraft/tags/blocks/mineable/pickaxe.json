@@ -53,6 +53,11 @@
     "dndclasses:clan_crest",
     "dndclasses:ancestor_statue",
     "dndclasses:mithral_lattice",
-    "dndclasses:waystone"
+    "dndclasses:waystone",
+    "dndclasses:bloodtusk_mud_bricks",
+    "dndclasses:bloodtusk_mud_brick_stairs",
+    "dndclasses:bloodtusk_mud_brick_slab",
+    "dndclasses:bloodtusk_mud_brick_wall",
+    "dndclasses:smithy_slag"
   ]
 }

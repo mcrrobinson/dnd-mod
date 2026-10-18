@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/tusk_rack"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/tusk_rack",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/tusk_rack",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/tusk_rack",
+      "y": 270
+    }
+  }
+}

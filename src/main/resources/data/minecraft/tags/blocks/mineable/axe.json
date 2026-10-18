@@ -14,6 +14,24 @@
     "dndclasses:heartwood_trapdoor",
     "dndclasses:living_wood",
     "dndclasses:woven_rope_plank",
-    "dndclasses:ale_keg_wall"
+    "dndclasses:ale_keg_wall",
+    "dndclasses:tanned_hide",
+    "dndclasses:tanned_hide_stairs",
+    "dndclasses:tanned_hide_slab",
+    "dndclasses:pale_tanned_hide",
+    "dndclasses:pale_tanned_hide_stairs",
+    "dndclasses:pale_tanned_hide_slab",
+    "dndclasses:grey_tanned_hide",
+    "dndclasses:grey_tanned_hide_stairs",
+    "dndclasses:grey_tanned_hide_slab",
+    "dndclasses:painted_hide",
+    "dndclasses:tanned_hide_carpet",
+    "dndclasses:pale_tanned_hide_carpet",
+    "dndclasses:grey_tanned_hide_carpet",
+    "dndclasses:hide_rug",
+    "dndclasses:war_totem",
+    "dndclasses:sharpened_stake_wall",
+    "dndclasses:tusk_rack",
+    "dndclasses:war_drum"
   ]
 }

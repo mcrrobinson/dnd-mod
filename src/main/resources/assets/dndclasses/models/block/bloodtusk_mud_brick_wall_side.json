@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_wall_side",
+  "textures": {
+    "wall": "dndclasses:block/bloodtusk_mud_bricks"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "dndclasses:block/tanned_hide",
+    "side": "dndclasses:block/tanned_hide",
+    "top": "dndclasses:block/tanned_hide"
+  }
+}

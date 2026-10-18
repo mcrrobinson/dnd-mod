@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
@@ -11,9 +12,9 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The gatehouse in the palisade: two 9-high watchtowers of dark oak (a ladder up the inside, an archer
- * platform on top with a fence post on each corner and open sides, so the archers can step up and shoot down)
- * either side of a five-wide gate whose lintel is lined with skulls, and red war banners with a black skull
- * hung on the towers. An Orc Archer keeps watch on each tower.
+ * platform on top with a sharpened stake on each corner and open sides, so the archers can step up and shoot
+ * down) either side of a five-wide gate whose lintel is lined with skulls, red war banners with a black skull
+ * and a Painted Hide with the Bloodtusk mark hung on the towers. An Orc Archer keeps watch on each tower.
  */
 public class GatehousePiece extends StrongholdPiece {
     static final int TOWER_HEIGHT = 9;
@@ -56,11 +57,13 @@ public class GatehousePiece extends StrongholdPiece {
                     }
                     b.set(x + dx, TOWER_HEIGHT, w + dz, Blocks.DARK_OAK_PLANKS);
                     if (Math.abs(dx) == 2 && Math.abs(dz) == 2) {
-                        b.set(x + dx, TOWER_HEIGHT + 1, w + dz, Blocks.DARK_OAK_FENCE);
+                        b.set(x + dx, TOWER_HEIGHT + 1, w + dz, GroundsPiece.stakeWall(Direction.SOUTH));
                     }
                 }
             }
             b.set(x - 2 * side, TOWER_HEIGHT + 2, w + 2, Blocks.TORCH);
+            // The Bloodtusk mark on the tower's outer face, under the banner.
+            b.set(x, 4, w + 1, ModBlockFamilies.PAINTED_HIDE.base());
             // War banners: outside, facing the approach, and inside over the yard.
             b.warBanner(x, TOWER_HEIGHT - 2, w + 2, Direction.SOUTH);
             b.warBanner(x + side, TOWER_HEIGHT - 3, w - 2, Direction.NORTH);

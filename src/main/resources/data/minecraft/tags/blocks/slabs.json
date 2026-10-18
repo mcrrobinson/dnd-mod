@@ -8,6 +8,10 @@
     "dndclasses:cut_hellbrass_slab",
     "dndclasses:moonstone_slab",
     "dndclasses:moonstone_brick_slab",
-    "dndclasses:forge_brick_slab"
+    "dndclasses:forge_brick_slab",
+    "dndclasses:tanned_hide_slab",
+    "dndclasses:pale_tanned_hide_slab",
+    "dndclasses:grey_tanned_hide_slab",
+    "dndclasses:bloodtusk_mud_brick_slab"
   ]
 }

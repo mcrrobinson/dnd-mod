@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "R": {
+      "item": "minecraft:red_dye"
+    },
+    "#": {
+      "item": "dndclasses:tanned_hide"
+    }
+  },
+  "pattern": [
+    "R",
+    "#"
+  ],
+  "result": {
+    "item": "dndclasses:painted_hide"
+  },
+  "show_notification": true
+}

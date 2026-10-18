@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/war_totem"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/war_totem",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/war_totem",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/war_totem",
+      "y": 270
+    }
+  }
+}

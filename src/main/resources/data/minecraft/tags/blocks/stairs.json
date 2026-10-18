@@ -8,6 +8,10 @@
     "dndclasses:cut_hellbrass_stairs",
     "dndclasses:moonstone_stairs",
     "dndclasses:moonstone_brick_stairs",
-    "dndclasses:forge_brick_stairs"
+    "dndclasses:forge_brick_stairs",
+    "dndclasses:tanned_hide_stairs",
+    "dndclasses:pale_tanned_hide_stairs",
+    "dndclasses:grey_tanned_hide_stairs",
+    "dndclasses:bloodtusk_mud_brick_stairs"
   ]
 }

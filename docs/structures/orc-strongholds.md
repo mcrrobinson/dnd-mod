@@ -6,13 +6,28 @@ Every hold is a circle round its Fighting Pit, turned so its gate faces one of t
 
 | Piece | What it is |
 |-|-|
-| Palisade | Radius 22. Dark oak and stripped dark oak logs 4 high, most topped with pointed dripstone stakes, a torch here and there, patched with red terracotta and blackstone. The floor inside is coarse dirt, red sand, packed mud, terracotta and gravel, with a packed-mud road out of the gate. |
-| Gatehouse | Two 9-high watchtowers of dark oak, 4 blocks either side of a 5-wide gate. A ladder runs up the inside of each to a 5x5 archer platform. It has a fence post on each corner and open sides, so the archer can step to the edge and shoot down. The gate's lintel is lined with skulls (a wither skeleton skull in the middle) and hung with lanterns. Red war banners with a black skull and border hang on both towers, inside and out. |
-| Great Longhouse (hearth) | 21 by 11 at the back of the hold, its door facing the pit. Spruce plank walls on dark oak posts under an A-frame roof of spruce and dark oak stairs. Inside: a campfire in a blackstone fire pit, log benches, four war drums (note blocks on hay), lanterns hung from the ridge, a trophy wall of 12 mob heads on the back wall, and the **War Chief's seat**: a blackstone throne between two gold blocks on a polished blackstone dais, with a gold block, a wither skeleton skull and two war banners behind it. The **hoard** chest stands beside the seat. |
-| Fighting Pit | In the middle. Round, radius 7, sunk 3 blocks, a sand floor, mud-brick walls and a dark oak fence round the rim, with mud-brick steps down on the gate side. The **war drum** stands on the far rim: a note block on a hay bale under a red banner. |
-| Smithy | On one side of the pit: an open-sided shed (8 by 11) under a dark oak slab roof. A polished blackstone forge wall with a blast furnace and a furnace, a channel of lava behind iron bars, an anvil, a grindstone, a smithing table, the armoury chest and a barrel. |
-| Yurts | 3 round hide tents, 9 across and 7 high: walls of brown, white and grey wool and brown terracotta, a conical roof round a spruce pole, the door facing the pit. Each holds a supply chest, two straw beds and a cauldron. |
-| Totems and bone heaps | 2-4 between the buildings: a totem pole of logs with a carved face, fence arms and a skull, or a heap of bone blocks round skulls. |
+| Palisade | Radius 22. Dark oak and stripped dark oak logs 4 high, nearly all topped with a Sharpened Stake Wall (pointing out of the hold), a torch here and there, patched with red terracotta and blackstone. The floor inside is coarse dirt, red sand, packed mud, terracotta and gravel, with a packed-mud road out of the gate. |
+| Gatehouse | Two 9-high watchtowers of dark oak, 4 blocks either side of a 5-wide gate. A ladder runs up the inside of each to a 5x5 archer platform. It has a sharpened stake on each corner and open sides, so the archer can step to the edge and shoot down. The gate's lintel is lined with skulls (a wither skeleton skull in the middle) and hung with lanterns. Red war banners with a black skull and border hang on both towers, inside and out, and a Painted Hide with the Bloodtusk mark is set in each tower's outer face. |
+| Great Longhouse (hearth) | 21 by 11 at the back of the hold, its door facing the pit under a flap of tanned hide (slabs), with a Painted Hide either side. Spruce plank walls on dark oak posts under an A-frame roof of spruce and dark oak stairs. Inside: a campfire in a blackstone fire pit, log benches, four War Drums, lanterns hung from the ridge, a Tusk Rack on each end wall, a trophy wall of 12 mob heads on the back wall, and the **War Chief's seat**: a blackstone throne between two gold blocks on a polished blackstone dais, with a gold block, a Tusk Rack and two war banners behind it and a 3x3 Hide Rug before it. The **hoard** chest stands beside the seat. |
+| Fighting Pit | In the middle. Round, radius 7, sunk 3 blocks, a sand floor, walls of Bloodtusk Mud Bricks (red ochre handprints and streaks) mixed with mud bricks, packed mud and red terracotta, and a dark oak fence round the rim, with Bloodtusk mud brick steps down on the gate side. The **war drum** stands on the far rim: a War Drum under a red banner. |
+| Smithy | On one side of the pit: an open-sided shed (8 by 11) under a dark oak slab roof. A polished blackstone forge wall with a blast furnace and a furnace, a channel of lava behind iron bars, an anvil, a grindstone, a smithing table, the armoury chest and a barrel. A heap of Smithy Slag lies outside the forge end. |
+| Yurts | 3 round hide tents, 9 across and 7 high: walls and roof of Tanned Hide (brown, pale and grey), the Bloodtusk mark (Painted Hide) on the back wall opposite the door, a conical roof round a spruce pole, the door facing the pit. Each holds a supply chest, two straw beds and a cauldron on a Tanned Hide Carpet. |
+| Totems and bone heaps | 2-4 between the buildings: a totem pole of logs with a War Totem face, fence arms and a skull, or a heap of bone blocks round skulls. |
+
+### Building blocks
+The hold is built from its own blocks, all in the **DnD Building Blocks** creative tab. Every one drops itself when mined, so you can take them from a hold.
+
+| Block | Shapes | Made from | Notes |
+|-|-|-|-|
+| Tanned Hide, Pale Tanned Hide, Grey Tanned Hide | block, stairs, slab, carpet | 4 leather make 2 Tanned Hide; 8 round a bone meal make 8 pale, round light grey dye 8 grey; 2 make 3 carpet | Stitched leather panels. Axe; wool's hardness and sound. The Quartermaster sells 8 Tanned Hide for 3 emeralds. |
+| Painted Hide | block | red dye over Tanned Hide | Tanned hide with the Bloodtusk mark in red ochre: a dripping handprint over two crossed tusks. |
+| Hide Rug | carpet | rabbit hide, Tanned Hide, rabbit hide make 3 | Brown fur with darker stripes. |
+| Bloodtusk Mud Bricks | block, stairs, slab, wall | 8 mud bricks round a red dye make 8 | Mud bricks with red ochre handprints and streaks. Pickaxe; stonecuts like mud bricks. |
+| Smithy Slag | block | (mined only) | Glassy black-green lumps with rusty pockets. Pickaxe; blackstone's hardness. |
+| War Totem | block, faces you when placed | red dye, dark oak log, bone meal (stacked) | A dark oak log with a snarling tusked face in red and white war paint. |
+| Sharpened Stake Wall | wall | 2 dark oak logs either side of string, twice, make 6 | Dark oak stakes with pale cut points, bound with rope. Its outside is the way you face when you place it: anything that walks into it from outside takes 1 damage ("impaled on a sharpened stake"), about twice a second while it presses against it. Orcs and goblins aren't hurt, nor are creative players or anyone touching it from inside. Joins up with other walls. |
+| Tusk Rack | wall-mounted | 2 bones over 3 dark oak planks | A plaque with a horned skull and two curved tusks. Hangs on the side of the block you click (needs a solid face) and drops if that block goes. No collision. |
+| War Drum | block | Tanned Hide on a barrel | Hitting it (left or right click) plays a deep drum beat. A beat rallies every orc and Half-Orc player within 16 blocks with Strength I for 10 s ("The war drum thunders: your blood runs hot!"); after a rally the drum only plays its sound for 30 s. The pit's drum starts the Trial of Strength on a right click instead. |
 
 ### People
 When the hold generates: 6-9 Orc Warriors round the yard (they roam within 18 blocks of the pit), an Orc Archer on each tower, the Orc Quartermaster in the smithy and the War Chief by his seat. Orc Warriors spawn naturally inside the palisade later, up to 12 orcs within 48 blocks (not on Peaceful). No monsters spawn inside a hold's box. See [Orcs](../mobs/orcs.md).
@@ -27,7 +42,7 @@ When the hold generates: 6-9 Orc Warriors round the yard (they roam within 18 bl
 ### Trial of Strength
 For Half-Orcs, and for any player Honored with the Bloodtusk Horde.
 
-1. Step down into the pit and right-click the war drum on its rim.
+1. Step down into the pit and right-click the War Drum on its rim.
 2. An Orc Champion leaps in on the far side and a one-on-one duel starts. A yellow duel bar ("Trial of Strength: &lt;Champion&gt;") shows the Champion's health to everyone within 32 blocks. The other orcs stand down and watch.
 3. The duel is non-lethal: whoever drops to 3 health or below yields. Damage that would take either of you below 3 is stopped at 3, so you can't die in the pit.
 4. You also lose if you go more than 12 blocks from the middle of the pit, log out, or the duel runs past 3 minutes.
@@ -71,6 +86,8 @@ Badlands, Wooded Badlands and Eroded Badlands. Strongholds use a spacing of 28 c
 - `/dndhome pieces` lists every piece of the stronghold you're in.
 
 ## Known limitations
+- Holds generated before the building blocks keep their old blocks (wool yurts, note-block drums, dripstone stakes). Their pit's note block still starts the Trial.
+- The War Drum's rally cooldown is kept in memory, so it resets when the server restarts.
 - Only one Trial can run at a hold at a time, and a duel in progress is lost if the server stops (the Champion leaves when the hold loads again).
 - Blood-Sworn is per hold, so a Blood-Sworn player's party is only safe near them at that hold.
 - The archers on the towers hold their post and only shoot what they can see within 16 blocks. From the middle of the platform the planks hide the ground near the tower, so an archer counts a target as seen when any spot within 3 blocks of its post has a clear line to it (with 0.3 blocks of slack either side), and walks to that spot (usually the platform's edge) to shoot. Archers at the edge can be knocked off the tower.
@@ -79,8 +96,9 @@ Badlands, Wooded Badlands and Eroded Badlands. Strongholds use a spacing of 28 c
 
 ## For developers
 - `world/gen/stronghold/`. `OrcStrongholdStructure` checks the site and plans the pieces round the centre with a random gate direction (`plan`). `StrongholdPiece` is the shared base: local (a, y, b) coordinates with the gate to the south, turned with `BlockState.rotate`; every piece carries its hold key (the start chunk, `ChunkPos.toLong`) for the orcs it places. Pieces: `GroundsPiece` (clearing, palisade, totems, warriors), `GatehousePiece`, `LonghousePiece` (`hoard()`, `seat()`), `FightingPitPiece` (`drum()`, `floor(offset)`, `inPit(pos)`), `SmithyPiece`, `YurtPiece`. `OrcStrongholdStructures` registers them. `BloodSworn` is the per-world `PersistentState` (`dndclasses_blood_sworn`) of Blood-Sworn players and lost days per hold.
-- `entity/OrcTrial`: the drum (`UseBlockCallback` on the pit's note block), the duel tick and bar, the win and loss, `clampPlayerHealth` (called from `PlayerEntityMixin.applyDamage`) and the quest hook `onTrialWon`. `entity/OrcHostility`: who orcs fight. `entity/OrcLaw`: the hoard grudge (`SettlementGrudges.BLOODTUSK_HORDE`).
+- Building blocks: the hide, Painted Hide, Bloodtusk Mud Brick and Smithy Slag families in `ModBlockFamilies` (resources from `tools/block_families.py`, see [Building blocks](../dev/building-blocks.md)); the carpets, Hide Rug, War Totem, Sharpened Stake Wall, Tusk Rack and War Drum in `OrcBuildingBlocks` (resources from `tools/orc_blocks.py`), classes in `classes/Blocks/orc/`: `StakeWallBlock` (`FACING` is the outside, `DAMAGE`, damage type `dndclasses:stake`), `WarDrumBlock` (`RANGE`, `DURATION`, `COOLDOWN`, `beat(...)`, and the hook `onRally` called for each Half-Orc a beat rallies), `TuskRackBlock`, `WarTotemBlock`. Textures: `tools/orc_block_textures.py`. The Quartermaster's Tanned Hide is in `OrcTrades` (`addMissing` adds it to saved Quartermasters).
+- `entity/OrcTrial`: the drum (`UseBlockCallback` on the pit's War Drum, or on the note block above it in older holds, `FightingPitPiece.legacyDrum()`), the duel tick and bar, the win and loss, `clampPlayerHealth` (called from `PlayerEntityMixin.applyDamage`) and the quest hook `onTrialWon`. `entity/OrcHostility`: who orcs fight. `entity/OrcLaw`: the hoard grudge (`SettlementGrudges.BLOODTUSK_HORDE`).
 - `RacialHomes.ORC_STRONGHOLD` (hearth: `OrcStrongholdStructures.LONGHOUSE`), the Rally in `HomeBonuses.welcome`, `Lockpicking` (hoard DC 15, yurts unlocked), `MagicLoot.placements`, `ModSpawns.canOrcSpawn`.
 - Data: `worldgen/structure/orc_stronghold.json` (Orc Warriors in the `creature` override, an empty `monster` list), `worldgen/structure_set/orc_strongholds.json`, `#dndclasses:has_structure/orc_stronghold`, `#dndclasses:orc_strongholds`, `loot_tables/chests/orc_stronghold_*.json`, `factions/bloodtusk_horde.json`, `advancements/blood_and_thunder.json`, `dialogue/orc_quartermaster.json`, `dialogue/orc_war_chief.json`.
-- Textures: `tools/orc_stronghold_textures.py` (orc skins, Grog, Goblin War Token).
-- Devscripts: `orc-stronghold-survey.txt` and `orc-trial.txt`.
+- Textures: `tools/orc_stronghold_textures.py` (orc skins, Grog, Goblin War Token), `tools/orc_block_textures.py` (the building blocks).
+- Devscripts: `orc-stronghold-survey.txt`, `orc-trial.txt`, `orc-blocks.txt` (every building block: drops, stakes, the War Drum's rally, the Quartermaster's hide, recipes) and `orc-blocks-survey.txt` (screenshots of the hold's buildings).

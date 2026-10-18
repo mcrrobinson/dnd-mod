@@ -1,10 +1,12 @@
 package mattonfire.dnd.world.gen;
 
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Registry.BlockFamily;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChainBlock;
+import net.minecraft.block.DoorBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LanternBlock;
 import net.minecraft.block.LeavesBlock;
@@ -12,8 +14,10 @@ import net.minecraft.block.PaneBlock;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.StairsBlock;
+import net.minecraft.block.TrapdoorBlock;
 import net.minecraft.block.WallBlock;
 import net.minecraft.block.enums.BlockHalf;
+import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Identifier;
@@ -58,6 +62,41 @@ public final class PieceBlocks {
     /** A log or other pillar block lying along {@code axis}. */
     public static BlockState pillar(Block block, Direction.Axis axis) {
         return block.getDefaultState().with(PillarBlock.AXIS, axis);
+    }
+
+    /** The stairs of {@code family} facing {@code facing} (see {@link #stairs(Block, Direction, boolean)}). */
+    public static BlockState stairs(BlockFamily family, Direction facing, boolean upsideDown) {
+        return stairs(family.stairs(), facing, upsideDown);
+    }
+
+    /** The slab of {@code family}, in the top or bottom half. */
+    public static BlockState slab(BlockFamily family, boolean top) {
+        return slab(family.slab(), top);
+    }
+
+    /** The wall of {@code family} (it joins up with its neighbours once the chunk is done, see {@link #joinsNeighbours}). */
+    public static BlockState wall(BlockFamily family) {
+        return family.wall().getDefaultState();
+    }
+
+    /** The pillar of {@code family} along {@code axis}: its pillar shape, or the base if that lies on an axis. */
+    public static BlockState pillar(BlockFamily family, Direction.Axis axis) {
+        return pillar(family.has(BlockFamily.Shape.PILLAR) ? family.pillar() : family.base(), axis);
+    }
+
+    /**
+     * One half of a closed door facing {@code facing} (the side you walk out of it towards): set the lower half
+     * at the doorway's floor and the upper half above it.
+     */
+    public static BlockState door(Block door, Direction facing, boolean upper) {
+        return door.getDefaultState().with(DoorBlock.FACING, facing)
+                .with(DoorBlock.HALF, upper ? DoubleBlockHalf.UPPER : DoubleBlockHalf.LOWER);
+    }
+
+    /** A closed trapdoor hinged on the {@code facing} side's opposite, in the top or bottom half of its block. */
+    public static BlockState trapdoor(Block trapdoor, Direction facing, boolean top) {
+        return trapdoor.getDefaultState().with(TrapdoorBlock.FACING, facing)
+                .with(TrapdoorBlock.HALF, top ? BlockHalf.TOP : BlockHalf.BOTTOM);
     }
 
     /** Leaves that never decay. */

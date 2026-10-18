@@ -12,6 +12,9 @@
     "dndclasses:tanned_hide_slab",
     "dndclasses:pale_tanned_hide_slab",
     "dndclasses:grey_tanned_hide_slab",
-    "dndclasses:bloodtusk_mud_brick_slab"
+    "dndclasses:bloodtusk_mud_brick_slab",
+    "dndclasses:thatch_slab",
+    "dndclasses:mossy_thatch_slab",
+    "dndclasses:round_door_frame_stone_slab"
   ]
 }

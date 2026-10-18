@@ -17,9 +17,13 @@ Every village grows out from a **party green** in the middle: a big party tree r
 
 Plots only go on dry, fairly level ground, so a village on hilly land can come out with fewer buildings than it rolled.
 
-**Smials** are dug into grassy hills, with a round door (green, red or yellow), round windows, a chimney and a fenced front garden. Inside you'll find a fireplace, a kitchen and a table laid with food. Bigger smials add a pantry stacked with barrels and a bedroom.
+**Smials** are dug into grassy hills, with a round door (green, red or yellow) in a pale stone arch, round windows in a wattle-and-daub front wall under the hill's cut turf face, a chimney and a fenced front garden. Inside you'll find a fireplace on a sooty hearth, a kitchen with Larder Shelves and herbs and onions hanging from the ceiling, and a table laid with food. Bigger smials add a pantry stacked with barrels and Larder Shelves, and a bedroom.
 
-**The Green Dragon** has a thatched roof, a sign out front ("Ales & Suppers"), a bar backed by ale casks and tables of food. The innkeeper stands behind the bar and the bounty board hangs on the wall. See [Hobbit Tavern](hobbit-tavern.md).
+**The Green Dragon** has a thatched roof (about one block in five gone mossy), half-timbered wattle-and-daub walls, a round green door in a stone arch, a sign out front ("Ales & Suppers"), a hearth-stone fireplace, a bar backed by Ale Casks you can draw from and tables of food. The innkeeper stands behind the bar and the bounty board hangs on the wall. See [Hobbit Tavern](hobbit-tavern.md).
+
+**Market stalls** have a low thatched roof with a striped valance at the front, a wattle-and-daub back wall and Pipe-weed Bundles among the pumpkins and melons. **Gardens** keep a Pipe-weed Bundle in one corner.
+
+The thatch, wattle and daub, turf, door arches, hearth stone, pipe-weed, Larder Shelves, Ale Casks and hanging herbs are the mod's own blocks; see [Hobbit building blocks](../items/hobbit-building-blocks.md).
 
 ### Loot
 The barrels and chests are full of food, and none of them are [locked](../systems/d20-skill-checks.md#lockpicking-rogue), so anyone can open them.
@@ -30,6 +34,8 @@ The barrels and chests are full of food, and none of them are [locked](../system
 | `chests/hobbit_larder` | smials | cooked meat and fish, cake, golden apples, emeralds, a clock |
 | `chests/hobbit_harvest` | gardens, orchards, ponds, market stalls, the green | crops, seeds, eggs, honeycomb, bone meal; 2% a Decanter of Endless Water ([Magic loot](../systems/magic-loot.md)) |
 | `chests/hobbit_ale` | the inn, the green | Mugs of Ale, honey bottles, pies, rabbit stew |
+
+Larder Shelves (9 slots) are filled from the same tables: `hobbit_larder` or `hobbit_pantry` in the smials, `hobbit_pantry` and `hobbit_ale` behind the inn's bar. The inn's Ale Casks give a Mug of Ale for each glass bottle, 4 per cask, and slowly refill.
 
 The plates and hams in item frames can be taken too.
 
@@ -55,4 +61,5 @@ Goblins sometimes [raid](../systems/goblin-raids.md) hobbit villages.
 ## For developers
 - `world/gen/village/`. `HobbitVillageStructure` finds the site, `HobbitVillagePlanner` builds the wish list and places the plots and lanes, and each building is a `*Piece` (`SmialPiece`, `InnPiece`, `VillageGreenPiece` and so on). `HobbitPiece` holds the shared loot ids.
 - Data: `worldgen/structure/hobbit_village.json`, `worldgen/structure_set/hobbit_villages.json`, the `#dndclasses:has_structure/hobbit_village` biome tag and `loot_tables/chests/hobbit_*.json`.
-- Devscripts: `hobbit-locate.txt`, `hobbit-village-tour.txt`.
+- The pieces build with the [hobbit building blocks](../items/hobbit-building-blocks.md): `HobbitPiece.thatch(x, y, z)` picks Thatch or Mossy Thatch per block, `Builder.roundDoor` builds the stone arch, `Builder.larder` and `Builder.herbs` place Larder Shelves and hanging herbs.
+- Devscripts: `hobbit-locate.txt`, `hobbit-village-tour.txt`, `hobbit-blocks-village.txt` (a freshly generated village with the new blocks).

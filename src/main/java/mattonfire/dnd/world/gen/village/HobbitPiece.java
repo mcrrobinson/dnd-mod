@@ -3,6 +3,9 @@ package mattonfire.dnd.world.gen.village;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.function.Consumer;
+import mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks;
+import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.HobbitEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.world.gen.FacingPiece;
@@ -26,6 +29,7 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 
@@ -81,6 +85,16 @@ public abstract class HobbitPiece extends FacingPiece<HobbitPiece.Builder> {
     public BlockPos entrance() {
         int x = this.entranceX();
         return new BlockPos(this.applyXTransform(x, -1), this.applyYTransform(0), this.applyZTransform(x, -1));
+    }
+
+    /**
+     * Thatch for local x/y/z: plain, or Mossy Thatch for about one block in five. Hashed from the position and
+     * the piece's seed rather than drawn from its random, so it's the same in every chunk and leaves the rest of
+     * the piece's draws alone.
+     */
+    protected BlockFamily thatch(int x, int y, int z) {
+        long h = (MathHelper.hashCode(x, y, z) ^ this.seed) * 0x9E3779B97F4A7C15L;
+        return Math.floorMod(h >>> 33, 5L) == 0 ? ModBlockFamilies.MOSSY_THATCH : ModBlockFamilies.THATCH;
     }
 
     @Override
@@ -186,18 +200,34 @@ public abstract class HobbitPiece extends FacingPiece<HobbitPiece.Builder> {
             this.set(x + dx, y - 1, z + dz, stairs(Blocks.SPRUCE_STAIRS, high, false));
         }
 
-        /** A round door: a coloured 3x3 disc with the real door in its middle, in a wooden ring. */
+        /**
+         * A round door: a coloured 3x3 disc with the real door in its middle, framed by a pale stone arch (Round
+         * Door Frame Stone posts, stairs rounding the top corners, a keystone over the door).
+         */
         void roundDoor(int x, int y, int z, Block door, Block planks) {
+            BlockFamily frame = ModBlockFamilies.ROUND_DOOR_FRAME_STONE;
             this.fill(x - 1, y, z, x + 1, y + 2, z, planks);
             this.door(x, y, z, door, IN);
-            this.fill(x - 2, y, z, x - 2, y + 2, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
-            this.fill(x + 2, y, z, x + 2, y + 2, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
-            this.fill(x - 1, y + 3, z, x + 1, y + 3, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X));
-            this.set(x - 2, y + 3, z, stairs(Blocks.SPRUCE_STAIRS, Direction.WEST, true));
-            this.set(x + 2, y + 3, z, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, true));
+            this.fill(x - 2, y, z, x - 2, y + 2, z, frame.base());
+            this.fill(x + 2, y, z, x + 2, y + 2, z, frame.base());
+            this.set(x - 1, y + 3, z, frame.base());
+            this.set(x, y + 3, z, ModBlockFamilies.ROUND_DOOR_KEYSTONE.base());
+            this.set(x + 1, y + 3, z, frame.base());
+            this.set(x - 2, y + 3, z, stairs(frame, Direction.WEST, true));
+            this.set(x + 2, y + 3, z, stairs(frame, Direction.EAST, true));
             // A knob on the right-hand panel.
             this.set(x + 1, y + 1, z - 1, Blocks.POLISHED_BLACKSTONE_BUTTON.getDefaultState()
                     .with(net.minecraft.block.WallMountedBlock.FACING, OUT));
+        }
+
+        /** A Larder Shelf facing {@code facing}, filled from {@code lootTable} when first opened. */
+        void larder(int x, int y, int z, Direction facing, Identifier lootTable) {
+            this.container(x, y, z, facing(HobbitBlocks.LARDER_SHELF, facing), lootTable);
+        }
+
+        /** Hanging herbs or an onion string under the ceiling at y + 1. */
+        void herbs(int x, int y, int z, boolean onions) {
+            this.set(x, y, z, onions ? HobbitBlocks.ONION_STRING : HobbitBlocks.HANGING_HERBS);
         }
 
         void door(int x, int y, int z, Block door, Direction facing) {

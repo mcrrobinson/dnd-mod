@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:treasury_coin_pile"
+    "dndclasses:treasury_coin_pile",
+    "dndclasses:smial_turf_wall"
   ]
 }

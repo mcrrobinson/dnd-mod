@@ -32,6 +32,8 @@
     "dndclasses:war_totem",
     "dndclasses:sharpened_stake_wall",
     "dndclasses:tusk_rack",
-    "dndclasses:war_drum"
+    "dndclasses:war_drum",
+    "dndclasses:larder_shelf",
+    "dndclasses:ale_cask"
   ]
 }

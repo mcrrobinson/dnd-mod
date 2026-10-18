@@ -272,6 +272,11 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.OrcBuildingBlocks.cutoutBlocks());
+        // Hobbit herbs and onions hang on a see-through cross model
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.HANGING_HERBS,
+                mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.ONION_STRING);
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

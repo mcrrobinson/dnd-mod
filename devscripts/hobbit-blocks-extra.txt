@@ -1,0 +1,84 @@
+# Checks the Hobbit building blocks a person was asked to: hand-crafted counts, thatch burning, and a saved
+# innkeeper picking up the Thatch offer. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hobbit-blocks-extra.txt
+# Expect in latest.log: crafting output "4 thatch" from 4 wheat and "4 thatch_stairs" from 6 thatch; most of the
+# thatch "Test failed" (burnt) after the fire; the innkeeper's offers list thatch once, before and after the
+# Thatch offer is removed.
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doFireTick true
+/time set noon
+/weather clear
+/fill 20 149 20 32 149 32 minecraft:stone
+/fill 20 150 20 32 156 32 minecraft:air
+# --- Crafting by hand ---
+/clear @s
+/give @s minecraft:wheat 4
+/setblock 22 150 24 minecraft:crafting_table
+/tp @s 22.5 150 22.0 0 25
+wait 10
+use
+wait 10
+# Crafting table slots: 0 output, 1-9 grid, 10-36 inventory, 37-45 hotbar
+slot 37
+slot 1 pickup 1
+slot 2 pickup 1
+slot 4 pickup 1
+slot 5 pickup 1
+wait 5
+slots
+closescreen
+/clear @s
+/give @s dndclasses:thatch 6
+wait 5
+use
+wait 10
+slot 37
+slot 1 pickup 1
+slot 4 pickup 1
+slot 5 pickup 1
+slot 7 pickup 1
+slot 8 pickup 1
+slot 9 pickup 1
+wait 5
+slots
+closescreen
+/clear @s
+/setblock 22 150 24 minecraft:air
+# --- Thatch burns ---
+/fill 27 150 27 29 150 29 dndclasses:thatch
+/setblock 28 151 28 minecraft:fire
+waitserver 900
+/execute if block 27 150 27 dndclasses:thatch
+/execute if block 28 150 27 dndclasses:thatch
+/execute if block 29 150 27 dndclasses:thatch
+/execute if block 27 150 28 dndclasses:thatch
+/execute if block 28 150 28 dndclasses:thatch
+/execute if block 29 150 28 dndclasses:thatch
+/execute if block 27 150 29 dndclasses:thatch
+/execute if block 28 150 29 dndclasses:thatch
+/execute if block 29 150 29 dndclasses:thatch
+/fill 26 150 26 30 152 30 minecraft:air
+/gamerule doFireTick false
+# --- A saved innkeeper without the Thatch offer gets it back when loaded ---
+/summon dndclasses:innkeeper 24.5 150 24.5 {Tags:["hobbitextra"],NoAI:1b}
+/tp @s 24.5 150 22.5 0 20
+sneak on
+wait 5
+use
+wait 10
+closescreen
+sneak off
+# Every /data change reloads the entity from NBT, as loading a saved chunk does, so removing the Thatch offer
+# (the last one) brings it straight back: the offer count and the last offer stay the same.
+/data get entity @e[tag=hobbitextra,limit=1] Offers.Recipes
+/data remove entity @e[tag=hobbitextra,limit=1] Offers.Recipes[-1]
+/data get entity @e[tag=hobbitextra,limit=1] Offers.Recipes
+/kill @e[tag=hobbitextra]
+quit

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:round_door_frame_stone"
+  },
+  "result": "dndclasses:round_door_frame_stone_slab"
+}

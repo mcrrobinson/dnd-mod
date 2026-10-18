@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/thatch_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/thatch"
+    },
+    "type=top": {
+      "model": "dndclasses:block/thatch_slab_top"
+    }
+  }
+}

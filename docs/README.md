@@ -97,7 +97,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits
 - [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source
 - [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
-- [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls of runic brick with a Dwarf King, a coin-heaped treasury and their own building blocks (clan crests, ancestor statues, forge bricks, a waystone naming the hold) (PR #242)
+- [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls of runic brick with a Dwarf King, a coin-heaped treasury and their own building blocks (clan crests, ancestor statues, forge bricks, a waystone naming the hold)
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home
 - [Orc Strongholds](structures/orc-strongholds.md): palisaded badlands warcamps with a gatehouse, Great Longhouse, Fighting Pit, smithy and yurts, built from tanned hide, stake walls and war drums; hostile except to Half-Orcs; the Trial of Strength makes you Blood-Sworn; the Half-Orc home
@@ -127,7 +127,8 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
 - [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
-- [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves (PR #241)
+- [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves
+- [Hobbit building blocks](items/hobbit-building-blocks.md): Thatch, Mossy Thatch, Wattle and Daub, Smial Turf Wall, Round Door Frame Stone, Hearth Stone, Pipe-weed Bundle; the Larder Shelf (9 slots) and Ale Cask (glass bottle for a Mug of Ale, 4 mugs, refills); hanging herbs and onions
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

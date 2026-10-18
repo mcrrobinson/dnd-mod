@@ -12,6 +12,9 @@
     "dndclasses:tanned_hide_stairs",
     "dndclasses:pale_tanned_hide_stairs",
     "dndclasses:grey_tanned_hide_stairs",
-    "dndclasses:bloodtusk_mud_brick_stairs"
+    "dndclasses:bloodtusk_mud_brick_stairs",
+    "dndclasses:thatch_stairs",
+    "dndclasses:mossy_thatch_stairs",
+    "dndclasses:round_door_frame_stone_stairs"
   ]
 }

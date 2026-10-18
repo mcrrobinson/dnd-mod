@@ -3,6 +3,7 @@ package mattonfire.dnd.entity;
 import static mattonfire.dnd.entity.NpcTrades.sell;
 import static mattonfire.dnd.entity.NpcTrades.buy;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.tavern.Tavern;
 import mattonfire.dnd.tavern.TavernRooms;
 import net.minecraft.item.Items;
@@ -39,11 +40,15 @@ final class InnkeeperTrades {
         return offers;
     }
 
-    /** Adds the trades a saved innkeeper from an older version doesn't have yet (the Room Key). */
+    /** Adds the trades a saved innkeeper from an older version doesn't have yet (the Room Key, thatch). */
     static void addMissing(TradeOfferList offers) {
         if (offers.stream().noneMatch(InnkeeperTrades::isRoomKey)) {
             // A room for the night: the key is stamped with the inn and the day as it's sold.
             offers.add(sell(TavernRooms.PRICE, Tavern.ROOM_KEY, 1));
+        }
+        if (offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModBlockFamilies.THATCH.base().asItem()))) {
+            // Thatch for your own roof, as on the inn's.
+            offers.add(sell(1, ModBlockFamilies.THATCH.base(), 8));
         }
     }
 

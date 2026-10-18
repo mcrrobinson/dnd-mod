@@ -1,0 +1,79 @@
+{
+  "variants": {
+    "facing=north,mugs=0": {
+      "model": "dndclasses:block/ale_cask"
+    },
+    "facing=north,mugs=1": {
+      "model": "dndclasses:block/ale_cask"
+    },
+    "facing=north,mugs=2": {
+      "model": "dndclasses:block/ale_cask"
+    },
+    "facing=north,mugs=3": {
+      "model": "dndclasses:block/ale_cask"
+    },
+    "facing=north,mugs=4": {
+      "model": "dndclasses:block/ale_cask"
+    },
+    "facing=east,mugs=0": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 90
+    },
+    "facing=east,mugs=1": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 90
+    },
+    "facing=east,mugs=2": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 90
+    },
+    "facing=east,mugs=3": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 90
+    },
+    "facing=east,mugs=4": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 90
+    },
+    "facing=south,mugs=0": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 180
+    },
+    "facing=south,mugs=1": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 180
+    },
+    "facing=south,mugs=2": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 180
+    },
+    "facing=south,mugs=3": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 180
+    },
+    "facing=south,mugs=4": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 180
+    },
+    "facing=west,mugs=0": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 270
+    },
+    "facing=west,mugs=1": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 270
+    },
+    "facing=west,mugs=2": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 270
+    },
+    "facing=west,mugs=3": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 270
+    },
+    "facing=west,mugs=4": {
+      "model": "dndclasses:block/ale_cask",
+      "y": 270
+    }
+  }
+}

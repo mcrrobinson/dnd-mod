@@ -1,0 +1,169 @@
+# Hobbit Villages building blocks: close-ups, the Ale Cask, the Larder Shelf, hanging herbs, drops, recipes and the
+# innkeeper's thatch. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hobbit-blocks.txt
+# Check in run/logs/latest.log:
+# - "Test passed" for every /execute if block line (cask 4 -> 3 mugs, still 0 when dry, refilled by random ticks,
+#   herbs gone once the block above is removed)
+# - "[DevScript] actionbar:" lines: "4 mugs of ale left..." with an empty hand, "The cask is dry..." when dry
+# - "Found 1 matching item" for the drawn Mug of Ale, then 1 glass bottle left (2 given, 1 used; still 1 when dry)
+# - the larder's "slots" output (food from the hobbit larder loot table)
+# - "Gave ..." lines for each block's loot table, "Unlocked 1 recipe" for each recipe, "dndclasses:thatch" in Offers
+# Screenshots: run/screenshots/hobbit-blocks-*.png
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule randomTickSpeed 0
+/time set noon
+/weather clear
+/kill @e[type=dndclasses:innkeeper,tag=hobbitblocks]
+/fill 28 149 28 48 149 42 minecraft:stone
+/fill 28 150 28 48 158 42 minecraft:air
+# The blocks in a row, fronts facing south (+z).
+/setblock 32 150 34 dndclasses:thatch
+/setblock 33 150 34 dndclasses:mossy_thatch
+/setblock 34 150 34 dndclasses:wattle_and_daub
+/setblock 35 150 34 dndclasses:timbered_wattle_and_daub
+/setblock 36 150 34 dndclasses:smial_turf_wall
+/setblock 37 150 34 dndclasses:round_door_frame_stone
+/setblock 38 150 34 dndclasses:round_door_keystone
+/setblock 39 150 34 dndclasses:hearth_stone
+/setblock 40 150 34 dndclasses:pipeweed_bundle
+/setblock 41 150 34 dndclasses:larder_shelf[facing=south]
+/setblock 42 150 34 dndclasses:ale_cask[facing=south]
+/setblock 43 151 34 minecraft:oak_planks
+/setblock 43 150 34 dndclasses:hanging_herbs
+/setblock 44 151 34 minecraft:oak_planks
+/setblock 44 150 34 dndclasses:onion_string
+# Shapes behind: a little thatch roof and a door arch.
+/fill 32 151 34 35 151 34 dndclasses:thatch_stairs[facing=north]
+/fill 32 151 33 35 151 33 dndclasses:mossy_thatch_slab
+/setblock 37 151 34 dndclasses:round_door_frame_stone_stairs[facing=west,half=top]
+/setblock 38 151 34 dndclasses:round_door_frame_stone_slab
+/setblock 39 151 34 dndclasses:round_door_frame_stone_stairs[facing=east,half=top]
+/setblock 40 151 34 dndclasses:pipeweed_bundle[axis=x]
+/setblock 41 151 34 dndclasses:ale_cask[facing=south]
+hud off
+/tp @s 35.5 151.5 38.5 180 15
+wait 40
+screenshot hobbit-blocks-left
+/tp @s 41.5 151.5 38.5 180 15
+wait 20
+screenshot hobbit-blocks-right
+/tp @s 41.5 154 31.5 0 40
+wait 20
+screenshot hobbit-blocks-tops
+hud on
+
+# Ale Cask (in survival, so the bottle is used up): an empty hand reads how many mugs are left; a glass bottle
+# draws one.
+/gamemode survival
+/clear @s
+hotbar 0
+/tp @s 42.5 150 36.5 180 30
+wait 5
+use
+wait 5
+actionbar
+/give @s minecraft:glass_bottle 2
+wait 3
+use
+wait 5
+/execute if block 42 150 34 dndclasses:ale_cask[mugs=3]
+/clear @s dndclasses:ale 0
+/clear @s minecraft:glass_bottle 0
+# Dry: no ale, the bottle is kept.
+/setblock 42 150 34 dndclasses:ale_cask[facing=south,mugs=0]
+wait 3
+use
+wait 5
+actionbar
+/execute if block 42 150 34 dndclasses:ale_cask[mugs=0]
+/clear @s minecraft:glass_bottle 0
+# Refills on random ticks (sped up here).
+/gamerule randomTickSpeed 4096
+waitserver 40
+/gamerule randomTickSpeed 0
+/execute if block 42 150 34 dndclasses:ale_cask[mugs=4]
+/gamemode creative
+
+# Larder Shelf: opens with 9 slots of food from the larder loot table.
+/clear @s
+/data merge block 41 150 34 {LootTable:"dndclasses:chests/hobbit_larder",LootTableSeed:7L}
+/tp @s 41.5 150 36.5 180 30
+wait 5
+use
+wait 10
+slots
+screenshot hobbit-blocks-larder
+closescreen
+wait 5
+
+# Hanging herbs fall when the block they hang from goes.
+/setblock 43 151 34 minecraft:air
+waitserver 2
+/execute if block 43 150 34 minecraft:air
+/execute if block 44 150 34 dndclasses:onion_string
+
+# Every block drops itself.
+/clear @s
+/loot give @s mine 32 150 34 minecraft:diamond_hoe
+/loot give @s mine 33 150 34 minecraft:diamond_hoe
+/loot give @s mine 34 150 34 minecraft:diamond_pickaxe
+/loot give @s mine 35 150 34 minecraft:diamond_pickaxe
+/loot give @s mine 36 150 34 minecraft:diamond_shovel
+/loot give @s mine 37 150 34 minecraft:diamond_pickaxe
+/loot give @s mine 38 150 34 minecraft:diamond_pickaxe
+/loot give @s mine 39 150 34 minecraft:diamond_pickaxe
+/loot give @s mine 40 150 34 minecraft:diamond_hoe
+/loot give @s mine 41 150 34 minecraft:diamond_axe
+/loot give @s mine 42 150 34 minecraft:diamond_axe
+/loot give @s mine 44 150 34 minecraft:diamond_hoe
+/loot give @s mine 32 151 34 minecraft:diamond_hoe
+/loot give @s mine 32 151 33 minecraft:diamond_hoe
+/loot give @s mine 37 151 34 minecraft:diamond_pickaxe
+/loot give @s mine 38 151 34 minecraft:diamond_pickaxe
+
+# Recipes load.
+/recipe take @s *
+/recipe give @s dndclasses:thatch
+/recipe give @s dndclasses:thatch_from_hay_block
+/recipe give @s dndclasses:thatch_stairs
+/recipe give @s dndclasses:thatch_slab
+/recipe give @s dndclasses:mossy_thatch
+/recipe give @s dndclasses:mossy_thatch_from_moss_block
+/recipe give @s dndclasses:mossy_thatch_stairs
+/recipe give @s dndclasses:mossy_thatch_slab
+/recipe give @s dndclasses:wattle_and_daub
+/recipe give @s dndclasses:timbered_wattle_and_daub
+/recipe give @s dndclasses:smial_turf_wall
+/recipe give @s dndclasses:round_door_frame_stone
+/recipe give @s dndclasses:round_door_frame_stone_stairs
+/recipe give @s dndclasses:round_door_frame_stone_slab
+/recipe give @s dndclasses:round_door_frame_stone_stairs_from_round_door_frame_stone_stonecutting
+/recipe give @s dndclasses:round_door_keystone
+/recipe give @s dndclasses:hearth_stone
+/recipe give @s dndclasses:pipeweed_bundle
+/recipe give @s dndclasses:larder_shelf
+/recipe give @s dndclasses:ale_cask
+/recipe give @s dndclasses:hanging_herbs
+/recipe give @s dndclasses:onion_string
+
+# The innkeeper sells thatch.
+/clear @s
+/summon dndclasses:innkeeper 36.5 150 38.5 {NoAI:1b,Tags:["hobbitblocks"],Rotation:[0f,0f]}
+/tp @s 36.5 150 40.5 180 20
+wait 10
+sneak on
+wait 3
+use
+wait 10
+screenshot hobbit-blocks-innkeeper
+closescreen
+sneak off
+wait 3
+/data get entity @e[type=dndclasses:innkeeper,tag=hobbitblocks,limit=1] Offers
+/kill @e[type=dndclasses:innkeeper,tag=hobbitblocks]
+/gamerule randomTickSpeed 3
+wait 10
+quit

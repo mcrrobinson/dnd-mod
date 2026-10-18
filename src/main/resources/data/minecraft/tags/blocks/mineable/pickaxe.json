@@ -58,6 +58,13 @@
     "dndclasses:bloodtusk_mud_brick_stairs",
     "dndclasses:bloodtusk_mud_brick_slab",
     "dndclasses:bloodtusk_mud_brick_wall",
-    "dndclasses:smithy_slag"
+    "dndclasses:smithy_slag",
+    "dndclasses:wattle_and_daub",
+    "dndclasses:timbered_wattle_and_daub",
+    "dndclasses:round_door_frame_stone",
+    "dndclasses:round_door_frame_stone_stairs",
+    "dndclasses:round_door_frame_stone_slab",
+    "dndclasses:round_door_keystone",
+    "dndclasses:hearth_stone"
   ]
 }

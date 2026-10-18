@@ -37,10 +37,12 @@ class Family:
     top, bottom: separate top/bottom textures for a cube base (cube_bottom_top; also used by stairs/slab)
     craft:    a recipe for the base from vanilla items: {'pattern': [...], 'key': {'#': 'minecraft:...'},
               'count': n}
+    tool:     the mineable tag, if not the material's (e.g. 'hoe' for straw, 'shovel' for earth)
+    cut:      whether the shapes get stonecutter recipes; default for stone families only (not wood or hide)
     """
 
     def __init__(self, name, title, shapes, material='stone', stem=None, stem_title=None, axis=False, top=None,
-                 bottom=None, craft=None):
+                 bottom=None, craft=None, tool=None, cut=None):
         self.name = name
         self.title = title
         self.shapes = shapes
@@ -55,6 +57,8 @@ class Family:
         self.top = top
         self.bottom = bottom
         self.craft = craft
+        self.tool = tool or ('pickaxe' if material == 'stone' else 'axe')
+        self.cut = (material == 'stone') if cut is None else cut
         unknown = set(shapes) - set(SHAPES)
         if unknown:
             raise ValueError(f'{name}: unknown shapes {unknown}')
@@ -65,8 +69,6 @@ class Family:
     def wooden(self):
         return self.material == 'wood'
 
-    def tool(self):
-        return 'pickaxe' if self.material == 'stone' else 'axe'
 
 
 FAMILIES = [
@@ -127,6 +129,28 @@ FAMILIES = [
            craft={'pattern': ['###', '#R#', '###'], 'key': {'#': 'minecraft:mud_bricks',
                                                            'R': 'minecraft:red_dye'}, 'count': 8}),
     Family('smithy_slag', 'Smithy Slag', []),
+    # --- Hobbit Villages ---
+    Family('thatch', 'Thatch', ['stairs', 'slab'], tool='hoe', cut=False,
+           craft={'pattern': ['##', '##'], 'key': {'#': 'minecraft:wheat'}, 'count': 4}),
+    Family('mossy_thatch', 'Mossy Thatch', ['stairs', 'slab'], tool='hoe', cut=False),
+    Family('wattle_and_daub', 'Wattle and Daub', [],
+           craft={'pattern': ['SC', 'CS'], 'key': {'S': 'minecraft:stick', 'C': 'minecraft:clay_ball'}, 'count': 2}),
+    Family('timbered_wattle_and_daub', 'Timbered Wattle and Daub', [],
+           craft={'pattern': [' W ', 'WLW', ' W '], 'key': {'W': 'dndclasses:wattle_and_daub',
+                                                           'L': 'minecraft:dark_oak_log'}, 'count': 4}),
+    Family('smial_turf_wall', 'Smial Turf Wall', [], tool='shovel', top='smial_turf_wall_top',
+           bottom='smial_turf_wall_bottom',
+           craft={'pattern': ['G', 'D', 'D'], 'key': {'G': 'minecraft:grass', 'D': 'minecraft:dirt'}, 'count': 2}),
+    Family('round_door_frame_stone', 'Round Door Frame Stone', ['stairs', 'slab'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'minecraft:smooth_stone'}, 'count': 4}),
+    Family('round_door_keystone', 'Round Door Keystone', [],
+           craft={'pattern': ['#', '#'], 'key': {'#': 'dndclasses:round_door_frame_stone'}, 'count': 2}),
+    Family('hearth_stone', 'Hearth Stone', [],
+           craft={'pattern': [' B ', 'BCB', ' B '], 'key': {'B': 'minecraft:bricks', 'C': 'minecraft:charcoal'},
+                  'count': 4}),
+    Family('pipeweed_bundle', 'Pipe-weed Bundle', [], axis=True, tool='hoe', cut=False,
+           craft={'pattern': ['FFF', 'FSF', 'FFF'], 'key': {'F': 'minecraft:fern', 'S': 'minecraft:string'},
+                  'count': 1}),
 ]
 
 
@@ -396,7 +420,7 @@ def gen_recipes(f):
         result = ref(f.id(shape))
         key = {'W': base, '#': 'minecraft:stick'} if shape in ('fence', 'fence_gate') else {'#': base}
         shaped(f.id(shape), pattern, key, result, count, category, group if f.wooden() else None)
-        if cut and f.material == 'stone':
+        if cut and f.cut:
             stonecut(f'{f.id(shape)}_from_{f.name}_stonecutting', base, result, cut)
 
 
@@ -433,7 +457,7 @@ def gen_tags():
     for f in FAMILIES:
         for shape in [None] + f.shapes:
             block = ref(f.id(shape))
-            tags.setdefault(('blocks', 'mineable/' + f.tool()), []).append(block)
+            tags.setdefault(('blocks', 'mineable/' + f.tool), []).append(block)
             for tag in shape_tags(f, shape):
                 tags.setdefault(('blocks', tag), []).append(block)
                 tags.setdefault(('items', tag), []).append(block)

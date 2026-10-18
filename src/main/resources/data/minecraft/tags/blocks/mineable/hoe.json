@@ -1,6 +1,15 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:silverleaf"
+    "dndclasses:silverleaf",
+    "dndclasses:thatch",
+    "dndclasses:thatch_stairs",
+    "dndclasses:thatch_slab",
+    "dndclasses:mossy_thatch",
+    "dndclasses:mossy_thatch_stairs",
+    "dndclasses:mossy_thatch_slab",
+    "dndclasses:pipeweed_bundle",
+    "dndclasses:hanging_herbs",
+    "dndclasses:onion_string"
   ]
 }

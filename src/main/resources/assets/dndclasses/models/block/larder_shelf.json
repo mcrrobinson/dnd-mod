@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "dndclasses:block/larder_shelf_side",
+    "north": "dndclasses:block/larder_shelf_front",
+    "south": "dndclasses:block/larder_shelf_side",
+    "east": "dndclasses:block/larder_shelf_side",
+    "west": "dndclasses:block/larder_shelf_side",
+    "up": "dndclasses:block/larder_shelf_top",
+    "down": "dndclasses:block/larder_shelf_top"
+  }
+}

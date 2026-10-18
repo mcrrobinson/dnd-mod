@@ -100,7 +100,7 @@ public class GardenPiece extends HobbitPiece {
         b.set(w - 3, 1, d - 2, Blocks.HAY_BLOCK);
         b.set(w - 3, 2, d - 2, Blocks.AIR);
         b.ground(w - 2, 1, Blocks.GRASS_BLOCK);
-        b.set(w - 2, 1, 1, Blocks.HAY_BLOCK);
+        b.set(w - 2, 1, 1, mattonfire.dnd.classes.Registry.ModBlockFamilies.PIPEWEED_BUNDLE.base());
 
         if (b.chance(0.6F)) {
             b.hobbit(mid, 1, d / 2);

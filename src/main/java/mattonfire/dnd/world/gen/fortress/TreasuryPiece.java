@@ -4,9 +4,11 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.classes.Obstacles.types.CraftElementObstacles;
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.SnowBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -14,12 +16,13 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 /**
- * The treasury behind the throne: a low blackstone vault heaped with gold, with treasure chests
- * on gilded plinths and the odd block of emerald or diamond. Always watched, and shut behind a
+ * The treasury behind the throne: a low runic vault heaped with coins behind a mithral grille, with
+ * treasure chests on gilded plinths and the odd block of gold, emerald or diamond. Always watched, and shut behind a
  * Clockwork Door (Hard): an Artificer or a Rogue repairs it open, anyone else smashes it and angers
  * the dwarves who see it.
  */
 public class TreasuryPiece extends FortressPiece {
+    private static final Block COINS = DwarvenBlocks.TREASURY_COIN_PILE;
     private static final int WIDTH = 13;
     private static final int DEPTH = 11;
     private static final int HEIGHT = 7;
@@ -39,17 +42,18 @@ public class TreasuryPiece extends FortressPiece {
 
     @Override
     protected void build(Builder b) {
-        b.shell(WIDTH, HEIGHT, DEPTH, Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState());
+        b.shell(WIDTH, HEIGHT, DEPTH, RUNIC.base().getDefaultState());
         b.air(MID - 1, 1, 0, MID + 1, 3, 0);
-        b.fill(MID - 1, 1, 1, MID + 1, 1, 1, Blocks.IRON_BARS);
+        b.fill(MID - 1, 1, 1, MID + 1, 1, 1, DwarvenBlocks.MITHRAL_LATTICE);
         b.set(MID, 1, 1, Blocks.AIR);
         for (int x = 1; x < WIDTH - 1; x++) {
             b.set(x, HEIGHT - 1, 1, Blocks.GILDED_BLACKSTONE);
             b.set(x, HEIGHT - 1, DEPTH - 2, Blocks.GILDED_BLACKSTONE);
         }
 
-        // Heaps of gold along the walls, highest in the corners.
-        Block[] hoard = {Blocks.GOLD_BLOCK, Blocks.GOLD_BLOCK, Blocks.RAW_GOLD_BLOCK, Blocks.GILDED_BLACKSTONE};
+        // Heaps of coins along the walls, highest in the corners, with the odd gold or emerald block showing.
+        // The heap tops are part-piles, so the heaps slope. (Same random draws as the old gold-block heaps.)
+        Block[] hoard = {COINS, COINS, COINS, Blocks.GOLD_BLOCK};
         for (int x = 1; x < WIDTH - 1; x++) {
             for (int z = 2; z < DEPTH - 1; z++) {
                 int edge = Math.min(Math.min(x - 1, WIDTH - 2 - x), DEPTH - 2 - z);
@@ -58,7 +62,14 @@ public class TreasuryPiece extends FortressPiece {
                 }
                 int heap = 2 - edge + (b.chance(0.4F) ? 1 : 0);
                 for (int y = 1; y <= heap; y++) {
-                    b.set(x, y, z, b.chance(0.04F) ? Blocks.EMERALD_BLOCK : b.pick(hoard));
+                    boolean emerald = b.chance(0.04F);
+                    Block block = emerald ? Blocks.EMERALD_BLOCK : b.pick(hoard);
+                    if (block == COINS || y == heap && !emerald) {
+                        int layers = y < heap ? 8 : 3 + Math.floorMod(x * 31 + z * 17, 5);
+                        b.set(x, y, z, COINS.getDefaultState().with(SnowBlock.LAYERS, layers));
+                    } else {
+                        b.set(x, y, z, block);
+                    }
                 }
             }
         }

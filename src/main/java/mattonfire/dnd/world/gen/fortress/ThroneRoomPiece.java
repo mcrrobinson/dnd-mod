@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.fortress;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.DyeColor;
@@ -12,8 +13,8 @@ import net.minecraft.util.math.random.Random;
 
 /**
  * The throne room at the end of the great hall: a red carpet up to a stepped dais where the
- * Dwarf King sits on a gold throne between braziers and banners, guarded. A narrow door behind
- * the throne leads to the treasury.
+ * Dwarf King sits on a gold throne under the clan crest, between braziers, banners, mithral grilles
+ * and ancestor statues, guarded. A narrow door behind the throne leads to the treasury.
  */
 public class ThroneRoomPiece extends FortressPiece {
     private static final int WIDTH = 19;
@@ -54,7 +55,7 @@ public class ThroneRoomPiece extends FortressPiece {
         }
 
         // The carpet up to the dais.
-        b.fill(MID - 1, 0, 1, MID + 1, 0, 10, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(MID - 1, 0, 1, MID + 1, 0, 10, RUNIC.base());
         b.fill(MID - 1, 1, 1, MID + 1, 1, 10, Blocks.RED_CARPET);
 
         // Pillars down both sides.
@@ -66,22 +67,29 @@ public class ThroneRoomPiece extends FortressPiece {
         }
 
         // The dais: two broad steps up to the throne.
-        b.fill(4, 1, 12, WIDTH - 5, 1, back - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
-        b.fill(4, 1, 11, WIDTH - 5, 1, 11, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, IN, false));
-        b.fill(6, 2, 13, WIDTH - 7, 2, back - 1, Blocks.POLISHED_BLACKSTONE_BRICKS);
-        b.fill(6, 2, 12, WIDTH - 7, 2, 12, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, IN, false));
+        b.fill(4, 1, 12, WIDTH - 5, 1, back - 1, RUNIC.base());
+        b.fill(4, 1, 11, WIDTH - 5, 1, 11, stairs(RUNIC, IN, false));
+        b.fill(6, 2, 13, WIDTH - 7, 2, back - 1, RUNIC.base());
+        b.fill(6, 2, 12, WIDTH - 7, 2, 12, stairs(RUNIC, IN, false));
         b.fill(MID - 1, 3, 12, MID + 1, 3, 13, Blocks.RED_CARPET);
 
         // The throne: a gold seat with arms and a tall back, under a hanging crown of lanterns.
-        b.set(MID, 3, 14, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, IN, false));
+        b.set(MID, 3, 14, stairs(RUNIC, IN, false));
         b.set(MID - 1, 3, 14, Blocks.GOLD_BLOCK);
         b.set(MID + 1, 3, 14, Blocks.GOLD_BLOCK);
-        b.set(MID - 1, 4, 14, bottomSlab(Blocks.POLISHED_BLACKSTONE_SLAB));
-        b.set(MID + 1, 4, 14, bottomSlab(Blocks.POLISHED_BLACKSTONE_SLAB));
+        b.set(MID - 1, 4, 14, slab(RUNIC, false));
+        b.set(MID + 1, 4, 14, slab(RUNIC, false));
         b.fill(MID, 3, back - 1, MID, 6, back - 1, Blocks.GOLD_BLOCK);
         b.set(MID, 5, back - 1, Blocks.GILDED_BLACKSTONE);
-        b.set(MID, 7, back - 1, Blocks.CHISELED_DEEPSLATE);
-        b.set(MID, 8, back - 1, Blocks.GOLD_BLOCK);
+        b.set(MID, 7, back - 1, chiseledRunic());
+        b.crest(MID, 8, back - 1, OUT);
+        // Mithral grilles either side of the throne, and the king's ancestors looking on from the back wall.
+        b.fill(MID - 2, 3, 14, MID - 2, 4, 14, DwarvenBlocks.MITHRAL_LATTICE);
+        b.fill(MID + 2, 3, 14, MID + 2, 4, 14, DwarvenBlocks.MITHRAL_LATTICE);
+        for (int x : new int[]{MID - 3, MID + 3}) {
+            b.set(x, 4, back, chiseledRunic());
+            b.ancestor(x, 5, back, OUT);
+        }
         b.banner(MID - 3, 9, back - 1, OUT, colour);
         b.banner(MID + 3, 9, back - 1, OUT, colour);
         b.brazier(4, 2, 12);

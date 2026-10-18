@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:forge_bricks"
+  },
+  "result": "dndclasses:forge_brick_slab"
+}

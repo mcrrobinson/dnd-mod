@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/forge_brick_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/forge_bricks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/forge_brick_slab_top"
+    }
+  }
+}

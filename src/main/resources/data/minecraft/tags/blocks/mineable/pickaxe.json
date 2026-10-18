@@ -44,6 +44,15 @@
     "dndclasses:moonstone_brick_stairs",
     "dndclasses:moonstone_brick_slab",
     "dndclasses:moonstone_brick_wall",
-    "dndclasses:sylvan_glyph_stone"
+    "dndclasses:sylvan_glyph_stone",
+    "dndclasses:chiseled_runic_deepslate_bricks",
+    "dndclasses:forge_bricks",
+    "dndclasses:forge_brick_stairs",
+    "dndclasses:forge_brick_slab",
+    "dndclasses:gold_veined_pillar",
+    "dndclasses:clan_crest",
+    "dndclasses:ancestor_statue",
+    "dndclasses:mithral_lattice",
+    "dndclasses:waystone"
   ]
 }

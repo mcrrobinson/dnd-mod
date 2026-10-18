@@ -99,6 +99,15 @@ FAMILIES = [
            craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:polished_moonstone'}, 'count': 4}),
     Family('living_wood', 'Living Wood', [], material='wood',
            craft={'pattern': ['V', '#'], 'key': {'V': 'minecraft:vine', '#': 'minecraft:birch_wood'}, 'count': 1}),
+    # --- Dwarven Fortresses ---
+    Family('chiseled_runic_deepslate_bricks', 'Chiseled Runic Deepslate Bricks', [],
+           craft={'pattern': ['#', '#'], 'key': {'#': 'dndclasses:runic_deepslate_brick_slab'}, 'count': 1}),
+    Family('forge_bricks', 'Forge Bricks', ['stairs', 'slab'],
+           craft={'pattern': ['###', '#M#', '###'], 'key': {'#': 'minecraft:bricks', 'M': 'minecraft:magma_block'},
+                  'count': 8}),
+    Family('gold_veined_pillar', 'Gold-Veined Pillar', [], axis=True,
+           craft={'pattern': ['#', 'G', '#'], 'key': {'#': 'minecraft:polished_deepslate', 'G': 'minecraft:gold_ingot'},
+                  'count': 3}),
 ]
 
 

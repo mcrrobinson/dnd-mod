@@ -6,6 +6,9 @@ import java.util.function.Consumer;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.DwarvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.entity.MountainDwarfEntity;
 import mattonfire.dnd.world.gen.FacingPiece;
@@ -77,10 +80,24 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
         return new Builder(world, chunkBox, random);
     }
 
-    /** The fortress stonework: mostly deepslate bricks, a few cracked or tiled for character. */
+    /**
+     * The fortress stonework: mostly Runic Deepslate Bricks, with plain, cracked and tiled deepslate among them so
+     * the runes don't repeat on every block.
+     */
     protected static Block masonry(Builder b) {
         float r = b.random.nextFloat();
-        return r < 0.08F ? Blocks.CRACKED_DEEPSLATE_BRICKS : r < 0.16F ? Blocks.DEEPSLATE_TILES : Blocks.DEEPSLATE_BRICKS;
+        return r < 0.08F ? Blocks.CRACKED_DEEPSLATE_BRICKS : r < 0.16F ? Blocks.DEEPSLATE_TILES
+                : r < 0.36F ? Blocks.DEEPSLATE_BRICKS : RUNIC.base();
+    }
+
+    /** The dwarves' own stone (Building Blocks: Dwarven Fortresses). */
+    protected static final BlockFamily RUNIC = ModBlockFamilies.RUNIC_DEEPSLATE_BRICKS;
+    /** Heat-blackened brick with ember mortar, for forges and hearths. */
+    protected static final BlockFamily FORGE_BRICKS = ModBlockFamilies.FORGE_BRICKS;
+
+    /** Runic brick carved with one big rune in a gold frame: pillar caps and door frames. */
+    protected static Block chiseledRunic() {
+        return ModBlockFamilies.CHISELED_RUNIC_DEEPSLATE_BRICKS.base();
     }
 
     /**
@@ -104,7 +121,7 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
                     this.set(x, 0, z, edge ? Blocks.POLISHED_DEEPSLATE.getDefaultState() : floor);
                     for (int y = 1; y < height; y++) {
                         if (edge || y == height - 1) {
-                            this.set(x, y, z, y == 1 && edge ? Blocks.POLISHED_BLACKSTONE_BRICKS : masonry(this));
+                            this.set(x, y, z, y == 1 && edge ? RUNIC.base() : masonry(this));
                         } else {
                             this.set(x, y, z, Blocks.AIR);
                         }
@@ -118,17 +135,17 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
             this.propUp(x, 0, z, Blocks.COBBLED_DEEPSLATE.getDefaultState(), MAX_FOUNDATION, false);
         }
 
-        /** A doorway through a wall at z, centred on x, in a basalt and gilded blackstone frame. */
+        /** A doorway through a wall at z, centred on x, framed in chiseled runic brick. */
         void doorway(int cx, int z, int width, int height) {
             int x1 = cx - width / 2;
             int x2 = x1 + width - 1;
             this.air(x1, 1, z, x2, height, z);
-            this.fill(x1 - 1, 1, z, x1 - 1, height, z, pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y));
-            this.fill(x2 + 1, 1, z, x2 + 1, height, z, pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y));
-            this.fill(x1 - 1, height + 1, z, x2 + 1, height + 1, z, Blocks.GILDED_BLACKSTONE);
+            this.fill(x1 - 1, 1, z, x1 - 1, height, z, chiseledRunic());
+            this.fill(x2 + 1, 1, z, x2 + 1, height, z, chiseledRunic());
+            this.fill(x1 - 1, height + 1, z, x2 + 1, height + 1, z, chiseledRunic());
             if (width >= 3) {
-                this.set(x1, height, z, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.EAST, true));
-                this.set(x2, height, z, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.WEST, true));
+                this.set(x1, height, z, stairs(RUNIC, Direction.EAST, true));
+                this.set(x2, height, z, stairs(RUNIC, Direction.WEST, true));
             }
         }
 
@@ -147,13 +164,22 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
             }
         }
 
-        /** A pillar of polished deepslate on a chiselled base with a gold capital. */
+        /** A gold-veined pillar on a chiseled runic base, with a gold capital under a chiseled runic cap. */
         void column(int x, int z, int top) {
-            this.set(x, 1, z, Blocks.CHISELED_DEEPSLATE);
-            this.set(x, 2, z, Blocks.GILDED_BLACKSTONE);
-            this.fill(x, 3, z, x, top - 2, z, pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y));
+            this.set(x, 1, z, chiseledRunic());
+            this.fill(x, 2, z, x, top - 2, z, pillar(ModBlockFamilies.GOLD_VEINED_PILLAR, Direction.Axis.Y));
             this.set(x, top - 1, z, Blocks.GOLD_BLOCK);
-            this.set(x, top, z, Blocks.CHISELED_DEEPSLATE);
+            this.set(x, top, z, chiseledRunic());
+        }
+
+        /** A Clan Crest at x/y/z, its sigil facing {@code facing}. */
+        void crest(int x, int y, int z, Direction facing) {
+            this.set(x, y, z, facing(DwarvenBlocks.CLAN_CREST, facing));
+        }
+
+        /** An Ancestor Statue's face at x/y/z, looking {@code facing}. */
+        void ancestor(int x, int y, int z, Direction facing) {
+            this.set(x, y, z, facing(DwarvenBlocks.ANCESTOR_STATUE, facing));
         }
 
         /**
@@ -170,11 +196,11 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
             for (Direction d : Direction.Type.HORIZONTAL) {
                 int ax = x + d.getOffsetX();
                 int az = z + d.getOffsetZ();
-                this.set(ax, y, az, bottomSlab(Blocks.POLISHED_BLACKSTONE_SLAB));
+                this.set(ax, y, az, slab(RUNIC, false));
                 this.set(ax, y + 1, az, this.candleState());
                 int ox = x + d.getOffsetX() * 2;
                 int oz = z + d.getOffsetZ() * 2;
-                this.set(ox, y, oz, bottomSlab(Blocks.POLISHED_BLACKSTONE_SLAB));
+                this.set(ox, y, oz, slab(RUNIC, false));
                 this.set(ox, y - 1, oz, lantern(true));
             }
         }

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:runic_deepslate_bricks"
+    },
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    }
+  },
+  "pattern": [
+    "#",
+    "G",
+    "#"
+  ],
+  "result": {
+    "item": "dndclasses:waystone"
+  },
+  "show_notification": true
+}

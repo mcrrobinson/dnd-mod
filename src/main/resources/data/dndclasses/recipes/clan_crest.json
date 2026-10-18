@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "#": {
+      "item": "dndclasses:chiseled_runic_deepslate_bricks"
+    }
+  },
+  "pattern": [
+    "G",
+    "#"
+  ],
+  "result": {
+    "item": "dndclasses:clan_crest"
+  },
+  "show_notification": true
+}

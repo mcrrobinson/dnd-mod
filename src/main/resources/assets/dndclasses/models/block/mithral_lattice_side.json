@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_glass_pane_side",
+  "textures": {
+    "pane": "dndclasses:block/mithral_lattice",
+    "edge": "dndclasses:block/mithral_lattice_edge"
+  }
+}

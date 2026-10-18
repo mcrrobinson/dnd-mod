@@ -1,0 +1,141 @@
+# Checks the Dwarven Fortresses building blocks (docs/structures/dwarven-fortresses.md#building-blocks).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dwarven-blocks.txt
+# Expect in latest.log:
+# - "Here stands <Clan> Hold" and "Your standing with the Mountain Dwarves: Neutral" after using the waystone
+# - the item-placed waystone: "Test passed" for its upper half; after breaking its lower half, "Test passed" for
+#   air above (the top goes too)
+# - /loot lines: coin piles drop gold nuggets only (4-12 for 4 layers, 8-24 for 8), the waystone's lower half
+#   drops 1 waystone and its upper half nothing, the other blocks drop themselves
+# - dw:before: the watching dwarf has no AngryAt ("Found no elements"); dw:grudge: its AngryAt is set after the
+#   coin pile is mined in front of it, and the pile is gone ("Test passed")
+# - each /recipe line unlocks 1 recipe ("No new recipes were learned" once an earlier run has unlocked them)
+# Screenshots: dwarven-blocks-row (every block in a row), dwarven-blocks-close-* (close-ups).
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/kill @e[tag=dwtest]
+/fill 98 149 -4 124 149 12 minecraft:polished_deepslate
+/fill 98 150 -4 124 158 12 minecraft:air
+/fill 98 150 9 124 154 9 minecraft:deepslate_tiles
+# The row, fronts facing north (towards the camera)
+/setblock 100 150 8 dndclasses:runic_deepslate_bricks
+/setblock 101 150 8 dndclasses:chiseled_runic_deepslate_bricks
+/setblock 101 151 8 dndclasses:chiseled_runic_deepslate_bricks
+/setblock 102 150 8 dndclasses:forge_bricks
+/setblock 102 151 8 dndclasses:forge_bricks
+/setblock 103 150 8 dndclasses:forge_brick_stairs[facing=south]
+/setblock 104 150 8 dndclasses:forge_brick_slab[type=bottom]
+/setblock 105 150 8 dndclasses:gold_veined_pillar
+/setblock 105 151 8 dndclasses:gold_veined_pillar
+/setblock 105 152 8 dndclasses:gold_veined_pillar
+/setblock 106 150 8 dndclasses:clan_crest[facing=north]
+/setblock 107 150 8 dndclasses:ancestor_statue[facing=north]
+/setblock 107 151 8 dndclasses:ancestor_statue[facing=north]
+/setblock 108 150 8 dndclasses:ale_keg_wall[facing=north]
+/setblock 108 151 8 dndclasses:ale_keg_wall[facing=north]
+/setblock 109 150 8 dndclasses:treasury_coin_pile[layers=4]
+/setblock 110 150 8 dndclasses:treasury_coin_pile[layers=8]
+/setblock 110 151 8 dndclasses:treasury_coin_pile[layers=3]
+/fill 111 150 8 113 151 8 dndclasses:mithral_lattice
+/setblock 115 150 8 dndclasses:waystone[facing=north,half=lower]
+/setblock 115 151 8 dndclasses:waystone[facing=north,half=upper]
+# Neighbour updates join the lattice up (setblock skips them for the block itself)
+/setblock 112 152 8 minecraft:stone
+/setblock 112 152 8 minecraft:air
+/setblock 112 150 7 minecraft:stone
+/setblock 112 150 7 minecraft:air
+/setblock 112 151 7 minecraft:stone
+/setblock 112 151 7 minecraft:air
+/tp @s 107.5 151 1.5 0 12
+wait 40
+closescreen
+hud off
+screenshot dwarven-blocks-row
+/tp @s 103.5 151.2 5.5 0 20
+wait 10
+screenshot dwarven-blocks-close-a
+/tp @s 108.5 151.2 5.5 0 20
+wait 10
+screenshot dwarven-blocks-close-b
+/tp @s 113.5 151.5 5.0 0 15
+wait 10
+screenshot dwarven-blocks-close-c
+/tp @s 107.5 152.5 6.5 0 50
+wait 10
+screenshot dwarven-blocks-close-top
+hud on
+# The waystone, used with an empty hand (standing reset to Neutral so the dwarves' own grudges don't interfere)
+/rep @s dndclasses:mountain_dwarves set 0
+/clear @s
+/tp @s 115.5 150 6.5 0 0
+wait 10
+use
+wait 10
+# Placing one from the item puts up both halves; breaking the bottom takes the top
+/gamemode survival
+/give @s dndclasses:waystone
+hotbar 0
+/tp @s 120.5 150 3.5 0 60
+wait 10
+use
+wait 10
+/execute if block 120 151 4 dndclasses:waystone[half=upper]
+/setblock 120 150 4 minecraft:air destroy
+wait 5
+/execute if block 120 151 4 minecraft:air
+/kill @e[type=minecraft:item,distance=..40]
+# Drops
+/loot spawn 107 153 3 mine 109 150 8 minecraft:diamond_shovel
+/loot spawn 107 153 3 mine 110 150 8 minecraft:diamond_shovel
+/loot spawn 107 153 3 mine 115 150 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 115 151 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 101 150 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 105 150 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 106 150 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 107 150 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 108 150 8 minecraft:diamond_axe
+/loot spawn 107 153 3 mine 111 150 8 minecraft:diamond_pickaxe
+/loot spawn 107 153 3 mine 104 150 8 minecraft:diamond_pickaxe
+/kill @e[type=minecraft:item,distance=..40]
+# Dwarves guard the coins like their gold blocks
+/setblock 102 150 4 dndclasses:treasury_coin_pile[layers=8]
+/summon dndclasses:mountain_dwarf 104.5 150 2.5 {NoAI:1b,CustomName:'"Watcher"',Tags:["dwtest"],Rotation:[90f,0f]}
+/clear @s
+/give @s minecraft:netherite_shovel{Enchantments:[{id:"minecraft:efficiency",lvl:5}]}
+/effect give @s minecraft:haste 60 1 true
+hotbar 0
+/tp @s 102.5 150 2.5 0 35
+wait 10
+/say dw:before
+/data get entity @e[tag=dwtest,limit=1] AngryAt
+mine on
+wait 10
+mine off
+wait 10
+/say dw:grudge
+/data get entity @e[tag=dwtest,limit=1] AngryAt
+/execute if block 102 150 4 minecraft:air
+/kill @e[tag=dwtest]
+/kill @e[type=minecraft:item,distance=..40]
+/effect clear @s
+/clear @s
+/gamemode creative
+# Recipes parse and exist
+/recipe give @s dndclasses:chiseled_runic_deepslate_bricks
+/recipe give @s dndclasses:chiseled_runic_deepslate_bricks_from_runic_deepslate_bricks_stonecutting
+/recipe give @s dndclasses:forge_bricks
+/recipe give @s dndclasses:forge_brick_stairs
+/recipe give @s dndclasses:forge_brick_slab
+/recipe give @s dndclasses:gold_veined_pillar
+/recipe give @s dndclasses:clan_crest
+/recipe give @s dndclasses:ancestor_statue_from_polished_deepslate_stonecutting
+/recipe give @s dndclasses:ale_keg_wall
+/recipe give @s dndclasses:mithral_lattice
+/recipe give @s dndclasses:waystone
+wait 20
+quit

@@ -292,6 +292,13 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.RuinBlocks.EYE_STALK_GROWTH);
+        // Shared adventuring blocks: the Wanted Poster's torn edges, and the signpost's text
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.AdventuringBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        net.minecraft.client.render.block.entity.BlockEntityRendererFactories.register(
+                mattonfire.dnd.classes.Registry.AdventuringBlocks.SIGNPOST_ENTITY,
+                mattonfire.dnd.client.renderer.SignpostBlockEntityRenderer::new);
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

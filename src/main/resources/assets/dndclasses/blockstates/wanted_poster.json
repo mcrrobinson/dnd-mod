@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,sketch=0": {
+      "model": "dndclasses:block/wanted_poster_0"
+    },
+    "facing=east,sketch=0": {
+      "model": "dndclasses:block/wanted_poster_0",
+      "y": 90
+    },
+    "facing=south,sketch=0": {
+      "model": "dndclasses:block/wanted_poster_0",
+      "y": 180
+    },
+    "facing=west,sketch=0": {
+      "model": "dndclasses:block/wanted_poster_0",
+      "y": 270
+    },
+    "facing=north,sketch=1": {
+      "model": "dndclasses:block/wanted_poster_1"
+    },
+    "facing=east,sketch=1": {
+      "model": "dndclasses:block/wanted_poster_1",
+      "y": 90
+    },
+    "facing=south,sketch=1": {
+      "model": "dndclasses:block/wanted_poster_1",
+      "y": 180
+    },
+    "facing=west,sketch=1": {
+      "model": "dndclasses:block/wanted_poster_1",
+      "y": 270
+    },
+    "facing=north,sketch=2": {
+      "model": "dndclasses:block/wanted_poster_2"
+    },
+    "facing=east,sketch=2": {
+      "model": "dndclasses:block/wanted_poster_2",
+      "y": 90
+    },
+    "facing=south,sketch=2": {
+      "model": "dndclasses:block/wanted_poster_2",
+      "y": 180
+    },
+    "facing=west,sketch=2": {
+      "model": "dndclasses:block/wanted_poster_2",
+      "y": 270
+    },
+    "facing=north,sketch=3": {
+      "model": "dndclasses:block/wanted_poster_3"
+    },
+    "facing=east,sketch=3": {
+      "model": "dndclasses:block/wanted_poster_3",
+      "y": 90
+    },
+    "facing=south,sketch=3": {
+      "model": "dndclasses:block/wanted_poster_3",
+      "y": 180
+    },
+    "facing=west,sketch=3": {
+      "model": "dndclasses:block/wanted_poster_3",
+      "y": 270
+    }
+  }
+}

@@ -71,8 +71,8 @@ public final class PartyCamp {
     private static final int CHECK_EVERY = 10;
     private static final int HUD_EVERY = 5;
 
-    public static final Item BEDROLL = Registry.register(Registries.ITEM,
-            new Identifier(DnDClasses.MOD_ID, "bedroll"), new BedrollItem(new FabricItemSettings().maxCount(1)));
+    /** The red Bedroll (registered with its block and the dyed ones in {@code AdventuringBlocks}). */
+    public static final Item BEDROLL = mattonfire.dnd.classes.Registry.AdventuringBlocks.BEDROLL_ITEM;
 
     /** Camps by id, in start order. */
     private static final Map<UUID, PartyCamp> CAMPS = new LinkedHashMap<>();

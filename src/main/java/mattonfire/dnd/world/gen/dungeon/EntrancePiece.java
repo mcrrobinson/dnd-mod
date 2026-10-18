@@ -1,7 +1,11 @@
 package mattonfire.dnd.world.gen.dungeon;
 
 import java.util.List;
+import mattonfire.dnd.classes.Blocks.adventuring.SignpostBlock;
+import mattonfire.dnd.classes.Blocks.adventuring.SignpostBlockEntity;
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.dungeon.DungeonState;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -94,6 +98,7 @@ public class EntrancePiece extends DungeonPiece {
     private void ring(Builder b) {
         int ground = this.top - this.info.floorY();
         int r = this.width() / 2;
+        this.signpost(b, r, Direction.fromHorizontal((int) Math.floorMod(this.seed, 4L)), RADIUS - 1, 2);
         for (int[] stone : STONES) {
             int x = r + stone[0];
             int z = r + stone[1];
@@ -112,6 +117,29 @@ public class EntrancePiece extends DungeonPiece {
         }
     }
 
+    // ---------------------------------------------------------------- the signpost
+
+    /**
+     * An Adventurer's Signpost naming the dungeon and its Challenge tier, standing on the ground {@code out}
+     * blocks from the middle of the shaft along {@code way} (the way in) and {@code side} to its right, with its
+     * arrow pointing back along the way in.
+     */
+    private void signpost(Builder b, int c, Direction way, int out, int side) {
+        Direction right = way.rotateYClockwise();
+        int x = c + way.getOffsetX() * out + right.getOffsetX() * side;
+        int z = c + way.getOffsetZ() * out + right.getOffsetZ() * side;
+        int ground = this.groundAt(b, x, z);
+        if (ground == Integer.MIN_VALUE) {
+            return;
+        }
+        b.set(x, ground + 1, z, AdventuringBlocks.SIGNPOST.getDefaultState().with(SignpostBlock.FACING, way.getOpposite()));
+        b.set(x, ground + 2, z, Blocks.AIR.getDefaultState());
+        if (b.world.getBlockEntity(b.pos(x, ground + 1, z)) instanceof SignpostBlockEntity post) {
+            post.setDungeon(this.info.startKey(), DungeonState.name(this.info.startKey(), this.theme()),
+                    DungeonState.tierText(this.info.tier()));
+        }
+    }
+
     // ---------------------------------------------------------------- the Crypt's barrow
 
     private void barrow(Builder b) {
@@ -125,6 +153,7 @@ public class EntrancePiece extends DungeonPiece {
         this.mound(b, ground, c);
         this.dromos(b, ground, c, passage);
         this.stoneRing(b, c, ringOffset, stoneSeed);
+        this.signpost(b, c, passage, PASSAGE_END + 1, 2);
     }
 
     /** Height of the mound at distance {@code r} from the middle of the shaft (0 outside it). */
@@ -296,6 +325,7 @@ public class EntrancePiece extends DungeonPiece {
         long seed = b.random.nextLong();
         this.knoll(b, ground, c, seed);
         this.tunnel(b, ground, c, mouth, seed);
+        this.signpost(b, c, mouth, PALISADE + 1, 3);
         this.palisade(b, c, mouth, seed);
         this.totems(b, c, mouth, seed);
     }
@@ -538,6 +568,7 @@ public class EntrancePiece extends DungeonPiece {
         this.hall(b, ground, c, mouth, seed, fallen);
         this.gateway(b, ground, c, mouth, seed);
         this.ruinedSurrounds(b, c, mouth, seed);
+        this.signpost(b, c, mouth, BARROW_RADIUS - 2, 3);
     }
 
     /** Index 0-3 of the corner tower at (dx, dz), or -1 if it isn't in one. */

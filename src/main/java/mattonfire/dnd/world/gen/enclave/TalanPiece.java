@@ -2,14 +2,13 @@ package mattonfire.dnd.world.gen.enclave;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
-import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LadderBlock;
 import net.minecraft.block.VineBlock;
-import net.minecraft.block.enums.BedPart;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.Direction;
@@ -154,9 +153,8 @@ public class TalanPiece extends EnclavePiece {
         switch (b.random.nextInt(3)) {
             case 0 -> {
                 // Dwelling: a bedroll and a chest.
-                BlockState bed = Blocks.GREEN_BED.getDefaultState().with(BedBlock.FACING, Direction.SOUTH);
-                b.set(2, y, 1, bed.with(BedBlock.PART, BedPart.FOOT));
-                b.set(2, y, 2, bed.with(BedBlock.PART, BedPart.HEAD));
+                b.set(2, y, 1, AdventuringBlocks.GREEN_BEDROLL.foot(Direction.SOUTH));
+                b.set(2, y, 2, AdventuringBlocks.GREEN_BEDROLL.head(Direction.SOUTH));
                 b.container(-2, y, 2, facing(Blocks.CHEST, Direction.NORTH), TALAN_LOOT);
             }
             case 1 -> {

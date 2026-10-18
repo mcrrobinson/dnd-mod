@@ -6,6 +6,7 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Obstacles.StructureObstacles;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.GoblinBlocks;
 import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
@@ -268,9 +269,9 @@ public class GoblinCampPiece extends StructurePiece {
         Direction in = side.getOpposite();
         long lootSeed = random.nextLong();
         boolean barrel = random.nextFloat() < 0.6F;
-        // A bed of straw at the back.
-        set(world, chunkBox, this.at(side, TENT_BACK - 1, -2, 1), Blocks.HAY_BLOCK.getDefaultState());
-        set(world, chunkBox, this.at(side, TENT_BACK - 2, -2, 1), Blocks.HAY_BLOCK.getDefaultState());
+        // A grubby bedroll at the back, its head to the back wall.
+        set(world, chunkBox, this.at(side, TENT_BACK - 1, -2, 1), AdventuringBlocks.BROWN_BEDROLL.head(side));
+        set(world, chunkBox, this.at(side, TENT_BACK - 2, -2, 1), AdventuringBlocks.BROWN_BEDROLL.foot(side));
         if (chief) {
             for (int r = TENT_FRONT + 1; r <= TENT_BACK - 2; r++) {
                 for (int p = -1; p <= 1; p++) {

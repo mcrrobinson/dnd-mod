@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import net.minecraft.block.Block;
@@ -80,14 +81,18 @@ public class YurtPiece extends StrongholdPiece {
             b.set(this.ya, y, this.yb, Blocks.SPRUCE_FENCE);
         }
         b.set(this.ya, HEIGHT, this.yb, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y));
-        // Beds of straw and a chest of supplies at the back, a cauldron by the door.
+        // Bedrolls and a chest of supplies at the back, a cauldron by the door.
         int backA = this.ya - (int) Math.round(da * 3);
         int backB = this.yb - (int) Math.round(db * 3);
         b.container(backA, 1, backB, facing(Blocks.CHEST, Direction.getFacing(da, 0.0D, db)), YURT_LOOT);
-        int sideA = this.ya + (int) Math.round(db * 2);
-        int sideB = this.yb - (int) Math.round(da * 2);
-        b.set(sideA, 1, sideB, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
-        b.set(this.ya - (int) Math.round(db * 2), 1, this.yb + (int) Math.round(da * 2), pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
+        // Two bedrolls either side of the pole, heads towards the back.
+        Direction back = Direction.getFacing(-da, 0.0D, -db);
+        for (int s = -1; s <= 1; s += 2) {
+            int footA = this.ya + s * (int) Math.round(db * 2);
+            int footB = this.yb - s * (int) Math.round(da * 2);
+            b.set(footA, 1, footB, AdventuringBlocks.BROWN_BEDROLL.foot(back));
+            b.set(footA + back.getOffsetX(), 1, footB + back.getOffsetZ(), AdventuringBlocks.BROWN_BEDROLL.head(back));
+        }
         b.set(this.ya + (int) Math.round(da * 2), 1, this.yb + (int) Math.round(db * 2), Blocks.CAULDRON);
     }
 }

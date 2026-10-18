@@ -1,0 +1,24 @@
+# Finds structures far out in the dev world (in chunks that haven't generated yet), for shared-blocks-survey.txt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/shared-blocks-locate.txt
+# Check latest.log for the [CHAT] "The nearest ... is at [x, y, z]" lines.
+wait 40
+closescreen
+/gamemode spectator
+/execute positioned 70000 100 70000 run locate structure dndclasses:hobbit_village
+waitserver 2
+/execute positioned 70000 100 -70000 run locate structure dndclasses:dwarven_fortress
+waitserver 2
+/execute positioned -70000 100 70000 run locate structure dndclasses:orc_stronghold
+waitserver 2
+/execute positioned -70000 100 -70000 run locate structure dndclasses:goblin_camp
+waitserver 2
+/execute positioned 70000 100 0 run locate structure dndclasses:crypt
+waitserver 2
+/execute positioned 0 100 70000 run locate structure dndclasses:goblin_warren
+waitserver 2
+/execute positioned -70000 100 0 run locate structure dndclasses:dwarven_ruin
+waitserver 2
+/execute positioned 0 100 -70000 run locate structure dndclasses:elven_enclave
+waitserver 2
+wait 40
+quit

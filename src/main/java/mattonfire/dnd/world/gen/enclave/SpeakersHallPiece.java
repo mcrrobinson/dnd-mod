@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.enclave;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.ElvenBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -107,6 +108,8 @@ public class SpeakersHallPiece extends EnclavePiece {
         for (int[] c : new int[][]{{1, 1}, {1, -1}, {-1, 1}, {-1, -1}}) {
             b.set(c[0] * 4, Y + 1, c[1] * 4, lantern(false));
         }
+        // A Wanted Poster pinned to the trunk over the lectern: the Speaker's notice of who the enclave won't shelter.
+        b.set(0, Y + 2, -HeartTreePiece.TRUNK - 1, AdventuringBlocks.WANTED_POSTER.poster(Direction.NORTH, 3));
         b.elf(3, Y + 1, 3, ModEntityTypes.ELF_SPEAKER);
     }
 }

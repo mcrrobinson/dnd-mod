@@ -1,0 +1,89 @@
+# Fresh structures with the shared adventuring blocks (docs/items/adventuring-blocks.md), at the spots
+# shared-blocks-locate.txt found and shared-blocks-recon.txt measured in the dev world (far out, so they generate
+# with this build). Elsewhere, put another world's structure boxes into the /tp lines.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/shared-blocks-survey.txt
+# The inn's ground floor, a yurt from above and the fortress are in shared-blocks-closeups.txt, readable dungeon
+# signposts in shared-blocks-signposts.txt.
+# Check: screenshots sb-longhouse(-b), sb-hall, sb-crypt-*, sb-warren-*, sb-ruin-* (the signpost by
+# the way in shows in one of each dungeon's four), and the [CHAT] counts at the end: brown bedrolls in the goblin
+# camp's tents (3, one per tent: filling one half away takes the other with it) and the fortress pieces (/dndhome pieces).
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/effect give @s minecraft:night_vision 900 0 true
+hud off
+# --- Orc stronghold: the Great Longhouse (box -74192 95 63374 to -74182 105 63394) and a yurt
+/tp @s -74187 140 63384 0 90
+wait 400
+/tp @s -74187.5 99.5 63375.5 0 30
+wait 60
+screenshot sb-longhouse
+/tp @s -74187.5 99.5 63393.5 180 30
+wait 20
+screenshot sb-longhouse-b
+/tp @s -74199.5 101 63369.5 0 90
+wait 20
+screenshot sb-yurt
+# --- Elven enclave: the Speaker's Hall (box 754 140 -69838 to 766 143 -69826)
+/tp @s 760 180 -69832 0 90
+wait 400
+/tp @s 760.5 142 -69838.5 0 10
+wait 60
+screenshot sb-hall
+# --- crypt entrance at 69687 93 231: four views from 14 out, one down each side
+/tp @s 69687 133 231 0 90
+wait 400
+/tp @s 69687.5 98 217.5 0 15
+wait 30
+screenshot sb-crypt-0
+/tp @s 69701.5 98 231.5 90 15
+wait 30
+screenshot sb-crypt-90
+/tp @s 69687.5 98 245.5 180 15
+wait 30
+screenshot sb-crypt-180
+/tp @s 69673.5 98 231.5 -90 15
+wait 30
+screenshot sb-crypt-270
+# --- warren entrance at -969 64 69431: four views from 14 out, one down each side
+/tp @s -969 104 69431 0 90
+wait 400
+/tp @s -968.5 69 69417.5 0 15
+wait 30
+screenshot sb-warren-0
+/tp @s -954.5 69 69431.5 90 15
+wait 30
+screenshot sb-warren-90
+/tp @s -968.5 69 69445.5 180 15
+wait 30
+screenshot sb-warren-180
+/tp @s -982.5 69 69431.5 -90 15
+wait 30
+screenshot sb-warren-270
+# --- ruin entrance at -68297 131 -1481: four views from 14 out, one down each side
+/tp @s -68297 171 -1481 0 90
+wait 400
+/tp @s -68296.5 136 -1494.5 0 15
+wait 30
+screenshot sb-ruin-0
+/tp @s -68282.5 136 -1480.5 90 15
+wait 30
+screenshot sb-ruin-90
+/tp @s -68296.5 136 -1466.5 180 15
+wait 30
+screenshot sb-ruin-180
+/tp @s -68310.5 136 -1480.5 -90 15
+wait 30
+screenshot sb-ruin-270
+# --- Goblin camp near -71008 -70288: count the brown bedroll halves in the tents (destructive: removes them)
+/tp @s -71008 140 -70288 0 90
+wait 400
+screenshot sb-camp-top
+/fill -71032 60 -70312 -70985 73 -70265 minecraft:air replace dndclasses:brown_bedroll
+/fill -71032 74 -70312 -70985 87 -70265 minecraft:air replace dndclasses:brown_bedroll
+/fill -71032 88 -70312 -70985 101 -70265 minecraft:air replace dndclasses:brown_bedroll
+hud on
+quit

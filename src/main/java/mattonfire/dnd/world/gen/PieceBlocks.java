@@ -130,11 +130,12 @@ public final class PieceBlocks {
     }
 
     /**
-     * Shapes that join up with their neighbours (fences, panes, stairs, walls, chains): a piece marks them for
-     * post-processing, which fixes their shape once the chunk is finished.
+     * Shapes that join up with their neighbours (fences, panes, stairs, walls, chains, tavern tables and benches): a
+     * piece marks them for post-processing, which fixes their shape once the chunk is finished.
      */
     public static boolean joinsNeighbours(Block block) {
         return block instanceof FenceBlock || block instanceof PaneBlock || block instanceof StairsBlock
-                || block instanceof WallBlock || block instanceof ChainBlock;
+                || block instanceof WallBlock || block instanceof ChainBlock
+                || block instanceof mattonfire.dnd.classes.Blocks.adventuring.TavernFurnitureBlock;
     }
 }

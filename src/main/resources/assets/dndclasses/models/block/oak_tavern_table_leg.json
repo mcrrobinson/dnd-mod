@@ -1,0 +1,6 @@
+{
+  "parent": "dndclasses:block/template_tavern_table_leg",
+  "textures": {
+    "planks": "minecraft:block/oak_planks"
+  }
+}

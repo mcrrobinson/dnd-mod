@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:dark_oak_slab"
+    },
+    "|": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "| |"
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:dark_oak_tavern_bench"
+  },
+  "show_notification": true
+}

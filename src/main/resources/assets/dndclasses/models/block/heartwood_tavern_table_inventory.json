@@ -1,0 +1,6 @@
+{
+  "parent": "dndclasses:block/template_tavern_table_inventory",
+  "textures": {
+    "planks": "dndclasses:block/heartwood_planks"
+  }
+}

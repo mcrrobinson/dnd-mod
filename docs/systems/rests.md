@@ -88,7 +88,7 @@ Rent a room from an innkeeper (**3 emeralds** for a Room Key) and sleep in any b
 ### Party camps
 Make camp anywhere at night for a long rest with your party, at the risk of an ambush.
 
-- **Bedroll:** craft one from 3 wool (any colour) over 3 leather. It isn't used up and stacks to 1.
+- **Bedroll:** craft one from 3 wool (any colour) over 3 leather. It isn't used up and stacks to 1. Dye it green, blue or brown; every colour makes camp. Used anywhere but a campfire it lays the bedroll down, a block you sleep in like a bed that never sets your spawn point (see [Adventuring blocks](../items/adventuring-blocks.md#bedrolls)).
 - **Make camp:** right-click a **lit campfire** (or soul campfire) with the Bedroll at night, from 12542 to 23460 on the overworld clock (the vanilla sleep window). Party members who do the same at a campfire within **8 blocks** in the next **10 seconds** join your camp; after that they're too late. A player outside your party makes their own camp, even at the same fire.
 - **60 seconds** of camping gives every camper a long rest (the benefits above). Time isn't skipped. You can't walk while camping (look around freely); the action bar counts "Camping 12 / 60 s" and a blue bar fills left of the charge gems.
 - **Refused** at day ("You can only make camp at night."), if you've already had a long rest today, while you're Downed or a party member within 32 blocks is, inside an uncleared dungeon, with monsters near you or a boss bar showing (the short rest rules).
@@ -110,7 +110,7 @@ Inside a dungeon whose boss is still alive (`DungeonRegistry.isInsideUncleared`)
 
 ## Where to find it
 - Short rests: any lit campfire (above).
-- Long rests: any bed, at night, a rented tavern room at any time, or a party camp at any lit campfire at night (Bedroll: 3 wool over 3 leather).
+- Long rests: any bed or laid-out Bedroll, at night, a rented tavern room at any time, or a party camp at any lit campfire at night (Bedroll: 3 wool over 3 leather).
 - `/dndclass rest` for admins.
 
 ## Commands

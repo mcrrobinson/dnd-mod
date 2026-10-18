@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.stronghold;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Blocks.orc.TuskRackBlock;
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -10,6 +11,8 @@ import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LanternBlock;
 import net.minecraft.block.WallSkullBlock;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
@@ -97,12 +100,21 @@ public class LonghousePiece extends StrongholdPiece {
         b.set(-2, 3, FRONT + 1, Blocks.WALL_TORCH.getDefaultState().with(net.minecraft.block.WallTorchBlock.FACING, Direction.SOUTH));
         b.set(2, 3, FRONT + 1, Blocks.WALL_TORCH.getDefaultState().with(net.minecraft.block.WallTorchBlock.FACING, Direction.SOUTH));
 
-        // The fire pit and the benches round it.
+        // The fire pit and the tavern benches round it; feasting tables beyond them, benched on the far side, so the
+        // diners face the fire.
         b.fill(-1, 0, RIDGE, 1, 0, RIDGE + 2, Blocks.BLACKSTONE);
         b.set(0, 1, RIDGE + 1, Blocks.CAMPFIRE);
+        ItemStack[] feast = {new ItemStack(Items.COOKED_BEEF), new ItemStack(Items.COOKED_MUTTON),
+                new ItemStack(Items.COOKED_PORKCHOP), new ItemStack(Items.BONE)};
         for (int z = RIDGE - 1; z <= RIDGE + 3; z++) {
-            b.set(-4, 1, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Z));
-            b.set(4, 1, z, pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Z));
+            for (int side = -1; side <= 1; side += 2) {
+                b.set(side * 4, 1, z, AdventuringBlocks.SPRUCE_TAVERN_BENCH.along(Direction.Axis.Z));
+                b.set(side * 6, 1, z, AdventuringBlocks.DARK_OAK_TAVERN_TABLE);
+                b.set(side * 7, 1, z, AdventuringBlocks.SPRUCE_TAVERN_BENCH.along(Direction.Axis.Z));
+                if (b.chance(0.5F)) {
+                    b.frame(side * 6, 2, z, Direction.UP, b.pick(feast).copy());
+                }
+            }
         }
         // War drums.
         for (int side = -1; side <= 1; side += 2) {

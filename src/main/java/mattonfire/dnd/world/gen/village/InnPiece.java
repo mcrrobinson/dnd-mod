@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.village;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks;
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.InnkeeperEntity;
@@ -152,19 +153,19 @@ public class InnPiece extends HobbitPiece {
         b.larder(10, 1, 8, OUT, ALE);
         b.set(11, 1, 8, Blocks.CAKE);
 
-        // Tables by the front windows and along the east wall.
+        // Tavern tables by the front windows and along the east wall, with benches either side.
         for (int x : new int[]{3, 4, 10, 11}) {
-            b.set(x, 1, 3, topSlab(Blocks.SPRUCE_SLAB));
+            b.set(x, 1, 3, AdventuringBlocks.SPRUCE_TAVERN_TABLE);
             b.tableFood(x, 2, 3);
-            b.set(x, 1, 4, stairs(Blocks.OAK_STAIRS, IN, false));
-            b.set(x, 1, 2, stairs(Blocks.OAK_STAIRS, OUT, false));
+            b.set(x, 1, 4, AdventuringBlocks.OAK_TAVERN_BENCH.along(Direction.Axis.X));
+            b.set(x, 1, 2, AdventuringBlocks.OAK_TAVERN_BENCH.along(Direction.Axis.X));
         }
         for (int z = 5; z <= 6; z++) {
-            b.set(11, 1, z, topSlab(Blocks.SPRUCE_SLAB));
+            b.set(11, 1, z, AdventuringBlocks.SPRUCE_TAVERN_TABLE);
             b.tableFood(11, 2, z);
-            b.set(12, 1, z, stairs(Blocks.OAK_STAIRS, Direction.EAST, false));
+            b.set(12, 1, z, AdventuringBlocks.OAK_TAVERN_BENCH.along(Direction.Axis.Z));
         }
-        b.set(10, 1, 5, stairs(Blocks.OAK_STAIRS, Direction.WEST, false));
+        b.set(10, 1, 5, AdventuringBlocks.OAK_TAVERN_BENCH.along(Direction.Axis.Z));
 
         b.set(4, 4, 4, lantern(true));
         b.set(10, 4, 4, lantern(true));
@@ -180,6 +181,9 @@ public class InnPiece extends HobbitPiece {
         // The bounty board: two boards side by side on the east wall, past the end of the bar.
         b.set(12, 2, 7, facing(Tavern.BOUNTY_BOARD, Direction.WEST));
         b.set(12, 2, 8, facing(Tavern.BOUNTY_BOARD, Direction.WEST));
+        // Wanted Posters: one over the bounty board, one on the front wall by the door.
+        b.set(12, 3, 7, AdventuringBlocks.WANTED_POSTER.poster(Direction.WEST, 0));
+        b.set(5, 3, 2, AdventuringBlocks.WANTED_POSTER.poster(Direction.NORTH, 2));
     }
 
     /**

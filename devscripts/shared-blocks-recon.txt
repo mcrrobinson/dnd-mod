@@ -1,0 +1,45 @@
+# Generates the far-out structures found by shared-blocks-locate.txt and logs their pieces (racial homes, with
+# /dndhome pieces) and dungeons (/dungeon info), so shared-blocks-survey.txt can aim at them.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/shared-blocks-recon.txt
+# Check latest.log for "[Home] piece ..." and the /dungeon info lines.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 70096 200 70384
+wait 300
+/spreadplayers 70096 70384 0 1 false @s
+waitserver 2
+/dndhome pieces
+/tp @s 69440 200 -70528
+wait 300
+/spreadplayers 69440 -70528 0 1 false @s
+waitserver 2
+/dndhome pieces
+/tp @s -74208 200 63376
+wait 300
+/spreadplayers -74208 63376 0 1 false @s
+waitserver 2
+/dndhome pieces
+/tp @s 752 200 -69840
+wait 300
+/spreadplayers 752 -69840 0 1 false @s
+waitserver 2
+/dndhome pieces
+/tp @s 69680 200 224
+wait 300
+/spreadplayers 69680 224 0 1 false @s
+waitserver 2
+/dungeon info
+/tp @s -976 200 69424
+wait 300
+/spreadplayers -976 69424 0 1 false @s
+waitserver 2
+/dungeon info
+/tp @s -68304 200 -1488
+wait 300
+/spreadplayers -68304 -1488 0 1 false @s
+waitserver 2
+/dungeon info
+/tp @s -71008 200 -70288
+wait 300
+quit

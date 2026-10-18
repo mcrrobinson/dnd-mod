@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.fortress;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
@@ -59,21 +60,21 @@ public class BrewhallPiece extends FortressPiece {
             b.set(WIDTH - 2, 3, z, bottomSlab(Blocks.DARK_OAK_SLAB));
         }
 
-        // The long table with benches.
+        // The long table (dark oak tavern tables, three wide) with tavern benches down both sides.
         ItemStack[] feast = {new ItemStack(Items.COOKED_BEEF), new ItemStack(Items.COOKED_PORKCHOP), new ItemStack(Items.BREAD),
                 new ItemStack(Items.HONEY_BOTTLE), new ItemStack(Items.MUSHROOM_STEW), new ItemStack(Items.COOKED_MUTTON),
                 new ItemStack(Items.BAKED_POTATO)};
         for (int z = 3; z <= back - 3; z++) {
             for (int x = MID - 1; x <= MID + 1; x++) {
-                b.set(x, 1, z, topSlab(Blocks.SPRUCE_SLAB));
+                b.set(x, 1, z, AdventuringBlocks.DARK_OAK_TAVERN_TABLE);
                 if (x != MID && b.chance(0.6F)) {
                     b.frame(x, 2, z, Direction.UP, b.pick(feast).copy());
                 } else if (x == MID && z % 3 == 0) {
                     b.set(x, 2, z, b.candleState());
                 }
             }
-            b.set(MID - 2, 1, z, stairs(Blocks.SPRUCE_STAIRS, Direction.WEST, false));
-            b.set(MID + 2, 1, z, stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, false));
+            b.set(MID - 2, 1, z, AdventuringBlocks.DARK_OAK_TAVERN_BENCH.along(Direction.Axis.Z));
+            b.set(MID + 2, 1, z, AdventuringBlocks.DARK_OAK_TAVERN_BENCH.along(Direction.Axis.Z));
         }
 
         // Ale kegs filling the back wall either side of the hearth.

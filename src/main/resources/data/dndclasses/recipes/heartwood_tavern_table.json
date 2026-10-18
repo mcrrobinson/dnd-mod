@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "dndclasses:heartwood_slab"
+    },
+    "P": {
+      "item": "dndclasses:heartwood_planks"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "P P"
+  ],
+  "result": {
+    "item": "dndclasses:heartwood_tavern_table"
+  },
+  "show_notification": true
+}

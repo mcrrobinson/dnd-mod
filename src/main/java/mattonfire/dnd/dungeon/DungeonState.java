@@ -57,10 +57,40 @@ public class DungeonState {
         this.entrance = entrance;
         this.floorY = floorY;
         this.rooms = rooms;
+        this.place = place(startKey, theme);
+        this.nameIndex = nameIndex(startKey, theme);
+    }
+
+    private static long nameHash(long startKey) {
         ChunkPos chunk = new ChunkPos(startKey);
-        long hash = MathHelper.hashCode(chunk.x, 0x5EED, chunk.z);
-        this.place = (int) Math.floorMod(hash, (long) theme.placeCount());
-        this.nameIndex = (int) Math.floorMod(hash >>> 16, (long) theme.nameCount());
+        return MathHelper.hashCode(chunk.x, 0x5EED, chunk.z);
+    }
+
+    private static int place(long startKey, DungeonTheme theme) {
+        return (int) Math.floorMod(nameHash(startKey), (long) theme.placeCount());
+    }
+
+    private static int nameIndex(long startKey, DungeonTheme theme) {
+        return (int) Math.floorMod(nameHash(startKey) >>> 16, (long) theme.nameCount());
+    }
+
+    /**
+     * The name a dungeon starting at {@code startKey} gets, before the registry knows it (worldgen: the
+     * entrance's signpost).
+     */
+    public static Text name(long startKey, DungeonTheme theme) {
+        return name(theme, place(startKey, theme), nameIndex(startKey, theme));
+    }
+
+    private static Text name(DungeonTheme theme, int place, int nameIndex) {
+        String base = theme.translationKey();
+        return Text.translatable("dungeon.dndclasses.name", Text.translatable(base + ".place." + place),
+                Text.translatable(base + ".name." + nameIndex));
+    }
+
+    /** "Challenge II" for tier 2. */
+    public static Text tierText(int tier) {
+        return Text.translatable("dungeon.dndclasses.challenge", TIER_NUMERALS[MathHelper.clamp(tier, 1, 4) - 1]);
     }
 
     public long startKey() {
@@ -82,14 +112,12 @@ public class DungeonState {
     }
 
     public Text tierText() {
-        return Text.translatable("dungeon.dndclasses.challenge", TIER_NUMERALS[this.tier - 1]);
+        return tierText(this.tier);
     }
 
     /** "The Barrow of Ashmoor": picked from the theme's word lists, seeded by the start position. */
     public Text name() {
-        String base = this.theme.translationKey();
-        return Text.translatable("dungeon.dndclasses.name", Text.translatable(base + ".place." + this.place),
-                Text.translatable(base + ".name." + this.nameIndex));
+        return name(this.theme, this.place, this.nameIndex);
     }
 
     /** Every piece's box together, entrance included. */

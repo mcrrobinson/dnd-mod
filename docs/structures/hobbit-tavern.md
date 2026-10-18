@@ -1,5 +1,5 @@
 # Hobbit Tavern
-Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells food and ale, buys produce and rents out rooms in the sleeping loft. On the inn's east wall hang two **bounty boards**, where hobbits pin up jobs: hunts and expeditions that pay emeralds, loot, XP and class XP.
+Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells food and ale, buys produce and rents out rooms in the sleeping loft. On the inn's east wall hang two **bounty boards**, where hobbits pin up jobs: hunts and expeditions that pay emeralds, loot, XP and class XP. A [Wanted Poster](../items/adventuring-blocks.md#wanted-poster) hangs over them and another by the door, and the guests eat at spruce [Tavern Tables](../items/adventuring-blocks.md#tavern-tables-and-benches) on oak benches.
 
 ![The innkeeper in front of the Green Dragon's bar, with the bounty boards on the wall to the right](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/hobbit-tavern-innkeeper.png)
 

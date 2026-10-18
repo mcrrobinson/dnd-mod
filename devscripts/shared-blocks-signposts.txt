@@ -1,0 +1,69 @@
+# Readable close-ups of the three dungeon signposts in the dev world's far dungeons (found with
+# shared-blocks-locate.txt), read by right-clicking them, and the far fortress's mead hall and gate.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/shared-blocks-signposts.txt
+# Check: "[DevScript] actionbar: The Pits of the Howling Hill - Challenge IV" (and the Barrow's and the Lost Hold's),
+# screenshots sb-sign-crypt, sb-sign-warren, sb-sign-ruin, sb-brewhall, sb-gate.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/effect give @s minecraft:night_vision 900 0 true
+
+/gamemode spectator
+/tp @s 69676 121 229 0 90
+wait 300
+/gamemode creative
+/effect give @s minecraft:slow_falling 5 0 true
+/tp @s 69676.5 91 230.8 180 30
+wait 40
+hud off
+screenshot sb-sign-crypt
+hud on
+use
+wait 10
+actionbar
+/gamemode spectator
+/tp @s -966 93 69418 0 90
+wait 300
+/gamemode creative
+/effect give @s minecraft:slow_falling 5 0 true
+/tp @s -964.2 63 69418.5 90 30
+wait 40
+hud off
+screenshot sb-sign-warren
+hud on
+use
+wait 10
+actionbar
+/gamemode spectator
+/tp @s -68294 159 -1492 0 90
+wait 300
+/gamemode creative
+/effect give @s minecraft:slow_falling 5 0 true
+/tp @s -68292.2 129 -1491.5 90 30
+wait 40
+hud off
+screenshot sb-sign-ruin
+hud on
+use
+wait 10
+actionbar
+/gamemode spectator
+/tp @s 69475 140 -70532 0 90
+wait 300
+hud off
+/tp @s 69475.5 115 -70537 0 35
+wait 40
+screenshot sb-brewhall
+/tp @s 69475.5 115 -70527 180 35
+wait 20
+screenshot sb-brewhall-b
+/tp @s 69460.5 113 -70512 -90 10
+wait 20
+screenshot sb-gate
+/tp @s 69454.5 114 -70512 -90 10
+wait 20
+screenshot sb-gate-b
+hud on
+quit

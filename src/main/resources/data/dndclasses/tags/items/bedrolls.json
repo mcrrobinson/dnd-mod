@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:bedroll",
+    "dndclasses:green_bedroll",
+    "dndclasses:blue_bedroll",
+    "dndclasses:brown_bedroll"
+  ]
+}

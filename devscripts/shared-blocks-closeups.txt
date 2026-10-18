@@ -1,0 +1,124 @@
+# Follow-up close-ups for shared-blocks-survey.txt: the Green Dragon's ground floor (sb-inn-floor-0..3), a yurt from
+# above (sb-yurt), each dungeon entrance from beside its signpost, and a search for the far fortress's pieces
+# (/dndhome pieces only answers inside a piece; the gate and mead hall turned up from a grid, see
+# shared-blocks-signposts.txt). Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/shared-blocks-closeups.txt
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/effect give @s minecraft:night_vision 900 0 true
+hud off
+/tp @s 70130 120 70424 0 90
+wait 300
+/tp @s 70130.5 73 70424.5 0 25
+wait 30
+screenshot sb-inn-floor-0
+/tp @s 70130.5 73 70424.5 90 25
+wait 30
+screenshot sb-inn-floor-1
+/tp @s 70130.5 73 70424.5 180 25
+wait 30
+screenshot sb-inn-floor-2
+/tp @s 70130.5 73 70424.5 -90 25
+wait 30
+screenshot sb-inn-floor-3
+/tp @s -74187 140 63384 0 90
+wait 300
+/tp @s -74198.5 98.5 63370.5 0 90
+wait 30
+screenshot sb-yurt
+/tp @s -74198.5 98.5 63370.5 0 45
+wait 10
+screenshot sb-yurt-b
+/tp @s 69687 133 231 0 90
+wait 300
+/tp @s 69676.5 94 226.5 0 20
+wait 20
+screenshot sb-crypt-sign-0
+/tp @s 69676.5 96 226.5 0 30
+wait 20
+screenshot sb-crypt-sign-2
+/tp @s 69676.5 98 226.5 0 40
+wait 20
+screenshot sb-crypt-sign-4
+/tp @s 69676.5 92 226.5 0 10
+wait 20
+screenshot sb-crypt-sign--2
+/tp @s -969 104 69431 0 90
+wait 300
+/tp @s -962.5 65 69418.5 90 20
+wait 20
+screenshot sb-warren-sign-0
+/tp @s -962.5 67 69418.5 90 30
+wait 20
+screenshot sb-warren-sign-2
+/tp @s -962.5 69 69418.5 90 40
+wait 20
+screenshot sb-warren-sign-4
+/tp @s -962.5 63 69418.5 90 10
+wait 20
+screenshot sb-warren-sign--2
+/tp @s -68297 171 -1481 0 90
+wait 300
+/tp @s -68290.5 132 -1491.5 90 20
+wait 20
+screenshot sb-ruin-sign-0
+/tp @s -68290.5 134 -1491.5 90 30
+wait 20
+screenshot sb-ruin-sign-2
+/tp @s -68290.5 136 -1491.5 90 40
+wait 20
+screenshot sb-ruin-sign-4
+/tp @s -68290.5 130 -1491.5 90 10
+wait 20
+screenshot sb-ruin-sign--2
+/tp @s 69440 150 -70528 0 90
+wait 300
+/tp @s 69440 60 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 70 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 80 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 90 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 100 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 110 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 120 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 130 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 140 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 150 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 160 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 170 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 180 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 190 -70528
+waitserver 2
+/dndhome pieces
+/tp @s 69440 200 -70528
+waitserver 2
+/dndhome pieces
+hud on
+quit

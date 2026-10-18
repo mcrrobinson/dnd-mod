@@ -1,0 +1,178 @@
+# Shared adventuring blocks (docs/items/adventuring-blocks.md): tavern tables and benches placed by hand join up,
+# a named signpost shows its name, the Wanted Poster reads out and drops off its wall, and a Bedroll gives a long
+# rest without setting the spawn point.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/shared-blocks.txt
+# Check logs/latest.log:
+# - "Test passed" for every /execute if block line (6 joins, the poster falling off, the dropped bedroll head)
+# - /loot give lines name each block ("Gave 1 [Spruce Tavern Table]", ...)
+# - "[DevScript] actionbar: To the Barrow" (the named signpost) and "WANTED, dead or alive: Grimtusk ..." (sketch 1)
+# - after the bedroll sleep: "Long rest: health, mana and charges restored", the sleeper's y at 150.3125 while
+#   asleep, and "Found no elements matching SpawnX" (no spawn point)
+# Screenshots: shared-blocks-furniture, shared-blocks-signpost-a/-b (both faces of the dungeon one),
+# shared-blocks-signpost-named, shared-blocks-poster, shared-blocks-bedrolls.
+wait 40
+closescreen
+include _reset.txt
+respawn
+/dndclass set @s cleric
+/clear @s
+/gamemode creative
+/difficulty easy
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule playersSleepingPercentage 100
+/gamerule dndRests true
+/weather clear
+/time set 1000
+/kill @e[type=!minecraft:player,distance=..40]
+/fill -4 149 0 16 149 20 minecraft:stone_bricks
+/fill -4 150 0 16 156 20 minecraft:air
+# --- Tables (z 5) and benches (z 3), placed by hand along x: each joins the one before it
+/item replace entity @s hotbar.0 with dndclasses:oak_tavern_table
+/item replace entity @s hotbar.1 with dndclasses:spruce_tavern_table
+/item replace entity @s hotbar.2 with dndclasses:heartwood_tavern_table
+/item replace entity @s hotbar.3 with dndclasses:oak_tavern_bench
+/item replace entity @s hotbar.4 with dndclasses:dark_oak_tavern_table
+hotbar 0
+/tp @s 0.5 150 3.5 0 39
+wait 5
+use
+wait 3
+hotbar 1
+/tp @s 1.5 150 3.5 0 39
+wait 5
+use
+wait 3
+hotbar 2
+/tp @s 2.5 150 3.5 0 39
+wait 5
+use
+wait 3
+hotbar 4
+/tp @s 4.5 150 3.5 0 39
+wait 5
+use
+wait 3
+hotbar 3
+/tp @s 0.5 150 1.5 0 39
+wait 5
+use
+wait 3
+/tp @s 1.5 150 1.5 0 39
+wait 5
+use
+wait 3
+/tp @s 2.5 150 1.5 0 39
+wait 5
+use
+wait 5
+/execute if block 0 150 5 dndclasses:oak_tavern_table[east=true,west=false,north=false,south=false]
+/execute if block 1 150 5 dndclasses:spruce_tavern_table[east=true,west=true]
+/execute if block 2 150 5 dndclasses:heartwood_tavern_table[west=true,east=false]
+/execute if block 4 150 5 dndclasses:dark_oak_tavern_table[west=false,east=false,north=false,south=false]
+/execute if block 1 150 3 dndclasses:oak_tavern_bench[axis=x,east=true,west=true]
+/execute if block 2 150 3 dndclasses:oak_tavern_bench[axis=x,west=true,east=false]
+# A bench turned the other way stands alone beside the row
+/setblock 3 150 3 dndclasses:spruce_tavern_bench[axis=z]
+/setblock 2 150 3 minecraft:air
+/setblock 2 150 3 dndclasses:oak_tavern_bench[axis=x]
+/execute if block 2 150 3 dndclasses:oak_tavern_bench[axis=x,east=false]
+/loot give @s mine 1 150 5 minecraft:diamond_axe
+/loot give @s mine 1 150 3 minecraft:diamond_axe
+/setblock 0 151 5 minecraft:candle[lit=true,candles=3]
+/setblock 2 151 5 minecraft:cake
+/clear @s
+# --- The Adventurer's Signpost: a named one says its name; a dungeon one has two lines
+/give @s dndclasses:adventurers_signpost{display:{Name:'"To the Barrow"'}}
+hotbar 0
+/tp @s 8.5 150 3.5 90 39
+wait 5
+use
+wait 5
+/clear @s
+use
+wait 5
+actionbar
+/setblock 10 150 3 dndclasses:adventurers_signpost[facing=east]{Lines:['{"text":"The Barrow of Ashmoor"}','{"text":"Challenge II","color":"dark_red"}']}
+/loot give @s mine 10 150 3 minecraft:diamond_axe
+/clear @s
+# --- The Wanted Poster on a wall; read it, mine it, knock its wall out
+/fill 6 150 9 9 152 9 minecraft:spruce_planks
+/setblock 6 151 8 dndclasses:wanted_poster[facing=north,sketch=0]
+/setblock 7 151 8 dndclasses:wanted_poster[facing=north,sketch=1]
+/setblock 8 151 8 dndclasses:wanted_poster[facing=north,sketch=2]
+/setblock 9 151 8 dndclasses:wanted_poster[facing=north,sketch=3]
+/tp @s 7.5 150 6.5 0 0
+wait 5
+use
+wait 5
+actionbar
+/loot give @s mine 6 151 8 minecraft:diamond_axe
+/clear @s
+# Knock the wall out behind sketch 3: the poster drops off (put both back for the screenshot)
+/setblock 9 151 9 minecraft:air
+/execute if block 9 151 8 minecraft:air
+/setblock 9 151 9 minecraft:spruce_planks
+/setblock 9 151 8 dndclasses:wanted_poster[facing=north,sketch=3]
+/kill @e[type=minecraft:item,distance=..30]
+# --- Bedrolls: one of each colour, the red one laid out by hand
+/setblock 12 150 13 dndclasses:green_bedroll[facing=south,part=foot]
+/setblock 12 150 14 dndclasses:green_bedroll[facing=south,part=head]
+/setblock 13 150 13 dndclasses:blue_bedroll[facing=south,part=foot]
+/setblock 13 150 14 dndclasses:blue_bedroll[facing=south,part=head]
+/setblock 14 150 13 dndclasses:brown_bedroll[facing=south,part=foot]
+/setblock 14 150 14 dndclasses:brown_bedroll[facing=south,part=head]
+/item replace entity @s hotbar.0 with dndclasses:bedroll
+hotbar 0
+/tp @s 11.5 150 10.5 0 39
+wait 5
+use
+wait 5
+/execute if block 11 150 12 dndclasses:bedroll[facing=south,part=foot]
+/execute if block 11 150 13 dndclasses:bedroll[facing=south,part=head]
+/loot give @s mine 11 150 13 mainhand
+# Drops from the head only: the foot gives nothing
+/loot give @s mine 11 150 12 mainhand
+/clear @s
+hud off
+# Screenshots of the blocks in daylight
+/tp @s 2.5 151.5 -1.5 0 25
+wait 20
+screenshot shared-blocks-furniture
+/tp @s 10.5 150 4.9 180 33
+wait 10
+screenshot shared-blocks-signpost-a
+/tp @s 10.5 150 2.1 0 33
+wait 10
+screenshot shared-blocks-signpost-b
+/tp @s 6.5 150 4.9 180 33
+wait 10
+screenshot shared-blocks-signpost-named
+/tp @s 7.5 151.5 5.5 0 5
+wait 10
+screenshot shared-blocks-poster
+/tp @s 12.5 152.5 10.0 0 45
+wait 10
+screenshot shared-blocks-bedrolls
+hud on
+# --- Sleeping in the bedroll at night: a long rest, no spawn point
+/gamemode survival
+/dndclass rest @s long
+/dndclass rest @s allow
+/damage @s 6 minecraft:magic
+/data get entity @s SpawnX
+/time set 13000
+/tp @s 11.5 150 10.5 0 39
+wait 10
+clearchat
+use
+wait 60
+/data get entity @s Pos[1]
+/data get entity @s SleepingY
+wait 120
+/time query daytime
+/data get entity @s SpawnX
+/data get entity @s Health
+wait 20
+/gamemode creative
+quit

@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.fortress;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Blocks.dwarven.WaystoneBlock;
+import mattonfire.dnd.classes.Registry.AdventuringBlocks;
 import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import net.minecraft.block.Blocks;
@@ -130,6 +131,10 @@ public class GatePiece extends FortressPiece {
         for (int x : new int[]{2, WIDTH - 3}) {
             b.fill(x, 8, FACADE, x, 9, FACADE, Blocks.IRON_BARS);
         }
+
+        // Wanted Posters on the facade either side of the door, between the frame and the banner walls.
+        b.set(MID - 4, 3, FACADE - 1, AdventuringBlocks.WANTED_POSTER.poster(OUT, 1));
+        b.set(MID + 4, 2, FACADE - 1, AdventuringBlocks.WANTED_POSTER.poster(OUT, 3));
 
         b.dwarf(MID - 3, 1, 2);
         b.dwarf(MID + 3, 1, 2);

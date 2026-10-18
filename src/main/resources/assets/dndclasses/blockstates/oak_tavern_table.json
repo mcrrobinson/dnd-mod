@@ -1,0 +1,48 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "dndclasses:block/oak_tavern_table_top"
+      }
+    },
+    {
+      "apply": {
+        "model": "dndclasses:block/oak_tavern_table_leg"
+      },
+      "when": {
+        "north": "false",
+        "west": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "dndclasses:block/oak_tavern_table_leg",
+        "y": 90
+      },
+      "when": {
+        "north": "false",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "dndclasses:block/oak_tavern_table_leg",
+        "y": 180
+      },
+      "when": {
+        "south": "false",
+        "east": "false"
+      }
+    },
+    {
+      "apply": {
+        "model": "dndclasses:block/oak_tavern_table_leg",
+        "y": 270
+      },
+      "when": {
+        "south": "false",
+        "west": "false"
+      }
+    }
+  ]
+}

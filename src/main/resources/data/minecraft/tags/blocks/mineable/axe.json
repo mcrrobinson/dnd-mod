@@ -49,6 +49,16 @@
     "dndclasses:rope_and_bone_fence",
     "dndclasses:war_order_board",
     "dndclasses:dragon_nest",
-    "dndclasses:dragon_nest_slab"
+    "dndclasses:dragon_nest_slab",
+    "dndclasses:adventurers_signpost",
+    "dndclasses:wanted_poster",
+    "dndclasses:oak_tavern_table",
+    "dndclasses:oak_tavern_bench",
+    "dndclasses:spruce_tavern_table",
+    "dndclasses:spruce_tavern_bench",
+    "dndclasses:dark_oak_tavern_table",
+    "dndclasses:dark_oak_tavern_bench",
+    "dndclasses:heartwood_tavern_table",
+    "dndclasses:heartwood_tavern_bench"
   ]
 }

@@ -4,7 +4,7 @@ Fortresses carved into mountainsides, home to the [Mountain Dwarves](../mobs/mou
 ![The gate of a dwarven fortress on a snowy peak](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/dwarven-blocks/fortress2-gate.png)
 
 ## How it works
-You find a fortress by its **great gate**: a tall facade of Runic Deepslate Bricks at the foot of a mountainside, with the Clan Crest over a chiseled runic doorway and a raised portcullis between gold-veined pillars and banners bearing the gold [Clan Anvil](../items/banner-patterns.md). It opens onto a terrace with braziers, guards and a **Waystone**: right-click it and it names the hold ("Here stands Ironfist Hold") and tells you your standing with the Mountain Dwarves.
+You find a fortress by its **great gate**: a tall facade of Runic Deepslate Bricks at the foot of a mountainside, with the Clan Crest over a chiseled runic doorway and a raised portcullis between gold-veined pillars and banners bearing the gold [Clan Anvil](../items/banner-patterns.md). Two [Wanted Posters](../items/adventuring-blocks.md#wanted-poster) hang on the facade either side of the door. It opens onto a terrace with braziers, guards and a **Waystone**: right-click it and it names the hold ("Here stands Ironfist Hold") and tells you your standing with the Mountain Dwarves.
 
 Behind the gate everything runs straight back into the rock:
 
@@ -20,7 +20,7 @@ Each side doorway leads down a short corridor to a room. A fortress has four or 
 |-|-|-|
 | Forge | Forge Brick chimney breast and floor round the furnaces, anvils and hearth, lava channels, an anvil, smithing tables, a grindstone | `chests/dwarven_fortress_forge`: iron and diamond tools, netherite scrap, Steampunk armor |
 | Barracks | bunks and armor stands | `chests/dwarven_fortress_barracks`: weapons, shields, crossbows, Knight and Warrior armor |
-| Mead hall | long tables of food, a forge-brick hearth between walls of ale kegs | `chests/dwarven_fortress_brewhall`: cooked food, golden apples and carrots |
+| Mead hall | a long dark oak [Tavern Table](../items/adventuring-blocks.md#tavern-tables-and-benches) (three wide) of food between dark oak Tavern Benches, a forge-brick hearth between walls of ale kegs | `chests/dwarven_fortress_brewhall`: cooked food, golden apples and carrots |
 | Mine | ore, amethyst and an ore cart | `chests/dwarven_fortress_mine`: raw ores, diamonds, lapis, rails, TNT |
 
 The treasury chests use `chests/dwarven_fortress_treasury`: gold blocks, diamonds, enchanted books, enchanted golden apples, Golden Horns and Knight armor, and a Pigstep disc.

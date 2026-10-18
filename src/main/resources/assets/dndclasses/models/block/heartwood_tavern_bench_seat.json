@@ -1,0 +1,6 @@
+{
+  "parent": "dndclasses:block/template_tavern_bench_seat",
+  "textures": {
+    "planks": "dndclasses:block/heartwood_planks"
+  }
+}

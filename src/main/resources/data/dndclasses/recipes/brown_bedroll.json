@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "group": "bedroll",
+  "category": "misc",
+  "ingredients": [
+    {
+      "tag": "dndclasses:bedrolls"
+    },
+    {
+      "item": "minecraft:brown_dye"
+    }
+  ],
+  "result": {
+    "item": "dndclasses:brown_bedroll"
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "dndclasses:heartwood_slab"
+    },
+    "|": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "| |"
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:heartwood_tavern_bench"
+  },
+  "show_notification": true
+}

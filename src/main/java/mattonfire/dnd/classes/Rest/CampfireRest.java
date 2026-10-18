@@ -50,7 +50,7 @@ public final class CampfireRest {
             }
             ServerPlayerEntity server = (ServerPlayerEntity) player;
             if (PartyCamp.inCamp(server) && isLitCampfire(world.getBlockState(pos)) && player.isSneaking()
-                    && (player.getMainHandStack().isEmpty() || player.getMainHandStack().isOf(PartyCamp.BEDROLL))) {
+                    && (player.getMainHandStack().isEmpty() || player.getMainHandStack().getItem() instanceof BedrollItem)) {
                 // Campers sit back down after an ambush, or get up and leave the camp.
                 PartyCamp.use(server, pos);
                 return ActionResult.SUCCESS;

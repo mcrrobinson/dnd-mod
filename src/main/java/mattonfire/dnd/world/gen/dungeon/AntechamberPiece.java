@@ -9,8 +9,8 @@ import net.minecraft.util.math.BlockBox;
 
 /**
  * The safe room at the foot of the stair: a cold campfire to rest by, before the first fight. In
- * the Crypt, sarcophagi line its walls; in the Goblin Warren, hide lean-tos; in the Dwarven Ruin,
- * cracked anvils, barrels and rubble.
+ * the Crypt, sarcophagi line its walls; in the Goblin Warren, hide lean-tos and the War Order Board;
+ * in the Dwarven Ruin, cracked anvils, barrels and rubble.
  */
 public class AntechamberPiece extends DungeonPiece {
     public AntechamberPiece(Info info, BlockBox box, long seed, int roomId, RoomRole role, int height, List<Door> doors) {
@@ -41,6 +41,7 @@ public class AntechamberPiece extends DungeonPiece {
         } else if (WarrenDressing.applies(this)) {
             // The goblins' sleeping den: hide lean-tos along the walls
             WarrenDressing.wallProps(b, w, d, 3, 0.6F, false);
+            WarrenDressing.warOrders(b, w);
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.4F);
         } else if (RuinDressing.applies(this)) {
             // The gate guards' hall: cracked anvils, barrels and fallen stone along the walls

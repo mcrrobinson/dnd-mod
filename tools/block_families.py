@@ -186,6 +186,11 @@ FAMILIES = [
     Family('ossuary_bricks', 'Ossuary Bricks', ['stairs', 'slab', 'wall'],
            craft={'pattern': ['###', '#B#', '###'], 'key': {'#': 'minecraft:stone_bricks', 'B': 'minecraft:bone'},
                   'count': 8}),
+    # --- Goblin Camps & Warrens ---
+    Family('scrap_lashed_planks', 'Scrap-lashed Planks', ['stairs', 'slab'], material='wood', stem='scrap_lashed',
+           stem_title='Scrap-lashed', craft={'pattern': ['SO', 'OT'], 'key': {'S': 'minecraft:spruce_planks',
+                                                                            'O': 'minecraft:oak_planks',
+                                                                            'T': 'minecraft:string'}, 'count': 3}),
 ]
 
 

@@ -133,6 +133,10 @@ public final class ModBlockFamilies {
     /** The Crypt's wall stone: grey stone bricks with skulls and long bones set into the mortar. */
     public static final BlockFamily OSSUARY_BRICKS = BlockFamily
             .builder("ossuary_bricks", Blocks.STONE_BRICKS).stoneShapes().build();
+    // --- Goblin Camps & Warrens ---
+    /** Mismatched boards nailed together at angles with rusty nails and rope: the goblins' idea of carpentry. */
+    public static final BlockFamily SCRAP_LASHED_PLANKS = BlockFamily
+            .builder("scrap_lashed_planks", Blocks.SPRUCE_PLANKS).stem("scrap_lashed").stairs().slab().build();
 
     private ModBlockFamilies() {
     }

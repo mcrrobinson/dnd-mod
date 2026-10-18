@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "D": {
+      "item": "minecraft:iron_nugget"
+    },
+    "#": {
+      "item": "minecraft:spruce_planks"
+    }
+  },
+  "pattern": [
+    "PDP",
+    "###"
+  ],
+  "result": {
+    "item": "dndclasses:war_order_board"
+  },
+  "show_notification": true
+}

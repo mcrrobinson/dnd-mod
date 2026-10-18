@@ -33,6 +33,8 @@ public class ModItemGroup {
             OrcBuildingBlocks.all().forEach(entries::add);
             // --- Crypt dungeons ---
             CryptBlocks.all().forEach(entries::add);
+            // --- Goblin Camps & Warrens ---
+            GoblinBlocks.all().forEach(entries::add);
         });
         // --- Dragon Temples ---
         ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP)

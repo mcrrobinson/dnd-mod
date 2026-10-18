@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "minecraft:block/spruce_log_top",
+    "side": "dndclasses:block/glyph_daubed_spruce_log_warlord"
+  }
+}

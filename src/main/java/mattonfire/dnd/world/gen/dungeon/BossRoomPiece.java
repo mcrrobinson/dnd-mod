@@ -89,11 +89,12 @@ public class BossRoomPiece extends DungeonPiece {
     }
 
     /**
-     * The Goblin Warlord's war hall: cages and hide lean-tos along the middle of each wall (between
-     * the doorways), skull totems at the dais corners, four fire pits under the hanging lanterns,
-     * bones and refuse pits.
+     * The Goblin Warlord's war hall: a dais of Scrap-lashed Planks, cages and hide lean-tos along the
+     * middle of each wall (between the doorways), skull totems at the dais corners, four fire pits under
+     * the hanging lanterns, junk piles in the corners and refuse pits.
      */
     private void warHall(Builder b, int w, int d, int mx, int mz) {
+        WarrenDressing.platform(b, mx - 3, mz - 3, mx + 3, mz + 3, 1);
         WarrenDressing.wallProps(b, w, d, 11, 0.8F, true);
         for (int[] o : new int[][]{{-4, -4}, {4, -4}, {-4, 4}, {4, 4}}) {
             WarrenDressing.totem(b, mx + o[0], mz + o[1]);
@@ -102,7 +103,7 @@ public class BossRoomPiece extends DungeonPiece {
             WarrenDressing.firePit(b, mx + o[0], mz + o[1]);
         }
         for (int[] c : CryptDressing.corners(w, d)) {
-            CryptDressing.bonePile(b, c[0], c[1]);
+            WarrenDressing.junkPile(b, c[0], c[1], c[0] < mx ? Direction.EAST : Direction.WEST);
         }
         for (int[] o : new int[][]{{-12, -4}, {12, 3}, {-3, 12}, {4, -12}}) {
             if (b.dressing.nextFloat() < 0.6F) {

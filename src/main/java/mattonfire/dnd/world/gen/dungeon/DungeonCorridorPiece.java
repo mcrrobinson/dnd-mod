@@ -66,7 +66,7 @@ public class DungeonCorridorPiece extends DungeonPiece {
                     } else if (y == 0) {
                         state = lateral == 2 ? b.palette.trim() : b.palette.floor(b.random);
                     } else if (lateral == 2 || y == HEIGHT + 1) {
-                        state = b.palette.wall(b.random);
+                        state = lateral == 2 ? b.palette.wall(b.random) : b.palette.ceiling(b.random);
                     } else {
                         state = Blocks.AIR.getDefaultState();
                     }

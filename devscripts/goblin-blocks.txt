@@ -1,0 +1,105 @@
+# Checks the Goblin Camps & Warrens building blocks (docs/structures/goblin-camps.md "Building blocks").
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/goblin-blocks.txt
+# Expect in latest.log:
+# - each "/loot give @s mine" line gives the block itself, except the junk pile mined with a plain shovel,
+#   which gives a junk roll (iron nuggets, bones, string, rotten flesh, rarely an emerald), and with a silk
+#   touch shovel gives the pile
+# - the double Scrap-lashed Slab gives 2 slabs
+# - each /recipe line unlocks 1 recipe ("No new recipes were learned" once an earlier run has unlocked them)
+# - "use" on the War Order Board prints "Scrawled on the board in Goblin..." and one order in [CHAT]
+# - /execute if block lines for the fence connecting to its neighbours pass
+# Screenshots: goblin-blocks-display (everything on a platform), goblin-blocks-close (a close-up),
+# goblin-blocks-board (the board and the fence).
+wait 40
+closescreen
+include _reset.txt
+# With no class the picker reopens after the reset
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/fill -2 149 -2 12 149 10 minecraft:grass_block
+/fill -2 150 -2 12 157 10 minecraft:air
+# Back row: a patchwork hide tent wall, scrap planks, glyph daubs, daubed logs
+/fill 0 150 8 1 152 8 dndclasses:patchwork_hide
+/fill 2 150 8 3 152 8 dndclasses:scrap_lashed_planks
+/fill 4 150 8 5 152 8 dndclasses:crude_glyph_daub
+/fill 6 150 8 7 152 8 dndclasses:glyph_daubed_spruce_log
+/setblock 8 150 8 dndclasses:glyph_daubed_spruce_log[axis=x]
+/setblock 8 151 8 dndclasses:glyph_daubed_spruce_log[axis=z]
+/fill 9 150 8 10 152 8 minecraft:cobblestone
+# Front: carpets, stairs and slabs, junk piles
+/fill 0 150 6 1 150 7 dndclasses:patchwork_hide_carpet
+/setblock 2 150 7 dndclasses:scrap_lashed_stairs[facing=north]
+/setblock 3 150 7 dndclasses:scrap_lashed_stairs[facing=east,shape=outer_left]
+/setblock 2 151 8 dndclasses:scrap_lashed_stairs[facing=south,half=top]
+/setblock 4 150 7 dndclasses:scrap_lashed_slab[type=bottom]
+/setblock 5 150 7 dndclasses:scrap_lashed_slab[type=top]
+/setblock 6 150 7 dndclasses:scrap_lashed_slab[type=double]
+/setblock 7 150 6 dndclasses:goblin_junk_pile
+/setblock 8 150 6 dndclasses:goblin_junk_pile
+/setblock 8 150 5 dndclasses:goblin_junk_pile
+# The War Order Board on the cobblestone, facing north (towards the camera)
+/setblock 9 151 7 dndclasses:war_order_board[facing=north]
+# A rope-and-bone fence line with a corner, joined to a spruce fence and the cobblestone wall
+/setblock 1 150 3 dndclasses:rope_and_bone_fence
+/setblock 2 150 3 dndclasses:rope_and_bone_fence
+/setblock 3 150 3 dndclasses:rope_and_bone_fence
+/setblock 3 150 2 dndclasses:rope_and_bone_fence
+/setblock 4 150 3 minecraft:spruce_fence
+/setblock 10 150 7 dndclasses:rope_and_bone_fence
+# Neighbour updates join the fences up (setblock skips them for the block itself)
+/setblock 2 151 3 minecraft:stone
+/setblock 2 151 3 minecraft:air
+/setblock 3 151 3 minecraft:stone
+/setblock 3 151 3 minecraft:air
+/setblock 1 151 3 minecraft:stone
+/setblock 1 151 3 minecraft:air
+/setblock 10 151 7 minecraft:stone
+/setblock 10 151 7 minecraft:air
+/execute if block 2 150 3 dndclasses:rope_and_bone_fence[east=true,west=true]
+/execute if block 3 150 3 dndclasses:rope_and_bone_fence[west=true,north=true,east=true]
+/execute if block 10 150 7 dndclasses:rope_and_bone_fence[south=true]
+/tp @s 5.5 152 -1.5 0 22
+wait 80
+closescreen
+hud off
+screenshot goblin-blocks-display
+/tp @s 5.0 151.5 4.0 0 25
+wait 10
+screenshot goblin-blocks-close
+/tp @s 7.5 151.2 4.5 -30 15
+wait 10
+screenshot goblin-blocks-board
+hud on
+# Drops: /loot simulates mining each block with the right tool
+/loot give @s mine 0 150 8 minecraft:shears
+/loot give @s mine 0 150 6 minecraft:diamond_axe
+/loot give @s mine 2 150 8 minecraft:diamond_axe
+/loot give @s mine 2 150 7 minecraft:diamond_axe
+/loot give @s mine 6 150 7 minecraft:diamond_axe
+/loot give @s mine 4 150 8 minecraft:diamond_pickaxe
+/loot give @s mine 6 150 8 minecraft:diamond_axe
+/loot give @s mine 1 150 3 minecraft:diamond_axe
+/loot give @s mine 9 151 7 minecraft:diamond_axe
+/loot give @s mine 7 150 6 minecraft:diamond_shovel
+/loot give @s mine 8 150 6 minecraft:diamond_shovel
+/loot give @s mine 8 150 5 minecraft:diamond_shovel{Enchantments:[{id:"minecraft:silk_touch",lvl:1}]}
+# Recipes parse and exist
+/recipe give @s dndclasses:patchwork_hide
+/recipe give @s dndclasses:patchwork_hide_carpet
+/recipe give @s dndclasses:scrap_lashed_planks
+/recipe give @s dndclasses:scrap_lashed_stairs
+/recipe give @s dndclasses:scrap_lashed_slab
+/recipe give @s dndclasses:crude_glyph_daub
+/recipe give @s dndclasses:glyph_daubed_spruce_log
+/recipe give @s dndclasses:rope_and_bone_fence
+/recipe give @s dndclasses:war_order_board
+# Read the War Order Board
+/clear @s
+/tp @s 9.5 150 5.5 0 0
+wait 10
+use
+wait 10
+quit

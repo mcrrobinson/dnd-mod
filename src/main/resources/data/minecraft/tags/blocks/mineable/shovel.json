@@ -2,6 +2,7 @@
   "replace": false,
   "values": [
     "dndclasses:treasury_coin_pile",
-    "dndclasses:smial_turf_wall"
+    "dndclasses:smial_turf_wall",
+    "dndclasses:goblin_junk_pile"
   ]
 }

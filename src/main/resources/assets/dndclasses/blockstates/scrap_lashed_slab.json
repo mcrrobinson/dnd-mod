@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/scrap_lashed_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/scrap_lashed_planks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/scrap_lashed_slab_top"
+    }
+  }
+}

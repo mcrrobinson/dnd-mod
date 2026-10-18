@@ -1,0 +1,58 @@
+{
+  "variants": {
+    "axis=x": [
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_skull_horizontal",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_fist_horizontal",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_arrow_horizontal",
+        "x": 90,
+        "y": 90
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_warlord_horizontal",
+        "x": 90,
+        "y": 90
+      }
+    ],
+    "axis=y": [
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_skull"
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_fist"
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_arrow"
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_warlord"
+      }
+    ],
+    "axis=z": [
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_skull_horizontal",
+        "x": 90
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_fist_horizontal",
+        "x": 90
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_arrow_horizontal",
+        "x": 90
+      },
+      {
+        "model": "dndclasses:block/glyph_daubed_spruce_log_warlord_horizontal",
+        "x": 90
+      }
+    ]
+  }
+}

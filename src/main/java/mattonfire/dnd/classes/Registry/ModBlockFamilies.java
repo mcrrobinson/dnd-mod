@@ -129,6 +129,10 @@ public final class ModBlockFamilies {
             .builder("frost_scorched_stone", Blocks.SMOOTH_BASALT).build();
     public static final BlockFamily STORM_SCORCHED_STONE = BlockFamily
             .builder("storm_scorched_stone", Blocks.SMOOTH_BASALT).build();
+    // --- Crypt dungeons ---
+    /** The Crypt's wall stone: grey stone bricks with skulls and long bones set into the mortar. */
+    public static final BlockFamily OSSUARY_BRICKS = BlockFamily
+            .builder("ossuary_bricks", Blocks.STONE_BRICKS).stoneShapes().build();
 
     private ModBlockFamilies() {
     }

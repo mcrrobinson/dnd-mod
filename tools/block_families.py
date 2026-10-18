@@ -182,6 +182,10 @@ FAMILIES = [
     Family('storm_scorched_stone', 'Storm-Scorched Stone', [],
            craft={'pattern': ['###', '#X#', '###'], 'key': {'#': 'minecraft:smooth_basalt',
                                                            'X': 'minecraft:copper_ingot'}, 'count': 8}),
+    # --- Crypt dungeons ---
+    Family('ossuary_bricks', 'Ossuary Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['###', '#B#', '###'], 'key': {'#': 'minecraft:stone_bricks', 'B': 'minecraft:bone'},
+                  'count': 8}),
 ]
 
 

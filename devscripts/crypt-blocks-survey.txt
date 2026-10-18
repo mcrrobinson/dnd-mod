@@ -1,0 +1,83 @@
+# Crypt building blocks survey (docs/items/crypt-blocks.md): the same shots as crypt-docs-rooms.txt (the docs'
+# "before" pictures), with the Crypt's blocks in place. Places "The Crypt of the Ashen Queen" at 2448 64 -2400
+# (floor y=41; /place gives the same layout there each time). Destructive: use a scratch run dir.
+# Room centres (/dungeon info): antechamber 2471 -2393, mid-boss 2455 -2441, boss 2431 -2433, reliquary 2407 -2441.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-crypt -PdevWidth=1920 -PdevHeight=1080 -PdevScript=devscripts/crypt-blocks-survey.txt
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/time set noon
+/weather clear
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamemode creative
+/effect give @s minecraft:night_vision 99999 0 true
+/tp @s 2455 200 -2393
+# /place needs the chunks loaded; in a world that hasn't generated them yet that takes a while
+/forceload add 2392 -2464 2512 -2336
+wait 600
+waitserver 2
+/place structure dndclasses:crypt 2448 64 -2400
+wait 100
+/dungeon info
+# Antechamber (13x13), from above the west doorway looking east (spectator, in the air so the camera clips nothing)
+/gamemode spectator
+/tp @s 2466.5 44 -2392.5 -90 22
+wait 80
+hud off
+screenshot crypt-blocks-survey-antechamber
+hud on
+# The corridor from the antechamber to the first encounter room (x 2478-2480): burial niches in its walls
+/tp @s 2479.5 42 -2392.5 180 8
+wait 30
+hud off
+screenshot crypt-blocks-survey-corridor
+/tp @s 2479.5 42 -2393.5 0 8
+wait 20
+screenshot crypt-blocks-survey-corridor-2
+hud on
+# Ossuary (mid-boss room, 15x15), from above the south door line looking north
+/tp @s 2455.5 45 -2436.5 180 30
+wait 60
+hud off
+screenshot crypt-blocks-survey-ossuary
+hud on
+# Boss room: a survival player 5+ blocks past the wall calls up the Lich and the phylactery
+/tp @s 2437.5 41 -2432.5 90 5
+/gamemode survival
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:regeneration 99999 4 true
+/tp @s 2437.5 41 -2432.5 90 5
+wait 60
+/tp @s 2437.5 41 -2432.5 90 5
+wait 60
+# Freeze the Lich on the dais facing the camera, then shoot from higher up and further back
+/data merge entity @e[type=dndclasses:lich,limit=1] {NoAI:1b,Rotation:[-90f,0f]}
+/gamemode spectator
+/tp @s 2444.5 46 -2432.5 90 18
+wait 30
+hud off
+screenshot crypt-blocks-survey-boss-a
+hud on
+/data get entity @e[type=dndclasses:lich,limit=1] Pos
+# Reliquary (13x13): the phylactery on the altar
+/tp @s 2407.5 44 -2437.5 180 30
+wait 30
+hud off
+screenshot crypt-blocks-survey-reliquary
+hud on
+# Cut-away plan from overhead
+/gamemode creative
+/kill @e[type=!player,x=2401,y=30,z=-2448,dx=108,dy=90,dz=68]
+/dungeon cutaway
+/gamemode spectator
+/tp @s 2454.5 150 -2413.5 180 90
+wait 200
+hud off
+screenshot crypt-blocks-survey-plan
+hud on
+/forceload remove all
+quit

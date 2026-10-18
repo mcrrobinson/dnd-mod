@@ -54,6 +54,8 @@ public class EncounterRoomPiece extends DungeonPiece {
                     CryptDressing.candles(b, c[0], 1, c[1]);
                 }
             }
+            CryptDressing.wallReliefs(b, w, d, 3, new int[]{-4, 4}, 0.4F);
+            CryptDressing.mossPatches(b, w, d, 2);
             CryptDressing.cornerCobwebs(b, w, d, top, 0.6F);
         } else if (WarrenDressing.applies(this)) {
             int[][] corners = CryptDressing.corners(w, d);

@@ -1,0 +1,97 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "dndclasses:block/sarcophagus_side",
+    "side": "dndclasses:block/sarcophagus_side",
+    "end": "dndclasses:block/sarcophagus_end",
+    "top": "dndclasses:block/sarcophagus_head_top",
+    "bottom": "minecraft:block/polished_deepslate"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        2,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#end",
+          "cullface": "north"
+        },
+        "east": {
+          "texture": "#side",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#side",
+          "cullface": "west"
+        },
+        "down": {
+          "texture": "#bottom",
+          "cullface": "down"
+        },
+        "up": {
+          "texture": "#bottom"
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        2,
+        1
+      ],
+      "to": [
+        15,
+        11,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#end"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#end"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "down": {
+          "texture": "#bottom"
+        },
+        "up": {
+          "texture": "#top"
+        }
+      }
+    }
+  ]
+}

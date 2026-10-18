@@ -99,6 +99,15 @@
     "dndclasses:prayer_wheel",
     "dndclasses:ember_incense_brazier",
     "dndclasses:frost_incense_brazier",
-    "dndclasses:storm_incense_brazier"
+    "dndclasses:storm_incense_brazier",
+    "dndclasses:ossuary_bricks",
+    "dndclasses:ossuary_brick_stairs",
+    "dndclasses:ossuary_brick_slab",
+    "dndclasses:ossuary_brick_wall",
+    "dndclasses:funerary_relief",
+    "dndclasses:burial_niche_wall",
+    "dndclasses:sarcophagus",
+    "dndclasses:lich_sigil_floor",
+    "dndclasses:phylactery_pedestal"
   ]
 }

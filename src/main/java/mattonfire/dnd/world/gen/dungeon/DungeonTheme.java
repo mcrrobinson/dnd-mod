@@ -1,6 +1,8 @@
 package mattonfire.dnd.world.gen.dungeon;
 
 import com.mojang.serialization.Codec;
+import mattonfire.dnd.classes.Registry.CryptBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -108,15 +110,28 @@ public enum DungeonTheme implements StringIdentifiable {
             return Blocks.DEEPSLATE_TILES.getDefaultState();
         }
 
-        /** The inner wall and ceiling. */
+        /**
+         * The inner wall and ceiling. The Crypt's: stone bricks with Ossuary Bricks (30%) set among them,
+         * some mossy, cracked or overgrown with Grave Moss.
+         */
         public BlockState wall(Random random) {
             float r = random.nextFloat();
-            return (r < 0.12F ? Blocks.MOSSY_STONE_BRICKS : r < 0.24F ? Blocks.CRACKED_STONE_BRICKS : Blocks.STONE_BRICKS).getDefaultState();
+            if (r < 0.3F) {
+                return ModBlockFamilies.OSSUARY_BRICKS.base().getDefaultState();
+            }
+            if (r < 0.35F) {
+                return CryptBlocks.GRAVE_MOSS.getDefaultState();
+            }
+            return (r < 0.43F ? Blocks.MOSSY_STONE_BRICKS : r < 0.55F ? Blocks.CRACKED_STONE_BRICKS : Blocks.STONE_BRICKS).getDefaultState();
         }
 
+        /** The Crypt's: polished andesite, with andesite, cracked stone bricks and patches of Grave Moss. */
         public BlockState floor(Random random) {
             float r = random.nextFloat();
-            return (r < 0.1F ? Blocks.ANDESITE : r < 0.2F ? Blocks.CRACKED_STONE_BRICKS : Blocks.POLISHED_ANDESITE).getDefaultState();
+            if (r < 0.06F) {
+                return CryptBlocks.GRAVE_MOSS.getDefaultState();
+            }
+            return (r < 0.15F ? Blocks.ANDESITE : r < 0.25F ? Blocks.CRACKED_STONE_BRICKS : Blocks.POLISHED_ANDESITE).getDefaultState();
         }
 
         /** The band along the foot of the walls and round doorways. */

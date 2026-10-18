@@ -20,6 +20,7 @@
     "dndclasses:gnomish_brick_stairs",
     "dndclasses:ember_dragonscale_tile_stairs",
     "dndclasses:frost_dragonscale_tile_stairs",
-    "dndclasses:storm_dragonscale_tile_stairs"
+    "dndclasses:storm_dragonscale_tile_stairs",
+    "dndclasses:ossuary_brick_stairs"
   ]
 }

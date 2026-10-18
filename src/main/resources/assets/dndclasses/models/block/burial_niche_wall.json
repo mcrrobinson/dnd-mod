@@ -1,0 +1,265 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "dndclasses:block/ossuary_bricks",
+    "outside": "dndclasses:block/ossuary_bricks",
+    "front": "dndclasses:block/burial_niche_wall",
+    "inside": "dndclasses:block/burial_niche_wall_inside",
+    "shroud": "dndclasses:block/burial_niche_wall_shroud"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        6
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#inside"
+        },
+        "south": {
+          "texture": "#outside",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#outside",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#outside",
+          "cullface": "west"
+        },
+        "up": {
+          "texture": "#outside",
+          "cullface": "up"
+        },
+        "down": {
+          "texture": "#outside",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        3,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "up": {
+          "texture": "#inside"
+        },
+        "east": {
+          "texture": "#outside",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#outside",
+          "cullface": "west"
+        },
+        "down": {
+          "texture": "#outside",
+          "cullface": "down"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        12,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "down": {
+          "texture": "#inside"
+        },
+        "east": {
+          "texture": "#outside",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#outside",
+          "cullface": "west"
+        },
+        "up": {
+          "texture": "#outside",
+          "cullface": "up"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        3,
+        0
+      ],
+      "to": [
+        2,
+        12,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "east": {
+          "texture": "#inside"
+        },
+        "west": {
+          "texture": "#outside",
+          "cullface": "west"
+        }
+      }
+    },
+    {
+      "from": [
+        14,
+        3,
+        0
+      ],
+      "to": [
+        16,
+        12,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "cullface": "north"
+        },
+        "west": {
+          "texture": "#inside"
+        },
+        "east": {
+          "texture": "#outside",
+          "cullface": "east"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        3,
+        1
+      ],
+      "to": [
+        14,
+        6,
+        5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shroud",
+          "uv": [
+            5,
+            10,
+            14,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#shroud",
+          "uv": [
+            5,
+            1,
+            14,
+            5
+          ]
+        },
+        "east": {
+          "texture": "#shroud",
+          "uv": [
+            11,
+            10,
+            15,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#shroud",
+          "uv": [
+            11,
+            10,
+            15,
+            13
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        3,
+        1.5
+      ],
+      "to": [
+        5,
+        7,
+        4.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shroud",
+          "uv": [
+            1,
+            9,
+            4,
+            13
+          ]
+        },
+        "up": {
+          "texture": "#shroud",
+          "uv": [
+            1,
+            1,
+            4,
+            4
+          ]
+        },
+        "east": {
+          "texture": "#shroud",
+          "uv": [
+            11,
+            9,
+            14,
+            13
+          ]
+        },
+        "west": {
+          "texture": "#shroud",
+          "uv": [
+            11,
+            9,
+            14,
+            13
+          ]
+        }
+      }
+    }
+  ]
+}

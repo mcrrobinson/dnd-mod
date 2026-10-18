@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "#": {
+      "item": "dndclasses:grave_moss"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "count": 3,
+    "item": "dndclasses:grave_moss_carpet"
+  },
+  "show_notification": true
+}

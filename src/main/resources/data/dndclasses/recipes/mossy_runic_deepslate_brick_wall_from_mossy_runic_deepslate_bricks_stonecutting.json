@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:mossy_runic_deepslate_bricks"
+  },
+  "result": "dndclasses:mossy_runic_deepslate_brick_wall"
+}

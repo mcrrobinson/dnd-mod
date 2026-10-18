@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "dndclasses:block/tarnished_gilding_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "dndclasses:block/tarnished_gilding"
+    },
+    "axis=z": {
+      "model": "dndclasses:block/tarnished_gilding_horizontal",
+      "x": 90
+    }
+  }
+}

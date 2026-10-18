@@ -1,0 +1,107 @@
+# Checks the Dwarven Ruin & Beholder lair building blocks (docs/structures/dungeons.md, docs/bosses/beholder.md).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ruin-blocks.txt
+# Expect in latest.log: "Test passed" for every /execute if block line (rubble stacks to 2 layers with a `use`,
+# the eye-stalk sticks out of the wall's face), each /loot line drops its block (5 rubble from 5 layers), and each
+# /recipe line unlocks 1 recipe ("No new recipes were learned" once an earlier run has unlocked them).
+# Screenshots: ruin-blocks-display, ruin-blocks-close, ruin-blocks-lair.
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/fill -4 149 -4 12 149 12 minecraft:polished_deepslate
+/fill -4 150 -4 12 157 12 minecraft:air
+# Back row: a wall of each stone, the Fallen Runic Bricks beside the living ones
+/fill 0 150 8 1 152 8 dndclasses:runic_deepslate_bricks
+/fill 2 150 8 3 152 8 dndclasses:cracked_runic_deepslate_bricks
+/fill 4 150 8 5 152 8 dndclasses:mossy_runic_deepslate_bricks
+/fill 6 150 8 6 152 8 dndclasses:tarnished_gilding
+/fill 7 150 8 8 152 8 dndclasses:ray_glazed_stone
+# Their shapes in front
+/setblock 2 150 7 dndclasses:cracked_runic_deepslate_brick_stairs[facing=north]
+/setblock 3 150 7 dndclasses:cracked_runic_deepslate_brick_slab[type=bottom]
+/setblock 4 150 7 dndclasses:mossy_runic_deepslate_brick_stairs[facing=north]
+/setblock 5 150 7 dndclasses:mossy_runic_deepslate_brick_wall
+/setblock 6 150 7 dndclasses:tarnished_gilding[axis=x]
+/setblock 7 150 7 dndclasses:ray_glazed_stone_stairs[facing=north]
+/setblock 8 150 7 dndclasses:ray_glazed_stone_slab[type=bottom]
+# Rubble from 1 to 8 layers
+/setblock 0 150 5 dndclasses:collapsed_rubble[layers=1]
+/setblock 1 150 5 dndclasses:collapsed_rubble[layers=2]
+/setblock 2 150 5 dndclasses:collapsed_rubble[layers=3]
+/setblock 3 150 5 dndclasses:collapsed_rubble[layers=4]
+/setblock 4 150 5 dndclasses:collapsed_rubble[layers=5]
+/setblock 5 150 5 dndclasses:collapsed_rubble[layers=6]
+/setblock 6 150 5 dndclasses:collapsed_rubble[layers=7]
+/setblock 7 150 5 dndclasses:collapsed_rubble[layers=8]
+# Petrified remains facing the camera (north), and eye-stalks on the floor and out of the wall
+/setblock 2 150 3 dndclasses:petrified_remains[facing=north]
+/setblock 5 150 3 dndclasses:petrified_remains[facing=east]
+/setblock 8 150 3 dndclasses:eye_stalk_growth[facing=up]
+/setblock 8 151 7 dndclasses:eye_stalk_growth[facing=north]
+/setblock 7 151 7 dndclasses:eye_stalk_growth[facing=north]
+/tp @s 4.5 152.5 -0.5 0 25
+wait 20
+closescreen
+hud off
+screenshot ruin-blocks-display
+/tp @s 3.5 151.2 1.0 0 30
+wait 10
+screenshot ruin-blocks-close
+hud on
+/execute if block 8 151 7 dndclasses:eye_stalk_growth[facing=north]
+# Stacking: place one layer of rubble with `use`, then use again on its top to add a second
+/clear @s
+/item replace entity @s weapon.mainhand with dndclasses:collapsed_rubble 16
+/setblock 10 150 2 minecraft:air
+/tp @s 10.5 150 0.5 0 50
+wait 10
+use
+wait 5
+/execute if block 10 150 2 dndclasses:collapsed_rubble[layers=1]
+/execute if block 10 150 1 dndclasses:collapsed_rubble[layers=1]
+use
+wait 5
+/execute if block 10 150 2 dndclasses:collapsed_rubble[layers=2]
+/execute if block 10 150 1 dndclasses:collapsed_rubble[layers=2]
+/clear @s
+# Drops: /loot simulates mining each block
+/loot spawn 4 153 2 mine 4 150 5 minecraft:diamond_shovel
+/loot spawn 4 153 2 mine 2 150 3 minecraft:diamond_pickaxe
+/loot spawn 4 153 2 mine 8 150 3 minecraft:diamond_hoe
+/loot spawn 4 153 2 mine 3 150 7 minecraft:diamond_pickaxe
+/loot spawn 4 153 2 mine 6 150 8 minecraft:diamond_pickaxe
+/loot spawn 4 153 2 mine 7 150 8 minecraft:diamond_pickaxe
+/kill @e[type=minecraft:item,distance=..30]
+# Eye-stalks pop off when their wall goes
+/setblock 8 151 8 minecraft:air
+wait 2
+/execute if block 8 151 7 minecraft:air
+# Recipes parse and exist
+/recipe give @s dndclasses:mossy_runic_deepslate_bricks
+/recipe give @s dndclasses:cracked_runic_deepslate_bricks_from_smelting
+/recipe give @s dndclasses:ray_glazed_stone_from_smelting
+/recipe give @s dndclasses:tarnished_gilding
+/recipe give @s dndclasses:collapsed_rubble
+/recipe give @s dndclasses:ray_glazed_stone_wall_from_ray_glazed_stone_stonecutting
+# Stonecunning outlines the cracked runic bricks of a secret door
+/execute if block 2 150 8 #dndclasses:secret_door
+# A little lair corner: ray-glazed walls, growths, remains on rubble
+/fill -4 150 -4 -1 154 -4 dndclasses:ray_glazed_stone
+/fill -4 150 -3 -4 154 0 dndclasses:ray_glazed_stone
+/setblock -3 152 -3 dndclasses:eye_stalk_growth[facing=south]
+/setblock -2 153 -3 dndclasses:eye_stalk_growth[facing=south]
+/setblock -3 151 -2 dndclasses:eye_stalk_growth[facing=east]
+/setblock -3 154 -2 dndclasses:eye_stalk_growth[facing=east]
+/setblock -2 150 -2 dndclasses:petrified_remains[facing=south]
+/setblock -1 150 -3 dndclasses:collapsed_rubble[layers=2]
+/setblock -3 150 -1 dndclasses:collapsed_rubble[layers=3]
+/tp @s -0.5 151.5 1.5 135 20
+wait 20
+hud off
+screenshot ruin-blocks-lair
+hud on
+quit

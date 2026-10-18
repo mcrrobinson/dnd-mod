@@ -11,6 +11,9 @@
     "dndclasses:sharpened_stake_wall",
     "dndclasses:gnomish_brick_wall",
     "dndclasses:ossuary_brick_wall",
-    "dndclasses:rimestone_brick_wall"
+    "dndclasses:rimestone_brick_wall",
+    "dndclasses:cracked_runic_deepslate_brick_wall",
+    "dndclasses:mossy_runic_deepslate_brick_wall",
+    "dndclasses:ray_glazed_stone_wall"
   ]
 }

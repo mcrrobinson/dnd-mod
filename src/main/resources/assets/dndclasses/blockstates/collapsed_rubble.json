@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "layers=1": {
+      "model": "dndclasses:block/collapsed_rubble_height2"
+    },
+    "layers=2": {
+      "model": "dndclasses:block/collapsed_rubble_height4"
+    },
+    "layers=3": {
+      "model": "dndclasses:block/collapsed_rubble_height6"
+    },
+    "layers=4": {
+      "model": "dndclasses:block/collapsed_rubble_height8"
+    },
+    "layers=5": {
+      "model": "dndclasses:block/collapsed_rubble_height10"
+    },
+    "layers=6": {
+      "model": "dndclasses:block/collapsed_rubble_height12"
+    },
+    "layers=7": {
+      "model": "dndclasses:block/collapsed_rubble_height14"
+    },
+    "layers=8": {
+      "model": "dndclasses:block/collapsed_rubble_block"
+    }
+  }
+}

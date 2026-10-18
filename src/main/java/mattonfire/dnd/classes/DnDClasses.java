@@ -193,6 +193,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();
                 mattonfire.dnd.classes.Registry.GoblinBlocks.register();
                 mattonfire.dnd.classes.Registry.LairBlocks.register();
+                mattonfire.dnd.classes.Registry.RuinBlocks.register();
                 mattonfire.dnd.classes.Blocks.TrapBlocks.register();
                 ModBannerPatterns.register();
                 ModEnchantments.registerEnchantments();

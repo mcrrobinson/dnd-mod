@@ -288,6 +288,10 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getTranslucent(),
                 mattonfire.dnd.classes.Registry.LairBlocks.translucentBlocks().toArray(net.minecraft.block.Block[]::new));
+        // The Beholder lair's eye-stalk growths are a cross model with see-through gaps
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.RuinBlocks.EYE_STALK_GROWTH);
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

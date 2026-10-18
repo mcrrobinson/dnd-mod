@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_wall_post",
+  "textures": {
+    "wall": "dndclasses:block/mossy_runic_deepslate_bricks"
+  }
+}

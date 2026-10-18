@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.beholder;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -19,9 +20,10 @@ import net.minecraft.world.gen.StructureAccessor;
 import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 /**
- * The way down to a Beholder's cavern: a 5x5 deepslate-brick shaft round a central pillar, with a
- * spiral stair (one step up per block round) from the tunnel at its foot to a crumbling ring of
- * wall on the surface. Its centre is {@link #OFFSET} blocks east of the cavern's.
+ * The way down to a Beholder's cavern: a 5x5 shaft the eye tyrant bored with its disintegration ray,
+ * walled in Ray-glazed Stone round a central pillar, with a spiral stair of ray-glazed steps (one step up
+ * per block round) from the tunnel at its foot to a crumbling ring of wall on the surface. Its centre is
+ * {@link #OFFSET} blocks east of the cavern's.
  */
 public class BeholderShaftPiece extends StructurePiece {
     /** How far east of the cavern centre the shaft stands. */
@@ -88,7 +90,7 @@ public class BeholderShaftPiece extends StructurePiece {
         int y0 = this.bottom.getY();
         int ring = Math.max(Math.abs(dx), Math.abs(dz));
         if (y == y0) {
-            return Blocks.DEEPSLATE_TILES.getDefaultState();
+            return ModBlockFamilies.RAY_GLAZED_STONE.base().getDefaultState();
         }
         if (ring == 2) {
             // The doorway from the tunnel, on the west side
@@ -98,7 +100,7 @@ public class BeholderShaftPiece extends StructurePiece {
             if (y <= this.top) {
                 boolean surface = y > this.top - 3;
                 return (surface ? (n < 0.5F ? Blocks.MOSSY_COBBLESTONE : Blocks.CRACKED_STONE_BRICKS)
-                        : n < 0.15F ? Blocks.CRACKED_DEEPSLATE_BRICKS : Blocks.DEEPSLATE_BRICKS).getDefaultState();
+                        : n < 0.08F ? Blocks.SMOOTH_BASALT : ModBlockFamilies.RAY_GLAZED_STONE.base()).getDefaultState();
             }
             // A broken parapet round the top, gaps to climb out through
             if (y == this.top + 1 && (dx + dz) % 2 == 0 && n < 0.7F) {
@@ -119,7 +121,7 @@ public class BeholderShaftPiece extends StructurePiece {
             int[] from = RING[(cell + RING.length - 1) % RING.length];
             int[] to = RING[cell];
             Direction facing = Direction.fromVector(to[0] - from[0], 0, to[1] - from[1]);
-            return Blocks.DEEPSLATE_TILE_STAIRS.getDefaultState().with(StairsBlock.FACING, facing == null ? Direction.NORTH : facing);
+            return ModBlockFamilies.RAY_GLAZED_STONE.stairs().getDefaultState().with(StairsBlock.FACING, facing == null ? Direction.NORTH : facing);
         }
         if (y > y0 + 3 && (y - y0 - 3) % 16 == 0 && cell == 3 && y < this.top - 2) {
             // Now and then a lantern hung under the stair above

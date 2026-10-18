@@ -2054,5 +2054,21 @@
     "block.dndclasses.storm_scale_pile": "Shed Storm Scales",
     "block.dndclasses.frost_scale_pile": "Shed Frost Scales",
     "item.dndclasses.storm_dragon_scale": "Storm Dragon Scale",
-    "item.dndclasses.frost_dragon_scale": "Frost Dragon Scale"
+    "item.dndclasses.frost_dragon_scale": "Frost Dragon Scale",
+    "block.dndclasses.cracked_runic_deepslate_bricks": "Cracked Runic Deepslate Bricks",
+    "block.dndclasses.cracked_runic_deepslate_brick_stairs": "Cracked Runic Deepslate Brick Stairs",
+    "block.dndclasses.cracked_runic_deepslate_brick_slab": "Cracked Runic Deepslate Brick Slab",
+    "block.dndclasses.cracked_runic_deepslate_brick_wall": "Cracked Runic Deepslate Brick Wall",
+    "block.dndclasses.mossy_runic_deepslate_bricks": "Mossy Runic Deepslate Bricks",
+    "block.dndclasses.mossy_runic_deepslate_brick_stairs": "Mossy Runic Deepslate Brick Stairs",
+    "block.dndclasses.mossy_runic_deepslate_brick_slab": "Mossy Runic Deepslate Brick Slab",
+    "block.dndclasses.mossy_runic_deepslate_brick_wall": "Mossy Runic Deepslate Brick Wall",
+    "block.dndclasses.tarnished_gilding": "Tarnished Gilding",
+    "block.dndclasses.ray_glazed_stone": "Ray-glazed Stone",
+    "block.dndclasses.ray_glazed_stone_stairs": "Ray-glazed Stone Stairs",
+    "block.dndclasses.ray_glazed_stone_slab": "Ray-glazed Stone Slab",
+    "block.dndclasses.ray_glazed_stone_wall": "Ray-glazed Stone Wall",
+    "block.dndclasses.collapsed_rubble": "Collapsed Rubble",
+    "block.dndclasses.petrified_remains": "Petrified Remains",
+    "block.dndclasses.eye_stalk_growth": "Eye-Stalk Growth"
 }

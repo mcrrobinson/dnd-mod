@@ -132,6 +132,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves
 - [Hobbit building blocks](items/hobbit-building-blocks.md): Thatch, Mossy Thatch, Wattle and Daub, Smial Turf Wall, Round Door Frame Stone, Hearth Stone, Pipe-weed Bundle; the Larder Shelf (9 slots) and Ale Cask (glass bottle for a Mug of Ale, 4 mugs, refills); hanging herbs and onions
 - [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons (PR #247)
+- [Dwarven Ruin & Beholder lair blocks](items/ruin-blocks.md): Fallen Runic Bricks (cracked, mossy), Collapsed Rubble layers, Tarnished Gilding, Ray-glazed Stone, Petrified Remains and Eye-Stalk Growths, placed in the Ruin and the lair
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

@@ -1,13 +1,17 @@
 package mattonfire.dnd.world.gen.beholder;
 
+import mattonfire.dnd.classes.Blocks.PetrifiedRemainsBlock;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.StructureObstacles;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.RuinBlocks;
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.world.gen.PieceBlocks;
+import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -42,9 +46,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 /**
  * The Beholder's cavern: a rough dome hollowed out of the deepslate round its centre (the middle of
- * the floor). The floor is a great eye laid in stone, with a glowing froglight iris; petrified
- * adventurers stand where its gaze caught them, a hoard is heaped against the far wall, and the
- * Beholder floats over it all. A tunnel leads east to the stair (BeholderShaftPiece). Off the tunnel's
+ * the floor), its walls melted glassy by the eye tyrant's rays (Ray-glazed Stone) and sprouting Eye-Stalk
+ * Growths. The floor is a great eye laid in stone, with a glowing froglight iris; petrified adventurers
+ * stand and kneel where its gaze caught them (armour stands and Petrified Remains), a hoard is heaped
+ * against the far wall, and the Beholder floats over it all. A tunnel leads east to the stair (BeholderShaftPiece). Off the tunnel's
  * north side, a Greater Arcane Seal (Very Hard, Wizards only) closes a small side vault.
  *
  * <p>The walls are a two-block shell, so caves, water and lava around it can't break in. Built once
@@ -59,6 +64,10 @@ public class BeholderCavernPiece extends StructurePiece {
     /** Thickness of the wall shell, in blocks. */
     private static final int SHELL = 2;
     private static final int STATUES = 5;
+    /** Petrified Remains blocks (kneeling statues), on top of the armour-stand ones. */
+    private static final int REMAINS = 6;
+    /** Chance an open cell against the wall or ceiling grows an Eye-Stalk Growth. */
+    private static final float EYE_STALK_CHANCE = 0.06F;
     private static final int DRIPSTONES = 24;
     /** The Beholder hovers this far above the floor. */
     private static final int HOVER = 5;
@@ -127,7 +136,7 @@ public class BeholderCavernPiece extends StructurePiece {
                     double s = this.shape(dx, dy, dz);
                     float n = BeholderLairStructures.noise(this.seed, x, y, z);
                     if (dy > 0 && s < 1.0) {
-                        world.setBlockState(pos, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
+                        world.setBlockState(pos, this.eyeStalkAt(dx, dy, dz), PieceBlocks.UPDATE);
                     } else if (dy == 0 && s < 1.0) {
                         world.setBlockState(pos, floor(dx, dz, n), PieceBlocks.UPDATE);
                     } else if (dy >= 0 && s < innerWall) {
@@ -156,6 +165,7 @@ public class BeholderCavernPiece extends StructurePiece {
         }
 
         int hx = cx - RADIUS + 4;
+        this.remains(world, chunkBox, cx, y0, cz, hx);
 
         // Adventurers turned to stone, all facing the middle, shields up against the gaze.
         double turn = random.nextDouble() * Math.PI * 2.0;
@@ -226,7 +236,57 @@ public class BeholderCavernPiece extends StructurePiece {
                 : n < 0.85F ? Blocks.CRACKED_DEEPSLATE_TILES : Blocks.TUFF).getDefaultState();
     }
 
-    /** The inside of the dome: dark rock veined with crying obsidian and amethyst, the odd shroomlight up high. */
+    /**
+     * What an open cell of the dome holds: air, or (now and then, where it backs onto the wall or ceiling) an
+     * Eye-Stalk Growth growing out of it. Not near the tunnel mouth or the side vault, which are cut later.
+     */
+    private BlockState eyeStalkAt(int dx, int dy, int dz) {
+        BlockState air = Blocks.AIR.getDefaultState();
+        if (dx >= RADIUS - 6 && dz >= -7 && dz <= 3) {
+            return air;
+        }
+        if (BeholderLairStructures.noise(this.seed ^ 0xE7E5A1L, dx, dy, dz) >= EYE_STALK_CHANCE) {
+            return air;
+        }
+        for (Direction support : new Direction[]{Direction.UP, Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST}) {
+            if (this.shape(dx + support.getOffsetX(), dy + support.getOffsetY(), dz + support.getOffsetZ()) >= 1.0) {
+                return RuinBlocks.EYE_STALK_GROWTH.getDefaultState().with(AmethystClusterBlock.FACING, support.getOpposite());
+            }
+        }
+        return air;
+    }
+
+    /**
+     * Petrified Remains: adventurers turned to stone as they knelt, each facing the middle where the Beholder
+     * hangs, on the open floor near the walls (not on the hoard or in the tunnel mouth). Its
+     * random is its own, so the cavern's other features keep their places.
+     */
+    private void remains(StructureWorldAccess world, BlockBox chunkBox, int cx, int y0, int cz, int hx) {
+        Random random = Random.create(this.seed ^ 0x9E7121L);
+        for (int i = 0; i < REMAINS; i++) {
+            double angle = random.nextDouble() * Math.PI * 2.0;
+            // Out by the walls, clear of the armour-stand statues (7.5 to 11.5 out)
+            double r = 12.0 + random.nextDouble() * 1.5;
+            int x = cx + (int) Math.round(Math.cos(angle) * r);
+            int z = cz + (int) Math.round(Math.sin(angle) * r);
+            BlockPos at = new BlockPos(x, y0 + 1, z);
+            if (!chunkBox.contains(at) || Math.abs(x - hx) + Math.abs(z - cz) <= 5
+                    || (x - cx >= RADIUS - 6 && Math.abs(z - cz) <= 3) || !world.getBlockState(at).isAir()) {
+                continue;
+            }
+            int ddx = cx - x;
+            int ddz = cz - z;
+            Direction facing = Math.abs(ddx) > Math.abs(ddz) ? (ddx > 0 ? Direction.EAST : Direction.WEST)
+                    : (ddz > 0 ? Direction.SOUTH : Direction.NORTH);
+            world.setBlockState(at, RuinBlocks.PETRIFIED_REMAINS.getDefaultState().with(PetrifiedRemainsBlock.FACING, facing),
+                    PieceBlocks.UPDATE);
+        }
+    }
+
+    /**
+     * The inside of the dome: stone melted glassy by disintegration rays, with patches of the dark rock it
+     * was, veined with crying obsidian and amethyst, the odd shroomlight up high.
+     */
     private static BlockState wall(int dy, float n) {
         if (dy > HEIGHT / 2 && n < 0.02F) {
             return Blocks.SHROOMLIGHT.getDefaultState();
@@ -237,11 +297,11 @@ public class BeholderCavernPiece extends StructurePiece {
         if (n < 0.08F) {
             return Blocks.AMETHYST_BLOCK.getDefaultState();
         }
-        return (n < 0.35F ? Blocks.DEEPSLATE : n < 0.6F ? Blocks.TUFF : n < 0.8F ? Blocks.COBBLED_DEEPSLATE
-                : Blocks.SMOOTH_BASALT).getDefaultState();
+        return (n < 0.62F ? ModBlockFamilies.RAY_GLAZED_STONE.base() : n < 0.74F ? Blocks.DEEPSLATE : n < 0.84F ? Blocks.TUFF
+                : n < 0.92F ? Blocks.COBBLED_DEEPSLATE : Blocks.SMOOTH_BASALT).getDefaultState();
     }
 
-    /** A three-wide tunnel east from the cavern wall to the stair, with soul lanterns at its mouth. */
+    /** A three-wide ray-glazed tunnel east from the cavern wall to the stair, with soul lanterns at its mouth. */
     private void tunnel(StructureWorldAccess world, BlockBox chunkBox, int cx, int y0, int cz) {
         int from = cx + RADIUS - 4;
         int to = cx + BeholderShaftPiece.OFFSET - 2;
@@ -255,8 +315,8 @@ public class BeholderCavernPiece extends StructurePiece {
                     } else if (dy == 0 && Math.abs(dz) <= 1) {
                         set(world, chunkBox, pos, Blocks.DEEPSLATE_TILES.getDefaultState());
                     } else if (this.shape(x - cx, dy, dz) >= 1.0) {
-                        // Walls and roof, only where they're not open cavern
-                        set(world, chunkBox, pos, Blocks.DEEPSLATE_BRICKS.getDefaultState());
+                        // Walls and roof, only where they're not open cavern: bored out by the same rays
+                        set(world, chunkBox, pos, ModBlockFamilies.RAY_GLAZED_STONE.base().getDefaultState());
                     }
                 }
             }

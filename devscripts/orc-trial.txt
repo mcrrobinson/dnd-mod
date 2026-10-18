@@ -7,8 +7,8 @@
 # - after /dndhome trialreset: "started" again, and "... won the Trial ... (champion yielded)" after the
 #   Champion takes /damage 60; "Blood and Thunder" in chat (only on the world's first win); the Orcish Greataxe in the slots dump
 # - screenshots trial-bar (the duel bar), trial-lost, trial-won
-# - each drum "use" logs "use -> block minecraft:note_block": /dndhome stronghold pit aims at the drum's near
-#   face (aiming at its middle from the pit floor hit the hay bale under it)
+# - each drum "use" logs "use -> block dndclasses:war_drum" ("minecraft:note_block" in a hold generated before
+#   the War Drum): /dndhome stronghold pit aims at the drum's near face
 # - no "[DevScript] waitserver: the game is paused" warning (the class picker reopening after /dndrace set used
 #   to pause the game, so waitserver never finished)
 wait 40

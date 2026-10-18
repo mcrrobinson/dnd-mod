@@ -97,7 +97,7 @@ final class StrongholdCommands {
         Vec3d eye = new Vec3d(stand.getX() + 0.5D, stand.getY() + player.getStandingEyeHeight(), stand.getZ() + 0.5D);
         Vec3d target = Vec3d.ofCenter(look);
         if (spot.equals("pit")) {
-            // Aim at the drum's near face: from the pit floor, aiming at its middle grazes the hay bale under it
+            // Aim at the drum's near face: from the pit floor, aiming at its middle grazes the rim under it
             Direction toward = Direction.getFacing(stand.getX() - look.getX(), 0, stand.getZ() - look.getZ());
             target = target.add(toward.getOffsetX() * 0.45D, 0.0D, toward.getOffsetZ() * 0.45D);
         }

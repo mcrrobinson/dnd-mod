@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -9,15 +11,15 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * A hide yurt: round, 9 across and 7 high, a wall of brown and white hides under a conical roof round a
- * centre pole, the door facing the middle of the hold. Inside: straw beds, a chest of camp supplies and a
- * cauldron.
+ * A hide yurt: round, 9 across and 7 high, a wall of tanned hides (brown, pale and grey) under a conical roof
+ * round a centre pole, the door facing the middle of the hold, and the Bloodtusk mark painted on the hides at
+ * the back. Inside: a hide carpet, straw beds, a chest of camp supplies and a cauldron.
  */
 public class YurtPiece extends StrongholdPiece {
     static final double RADIUS = 4.5D;
     static final int HEIGHT = 7;
-    private static final Block[] HIDES = {Blocks.BROWN_WOOL, Blocks.BROWN_WOOL, Blocks.WHITE_WOOL, Blocks.LIGHT_GRAY_WOOL,
-            Blocks.BROWN_TERRACOTTA};
+    private static final Block[] HIDES = {ModBlockFamilies.TANNED_HIDE.base(), ModBlockFamilies.TANNED_HIDE.base(),
+            ModBlockFamilies.PALE_TANNED_HIDE.base(), ModBlockFamilies.GREY_TANNED_HIDE.base(), ModBlockFamilies.TANNED_HIDE.base()};
 
     public YurtPiece(BlockPos center, Direction gate, long seed, long hold, int ya, int yb) {
         super(OrcStrongholdStructures.YURT, center, gate, seed, hold, ya - 5, 0, yb - 5, ya + 5, HEIGHT + 1, yb + 5);
@@ -59,12 +61,16 @@ public class YurtPiece extends StrongholdPiece {
                 int top = HEIGHT - (int) Math.round(d * 4.0D / RADIUS);
                 b.set(a, 0, bb, Blocks.COARSE_DIRT);
                 if (d < 2.5D) {
-                    b.set(a, 1, bb, Blocks.BROWN_CARPET);
+                    b.set(a, 1, bb, OrcBuildingBlocks.TANNED_HIDE_CARPET);
                 }
                 boolean wall = d > RADIUS - 1.0D;
-                boolean door = wall && (x * da + z * db) / Math.max(d, 0.01D) > 0.85D;
+                double toDoor = (x * da + z * db) / Math.max(d, 0.01D);
+                boolean door = wall && toDoor > 0.85D;
+                // The Bloodtusk mark on the hides at the back, opposite the door.
+                boolean painted = wall && toDoor < -0.9D;
                 for (int y = d < 2.5D ? 2 : 1; y < top; y++) {
-                    b.set(a, y, bb, wall && !(door && y <= 2) ? hide.getDefaultState() : Blocks.AIR.getDefaultState());
+                    Block block = painted && y == 3 ? ModBlockFamilies.PAINTED_HIDE.base() : hide;
+                    b.set(a, y, bb, wall && !(door && y <= 2) ? block.getDefaultState() : Blocks.AIR.getDefaultState());
                 }
                 b.set(a, top, bb, hide);
             }

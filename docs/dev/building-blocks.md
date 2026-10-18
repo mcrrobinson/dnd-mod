@@ -36,7 +36,7 @@ The first family is **Runic Deepslate Bricks** (base, stairs, slab and wall), th
    ```java
    public static final BlockFamily THATCH = BlockFamily.builder("thatch", Blocks.HAY_BLOCK).stairs().slab().build();
    ```
-2. Add the same family to `FAMILIES` in `tools/block_families.py` (same name, stem and shapes; `material='wood'` for axe-mined wood) and run `python3 tools/block_families.py`. It writes the blockstates, block and item models, loot tables and recipes, adds the lang names and tag entries, and leaves everything else alone, so it's safe to rerun.
+2. Add the same family to `FAMILIES` in `tools/block_families.py` (same name, stem and shapes; `material='wood'` for axe-mined wood, `material='hide'` for axe-mined blocks that aren't wood: plain shape tags, no stonecutter) and run `python3 tools/block_families.py`. It writes the blockstates, block and item models, loot tables and recipes, adds the lang names and tag entries, and leaves everything else alone, so it's safe to rerun.
 3. Draw the textures listed in the table above in the area's texture script (`tools/<area>_block_textures.py`, 16x16 with `pngio`).
 4. `./gradlew build`. On startup, `BlockFamily.register()` logs `[BlockFamily] <id> has no generated resources; run tools/block_families.py` for any block whose blockstate or loot table is missing.
 

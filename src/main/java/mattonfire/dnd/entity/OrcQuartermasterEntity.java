@@ -102,5 +102,9 @@ public class OrcQuartermasterEntity extends OrcEntity implements SettlementMerch
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.merchant.read(nbt);
+        if (this.merchant.savedOffers() != null) {
+            // Quartermasters from before Tanned Hide.
+            OrcTrades.addMissing(this.merchant.savedOffers());
+        }
     }
 }

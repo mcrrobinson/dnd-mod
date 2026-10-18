@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:bloodtusk_mud_bricks"
+  },
+  "result": "dndclasses:bloodtusk_mud_brick_slab"
+}

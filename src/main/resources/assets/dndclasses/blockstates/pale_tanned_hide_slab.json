@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/pale_tanned_hide_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/pale_tanned_hide"
+    },
+    "type=top": {
+      "model": "dndclasses:block/pale_tanned_hide_slab_top"
+    }
+  }
+}

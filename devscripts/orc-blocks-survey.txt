@@ -1,0 +1,72 @@
+# Screenshots of the nearest Orc Stronghold's buildings, for before/after shots of the building blocks
+# (docs/structures/orc-strongholds.md). Strongholds keep the blocks they were generated with: for "after" shots
+# use a world (or region files) where the hold hasn't generated yet.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/orc-blocks-survey.txt [-PdevWorld=<world>]
+# Check in <run dir>/logs/latest.log: "[Home] Orc Stronghold at chunk ..." for each /dndhome line.
+# Screenshots: ob-gate (palisade and gatehouse), ob-top, ob-pit (the War Drum), ob-front (the Longhouse front),
+# ob-seat (tusk rack, hide rug), ob-smithy, ob-yard and ob-yard2 (the smithy from either side), ob-slag-a/b (one shows the slag heap),
+# ob-yurts; and one "Test passed" of the four slag checks (more when both spots have slag)
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/locate structure dndclasses:orc_stronghold
+wait 100
+/dndhome stronghold gate
+waitserver 2
+wait 200
+hud off
+/tp @s ^ ^3 ^-2
+wait 60
+screenshot ob-gate
+/tp @s ~ ~14 ~ ~ 35
+wait 40
+screenshot ob-yurts
+/tp @s ~ ~31 ~ ~ 90
+wait 200
+screenshot ob-top
+/dndhome stronghold pit
+waitserver 2
+wait 80
+screenshot ob-pit
+/tp @s ^ ^ ^-3
+/tp @s ~ ~4 ~ ~ 15
+wait 60
+screenshot ob-front
+/dndhome stronghold seat
+waitserver 2
+wait 80
+screenshot ob-seat
+/dndhome stronghold smithy
+waitserver 2
+wait 80
+screenshot ob-smithy
+# The slag heap lies 6-7 blocks to one side of the forge end (which side depends on how the hold is turned)
+/execute rotated ~ 0 if block ^6 ^ ^5 dndclasses:smithy_slag
+/execute rotated ~ 0 if block ^-6 ^ ^5 dndclasses:smithy_slag
+/execute rotated ~ 0 if block ^7 ^ ^6 dndclasses:smithy_slag
+/execute rotated ~ 0 if block ^-7 ^ ^6 dndclasses:smithy_slag
+/tp @s ~ ~2 ~ ~60 25
+wait 30
+screenshot ob-slag-a
+/tp @s ~ ~ ~ ~-120 25
+wait 30
+screenshot ob-slag-b
+/dndhome stronghold smithy
+waitserver 2
+wait 20
+/tp @s ^ ^ ^-8
+/tp @s ~ ~9 ~ ~-40 40
+wait 60
+screenshot ob-yard
+/tp @s ~ ~ ~ ~80 40
+wait 40
+screenshot ob-yard2
+hud on
+wait 20
+quit

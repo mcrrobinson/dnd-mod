@@ -2,6 +2,9 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Blocks.orc.TuskRackBlock;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -13,9 +16,10 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The Great Longhouse at the back of the hold, the Half-Orc hearth: 21 by 11 under an A-frame roof of spruce
- * and dark oak, with its door facing the pit. Inside: a fire pit in the middle, log benches, war drums (note
- * blocks on hay), a trophy wall of mob heads on the back wall, and at the far end the War Chief's seat of
- * blackstone and gold on a dais, with the hoard chest beside it. The War Chief waits by the seat.
+ * and dark oak, its front marked with Painted Hide and its door facing the pit under a tanned hide flap.
+ * Inside: a fire pit in the middle, log benches, four War Drums, a trophy wall of mob heads on the back wall,
+ * Tusk Racks on the end walls and behind the seat, and at the far end the War Chief's seat of blackstone and
+ * gold on a dais with a Hide Rug before it, and the hoard chest beside it. The War Chief waits by the seat.
  */
 public class LonghousePiece extends StrongholdPiece {
     static final int A = 10;
@@ -52,6 +56,10 @@ public class LonghousePiece extends StrongholdPiece {
         return this.at(0, 1, SEAT_B + 2);
     }
 
+    private static net.minecraft.block.BlockState rack(Direction facing) {
+        return OrcBuildingBlocks.TUSK_RACK.getDefaultState().with(TuskRackBlock.FACING, facing);
+    }
+
     @Override
     protected void build(Builder b) {
         // Floor, walls and the space inside.
@@ -79,7 +87,13 @@ public class LonghousePiece extends StrongholdPiece {
             }
         }
         // The door, facing the pit.
-        b.air(-1, 1, FRONT, 1, 3, FRONT);
+        b.air(-1, 1, FRONT, 1, 2, FRONT);
+        // A hide flap over the top of the doorway, and the Bloodtusk mark either side of it.
+        for (int x = -1; x <= 1; x++) {
+            b.set(x, 3, FRONT, slab(ModBlockFamilies.TANNED_HIDE, true));
+        }
+        b.set(-3, 2, FRONT, ModBlockFamilies.PAINTED_HIDE.base());
+        b.set(3, 2, FRONT, ModBlockFamilies.PAINTED_HIDE.base());
         b.set(-2, 3, FRONT + 1, Blocks.WALL_TORCH.getDefaultState().with(net.minecraft.block.WallTorchBlock.FACING, Direction.SOUTH));
         b.set(2, 3, FRONT + 1, Blocks.WALL_TORCH.getDefaultState().with(net.minecraft.block.WallTorchBlock.FACING, Direction.SOUTH));
 
@@ -92,11 +106,12 @@ public class LonghousePiece extends StrongholdPiece {
         }
         // War drums.
         for (int side = -1; side <= 1; side += 2) {
-            b.set(side * 8, 1, FRONT - 2, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
-            b.set(side * 8, 2, FRONT - 2, Blocks.NOTE_BLOCK);
-            b.set(side * 8, 1, BACK + 3, pillar(Blocks.HAY_BLOCK, Direction.Axis.Y));
-            b.set(side * 8, 2, BACK + 3, Blocks.NOTE_BLOCK);
+            b.set(side * 8, 1, FRONT - 2, OrcBuildingBlocks.WAR_DRUM);
+            b.set(side * 8, 1, BACK + 3, OrcBuildingBlocks.WAR_DRUM);
         }
+        // Tusk racks on the end walls, over the benches.
+        b.set(-A + 1, 3, RIDGE, rack(Direction.EAST));
+        b.set(A - 1, 3, RIDGE, rack(Direction.WEST));
         // Lanterns hung from the ridge.
         for (int x = -6; x <= 6; x += 6) {
             b.set(x, roofY(RIDGE) - 1, RIDGE, Blocks.LANTERN.getDefaultState().with(LanternBlock.HANGING, true));
@@ -115,7 +130,9 @@ public class LonghousePiece extends StrongholdPiece {
         b.set(1, 1, SEAT_B, Blocks.GOLD_BLOCK);
         b.set(0, 1, BACK + 1, Blocks.CHISELED_POLISHED_BLACKSTONE);
         b.set(0, 2, BACK + 1, Blocks.GOLD_BLOCK);
-        b.set(0, 3, BACK + 1, Blocks.WITHER_SKELETON_SKULL);
+        b.set(0, 3, BACK + 1, rack(Direction.SOUTH));
+        // The Hide Rug before the seat.
+        b.fill(-1, 1, SEAT_B + 1, 1, 1, SEAT_B + 3, OrcBuildingBlocks.HIDE_RUG);
         b.warBanner(-2, 3, BACK + 1, Direction.SOUTH);
         b.warBanner(2, 3, BACK + 1, Direction.SOUTH);
         // The hoard (lockpick DC 15) and the chief's barrels.

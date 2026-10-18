@@ -91,7 +91,7 @@ public final class OrcTrial {
     public static void register() {
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (world.isClient || !(player instanceof ServerPlayerEntity serverPlayer)
-                    || !world.getBlockState(hit.getBlockPos()).isOf(Blocks.NOTE_BLOCK)) {
+                    || !isDrum(world.getBlockState(hit.getBlockPos()))) {
                 return ActionResult.PASS;
             }
             FightingPitPiece pit = pitWithDrum((ServerWorld) world, hit.getBlockPos());
@@ -110,6 +110,11 @@ public final class OrcTrial {
         });
     }
 
+    /** A war drum: the War Drum block, or the note block of a hold generated before it. */
+    private static boolean isDrum(net.minecraft.block.BlockState state) {
+        return state.isOf(mattonfire.dnd.classes.Registry.OrcBuildingBlocks.WAR_DRUM) || state.isOf(Blocks.NOTE_BLOCK);
+    }
+
     /** The Fighting Pit whose war drum is at {@code pos}, or null. */
     private static FightingPitPiece pitWithDrum(ServerWorld world, BlockPos pos) {
         RacialHomes.Visit visit = RacialHomes.homeAt(world, pos);
@@ -117,7 +122,7 @@ public final class OrcTrial {
             return null;
         }
         StructurePiece piece = visit.pieceAt(pos, OrcStrongholdStructures.PIT);
-        return piece instanceof FightingPitPiece pit && pit.drum().equals(pos) ? pit : null;
+        return piece instanceof FightingPitPiece pit && (pit.drum().equals(pos) || pit.legacyDrum().equals(pos)) ? pit : null;
     }
 
     public static boolean isDueling(PlayerEntity player) {

@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.classes.Blocks.orc.StakeWallBlock;
+import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,9 +18,9 @@ import net.minecraft.util.math.Direction;
 /**
  * The hold's grounds: the clearing levelled out to radius {@link OrcStrongholdStructure#CLEAR} (cut away
  * {@link #HEADROOM} blocks up, filled with terracotta beneath), a trampled floor of coarse dirt, red sand and
- * packed mud, the palisade (dark oak and stripped dark oak logs 4 high, topped with pointed dripstone stakes,
- * patched here and there with red terracotta and blackstone), 2-4 totem poles and bone heaps, and the 6-9
- * Orc Warriors who roam inside the wall.
+ * packed mud, the palisade (dark oak and stripped dark oak logs 4 high, topped with a course of Sharpened Stake
+ * Walls that hurt whoever climbs at them from outside, patched here and there with red terracotta and
+ * blackstone), 2-4 War Totem poles and bone heaps, and the 6-9 Orc Warriors who roam inside the wall.
  */
 public class GroundsPiece extends StrongholdPiece {
     static final int HEADROOM = 32;
@@ -103,20 +105,25 @@ public class GroundsPiece extends StrongholdPiece {
             b.set(x, y, z, log == Blocks.DARK_OAK_LOG || log == Blocks.STRIPPED_DARK_OAK_LOG
                     ? pillar(log, Direction.Axis.Y) : log.getDefaultState());
         }
-        if (r < 0.7F) {
-            b.set(x, WALL_HEIGHT + 1, z, stake());
-        } else if (r < 0.75F) {
+        if (r < 0.9F) {
+            b.set(x, WALL_HEIGHT + 1, z, stakeWall(Direction.getFacing(x, 0, z)));
+        } else if (r < 0.95F) {
             b.set(x, WALL_HEIGHT + 1, z, Blocks.TORCH);
         }
     }
 
-    /** A totem pole: stacked logs with fence "arms", a carved face and a skull on top. */
+    /** A Sharpened Stake Wall whose outside (the side that hurts) is {@code outside}. */
+    static BlockState stakeWall(Direction outside) {
+        return OrcBuildingBlocks.SHARPENED_STAKE_WALL.getDefaultState().with(StakeWallBlock.FACING, outside);
+    }
+
+    /** A totem pole: stacked logs with fence "arms", a War Totem face and a skull on top. */
     private void totem(Builder b, int x, int z) {
         BlockState skull = skull(b.random);
         for (int y = 1; y <= 4; y++) {
             b.set(x, y, z, pillar(y % 2 == 0 ? Blocks.STRIPPED_DARK_OAK_LOG : Blocks.DARK_OAK_LOG, Direction.Axis.Y));
         }
-        b.set(x, 3, z + 1, Blocks.CARVED_PUMPKIN.getDefaultState().with(net.minecraft.block.CarvedPumpkinBlock.FACING, Direction.SOUTH));
+        b.set(x, 3, z, facing(OrcBuildingBlocks.WAR_TOTEM, Direction.SOUTH));
         b.set(x - 1, 4, z, Blocks.DARK_OAK_FENCE);
         b.set(x + 1, 4, z, Blocks.DARK_OAK_FENCE);
         b.set(x, 5, z, skull);

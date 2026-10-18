@@ -67,13 +67,6 @@ public abstract class StrongholdPiece extends OrientedPiece<StrongholdPiece.Buil
         return new Builder(world, chunkBox, random);
     }
 
-    /** A pointed dripstone stake, tip up. */
-    protected static BlockState stake() {
-        return Blocks.POINTED_DRIPSTONE.getDefaultState()
-                .with(net.minecraft.block.PointedDripstoneBlock.VERTICAL_DIRECTION, Direction.UP)
-                .with(net.minecraft.block.PointedDripstoneBlock.THICKNESS, net.minecraft.block.enums.Thickness.TIP);
-    }
-
     /** A floor-standing skull or head, turned {@code rotation} (0-15). */
     protected static BlockState skull(Random random) {
         float r = random.nextFloat();

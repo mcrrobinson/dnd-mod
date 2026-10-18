@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:tanned_hide"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    }
+  },
+  "pattern": [
+    "###",
+    "#B#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:pale_tanned_hide"
+  },
+  "show_notification": true
+}

@@ -59,6 +59,20 @@ public final class ModBlockFamilies {
     /** A fluted dark stone column with gold run into its cracks; lies along an axis like a log. */
     public static final BlockFamily GOLD_VEINED_PILLAR = BlockFamily
             .builder("gold_veined_pillar", Blocks.POLISHED_DEEPSLATE).axisBase().build();
+    // --- Orc Strongholds ---
+    /** Stitched leather panels, the yurts' walls and roofs: brown, pale and grey, like the old wool mix. */
+    public static final BlockFamily TANNED_HIDE = BlockFamily.builder("tanned_hide", Blocks.BROWN_WOOL).stairs().slab().build();
+    public static final BlockFamily PALE_TANNED_HIDE = BlockFamily.builder("pale_tanned_hide", Blocks.WHITE_WOOL).stairs()
+            .slab().build();
+    public static final BlockFamily GREY_TANNED_HIDE = BlockFamily.builder("grey_tanned_hide", Blocks.LIGHT_GRAY_WOOL)
+            .stairs().slab().build();
+    /** Tanned hide with the Bloodtusk mark in red ochre: two crossed tusks under a dripping handprint. */
+    public static final BlockFamily PAINTED_HIDE = BlockFamily.builder("painted_hide", Blocks.BROWN_WOOL).build();
+    /** Mud bricks daubed with red ochre handprints and streaks: the Fighting Pit. */
+    public static final BlockFamily BLOODTUSK_MUD_BRICKS = BlockFamily
+            .builder("bloodtusk_mud_bricks", Blocks.MUD_BRICKS).stoneShapes().build();
+    /** Glassy black-green lumps with rusty pockets, heaped outside the smithy. */
+    public static final BlockFamily SMITHY_SLAG = BlockFamily.builder("smithy_slag", Blocks.BLACKSTONE).build();
 
     private ModBlockFamilies() {
     }

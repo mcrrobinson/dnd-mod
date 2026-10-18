@@ -27,7 +27,7 @@ screenshot goblin-survey-camp-top
 # The camp's floor is at y 63 (its fire at 64); the gate is to the west, the chief's tent to the east
 /execute if block -241 65 1096 dndclasses:war_order_board
 /execute if block -243 63 1096 dndclasses:scrap_lashed_planks
-/tp @s -244.5 64.8 1096.5 -90 6
+/tp @s -243.0 64.6 1096.5 -90 2
 wait 60
 screenshot goblin-survey-camp-chief
 /tp @s -247.5 67 1100.5 90 15
@@ -57,7 +57,7 @@ wait 60
 wait 120
 hud off
 screenshot goblin-survey-warren-antechamber
-/tp @s 2470.5 37.6 -2410.5 -117 8
+/tp @s 2475.5 37.4 -2410.0 180 5
 wait 30
 screenshot goblin-survey-warren-antechamber-2
 # The war hall: the dais, cages and lean-tos

@@ -277,6 +277,10 @@ public class DndClassesClient implements ClientModInitializer {
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.HANGING_HERBS,
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.ONION_STRING);
+        // The Crypt's grave candle cluster: its wax puddle has a ragged edge
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.CryptBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

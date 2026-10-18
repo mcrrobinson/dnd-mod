@@ -1862,5 +1862,18 @@
     "block.dndclasses.paper_lantern": "Paper Lantern",
     "block.dndclasses.sparring_post": "Sparring Post",
     "message.dndclasses.sparring_post.hit": "Sparring Post: %s damage (%s%% swing)",
-    "message.dndclasses.sparring_post.crit": "Sparring Post: %s damage, critical hit! (%s%% swing)"
+    "message.dndclasses.sparring_post.crit": "Sparring Post: %s damage, critical hit! (%s%% swing)",
+    "block.dndclasses.ossuary_bricks": "Ossuary Bricks",
+    "block.dndclasses.ossuary_brick_stairs": "Ossuary Brick Stairs",
+    "block.dndclasses.ossuary_brick_slab": "Ossuary Brick Slab",
+    "block.dndclasses.ossuary_brick_wall": "Ossuary Brick Wall",
+    "block.dndclasses.funerary_relief": "Funerary Relief",
+    "block.dndclasses.burial_niche_wall": "Burial Niche Wall",
+    "block.dndclasses.sarcophagus": "Sarcophagus",
+    "block.dndclasses.grave_candle_cluster": "Grave Candle Cluster",
+    "block.dndclasses.lich_sigil_floor": "Lich Sigil Floor",
+    "block.dndclasses.grave_moss": "Grave Moss",
+    "block.dndclasses.grave_moss_carpet": "Grave Moss Carpet",
+    "block.dndclasses.phylactery_pedestal": "Phylactery Pedestal",
+    "block.dndclasses.sarcophagus.sleeps": "The dead within sleep on, untroubled by you."
 }

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:ossuary_bricks"
+  },
+  "result": "dndclasses:ossuary_brick_slab"
+}

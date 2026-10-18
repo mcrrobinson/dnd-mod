@@ -36,6 +36,7 @@ public class AntechamberPiece extends DungeonPiece {
         if (CryptDressing.applies(this)) {
             // The dead laid out along the walls, either side of the doorways
             CryptDressing.wallSarcophagi(b, w, d, 3, 0.5F);
+            CryptDressing.mossPatches(b, w, d, 2);
             CryptDressing.cornerCobwebs(b, w, d, this.height, 0.6F);
         } else if (WarrenDressing.applies(this)) {
             // The goblins' sleeping den: hide lean-tos along the walls

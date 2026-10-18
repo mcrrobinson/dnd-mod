@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:ossuary_bricks"
+  },
+  "result": "dndclasses:burial_niche_wall"
+}

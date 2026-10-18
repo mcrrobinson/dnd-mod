@@ -24,7 +24,7 @@ This page covers the framework and the three themes: the **Crypt**, the **Goblin
 - **Corridors**: 3 wide and 4 high, joining neighbouring rooms' 3x3 doorways across the gaps between cells.
 - **Shell**: every room and corridor fills its whole box. Walls, floor and ceiling are 2 blocks thick, with an outer skin of deepslate tiles, so caves, aquifers and lava can't flood in. Floors are propped up with cobbled deepslate (up to 16 blocks) over caves.
 - **Depth**: the floor is 20 blocks below the lowest of 25 ground samples over the grid (or below sea level, if that's lower), so even the boss room's roof stays at least 6 blocks under the surface. The Dwarven Ruin goes deeper: its floor is at a random level between y -30 and 0 (fixed by its position), or lower if the ground calls for it. Only the entrance shows (for the Crypt, a barrow; for the Goblin Warren, a cave mouth; for the Dwarven Ruin, a collapsed gatehouse: see below).
-- **Crypt palette**: stone bricks (some mossy or cracked), polished andesite floors, polished deepslate trim, chiselled stone accents, soul lanterns.
+- **Crypt palette**: stone bricks with [Ossuary Bricks](../items/crypt-blocks.md) set among them (30%), some mossy, cracked or overgrown with Grave Moss; polished andesite floors with patches of Grave Moss; polished deepslate trim, chiselled stone accents, soul lanterns.
 - **Chests**: one in each encounter room, the secret room and the side vault, with locked tier loot (`dndclasses:chests/dungeon/<theme>_<room>_t<tier>`); 8% of them are Mimics. See [Dungeon loot](../systems/dungeon-loot.md).
 - **No natural monster spawns** inside (`spawn_overrides.monster` is empty): every monster will come from an encounter.
 - **Music**: each theme has its own ambient loop inside (an organ drone in the Crypt, tribal drums in the Warren, brass and echoing anvils in the Ruin), a short sting plays when a room's fight ends and a fanfare when the dungeon is cleared. See [Music](../music.md).
@@ -39,17 +39,18 @@ The first theme: a barrow over a buried tomb, home of the Ossuary Cube and the L
 
 | Room | Props |
 |-|-|
-| Antechamber | sarcophagi along the walls (half the 8 spots), with candles; cobwebs |
-| Encounter rooms | bone piles in the corners (not the chest's), candles by the columns, cobwebs |
+| Antechamber | sarcophagi along the walls (half the 8 spots), with candles or a grave candle cluster; grave moss; cobwebs |
+| Encounter rooms | bone piles in the corners (not the chest's), candles by the columns, Funerary Reliefs in the walls, grave moss, cobwebs |
 | Trap corridor | cobwebs along the top of the hall |
 | Gate room, vault, side vault | lit candles in the corners, cobwebs |
 | Puzzle room | candles under the corner murals, cobwebs |
 | Mid-boss room (the Ossuary) | bone piles in every corner and along the walls, skulls strewn off the door lines, cobwebs |
-| Boss room (the Lich's tomb) | sarcophagi along the middle of each wall (3 in 4 of the 8 spots), candles on the dais corners, bone piles, skulls, cobwebs |
+| Boss room (the Lich's tomb) | Lich Sigil Floor on top of the dais, sarcophagi along the middle of each wall (3 in 4 of the 8 spots) with a Funerary Relief over the gap in each wall, grave candle clusters on the dais corners, bone piles, skulls, grave moss, cobwebs |
 | Secret room | a bone pile in one corner |
-| Reliquary | a chiselled deepslate altar with polished deepslate steps, four columns, four soul lanterns, candles on the diagonals, bone piles in the corners, skulls |
+| Reliquary | a Phylactery Pedestal with polished deepslate steps in a ring of Lich Sigil Floor, four columns, four soul lanterns, grave candle clusters on the diagonals, Funerary Reliefs in the walls, bone piles in the corners, skulls, grave moss |
+| Corridors | Burial Niche Walls in the side walls at head height (every third block centred along it, half the spots) |
 
-A sarcophagus is two polished deepslate blocks under a deepslate tile slab lid, with candles at its corner end half the time. A bone pile is a bone block on its side, sometimes stacked, often with a skull.
+A sarcophagus is a two-block [Sarcophagus](../items/crypt-blocks.md) with a knight's effigy on its lid; 35% of them are occupied, and a zombie climbs out when one is opened. Half the time there are candles or a grave candle cluster at its corner end. The Crypt's blocks are described on [Crypt building blocks](../items/crypt-blocks.md). A bone pile is a bone block on its side, sometimes stacked, often with a skull.
 
 ![The antechamber: cold campfire in the middle, sarcophagi along the walls, a soul lantern and cobwebs](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-antechamber.png)
 
@@ -59,7 +60,7 @@ A sarcophagus is two polished deepslate blocks under a deepslate tile slab lid, 
 
 ![The reliquary: the phylactery on the chiselled deepslate altar, with candles, columns and bone piles](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-verify-shots/crypt-reliquary.png)
 
-- **The reliquary**: the room off the boss room where the **phylactery** appears, on the altar in the middle (one block up), when the Lich is called up. It's about 25 blocks from the boss's dais, through a short corridor, so it's inside the Lich's leash; its doorway stays open while the boss room is sealed. See [Dungeon encounters](../systems/dungeon-encounters.md#boss).
+- **The reliquary**: the room off the boss room where the **phylactery** appears, on the Phylactery Pedestal in the middle, when the Lich is called up. It's about 25 blocks from the boss's dais, through a short corridor, so it's inside the Lich's leash; its doorway stays open while the boss room is sealed. See [Dungeon encounters](../systems/dungeon-encounters.md#boss).
 - **Vault**: at III and IV the Hoard Coffer's full roll has a 15% chance of a Staff of Ice on top (see [Dungeon loot](../systems/dungeon-loot.md)).
 
 ### The Goblin Warren

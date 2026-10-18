@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,part=head": {
+      "model": "dndclasses:block/sarcophagus_head"
+    },
+    "facing=east,part=head": {
+      "model": "dndclasses:block/sarcophagus_head",
+      "y": 90
+    },
+    "facing=south,part=head": {
+      "model": "dndclasses:block/sarcophagus_head",
+      "y": 180
+    },
+    "facing=west,part=head": {
+      "model": "dndclasses:block/sarcophagus_head",
+      "y": 270
+    },
+    "facing=north,part=foot": {
+      "model": "dndclasses:block/sarcophagus_foot"
+    },
+    "facing=east,part=foot": {
+      "model": "dndclasses:block/sarcophagus_foot",
+      "y": 90
+    },
+    "facing=south,part=foot": {
+      "model": "dndclasses:block/sarcophagus_foot",
+      "y": 180
+    },
+    "facing=west,part=foot": {
+      "model": "dndclasses:block/sarcophagus_foot",
+      "y": 270
+    }
+  }
+}

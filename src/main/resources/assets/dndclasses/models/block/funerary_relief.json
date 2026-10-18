@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "dndclasses:block/funerary_relief",
+    "side": "minecraft:block/stone_bricks",
+    "top": "minecraft:block/stone_bricks"
+  }
+}

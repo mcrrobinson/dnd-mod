@@ -425,11 +425,33 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
         if (!placed && !this.placeNear(phylactery, this.getBlockPos(), 4.0D, 7.0D)) {
             phylactery.refreshPositionAndAngles(this.getX(), this.getY(), this.getZ(), 0.0F, 0.0F);
         }
+        this.raisePedestal(world, phylactery);
         this.linkPhylactery(phylactery);
         // Encounter tags carry over, so /dm encounter clear and "loot": false cover the phylactery too.
         this.getCommandTags().stream().filter(tag -> !tag.equals(mattonfire.dnd.dm.DmFreeze.TAG))
                 .forEach(phylactery::addCommandTag);
         world.spawnEntity(phylactery);
+    }
+
+    /**
+     * Sets a Phylactery Pedestal under a new phylactery that isn't already on one (the Crypt's reliquary has
+     * its own): in the block the phylactery stands in, if that's air and there's room for it one block up,
+     * and mob griefing is on.
+     */
+    private void raisePedestal(ServerWorld world, PhylacteryEntity phylactery) {
+        BlockPos feet = BlockPos.ofFloored(phylactery.getX(), phylactery.getY() + 0.01D, phylactery.getZ());
+        if (world.getBlockState(feet.down()).isOf(mattonfire.dnd.classes.Registry.CryptBlocks.PHYLACTERY_PEDESTAL)
+                || !world.getGameRules().getBoolean(net.minecraft.world.GameRules.DO_MOB_GRIEFING)
+                || !world.getBlockState(feet).isAir()) {
+            return;
+        }
+        net.minecraft.util.math.Box raised = phylactery.getBoundingBox().offset(0.0D, feet.getY() + 1.0D - phylactery.getY(), 0.0D);
+        if (!world.isSpaceEmpty(phylactery, raised)) {
+            return;
+        }
+        world.setBlockState(feet, mattonfire.dnd.classes.Registry.CryptBlocks.PHYLACTERY_PEDESTAL.getDefaultState());
+        phylactery.refreshPositionAndAngles(phylactery.getX(), feet.getY() + 1.0D, phylactery.getZ(),
+                phylactery.getYaw(), 0.0F);
     }
 
     @Nullable

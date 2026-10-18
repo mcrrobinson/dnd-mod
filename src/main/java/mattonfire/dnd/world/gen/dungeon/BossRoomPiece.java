@@ -49,7 +49,9 @@ public class BossRoomPiece extends DungeonPiece {
         }
         // The dais
         b.fill(mx - 3, 1, mz - 3, mx + 3, 1, mz + 3, b.palette.trim());
-        b.fill(mx - 1, 2, mz - 1, mx + 1, 2, mz + 1, b.palette.accent());
+        // The Lich's dais is topped with its sigil
+        b.fill(mx - 1, 2, mz - 1, mx + 1, 2, mz + 1, CryptDressing.applies(this)
+                ? mattonfire.dnd.classes.Registry.CryptBlocks.LICH_SIGIL_FLOOR.getDefaultState() : b.palette.accent());
         for (int[] o : new int[][]{{-8, -8}, {8, -8}, {-8, 8}, {8, 8}}) {
             b.light(mx + o[0], this.height, mz + o[1], true);
         }
@@ -65,13 +67,16 @@ public class BossRoomPiece extends DungeonPiece {
 
     /**
      * The Lich's tomb: sarcophagi along the middle of each wall (the doorways are a cell's middle,
-     * well to either side), candles on the dais corners, bones in the corners.
+     * well to either side) with a Funerary Relief over the gap between each pair, grave candle clusters on
+     * the dais corners, bones in the corners, grave moss.
      */
     private void tomb(Builder b, int w, int d, int mx, int mz) {
         CryptDressing.wallSarcophagi(b, w, d, 11, 0.75F);
+        CryptDressing.wallReliefs(b, w, d, 3, new int[]{0}, 1.0F);
         for (int[] o : new int[][]{{-3, -3}, {3, -3}, {-3, 3}, {3, 3}}) {
-            CryptDressing.candles(b, mx + o[0], 2, mz + o[1]);
+            CryptDressing.candleCluster(b, mx + o[0], 2, mz + o[1]);
         }
+        CryptDressing.mossPatches(b, w, d, 5);
         for (int[] c : CryptDressing.corners(w, d)) {
             CryptDressing.bonePile(b, c[0], c[1]);
         }

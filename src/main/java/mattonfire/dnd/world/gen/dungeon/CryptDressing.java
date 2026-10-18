@@ -1,22 +1,27 @@
 package mattonfire.dnd.world.gen.dungeon;
 
+import mattonfire.dnd.classes.Registry.CryptBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CandleBlock;
 import net.minecraft.block.PillarBlock;
 import net.minecraft.block.SkullBlock;
-import net.minecraft.block.SlabBlock;
-import net.minecraft.block.enums.SlabType;
+import net.minecraft.block.enums.BedPart;
 import net.minecraft.util.math.Direction;
 
 /**
- * The Crypt's props: sarcophagi, lit candles, cobwebs, bone piles and skulls. Rooms call these
+ * The Crypt's props: sarcophagi, lit candles and grave candle clusters, cobwebs, bone piles, skulls, grave
+ * moss, funerary reliefs, burial niches and the Lich's sigils. Rooms call these
  * after building (only for {@link DungeonTheme#CRYPT}) with spots they know are clear of their
  * doors, chests, spawn points and traps. Everything is placed only into air ({@link DungeonPiece.Builder#setIfAir}),
  * and every draw comes from the builder's separate {@code dressing} random, so dressing never moves
  * a room's chests, traps or puzzle.
  */
 final class CryptDressing {
+    /** The share of dressing sarcophagi that hold an ambush. */
+    static final float OCCUPIED_CHANCE = 0.35F;
+
     private CryptDressing() {
     }
 
@@ -67,23 +72,139 @@ final class CryptDressing {
     }
 
     /**
-     * A stone coffin two blocks long, from local (x, z) running {@code along}: a polished deepslate
-     * body under a deepslate-tile lid, now and then with candles at its head (the block before it) or,
-     * with {@code candlesAtFoot}, its foot (the block past its end).
+     * A {@link CryptBlocks#SARCOPHAGUS} two blocks long, from local (x, z) (its head) running {@code along}
+     * to its foot. {@value #OCCUPIED_CHANCE} of them hold an ambush (a zombie climbs out when one is opened).
+     * Half the time there are candles or a grave candle cluster at its head (the block before it) or, with
+     * {@code candlesAtFoot}, its foot (the block past its end).
      */
     static void sarcophagus(DungeonPiece.Builder b, int x, int z, Direction along, boolean candlesAtFoot) {
-        BlockState body = Blocks.POLISHED_DEEPSLATE.getDefaultState();
-        BlockState lid = Blocks.DEEPSLATE_TILE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
-        for (int i = 0; i < 2; i++) {
-            int bx = x + along.getOffsetX() * i;
-            int bz = z + along.getOffsetZ() * i;
-            if (b.setIfAir(bx, 1, bz, body)) {
-                b.setIfAir(bx, 2, bz, lid);
-            }
-        }
+        boolean occupied = b.dressing.nextFloat() < OCCUPIED_CHANCE;
+        Direction toHead = along.getOpposite();
+        b.setIfAir(x, 1, z, CryptBlocks.SARCOPHAGUS.half(toHead, BedPart.HEAD, occupied));
+        b.setIfAir(x + along.getOffsetX(), 1, z + along.getOffsetZ(), CryptBlocks.SARCOPHAGUS.half(toHead, BedPart.FOOT, occupied));
         if (b.dressing.nextFloat() < 0.5F) {
             int step = candlesAtFoot ? 2 : -1;
-            candles(b, x + along.getOffsetX() * step, 1, z + along.getOffsetZ() * step);
+            int cx = x + along.getOffsetX() * step;
+            int cz = z + along.getOffsetZ() * step;
+            if (b.dressing.nextFloat() < 0.4F) {
+                candleCluster(b, cx, 1, cz);
+            } else {
+                candles(b, cx, 1, cz);
+            }
+        }
+    }
+
+    /** A {@link CryptBlocks#GRAVE_CANDLE_CLUSTER}: a puddle of wax with burning stubs (light 6). */
+    static void candleCluster(DungeonPiece.Builder b, int x, int y, int z) {
+        b.setIfAir(x, y, z, CryptBlocks.GRAVE_CANDLE_CLUSTER.getDefaultState());
+    }
+
+    /**
+     * Up to {@code count} patches of Grave Moss carpet on the floor (ring 2 inwards), each a few blocks
+     * scattered round a random spot; only into air.
+     */
+    static void mossPatches(DungeonPiece.Builder b, int width, int depth, int count) {
+        for (int i = 0; i < count; i++) {
+            int cx = 2 + b.dressing.nextInt(width - 4);
+            int cz = 2 + b.dressing.nextInt(depth - 4);
+            int size = 2 + b.dressing.nextInt(4);
+            for (int j = 0; j < size; j++) {
+                int x = Math.max(2, Math.min(width - 3, cx + b.dressing.nextInt(3) - 1));
+                int z = Math.max(2, Math.min(depth - 3, cz + b.dressing.nextInt(3) - 1));
+                b.setIfAir(x, 1, z, CryptBlocks.GRAVE_MOSS_CARPET.getDefaultState());
+            }
+        }
+    }
+
+    /**
+     * Funerary Reliefs set into the inner wall (ring 1) at height {@code y}, facing into the room, at
+     * {@code offset} blocks either side of the middle of each wall, each with {@code chance}. They only
+     * replace plain crypt wall ({@link #isPlainWall}), so they never cut into a doorway's trim, a mural or a
+     * seal; doorways are a cell's middle, framed 2 blocks either side of it, so keep {@code offset} past 2
+     * from any doorway.
+     */
+    static void wallReliefs(DungeonPiece.Builder b, int width, int depth, int y, int[] offsets, float chance) {
+        for (Direction wall : Direction.Type.HORIZONTAL) {
+            for (int offset : offsets) {
+                if (b.dressing.nextFloat() >= chance) {
+                    continue;
+                }
+                int x;
+                int z;
+                switch (wall) {
+                    case NORTH -> {
+                        x = width / 2 + offset;
+                        z = 1;
+                    }
+                    case SOUTH -> {
+                        x = width / 2 + offset;
+                        z = depth - 2;
+                    }
+                    case WEST -> {
+                        x = 1;
+                        z = depth / 2 + offset;
+                    }
+                    default -> {
+                        x = width - 2;
+                        z = depth / 2 + offset;
+                    }
+                }
+                setIfPlainWall(b, x, y, z, CryptBlocks.FUNERARY_RELIEF.facing(wall.getOpposite()));
+            }
+        }
+    }
+
+    /** Sets the block only over plain crypt wall (see {@link #isPlainWall}). */
+    static boolean setIfPlainWall(DungeonPiece.Builder b, int x, int y, int z, BlockState state) {
+        BlockState now = b.get(x, y, z);
+        if (now == null || !isPlainWall(now)) {
+            return false;
+        }
+        b.set(x, y, z, state);
+        return true;
+    }
+
+    /** The blocks the Crypt's {@link DungeonTheme.Palette#wall} draws from. */
+    static boolean isPlainWall(BlockState state) {
+        return state.isOf(Blocks.STONE_BRICKS) || state.isOf(Blocks.MOSSY_STONE_BRICKS)
+                || state.isOf(Blocks.CRACKED_STONE_BRICKS) || state.isOf(ModBlockFamilies.OSSUARY_BRICKS.base())
+                || state.isOf(CryptBlocks.GRAVE_MOSS);
+    }
+
+    /**
+     * Burial Niche Walls along a corridor's side walls (local {@code lateral} 2 from its middle line), at
+     * head height (y 2), every third block centred along it (most corridors are only 1-4 blocks long, the
+     * gap between two rooms' walls), each with {@code chance}, facing in.
+     */
+    static void corridorNiches(DungeonPiece.Builder b, Direction.Axis axis, int length, float chance) {
+        for (int i = ((length - 1) % 3) / 2; i < length; i += 3) {
+            for (int side : new int[]{1, 5}) {
+                if (b.dressing.nextFloat() >= chance) {
+                    continue;
+                }
+                Direction front = axis == Direction.Axis.X
+                        ? (side == 1 ? Direction.SOUTH : Direction.NORTH)
+                        : (side == 1 ? Direction.EAST : Direction.WEST);
+                int x = axis == Direction.Axis.X ? i : side;
+                int z = axis == Direction.Axis.X ? side : i;
+                setIfPlainWall(b, x, 2, z, CryptBlocks.BURIAL_NICHE_WALL.facing(front));
+            }
+        }
+    }
+
+    /**
+     * Lich Sigil Floor in a ring round local (cx, cz) on the floor (y 0), between {@code inner} and
+     * {@code outer} blocks out.
+     */
+    static void sigilRing(DungeonPiece.Builder b, int cx, int cz, double inner, double outer) {
+        int r = (int) Math.ceil(outer);
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dz = -r; dz <= r; dz++) {
+                double dist = Math.sqrt(dx * dx + dz * dz);
+                if (dist >= inner && dist <= outer) {
+                    b.set(cx + dx, 0, cz + dz, CryptBlocks.LICH_SIGIL_FLOOR.getDefaultState());
+                }
+            }
         }
     }
 

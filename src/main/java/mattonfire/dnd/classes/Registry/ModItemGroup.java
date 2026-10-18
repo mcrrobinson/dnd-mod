@@ -31,6 +31,8 @@ public class ModItemGroup {
             DwarvenBlocks.all().forEach(entries::add);
             // --- Orc Strongholds ---
             OrcBuildingBlocks.all().forEach(entries::add);
+            // --- Crypt dungeons ---
+            CryptBlocks.all().forEach(entries::add);
         });
         // --- Dragon Temples ---
         ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP)

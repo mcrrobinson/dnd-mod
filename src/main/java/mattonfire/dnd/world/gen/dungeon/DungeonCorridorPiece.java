@@ -74,6 +74,9 @@ public class DungeonCorridorPiece extends DungeonPiece {
                 }
             }
         }
+        if (CryptDressing.applies(this)) {
+            CryptDressing.corridorNiches(b, this.axis, length, 0.5F);
+        }
         if (length >= 5) {
             int mid = length / 2;
             if (this.axis == Direction.Axis.X) {

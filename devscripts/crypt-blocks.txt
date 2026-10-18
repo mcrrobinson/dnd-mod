@@ -1,0 +1,141 @@
+# Checks the Crypt's building blocks (docs/items/crypt-blocks.md): places each one on a platform for screenshots,
+# checks the drops and recipes, the sarcophagus ambush (a zombie climbs out of an occupied one; a Necromancer
+# leaves it sleeping) and the pedestal a Lich sets under its phylactery.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/crypt-blocks.txt
+# Expect in latest.log: each /loot line drops its own block (one Sarcophagus, from the head); /recipe lines unlock
+# a recipe each (or "No new recipes" on a rerun); the [CHAT] "Test passed" lines after "ambush", "emptied",
+# "sleeps", "still occupied" and "pedestal"; the actionbar "The dead within sleep on".
+# Screenshots: crypt-blocks-display, crypt-blocks-close, crypt-blocks-sarcophagus, crypt-blocks-ambush,
+# crypt-blocks-pedestal, crypt-blocks-effigy.
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/difficulty normal
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule mobGriefing true
+/time set 18000
+/kill @e[type=!player,distance=..40]
+/fill -4 149 -4 12 149 12 minecraft:polished_andesite
+/fill -4 150 -4 12 158 12 minecraft:air
+# A wall of Ossuary Bricks with a Funerary Relief and a Burial Niche Wall set into it, the shapes in front
+/fill 0 150 8 8 152 8 dndclasses:ossuary_bricks
+/setblock 2 151 8 dndclasses:funerary_relief[facing=north]
+/setblock 6 151 8 dndclasses:burial_niche_wall[facing=north]
+/setblock 4 151 8 dndclasses:burial_niche_wall[facing=north]
+/setblock 0 150 7 dndclasses:ossuary_brick_stairs[facing=north]
+/setblock 1 150 7 dndclasses:ossuary_brick_slab[type=bottom]
+/setblock 8 150 7 dndclasses:ossuary_brick_wall
+/setblock 8 150 6 dndclasses:ossuary_brick_wall
+/setblock 8 151 7 minecraft:stone
+/setblock 8 151 7 minecraft:air
+# Two sarcophagi (head to the east), the second one occupied; candles, sigil floor, moss, a pedestal
+/setblock 1 150 4 dndclasses:sarcophagus[facing=east,part=foot]
+/setblock 2 150 4 dndclasses:sarcophagus[facing=east,part=head]
+/setblock 1 150 2 dndclasses:sarcophagus[facing=east,part=foot,occupied=true]
+/setblock 2 150 2 dndclasses:sarcophagus[facing=east,part=head,occupied=true]
+/setblock 3 150 4 dndclasses:grave_candle_cluster
+/fill 4 149 3 6 149 5 dndclasses:lich_sigil_floor
+/setblock 5 150 4 dndclasses:phylactery_pedestal
+/fill 7 149 2 8 149 5 dndclasses:grave_moss
+/setblock 6 150 2 dndclasses:grave_moss_carpet
+/setblock 6 150 1 dndclasses:grave_moss_carpet
+/setblock 7 150 1 dndclasses:grave_candle_cluster
+/tp @s 4.5 153 -2.5 0 30
+wait 40
+hud off
+screenshot crypt-blocks-display
+/tp @s 4.5 152.2 5.2 0 15
+wait 10
+screenshot crypt-blocks-close
+/tp @s 1.5 152.5 6.5 -150 50
+wait 10
+screenshot crypt-blocks-sarcophagus
+/tp @s 2.0 153.2 4.5 90 90
+wait 10
+screenshot crypt-blocks-effigy
+hud on
+# Drops: /loot simulates mining each block with a pickaxe (or a hoe for the moss)
+/loot spawn 4 152 0 mine 0 151 8 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 2 151 8 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 6 151 8 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 1 150 4 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 2 150 4 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 3 150 4 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 4 149 3 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 5 150 4 minecraft:diamond_pickaxe
+/loot spawn 4 152 0 mine 7 149 2 minecraft:diamond_hoe
+/loot spawn 4 152 0 mine 6 150 2 minecraft:diamond_hoe
+/kill @e[type=minecraft:item,distance=..30]
+/recipe give @s dndclasses:ossuary_bricks
+/recipe give @s dndclasses:funerary_relief_from_ossuary_bricks_stonecutting
+/recipe give @s dndclasses:burial_niche_wall_from_ossuary_bricks_stonecutting
+/recipe give @s dndclasses:sarcophagus
+/recipe give @s dndclasses:grave_candle_cluster
+/recipe give @s dndclasses:grave_moss
+/recipe give @s dndclasses:grave_moss_carpet
+# Ambush: a survival player opens the occupied sarcophagus and a zombie climbs out
+/gamemode survival
+/effect give @s minecraft:resistance 99999 4 true
+/tp @s 1.5 150 0.5 0 25
+wait 5
+use
+wait 10
+/say ambush
+/execute if entity @e[type=minecraft:zombie,distance=..8]
+/say emptied
+/execute if block 1 150 2 dndclasses:sarcophagus[occupied=false]
+/execute if block 2 150 2 dndclasses:sarcophagus[occupied=false]
+hud off
+/tp @s 1.5 151.5 -1.5 0 30
+wait 5
+screenshot crypt-blocks-ambush
+hud on
+/kill @e[type=minecraft:zombie,distance=..30]
+# A Necromancer leaves it sleeping (clear it first: /setblock post-processes a half against its neighbour)
+/fill 1 150 2 2 150 2 minecraft:air
+/setblock 1 150 2 dndclasses:sarcophagus[facing=east,part=foot,occupied=true]
+/setblock 2 150 2 dndclasses:sarcophagus[facing=east,part=head,occupied=true]
+/dndclass set @s necromancer
+/clear @s dndclasses:class_guidebook
+wait 20
+closescreen
+/tp @s 1.5 150 0.5 0 25
+wait 5
+use
+wait 10
+actionbar
+/say sleeps
+/execute unless entity @e[type=minecraft:zombie,distance=..8]
+/say still occupied
+/execute if block 1 150 2 dndclasses:sarcophagus[occupied=true]
+/dndclass set @s none
+/clear @s dndclasses:class_guidebook
+wait 20
+closescreen
+# Breaking the head breaks the foot too
+/setblock 2 150 4 minecraft:air destroy
+wait 2
+/say foot gone
+/execute if block 1 150 4 minecraft:air
+/kill @e[type=minecraft:item,distance=..30]
+# A Lich raised in the open sets a pedestal under its phylactery
+/gamemode creative
+/fill -4 150 -4 12 158 12 minecraft:air
+/summon dndclasses:lich 4.5 150 4.5 {Rotation:[180f,0f]}
+wait 20
+/say pedestal
+/execute at @e[type=dndclasses:phylactery,limit=1] if block ~ ~-1 ~ dndclasses:phylactery_pedestal
+/data get entity @e[type=dndclasses:phylactery,limit=1] Pos
+/execute as @e[type=dndclasses:phylactery,limit=1] at @s run tp @p ~ ~2 ~-3 0 30
+wait 20
+hud off
+screenshot crypt-blocks-pedestal
+hud on
+/kill @e[type=dndclasses:lich]
+/kill @e[type=dndclasses:phylactery]
+/kill @e[type=!player,distance=..40]
+quit

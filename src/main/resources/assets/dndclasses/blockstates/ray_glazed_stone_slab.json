@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/ray_glazed_stone_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/ray_glazed_stone"
+    },
+    "type=top": {
+      "model": "dndclasses:block/ray_glazed_stone_slab_top"
+    }
+  }
+}

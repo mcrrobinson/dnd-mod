@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:cracked_runic_deepslate_bricks"
+  },
+  "result": "dndclasses:cracked_runic_deepslate_brick_stairs"
+}

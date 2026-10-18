@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "minecraft:gilded_blackstone"
+    },
+    "#": {
+      "item": "minecraft:polished_deepslate"
+    }
+  },
+  "pattern": [
+    "G",
+    "#"
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:tarnished_gilding"
+  },
+  "show_notification": true
+}

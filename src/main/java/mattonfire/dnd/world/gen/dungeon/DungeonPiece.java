@@ -377,7 +377,7 @@ public abstract class DungeonPiece extends ModPiece<DungeonPiece.Builder> {
                             boolean bricked = door.hidden() && depthIn == 1;
                             this.set(x, y, z, bricked ? this.palette.secretWall() : Blocks.AIR.getDefaultState());
                         } else if (depthIn == 1) {
-                            this.set(x, y, z, this.palette.trim());
+                            this.set(x, y, z, this.palette.doorFrame());
                         }
                     }
                 }

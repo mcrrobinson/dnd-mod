@@ -1,5 +1,8 @@
 package mattonfire.dnd.world.gen.dungeon;
 
+import mattonfire.dnd.classes.Blocks.RubbleBlock;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.RuinBlocks;
 import net.minecraft.block.AnvilBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -9,8 +12,8 @@ import net.minecraft.block.enums.SlabType;
 import net.minecraft.util.math.Direction;
 
 /**
- * The Dwarven Ruin's props: rubble heaps, broken pillars, cracked anvils, headless statues, barrels
- * and seams of gilded stone. Like {@link CryptDressing} and {@link WarrenDressing}, rooms call these
+ * The Dwarven Ruin's props: rubble heaps in drifts of Collapsed Rubble, broken pillars, cracked anvils,
+ * headless statues, barrels and seams of gilded stone. Like {@link CryptDressing} and {@link WarrenDressing}, rooms call these
  * after building (only for {@link DungeonTheme#DWARVEN_RUIN}) with spots they know are clear of their
  * doors, chests, spawn points and traps. Props go only into air ({@link DungeonPiece.Builder#setIfAir}),
  * a broken pillar only takes out the pillar's own blocks, and every draw comes from the builder's
@@ -31,11 +34,28 @@ final class RuinDressing {
     }
 
     private static BlockState rubbleSlab(DungeonPiece.Builder b) {
-        Block slab = b.dressing.nextBoolean() ? Blocks.COBBLED_DEEPSLATE_SLAB : Blocks.DEEPSLATE_BRICK_SLAB;
+        Block slab = b.dressing.nextBoolean() ? Blocks.COBBLED_DEEPSLATE_SLAB : ModBlockFamilies.CRACKED_RUNIC_DEEPSLATE_BRICKS.slab();
         return slab.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
     }
 
-    /** A heap of fallen stone at (x, z): a block or two, with a slab on top or beside it. */
+    /** {@code layers} of Collapsed Rubble. */
+    static BlockState rubbleLayers(int layers) {
+        return RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, layers);
+    }
+
+    /**
+     * A drift of Collapsed Rubble round (x, z): up to {@code max} layers on each free floor cell beside it,
+     * thinning out, so a heap looks like it spilled.
+     */
+    static void rubbleDrift(DungeonPiece.Builder b, int x, int z, int max) {
+        for (Direction side : Direction.Type.HORIZONTAL) {
+            if (b.dressing.nextFloat() < 0.6F) {
+                b.setIfAir(x + side.getOffsetX(), 1, z + side.getOffsetZ(), rubbleLayers(1 + b.dressing.nextInt(max)));
+            }
+        }
+    }
+
+    /** A heap of fallen stone at (x, z): a block or two, with a slab on top or beside it, in a drift of rubble. */
     static void rubble(DungeonPiece.Builder b, int x, int z) {
         if (!b.setIfAir(x, 1, z, rubbleBlock(b))) {
             return;
@@ -47,6 +67,7 @@ final class RuinDressing {
             Direction side = Direction.fromHorizontal(b.dressing.nextInt(4));
             b.setIfAir(x + side.getOffsetX(), 1, z + side.getOffsetZ(), rubbleSlab(b));
         }
+        rubbleDrift(b, x, z, 4);
     }
 
     /** A cracked anvil (chipped or damaged) facing {@code facing}. */
@@ -89,6 +110,7 @@ final class RuinDressing {
             Direction other = side.rotateYClockwise();
             b.setIfAir(x + other.getOffsetX(), 1, z + other.getOffsetZ(), rubbleSlab(b));
         }
+        rubbleDrift(b, x, z, 3);
     }
 
     /**

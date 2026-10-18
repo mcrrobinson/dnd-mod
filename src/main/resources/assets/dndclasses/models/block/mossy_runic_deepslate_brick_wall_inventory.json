@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/wall_inventory",
+  "textures": {
+    "wall": "dndclasses:block/mossy_runic_deepslate_bricks"
+  }
+}

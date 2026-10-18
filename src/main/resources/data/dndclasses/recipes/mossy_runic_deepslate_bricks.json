@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:runic_deepslate_bricks"
+    },
+    "M": {
+      "item": "minecraft:moss_block"
+    }
+  },
+  "pattern": [
+    "#M"
+  ],
+  "result": {
+    "item": "dndclasses:mossy_runic_deepslate_bricks"
+  },
+  "show_notification": true
+}

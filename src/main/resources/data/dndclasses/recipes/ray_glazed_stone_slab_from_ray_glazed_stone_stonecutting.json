@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:ray_glazed_stone"
+  },
+  "result": "dndclasses:ray_glazed_stone_slab"
+}

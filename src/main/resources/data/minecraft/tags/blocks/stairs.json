@@ -22,6 +22,9 @@
     "dndclasses:frost_dragonscale_tile_stairs",
     "dndclasses:storm_dragonscale_tile_stairs",
     "dndclasses:ossuary_brick_stairs",
-    "dndclasses:rimestone_brick_stairs"
+    "dndclasses:rimestone_brick_stairs",
+    "dndclasses:cracked_runic_deepslate_brick_stairs",
+    "dndclasses:mossy_runic_deepslate_brick_stairs",
+    "dndclasses:ray_glazed_stone_stairs"
   ]
 }

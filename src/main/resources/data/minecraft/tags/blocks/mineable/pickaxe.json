@@ -117,6 +117,20 @@
     "dndclasses:rimestone_brick_slab",
     "dndclasses:rimestone_brick_wall",
     "dndclasses:fulgurite_spike",
-    "dndclasses:hoarfrost_crystal"
+    "dndclasses:hoarfrost_crystal",
+    "dndclasses:cracked_runic_deepslate_bricks",
+    "dndclasses:cracked_runic_deepslate_brick_stairs",
+    "dndclasses:cracked_runic_deepslate_brick_slab",
+    "dndclasses:cracked_runic_deepslate_brick_wall",
+    "dndclasses:mossy_runic_deepslate_bricks",
+    "dndclasses:mossy_runic_deepslate_brick_stairs",
+    "dndclasses:mossy_runic_deepslate_brick_slab",
+    "dndclasses:mossy_runic_deepslate_brick_wall",
+    "dndclasses:tarnished_gilding",
+    "dndclasses:ray_glazed_stone",
+    "dndclasses:ray_glazed_stone_stairs",
+    "dndclasses:ray_glazed_stone_slab",
+    "dndclasses:ray_glazed_stone_wall",
+    "dndclasses:petrified_remains"
   ]
 }

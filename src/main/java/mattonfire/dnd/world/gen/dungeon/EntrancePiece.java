@@ -1,6 +1,7 @@
 package mattonfire.dnd.world.gen.dungeon;
 
 import java.util.List;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -22,9 +23,10 @@ import net.minecraft.world.Heightmap;
  * timber-shored tunnel into one side, a crude palisade of stakes round it (the goblin camp's, from
  * {@code GoblinCampPiece}) with skull-topped gate posts where the trail comes in, and goblin totems.</li>
  * <li>The Dwarven Ruin: a <b>collapsed dwarven gatehouse</b> in the fortress's stone (polished
- * blackstone and deepslate bricks, a glint of gilded blackstone), a 13x13 hall round the top of the
- * stair with broken walls, four corner towers (some fallen), a great doorway between polished basalt
- * pillars under a broken lintel, a paved approach and rubble and fallen pillars all round.</li>
+ * blackstone and Fallen Runic Bricks, a glint of gilded blackstone), a 13x13 hall round the top of the
+ * stair with broken walls, Collapsed Rubble drifted over its floor, four corner towers (some fallen), a
+ * great doorway between Tarnished Gilding pillars under a broken lintel, a paved approach and rubble
+ * and fallen pillars all round.</li>
  * <li>Other themes: a ring of standing stones round the shaft top.</li>
  * </ul>
  */
@@ -579,9 +581,14 @@ public class EntrancePiece extends DungeonPiece {
                 } else {
                     height = 0;
                 }
+                // Collapsed Rubble drifted over the hall floor, deepest against the walls
+                int rubble = tower < 0 && ring < HALL && ring > SHAFT + 1
+                        && r.nextFloat() < (ring == HALL - 1 ? 0.45F : 0.15F) ? 1 + r.nextInt(ring == HALL - 1 ? 4 : 2) : 0;
                 for (int y = 1; y <= HALL_CLEAR; y++) {
                     BlockState state;
-                    if (y <= height) {
+                    if (y == 1 && rubble > 0) {
+                        state = RuinDressing.rubbleLayers(rubble);
+                    } else if (y <= height) {
                         state = gateStone(b, r);
                     } else if (tower >= 0 && !fallen[tower] && y == height + 1 && Math.abs(dx) == HALL && Math.abs(dz) == HALL) {
                         state = b.palette.surfaceWall();
@@ -599,8 +606,8 @@ public class EntrancePiece extends DungeonPiece {
     }
 
     /**
-     * The great doorway in the wall facing {@code dir}: 3 wide and 4 high, between two polished
-     * basalt pillars with chiselled capitals, under a chiselled lintel broken off on one side (the
+     * The great doorway in the wall facing {@code dir}: 3 wide and 4 high, between two
+     * Tarnished Gilding pillars with chiselled capitals, under a chiselled lintel broken off on one side (the
      * missing piece lies in front); then a paved approach out to the edge of the piece, cleared above.
      */
     private void gateway(Builder b, int ground, int c, Direction dir, long seed) {
@@ -611,7 +618,7 @@ public class EntrancePiece extends DungeonPiece {
             int z = c + dir.getOffsetZ() * HALL + side.getOffsetZ() * l;
             if (Math.abs(l) == 2) {
                 for (int y = 1; y <= HALL_WALL + 1; y++) {
-                    b.set(x, ground + y, z, Blocks.POLISHED_BASALT.getDefaultState());
+                    b.set(x, ground + y, z, ModBlockFamilies.TARNISHED_GILDING.base().getDefaultState());
                 }
                 b.set(x, ground + HALL_WALL + 2, z, b.palette.accent());
                 continue;
@@ -676,13 +683,23 @@ public class EntrancePiece extends DungeonPiece {
                 continue;
             }
             if (drum) {
-                BlockState basalt = Blocks.POLISHED_BASALT.getDefaultState().with(net.minecraft.block.PillarBlock.AXIS, lying.getAxis());
-                b.set(x, ground + 1, z, basalt);
-                b.set(x + lying.getOffsetX(), ground + 1, z + lying.getOffsetZ(), basalt);
+                BlockState fallen = ModBlockFamilies.TARNISHED_GILDING.base().getDefaultState()
+                        .with(net.minecraft.block.PillarBlock.AXIS, lying.getAxis());
+                b.set(x, ground + 1, z, fallen);
+                b.set(x + lying.getOffsetX(), ground + 1, z + lying.getOffsetZ(), fallen);
             } else {
                 b.set(x, ground + 1, z, r.nextFloat() < 0.6F ? Blocks.COBBLED_DEEPSLATE.getDefaultState() : gateStone(b, r));
                 if (r.nextFloat() < 0.4F) {
                     b.set(x, ground + 2, z, Blocks.COBBLED_DEEPSLATE_SLAB.getDefaultState());
+                }
+                // and the heap's spill of rubble beside it, where the ground is level
+                Direction spill = Direction.fromHorizontal(r.nextInt(4));
+                int sx = x + spill.getOffsetX();
+                int sz = z + spill.getOffsetZ();
+                BlockState beside = b.get(sx, ground + 1, sz);
+                BlockState under = b.get(sx, ground, sz);
+                if (beside != null && beside.isAir() && under != null && under.isFullCube(net.minecraft.world.EmptyBlockView.INSTANCE, BlockPos.ORIGIN)) {
+                    b.set(sx, ground + 1, sz, RuinDressing.rubbleLayers(1 + r.nextInt(3)));
                 }
             }
         }

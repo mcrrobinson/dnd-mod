@@ -148,6 +148,19 @@ public final class ModBlockFamilies {
     public static final BlockFamily DRAGON_NEST = BlockFamily.builder("dragon_nest",
             FabricBlockSettings.copyOf(Blocks.SPRUCE_PLANKS).strength(1.0F)
                     .sounds(net.minecraft.sound.BlockSoundGroup.MANGROVE_ROOTS)).slab().build();
+    // --- Dwarven Ruin dungeons & Beholder lair ---
+    /** Fallen Runic Bricks: the fortress stone of a dead hold, cracked through, its gold inlay chipped away. */
+    public static final BlockFamily CRACKED_RUNIC_DEEPSLATE_BRICKS = BlockFamily
+            .builder("cracked_runic_deepslate_bricks", Blocks.CRACKED_DEEPSLATE_BRICKS).stoneShapes().build();
+    /** Fallen Runic Bricks with moss grown into the mortar, the inlay dull. */
+    public static final BlockFamily MOSSY_RUNIC_DEEPSLATE_BRICKS = BlockFamily
+            .builder("mossy_runic_deepslate_bricks", Blocks.DEEPSLATE_BRICKS).stoneShapes().build();
+    /** Dark stone with its gilding flaking off: the ruin's pillars and door frames. Lies along an axis. */
+    public static final BlockFamily TARNISHED_GILDING = BlockFamily
+            .builder("tarnished_gilding", Blocks.GILDED_BLACKSTONE).axisBase().build();
+    /** Stone melted smooth and glassy by a beholder's disintegration ray: its shaft and cavern. */
+    public static final BlockFamily RAY_GLAZED_STONE = BlockFamily
+            .builder("ray_glazed_stone", Blocks.POLISHED_DEEPSLATE).stoneShapes().build();
 
     private ModBlockFamilies() {
     }

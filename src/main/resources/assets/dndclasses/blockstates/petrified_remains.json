@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/petrified_remains"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/petrified_remains",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/petrified_remains",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/petrified_remains",
+      "y": 270
+    }
+  }
+}

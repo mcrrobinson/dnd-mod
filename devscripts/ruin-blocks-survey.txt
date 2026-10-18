@@ -1,0 +1,159 @@
+# Survey shots of a /place'd Dwarven Ruin (gatehouse, then rooms) and a /place'd Beholder lair (cavern, walls, tunnel
+# and shaft top), in new chunks, for before/after comparisons of their blocks (docs/items/ruin-blocks.md).
+# Destructive (/place): use a fresh scratch copy of the run dir.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-scratch -PdevScript=devscripts/ruin-blocks-survey.txt
+# Check: screenshots/ruin-survey-*.png; the "/dungeon info" and "Generated structure" [CHAT] lines in logs/latest.log.
+wait 40
+closescreen
+include _reset.txt
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/effect give @s minecraft:night_vision 9999 0 true
+/gamemode spectator
+# The Ruin: its chunks have to be loaded for /place
+/forceload add 2352 -2512 2544 -2320
+/tp @s 2455 200 -2409
+waitserver 400
+/place structure dndclasses:dwarven_ruin 2448 64 -2416
+waitserver 40
+/dungeon info
+# The gatehouse hall (the entrance is at 2455 106 -2409 here) from two corners; the wait lets the chat fade
+/tp @s 2450 110 -2414 -45 25
+wait 240
+hud off
+screenshot ruin-survey-gatehouse
+/tp @s 2460 110 -2404 135 25
+wait 40
+screenshot ruin-survey-gatehouse-2
+hud on
+# Counts (a fill that replaces a block with itself reports how many there are; it resets their states, so only
+# after the shots): rubble in the hall, gilding
+/fill 2448 105 -2416 2462 109 -2402 dndclasses:collapsed_rubble replace dndclasses:collapsed_rubble
+/fill 2448 100 -2416 2462 120 -2402 dndclasses:tarnished_gilding replace dndclasses:tarnished_gilding
+# Rooms (from /dungeon info: floor y=-21): antechamber, a corridor, the large encounter room, the boss dome
+/tp @s 2475 -19 -2409 90 10
+wait 60
+hud off
+screenshot ruin-survey-antechamber
+/tp @s 2487 -19 -2403 0 5
+wait 20
+screenshot ruin-survey-corridor
+/tp @s 2487 -18 -2383 0 20
+wait 20
+screenshot ruin-survey-encounter
+/tp @s 2431 -14 -2413 0 25
+wait 20
+screenshot ruin-survey-boss
+hud on
+/forceload remove all
+# The lair: its pupil (obsidian) is at the chunk centre, 3000 ?? 3000, its floor between y -38 and -19
+/forceload add 2976 2976 3040 3024
+/tp @s 3000 120 3000
+waitserver 200
+/place structure dndclasses:beholder_lair 3000 0 3000
+waitserver 40
+/execute if block 3000 -38 3000 minecraft:obsidian run tp @s 3013 -33 3000 90 15
+/execute if block 3000 -37 3000 minecraft:obsidian run tp @s 3013 -32 3000 90 15
+/execute if block 3000 -36 3000 minecraft:obsidian run tp @s 3013 -31 3000 90 15
+/execute if block 3000 -35 3000 minecraft:obsidian run tp @s 3013 -30 3000 90 15
+/execute if block 3000 -34 3000 minecraft:obsidian run tp @s 3013 -29 3000 90 15
+/execute if block 3000 -33 3000 minecraft:obsidian run tp @s 3013 -28 3000 90 15
+/execute if block 3000 -32 3000 minecraft:obsidian run tp @s 3013 -27 3000 90 15
+/execute if block 3000 -31 3000 minecraft:obsidian run tp @s 3013 -26 3000 90 15
+/execute if block 3000 -30 3000 minecraft:obsidian run tp @s 3013 -25 3000 90 15
+/execute if block 3000 -29 3000 minecraft:obsidian run tp @s 3013 -24 3000 90 15
+/execute if block 3000 -28 3000 minecraft:obsidian run tp @s 3013 -23 3000 90 15
+/execute if block 3000 -27 3000 minecraft:obsidian run tp @s 3013 -22 3000 90 15
+/execute if block 3000 -26 3000 minecraft:obsidian run tp @s 3013 -21 3000 90 15
+/execute if block 3000 -25 3000 minecraft:obsidian run tp @s 3013 -20 3000 90 15
+/execute if block 3000 -24 3000 minecraft:obsidian run tp @s 3013 -19 3000 90 15
+/execute if block 3000 -23 3000 minecraft:obsidian run tp @s 3013 -18 3000 90 15
+/execute if block 3000 -22 3000 minecraft:obsidian run tp @s 3013 -17 3000 90 15
+/execute if block 3000 -21 3000 minecraft:obsidian run tp @s 3013 -16 3000 90 15
+/execute if block 3000 -20 3000 minecraft:obsidian run tp @s 3013 -15 3000 90 15
+/execute if block 3000 -19 3000 minecraft:obsidian run tp @s 3013 -14 3000 90 15
+wait 60
+hud off
+screenshot ruin-survey-lair-cavern
+/tp @s ~-13 ~-1 ~-9 180 -5
+wait 20
+screenshot ruin-survey-lair-wall
+/tp @s ~12 ~-2 ~9 270 5
+wait 20
+screenshot ruin-survey-lair-tunnel
+/tp @s ~-6 ~4 ~3 225 25
+wait 20
+screenshot ruin-survey-lair-remains
+hud on
+/spreadplayers 3020 3000 0 1 false @s
+wait 20
+/tp @s ~1.5 ~3 ~1.5 135 75
+wait 40
+hud off
+screenshot ruin-survey-lair-shaft
+hud on
+# Counts in the cavern, both halves, at whatever height its floor is: eye-stalks, then petrified remains
+/execute if block 3000 -38 3000 minecraft:obsidian run fill 2981 -37 2981 3000 -25 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -38 3000 minecraft:obsidian run fill 3001 -37 2981 3019 -25 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -37 3000 minecraft:obsidian run fill 2981 -36 2981 3000 -24 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -37 3000 minecraft:obsidian run fill 3001 -36 2981 3019 -24 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -36 3000 minecraft:obsidian run fill 2981 -35 2981 3000 -23 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -36 3000 minecraft:obsidian run fill 3001 -35 2981 3019 -23 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -35 3000 minecraft:obsidian run fill 2981 -34 2981 3000 -22 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -35 3000 minecraft:obsidian run fill 3001 -34 2981 3019 -22 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -34 3000 minecraft:obsidian run fill 2981 -33 2981 3000 -21 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -34 3000 minecraft:obsidian run fill 3001 -33 2981 3019 -21 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -33 3000 minecraft:obsidian run fill 2981 -32 2981 3000 -20 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -33 3000 minecraft:obsidian run fill 3001 -32 2981 3019 -20 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -32 3000 minecraft:obsidian run fill 2981 -31 2981 3000 -19 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -32 3000 minecraft:obsidian run fill 3001 -31 2981 3019 -19 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -31 3000 minecraft:obsidian run fill 2981 -30 2981 3000 -18 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -31 3000 minecraft:obsidian run fill 3001 -30 2981 3019 -18 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -30 3000 minecraft:obsidian run fill 2981 -29 2981 3000 -17 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -30 3000 minecraft:obsidian run fill 3001 -29 2981 3019 -17 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -29 3000 minecraft:obsidian run fill 2981 -28 2981 3000 -16 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -29 3000 minecraft:obsidian run fill 3001 -28 2981 3019 -16 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -28 3000 minecraft:obsidian run fill 2981 -27 2981 3000 -15 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -28 3000 minecraft:obsidian run fill 3001 -27 2981 3019 -15 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -27 3000 minecraft:obsidian run fill 2981 -26 2981 3000 -14 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -27 3000 minecraft:obsidian run fill 3001 -26 2981 3019 -14 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -26 3000 minecraft:obsidian run fill 2981 -25 2981 3000 -13 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -26 3000 minecraft:obsidian run fill 3001 -25 2981 3019 -13 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -25 3000 minecraft:obsidian run fill 2981 -24 2981 3000 -12 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -25 3000 minecraft:obsidian run fill 3001 -24 2981 3019 -12 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -24 3000 minecraft:obsidian run fill 2981 -23 2981 3000 -11 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -24 3000 minecraft:obsidian run fill 3001 -23 2981 3019 -11 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -23 3000 minecraft:obsidian run fill 2981 -22 2981 3000 -10 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -23 3000 minecraft:obsidian run fill 3001 -22 2981 3019 -10 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -22 3000 minecraft:obsidian run fill 2981 -21 2981 3000 -9 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -22 3000 minecraft:obsidian run fill 3001 -21 2981 3019 -9 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -21 3000 minecraft:obsidian run fill 2981 -20 2981 3000 -8 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -21 3000 minecraft:obsidian run fill 3001 -20 2981 3019 -8 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -20 3000 minecraft:obsidian run fill 2981 -19 2981 3000 -7 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -20 3000 minecraft:obsidian run fill 3001 -19 2981 3019 -7 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -19 3000 minecraft:obsidian run fill 2981 -18 2981 3000 -6 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -19 3000 minecraft:obsidian run fill 3001 -18 2981 3019 -6 3019 dndclasses:eye_stalk_growth replace dndclasses:eye_stalk_growth
+/execute if block 3000 -38 3000 minecraft:obsidian run fill 2981 -37 2981 3019 -37 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -37 3000 minecraft:obsidian run fill 2981 -36 2981 3019 -36 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -36 3000 minecraft:obsidian run fill 2981 -35 2981 3019 -35 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -35 3000 minecraft:obsidian run fill 2981 -34 2981 3019 -34 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -34 3000 minecraft:obsidian run fill 2981 -33 2981 3019 -33 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -33 3000 minecraft:obsidian run fill 2981 -32 2981 3019 -32 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -32 3000 minecraft:obsidian run fill 2981 -31 2981 3019 -31 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -31 3000 minecraft:obsidian run fill 2981 -30 2981 3019 -30 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -30 3000 minecraft:obsidian run fill 2981 -29 2981 3019 -29 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -29 3000 minecraft:obsidian run fill 2981 -28 2981 3019 -28 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -28 3000 minecraft:obsidian run fill 2981 -27 2981 3019 -27 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -27 3000 minecraft:obsidian run fill 2981 -26 2981 3019 -26 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -26 3000 minecraft:obsidian run fill 2981 -25 2981 3019 -25 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -25 3000 minecraft:obsidian run fill 2981 -24 2981 3019 -24 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -24 3000 minecraft:obsidian run fill 2981 -23 2981 3019 -23 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -23 3000 minecraft:obsidian run fill 2981 -22 2981 3019 -22 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -22 3000 minecraft:obsidian run fill 2981 -21 2981 3019 -21 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -21 3000 minecraft:obsidian run fill 2981 -20 2981 3019 -20 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -20 3000 minecraft:obsidian run fill 2981 -19 2981 3019 -19 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/execute if block 3000 -19 3000 minecraft:obsidian run fill 2981 -18 2981 3019 -18 3019 dndclasses:petrified_remains replace dndclasses:petrified_remains
+/forceload remove all
+quit

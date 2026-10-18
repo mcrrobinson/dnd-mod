@@ -203,6 +203,15 @@ FAMILIES = [
     Family('dragon_nest', 'Dragon Nest', ['slab'], material='wood', top='dragon_nest_top',
            craft={'pattern': ['SBS', 'BSB', 'SBS'], 'key': {'S': 'minecraft:stick', 'B': 'minecraft:bone'},
                   'count': 2}),
+    # --- Dwarven Ruin dungeons & Beholder lair ---
+    Family('cracked_runic_deepslate_bricks', 'Cracked Runic Deepslate Bricks', ['stairs', 'slab', 'wall']),
+    Family('mossy_runic_deepslate_bricks', 'Mossy Runic Deepslate Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['#M'], 'key': {'#': 'dndclasses:runic_deepslate_bricks', 'M': 'minecraft:moss_block'},
+                  'count': 1}),
+    Family('tarnished_gilding', 'Tarnished Gilding', [], axis=True,
+           craft={'pattern': ['G', '#'], 'key': {'G': 'minecraft:gilded_blackstone', '#': 'minecraft:polished_deepslate'},
+                  'count': 2}),
+    Family('ray_glazed_stone', 'Ray-glazed Stone', ['stairs', 'slab', 'wall']),
 ]
 
 

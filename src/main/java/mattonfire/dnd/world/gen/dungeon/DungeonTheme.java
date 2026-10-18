@@ -149,6 +149,11 @@ public enum DungeonTheme implements StringIdentifiable {
             return Blocks.CHISELED_STONE_BRICKS.getDefaultState();
         }
 
+        /** The frame round a doorway (inside the room's skin); the trim unless a theme says otherwise. */
+        public BlockState doorFrame() {
+            return this.trim();
+        }
+
         public Block pillar() {
             return Blocks.STONE_BRICKS;
         }
@@ -262,18 +267,22 @@ public enum DungeonTheme implements StringIdentifiable {
     }
 
     /**
-     * The Dwarven Ruin: the dwarven fortress's stonework ({@code FortressPiece}) gone to ruin. Deepslate
-     * brick walls, many of them cracked, with tiles and cobbled deepslate where they were patched;
-     * polished deepslate floors, cracked here and there; polished blackstone brick trim, chiselled
-     * deepslate accents, polished basalt pillars, plain lanterns and deepslate brick stairs.
+     * The Dwarven Ruin: the dwarven fortress's stonework ({@code FortressPiece}) gone to ruin. Walls of the
+     * fortresses' Runic Deepslate Bricks, now mostly cracked or mossy (Fallen Runic Bricks) among cracked
+     * deepslate bricks, with tiles and cobbled deepslate where they were patched; polished deepslate floors,
+     * cracked here and there; polished blackstone brick trim, Tarnished Gilding pillars and door frames,
+     * chiselled deepslate accents, plain lanterns and cracked runic brick stairs.
      */
     static class RuinPalette extends Palette {
         @Override
         public BlockState wall(Random random) {
             float r = random.nextFloat();
-            return (r < 0.45F ? Blocks.DEEPSLATE_BRICKS : r < 0.7F ? Blocks.CRACKED_DEEPSLATE_BRICKS
-                    : r < 0.8F ? Blocks.DEEPSLATE_TILES : r < 0.88F ? Blocks.CRACKED_DEEPSLATE_TILES
-                    : r < 0.95F ? Blocks.COBBLED_DEEPSLATE : Blocks.MOSSY_COBBLESTONE).getDefaultState();
+            return (r < 0.1F ? ModBlockFamilies.RUNIC_DEEPSLATE_BRICKS.base()
+                    : r < 0.34F ? ModBlockFamilies.CRACKED_RUNIC_DEEPSLATE_BRICKS.base()
+                    : r < 0.5F ? ModBlockFamilies.MOSSY_RUNIC_DEEPSLATE_BRICKS.base()
+                    : r < 0.64F ? Blocks.CRACKED_DEEPSLATE_BRICKS
+                    : r < 0.74F ? Blocks.DEEPSLATE_TILES : r < 0.82F ? Blocks.CRACKED_DEEPSLATE_TILES
+                    : r < 0.94F ? Blocks.COBBLED_DEEPSLATE : Blocks.MOSSY_COBBLESTONE).getDefaultState();
         }
 
         @Override
@@ -293,18 +302,24 @@ public enum DungeonTheme implements StringIdentifiable {
             return Blocks.CHISELED_DEEPSLATE.getDefaultState();
         }
 
+        /** Dark stone with its gold leaf flaking off. */
         @Override
         public Block pillar() {
-            return Blocks.POLISHED_BASALT;
+            return ModBlockFamilies.TARNISHED_GILDING.base();
+        }
+
+        @Override
+        public BlockState doorFrame() {
+            return ModBlockFamilies.TARNISHED_GILDING.base().getDefaultState();
         }
 
         /**
-         * A doorway walled up with cracked bricks (the stonework a Dwarf's stonecunning picks out: a
-         * hook for the races area).
+         * A doorway walled up with cracked runic bricks (the stonework a Dwarf's stonecunning picks out:
+         * tagged {@code dndclasses:secret_door}).
          */
         @Override
         public BlockState secretWall() {
-            return Blocks.CRACKED_DEEPSLATE_BRICKS.getDefaultState();
+            return ModBlockFamilies.CRACKED_RUNIC_DEEPSLATE_BRICKS.base().getDefaultState();
         }
 
         @Override
@@ -316,7 +331,8 @@ public enum DungeonTheme implements StringIdentifiable {
         public BlockState surface(Random random) {
             float r = random.nextFloat();
             return (r < 0.35F ? Blocks.POLISHED_BLACKSTONE_BRICKS : r < 0.6F ? Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS
-                    : r < 0.85F ? Blocks.DEEPSLATE_BRICKS : Blocks.CRACKED_DEEPSLATE_BRICKS).getDefaultState();
+                    : r < 0.8F ? ModBlockFamilies.MOSSY_RUNIC_DEEPSLATE_BRICKS.base()
+                    : ModBlockFamilies.CRACKED_RUNIC_DEEPSLATE_BRICKS.base()).getDefaultState();
         }
 
         @Override
@@ -326,7 +342,7 @@ public enum DungeonTheme implements StringIdentifiable {
 
         @Override
         public Block stairs() {
-            return Blocks.DEEPSLATE_BRICK_STAIRS;
+            return ModBlockFamilies.CRACKED_RUNIC_DEEPSLATE_BRICKS.stairs();
         }
     }
 }

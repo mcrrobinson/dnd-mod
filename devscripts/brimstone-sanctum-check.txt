@@ -33,11 +33,20 @@ screenshot bsc-anchor
 /execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=4]
 /data get entity @s SpawnDimension
 /execute at @s rotated ~ 0 run setblock ^ ^ ^2 minecraft:respawn_anchor[charges=0]
-wait 220
+# Wait out the background refill (every 200 server ticks) as a spectator, so no Nether mob moves or kills the
+# player, and count server ticks: a slow server runs fewer of them than the client in a plain wait. Go back to
+# the anchor before each check so it always lands on the anchor and prints Test passed/failed.
+/gamemode spectator
+waitserver 220
+/dndhome sanctum anchor
+waitserver 2
 /execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=0]
 /time add 24000
-wait 220
+waitserver 220
+/dndhome sanctum anchor
+waitserver 2
 /execute at @s rotated ~ 0 if block ^ ^ ^2 minecraft:respawn_anchor[charges=4]
+/gamemode survival
 # Fire immunity inside the sanctum, for a Tiefling.
 /effect clear @s
 /effect give @s instant_health 1 5

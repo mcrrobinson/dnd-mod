@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "dndclasses:block/pipeweed_bundle_top",
+    "side": "dndclasses:block/pipeweed_bundle"
+  }
+}

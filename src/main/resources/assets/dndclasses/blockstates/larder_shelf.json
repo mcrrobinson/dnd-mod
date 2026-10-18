@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/larder_shelf"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/larder_shelf",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/larder_shelf",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/larder_shelf",
+      "y": 270
+    }
+  }
+}

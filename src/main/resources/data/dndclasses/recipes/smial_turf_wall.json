@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "minecraft:grass"
+    },
+    "D": {
+      "item": "minecraft:dirt"
+    }
+  },
+  "pattern": [
+    "G",
+    "D",
+    "D"
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:smial_turf_wall"
+  },
+  "show_notification": true
+}

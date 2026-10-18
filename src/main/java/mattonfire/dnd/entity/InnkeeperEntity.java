@@ -308,7 +308,7 @@ public class InnkeeperEntity extends HobbitEntity implements SettlementMerchant 
         super.readCustomDataFromNbt(nbt);
         this.merchant.read(nbt);
         if (this.merchant.savedOffers() != null) {
-            // Innkeepers from before rooms were for rent.
+            // Innkeepers from before rooms were for rent or thatch was for sale.
             InnkeeperTrades.addMissing(this.merchant.savedOffers());
         }
         if (nbt.contains("HonoredOffer")) {

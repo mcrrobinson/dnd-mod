@@ -11,6 +11,7 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
     - 1 emerald each: 2 ale, 4 bread, 3 cooked chicken, 2 pumpkin pie, 8 cookies or 2 honey bottles
     - 2 emeralds: 1 rabbit stew
     - 3 emeralds: 1 cake, or a **Room Key** (see [Rooms for the night](#rooms-for-the-night))
+    - 1 emerald: 8 [Thatch](../items/hobbit-building-blocks.md), listed after the Room Key
   - **Buys (for 1 emerald):** 20 wheat, 24 potatoes, 22 carrots, 10 brown mushrooms or 6 pumpkins.
   - **Halflings** pay 25% less (kin prices, see [Racial homes](../races/racial-homes.md)): rabbit stew 1, cake 2, and the innkeeper takes 15 wheat, 18 potatoes, 16 carrots, 7 mushrooms or 4 pumpkins. One-emerald trades stay at 1.
   - **Halflings only** (kin stock): the [Halfling Sling](../items/racial-weapons.md#halfling-sling) for 6 emeralds (4 at kin price), listed after the other trades. Nobody else sees it.
@@ -31,6 +32,8 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
 
 ### Mug of Ale
 A drink: 3 hunger, 0.4 saturation, 6 s of Regeneration I, and a 25% chance of 8 s of Nausea. Stacks to 16.
+
+Behind the bar stand **Ale Casks**: right-click one with a glass bottle to draw a Mug of Ale yourself. Each holds 4 mugs and slowly refills (see [Hobbit building blocks](../items/hobbit-building-blocks.md#ale-cask)).
 
 ### Bounty board
 - Each board has three notices.

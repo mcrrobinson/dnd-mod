@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen.village;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.InnkeeperEntity;
 import mattonfire.dnd.tavern.Tavern;
 import net.minecraft.block.Block;
@@ -20,8 +22,9 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.random.Random;
 
 /**
- * The Green Dragon: a thatched inn with a round green door, a roaring fire, a bar backed by ale
- * casks and tables laid for supper. The innkeeper tends the bar (food and drink for emeralds) and
+ * The Green Dragon: a thatched inn with half-timbered walls, a round green door in a stone arch, a
+ * roaring fire on a soot-blackened hearth, a bar backed by ale casks you can draw from and tables laid
+ * for supper. The innkeeper tends the bar (food and drink for emeralds) and
  * a bounty board on the east wall posts jobs for adventurers. Up a ladder in the north-east corner,
  * a sleeping loft under the thatch has four beds for guests who rent a room.
  */
@@ -53,12 +56,13 @@ public class InnPiece extends HobbitPiece {
         b.lawn(0, 0, WIDTH - 1, DEPTH - 1, HEIGHT - 1);
         b.fill(1, 0, 1, 13, 0, 9, Blocks.SPRUCE_PLANKS);
 
-        // Walls: a fieldstone footing, plank walls and timber corner posts.
+        // Walls: a fieldstone footing, wattle and daub under a timbered top course, and timber corner posts.
         for (int x = 1; x <= 13; x++) {
             for (int z = 1; z <= 9; z++) {
                 if (x == 1 || x == 13 || z == 1 || z == 9) {
                     b.set(x, 1, z, fieldstone(b));
-                    b.fill(x, 2, z, x, 4, z, Blocks.OAK_PLANKS);
+                    b.fill(x, 2, z, x, 3, z, ModBlockFamilies.WATTLE_AND_DAUB.base());
+                    b.set(x, 4, z, ModBlockFamilies.TIMBERED_WATTLE_AND_DAUB.base());
                 }
             }
         }
@@ -69,11 +73,11 @@ public class InnPiece extends HobbitPiece {
 
         this.roof(b);
 
-        // Fireplace in the west wall, chimney up the outside.
-        b.fill(1, 1, 4, 1, 4, 6, Blocks.BRICKS);
+        // Fireplace in the west wall on a sooty hearth, chimney up the outside.
+        b.fill(1, 1, 4, 1, 4, 6, ModBlockFamilies.HEARTH_STONE.base());
         b.set(1, 1, 5, Blocks.CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, Direction.EAST));
         b.set(1, 2, 5, Blocks.AIR);
-        b.fill(0, 1, 4, 0, 2, 6, Blocks.BRICKS);
+        b.fill(0, 1, 4, 0, 2, 6, ModBlockFamilies.HEARTH_STONE.base());
         b.fill(0, 3, 5, 0, 11, 5, Blocks.BRICKS);
         b.set(0, 12, 5, Blocks.CAMPFIRE);
         b.fill(2, 3, 4, 2, 3, 6, topSlab(Blocks.SPRUCE_SLAB));
@@ -94,24 +98,31 @@ public class InnPiece extends HobbitPiece {
         this.frontage(b);
     }
 
-    /** A thatched gable roof: hay bales stepping up from front and back to a ridge along x. */
+    /**
+     * A thatched gable roof: thatch stairs stepping up from front and back to a slab ridge along x, thatch
+     * along the gable eaves and timbered wattle and daub filling the gable ends.
+     */
     private void roof(Builder b) {
         for (int k = 0; k <= 5; k++) {
             int y = 5 + k;
             int front = k;
             int rear = 10 - k;
             for (int x = 0; x < WIDTH; x++) {
-                b.set(x, y, front, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
-                b.set(x, y, rear, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
+                if (k == 5) {
+                    b.set(x, y, front, slab(this.thatch(x, y, front), false));
+                } else {
+                    b.set(x, y, front, stairs(this.thatch(x, y, front), IN, false));
+                    b.set(x, y, rear, stairs(this.thatch(x, y, rear), OUT, false));
+                }
             }
             for (int z = front + 1; z < rear; z++) {
                 if (k == 0) {
                     b.fill(1, y, z, 13, y, z, Blocks.OAK_PLANKS);
-                    b.set(0, y, z, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
-                    b.set(WIDTH - 1, y, z, pillar(Blocks.HAY_BLOCK, Direction.Axis.X));
+                    b.set(0, y, z, this.thatch(0, y, z).base());
+                    b.set(WIDTH - 1, y, z, this.thatch(WIDTH - 1, y, z).base());
                 } else {
-                    b.set(1, y, z, Blocks.OAK_PLANKS);
-                    b.set(13, y, z, Blocks.OAK_PLANKS);
+                    b.set(1, y, z, ModBlockFamilies.TIMBERED_WATTLE_AND_DAUB.base());
+                    b.set(13, y, z, ModBlockFamilies.TIMBERED_WATTLE_AND_DAUB.base());
                 }
             }
         }
@@ -120,7 +131,8 @@ public class InnPiece extends HobbitPiece {
     private void furnish(Builder b) {
         b.fill(5, 1, 2, 9, 1, 4, Blocks.GREEN_CARPET);
 
-        // Bar counter with drinks and nibbles, ale casks stacked behind.
+        // Bar counter with drinks and nibbles; behind it a row of ale casks to draw from, larder shelves and
+        // more casks on top, and herbs and onions hanging from the ceiling.
         for (int x = 3; x <= 9; x++) {
             b.set(x, 1, 6, topSlab(Blocks.SPRUCE_SLAB));
             if (b.chance(0.45F)) {
@@ -128,10 +140,15 @@ public class InnPiece extends HobbitPiece {
             } else {
                 b.tableFood(x, 2, 6);
             }
-            b.barrel(x, 1, 8, OUT, ALE);
-            b.barrel(x, 2, 8, OUT, x % 2 == 0 ? ALE : PANTRY);
+            b.set(x, 1, 8, facing(HobbitBlocks.ALE_CASK, OUT));
+            if (x % 2 == 0) {
+                b.set(x, 2, 8, facing(HobbitBlocks.ALE_CASK, OUT));
+            } else {
+                b.larder(x, 2, 8, OUT, PANTRY);
+            }
+            b.herbs(x, 4, 8, x % 2 == 0);
         }
-        b.set(10, 1, 8, Blocks.HAY_BLOCK);
+        b.larder(10, 1, 8, OUT, ALE);
         b.set(11, 1, 8, Blocks.CAKE);
 
         // Tables by the front windows and along the east wall.

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "W": {
+      "item": "dndclasses:wattle_and_daub"
+    },
+    "L": {
+      "item": "minecraft:dark_oak_log"
+    }
+  },
+  "pattern": [
+    " W ",
+    "WLW",
+    " W "
+  ],
+  "result": {
+    "count": 4,
+    "item": "dndclasses:timbered_wattle_and_daub"
+  },
+  "show_notification": true
+}

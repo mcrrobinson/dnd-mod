@@ -1,0 +1,61 @@
+# Hobbit Villages building blocks in a village: before (the dev world's old village at 200, 1352, generated
+# before the blocks) and after (a fresh village at 4768, 5536, found with
+# /execute positioned 6000 100 6000 run locate structure dndclasses:hobbit_village).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hobbit-blocks-village.txt
+# Check: run/screenshots/hobbit-village-before-*.png and hobbit-village-after-*.png.
+wait 40
+closescreen
+/gamemode spectator
+/time set 1000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+/tp @s 200 150 1352 0 90
+wait 400
+screenshot hobbit-village-before-top
+/tp @s 200 105 1317 0 35
+wait 100
+screenshot hobbit-village-before-north
+/tp @s 4768 150 5536 0 90
+wait 600
+screenshot hobbit-village-after-top
+/tp @s 4768 110 5500 0 35
+wait 200
+screenshot hobbit-village-after-north
+/tp @s 4804 110 5536 90 35
+wait 200
+screenshot hobbit-village-after-east
+/tp @s 4768 110 5572 180 35
+wait 200
+screenshot hobbit-village-after-south
+/tp @s 4732 110 5536 -90 35
+wait 200
+screenshot hobbit-village-after-west
+# Close-ups: the Green Dragon (faces west), its bar, a market stall and a large smial (faces north).
+/tp @s 4786 120 5546
+/spreadplayers 4786 5546 0 1 false @s
+/tp @s ~ ~4 ~ -90 15
+wait 100
+screenshot hobbit-village-after-inn
+/tp @s 4802.5 72.2 5547.5 -90 20
+wait 20
+screenshot hobbit-village-after-inn-bar
+/tp @s 4757 120 5525
+/spreadplayers 4757 5525 0 1 false @s
+/tp @s ~ ~4 ~ 0 25
+wait 40
+screenshot hobbit-village-after-stall
+/tp @s 4788.5 70.9 5576.2 0 15
+wait 40
+screenshot hobbit-village-after-smial
+/tp @s 4788.5 68.9 5584 0 15
+wait 20
+screenshot hobbit-village-after-smial-door
+/tp @s 4788.5 70.6 5592.5 90 15
+wait 20
+screenshot hobbit-village-after-smial-west
+/tp @s 4788.5 70.6 5592.5 -90 15
+wait 20
+screenshot hobbit-village-after-smial-east
+hud on
+quit

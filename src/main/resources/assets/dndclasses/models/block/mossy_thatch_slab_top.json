@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "dndclasses:block/mossy_thatch",
+    "side": "dndclasses:block/mossy_thatch",
+    "top": "dndclasses:block/mossy_thatch"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:block/cube",
+  "textures": {
+    "particle": "dndclasses:block/ale_cask_side",
+    "north": "dndclasses:block/ale_cask_front",
+    "south": "dndclasses:block/ale_cask_back",
+    "east": "dndclasses:block/ale_cask_side",
+    "west": "dndclasses:block/ale_cask_side",
+    "up": "dndclasses:block/ale_cask_top",
+    "down": "dndclasses:block/ale_cask_top"
+  }
+}

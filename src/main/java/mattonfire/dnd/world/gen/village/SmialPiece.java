@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.village;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -22,9 +23,10 @@ import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.random.Random;
 
 /**
- * A hobbit hole: rooms dug into a grassy hill, a round door and round windows in the front wall,
- * a fenced front garden, and inside a panelled hall with a fireplace, a kitchen and a table laid
- * for second breakfast. Bigger smials add a pantry and a bedroom either side of the hall.
+ * A hobbit hole: rooms dug into a grassy hill, a round door in a stone arch and round windows in a
+ * wattle-and-daub front wall under the hill's cut turf face, a fenced front garden, and inside a
+ * panelled hall with a fireplace on a sooty hearth, a kitchen with larder shelves and herbs hanging
+ * from the ceiling, and a table laid for second breakfast. Bigger smials add a pantry and a bedroom either side of the hall.
  */
 public class SmialPiece extends HobbitPiece {
     public enum Size {
@@ -171,7 +173,8 @@ public class SmialPiece extends HobbitPiece {
                 for (int y = 1; y < top; y++) {
                     b.set(x, y, z, wall ? fieldstone(b) : Blocks.DIRT);
                 }
-                b.set(x, top, z, Blocks.GRASS_BLOCK);
+                // The retaining walls' tops, and the hill's face over the front wall, are cut turf.
+                b.set(x, top, z, wall ? ModBlockFamilies.SMIAL_TURF_WALL.base() : Blocks.GRASS_BLOCK);
                 float roll = b.random.nextFloat();
                 if (roll < 0.3F) {
                     b.set(x, top + 1, z, Blocks.GRASS);
@@ -227,11 +230,11 @@ public class SmialPiece extends HobbitPiece {
             }
         }
 
-        // Fireplace in the back wall, with the chimney poking out of the hill.
-        b.fill(cx - 2, 1, back, cx + 2, 4, back, Blocks.BRICKS);
+        // Fireplace in the back wall on a sooty hearth, with the chimney poking out of the hill.
+        b.fill(cx - 2, 1, back, cx + 2, 4, back, ModBlockFamilies.HEARTH_STONE.base());
         b.set(cx, 1, back, Blocks.CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, OUT));
         b.set(cx, 2, back, Blocks.AIR);
-        b.fill(cx - 1, 1, back + 1, cx + 1, 2, back + 1, Blocks.BRICKS);
+        b.fill(cx - 1, 1, back + 1, cx + 1, 2, back + 1, ModBlockFamilies.HEARTH_STONE.base());
         int chimney = Math.max(this.hillTop(cx, back + 1), 4) + 2;
         b.fill(cx, 3, back + 1, cx, chimney, back + 1, Blocks.BRICKS);
         b.set(cx, chimney + 1, back + 1, Blocks.CAMPFIRE.getDefaultState());
@@ -250,10 +253,14 @@ public class SmialPiece extends HobbitPiece {
     }
 
     private void buildFacade(Builder b, int cx, int x0, int x1) {
+        // A fieldstone footing, wattle and daub under a timbered top course, and the hill's cut turf face above.
         for (int x = x0; x <= x1; x++) {
             for (int y = 1; y <= 5; y++) {
-                b.set(x, y, FACADE, y == 1 ? fieldstone(b) : Blocks.MUD_BRICKS);
+                b.set(x, y, FACADE, y == 1 ? fieldstone(b).getDefaultState()
+                        : (y == 5 ? ModBlockFamilies.TIMBERED_WATTLE_AND_DAUB : ModBlockFamilies.WATTLE_AND_DAUB)
+                                .base().getDefaultState());
             }
+            b.set(x, 6, FACADE, ModBlockFamilies.SMIAL_TURF_WALL.base());
         }
 
         DoorStyle style = DOORS[this.door];
@@ -360,14 +367,17 @@ public class SmialPiece extends HobbitPiece {
                 case 2 -> b.set(hx0, 1, z, facing(Blocks.FURNACE, Direction.EAST));
                 case 3 -> b.set(hx0, 1, z, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3));
                 default -> {
-                    b.barrel(hx0, 1, z, Direction.UP, LARDER);
+                    b.larder(hx0, 1, z, Direction.EAST, LARDER);
                     b.plate(hx0, 2, z);
                 }
             }
             b.frame(hx0, 3, z, Direction.EAST, HobbitFood.hanging(b.random));
+            if ((z - start) % 2 == 0) {
+                b.herbs(hx0 + 1, 4, z, (z - start) % 4 == 0);
+            }
         }
-        b.set(hx0, 1, iz1, Blocks.HAY_BLOCK);
-        b.set(hx0, 2, iz1, Blocks.HAY_BLOCK);
+        b.larder(hx0, 1, iz1, Direction.EAST, PANTRY);
+        b.larder(hx0, 2, iz1, Direction.EAST, LARDER);
 
         // A reading nook along the right wall.
         start = this.size == Size.LARGE ? iz0 + 2 : iz0 + 1;
@@ -412,9 +422,15 @@ public class SmialPiece extends HobbitPiece {
         // Barrels all along the outer wall, more food stacked on top, and more hanging above.
         Block[] stacked = {Blocks.HAY_BLOCK, Blocks.PUMPKIN, Blocks.MELON, Blocks.BARREL, Blocks.BEEHIVE};
         for (int z = iz0; z <= iz1; z++) {
-            b.barrel(px0, 1, z, Direction.EAST, z % 2 == 0 ? PANTRY : LARDER);
+            if (z % 2 == 0) {
+                b.barrel(px0, 1, z, Direction.EAST, PANTRY);
+            } else {
+                b.larder(px0, 1, z, Direction.EAST, LARDER);
+            }
             Block top = b.pick(stacked);
-            if (top == Blocks.BARREL) {
+            if (top == Blocks.HAY_BLOCK) {
+                b.larder(px0, 2, z, Direction.EAST, PANTRY);
+            } else if (top == Blocks.BARREL) {
                 b.barrel(px0, 2, z, Direction.UP, PANTRY);
             } else if (top == Blocks.BEEHIVE) {
                 b.beehive(px0, 2, z, Direction.EAST, 0);
@@ -422,6 +438,9 @@ public class SmialPiece extends HobbitPiece {
                 b.set(px0, 2, z, top);
             }
             b.frame(px0, 3, z, Direction.EAST, HobbitFood.hanging(b.random));
+            if (z % 3 == 0) {
+                b.herbs(px0, 4, z, z % 2 == 0);
+            }
         }
         if (px1 > px0 + 1) {
             for (int z = iz0 + 3; z <= iz1; z++) {
@@ -429,7 +448,7 @@ public class SmialPiece extends HobbitPiece {
                     b.chest(px1, 1, z, Direction.WEST, LARDER);
                     b.set(px1, 2, z, Blocks.CAKE);
                 } else {
-                    b.set(px1, 1, z, Blocks.HAY_BLOCK);
+                    b.larder(px1, 1, z, Direction.WEST, PANTRY);
                     b.set(px1, 2, z, Blocks.PUMPKIN);
                 }
             }

@@ -4,6 +4,9 @@ import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
 import net.minecraft.block.BlockSetType;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.WoodType;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.MapColor;
+import net.minecraft.sound.BlockSoundGroup;
 
 /**
  * The mod's decorative building materials (see {@link BlockFamily} and docs/dev/building-blocks.md). Each one
@@ -73,6 +76,31 @@ public final class ModBlockFamilies {
             .builder("bloodtusk_mud_bricks", Blocks.MUD_BRICKS).stoneShapes().build();
     /** Glassy black-green lumps with rusty pockets, heaped outside the smithy. */
     public static final BlockFamily SMITHY_SLAG = BlockFamily.builder("smithy_slag", Blocks.BLACKSTONE).build();
+    // --- Hobbit Villages ---
+    /** Golden straw roofing for the Green Dragon and the market stalls (hoe, like hay). */
+    public static final BlockFamily THATCH = BlockFamily.builder("thatch", Blocks.HAY_BLOCK).stairs().slab().build();
+    /** Thatch gone green with moss on older roofs. */
+    public static final BlockFamily MOSSY_THATCH = BlockFamily.builder("mossy_thatch", Blocks.HAY_BLOCK).stairs().slab()
+            .build();
+    /** Cream plaster over woven wattle: the Shire's half-timbered walls. */
+    public static final BlockFamily WATTLE_AND_DAUB = BlockFamily.builder("wattle_and_daub", Blocks.MUD_BRICKS).build();
+    /** Wattle and daub with a dark oak beam along the top and down one side, so rows of it make a frame. */
+    public static final BlockFamily TIMBERED_WATTLE_AND_DAUB = BlockFamily
+            .builder("timbered_wattle_and_daub", Blocks.MUD_BRICKS).build();
+    /** The cut face of a smial's hill: a grass band over packed earth (shovel). */
+    public static final BlockFamily SMIAL_TURF_WALL = BlockFamily.builder("smial_turf_wall",
+            FabricBlockSettings.copyOf(Blocks.DIRT).sounds(BlockSoundGroup.GRASS).mapColor(MapColor.PALE_GREEN)).build();
+    /** Smooth pale stone for the arch round a round door. */
+    public static final BlockFamily ROUND_DOOR_FRAME_STONE = BlockFamily
+            .builder("round_door_frame_stone", Blocks.SMOOTH_STONE).stairs().slab().build();
+    /** The keystone at the top of a round door's arch. */
+    public static final BlockFamily ROUND_DOOR_KEYSTONE = BlockFamily.builder("round_door_keystone", Blocks.SMOOTH_STONE)
+            .build();
+    /** Soot-blackened brick round a hobbit fireplace. */
+    public static final BlockFamily HEARTH_STONE = BlockFamily.builder("hearth_stone", Blocks.BRICKS).build();
+    /** A bale of dried pipe-weed leaves, tied with twine (hoe, like hay). */
+    public static final BlockFamily PIPEWEED_BUNDLE = BlockFamily.builder("pipeweed_bundle", Blocks.HAY_BLOCK).axisBase()
+            .build();
 
     private ModBlockFamilies() {
     }

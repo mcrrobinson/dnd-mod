@@ -43,6 +43,8 @@ import mattonfire.dnd.world.GameTime;
  * <li>A customer who dies or walks off more than {@link #MAX_CUSTOMER_DISTANCE} blocks stops trading.</li>
  * <li>Every {@link #RESTOCK_CHECK_TICKS} ticks: on a new day every offer gets its uses back.</li>
  * <li>A trade counts for the faction ({@link FactionEvents#traded}) and drops 3-6 XP when vanilla would.</li>
+ * <li>A racial home's merchant also sells its banner pattern ({@link RacialBannerOffers}), added when the offers
+ * are made or loaded.</li>
  * </ul>
  * The NPC calls {@link #tick()} from {@code mobTick}, {@link #interact} from {@code interactMob}, and
  * {@link #write} / {@link #read} from its NBT methods.
@@ -149,6 +151,9 @@ public final class NpcMerchant {
     public TradeOfferList baseOffers() {
         if (this.offers == null) {
             this.offers = this.npc.getWorld() instanceof ServerWorld world ? this.factory.apply(world) : new TradeOfferList();
+            if (!this.isClient()) {
+                RacialBannerOffers.addMissing(this.npc, this.offers);
+            }
         }
         return this.offers;
     }
@@ -315,6 +320,7 @@ public final class NpcMerchant {
         }
         if (nbt.contains("Offers")) {
             this.offers = new TradeOfferList(nbt.getCompound("Offers"));
+            RacialBannerOffers.addMissing(this.npc, this.offers);
         }
         this.stocks.forEach(stock -> stock.read(nbt));
     }

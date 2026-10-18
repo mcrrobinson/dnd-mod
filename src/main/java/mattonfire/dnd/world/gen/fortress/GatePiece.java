@@ -4,6 +4,7 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Blocks.dwarven.WaystoneBlock;
 import mattonfire.dnd.classes.Registry.DwarvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.nbt.NbtCompound;
@@ -116,8 +117,8 @@ public class GatePiece extends FortressPiece {
             b.column(x, FACADE - 1, 14);
             b.set(x, 15, FACADE - 1, Blocks.GOLD_BLOCK);
         }
-        b.banner(MID - 5, 10, FACADE - 1, OUT, banner);
-        b.banner(MID + 5, 10, FACADE - 1, OUT, banner);
+        b.banner(MID - 5, 10, FACADE - 1, OUT, banner, ModBannerPatterns.CLAN_ANVIL.in(DyeColor.YELLOW));
+        b.banner(MID + 5, 10, FACADE - 1, OUT, banner, ModBannerPatterns.CLAN_ANVIL.in(DyeColor.YELLOW));
         b.set(MID - 5, 6, FACADE - 1, lantern(false));
         b.set(MID - 5, 5, FACADE - 1, wall(RUNIC));
         b.set(MID + 5, 6, FACADE - 1, lantern(false));

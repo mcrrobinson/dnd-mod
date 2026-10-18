@@ -4,6 +4,7 @@ import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
@@ -14,6 +15,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -171,6 +173,9 @@ public class ObservatoryPiece extends CogsdeepPiece {
                 }
             }
         }
+
+        // The Gnome Cog banner over the door, brass on blue.
+        b.banner(0, 4, 7, Direction.SOUTH, DyeColor.BLUE, ModBannerPatterns.GNOME_COG.in(DyeColor.YELLOW));
 
         // Lanterns on gnomish brick posts either side of the door.
         b.set(-1, 2, 7, Blocks.LANTERN);

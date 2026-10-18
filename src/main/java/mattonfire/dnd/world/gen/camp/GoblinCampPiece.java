@@ -7,11 +7,13 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Obstacles.StructureObstacles;
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.classes.Registry.GoblinBlocks;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.world.gen.PieceBlocks;
+import net.minecraft.block.BannerBlock;
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -19,6 +21,7 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.SkullBlock;
+import net.minecraft.block.WallBannerBlock;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.SpawnReason;
@@ -27,11 +30,13 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtHelper;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.RotationPropertyHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -215,6 +220,25 @@ public class GoblinCampPiece extends StructurePiece {
                 List.of(this.at(chief, TENT_FRONT - 2, 2, 1), this.at(chief, TENT_FRONT - 1, 3, 1),
                         this.at(chief, TENT_FRONT - 2, 1, 1)),
                 GUARD_WOLVES, Tier.EASY, true);
+
+        // Banners, drawing no randoms either: the goblin skull on the gate posts, hung facing out, and the
+        // Warlord's standard on the chief's ridge pole when one leads the camp.
+        ModBannerPatterns.Layer skull = ModBannerPatterns.GOBLIN_SKULL.in(DyeColor.LIME);
+        for (int side = -1; side <= 1; side += 2) {
+            BlockPos banner = this.at(gate, RADIUS + 1, 2 * side, 3);
+            set(world, chunkBox, banner, Blocks.BLACK_WALL_BANNER.getDefaultState().with(WallBannerBlock.FACING, gate));
+            if (chunkBox.contains(banner)) {
+                ModBannerPatterns.decorate(world, banner, skull);
+            }
+        }
+        if (warlord) {
+            BlockPos standard = this.at(chief, TENT_FRONT - 1, 0, 4);
+            set(world, chunkBox, standard, Blocks.BLACK_BANNER.getDefaultState()
+                    .with(BannerBlock.ROTATION, RotationPropertyHelper.fromDirection(gate)));
+            if (chunkBox.contains(standard)) {
+                ModBannerPatterns.decorate(world, standard, new ModBannerPatterns.Layer("bo", DyeColor.RED), skull);
+            }
+        }
     }
 
     /** A hide tent, open towards the fire, with its back {@link #TENT_BACK} blocks out on {@code side}. */

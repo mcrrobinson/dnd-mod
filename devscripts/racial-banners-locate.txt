@@ -1,0 +1,30 @@
+# Finds a fresh structure of each kind that hangs a racial banner, far from anything explored, for
+# racial-banners-tour.txt. Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/racial-banners-locate.txt
+# Check: the [CHAT] line of each /locate in latest.log. /locate doesn't generate the chunks, so the structures
+# it finds are built with the current code when the tour first visits them.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 60000 200 60000
+wait 40
+/locate structure dndclasses:orc_stronghold
+waitserver 2
+/locate structure dndclasses:dwarven_fortress
+waitserver 2
+/locate structure dndclasses:elven_enclave
+waitserver 2
+/locate structure dndclasses:dragon_temple
+waitserver 2
+/locate structure dndclasses:cogsdeep
+waitserver 2
+/locate structure dndclasses:hobbit_village
+waitserver 2
+/locate structure dndclasses:goblin_camp
+waitserver 2
+/execute in minecraft:the_nether run tp @s 7500 100 7500
+wait 40
+/locate structure dndclasses:brimstone_sanctum
+waitserver 2
+/execute in minecraft:overworld run tp @s 0 200 0
+wait 20
+quit

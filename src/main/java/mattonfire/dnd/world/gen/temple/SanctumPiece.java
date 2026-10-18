@@ -4,6 +4,7 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Race.DragonAncestry;
 import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -201,7 +202,7 @@ public class SanctumPiece extends TemplePiece {
         }
         b.set(x, 1, z, tiles.base());
         b.set(x, 2, z, top);
-        b.banner(x, 4, DEPTH - 2, FRONT, color);
+        b.banner(x, 4, DEPTH - 2, FRONT, color, ModBannerPatterns.THREE_BREATHS.in(DyeColor.YELLOW));
         b.set(x - 1, 1, z, stairs(tiles, Direction.EAST, false));
         b.set(x + 1, 1, z, stairs(tiles, Direction.WEST, false));
         // An incense brazier either side, in front.

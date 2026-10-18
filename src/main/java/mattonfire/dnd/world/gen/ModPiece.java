@@ -1,6 +1,7 @@
 package mattonfire.dnd.world.gen;
 
 import java.util.function.Consumer;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.entity.MimicEntity;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BeehiveBlock;
@@ -225,6 +226,20 @@ public abstract class ModPiece<B extends ModPiece<B>.Builder> extends StructureP
         public void banner(int x, int y, int z, Direction facing, DyeColor color) {
             Block banner = Registries.BLOCK.get(new Identifier(color.getName() + "_wall_banner"));
             this.set(x, y, z, banner.getDefaultState().with(WallBannerBlock.FACING, facing));
+        }
+
+        /** A wall banner with patterns on it, bottom layer first (see {@link ModBannerPatterns}). */
+        public void banner(int x, int y, int z, Direction facing, DyeColor color, ModBannerPatterns.Layer... layers) {
+            this.banner(x, y, z, facing, color);
+            this.patterns(x, y, z, layers);
+        }
+
+        /** Sets the patterns of the banner just placed at x/y/z (wall or standing), bottom layer first. */
+        public void patterns(int x, int y, int z, ModBannerPatterns.Layer... layers) {
+            BlockPos pos = this.pos(x, y, z);
+            if (this.chunkBox.contains(pos)) {
+                ModBannerPatterns.decorate(this.world, pos, layers);
+            }
         }
 
         /** A bed with its foot at x/y/z and its head one block towards {@code facing} (local). */

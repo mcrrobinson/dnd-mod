@@ -1,12 +1,14 @@
 package mattonfire.dnd.world.gen.enclave;
 
 import mattonfire.dnd.classes.Registry.ElvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.Direction;
 
 /**
@@ -71,6 +73,7 @@ public class MoonwellPiece extends EnclavePiece {
             int z = c[1] * REACH;
             b.fill(x, 1, z, x, 3, z, Blocks.BIRCH_FENCE);
             b.set(x, 4, z, Blocks.WHITE_BANNER);
+            b.patterns(x, 4, z, ModBannerPatterns.SYLVAN_LEAF.in(DyeColor.CYAN));
         }
         if (b.chance(0.5F)) {
             b.elf(0, 1, -REACH, ModEntityTypes.ELF_WARDEN);

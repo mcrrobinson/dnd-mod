@@ -217,6 +217,11 @@
               "identified": true
             }
           ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:clan_anvil_banner_pattern",
+          "weight": 4
         }
       ]
     }

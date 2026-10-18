@@ -23,7 +23,7 @@ The goblins' war leader: a big, crowned Goblin Warrior that bellows for reinforc
 ## Rewards
 - 4-9 gold ingots (+0-2 per Looting level).
 - Killed by a player: 60 XP, 1-3 diamonds, 50% (+10%/Looting) netherite scrap, and 25% (+5%/Looting) a randomly enchanted golden helmet.
-- Killed by a player: 35% the [Warlord's Warhorn](../items/magic-items.md#warlords-warhorn) (Rare, unidentified), and 50% a Rare magic item (unidentified, see [Magic loot](../systems/magic-loot.md)).
+- Killed by a player: 35% the [Warlord's Warhorn](../items/magic-items.md#warlords-warhorn) (Rare, unidentified), 50% a Rare magic item (unidentified, see [Magic loot](../systems/magic-loot.md)), and always the [Goblin Skull banner pattern](../items/banner-patterns.md).
 
 ## Commands
 - `/summon dndclasses:goblin_warlord`

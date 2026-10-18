@@ -2,12 +2,14 @@ package mattonfire.dnd.world.gen.stronghold;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.OrcBuildingBlocks;
 import net.minecraft.block.BannerBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.util.DyeColor;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
@@ -95,6 +97,7 @@ public class FightingPitPiece extends StrongholdPiece {
         int drumB = PB - RADIUS - 1;
         b.set(PA, 1, drumB, OrcBuildingBlocks.WAR_DRUM);
         b.set(PA, 2, drumB, Blocks.RED_BANNER.getDefaultState().with(BannerBlock.ROTATION, 0));
+        b.patterns(PA, 2, drumB, ModBannerPatterns.BLOODTUSK.in(DyeColor.BLACK));
         b.set(PA - 1, 1, drumB, Blocks.DARK_OAK_FENCE);
         b.set(PA + 1, 1, drumB, Blocks.DARK_OAK_FENCE);
         // Torches on posts round the rim.

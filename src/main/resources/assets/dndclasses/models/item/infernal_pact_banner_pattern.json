@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "dndclasses:item/infernal_pact_banner_pattern"
+  }
+}

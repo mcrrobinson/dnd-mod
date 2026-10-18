@@ -1,0 +1,947 @@
+# Checks the racial banner patterns (docs/items/banner-patterns.md).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/racial-banners.txt
+# Expect in latest.log:
+# - the loom: `slots` after `button 0` shows the patterned banner in slot 3, and the "Test passed" after taking it
+#   (a white banner with a red dnd_bloodtusk layer in the inventory)
+# - one "Test passed" per merchant: each saved merchant (Offers with no recipes) loads with its pattern on sale
+# - a fresh Pactbroker makes its offers on `use`, and they end with the Infernal Pact pattern ("Test passed")
+# - two "Test passed, count: N" (N about 10) for the Clan Anvil in 400 rolls of each dwarf barter table
+# - "Test failed" for the Warlord still being there, then "Test passed" for the Goblin Skull pattern it dropped
+# Screenshots: racial-banners-wall (the eight patterns on wall banners, shields in item frames under them),
+# racial-banners-close (the first four), racial-banners-shields (three framed shields), racial-banners-shield
+# (the Gnome Cog shield up close), racial-banners-loom (the loom with the pattern), racial-banners-trades (the
+# Pactbroker's offers scrolled to the end)
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobLoot true
+/time set noon
+/kill @e[type=minecraft:item_frame,distance=..40]
+/kill @e[tag=bannertest]
+/fill -4 149 -14 20 149 10 minecraft:smooth_stone
+/fill -4 150 -14 20 156 10 minecraft:air
+/fill -1 150 8 17 155 8 minecraft:spruce_planks
+# The eight patterns, each on its home's banner colours, and a matching shield in a frame under each
+/setblock 1 154 7 minecraft:red_wall_banner[facing=north]{Patterns:[{Pattern:"bo",Color:15},{Pattern:"dnd_bloodtusk",Color:15}]}
+/setblock 3 154 7 minecraft:blue_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_clan_anvil",Color:4}]}
+/setblock 5 154 7 minecraft:white_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_sylvan_leaf",Color:9}]}
+/setblock 7 154 7 minecraft:red_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_three_breaths",Color:4}]}
+/setblock 9 154 7 minecraft:black_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_infernal_pact",Color:14}]}
+/setblock 11 154 7 minecraft:blue_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_gnome_cog",Color:4}]}
+/setblock 13 154 7 minecraft:yellow_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_green_dragon",Color:13}]}
+/setblock 15 154 7 minecraft:black_wall_banner[facing=north]{Patterns:[{Pattern:"dnd_goblin_skull",Color:5}]}
+/summon minecraft:item_frame 1 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:14,Patterns:[{Pattern:"dnd_bloodtusk",Color:15}]}}}}
+/summon minecraft:item_frame 3 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:11,Patterns:[{Pattern:"dnd_clan_anvil",Color:4}]}}}}
+/summon minecraft:item_frame 5 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:0,Patterns:[{Pattern:"dnd_sylvan_leaf",Color:9}]}}}}
+/summon minecraft:item_frame 7 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:14,Patterns:[{Pattern:"dnd_three_breaths",Color:4}]}}}}
+/summon minecraft:item_frame 9 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:15,Patterns:[{Pattern:"dnd_infernal_pact",Color:14}]}}}}
+/summon minecraft:item_frame 11 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:11,Patterns:[{Pattern:"dnd_gnome_cog",Color:4}]}}}}
+/summon minecraft:item_frame 13 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:4,Patterns:[{Pattern:"dnd_green_dragon",Color:13}]}}}}
+/summon minecraft:item_frame 15 151 7 {Facing:2b,Fixed:1b,Tags:["bannertest"],Item:{id:"minecraft:shield",Count:1b,tag:{BlockEntityTag:{Base:15,Patterns:[{Pattern:"dnd_goblin_skull",Color:5}]}}}}
+# A standing banner too
+/setblock 8 150 4 minecraft:red_banner[rotation=8]{Patterns:[{Pattern:"dnd_bloodtusk",Color:15}]}
+/tp @s 8.5 151.5 -2.5 0 8
+wait 40
+hud off
+screenshot racial-banners-wall
+/tp @s 4.5 152 2.5 0 10
+wait 20
+screenshot racial-banners-close
+/tp @s 6.0 151.2 5.6 0 10
+wait 20
+screenshot racial-banners-shields
+hud on
+
+# The loom: a white banner, red dye and the Bloodtusk pattern
+/clear @s
+/give @s minecraft:white_banner
+/give @s minecraft:red_dye
+/give @s dndclasses:bloodtusk_banner_pattern
+/setblock 8 150 -6 minecraft:loom
+/tp @s 8.5 150 -4.5 180 45
+wait 10
+use
+wait 10
+slots
+slot 31 quick_move
+slot 32 quick_move
+slot 33 quick_move
+wait 5
+button 0
+wait 5
+slots
+screenshot racial-banners-loom
+slot 3 quick_move
+wait 5
+closescreen
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:white_banner",tag:{BlockEntityTag:{Patterns:[{Pattern:"dnd_bloodtusk",Color:14}]}}}]}]
+
+# The Gnome Cog shield up close
+/clear @s
+/tp @s 11.5 150 6.3 0 4
+wait 20
+hud off
+screenshot racial-banners-shield
+hud on
+
+# Merchants: saved ones (no recipes yet) get their pattern when they load
+/summon dndclasses:orc_quartermaster 0 150 -12 {NoAI:1b,Tags:["bannertest"],Offers:{Recipes:[]}}
+/summon dndclasses:elf_speaker 2 150 -12 {NoAI:1b,Tags:["bannertest"],Offers:{Recipes:[]}}
+/summon dndclasses:dragonborn_elder 4 150 -12 {NoAI:1b,Tags:["bannertest"],Offers:{Recipes:[]}}
+/summon dndclasses:tiefling_pactbroker 6 150 -12 {NoAI:1b,Tags:["bannertest"],Offers:{Recipes:[]}}
+/summon dndclasses:gnome_tinker 8 150 -12 {NoAI:1b,Tags:["bannertest"],Offers:{Recipes:[]}}
+/summon dndclasses:innkeeper 10 150 -12 {NoAI:1b,Tags:["bannertest"],Offers:{Recipes:[]}}
+wait 5
+/execute if entity @e[type=dndclasses:orc_quartermaster,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:bloodtusk_banner_pattern"}}]}}]
+/execute if entity @e[type=dndclasses:elf_speaker,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:sylvan_leaf_banner_pattern"}}]}}]
+/execute if entity @e[type=dndclasses:dragonborn_elder,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:three_breaths_banner_pattern"}}]}}]
+/execute if entity @e[type=dndclasses:tiefling_pactbroker,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:infernal_pact_banner_pattern"}}]}}]
+/execute if entity @e[type=dndclasses:gnome_tinker,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:gnome_cog_banner_pattern"}}]}}]
+/execute if entity @e[type=dndclasses:innkeeper,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:green_dragon_banner_pattern"}}]}}]
+/data get entity @e[type=dndclasses:orc_quartermaster,tag=bannertest,limit=1] Offers.Recipes[0]
+/kill @e[tag=bannertest,type=!minecraft:item_frame]
+# A fresh Pactbroker makes its offers when first traded with: the pattern is added to the end
+/summon dndclasses:tiefling_pactbroker 8.5 150 -12.5 {NoAI:1b,Tags:["bannertest"],Rotation:[0f,0f]}
+/tp @s 8.5 150 -10.0 180 10
+wait 10
+use
+wait 10
+scroll -10 -200 0
+wait 5
+screenshot racial-banners-trades
+closescreen
+wait 5
+/execute if entity @e[type=dndclasses:tiefling_pactbroker,tag=bannertest,nbt={Offers:{Recipes:[{sell:{id:"dndclasses:infernal_pact_banner_pattern"}}]}}]
+/data get entity @e[type=dndclasses:tiefling_pactbroker,tag=bannertest,limit=1] Offers.Recipes
+/kill @e[tag=bannertest,type=!minecraft:item_frame]
+
+# The Goblin Warlord drops the Goblin Skull pattern
+/kill @e[type=minecraft:item,distance=..60]
+/summon dndclasses:goblin_warlord 8.5 150 -12.5 {NoAI:1b,Tags:["bannertest"]}
+wait 5
+/damage @e[type=dndclasses:goblin_warlord,tag=bannertest,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/damage @e[type=dndclasses:goblin_warlord,tag=bannertest,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/damage @e[type=dndclasses:goblin_warlord,tag=bannertest,limit=1] 1000 minecraft:player_attack by @s
+wait 40
+/execute if entity @e[type=dndclasses:goblin_warlord,tag=bannertest]
+/execute if entity @e[type=minecraft:item,distance=..60,nbt={Item:{id:"dndclasses:goblin_skull_banner_pattern"}}]
+/kill @e[type=minecraft:item,distance=..60]
+/kill @e[tag=bannertest,type=!minecraft:item_frame]
+
+# The dwarves' barter tables: 400 rolls of each (Clan Anvil weight 4 of 159 / 171, about 10 expected; the chance
+# of none is under 1 in 20000). Expect "Test passed" with a count for each table.
+/kill @e[type=minecraft:item,distance=..80]
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter
+wait 5
+/execute if entity @e[type=minecraft:item,distance=..80,nbt={Item:{id:"dndclasses:clan_anvil_banner_pattern"}}]
+/kill @e[type=minecraft:item,distance=..80]
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+/loot spawn 8 152 -20 loot dndclasses:gameplay/dwarf_barter_honored
+wait 5
+/execute if entity @e[type=minecraft:item,distance=..80,nbt={Item:{id:"dndclasses:clan_anvil_banner_pattern"}}]
+/kill @e[type=minecraft:item,distance=..80]
+wait 10
+quit

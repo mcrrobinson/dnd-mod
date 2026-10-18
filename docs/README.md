@@ -105,7 +105,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Cogsdeep](structures/cogsdeep.md): gnome burrows under forests and meadows: a copper-domed observatory over a spiral stair down to y 11-30, workshops of unpowered contraptions, a clocktower, a gem room and a lush grotto; the Tinkers' law; the Gnome home
 - [Cogsdeep building blocks](structures/cogsdeep-blocks.md): Riveted Brass, Gnomish Bricks, animated Cogwork Panels and Gearwalls, Pipework, Glowcrystals, a Clockface that keeps the time, the Blueprint Table and Telescope Lens; swapped into the burrow, sold by Tinkers
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
-- [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains
+- [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains; the goblin building blocks (Patchwork Hide, Scrap-lashed Planks, junk piles, glyph daubs, Rope-and-Bone Fence, War Order Board), also used in Goblin Warrens (PR #TBD)
 - [Hobbit Tavern](structures/hobbit-tavern.md): innkeeper, bounty board (incl. dungeon clearances with Dungeon Maps) and rentable rooms (Room Keys, Well Rested)
 - [Dungeons](structures/dungeons.md): underground multi-room Crypts under a barrow, Goblin Warrens behind a cave mouth and deep Dwarven Ruins under a collapsed gatehouse, with a planned route to the Lich, the Goblin Warlord or the Beholder, a vault, theme dressing and a Challenge tier
 

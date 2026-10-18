@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cube_all",
+  "textures": {
+    "all": "dndclasses:block/crude_glyph_daub_skull"
+  }
+}

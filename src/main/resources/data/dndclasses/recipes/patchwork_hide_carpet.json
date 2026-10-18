@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:patchwork_hide"
+    }
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "item": "dndclasses:patchwork_hide_carpet",
+    "count": 3
+  },
+  "show_notification": true
+}

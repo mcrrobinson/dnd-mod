@@ -1,0 +1,46 @@
+# Finds places for the goblin building-block survey (goblin-blocks-survey.txt) in a scratch copy of the dev
+# world: places goblin camps at a few chunk centres near the dev world's camp (-408, 1096) and a Goblin Warren
+# at 2448, -2416, and lists the warren's rooms. Also locates the dev world's existing camp and warren, which
+# were generated before the building blocks (the "before" shots).
+# Destructive (/place): use a scratch copy of the run dir.
+# Run: timeout 400 ./gradlew runClient -PdevRunDir=run-goblin -PdevScript=devscripts/goblin-blocks-recon.txt
+# Check: [CHAT] lines in logs/latest.log: "Generated goblin_camp" or "Failed to place structure" per spot,
+# the /dungeon info room list and the /locate results.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set noon
+/weather clear
+/locate structure dndclasses:goblin_camp
+waitserver 2
+/locate structure dndclasses:goblin_warren
+waitserver 2
+/tp @s -248 150 1096
+wait 100
+/place structure dndclasses:goblin_camp -248 80 1096
+waitserver 2
+/tp @s -568 150 1096
+wait 100
+/place structure dndclasses:goblin_camp -568 80 1096
+waitserver 2
+/tp @s -408 150 1256
+wait 100
+/place structure dndclasses:goblin_camp -408 80 1256
+waitserver 2
+/tp @s -408 150 936
+wait 100
+/place structure dndclasses:goblin_camp -408 80 936
+waitserver 2
+/gamemode creative
+/tp @s 2455 200 -2409
+wait 300
+/place structure dndclasses:goblin_warren 2448 64 -2416
+waitserver 2
+wait 60
+/spreadplayers 2455 -2409 0 1 false @s
+wait 40
+/dungeon info
+wait 20
+quit

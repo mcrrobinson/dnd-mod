@@ -1,10 +1,13 @@
 package mattonfire.dnd.world.gen.dungeon;
 
+import mattonfire.dnd.classes.Registry.GoblinBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.ComposterBlock;
+import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.SlabBlock;
 import net.minecraft.block.enums.SlabType;
@@ -19,8 +22,9 @@ import net.minecraft.util.math.Direction;
  * builder's separate {@code dressing} random, so dressing never moves a room's chests, traps or puzzle.
  */
 final class WarrenDressing {
-    /** The hides of the goblin camp's tents ({@code GoblinCampPiece}). */
-    private static final Block[] HIDES = {Blocks.BROWN_WOOL, Blocks.GREEN_WOOL, Blocks.GRAY_WOOL, Blocks.LIME_WOOL, Blocks.BLACK_WOOL};
+    /** The hides of the goblin camp's tents ({@code GoblinCampPiece}): mostly Patchwork Hide. */
+    private static final Block[] HIDES = {Blocks.BROWN_WOOL, GoblinBlocks.PATCHWORK_HIDE, GoblinBlocks.PATCHWORK_HIDE,
+            GoblinBlocks.PATCHWORK_HIDE, Blocks.BLACK_WOOL};
 
     private WarrenDressing() {
     }
@@ -33,11 +37,38 @@ final class WarrenDressing {
         return HIDES[b.dressing.nextInt(HIDES.length)].getDefaultState();
     }
 
-    /** A straw bedroll: a hay bale, sometimes with a brown rug beside it towards {@code side}. */
+    /** A straw bedroll: a hay bale, sometimes with a patchwork rug beside it towards {@code side}. */
     static void bedroll(DungeonPiece.Builder b, int x, int z, Direction side) {
         if (b.setIfAir(x, 1, z, Blocks.HAY_BLOCK.getDefaultState()) && b.dressing.nextFloat() < 0.5F) {
-            b.setIfAir(x + side.getOffsetX(), 1, z + side.getOffsetZ(), Blocks.BROWN_CARPET.getDefaultState());
+            b.setIfAir(x + side.getOffsetX(), 1, z + side.getOffsetZ(), GoblinBlocks.PATCHWORK_HIDE_CARPET.getDefaultState());
         }
+    }
+
+    /** A Goblin Junk Pile, sometimes with a skull or a bone block beside it towards {@code side}. */
+    static void junkPile(DungeonPiece.Builder b, int x, int z, Direction side) {
+        if (!b.setIfAir(x, 1, z, GoblinBlocks.GOBLIN_JUNK_PILE.getDefaultState())) {
+            return;
+        }
+        float r = b.dressing.nextFloat();
+        if (r < 0.3F) {
+            CryptDressing.skull(b, x + side.getOffsetX(), 1, z + side.getOffsetZ());
+        } else if (r < 0.5F) {
+            b.setIfAir(x + side.getOffsetX(), 1, z + side.getOffsetZ(), Blocks.BONE_BLOCK.getDefaultState());
+        }
+    }
+
+    /** A platform of Scrap-lashed Planks from (x0, z0) to (x1, z1) at height {@code y}, replacing what's there. */
+    static void platform(DungeonPiece.Builder b, int x0, int z0, int x1, int z1, int y) {
+        b.fill(x0, y, z0, x1, y, z1, ModBlockFamilies.SCRAP_LASHED_PLANKS.base().getDefaultState());
+    }
+
+    /**
+     * The War Order Board, hung on the north wall in the room's north-east inner corner (above the corner
+     * lantern), facing into the room. Away from the walls' middles, where the doorways are.
+     */
+    static void warOrders(DungeonPiece.Builder b, int width) {
+        b.setIfAir(width - 3, 2, 2, GoblinBlocks.WAR_ORDER_BOARD.getDefaultState()
+                .with(HorizontalFacingBlock.FACING, Direction.SOUTH));
     }
 
     /** A skull on a spruce stake two fences high: the goblins' trophy totem. */
@@ -62,12 +93,12 @@ final class WarrenDressing {
         }
     }
 
-    /** One corner prop: a bedroll, stores, a heap of gnawed bones or a totem. */
+    /** One corner prop: a bedroll, stores, a junk pile or a totem. */
     static void cornerProp(DungeonPiece.Builder b, int x, int z, Direction side) {
         switch (b.dressing.nextInt(4)) {
             case 0 -> bedroll(b, x, z, side);
             case 1 -> stores(b, x, z);
-            case 2 -> CryptDressing.bonePile(b, x, z);
+            case 2 -> junkPile(b, x, z, side);
             default -> totem(b, x, z);
         }
     }
@@ -112,7 +143,7 @@ final class WarrenDressing {
 
     /**
      * A hide lean-to against a wall: two cells along it and two deep. The back row (by the wall) has a
-     * straw bed and a rug under hides three blocks up; the front row has a stake at one end, an open
+     * straw bed and a patchwork rug under hides three blocks up; the front row has a stake at one end, an open
      * end to crawl in at the other, and hides two blocks up.
      */
     static void leanTo(DungeonPiece.Builder b, int x, int z, Direction along, Direction inward) {
@@ -123,7 +154,7 @@ final class WarrenDressing {
             int fx = bx + inward.getOffsetX();
             int fz = bz + inward.getOffsetZ();
             BlockState patch = b.dressing.nextFloat() < 0.15F ? hide(b) : roof;
-            b.setIfAir(bx, 1, bz, i == 0 ? Blocks.HAY_BLOCK.getDefaultState() : Blocks.BROWN_CARPET.getDefaultState());
+            b.setIfAir(bx, 1, bz, i == 0 ? Blocks.HAY_BLOCK.getDefaultState() : GoblinBlocks.PATCHWORK_HIDE_CARPET.getDefaultState());
             b.setIfAir(bx, 3, bz, patch);
             if (i == 0) {
                 b.setIfAir(fx, 1, fz, Blocks.SPRUCE_FENCE.getDefaultState());
@@ -133,12 +164,12 @@ final class WarrenDressing {
     }
 
     /**
-     * A cage 3x3 from (x, z): iron bars round a cell with a skull and bones in it, under a spruce slab
-     * roof. A captive the goblins didn't keep alive.
+     * A cage 3x3 from (x, z): iron bars round a cell with a skull and bones in it, under a roof of
+     * Scrap-lashed Slabs. A captive the goblins didn't keep alive.
      */
     static void cage(DungeonPiece.Builder b, int x, int z) {
         BlockState bars = Blocks.IRON_BARS.getDefaultState();
-        BlockState roof = Blocks.SPRUCE_SLAB.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
+        BlockState roof = ModBlockFamilies.SCRAP_LASHED_PLANKS.slab().getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
         for (int dx = 0; dx < 3; dx++) {
             for (int dz = 0; dz < 3; dz++) {
                 boolean middle = dx == 1 && dz == 1;

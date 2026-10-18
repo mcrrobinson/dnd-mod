@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "F": {
+      "item": "minecraft:spruce_fence"
+    },
+    "B": {
+      "item": "minecraft:bone"
+    },
+    "T": {
+      "item": "minecraft:string"
+    }
+  },
+  "pattern": [
+    "FBF",
+    "FTF"
+  ],
+  "result": {
+    "item": "dndclasses:rope_and_bone_fence",
+    "count": 4
+  },
+  "show_notification": true
+}

@@ -1,0 +1,82 @@
+# Before/after shots of a goblin camp and a Goblin Warren for the goblin building blocks. Places the same camp
+# (-248, 1096) and warren (2448, -2416) that goblin-blocks-recon.txt found room for, so running it on main and on
+# the branch, each in a fresh copy of the dev world, gives the same layouts.
+# Destructive (/place, /dungeon cutaway): use a scratch copy of the run dir.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-survey -PdevScript=devscripts/goblin-blocks-survey.txt
+# Check: screenshots/goblin-survey-*.png; "Generated structure" twice in [CHAT].
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/weather clear
+/effect give @s minecraft:night_vision 99999 0 true
+# The camp
+/tp @s -248 150 1096
+wait 150
+/place structure dndclasses:goblin_camp -248 80 1096
+waitserver 2
+/gamemode spectator
+/spreadplayers -248 1096 0 1 false @s
+wait 20
+/tp @s -247.5 ~30 1096.5 0 90
+wait 200
+hud off
+screenshot goblin-survey-camp-top
+# The camp's floor is at y 63 (its fire at 64); the gate is to the west, the chief's tent to the east
+/execute if block -241 65 1096 dndclasses:war_order_board
+/execute if block -243 63 1096 dndclasses:scrap_lashed_planks
+/tp @s -244.5 64.8 1096.5 -90 6
+wait 60
+screenshot goblin-survey-camp-chief
+/tp @s -247.5 67 1100.5 90 15
+wait 30
+screenshot goblin-survey-camp-west
+/tp @s -247.5 67 1100.5 270 15
+wait 30
+screenshot goblin-survey-camp-east
+/tp @s -247.5 66 1115.5 180 12
+wait 40
+screenshot goblin-survey-camp-gate
+hud on
+# The warren
+/gamemode creative
+/tp @s 2455 200 -2409
+# /place needs every chunk the warren covers loaded
+/forceload add 2390 -2430 2500 -2350
+waitserver 100
+wait 100
+/place structure dndclasses:goblin_warren 2448 64 -2416
+waitserver 2
+wait 60
+/gamemode spectator
+# The antechamber (sleeping den) and its War Order Board in the north-east corner
+/execute if block 2475 37 -2413 dndclasses:war_order_board
+/tp @s 2469.5 37.6 -2404.5 -146 8
+wait 120
+hud off
+screenshot goblin-survey-warren-antechamber
+/tp @s 2470.5 37.6 -2410.5 -117 8
+wait 30
+screenshot goblin-survey-warren-antechamber-2
+# The war hall: the dais, cages and lean-tos
+/tp @s 2431.5 41 -2389.5 180 25
+wait 60
+screenshot goblin-survey-warren-hall
+/tp @s 2487.5 38 -2404.5 180 20
+wait 40
+screenshot goblin-survey-warren-encounter
+/tp @s 2487.5 37.6 -2392.5 180 0
+wait 40
+screenshot goblin-survey-warren-corridor
+hud on
+/dungeon cutaway
+wait 60
+/tp @s 2448 110 -2389 0 90
+wait 200
+hud off
+screenshot goblin-survey-warren-overhead
+hud on
+/forceload remove all
+quit

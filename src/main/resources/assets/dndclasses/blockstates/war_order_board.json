@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/war_order_board"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/war_order_board",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/war_order_board",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/war_order_board",
+      "y": 270
+    }
+  }
+}

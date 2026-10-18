@@ -1,0 +1,18 @@
+{
+  "variants": {
+    "": [
+      {
+        "model": "dndclasses:block/crude_glyph_daub_skull"
+      },
+      {
+        "model": "dndclasses:block/crude_glyph_daub_fist"
+      },
+      {
+        "model": "dndclasses:block/crude_glyph_daub_arrow"
+      },
+      {
+        "model": "dndclasses:block/crude_glyph_daub_warlord"
+      }
+    ]
+  }
+}

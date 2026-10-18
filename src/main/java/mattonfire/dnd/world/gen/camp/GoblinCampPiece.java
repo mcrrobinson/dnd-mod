@@ -6,6 +6,8 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Obstacles.StructureObstacles;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Registry.GoblinBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -15,6 +17,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.HorizontalFacingBlock;
 import net.minecraft.block.SkullBlock;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.entity.EntityType;
@@ -36,9 +39,10 @@ import net.minecraft.world.gen.chunk.ChunkGenerator;
 
 /**
  * The whole goblin camp, built round its centre in world coordinates. From the middle out: a
- * campfire in a stone fire pit ringed by log seats, three hide tents (one on each side but the
- * gate's; the chief's, opposite the gate, holds the loot chest), junk heaps and trophy poles in
- * the corners, and a crude, gappy palisade with a skull-topped gate. The clearing is levelled and
+ * campfire in a stone fire pit ringed by log seats, three Patchwork Hide tents (one on each side
+ * but the gate's; the chief's, opposite the gate, has a plank floor, the War Order Board and the loot
+ * chest), junk piles and trophy poles in the corners, and a crude, gappy palisade of logs, war-marked
+ * posts and rope-and-bone fence with a skull-topped gate. The clearing is levelled and
  * any trees in it cut down. Two wolves are chained to a Guardian Beast post in front of the chief's
  * tent: a Druid or a Bard calms them, anyone else fights them (the camp's one critical obstacle).
  *
@@ -67,7 +71,12 @@ public class GoblinCampPiece extends StructurePiece {
     /** Wolves chained to the Guardian Beast post in front of the chief's tent. */
     private static final int GUARD_WOLVES = 2;
 
-    private static final Block[] HIDES = {Blocks.BROWN_WOOL, Blocks.GREEN_WOOL, Blocks.GRAY_WOOL, Blocks.LIME_WOOL, Blocks.BLACK_WOOL};
+    /**
+     * Tent hides, drawn by index: Patchwork Hide where the green, grey and lime wool used to be, so camps
+     * generated before it was added still match across chunk borders.
+     */
+    private static final Block[] HIDES = {Blocks.BROWN_WOOL, GoblinBlocks.PATCHWORK_HIDE, GoblinBlocks.PATCHWORK_HIDE,
+            GoblinBlocks.PATCHWORK_HIDE, Blocks.BLACK_WOOL};
 
     private final BlockPos center;
     private final long seed;
@@ -129,7 +138,8 @@ public class GoblinCampPiece extends StructurePiece {
         for (int side = -1; side <= 1; side += 2) {
             BlockPos post = this.at(gate, RADIUS, 2 * side, 0);
             for (int y = 1; y <= 3; y++) {
-                set(world, chunkBox, post.up(y), PieceBlocks.pillar(Blocks.SPRUCE_LOG, Direction.Axis.Y));
+                Block log = y == 2 ? GoblinBlocks.GLYPH_DAUBED_SPRUCE_LOG : Blocks.SPRUCE_LOG;
+                set(world, chunkBox, post.up(y), PieceBlocks.pillar(log, Direction.Axis.Y));
             }
             set(world, chunkBox, post.up(4), skull(random));
         }
@@ -220,7 +230,9 @@ public class GoblinCampPiece extends StructurePiece {
                     set(world, chunkBox, this.at(side, r, p, y), r == TENT_BACK ? hide.getDefaultState() : Blocks.AIR.getDefaultState());
                 }
                 if (r < TENT_BACK && Math.abs(p) < TENT_HALF_WIDTH) {
-                    set(world, chunkBox, this.at(side, r, p, 0), Blocks.COARSE_DIRT.getDefaultState());
+                    // The chief has a floor of planks; everyone else sleeps on the dirt.
+                    set(world, chunkBox, this.at(side, r, p, 0), (chief ? ModBlockFamilies.SCRAP_LASHED_PLANKS.base()
+                            : Blocks.COARSE_DIRT).getDefaultState());
                 }
             }
         }
@@ -245,6 +257,9 @@ public class GoblinCampPiece extends StructurePiece {
             set(world, chunkBox, chest, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, in));
             setLoot(world, chunkBox, chest, CHIEF_CHEST, lootSeed);
             set(world, chunkBox, this.at(side, TENT_BACK - 1, 2, 1), Blocks.GOLD_BLOCK.getDefaultState());
+            // The Warlord's war orders, hung on the back wall over the chest.
+            set(world, chunkBox, this.at(side, TENT_BACK - 1, 0, 2),
+                    GoblinBlocks.WAR_ORDER_BOARD.getDefaultState().with(HorizontalFacingBlock.FACING, in));
         } else if (barrel) {
             BlockPos at = this.at(side, TENT_BACK - 1, 2, 1);
             set(world, chunkBox, at, Blocks.BARREL.getDefaultState().with(BarrelBlock.FACING, Direction.UP));
@@ -258,6 +273,11 @@ public class GoblinCampPiece extends StructurePiece {
         float r = random.nextFloat();
         long lootSeed = random.nextLong();
         BlockState skull = skull(random);
+        BlockState junk = GoblinBlocks.GOBLIN_JUNK_PILE.getDefaultState();
+        if (kind != 2) {
+            // A heap of junk at the corner's edge (the bone heap has its own).
+            set(world, chunkBox, this.at(7 * sx, 1, 5 * sz), junk);
+        }
         switch (kind) {
             case 0 -> {
                 // Trophy poles hung with skulls.
@@ -278,10 +298,10 @@ public class GoblinCampPiece extends StructurePiece {
                 set(world, chunkBox, this.at(7 * sx, 2, 7 * sz), Blocks.TORCH.getDefaultState());
             }
             case 2 -> {
-                // A heap of bones round a skull.
+                // A hoard of junk and bones round a skull.
                 set(world, chunkBox, this.at(7 * sx, 1, 7 * sz), Blocks.BONE_BLOCK.getDefaultState());
-                set(world, chunkBox, this.at(6 * sx, 1, 7 * sz), Blocks.BONE_BLOCK.getDefaultState());
-                set(world, chunkBox, this.at(7 * sx, 2, 7 * sz), Blocks.BONE_BLOCK.getDefaultState());
+                set(world, chunkBox, this.at(6 * sx, 1, 7 * sz), junk);
+                set(world, chunkBox, this.at(7 * sx, 2, 7 * sz), junk);
                 set(world, chunkBox, this.at(7 * sx, 1, 6 * sz), skull);
                 set(world, chunkBox, this.at(6 * sx, 1, 6 * sz), Blocks.COBWEB.getDefaultState());
             }
@@ -312,22 +332,28 @@ public class GoblinCampPiece extends StructurePiece {
         world.spawnEntityAndPassengers(goblin);
     }
 
-    /** A crude palisade post: logs, often with a stake or a torch on top, or a stretch of fence. */
+    /**
+     * A crude palisade post: logs (some spruce ones daubed with a war mark), often with a rope-and-bone
+     * stake or a torch on top, or a stretch of rope-and-bone fence.
+     */
     private static void palisade(StructureWorldAccess world, BlockBox chunkBox, BlockPos pos, float r, float r2, int height) {
+        BlockState fence = GoblinBlocks.ROPE_AND_BONE_FENCE.getDefaultState();
         if (r2 < 0.25F) {
             for (int y = 1; y <= 2; y++) {
-                set(world, chunkBox, pos.up(y), Blocks.SPRUCE_FENCE.getDefaultState());
+                set(world, chunkBox, pos.up(y), fence);
             }
             return;
         }
         Block log = r2 < 0.4F ? Blocks.OAK_LOG : r2 < 0.55F ? Blocks.STRIPPED_SPRUCE_LOG : Blocks.SPRUCE_LOG;
+        boolean daubed = r2 >= 0.8F;
         for (int y = 1; y <= height; y++) {
-            set(world, chunkBox, pos.up(y), PieceBlocks.pillar(log, Direction.Axis.Y));
+            Block block = daubed && y == 2 ? GoblinBlocks.GLYPH_DAUBED_SPRUCE_LOG : log;
+            set(world, chunkBox, pos.up(y), PieceBlocks.pillar(block, Direction.Axis.Y));
         }
         if (r < 0.06F) {
             set(world, chunkBox, pos.up(height + 1), Blocks.TORCH.getDefaultState());
         } else if (r < 0.35F) {
-            set(world, chunkBox, pos.up(height + 1), Blocks.SPRUCE_FENCE.getDefaultState());
+            set(world, chunkBox, pos.up(height + 1), fence);
         }
     }
 
@@ -375,6 +401,10 @@ public class GoblinCampPiece extends StructurePiece {
     private static void set(StructureWorldAccess world, BlockBox chunkBox, BlockPos pos, BlockState state) {
         if (chunkBox.contains(pos)) {
             world.setBlockState(pos, state, PieceBlocks.UPDATE);
+            // The palisade's rope-and-bone fence joins up with its neighbours once the chunk is done.
+            if (state.isOf(GoblinBlocks.ROPE_AND_BONE_FENCE)) {
+                world.getChunk(pos).markBlockForPostProcessing(pos);
+            }
         }
     }
 

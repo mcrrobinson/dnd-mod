@@ -41,6 +41,12 @@
     "dndclasses:temple_lacquer_slab",
     "dndclasses:temple_lacquer_fence",
     "dndclasses:paper_lantern",
-    "dndclasses:sparring_post"
+    "dndclasses:sparring_post",
+    "dndclasses:scrap_lashed_planks",
+    "dndclasses:scrap_lashed_stairs",
+    "dndclasses:scrap_lashed_slab",
+    "dndclasses:glyph_daubed_spruce_log",
+    "dndclasses:rope_and_bone_fence",
+    "dndclasses:war_order_board"
   ]
 }

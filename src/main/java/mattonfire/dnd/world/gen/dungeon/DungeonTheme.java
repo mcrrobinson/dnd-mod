@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.dungeon;
 
 import com.mojang.serialization.Codec;
 import mattonfire.dnd.classes.Registry.CryptBlocks;
+import mattonfire.dnd.classes.Registry.GoblinBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -125,6 +126,11 @@ public enum DungeonTheme implements StringIdentifiable {
             return (r < 0.43F ? Blocks.MOSSY_STONE_BRICKS : r < 0.55F ? Blocks.CRACKED_STONE_BRICKS : Blocks.STONE_BRICKS).getDefaultState();
         }
 
+        /** The ceiling over a room or corridor: the wall unless a theme says otherwise (one draw, like wall). */
+        public BlockState ceiling(Random random) {
+            return this.wall(random);
+        }
+
         /** The Crypt's: polished andesite, with andesite, cracked stone bricks and patches of Grave Moss. */
         public BlockState floor(Random random) {
             float r = random.nextFloat();
@@ -179,13 +185,24 @@ public enum DungeonTheme implements StringIdentifiable {
     /**
      * The Goblin Warren: rough-hewn tunnels dug out of the rock and shored up with timber, the
      * palisade's spruce logs from {@code GoblinCampPiece}, coarse earth underfoot and plain lanterns.
+     * The walls are patched with Scrap-lashed Planks and here and there daubed with Crude Glyphs.
      */
     static class WarrenPalette extends Palette {
         @Override
         public BlockState wall(Random random) {
             float r = random.nextFloat();
-            return (r < 0.45F ? Blocks.COBBLESTONE : r < 0.65F ? Blocks.STONE : r < 0.8F ? Blocks.MOSSY_COBBLESTONE
-                    : r < 0.92F ? Blocks.ANDESITE : Blocks.TUFF).getDefaultState();
+            // Cobble and stone patched with scrap planks, now and then daubed with a war mark.
+            return (r < 0.45F ? Blocks.COBBLESTONE : r < 0.62F ? Blocks.STONE : r < 0.76F ? Blocks.MOSSY_COBBLESTONE
+                    : r < 0.86F ? Blocks.ANDESITE : r < 0.93F ? ModBlockFamilies.SCRAP_LASHED_PLANKS.base()
+                    : r < 0.97F ? Blocks.TUFF : GoblinBlocks.CRUDE_GLYPH_DAUB).getDefaultState();
+        }
+
+        /** Bare rock overhead: the planks and war marks are only on the walls. */
+        @Override
+        public BlockState ceiling(Random random) {
+            float r = random.nextFloat();
+            return (r < 0.5F ? Blocks.COBBLESTONE : r < 0.7F ? Blocks.STONE : r < 0.85F ? Blocks.MOSSY_COBBLESTONE
+                    : r < 0.95F ? Blocks.ANDESITE : Blocks.TUFF).getDefaultState();
         }
 
         @Override

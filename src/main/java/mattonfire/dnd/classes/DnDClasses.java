@@ -190,6 +190,7 @@ public class DnDClasses implements ModInitializer {
                 // --- Dragon Temples ---
                 mattonfire.dnd.classes.Registry.ModTempleBlocks.register();
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();
+                mattonfire.dnd.classes.Registry.GoblinBlocks.register();
                 mattonfire.dnd.classes.Blocks.TrapBlocks.register();
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();

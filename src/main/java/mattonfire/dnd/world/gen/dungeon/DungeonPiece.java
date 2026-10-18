@@ -319,7 +319,8 @@ public abstract class DungeonPiece extends ModPiece<DungeonPiece.Builder> {
                         } else if (y == 0) {
                             state = ring == 1 ? this.palette.trim() : this.palette.floor(this.random);
                         } else if (ring == 1 || y == height + 1) {
-                            state = y == 1 && ring == 1 ? this.palette.trim() : this.palette.wall(this.random);
+                            state = y == 1 && ring == 1 ? this.palette.trim()
+                                    : ring > 1 ? this.palette.ceiling(this.random) : this.palette.wall(this.random);
                         } else {
                             state = Blocks.AIR.getDefaultState();
                         }

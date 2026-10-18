@@ -60,4 +60,5 @@ Merchant offers are built in each merchant's `*Trades` class (`TieflingTrades.pa
 - `classes/Client/DndClassesClient.java`: doors and trapdoors on the cutout render layer (`BlockFamily.cutoutBlocks()`)
 - `world/gen/PieceBlocks.java`: the placement helpers
 - `tools/block_families.py`: the resources; `tools/dwarven_block_textures.py`: the Dwarven Fortresses textures, `tools/dwarven_blocks.py`: the resources of their one-off blocks (`DwarvenBlocks`)
+- `tools/lair_block_textures.py`: the Dragon & Frost lairs' textures and the resources of their one-off blocks (`LairBlocks`)
 - `devscripts/block-families.txt`: places the sample family's shapes, checks the drops and the stonecutter, and takes screenshots

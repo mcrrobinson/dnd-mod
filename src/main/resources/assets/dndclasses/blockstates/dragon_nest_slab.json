@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/dragon_nest_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/dragon_nest"
+    },
+    "type=top": {
+      "model": "dndclasses:block/dragon_nest_slab_top"
+    }
+  }
+}

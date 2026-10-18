@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "dndclasses:block/hoarfrost_crystal"
+  }
+}

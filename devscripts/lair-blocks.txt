@@ -1,0 +1,131 @@
+# Checks the Dragon & Frost lairs building blocks (docs/structures/dragon-lairs.md#building-blocks).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/lair-blocks.txt
+# Expect in latest.log:
+# - "Test passed" for the frost scale pile placed from the item on packed ice (snow can't lie on ice; scales can),
+#   and for the hoarfrost crystal placed from the item on the wall's side (facing=north)
+# - /loot lines: scale piles drop their dragon's scales, one per layer (4 storm, 3 frost); storm glass drops
+#   nothing without silk touch; the other blocks drop themselves; the double nest slab drops 2
+# - each /recipe line unlocks 1 recipe ("No new recipes were learned" once an earlier run has unlocked them)
+# Screenshots: lair-blocks-row (every block in a row), lair-blocks-close-* (close-ups), lair-blocks-top.
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/weather clear
+# Load the test area first
+/tp @s 210.5 151.5 0.5 0 12
+wait 100
+/fill 198 149 -4 224 149 12 minecraft:smooth_stone
+/fill 198 150 -4 224 158 12 minecraft:air
+/fill 198 150 9 224 154 9 minecraft:polished_andesite
+# The row, facing north (towards the camera)
+/setblock 200 150 8 dndclasses:fulgurite
+/setblock 200 151 8 dndclasses:fulgurite
+/setblock 201 150 8 dndclasses:fulgurite
+/setblock 201 151 8 dndclasses:fulgurite_spike
+/setblock 202 150 8 dndclasses:fulgurite_spike
+/setblock 203 150 8 dndclasses:storm_glass
+/setblock 203 151 8 dndclasses:storm_glass
+/fill 204 150 8 206 151 8 dndclasses:storm_glass_pane
+/setblock 207 150 8 dndclasses:rimestone
+/setblock 207 151 8 dndclasses:rimestone
+/setblock 208 150 8 dndclasses:rimestone_bricks
+/setblock 208 151 8 dndclasses:rimestone_bricks
+/setblock 209 150 8 dndclasses:rimestone_brick_stairs[facing=south]
+/setblock 210 150 8 dndclasses:rimestone_brick_slab[type=bottom]
+/setblock 211 150 8 dndclasses:rimestone_brick_wall
+/setblock 212 150 8 minecraft:packed_ice
+/setblock 212 151 8 dndclasses:hoarfrost_crystal[facing=up]
+/setblock 213 150 8 dndclasses:hoarfrost_crystal[facing=up]
+/setblock 214 150 8 dndclasses:dragon_nest
+/setblock 214 151 8 dndclasses:dragon_nest
+/setblock 215 150 8 dndclasses:dragon_nest_slab[type=bottom]
+/setblock 216 150 8 dndclasses:dragon_nest_slab[type=double]
+/setblock 217 150 8 dndclasses:storm_scale_pile[layers=4]
+/setblock 218 150 8 dndclasses:storm_scale_pile[layers=8]
+/setblock 219 150 8 minecraft:packed_ice
+/setblock 219 151 8 dndclasses:frost_scale_pile[layers=3]
+/setblock 220 150 8 dndclasses:frost_scale_pile[layers=8]
+/setblock 221 150 8 dndclasses:treasury_coin_pile[layers=5]
+# Neighbour updates join the panes and wall up (setblock skips them for the block itself)
+/setblock 205 152 8 minecraft:stone
+/setblock 205 152 8 minecraft:air
+/setblock 205 150 7 minecraft:stone
+/setblock 205 150 7 minecraft:air
+/setblock 205 151 7 minecraft:stone
+/setblock 205 151 7 minecraft:air
+/setblock 211 151 8 minecraft:stone
+/setblock 211 151 8 minecraft:air
+/tp @s 210.5 151.5 0.5 0 12
+wait 40
+closescreen
+hud off
+screenshot lair-blocks-row
+/tp @s 202.5 151.2 5.5 0 20
+wait 10
+screenshot lair-blocks-close-storm
+/tp @s 209.5 151.2 5.5 0 20
+wait 10
+screenshot lair-blocks-close-frost
+/tp @s 217.5 151.2 5.5 0 25
+wait 10
+screenshot lair-blocks-close-nest
+/tp @s 210.5 153.5 6.0 0 55
+wait 10
+screenshot lair-blocks-top
+hud on
+# Placing from the item: frost scales on packed ice, a crystal on a wall's side
+/gamemode survival
+/clear @s
+/setblock 202 150 2 minecraft:packed_ice
+/give @s dndclasses:frost_scale_pile
+hotbar 0
+/tp @s 202.5 150 0.5 0 20
+wait 10
+use
+wait 10
+/execute if block 202 151 2 dndclasses:frost_scale_pile
+/clear @s
+/setblock 206 151 4 dndclasses:rimestone_bricks
+/give @s dndclasses:hoarfrost_crystal
+hotbar 0
+/tp @s 206.5 150 1.5 0 5
+wait 10
+use
+wait 10
+/execute if block 206 151 3 dndclasses:hoarfrost_crystal[facing=north]
+/clear @s
+/gamemode creative
+/kill @e[type=minecraft:item,distance=..40]
+# Drops
+/loot spawn 210 153 3 mine 217 150 8 minecraft:diamond_shovel
+/loot spawn 210 153 3 mine 219 151 8 minecraft:diamond_shovel
+/loot spawn 210 153 3 mine 203 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 200 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 202 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 207 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 209 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 211 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 213 150 8 minecraft:diamond_pickaxe
+/loot spawn 210 153 3 mine 214 150 8 minecraft:diamond_axe
+/loot spawn 210 153 3 mine 216 150 8 minecraft:diamond_axe
+/kill @e[type=minecraft:item,distance=..40]
+# Recipes parse and exist
+/recipe give @s dndclasses:fulgurite
+/recipe give @s dndclasses:fulgurite_spike
+/recipe give @s dndclasses:rimestone
+/recipe give @s dndclasses:rimestone_bricks
+/recipe give @s dndclasses:rimestone_brick_wall_from_rimestone_stonecutting
+/recipe give @s dndclasses:dragon_nest
+/recipe give @s dndclasses:dragon_nest_slab
+/recipe give @s dndclasses:storm_glass
+/recipe give @s dndclasses:storm_glass_pane
+/recipe give @s dndclasses:hoarfrost_crystal
+/recipe give @s dndclasses:storm_scale_pile
+/recipe give @s dndclasses:frost_scale_pile
+wait 20
+quit

@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=down": {
+      "model": "dndclasses:block/hoarfrost_crystal",
+      "x": 180
+    },
+    "facing=up": {
+      "model": "dndclasses:block/hoarfrost_crystal"
+    },
+    "facing=north": {
+      "model": "dndclasses:block/hoarfrost_crystal",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/hoarfrost_crystal",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "dndclasses:block/hoarfrost_crystal",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "dndclasses:block/hoarfrost_crystal",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

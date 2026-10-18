@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "bottom": "dndclasses:block/dragon_nest_top",
+    "side": "dndclasses:block/dragon_nest",
+    "top": "dndclasses:block/dragon_nest_top"
+  }
+}

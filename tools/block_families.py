@@ -191,6 +191,18 @@ FAMILIES = [
            stem_title='Scrap-lashed', craft={'pattern': ['SO', 'OT'], 'key': {'S': 'minecraft:spruce_planks',
                                                                             'O': 'minecraft:oak_planks',
                                                                             'T': 'minecraft:string'}, 'count': 3}),
+    # --- Dragon & Frost lairs ---
+    Family('fulgurite', 'Fulgurite', [],
+           craft={'pattern': ['###', '#R#', '###'], 'key': {'#': 'minecraft:sand', 'R': 'minecraft:lightning_rod'},
+                  'count': 8}),
+    Family('rimestone', 'Rimestone', [],
+           craft={'pattern': ['###', '#I#', '###'], 'key': {'#': 'minecraft:stone', 'I': 'minecraft:blue_ice'},
+                  'count': 8}),
+    Family('rimestone_bricks', 'Rimestone Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:rimestone'}, 'count': 4}),
+    Family('dragon_nest', 'Dragon Nest', ['slab'], material='wood', top='dragon_nest_top',
+           craft={'pattern': ['SBS', 'BSB', 'SBS'], 'key': {'S': 'minecraft:stick', 'B': 'minecraft:bone'},
+                  'count': 2}),
 ]
 
 

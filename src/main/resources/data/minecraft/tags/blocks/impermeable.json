@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:starglass"
+    "dndclasses:starglass",
+    "dndclasses:storm_glass"
   ]
 }

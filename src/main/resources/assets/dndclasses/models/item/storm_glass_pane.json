@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "dndclasses:block/storm_glass_pane_item"
+  }
+}

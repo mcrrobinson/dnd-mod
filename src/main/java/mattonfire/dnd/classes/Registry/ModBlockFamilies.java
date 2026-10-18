@@ -137,6 +137,17 @@ public final class ModBlockFamilies {
     /** Mismatched boards nailed together at angles with rusty nails and rope: the goblins' idea of carpentry. */
     public static final BlockFamily SCRAP_LASHED_PLANKS = BlockFamily
             .builder("scrap_lashed_planks", Blocks.SPRUCE_PLANKS).stem("scrap_lashed").stairs().slab().build();
+    // --- Dragon & Frost lairs ---
+    /** Dark glassy rock streaked with fused sand where lightning struck: round the Lightning Chaser's nest. */
+    public static final BlockFamily FULGURITE = BlockFamily.builder("fulgurite", Blocks.SMOOTH_BASALT).build();
+    /** Grey stone frozen by a Frost Drake's breath, frost crystals and ice in its cracks: the frost lair's rim. */
+    public static final BlockFamily RIMESTONE = BlockFamily.builder("rimestone", Blocks.STONE).build();
+    public static final BlockFamily RIMESTONE_BRICKS = BlockFamily.builder("rimestone_bricks", Blocks.STONE_BRICKS)
+            .stoneShapes().build();
+    /** Woven branches tangled with bones and shed scales: the floor of both lairs' nests. */
+    public static final BlockFamily DRAGON_NEST = BlockFamily.builder("dragon_nest",
+            FabricBlockSettings.copyOf(Blocks.SPRUCE_PLANKS).strength(1.0F)
+                    .sounds(net.minecraft.sound.BlockSoundGroup.MANGROVE_ROOTS)).slab().build();
 
     private ModBlockFamilies() {
     }

@@ -1,0 +1,39 @@
+# Survey of lairs generated with the lair building blocks (docs/structures/dragon-lairs.md and frost-lairs.md,
+# "Building blocks"): lairs found with lair-blocks-locate.txt in ground nobody had visited (dev world: dragon lair
+# centre -46372 250 33480, frost lair -39144 179 35764). Elsewhere, visit new lairs once and read their centres
+# from the Lair lines this script logs. The pages' existing pictures show the lairs before.
+# Run: timeout 500 ./gradlew runClient -PdevScript=devscripts/lair-blocks-survey.txt
+# Check: screenshots lair-after-*: fulgurite and spikes on the storm lair's floor and round its
+# stones, storm glass under the copper caps, the woven nest heaped with coin piles and storm scales; rimestone in
+# the frost lair's rim and spire feet, hoarfrost crystals on the spires and round the nest, frost scales.
+wait 40
+closescreen
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+# --- the new dragon lair
+/tp @s -46372 270 33454 0 40
+wait 800
+/execute as @e[type=dndclasses:lightning_chaser,distance=..300] run data get entity @s Lair
+screenshot lair-after-storm
+/tp @s -46372 258 33470 0 45
+wait 40
+screenshot lair-after-storm-nest
+/tp @s -46360 256 33470 45 25
+wait 40
+screenshot lair-after-storm-stones
+# --- the new frost lair
+/tp @s -39144 215 35740 0 40
+wait 600
+/execute as @e[type=dndclasses:frost_drake,distance=..200] run data get entity @s Lair
+screenshot lair-after-frost
+/tp @s -39144 196 35756 0 40
+wait 40
+screenshot lair-after-frost-nest
+/tp @s -39130 190 35752 45 25
+wait 40
+screenshot lair-after-frost-rim
+hud on
+quit

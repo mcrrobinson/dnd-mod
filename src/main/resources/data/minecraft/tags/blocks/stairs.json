@@ -21,6 +21,7 @@
     "dndclasses:ember_dragonscale_tile_stairs",
     "dndclasses:frost_dragonscale_tile_stairs",
     "dndclasses:storm_dragonscale_tile_stairs",
-    "dndclasses:ossuary_brick_stairs"
+    "dndclasses:ossuary_brick_stairs",
+    "dndclasses:rimestone_brick_stairs"
   ]
 }

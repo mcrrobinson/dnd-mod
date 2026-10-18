@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "S": {
+      "item": "minecraft:string"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "T": {
+      "item": "minecraft:torch"
+    }
+  },
+  "pattern": [
+    " S ",
+    "PTP",
+    " P "
+  ],
+  "result": {
+    "item": "dndclasses:paper_lantern"
+  },
+  "show_notification": true
+}

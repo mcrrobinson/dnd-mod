@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:heartwood_fence"
+    "dndclasses:heartwood_fence",
+    "dndclasses:temple_lacquer_fence"
   ]
 }

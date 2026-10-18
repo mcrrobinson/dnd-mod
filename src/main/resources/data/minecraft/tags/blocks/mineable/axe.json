@@ -35,6 +35,12 @@
     "dndclasses:war_drum",
     "dndclasses:larder_shelf",
     "dndclasses:ale_cask",
-    "dndclasses:blueprint_table"
+    "dndclasses:blueprint_table",
+    "dndclasses:temple_lacquer_planks",
+    "dndclasses:temple_lacquer_stairs",
+    "dndclasses:temple_lacquer_slab",
+    "dndclasses:temple_lacquer_fence",
+    "dndclasses:paper_lantern",
+    "dndclasses:sparring_post"
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "dndclasses:block/paper_lantern"
+    },
+    "hanging=true": {
+      "model": "dndclasses:block/paper_lantern_hanging"
+    }
+  }
+}

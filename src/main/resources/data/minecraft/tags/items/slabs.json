@@ -17,6 +17,9 @@
     "dndclasses:mossy_thatch_slab",
     "dndclasses:round_door_frame_stone_slab",
     "dndclasses:cut_riveted_brass_slab",
-    "dndclasses:gnomish_brick_slab"
+    "dndclasses:gnomish_brick_slab",
+    "dndclasses:ember_dragonscale_tile_slab",
+    "dndclasses:frost_dragonscale_tile_slab",
+    "dndclasses:storm_dragonscale_tile_slab"
   ]
 }

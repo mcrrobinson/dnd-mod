@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/storm_dragonscale_tile_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/storm_dragonscale_tiles"
+    },
+    "type=top": {
+      "model": "dndclasses:block/storm_dragonscale_tile_slab_top"
+    }
+  }
+}

@@ -3,6 +3,8 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Race.DragonAncestry;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -13,7 +15,8 @@ import net.minecraft.util.math.Direction;
 /**
  * The courtyard at the top of the grand stair, 21 by 15: a gilded path of polished blackstone from the stair
  * to the sanctum door that parts round the Ember statue in the middle, with the Frost and Storm statues
- * either side ({@link StatuePiece}), soul-lantern posts at the corners and Templars on watch.
+ * either side ({@link StatuePiece}), incense-brazier posts at the corners (Ember at the front, Frost and Storm at
+ * the back on their statues' sides), paper lanterns on lacquered posts beside the path and Templars on watch.
  */
 public class CourtyardPiece extends TemplePiece {
     static final int WIDTH = DragonTemplePlanner.COURT_WIDTH;
@@ -71,12 +74,20 @@ public class CourtyardPiece extends TemplePiece {
                 b.set(x, 0, z, floor);
             }
         }
-        // Soul-lantern posts at the corners.
+        // Incense-brazier posts at the corners: Ember at the front, Frost and Storm at the back.
         for (int x : new int[]{1, WIDTH - 2}) {
             for (int z : new int[]{1, DEPTH - 2}) {
                 b.set(x, 1, z, Blocks.CHISELED_POLISHED_BLACKSTONE);
                 b.fill(x, 2, z, x, 3, z, Blocks.POLISHED_BLACKSTONE_WALL);
-                b.set(x, 4, z, soulLantern(false));
+                DragonAncestry kind = z == 1 ? DragonAncestry.EMBER : x < MID ? DragonAncestry.FROST : DragonAncestry.STORM;
+                b.set(x, 4, z, ModTempleBlocks.brazier(kind));
+            }
+        }
+        // Paper lanterns on lacquered posts either side of the path, at the stair and at the sanctum door.
+        for (int x : new int[]{MID - 4, MID + 4}) {
+            for (int z : new int[]{1, DEPTH - 3}) {
+                b.fill(x, 1, z, x, 2, z, ModBlockFamilies.TEMPLE_LACQUER_PLANKS.fence());
+                b.set(x, 3, z, ModTempleBlocks.PAPER_LANTERN);
             }
         }
         // Templars on watch.

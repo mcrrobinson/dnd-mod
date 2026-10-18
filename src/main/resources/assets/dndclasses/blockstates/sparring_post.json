@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/sparring_post"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/sparring_post",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/sparring_post",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/sparring_post",
+      "y": 270
+    }
+  }
+}

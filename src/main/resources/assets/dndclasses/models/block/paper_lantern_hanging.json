@@ -1,0 +1,270 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "lantern": "dndclasses:block/paper_lantern",
+    "particle": "dndclasses:block/paper_lantern"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        3,
+        5
+      ],
+      "to": [
+        11,
+        4,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            0,
+            14,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            0,
+            14,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        4,
+        4
+      ],
+      "to": [
+        12,
+        13,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lantern",
+          "uv": [
+            0,
+            0,
+            8,
+            9
+          ]
+        },
+        "east": {
+          "texture": "#lantern",
+          "uv": [
+            0,
+            0,
+            8,
+            9
+          ]
+        },
+        "south": {
+          "texture": "#lantern",
+          "uv": [
+            0,
+            0,
+            8,
+            9
+          ]
+        },
+        "west": {
+          "texture": "#lantern",
+          "uv": [
+            0,
+            0,
+            8,
+            9
+          ]
+        },
+        "up": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            8,
+            16,
+            16
+          ]
+        },
+        "down": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            8,
+            16,
+            16
+          ]
+        }
+      },
+      "shade": false
+    },
+    {
+      "from": [
+        5,
+        13,
+        5
+      ],
+      "to": [
+        11,
+        14,
+        11
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "east": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "south": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "west": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            6,
+            14,
+            7
+          ]
+        },
+        "up": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            0,
+            14,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#lantern",
+          "uv": [
+            8,
+            0,
+            14,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        14,
+        7.5
+      ],
+      "to": [
+        8.5,
+        16,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#lantern",
+          "uv": [
+            14,
+            0,
+            15,
+            2
+          ]
+        },
+        "east": {
+          "texture": "#lantern",
+          "uv": [
+            14,
+            0,
+            15,
+            2
+          ]
+        },
+        "south": {
+          "texture": "#lantern",
+          "uv": [
+            14,
+            0,
+            15,
+            2
+          ]
+        },
+        "west": {
+          "texture": "#lantern",
+          "uv": [
+            14,
+            0,
+            15,
+            2
+          ]
+        },
+        "up": {
+          "texture": "#lantern"
+        },
+        "down": {
+          "texture": "#lantern"
+        }
+      }
+    }
+  ]
+}

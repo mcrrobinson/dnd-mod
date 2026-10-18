@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Registry.ModItems;
+import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -14,7 +15,7 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The training yard along the other side of the courtyard: a beaten floor of coarse dirt and gravel, three
- * targets on hay bales along the parapet, armour stands in the Knight set, a grindstone and an anvil, and a
+ * targets on hay bales along the parapet, three sparring posts, armour stands in the Knight set, a grindstone and an anvil, and a
  * Templar or two at drill.
  */
 public class TrainingYardPiece extends TemplePiece {
@@ -41,6 +42,10 @@ public class TrainingYardPiece extends TemplePiece {
         for (int z = 5; z < DEPTH - 3; z += 6) {
             b.set(1, 1, z, Blocks.HAY_BLOCK);
             b.set(1, 2, z, Blocks.TARGET);
+        }
+        // Sparring posts, their padded fronts towards the middle of the yard.
+        for (int z = 8; z <= 20; z += 6) {
+            b.set(3, 1, z, facing(ModTempleBlocks.SPARRING_POST, Direction.EAST));
         }
         // Armour stands in the Knight set: the first in the full set, the others in what's left of it.
         ItemStack[] knight = {new ItemStack(ModItems.KNIGHT_HELMET), new ItemStack(ModItems.KNIGHT_CHESTPLATE),

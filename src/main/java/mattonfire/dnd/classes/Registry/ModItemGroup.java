@@ -32,6 +32,9 @@ public class ModItemGroup {
             // --- Orc Strongholds ---
             OrcBuildingBlocks.all().forEach(entries::add);
         });
+        // --- Dragon Temples ---
+        ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP)
+                .register(entries -> ModTempleBlocks.tabBlocks().forEach(entries::add));
         // Example of adding to existing Item Group
         ItemGroupEvents.modifyEntriesEvent(DND_CLASSES_ITEMGROUP).register(entries -> {
             entries.add(ModItems.CLASS_GUIDEBOOK);

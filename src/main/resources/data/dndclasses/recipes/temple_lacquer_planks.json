@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:dark_oak_planks"
+    },
+    "D": {
+      "item": "minecraft:red_dye"
+    }
+  },
+  "pattern": [
+    "###",
+    "#D#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:temple_lacquer_planks"
+  },
+  "show_notification": true
+}

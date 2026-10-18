@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/temple_lacquer_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/temple_lacquer_planks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/temple_lacquer_slab_top"
+    }
+  }
+}

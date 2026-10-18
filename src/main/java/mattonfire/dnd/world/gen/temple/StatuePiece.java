@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Race.DragonAncestry;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,7 +14,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * One of the courtyard's three dragon statues, block-built on a gilded plinth and 10 blocks tall: a dragon
+ * One of the courtyard's three dragon statues, block-built on a plinth of its colour's Dragonscale Tiles with
+ * gilded corners and 10 blocks tall: a dragon
  * sitting up on its haunches with its wings half spread, looking down the stair.
  * <ul>
  * <li>Ember: red nether brick, magma eyes and red horns (red nether brick walls stand in for fire coral,
@@ -79,11 +81,12 @@ public class StatuePiece extends TemplePiece {
         Block wing = p[1];
         Block belly = p[2];
         Block eye = p[3];
-        // The plinth: polished blackstone with gilded corners.
+        // The plinth: the statue's Dragonscale Tiles with gilded corners.
+        Block tiles = ModBlockFamilies.dragonscale(this.kind).base();
         for (int x = 0; x < SIZE; x++) {
             for (int z = 0; z < SIZE; z++) {
                 boolean corner = (x == 0 || x == SIZE - 1) && (z == 0 || z == SIZE - 1);
-                b.set(x, 0, z, corner ? Blocks.GILDED_BLACKSTONE : Blocks.POLISHED_BLACKSTONE);
+                b.set(x, 0, z, corner ? Blocks.GILDED_BLACKSTONE : tiles);
             }
         }
         // Haunches and the tail curled round the back.

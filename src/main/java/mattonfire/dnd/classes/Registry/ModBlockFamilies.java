@@ -110,6 +110,25 @@ public final class ModBlockFamilies {
     /** Cogsdeep's walls: small, rounded pale-grey bricks, gnome-sized. */
     public static final BlockFamily GNOMISH_BRICKS = BlockFamily
             .builder("gnomish_bricks", Blocks.STONE_BRICKS).stoneShapes().build();
+    // --- Dragon Temples ---
+    /** The temple's roof tiles and altar plinths: overlapping scales in each breath's colour. */
+    public static final BlockFamily EMBER_DRAGONSCALE_TILES = BlockFamily
+            .builder("ember_dragonscale_tiles", Blocks.DEEPSLATE_TILES).stairs().slab().build();
+    public static final BlockFamily FROST_DRAGONSCALE_TILES = BlockFamily
+            .builder("frost_dragonscale_tiles", Blocks.DEEPSLATE_TILES).stairs().slab().build();
+    public static final BlockFamily STORM_DRAGONSCALE_TILES = BlockFamily
+            .builder("storm_dragonscale_tiles", Blocks.DEEPSLATE_TILES).stairs().slab().build();
+    /** Glossy red-lacquered wood: the temple's cells, beams and shelf frames. */
+    public static final BlockFamily TEMPLE_LACQUER_PLANKS = BlockFamily
+            .builder("temple_lacquer_planks", Blocks.DARK_OAK_PLANKS).stem("temple_lacquer").stairs().slab().fence()
+            .build();
+    /** Basalt scorched by each breath, on the floor in front of its altar. */
+    public static final BlockFamily EMBER_SCORCHED_STONE = BlockFamily
+            .builder("ember_scorched_stone", Blocks.SMOOTH_BASALT).build();
+    public static final BlockFamily FROST_SCORCHED_STONE = BlockFamily
+            .builder("frost_scorched_stone", Blocks.SMOOTH_BASALT).build();
+    public static final BlockFamily STORM_SCORCHED_STONE = BlockFamily
+            .builder("storm_scorched_stone", Blocks.SMOOTH_BASALT).build();
 
     private ModBlockFamilies() {
     }
@@ -118,5 +137,24 @@ public final class ModBlockFamilies {
         for (BlockFamily family : BlockFamily.all()) {
             family.register();
         }
+    }
+
+    // --- Dragon Temples ---
+    /** The Dragonscale Tiles of an ancestry (Ember for NONE). */
+    public static BlockFamily dragonscale(mattonfire.dnd.classes.Race.DragonAncestry kind) {
+        return switch (kind) {
+            case FROST -> FROST_DRAGONSCALE_TILES;
+            case STORM -> STORM_DRAGONSCALE_TILES;
+            default -> EMBER_DRAGONSCALE_TILES;
+        };
+    }
+
+    /** The Breath-Scorched Stone of an ancestry (Ember for NONE). */
+    public static BlockFamily scorchedStone(mattonfire.dnd.classes.Race.DragonAncestry kind) {
+        return switch (kind) {
+            case FROST -> FROST_SCORCHED_STONE;
+            case STORM -> STORM_SCORCHED_STONE;
+            default -> EMBER_SCORCHED_STONE;
+        };
     }
 }

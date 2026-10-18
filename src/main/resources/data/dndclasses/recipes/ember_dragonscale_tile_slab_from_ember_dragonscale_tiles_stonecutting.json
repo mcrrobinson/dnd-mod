@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:ember_dragonscale_tiles"
+  },
+  "result": "dndclasses:ember_dragonscale_tile_slab"
+}

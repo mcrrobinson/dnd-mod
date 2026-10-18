@@ -14,7 +14,18 @@ public class ModItemGroup {
             .displayName(Text.translatable("itemgroup.dndclasses"))
             .icon(() -> new ItemStack(ModItems.MONK_STAFF)).build();
 
+    /** Decorative building materials ({@link BlockFamily}), each family's shapes together. */
+    public static ItemGroup BUILDING_BLOCKS_ITEMGROUP = FabricItemGroup
+            .builder(new Identifier(DnDClasses.MOD_ID, "building_blocks"))
+            .displayName(Text.translatable("itemgroup.dndclasses.building_blocks"))
+            .icon(() -> new ItemStack(ModBlockFamilies.RUNIC_DEEPSLATE_BRICKS.base())).build();
+
     public static void registerItemGroups() {
+        ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP).register(entries -> {
+            for (BlockFamily family : BlockFamily.all()) {
+                family.blocks().forEach(entries::add);
+            }
+        });
         // Example of adding to existing Item Group
         ItemGroupEvents.modifyEntriesEvent(DND_CLASSES_ITEMGROUP).register(entries -> {
             entries.add(ModItems.CLASS_GUIDEBOOK);

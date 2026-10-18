@@ -1,0 +1,89 @@
+# Checks the block-family framework with Runic Deepslate Bricks (docs/dev/building-blocks.md).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/block-families.txt
+# Expect in latest.log: each /loot line drops its own block (2 slabs from the double slab), the stonecutter's
+# output after `button 0/1/2` is 2 slabs, 1 stairs and 1 wall, and each /recipe line unlocks 1 recipe ("No new
+# recipes were learned" once an earlier run has unlocked them).
+# Screenshots: block-families-display (shapes on a platform), block-families-close (a close-up).
+wait 40
+closescreen
+include _reset.txt
+# With no class the picker reopens after the reset
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/fill -2 149 -2 10 149 10 minecraft:deepslate_tiles
+/fill -2 150 -2 10 156 10 minecraft:air
+# A wall of base blocks, a stair run and slabs in front, a wall line with a corner and a gap
+/fill 0 150 8 8 152 8 dndclasses:runic_deepslate_bricks
+/setblock 0 150 7 dndclasses:runic_deepslate_brick_stairs[facing=north]
+/setblock 1 150 7 dndclasses:runic_deepslate_brick_stairs[facing=north]
+/setblock 2 150 7 dndclasses:runic_deepslate_brick_stairs[facing=east,shape=outer_left]
+/setblock 1 151 8 dndclasses:runic_deepslate_brick_stairs[facing=south,half=top]
+/setblock 4 150 7 dndclasses:runic_deepslate_brick_slab[type=bottom]
+/setblock 5 150 7 dndclasses:runic_deepslate_brick_slab[type=top]
+/setblock 6 150 7 dndclasses:runic_deepslate_brick_slab[type=double]
+/setblock 2 150 4 dndclasses:runic_deepslate_brick_wall
+/setblock 3 150 4 dndclasses:runic_deepslate_brick_wall
+/setblock 4 150 4 dndclasses:runic_deepslate_brick_wall
+/setblock 4 150 5 dndclasses:runic_deepslate_brick_wall
+/setblock 4 151 4 dndclasses:runic_deepslate_brick_wall
+/setblock 6 150 4 minecraft:cobblestone_wall
+/setblock 7 150 4 dndclasses:runic_deepslate_brick_wall
+# Neighbour updates join the walls up (setblock skips them for the block itself)
+/setblock 3 151 4 minecraft:stone
+/setblock 3 151 4 minecraft:air
+/setblock 5 150 4 minecraft:stone
+/setblock 5 150 4 minecraft:air
+/tp @s 4.5 151 0.5 0 20
+wait 20
+closescreen
+hud off
+screenshot block-families-display
+/tp @s 5.5 150 5.0 0 25
+wait 10
+screenshot block-families-close
+hud on
+# Drops: /loot simulates mining each block with a pickaxe
+/loot spawn 4 152 2 mine 0 151 8 minecraft:diamond_pickaxe
+/loot spawn 4 152 2 mine 0 150 7 minecraft:diamond_pickaxe
+/loot spawn 4 152 2 mine 4 150 7 minecraft:diamond_pickaxe
+/loot spawn 4 152 2 mine 6 150 7 minecraft:diamond_pickaxe
+/loot spawn 4 152 2 mine 2 150 4 minecraft:diamond_pickaxe
+/kill @e[type=minecraft:item,distance=..30]
+# Recipes parse and exist
+/recipe give @s dndclasses:runic_deepslate_bricks
+/recipe give @s dndclasses:runic_deepslate_brick_stairs
+/recipe give @s dndclasses:runic_deepslate_brick_slab
+/recipe give @s dndclasses:runic_deepslate_brick_wall
+/recipe give @s dndclasses:runic_deepslate_brick_slab_from_runic_deepslate_bricks_stonecutting
+/recipe give @s dndclasses:runic_deepslate_brick_stairs_from_runic_deepslate_bricks_stonecutting
+/recipe give @s dndclasses:runic_deepslate_brick_wall_from_runic_deepslate_bricks_stonecutting
+# Stonecutter: recipes are listed by result id (slab, stairs, wall)
+/gamemode survival
+/clear @s
+/give @s dndclasses:runic_deepslate_bricks 4
+/setblock 4 150 2 minecraft:stonecutter
+/tp @s 4.5 150 -0.5 0 30
+wait 10
+use
+wait 10
+# Stonecutter slots: 0 input, 1 output, 2-28 inventory, 29-37 hotbar
+slot 29
+slot 0
+wait 5
+button 0
+wait 5
+slots
+button 1
+wait 5
+slots
+button 2
+wait 5
+slots
+screenshot block-families-stonecutter
+closescreen
+/clear @s
+/setblock 4 150 2 minecraft:air
+quit

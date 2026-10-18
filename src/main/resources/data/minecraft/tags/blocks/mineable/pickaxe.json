@@ -8,6 +8,10 @@
     "dndclasses:desecrated_altar",
     "dndclasses:ossuary_gate",
     "dndclasses:clockwork_door",
-    "dndclasses:alchemical_seal"
+    "dndclasses:alchemical_seal",
+    "dndclasses:runic_deepslate_bricks",
+    "dndclasses:runic_deepslate_brick_stairs",
+    "dndclasses:runic_deepslate_brick_slab",
+    "dndclasses:runic_deepslate_brick_wall"
   ]
 }

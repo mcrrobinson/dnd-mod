@@ -137,3 +137,4 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Boss framework](dev/boss-framework.md): adding a boss with BossFight
 - [Project layout](dev/project-layout.md): where things live in the code, and what each dependency is for
 - [Obstacles in structures and templates](dev/obstacle-templates.md): placing obstacles from structure code, and the `dndclasses:obstacle_tier` processor for NBT templates and jigsaw pieces
+- [Building blocks](dev/building-blocks.md): `BlockFamily` decorative materials (stairs, slab, wall, fence, door, ...) from one call, `tools/block_families.py` for their resources, and the DnD Building Blocks tab (PR #n)

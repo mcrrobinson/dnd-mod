@@ -1682,5 +1682,10 @@
     "dialogue.dndclasses.gnome_tinker.greeting.neutral": "\"Oh! A visitor. Watch your head, the ceilings are built for sensible people.\"",
     "dialogue.dndclasses.gnome_tinker.greeting.friendly": "\"Welcome to Cogsdeep! Everything's for sale except the clock. Especially not the clock.\"",
     "dialogue.dndclasses.gnome_tinker.greeting.honored": "\"Ah, a friend of the Guild! Come, come, I've been dying to show someone this.\"",
-    "dialogue.dndclasses.gnome_tinker.greeting.exalted": "\"You've a gnome's heart under all that height. The workshop is yours.\""
+    "dialogue.dndclasses.gnome_tinker.greeting.exalted": "\"You've a gnome's heart under all that height. The workshop is yours.\"",
+    "itemgroup.dndclasses.building_blocks": "DnD Building Blocks",
+    "block.dndclasses.runic_deepslate_bricks": "Runic Deepslate Bricks",
+    "block.dndclasses.runic_deepslate_brick_stairs": "Runic Deepslate Brick Stairs",
+    "block.dndclasses.runic_deepslate_brick_slab": "Runic Deepslate Brick Slab",
+    "block.dndclasses.runic_deepslate_brick_wall": "Runic Deepslate Brick Wall"
 }

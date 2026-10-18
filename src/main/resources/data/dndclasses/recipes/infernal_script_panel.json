@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:polished_blackstone"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
+  },
+  "pattern": [
+    "#",
+    "R"
+  ],
+  "result": {
+    "item": "dndclasses:infernal_script_panel"
+  },
+  "show_notification": true
+}

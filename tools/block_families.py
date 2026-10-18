@@ -69,6 +69,19 @@ FAMILIES = [
     Family('runic_deepslate_bricks', 'Runic Deepslate Bricks', ['stairs', 'slab', 'wall'],
            craft={'pattern': ['###', '#G#', '###'], 'key': {'#': 'minecraft:deepslate_bricks',
                                                            'G': 'minecraft:gold_nugget'}, 'count': 8}),
+    # --- Brimstone Sanctums ---
+    Family('brimstone', 'Brimstone', ['stairs', 'slab', 'wall'], top='brimstone_top',
+           craft={'pattern': ['###', '#G#', '###'], 'key': {'#': 'minecraft:basalt',
+                                                           'G': 'minecraft:glowstone_dust'}, 'count': 8}),
+    Family('polished_brimstone', 'Polished Brimstone', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:brimstone'}, 'count': 4}),
+    Family('brimstone_bricks', 'Brimstone Bricks', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:polished_brimstone'}, 'count': 4}),
+    Family('hellbrass', 'Hellbrass', [],
+           craft={'pattern': ['CGC', 'GBG', 'CGC'], 'key': {'C': 'minecraft:copper_ingot', 'G': 'minecraft:gold_ingot',
+                                                           'B': 'minecraft:blaze_powder'}, 'count': 4}),
+    Family('cut_hellbrass', 'Cut Hellbrass', ['stairs', 'slab'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:hellbrass'}, 'count': 4}),
 ]
 
 

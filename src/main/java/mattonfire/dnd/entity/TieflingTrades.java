@@ -5,6 +5,7 @@ import static mattonfire.dnd.entity.NpcTrades.buy;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.ModBlocks;
 import mattonfire.dnd.classes.Registry.ModItems;
 import net.minecraft.entity.Entity;
@@ -15,6 +16,7 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.util.math.random.Random;
+import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
 /**
@@ -22,7 +24,7 @@ import net.minecraft.village.TradeOfferList;
  * Tieflings pay kin prices ({@link KinPrices}).
  * <ul>
  * <li>Sells: 2 blaze rods (1 emerald), a ghast tear (3), 4 magma cream (2), a Potion of Fire Resistance (4),
- * and 1 netherite scrap a day (24).</li>
+ * and 1 netherite scrap a day (24); and the sanctum's stone, 16 Brimstone or 8 Brimstone Bricks (1).</li>
  * <li>Buys, for 1 emerald: 20 quartz, 22 nether wart, 3 gold ingots, 2 crying obsidian.</li>
  * <li>Kin stock, to Tieflings only: Infernal Regalia ({@link KinStockOffers#brimstoneSanctum()}).</li>
  * <li>Class stock: a Warlock may buy one piece of the Wither set (20 emeralds; which piece is rolled per
@@ -49,7 +51,27 @@ public final class TieflingTrades {
         offers.add(buy(Items.NETHER_WART, 22));
         offers.add(buy(Items.GOLD_INGOT, 3));
         offers.add(buy(Items.CRYING_OBSIDIAN, 2));
+        offers.add(brimstone());
+        offers.add(brimstoneBricks());
         return offers;
+    }
+
+    private static TradeOffer brimstone() {
+        return sell(1, ModBlockFamilies.BRIMSTONE.base(), 16);
+    }
+
+    private static TradeOffer brimstoneBricks() {
+        return sell(1, ModBlockFamilies.BRIMSTONE_BRICKS.base(), 8);
+    }
+
+    /** Adds the offers a saved Pactbroker from an older version doesn't have yet (the brimstone). */
+    static void addMissing(TradeOfferList offers) {
+        if (offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModBlockFamilies.BRIMSTONE.base().asItem()))) {
+            offers.add(brimstone());
+        }
+        if (offers.stream().noneMatch(offer -> offer.getSellItem().isOf(ModBlockFamilies.BRIMSTONE_BRICKS.base().asItem()))) {
+            offers.add(brimstoneBricks());
+        }
     }
 
     /** Warlocks only: one piece of the Wither set, rolled when the Pactbroker first trades. */

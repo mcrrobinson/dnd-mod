@@ -251,6 +251,10 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.BlockFamily.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        // Brimstone Sanctum lights: the sconce's flame and the censer's chain
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.SanctumBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
         // Portcullis bars have see-through gaps
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

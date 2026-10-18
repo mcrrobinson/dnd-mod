@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:polished_blackstone"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "B": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "pattern": [
+    "#R#",
+    "RBR",
+    "#R#"
+  ],
+  "result": {
+    "count": 4,
+    "item": "dndclasses:pact_sigil_tile"
+  },
+  "show_notification": true
+}

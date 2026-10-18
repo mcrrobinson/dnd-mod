@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "dndclasses:block/polished_brimstone",
+    "side": "dndclasses:block/polished_brimstone",
+    "top": "dndclasses:block/polished_brimstone"
+  }
+}

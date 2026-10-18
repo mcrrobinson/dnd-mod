@@ -30,6 +30,8 @@ Each trade has 12 uses (the netherite scrap 1) and restocks every morning. Price
 | 4 magma cream | 2 |
 | a Potion of Fire Resistance (3:00) | 4 |
 | a netherite scrap (once a day) | 24 |
+| 16 [Brimstone](../structures/brimstone-sanctums.md#building-blocks) | 1 |
+| 8 Brimstone Bricks | 1 |
 | **Tieflings only:** [Infernal Regalia](../items/armor.md#racial-armor) helmet, chestplate, leggings, boots | 12, 20, 18, 10 |
 | **Warlocks only:** one piece of the Wither set (which piece is rolled per Pactbroker) | 20 |
 | **Alchemists only:** a Fast Brewing Stand | 12 |
@@ -41,7 +43,7 @@ Each trade has 12 uses (the netherite scrap 1) and restocks every morning. Price
 | 3 gold ingots | 1 |
 | 2 crying obsidian | 1 |
 
-The gated offers come after the others, and only the players they're for see them: a Tiefling Warlock sees 14 trades, a Human Alchemist 10.
+The gated offers come after the others, and only the players they're for see them: a Tiefling Warlock sees 16 trades, a Human Alchemist 12. The brimstone offers come after the buys, and a Pactbroker from an older world gets them when he's next loaded.
 
 ### Dialogue
 The Pactbroker has the quest-giver role `tiefling_pactbroker` (`dialogue/tiefling_pactbroker.json`, with a greeting for each standing tier). Quests whose `giver` is `tiefling_pactbroker` are offered by him; with nothing to say, right-clicking him opens his trades. See [NPC dialogue](../systems/dialogue.md).

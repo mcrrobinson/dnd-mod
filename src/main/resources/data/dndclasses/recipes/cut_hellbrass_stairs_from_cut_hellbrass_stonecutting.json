@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:cut_hellbrass"
+  },
+  "result": "dndclasses:cut_hellbrass_stairs"
+}

@@ -1,0 +1,11 @@
+{
+  "parent": "minecraft:block/lectern",
+  "textures": {
+    "particle": "dndclasses:block/contract_lectern_sides",
+    "bottom": "dndclasses:block/contract_lectern_sides",
+    "base": "dndclasses:block/contract_lectern_base",
+    "front": "dndclasses:block/contract_lectern_front",
+    "sides": "dndclasses:block/contract_lectern_sides",
+    "top": "dndclasses:block/contract_lectern_top"
+  }
+}

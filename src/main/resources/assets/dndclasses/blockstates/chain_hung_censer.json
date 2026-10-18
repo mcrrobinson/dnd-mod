@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "dndclasses:block/chain_hung_censer"
+    },
+    "hanging=true": {
+      "model": "dndclasses:block/chain_hung_censer_hanging"
+    }
+  }
+}

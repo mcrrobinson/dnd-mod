@@ -1,6 +1,9 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:runic_deepslate_brick_wall"
+    "dndclasses:runic_deepslate_brick_wall",
+    "dndclasses:brimstone_wall",
+    "dndclasses:polished_brimstone_wall",
+    "dndclasses:brimstone_brick_wall"
   ]
 }

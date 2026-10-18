@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "dndclasses:block/pact_sigil_tile",
+    "side": "minecraft:block/polished_blackstone",
+    "bottom": "minecraft:block/polished_blackstone"
+  }
+}

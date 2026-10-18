@@ -180,6 +180,7 @@ public class DnDClasses implements ModInitializer {
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
                 ModBlockFamilies.register();
+                mattonfire.dnd.classes.Registry.SanctumBlocks.register();
                 mattonfire.dnd.classes.Blocks.TrapBlocks.register();
                 ModEnchantments.registerEnchantments();
                 ModParticles.registerParticles();

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "spinning=false": {
+      "model": "dndclasses:block/prayer_wheel"
+    },
+    "spinning=true": {
+      "model": "dndclasses:block/prayer_wheel_spinning"
+    }
+  }
+}

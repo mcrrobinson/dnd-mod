@@ -1,0 +1,68 @@
+# Dragon Temple building blocks: survey shots of the temple nearest (1400, 7200) in the dev world.
+# Run: timeout 900 ./gradlew runClient --offline -PdevScript=devscripts/dragon-temple-blocks-survey.txt
+# Run it once on main and once on this branch, each on a world where that temple hasn't generated yet, for
+# before/after shots (dtb-sanctum, dtb-cloister, dtb-yard, dtb-court, dtb-top, dtb-front). After this
+# card they show Ember Dragonscale roofs (Frost/Storm stripes over the sanctum), tile plinths under the statues
+# and altars, incense braziers in place of campfires and soul lanterns, paper lanterns, prayer wheels in the
+# cloister corridor, sparring posts in the yard and scorched floor before the altars.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+/tp @s 1400 200 7200
+waitserver 5
+wait 200
+/dndhome temple
+waitserver 5
+wait 200
+/tp @s ^ ^1 ^-1 ~ 40
+waitserver 5
+wait 60
+screenshot dtb-sanctum
+/dndhome temple
+waitserver 5
+wait 60
+/tp @s ^-15 ^ ^-9 ~180 35
+waitserver 5
+/tp @s ^ ^ ^1
+waitserver 5
+wait 80
+screenshot dtb-cloister
+/dndhome temple
+waitserver 5
+wait 60
+/tp @s ^15 ^7 ^-8 ~180 55
+waitserver 5
+wait 80
+screenshot dtb-yard
+/dndhome temple
+waitserver 5
+wait 60
+/tp @s ^ ^5 ^-24 ~ 8
+waitserver 5
+wait 100
+screenshot dtb-court
+/dndhome temple
+waitserver 5
+wait 60
+/tp @s ~ ~40 ~ ~ 90
+waitserver 5
+wait 160
+screenshot dtb-top
+/dndhome temple
+waitserver 5
+wait 60
+/tp @s ~ ~10 ~ ~180 20
+/tp @s ^ ^ ^28
+waitserver 5
+wait 120
+/tp @s ~ ~ ~ ~180 20
+waitserver 5
+wait 60
+screenshot dtb-front
+hud on
+quit

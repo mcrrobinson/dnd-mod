@@ -100,5 +100,8 @@ public class DragonbornElderEntity extends DragonbornEntity implements Settlemen
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.merchant.read(nbt);
+        if (this.merchant.savedOffers() != null) {
+            DragonbornTrades.addMissing(this.merchant.savedOffers());
+        }
     }
 }

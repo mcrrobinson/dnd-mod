@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "dndclasses:block/ember_dragonscale_tiles",
+    "side": "dndclasses:block/ember_dragonscale_tiles",
+    "top": "dndclasses:block/ember_dragonscale_tiles"
+  }
+}

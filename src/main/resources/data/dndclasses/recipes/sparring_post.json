@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "W": {
+      "item": "minecraft:white_wool"
+    },
+    "H": {
+      "item": "minecraft:hay_block"
+    },
+    "F": {
+      "item": "minecraft:oak_fence"
+    }
+  },
+  "pattern": [
+    "W",
+    "H",
+    "F"
+  ],
+  "result": {
+    "item": "dndclasses:sparring_post"
+  },
+  "show_notification": true
+}

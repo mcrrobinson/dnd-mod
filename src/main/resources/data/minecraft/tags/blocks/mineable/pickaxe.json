@@ -82,6 +82,23 @@
     "dndclasses:glowcrystal_green",
     "dndclasses:glowcrystal_amber",
     "dndclasses:clockface",
-    "dndclasses:telescope_lens"
+    "dndclasses:telescope_lens",
+    "dndclasses:ember_dragonscale_tiles",
+    "dndclasses:ember_dragonscale_tile_stairs",
+    "dndclasses:ember_dragonscale_tile_slab",
+    "dndclasses:frost_dragonscale_tiles",
+    "dndclasses:frost_dragonscale_tile_stairs",
+    "dndclasses:frost_dragonscale_tile_slab",
+    "dndclasses:storm_dragonscale_tiles",
+    "dndclasses:storm_dragonscale_tile_stairs",
+    "dndclasses:storm_dragonscale_tile_slab",
+    "dndclasses:ember_scorched_stone",
+    "dndclasses:frost_scorched_stone",
+    "dndclasses:storm_scorched_stone",
+    "dndclasses:ancestor_relief",
+    "dndclasses:prayer_wheel",
+    "dndclasses:ember_incense_brazier",
+    "dndclasses:frost_incense_brazier",
+    "dndclasses:storm_incense_brazier"
   ]
 }

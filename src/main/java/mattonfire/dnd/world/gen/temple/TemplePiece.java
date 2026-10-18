@@ -3,12 +3,16 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
+import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.entity.DragonbornEntity;
 import mattonfire.dnd.world.gen.FacingPiece;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CandleBlock;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.enums.SlabType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructurePieceType;
@@ -64,6 +68,32 @@ public abstract class TemplePiece extends FacingPiece<TemplePiece.Builder> {
     protected static Block masonry(Builder b) {
         float r = b.random.nextFloat();
         return r < 0.06F ? Blocks.CRACKED_DEEPSLATE_TILES : r < 0.18F ? Blocks.POLISHED_BLACKSTONE_BRICKS : Blocks.DEEPSLATE_TILES;
+    }
+
+    /**
+     * A stepped hip roof of Dragonscale Tiles on top of a {@code width} by {@code depth} building, from {@code y}
+     * up: {@code tiers} rings of stairs, each one block in and one up from the last and climbing to the middle,
+     * capped with a flat top of double slabs. {@code tilesAt} gives each column's tiles (local x), so a roof
+     * can carry stripes of another colour. The hollow under the upper rings is filled with hidden stone.
+     */
+    protected static void roof(Builder b, int width, int depth, int y, int tiers, IntFunction<BlockFamily> tilesAt) {
+        for (int x = 0; x < width; x++) {
+            for (int z = 0; z < depth; z++) {
+                int inset = Math.min(Math.min(x, width - 1 - x), Math.min(z, depth - 1 - z));
+                BlockFamily tiles = tilesAt.apply(x);
+                for (int k = 0; k < tiers && k <= inset; k++) {
+                    if (k == inset) {
+                        // The ring: stairs rising towards the middle (their full back faces inwards).
+                        Direction in = z == k ? BACK : z == depth - 1 - k ? FRONT : x == k ? Direction.EAST : Direction.WEST;
+                        b.set(x, y + k, z, stairs(tiles, in, false));
+                    } else if (k == tiers - 1) {
+                        b.set(x, y + k, z, tiles.slab().getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE));
+                    } else {
+                        b.set(x, y + k, z, Blocks.POLISHED_BLACKSTONE_BRICKS);
+                    }
+                }
+            }
+        }
     }
 
     /** Places blocks, containers and entities for one chunk's slice of a piece, in local coordinates. */

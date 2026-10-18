@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:frost_dragonscale_tiles"
+  },
+  "result": "dndclasses:frost_dragonscale_tile_stairs"
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "dndclasses:block/template_incense_brazier",
+  "textures": {
+    "bronze": "dndclasses:block/incense_brazier_bronze",
+    "embers": "dndclasses:block/frost_incense_brazier_embers"
+  }
+}

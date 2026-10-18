@@ -1,5 +1,6 @@
 package mattonfire.dnd.world.gen.temple;
 
+import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -53,10 +54,10 @@ public class TerracePiece extends TemplePiece {
         for (int x = 1; x < DragonTemplePlanner.SIDE_WIDTH; x++) {
             b.set(x, 1, DEPTH - 1, wall);
         }
-        // Braziers at the front corners, so the temple shows from the valley at night.
+        // Incense braziers at the front corners, so the temple shows from the valley at night.
         for (int x : new int[]{0, WIDTH - 1}) {
             b.set(x, 1, 0, Blocks.GILDED_BLACKSTONE);
-            b.set(x, 2, 0, Blocks.CAMPFIRE);
+            b.set(x, 2, 0, ModTempleBlocks.EMBER_INCENSE_BRAZIER);
         }
     }
 }

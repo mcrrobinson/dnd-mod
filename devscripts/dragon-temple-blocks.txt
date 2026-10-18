@@ -1,0 +1,140 @@
+# Dragon Temple building blocks: close-ups, the Prayer Wheel, the Sparring Post, drops and the Elder's tiles.
+# Run: timeout 300 ./gradlew runClient --offline -PdevScript=devscripts/dragon-temple-blocks.txt
+# Checks, in <run dir>/logs/latest.log:
+# - screenshot dtb-blocks: row 1 the Ember/Frost/Storm Dragonscale Tiles, Temple Lacquer Planks and the three
+#   Breath-Scorched Stones; row 2 Ancestor Relief, Prayer Wheel, the three Incense Braziers, Sparring Post, Paper
+#   Lantern; row 3 tile stairs and slabs, lacquer stairs, slab and fence, a hanging Paper Lantern
+# - "[TempleBlocks] Dev spun the prayer wheel", then "Test passed" for spinning=true, and after 70 ticks for
+#   spinning=false (screenshot dtb-wheel-spinning)
+# - "[DevScript] actionbar: Sparring Post: 7.0 damage (100% swing)" for a diamond sword hit, "[SparringPost] ..."
+#   and "Test passed" that the post is still there after each of two hits
+# - "Test passed" that a sneaking creative click breaks the post
+# - one "Test passed" per block dropped by /setblock ... destroy
+# - the Elder's offers (/data get) include 16 of each dndclasses:*_dragonscale_tiles
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/tp @s 2000.5 151 1998.5 0 -12
+wait 100
+waitserver 40
+/kill @e[type=item,distance=..40]
+/fill 1990 150 1990 2010 150 2016 minecraft:smooth_quartz
+/fill 1990 151 1990 2010 160 2016 minecraft:air
+# Row 1
+/setblock 1997 151 2004 dndclasses:ember_dragonscale_tiles
+/setblock 1998 151 2004 dndclasses:frost_dragonscale_tiles
+/setblock 1999 151 2004 dndclasses:storm_dragonscale_tiles
+/setblock 2000 151 2004 dndclasses:temple_lacquer_planks
+/setblock 2001 151 2004 dndclasses:ember_scorched_stone
+/setblock 2002 151 2004 dndclasses:frost_scorched_stone
+/setblock 2003 151 2004 dndclasses:storm_scorched_stone
+# Row 2, on smooth quartz
+/fill 1997 152 2004 2003 152 2004 minecraft:smooth_quartz
+/setblock 1997 153 2004 dndclasses:ancestor_relief[facing=north]
+/setblock 1998 153 2004 dndclasses:prayer_wheel
+/setblock 1999 153 2004 dndclasses:ember_incense_brazier
+/setblock 2000 153 2004 dndclasses:frost_incense_brazier
+/setblock 2001 153 2004 dndclasses:storm_incense_brazier
+/setblock 2002 153 2004 dndclasses:sparring_post[facing=north]
+/setblock 2003 153 2004 dndclasses:paper_lantern
+# Row 3
+/fill 1997 154 2004 2003 154 2004 minecraft:smooth_quartz
+/setblock 1997 155 2004 dndclasses:ember_dragonscale_tile_stairs[facing=south]
+/setblock 1998 155 2004 dndclasses:frost_dragonscale_tile_stairs[facing=south]
+/setblock 1999 155 2004 dndclasses:storm_dragonscale_tile_stairs[facing=south]
+/setblock 2000 155 2004 dndclasses:ember_dragonscale_tile_slab
+/setblock 2001 155 2004 dndclasses:temple_lacquer_stairs[facing=south]
+/setblock 2002 155 2004 dndclasses:temple_lacquer_slab
+/setblock 2003 155 2004 dndclasses:temple_lacquer_fence
+/setblock 2004 156 2004 minecraft:smooth_quartz
+/setblock 2004 155 2004 dndclasses:paper_lantern[hanging=true]
+/tp @s 2000.5 151 1998.5 0 -12
+waitserver 5
+hud off
+wait 60
+screenshot dtb-blocks
+/tp @s 2000.5 152 2001.5 0 18
+wait 20
+screenshot dtb-blocks-close
+hud on
+# The Prayer Wheel: right-click spins it for 60 ticks.
+/setblock 1999 151 2010 dndclasses:prayer_wheel
+/setblock 2001 151 2010 dndclasses:sparring_post[facing=north]
+waitserver 2
+/tp @s 1999.5 151 2008.5 0 30
+waitserver 5
+wait 5
+use
+waitserver 5
+/execute if block 1999 151 2010 dndclasses:prayer_wheel[spinning=true]
+hud off
+screenshot dtb-wheel-spinning
+hud on
+waitserver 70
+/execute if block 1999 151 2010 dndclasses:prayer_wheel[spinning=false]
+# The Sparring Post: a diamond sword hit shows its damage and leaves the post standing.
+/gamemode survival
+/item replace entity @s weapon.mainhand with minecraft:diamond_sword
+hotbar 0
+/tp @s 2001.5 151 2008.5 0 30
+waitserver 40
+wait 5
+attack
+waitserver 10
+actionbar
+/execute if block 2001 151 2010 dndclasses:sparring_post
+waitserver 6
+attack
+waitserver 10
+actionbar
+/execute if block 2001 151 2010 dndclasses:sparring_post
+# Sneak to break it (creative, empty hand).
+/gamemode creative
+/item replace entity @s weapon.mainhand with minecraft:air
+waitserver 2
+sneak on
+waitserver 5
+attack
+waitserver 10
+sneak off
+/execute unless block 2001 151 2010 dndclasses:sparring_post
+# Drops: each block drops itself.
+/gamemode survival
+/tp @s 2000.5 151 1996.5 0 0
+/kill @e[type=item,distance=..40]
+/setblock 1997 153 2004 air destroy
+/setblock 1998 153 2004 air destroy
+/setblock 1999 153 2004 air destroy
+/setblock 2002 153 2004 air destroy
+/setblock 2003 153 2004 air destroy
+/setblock 1997 151 2004 air destroy
+/setblock 2001 151 2004 air destroy
+/setblock 2003 155 2004 air destroy
+waitserver 5
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ancestor_relief"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:prayer_wheel"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ember_incense_brazier"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:sparring_post"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:paper_lantern"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ember_dragonscale_tiles"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ember_scorched_stone"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:temple_lacquer_fence"}}]
+/kill @e[type=item,distance=..40]
+# The Elder sells the tiles.
+/summon dndclasses:dragonborn_elder 2003.5 151 2010.5 {NoAI:1b,Tags:["dtbtest"],Rotation:[180f,0f]}
+/give @s minecraft:emerald 10
+/item replace entity @s weapon.mainhand with minecraft:emerald
+/tp @s 2003.5 151 2008.5 0 10
+waitserver 20
+wait 5
+use
+waitserver 40
+screenshot dtb-elder
+closescreen
+/data get entity @e[type=dndclasses:dragonborn_elder,tag=dtbtest,limit=1]
+/kill @e[tag=dtbtest]
+quit

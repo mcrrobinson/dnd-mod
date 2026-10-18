@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.temple;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -11,8 +12,9 @@ import net.minecraft.util.math.Direction;
 
 /**
  * The grand stair from the foot of the slope up to the courtyard: 5 wide, one step up per block, deepslate
- * tile steps with polished blackstone at the edges between balustrades of polished blackstone with gilded
- * posts and lanterns every fourth step, and braziers at the foot. Built up from the ground beneath and cleared above.
+ * tile steps with polished blackstone at the edges between balustrades of polished blackstone with a
+ * lantern every fourth step on a post (an Ancestor Relief facing the stair, gilded at the foot), and Ember
+ * incense braziers at the foot. Built up from the ground beneath and cleared above.
  */
 public class GrandStairPiece extends TemplePiece {
     static final int WIDTH = 7;
@@ -50,7 +52,8 @@ public class GrandStairPiece extends TemplePiece {
                 if (wall) {
                     b.set(x, z, z, Blocks.POLISHED_BLACKSTONE_BRICKS);
                     boolean post = z % 4 == 0;
-                    b.set(x, z + 1, z, post ? Blocks.GILDED_BLACKSTONE.getDefaultState() : rail);
+                    b.set(x, z + 1, z, !post ? rail : z == 0 ? Blocks.GILDED_BLACKSTONE.getDefaultState()
+                            : facing(ModTempleBlocks.ANCESTOR_RELIEF, x == 0 ? Direction.EAST : Direction.WEST));
                     b.air(x, z + 2, z, x, z + HEADROOM, z);
                     if (post && z > 0) {
                         b.set(x, z + 2, z, lantern(false));
@@ -66,10 +69,10 @@ public class GrandStairPiece extends TemplePiece {
                 }
             }
         }
-        // Braziers either side of the foot.
+        // Incense braziers either side of the foot.
         for (int x : new int[]{0, WIDTH - 1}) {
             b.set(x, 1, 0, Blocks.GILDED_BLACKSTONE);
-            b.set(x, 2, 0, Blocks.CAMPFIRE);
+            b.set(x, 2, 0, ModTempleBlocks.EMBER_INCENSE_BRAZIER);
         }
     }
 }

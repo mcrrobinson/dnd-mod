@@ -5,6 +5,8 @@ import static mattonfire.dnd.entity.NpcTrades.buy;
 
 import mattonfire.dnd.dungeon.DungeonMaps;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
@@ -32,6 +34,8 @@ import net.minecraft.world.gen.structure.Structure;
  * <li>Buys the wyvern and drake drops (from {@code loot_tables/entities/*wyvern*}, {@code frost_drake} and
  * {@code lightning_chaser}): phantom membrane, magma cream, blaze powder, blue ice, copper blocks and
  * netherite scrap, for 3-8 emeralds.</li>
+ * <li>Sells the temple's Dragonscale Tiles: 16 Ember, Frost or Storm for {@value #TILE_PRICE} emeralds each
+ * ({@link #addMissing}).</li>
  * <li>Kin stock, to Dragonborn only: Draconic Scale ({@link KinStockOffers#dragonTemple()}, shown through
  * {@link KinStock}).</li>
  * </ul>
@@ -39,6 +43,9 @@ import net.minecraft.world.gen.structure.Structure;
 public final class DragonbornTrades {
     /** The Elder's Smite Dragons book (of 5 levels). */
     public static final int SMITE_LEVEL = 3;
+    /** Emeralds for a stack of {@link #TILE_COUNT} Dragonscale Tiles, before kin prices. */
+    public static final int TILE_PRICE = 3;
+    public static final int TILE_COUNT = 16;
     public static final TagKey<Structure> DRAGON_LAIR_MAPS = TagKey.of(RegistryKeys.STRUCTURE,
             new Identifier(DnDClasses.MOD_ID, "dragon_temple_maps/dragon_lair"));
     public static final TagKey<Structure> FROST_LAIR_MAPS = TagKey.of(RegistryKeys.STRUCTURE,
@@ -66,7 +73,18 @@ public final class DragonbornTrades {
         offers.add(buy(Items.BLUE_ICE, 2, 5));
         offers.add(buy(Items.COPPER_BLOCK, 2, 3));
         offers.add(buy(Items.NETHERITE_SCRAP, 1, 8));
+        addMissing(offers);
         return offers;
+    }
+
+    /** Adds the trades a saved Elder from an older version doesn't have yet (the Dragonscale Tiles). */
+    static void addMissing(TradeOfferList offers) {
+        for (BlockFamily tiles : new BlockFamily[]{ModBlockFamilies.EMBER_DRAGONSCALE_TILES,
+                ModBlockFamilies.FROST_DRAGONSCALE_TILES, ModBlockFamilies.STORM_DRAGONSCALE_TILES}) {
+            if (offers.stream().noneMatch(offer -> offer.getSellItem().isOf(tiles.base().asItem()))) {
+                offers.add(sell(TILE_PRICE, tiles.base(), TILE_COUNT));
+            }
+        }
     }
 
     /** A map to the nearest unexplored structure in {@code targets}, or null if there's none in range. */

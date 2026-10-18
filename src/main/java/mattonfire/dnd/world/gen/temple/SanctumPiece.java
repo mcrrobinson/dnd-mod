@@ -3,6 +3,9 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Race.DragonAncestry;
+import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -17,11 +20,14 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * The sanctum, the temple's hearth: a pillared hall of deepslate and blackstone at the back of the courtyard,
- * cut into the mountain. Along its back wall stand the three breath altars, each under its colour's banner:
+ * cut into the mountain, under a stepped roof of Ember Dragonscale Tiles striped Frost and Storm over their
+ * altars, with lacquered beams between the pillars and Ancestor Reliefs at the pillars' feet. Along its back
+ * wall stand the three breath altars, each on a plinth of its colour's Dragonscale Tiles under its banner, with
+ * an incense brazier either side and Breath-Scorched Stone on the floor in front:
  * <ul>
- * <li>Ember: a campfire brazier on red nether brick</li>
- * <li>Frost: soul fire on blue ice</li>
- * <li>Storm: a copper lightning rod on cut copper</li>
+ * <li>Ember: a campfire</li>
+ * <li>Frost: soul fire</li>
+ * <li>Storm: a copper lightning rod</li>
  * </ul>
  * In front of them an enchanting table ringed with bookshelves; behind the Ember altar the reliquary (a
  * DC 15 locked chest). The Dragonborn Elder keeps to the sanctum. The altars are the Dragonborn shrines
@@ -31,29 +37,37 @@ public class SanctumPiece extends TemplePiece {
     static final int WIDTH = DragonTemplePlanner.COURT_WIDTH;
     static final int DEPTH = DragonTemplePlanner.SANCTUM_DEPTH;
     static final int HEIGHT = 10;
+    /** The roof's rings of stairs on top of the walls. */
+    static final int ROOF_TIERS = 3;
     private static final int MID = WIDTH / 2;
     /** The altars stand this far in (local z). */
     private static final int ALTAR_Z = DEPTH - 4;
 
     public SanctumPiece(BlockPos front, Direction facing, long seed) {
-        super(DragonTempleStructures.SANCTUM, boxFrom(front, facing, WIDTH, HEIGHT, DEPTH), facing, seed);
+        super(DragonTempleStructures.SANCTUM, boxFrom(front, facing, WIDTH, HEIGHT + ROOF_TIERS, DEPTH), facing, seed);
     }
 
     public SanctumPiece(NbtCompound nbt) {
         super(DragonTempleStructures.SANCTUM, nbt);
     }
 
-    /** The ancestry whose altar {@code state} is part of (fire, plinth or rod), or null. */
+    /**
+     * The ancestry whose altar {@code state} is part of (fire, plinth or rod), or null. Plinths are Dragonscale
+     * Tiles; temples generated before them have red nether brick, blue ice and cut copper.
+     */
     @Nullable
     public static DragonAncestry altarOf(BlockState state) {
         Block block = state.getBlock();
-        if (block == Blocks.CAMPFIRE || block == Blocks.RED_NETHER_BRICKS) {
+        if (block == Blocks.CAMPFIRE || block == Blocks.RED_NETHER_BRICKS
+                || block == ModBlockFamilies.EMBER_DRAGONSCALE_TILES.base()) {
             return DragonAncestry.EMBER;
         }
-        if (block == Blocks.SOUL_CAMPFIRE || block == Blocks.BLUE_ICE) {
+        if (block == Blocks.SOUL_CAMPFIRE || block == Blocks.BLUE_ICE
+                || block == ModBlockFamilies.FROST_DRAGONSCALE_TILES.base()) {
             return DragonAncestry.FROST;
         }
-        if (block == Blocks.LIGHTNING_ROD || block == Blocks.WAXED_CUT_COPPER) {
+        if (block == Blocks.LIGHTNING_ROD || block == Blocks.WAXED_CUT_COPPER
+                || block == ModBlockFamilies.STORM_DRAGONSCALE_TILES.base()) {
             return DragonAncestry.STORM;
         }
         return null;
@@ -105,13 +119,15 @@ public class SanctumPiece extends TemplePiece {
         b.set(MID - 1, 4, 0, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.EAST, true));
         b.set(MID + 1, 4, 0, stairs(Blocks.POLISHED_BLACKSTONE_BRICK_STAIRS, Direction.WEST, true));
 
-        // Pillars down both sides.
+        // Pillars down both sides, an Ancestor Relief at each one's foot facing the aisle, and a lacquered
+        // beam across between each pair.
         for (int z = 3; z < DEPTH - 1; z += 3) {
             for (int x : new int[]{2, WIDTH - 3}) {
-                b.set(x, 1, z, Blocks.CHISELED_DEEPSLATE);
+                b.set(x, 1, z, facing(ModTempleBlocks.ANCESTOR_RELIEF, x < MID ? Direction.EAST : Direction.WEST));
                 b.fill(x, 2, z, x, HEIGHT - 3, z, pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y));
                 b.set(x, HEIGHT - 2, z, Blocks.GOLD_BLOCK);
             }
+            b.fill(3, HEIGHT - 2, z, WIDTH - 4, HEIGHT - 2, z, ModBlockFamilies.TEMPLE_LACQUER_PLANKS.base());
         }
 
         // The enchanting table, ringed with bookshelves two blocks off.
@@ -149,6 +165,10 @@ public class SanctumPiece extends TemplePiece {
             }
         }
 
+        // The roof: Ember tiles, with a Frost and a Storm stripe over their altars.
+        roof(b, WIDTH, DEPTH, HEIGHT, ROOF_TIERS, x -> x == MID - 6 ? ModBlockFamilies.FROST_DRAGONSCALE_TILES
+                : x == MID + 6 ? ModBlockFamilies.STORM_DRAGONSCALE_TILES : ModBlockFamilies.EMBER_DRAGONSCALE_TILES);
+
         // The Elder, and a Templar at the door.
         b.dragonborn(MID, 1, ALTAR_Z - 2, ModEntityTypes.DRAGONBORN_ELDER);
         b.dragonborn(MID + 2, 1, 1, ModEntityTypes.DRAGONBORN_TEMPLAR);
@@ -156,22 +176,19 @@ public class SanctumPiece extends TemplePiece {
 
     private void altar(Builder b, int x, DragonAncestry kind) {
         int z = ALTAR_Z;
-        BlockState plinth;
+        BlockFamily tiles = ModBlockFamilies.dragonscale(kind);
         BlockState top;
         DyeColor color;
         switch (kind) {
             case FROST -> {
-                plinth = Blocks.BLUE_ICE.getDefaultState();
                 top = Blocks.SOUL_CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, FRONT);
                 color = DyeColor.LIGHT_BLUE;
             }
             case STORM -> {
-                plinth = Blocks.WAXED_CUT_COPPER.getDefaultState();
                 top = Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP);
                 color = DyeColor.BLUE;
             }
             default -> {
-                plinth = Blocks.RED_NETHER_BRICKS.getDefaultState();
                 top = Blocks.CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, FRONT);
                 color = DyeColor.RED;
             }
@@ -182,10 +199,24 @@ public class SanctumPiece extends TemplePiece {
                 b.set(x + dx, 0, z + dz, Blocks.GILDED_BLACKSTONE);
             }
         }
-        b.set(x, 1, z, plinth);
+        b.set(x, 1, z, tiles.base());
         b.set(x, 2, z, top);
         b.banner(x, 4, DEPTH - 2, FRONT, color);
-        b.set(x - 1, 1, z, stairs(Blocks.POLISHED_BLACKSTONE_STAIRS, Direction.EAST, false));
-        b.set(x + 1, 1, z, stairs(Blocks.POLISHED_BLACKSTONE_STAIRS, Direction.WEST, false));
+        b.set(x - 1, 1, z, stairs(tiles, Direction.EAST, false));
+        b.set(x + 1, 1, z, stairs(tiles, Direction.WEST, false));
+        // An incense brazier either side, in front.
+        b.set(x - 2, 1, z - 1, ModTempleBlocks.brazier(kind));
+        b.set(x + 2, 1, z - 1, ModTempleBlocks.brazier(kind));
+        // The floor in front scorched by the breath: solid in the middle, ragged at the edges.
+        Block scorched = ModBlockFamilies.scorchedStone(kind).base();
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dz = 2; dz <= 4; dz++) {
+                boolean core = Math.abs(dx) <= 1 && dz <= 3;
+                boolean ragged = b.chance(0.45F);
+                if (core || ragged) {
+                    b.set(x + dx, 0, z - dz, scorched);
+                }
+            }
+        }
     }
 }

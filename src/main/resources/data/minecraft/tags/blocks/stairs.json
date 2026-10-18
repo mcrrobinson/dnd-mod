@@ -17,6 +17,9 @@
     "dndclasses:mossy_thatch_stairs",
     "dndclasses:round_door_frame_stone_stairs",
     "dndclasses:cut_riveted_brass_stairs",
-    "dndclasses:gnomish_brick_stairs"
+    "dndclasses:gnomish_brick_stairs",
+    "dndclasses:ember_dragonscale_tile_stairs",
+    "dndclasses:frost_dragonscale_tile_stairs",
+    "dndclasses:storm_dragonscale_tile_stairs"
   ]
 }

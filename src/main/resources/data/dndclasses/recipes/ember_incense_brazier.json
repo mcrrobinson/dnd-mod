@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "I": {
+      "item": "minecraft:copper_ingot"
+    },
+    "C": {
+      "item": "minecraft:coal"
+    },
+    "D": {
+      "item": "minecraft:red_dye"
+    }
+  },
+  "pattern": [
+    "ICI",
+    "IDI"
+  ],
+  "result": {
+    "item": "dndclasses:ember_incense_brazier"
+  },
+  "show_notification": true
+}

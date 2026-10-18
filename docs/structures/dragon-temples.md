@@ -6,21 +6,41 @@ Every temple is the same plan, turned to climb into its slope:
 
 | Piece | What it is |
 |-|-|
-| Terrace | 39 wide and 28 deep, 8-12 blocks above the stair foot. The slope is cut away 13 blocks above the floor and built up beneath it with cobbled deepslate. Polished deepslate floor, a polished blackstone parapet with gilded posts along the open edges, braziers at the front corners. |
-| Grand stair | 5 wide, one step up per block from the foot to the courtyard: deepslate tile steps, polished blackstone edges, balustrades with a gilded post and lantern every fourth step, braziers either side of the foot |
-| Courtyard | 21 by 15 at the top of the stair. A gilded blackstone path runs to the sanctum door and parts round the middle statue. Soul-lantern posts at the corners. |
-| Statues | Three dragons, each 10 blocks tall on a gilded plinth, sitting up with their wings half spread: **Ember** (red nether brick, magma eyes, red horns) in the middle of the path, **Frost** (quartz, packed ice, snow, blue ice eyes) and **Storm** (lapis, prismarine, sea lantern eyes, lightning-rod horns) either side |
-| Sanctum (hearth) | 21 by 13 at the back, cut into the mountain: pillars of basalt, soul lanterns, an enchanting table ringed with 26 bookshelves (open at the front), the three breath altars along the back wall under red, light blue and blue banners, and the reliquary behind the Ember altar |
-| Cloister | Down one side: six small rooms off a corridor (4-6 monks' cells with a red bed, a chest and a candle; the rest storerooms with barrels), a cross-hall with the door onto the courtyard, and the library (about 36 bookshelves, two lecterns, a reading table) |
-| Training yard | Down the other side: coarse dirt and gravel, three targets on hay bales, three armour stands in the Knight set (one complete, two partial), a grindstone, an anvil and a barrel |
+| Terrace | 39 wide and 28 deep, 8-12 blocks above the stair foot. The slope is cut away 13 blocks above the floor and built up beneath it with cobbled deepslate. Polished deepslate floor, a polished blackstone parapet with gilded posts along the open edges, Ember incense braziers at the front corners. |
+| Grand stair | 5 wide, one step up per block from the foot to the courtyard: deepslate tile steps, polished blackstone edges, balustrades with a lantern every fourth step on an Ancestor Relief facing the stair (gilded at the foot), Ember incense braziers either side of the foot |
+| Courtyard | 21 by 15 at the top of the stair. A gilded blackstone path runs to the sanctum door and parts round the middle statue. Incense-brazier posts at the corners (Ember at the front; Frost and Storm at the back, on their statues' sides), and paper lanterns on lacquered fence posts either side of the path at the stair and at the sanctum door. |
+| Statues | Three dragons, each 10 blocks tall on a plinth of their colour's Dragonscale Tiles with gilded corners, sitting up with their wings half spread: **Ember** (red nether brick, magma eyes, red horns) in the middle of the path, **Frost** (quartz, packed ice, snow, blue ice eyes) and **Storm** (lapis, prismarine, sea lantern eyes, lightning-rod horns) either side |
+| Sanctum (hearth) | 21 by 13 at the back, cut into the mountain, under a stepped roof of Ember Dragonscale Tiles (three rings of stairs and a flat top) with a Frost stripe over the Frost altar and a Storm stripe over the Storm altar: basalt pillars standing on Ancestor Reliefs, Temple Lacquer beams across between them, soul lanterns, an enchanting table ringed with 26 bookshelves (open at the front), the three breath altars along the back wall under red, light blue and blue banners, and the reliquary behind the Ember altar |
+| Cloister | Down one side, under the same Ember Dragonscale roof: six small rooms off a corridor (4-6 monks' cells with a Temple Lacquer floor, a red bed, a chest and a candle; the rest storerooms with barrels), 12 prayer wheels set into the corridor walls either side of the doors, paper lanterns overhead, lacquered beams across, an Ancestor Relief at each end of the corridor, a cross-hall with the door onto the courtyard, and the library (28 bookshelves in Temple Lacquer frames, two lecterns, a lacquered reading table) |
+| Training yard | Down the other side: coarse dirt and gravel, three targets on hay bales, three sparring posts, three armour stands in the Knight set (one complete, two partial), a grindstone, an anvil and a barrel |
 
-The breath altars:
+The breath altars, each on a gilded step with its tiles' stairs either side, an incense brazier of its colour at each front corner and Breath-Scorched Stone of its colour on the floor in front (a 3 by 2 patch with a ragged edge):
 
 | Altar | Plinth | On top |
 |-|-|-|
-| Ember | red nether brick | a campfire |
-| Frost | blue ice | a soul campfire |
-| Storm | waxed cut copper | a lightning rod |
+| Ember | Ember Dragonscale Tiles | a campfire |
+| Frost | Frost Dragonscale Tiles | a soul campfire |
+| Storm | Storm Dragonscale Tiles | a lightning rod |
+
+Temples generated before the Dragonscale plinths keep their red nether brick, blue ice and cut copper ones, and those still work as altars.
+
+### Building blocks
+The temple is built from its own blocks, all in the **DnD Building Blocks** creative tab. Each drops itself when mined.
+
+| Block | Shapes | What it is | Recipe |
+|-|-|-|-|
+| Ember, Frost and Storm Dragonscale Tiles | block, stairs, slab | overlapping rounded scales: deep red to orange, pale blue to white, teal to dark blue with yellow glints. Stone (pickaxe), like deepslate tiles. | 8 deepslate tiles round a red, light blue or cyan dye make 8 |
+| Temple Lacquer Planks | planks, stairs, slab, fence | glossy red-lacquered boards with black joints. Wood (axe), like dark oak. | 8 dark oak planks round a red dye make 8 |
+| Ember-, Frost- and Storm-Scorched Stone | block | basalt with red glaze and glowing cracks, frost rime and pale blue cracks, or branching yellow-white scorch lines. Like smooth basalt. | 8 smooth basalt round a blaze powder, snowball or copper ingot make 8 |
+| Ancestor Relief | block that faces you | carved grey-black stone with a dragon's head in profile and a gold eye. Like chiseled deepslate. | 4 chiseled deepslate round a gold nugget make 4 |
+| Prayer Wheel | | a red drum with gold script bands between brass caps. Right-click it and it turns for 3 seconds (a creak and a chime; right-clicking again keeps it going). Pickaxe. | copper ingot, red wool, copper ingot in a column |
+| Ember, Frost and Storm Incense Brazier | | a dark bronze bowl on legs with embers glowing in its colour, giving off smoke of that colour. Light 13. Doesn't burn or cook. Pickaxe. | 4 copper ingots, a coal and a red, light blue or cyan dye (`ICI` / `IDI`) |
+| Paper Lantern | | a cream paper lantern with red caps. Stands on a block or hangs under one (place it against a ceiling), like a lantern. Light 14. | string over paper, torch, paper over paper |
+| Sparring Post | block that faces you | a straw-and-rope wrapped post with a padded front. Hitting it doesn't break it: the action bar shows what the swing would deal, e.g. "Sparring Post: 7.0 damage (100% swing)". Sneak to break it. Axe. | white wool, hay bale, oak fence in a column |
+
+The Sparring Post works the damage out as vanilla does against an unarmoured mob: your attack damage (weapon, Strength, class and gear modifiers), the weapon's damage enchantments (Sharpness, not Smite or Bane), how charged the swing is (counted from your last hit on a post) and a jump crit (x1.5). It doesn't count effects that only trigger on hitting a creature (Sneak Attack, smites and other on-hit extras). Holding the button down counts a hit every 5 ticks at most.
+
+The Elder sells 16 Ember, Frost or Storm Dragonscale Tiles for 3 emeralds each (2 for Dragonborn).
 
 ### People
 5 to 7 Dragonborn Templars when the temple generates (two in the courtyard and sometimes a third at the top of the stair, one at the sanctum door, one in the cloister, one or two in the yard) and the Dragonborn Elder in the sanctum. Templars spawn naturally on the terrace later, up to 7 within 48 blocks. No monsters spawn inside a temple's box. See [Dragonborn](../mobs/dragonborn.md).
@@ -28,7 +48,7 @@ The breath altars:
 ### Temple law
 Neutral to everyone. Every Dragonborn within 16 blocks (24 if you're Unfriendly or worse with the Dragonsworn) who can see you takes offence, and the Templars turn on you for 30-50 s, if you:
 
-- break a block of a statue, or an altar's plinth, fire or rod
+- break a block of a statue, or an altar's plinth, fire or rod (a Dragonscale Tiles block in the sanctum counts as a plinth)
 - open the reliquary (any chest in the sanctum)
 
 Each seen offence costs 40 standing with the Dragonsworn. There's no kin trust: Dragonborn are held to the same law. Striking any Dragonborn brings every Templar within 16 blocks down on you. Helping to drive off a goblin raid on the temple forgives you.
@@ -80,8 +100,9 @@ Goblins sometimes [raid](../systems/goblin-raids.md) temples. The war party clim
 
 ## For developers
 - `world/gen/temple/`. `DragonTempleStructure` checks the biome, the lair rule (`StructureProximity.near` on both lair sets first, then `nearGenerating` once a site is found) and the fortress exclusion; `TempleTerrain` finds the site; `DragonTemplePlanner` places the pieces round a `Site` (foot, facing, rise). `TemplePiece` is the shared base (local coordinates facing north, rotated by vanilla, a per-piece seed). Pieces: `TerracePiece`, `GrandStairPiece`, `CourtyardPiece`, `StatuePiece` (one per statue, so a statue is a box), `SanctumPiece` (`altarOf(state)`, `altarTop`, `inFrontOf`, `reliquary`), `CloisterPiece`, `TrainingYardPiece`. `DragonTempleStructures` registers them.
+- Building blocks: the families `EMBER_/FROST_/STORM_DRAGONSCALE_TILES`, `TEMPLE_LACQUER_PLANKS` and `EMBER_/FROST_/STORM_SCORCHED_STONE` in `ModBlockFamilies` (with `dragonscale(kind)` and `scorchedStone(kind)`), and the one-off blocks in `ModTempleBlocks` (`classes/Blocks/Temple/`: `AncestorReliefBlock`, `PrayerWheelBlock` with its `onSpin` hook for a later blessing, `IncenseBrazierBlock`, `PaperLanternBlock`, `SparringPostBlock`). `TemplePiece.roof(...)` builds the stepped tile roofs. Resources: `tools/block_families.py` (families), `tools/temple_blocks.py` (the one-off blocks), `tools/temple_block_textures.py` (every texture). Logs `[TempleBlocks] <player> spun the prayer wheel at ...` and `[SparringPost] <player> hit for <damage> (<charge>% charge)`.
 - `TempleShrine`: the altar hook (`UseBlockCallback`), the `BreathWeapon.MODIFY` listener, `isBlessed`, quest hooks `onBlessing` and `onRebirth`. Persistent data: `DndShrineDay`, `DndShrineBlessedUntil`. Logs `[DragonTemple] ...`.
 - `world/gen/StructureProximity.nearGenerating(context, set, radius)` / `nearestGenerating`: like `near`, but runs the other structure's site check, so only starts that really generate count.
 - Data: `worldgen/structure/dragon_temple.json` (Templars in the `creature` override for pieces, an empty `monster` list for the whole box), `worldgen/structure_set/dragon_temples.json`, `#dndclasses:has_structure/dragon_temple`, `#dndclasses:dragon_temples`, `#dndclasses:dragon_temple_maps/dragon_lair` and `.../frost_lair` (the Elder's map targets), `loot_tables/chests/dragon_temple_*.json`, `loot_tables/gameplay/goblin_raid_dragon_temple.json`, `factions/dragonsworn.json`, `dialogue/dragonborn_elder.json`.
 - `RacialHomes.DRAGON_TEMPLE` (hearth: `DragonTempleStructures.SANCTUM`), `Settlement.Kind.TEMPLE` (rally in the courtyard, raiders from the valley), `SettlementGrudges.DRAGONSWORN` (`entity/TempleLaw`), `Lockpicking` (the reliquary at DC 15, cells unlocked).
-- Devscripts: `dragon-temple-survey.txt` (both `/locate`s, `/dndhome templesurvey`, screenshots, NPC counts) and `dragon-temple-shrine.txt` (blessing, rebirth, the price, other races, Templar breath at a zombie).
+- Devscripts: `dragon-temple-survey.txt` (both `/locate`s, `/dndhome templesurvey`, screenshots, NPC counts), `dragon-temple-shrine.txt` (blessing, rebirth, the price, other races, Templar breath at a zombie), `dragon-temple-blocks.txt` (close-ups of every building block, the prayer wheel, the sparring post, drops and the Elder's tiles) and `dragon-temple-blocks-survey.txt` (the same shots of an older temple and of a newly generated one).

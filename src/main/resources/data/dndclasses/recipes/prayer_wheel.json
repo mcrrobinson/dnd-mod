@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "C": {
+      "item": "minecraft:copper_ingot"
+    },
+    "R": {
+      "item": "minecraft:red_wool"
+    }
+  },
+  "pattern": [
+    "C",
+    "R",
+    "C"
+  ],
+  "result": {
+    "item": "dndclasses:prayer_wheel"
+  },
+  "show_notification": true
+}

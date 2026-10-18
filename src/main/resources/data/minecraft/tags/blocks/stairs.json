@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:runic_deepslate_brick_stairs"
+    "dndclasses:runic_deepslate_brick_stairs",
+    "dndclasses:brimstone_stairs",
+    "dndclasses:polished_brimstone_stairs",
+    "dndclasses:brimstone_brick_stairs",
+    "dndclasses:cut_hellbrass_stairs"
   ]
 }

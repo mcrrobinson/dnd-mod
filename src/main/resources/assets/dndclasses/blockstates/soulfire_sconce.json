@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "dndclasses:block/soulfire_sconce"
+    },
+    "facing=north": {
+      "model": "dndclasses:block/soulfire_sconce",
+      "y": 270
+    },
+    "facing=south": {
+      "model": "dndclasses:block/soulfire_sconce",
+      "y": 90
+    },
+    "facing=west": {
+      "model": "dndclasses:block/soulfire_sconce",
+      "y": 180
+    }
+  }
+}

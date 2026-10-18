@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "dndclasses:block/cut_hellbrass",
+    "side": "dndclasses:block/cut_hellbrass",
+    "top": "dndclasses:block/cut_hellbrass"
+  }
+}

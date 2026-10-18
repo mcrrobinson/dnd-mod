@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen.sanctum;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.SanctumBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.NetherWartBlock;
@@ -10,9 +12,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * The Alchemist's den, west of the square: a squat blackstone workshop under a nether brick roof, its door
- * facing the square. Inside, brewing stands and cauldrons along the back wall, shelves of barrels and the den's
- * chest; outside its south wall a planter of nether wart on soul sand.
+ * The Alchemist's den, west of the square: a squat brimstone brick workshop under a nether brick roof, its door
+ * facing the square. Inside, brewing stands and cauldrons along the back wall, shelves of barrels, the den's
+ * chest and two sulphur vents fuming in the floor; outside its south wall a planter of nether wart on soul sand.
  */
 public class DenPiece extends BrimstonePiece {
     static final int WEST = -13;
@@ -35,7 +37,7 @@ public class DenPiece extends BrimstonePiece {
             for (int z = BACK; z <= FRONT; z++) {
                 boolean edge = x == WEST || x == EAST || z == BACK || z == FRONT;
                 boolean corner = (x == WEST || x == EAST) && (z == BACK || z == FRONT);
-                b.set(x, 0, z, edge ? Blocks.POLISHED_BLACKSTONE_BRICKS : Blocks.NETHER_BRICKS);
+                b.set(x, 0, z, edge ? ModBlockFamilies.BRIMSTONE_BRICKS.base() : Blocks.NETHER_BRICKS);
                 for (int y = 1; y < HEIGHT; y++) {
                     if (corner) {
                         b.set(x, y, z, Blocks.CHISELED_POLISHED_BLACKSTONE);
@@ -51,7 +53,7 @@ public class DenPiece extends BrimstonePiece {
         }
         // The door, facing the square.
         b.air(EAST, 1, -5, EAST, 2, -5);
-        b.fill(EAST + 1, 1, -4, EAST + 1, 2, -4, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+        b.fill(EAST + 1, 1, -4, EAST + 1, 2, -4, wall(ModBlockFamilies.BRIMSTONE_BRICKS));
         b.set(EAST + 1, 3, -4, soulLantern(false));
 
         // Brewing stands and cauldrons along the back wall; barrels on the west wall.
@@ -65,6 +67,8 @@ public class DenPiece extends BrimstonePiece {
         b.set(WEST + 1, 2, BACK + 4, Blocks.BREWING_STAND);
         b.container(EAST - 1, 1, BACK + 1, facing(Blocks.CHEST, Direction.WEST), DEN_LOOT);
         b.set(EAST - 1, 1, FRONT - 1, Blocks.CRAFTING_TABLE);
+        b.set(WEST + 3, 0, BACK + 3, SanctumBlocks.SULPHUR_VENT);
+        b.set(EAST - 2, 0, FRONT - 2, SanctumBlocks.SULPHUR_VENT);
         b.set((WEST + EAST) / 2, HEIGHT - 1, (BACK + FRONT) / 2, soulLantern(true));
 
         // The nether wart planter outside the south wall.

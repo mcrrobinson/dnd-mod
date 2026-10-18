@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/contract_lectern"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/contract_lectern",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/contract_lectern",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/contract_lectern",
+      "y": 270
+    }
+  }
+}

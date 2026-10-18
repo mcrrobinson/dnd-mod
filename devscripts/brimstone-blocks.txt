@@ -1,0 +1,124 @@
+# The Brimstone Sanctum building blocks (docs/structures/brimstone-sanctums.md#building-blocks).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/brimstone-blocks.txt
+# Expect in latest.log:
+# - each /loot line drops its own block (2 slabs from the double slab)
+# - each /recipe line unlocks 1 recipe ("No new recipes were learned" once an earlier run has unlocked them)
+# - using the Contract Lectern prints "The Law of the Brimstone Covenant" and its four laws ([CHAT]) and logs
+#   "[ContractLectern] Dev read the Covenant's law at ..."
+# - the Pactbroker's trades 9 and 10: `slots` shows 16 Brimstone, then 8 Brimstone Bricks, in the output slot
+# Screenshots: brimstone-blocks-display (every block at noon), brimstone-blocks-night (the lights, sigil and
+# script at midnight), brimstone-blocks-close (close-up of the materials), brimstone-blocks-lights (close-up of the
+# lectern, sconce and censers).
+wait 40
+closescreen
+include _reset.txt
+wait 20
+closescreen
+/gamemode creative
+/gamerule doDaylightCycle false
+/time set noon
+/fill 18 149 -8 36 149 12 dndclasses:brimstone
+/fill 18 150 -8 36 156 12 minecraft:air
+# The materials: a two-high wall of each base block
+/fill 20 150 8 20 151 8 dndclasses:brimstone
+/fill 21 150 8 21 151 8 dndclasses:polished_brimstone
+/fill 22 150 8 22 151 8 dndclasses:brimstone_bricks
+/fill 23 150 8 23 151 8 dndclasses:hellbrass
+/fill 24 150 8 24 151 8 dndclasses:cut_hellbrass
+/fill 25 150 8 25 151 8 dndclasses:pact_sigil_tile
+/fill 26 150 8 26 151 8 dndclasses:infernal_script_panel[facing=north]
+/fill 27 150 8 27 151 8 dndclasses:sulphur_vent
+/fill 28 150 8 31 152 8 dndclasses:brimstone_bricks
+# Shapes in front
+/setblock 20 150 6 dndclasses:brimstone_stairs[facing=south]
+/setblock 21 150 6 dndclasses:brimstone_slab[type=bottom]
+/setblock 22 150 6 dndclasses:brimstone_wall
+/setblock 23 150 6 dndclasses:polished_brimstone_stairs[facing=south]
+/setblock 24 150 6 dndclasses:polished_brimstone_slab[type=double]
+/setblock 25 150 6 dndclasses:polished_brimstone_wall
+/setblock 26 150 6 dndclasses:brimstone_brick_stairs[facing=south]
+/setblock 27 150 6 dndclasses:brimstone_brick_slab[type=top]
+/setblock 28 150 6 dndclasses:brimstone_brick_wall
+/setblock 29 150 6 dndclasses:cut_hellbrass_stairs[facing=south]
+/setblock 30 150 6 dndclasses:cut_hellbrass_slab[type=bottom]
+# Sigil tiles on the floor, a vent fuming in it
+/fill 20 149 3 22 149 5 dndclasses:pact_sigil_tile
+/setblock 25 149 4 dndclasses:sulphur_vent
+# The lights and the lectern: a sconce on the brick wall, a censer hung from a beam on a chain, one standing
+/setblock 29 151 7 dndclasses:soulfire_sconce[facing=north]
+/fill 30 155 5 33 155 7 dndclasses:brimstone_bricks
+/setblock 31 154 6 minecraft:chain
+/setblock 31 153 6 minecraft:chain
+/setblock 31 152 6 dndclasses:chain_hung_censer[hanging=true]
+/setblock 33 150 5 dndclasses:chain_hung_censer
+/setblock 32 150 4 dndclasses:contract_lectern[facing=north]
+/tp @s 26.5 151.5 -2.5 0 18
+wait 40
+hud off
+screenshot brimstone-blocks-display
+/tp @s 23.5 151.6 3.0 0 22
+wait 20
+screenshot brimstone-blocks-close
+/time set midnight
+/tp @s 31.0 151.6 1.0 0 12
+wait 40
+screenshot brimstone-blocks-lights
+/tp @s 26.5 151.5 -2.5 0 18
+wait 20
+screenshot brimstone-blocks-night
+/time set noon
+hud on
+# Drops: /loot simulates mining each block with a pickaxe
+/loot spawn 26 152 -4 mine 20 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 21 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 22 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 23 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 24 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 25 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 26 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 27 150 8 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 24 150 6 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 29 150 6 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 30 150 6 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 29 151 7 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 31 152 6 minecraft:diamond_pickaxe
+/loot spawn 26 152 -4 mine 32 150 4 minecraft:diamond_pickaxe
+/kill @e[type=minecraft:item,distance=..40]
+# Recipes parse and exist
+/recipe give @s dndclasses:brimstone
+/recipe give @s dndclasses:polished_brimstone
+/recipe give @s dndclasses:brimstone_bricks
+/recipe give @s dndclasses:brimstone_brick_wall_from_brimstone_bricks_stonecutting
+/recipe give @s dndclasses:hellbrass
+/recipe give @s dndclasses:cut_hellbrass
+/recipe give @s dndclasses:cut_hellbrass_slab
+/recipe give @s dndclasses:pact_sigil_tile
+/recipe give @s dndclasses:infernal_script_panel
+/recipe give @s dndclasses:contract_lectern
+/recipe give @s dndclasses:sulphur_vent
+/recipe give @s dndclasses:soulfire_sconce
+/recipe give @s dndclasses:chain_hung_censer
+# The Contract Lectern: right-click reads the law
+/gamemode survival
+/clear @s
+/tp @s 32.5 150 1.8 0 25
+wait 10
+use
+wait 10
+# The Pactbroker sells the sanctum's stone (offers 9 and 10)
+/summon dndclasses:tiefling_pactbroker 24.5 150 -4.5 {NoAI:1b,Rotation:[180f,0f]}
+/give @s minecraft:emerald 10
+/tp @s 24.5 150 -7.5 0 20
+wait 20
+use
+wait 10
+trade 9
+wait 5
+slots
+trade 10
+wait 5
+slots
+closescreen
+/kill @e[type=dndclasses:tiefling_pactbroker,distance=..40]
+/clear @s
+quit

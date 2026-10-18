@@ -5,6 +5,8 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.SanctumBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -79,7 +81,7 @@ public class PlatformPiece extends BrimstonePiece {
                     for (int y = 1; y < WALL_HEIGHT; y++) {
                         b.set(x, y, z, masonry(b));
                     }
-                    b.set(x, WALL_HEIGHT, z, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+                    b.set(x, WALL_HEIGHT, z, wall(ModBlockFamilies.BRIMSTONE_BRICKS));
                 }
             }
         }
@@ -103,7 +105,7 @@ public class PlatformPiece extends BrimstonePiece {
             b.set(side * 2, WALL_HEIGHT + 2, g, soulLantern(false));
         }
         b.fill(-1, 4, g, 1, 4, g, Blocks.IRON_BARS);
-        b.fill(-1, WALL_HEIGHT, g, 1, WALL_HEIGHT, g, Blocks.POLISHED_BLACKSTONE_BRICKS);
+        b.fill(-1, WALL_HEIGHT, g, 1, WALL_HEIGHT, g, ModBlockFamilies.BRIMSTONE_BRICKS.base());
         b.set(0, WALL_HEIGHT + 1, g, Blocks.GILDED_BLACKSTONE);
         b.set(-1, 3, g, Blocks.IRON_BARS);
         b.set(1, 3, g, Blocks.IRON_BARS);
@@ -111,8 +113,17 @@ public class PlatformPiece extends BrimstonePiece {
         // Soul-fire braziers either side of the road.
         for (int side = -1; side <= 1; side += 2) {
             int x = side * 3;
-            b.set(x, 1, 8, Blocks.POLISHED_BLACKSTONE);
+            b.set(x, 1, 8, ModBlockFamilies.POLISHED_BRIMSTONE.base());
             b.set(x, 2, 8, Blocks.SOUL_CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, Direction.SOUTH));
+        }
+
+        // Sulphur vents round the platform's edge, outside the wall, every 30 degrees but at the gate.
+        for (int k = 0; k < 12; k++) {
+            if (k == 3) {
+                continue;
+            }
+            double angle = k * Math.PI / 6.0D;
+            b.set((int) Math.round(Math.cos(angle) * r), 0, (int) Math.round(Math.sin(angle) * r), SanctumBlocks.SULPHUR_VENT);
         }
 
         // The Exiles.
@@ -124,15 +135,21 @@ public class PlatformPiece extends BrimstonePiece {
         }
     }
 
-    /** The platform's top block {@code d} blocks from the middle. */
+    /**
+     * The platform's top block {@code d} blocks from the middle: mostly brimstone inside the wall, a polished
+     * brimstone road, and polished basalt with patches of brimstone outside the wall.
+     */
     private BlockState floor(double d, float roll, boolean road) {
         if (road) {
-            return (roll < 0.85F ? Blocks.POLISHED_BLACKSTONE : Blocks.POLISHED_BLACKSTONE_BRICKS).getDefaultState();
+            return (roll < 0.85F ? ModBlockFamilies.POLISHED_BRIMSTONE.base() : ModBlockFamilies.BRIMSTONE_BRICKS.base())
+                    .getDefaultState();
         }
         if (d > BrimstoneSanctumStructure.WALL + 0.5D) {
-            return pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y);
+            return roll < 0.3F ? ModBlockFamilies.BRIMSTONE.base().getDefaultState() : pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y);
         }
-        return (roll < 0.55F ? Blocks.BLACKSTONE : roll < 0.75F ? Blocks.POLISHED_BLACKSTONE : roll < 0.9F ? Blocks.SMOOTH_BASALT
+        return (roll < 0.45F ? ModBlockFamilies.BRIMSTONE.base() : roll < 0.6F ? Blocks.BLACKSTONE
+                : roll < 0.7F ? Blocks.POLISHED_BLACKSTONE : roll < 0.83F ? Blocks.SMOOTH_BASALT
+                : roll < 0.91F ? ModBlockFamilies.POLISHED_BRIMSTONE.base()
                 : roll < 0.97F ? Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS : Blocks.GILDED_BLACKSTONE).getDefaultState();
     }
 }

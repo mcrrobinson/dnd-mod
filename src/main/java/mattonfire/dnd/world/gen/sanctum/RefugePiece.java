@@ -4,15 +4,17 @@ import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.SanctumBlocks;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * The Refuge, south-west of the square: a dormitory of blackstone and crimson planks, its door facing the
- * square. Beds explode in the Nether, so its sleepers bind to {@link #ANCHORS} respawn anchors along the back
- * wall instead, each with a red carpet before it. They're generated empty: anyone may charge one with glowstone,
+ * The Refuge, south-west of the square: a dormitory of brimstone bricks and crimson planks, its door facing the
+ * square, lit by soulfire sconces. Beds explode in the Nether, so its sleepers bind to {@link #ANCHORS} respawn
+ * anchors along the back wall instead, framed in cut hellbrass, each with a red carpet before it. They're generated empty: anyone may charge one with glowstone,
  * and a Tiefling binds to one for free and finds it refilled every day ({@link SanctumRefuge}).
  */
 public class RefugePiece extends BrimstonePiece {
@@ -57,10 +59,10 @@ public class RefugePiece extends BrimstonePiece {
                 boolean edge = x == WEST || x == EAST || z == BACK || z == FRONT;
                 boolean post = (x == WEST || x == EAST) && (z == BACK || z == FRONT || (z - BACK) % 4 == 0)
                         || (z == BACK || z == FRONT) && (x - WEST) % 4 == 0;
-                b.set(x, 0, z, edge ? Blocks.POLISHED_BLACKSTONE_BRICKS : Blocks.CRIMSON_PLANKS);
+                b.set(x, 0, z, edge ? ModBlockFamilies.BRIMSTONE_BRICKS.base() : Blocks.CRIMSON_PLANKS);
                 for (int y = 1; y < HEIGHT; y++) {
                     if (post && edge) {
-                        b.set(x, y, z, Blocks.POLISHED_BLACKSTONE_BRICKS);
+                        b.set(x, y, z, ModBlockFamilies.BRIMSTONE_BRICKS.base());
                     } else if (edge) {
                         boolean window = y == 2 && z == FRONT && x % 2 == 0;
                         b.set(x, y, z, window ? Blocks.RED_STAINED_GLASS_PANE : Blocks.CRIMSON_PLANKS);
@@ -68,20 +70,28 @@ public class RefugePiece extends BrimstonePiece {
                         b.set(x, y, z, Blocks.AIR);
                     }
                 }
-                b.set(x, HEIGHT, z, edge ? Blocks.POLISHED_BLACKSTONE_BRICK_SLAB.getDefaultState() : Blocks.CRIMSON_PLANKS.getDefaultState());
+                b.set(x, HEIGHT, z, edge ? slab(ModBlockFamilies.BRIMSTONE_BRICKS, false) : Blocks.CRIMSON_PLANKS.getDefaultState());
             }
         }
         // The door, facing the square.
         b.air(EAST, 1, 6, EAST, 2, 6);
-        b.fill(EAST + 1, 1, 7, EAST + 1, 2, 7, Blocks.POLISHED_BLACKSTONE_BRICK_WALL);
+        b.fill(EAST + 1, 1, 7, EAST + 1, 2, 7, wall(ModBlockFamilies.BRIMSTONE_BRICKS));
         b.set(EAST + 1, 3, 7, soulLantern(false));
 
-        // The anchors along the back wall, a red carpet before each.
+        // The anchors along the back wall in a cut hellbrass frame (posts between them, a slab over each), a red
+        // carpet before each.
         for (int i = 0; i < ANCHORS; i++) {
             int z = anchorB(i);
             b.set(WEST + 1, 1, z, Blocks.RESPAWN_ANCHOR);
+            b.set(WEST + 1, 2, z, slab(ModBlockFamilies.CUT_HELLBRASS, false));
             b.set(WEST + 2, 1, z, Blocks.RED_CARPET);
+            if (i > 0) {
+                b.fill(WEST + 1, 1, z - 1, WEST + 1, 2, z - 1, ModBlockFamilies.CUT_HELLBRASS.base());
+            }
         }
+        // Soulfire sconces on the inside of the front wall.
+        b.set(WEST + 2, 3, FRONT - 1, facing(SanctumBlocks.SOULFIRE_SCONCE, Direction.NORTH));
+        b.set(EAST - 2, 3, FRONT - 1, facing(SanctumBlocks.SOULFIRE_SCONCE, Direction.NORTH));
         b.container(EAST - 1, 1, BACK + 1, facing(Blocks.CHEST, Direction.WEST), REFUGE_LOOT);
         b.set(EAST - 1, 1, FRONT - 1, facing(Blocks.BARREL, Direction.UP));
         b.set((WEST + EAST) / 2, HEIGHT - 1, BACK + 2, soulLantern(true));

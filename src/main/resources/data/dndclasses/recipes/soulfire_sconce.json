@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": {
+      "item": "minecraft:soul_torch"
+    },
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
+  },
+  "pattern": [
+    "T",
+    "N"
+  ],
+  "result": {
+    "item": "dndclasses:soulfire_sconce"
+  },
+  "show_notification": true
+}

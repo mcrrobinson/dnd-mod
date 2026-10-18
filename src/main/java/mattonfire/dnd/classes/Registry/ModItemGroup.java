@@ -25,6 +25,8 @@ public class ModItemGroup {
             for (BlockFamily family : BlockFamily.all()) {
                 family.blocks().forEach(entries::add);
             }
+            // --- Brimstone Sanctums ---
+            SanctumBlocks.all().forEach(entries::add);
         });
         // Example of adding to existing Item Group
         ItemGroupEvents.modifyEntriesEvent(DND_CLASSES_ITEMGROUP).register(entries -> {

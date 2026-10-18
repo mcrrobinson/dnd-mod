@@ -2,6 +2,7 @@ package mattonfire.dnd.world.gen.sanctum;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
@@ -10,8 +11,9 @@ import net.minecraft.util.math.Direction;
 
 /**
  * One stall of the Brass Market, east of the square (three of them, see
- * {@link BrimstoneSanctumStructure#STALLS}): crimson posts under an awning of orange, yellow or red wool, a
- * blackstone counter facing the square, and barrels of wares behind it (one filled from the market table).
+ * {@link BrimstoneSanctumStructure#STALLS}): crimson posts on cut hellbrass feet under an awning of orange,
+ * yellow or red wool crowned with hellbrass, a cut hellbrass counter facing the square, and barrels of wares
+ * behind it (one filled from the market table).
  */
 public class MarketPiece extends BrimstonePiece {
     private static final Block[] AWNINGS = {Blocks.ORANGE_WOOL, Blocks.YELLOW_WOOL, Blocks.RED_WOOL};
@@ -46,12 +48,13 @@ public class MarketPiece extends BrimstonePiece {
         for (int dx = -1; dx <= 1; dx += 2) {
             for (int dz = -1; dz <= 1; dz += 2) {
                 b.fill(a + dx, 1, z + dz, a + dx, 2, z + dz, Blocks.CRIMSON_FENCE);
+                b.set(a + dx, 0, z + dz, ModBlockFamilies.CUT_HELLBRASS.base());
             }
         }
         b.fill(a - 1, 3, z - 1, a + 1, 3, z + 1, awning);
-        b.set(a, 4, z, Blocks.GOLD_BLOCK);
+        b.set(a, 4, z, ModBlockFamilies.HELLBRASS.base());
         // The counter, facing the square (west), and the wares behind it.
-        b.set(a - 1, 1, z, slab(Blocks.POLISHED_BLACKSTONE_SLAB, true));
+        b.set(a - 1, 1, z, slab(ModBlockFamilies.CUT_HELLBRASS, true));
         b.container(a + 1, 1, z, facing(Blocks.BARREL, Direction.UP), MARKET_LOOT);
         b.set(a + 1, 2, z, facing(Blocks.BARREL, Direction.UP));
         b.set(a, 1, z, Blocks.AIR);

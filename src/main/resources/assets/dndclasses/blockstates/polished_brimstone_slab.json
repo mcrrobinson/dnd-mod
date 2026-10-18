@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/polished_brimstone_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/polished_brimstone"
+    },
+    "type=top": {
+      "model": "dndclasses:block/polished_brimstone_slab_top"
+    }
+  }
+}

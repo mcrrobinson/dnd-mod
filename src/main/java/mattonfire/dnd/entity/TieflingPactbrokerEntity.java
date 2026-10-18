@@ -88,5 +88,8 @@ public class TieflingPactbrokerEntity extends TieflingEntity implements Settleme
     public void readCustomDataFromNbt(NbtCompound nbt) {
         super.readCustomDataFromNbt(nbt);
         this.merchant.read(nbt);
+        if (this.merchant.savedOffers() != null) {
+            TieflingTrades.addMissing(this.merchant.savedOffers());
+        }
     }
 }

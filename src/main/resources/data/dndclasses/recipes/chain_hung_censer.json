@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "C": {
+      "item": "minecraft:chain"
+    },
+    "I": {
+      "item": "minecraft:copper_ingot"
+    },
+    "B": {
+      "item": "minecraft:blaze_powder"
+    }
+  },
+  "pattern": [
+    " C ",
+    "IBI",
+    " I "
+  ],
+  "result": {
+    "item": "dndclasses:chain_hung_censer"
+  },
+  "show_notification": true
+}

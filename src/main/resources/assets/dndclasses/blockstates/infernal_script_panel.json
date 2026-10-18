@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/infernal_script_panel"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/infernal_script_panel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/infernal_script_panel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/infernal_script_panel",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:brimstone"
+  },
+  "result": "dndclasses:brimstone_slab"
+}

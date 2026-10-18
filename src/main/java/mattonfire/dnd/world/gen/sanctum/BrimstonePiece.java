@@ -3,6 +3,7 @@ package mattonfire.dnd.world.gen.sanctum;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.function.Consumer;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.entity.TieflingEntity;
 import mattonfire.dnd.world.gen.OrientedPiece;
 import net.minecraft.block.Block;
@@ -65,11 +66,14 @@ public abstract class BrimstonePiece extends OrientedPiece<BrimstonePiece.Builde
         return new Builder(world, chunkBox, random);
     }
 
-    /** The sanctum's stonework: blackstone bricks, a few cracked, the odd gilded or plain blackstone. */
+    /**
+     * The sanctum's stonework: brimstone bricks, with the odd cracked or plain polished blackstone brick and
+     * gilded blackstone.
+     */
     protected static Block masonry(Builder b) {
         float r = b.random.nextFloat();
-        return r < 0.08F ? Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS : r < 0.11F ? Blocks.GILDED_BLACKSTONE
-                : r < 0.2F ? Blocks.BLACKSTONE : Blocks.POLISHED_BLACKSTONE_BRICKS;
+        return r < 0.06F ? Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS : r < 0.09F ? Blocks.GILDED_BLACKSTONE
+                : r < 0.2F ? Blocks.POLISHED_BLACKSTONE_BRICKS : ModBlockFamilies.BRIMSTONE_BRICKS.base();
     }
 
     /** Places blocks, containers and Tieflings for one chunk's slice of a piece, in local coordinates. */

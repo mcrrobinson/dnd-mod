@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "minecraft:polished_blackstone_slab"
+    },
+    "P": {
+      "item": "minecraft:paper"
+    },
+    "#": {
+      "item": "minecraft:polished_blackstone"
+    }
+  },
+  "pattern": [
+    "SPS",
+    " # ",
+    " S "
+  ],
+  "result": {
+    "item": "dndclasses:contract_lectern"
+  },
+  "show_notification": true
+}

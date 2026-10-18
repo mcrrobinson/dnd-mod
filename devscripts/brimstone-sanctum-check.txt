@@ -6,8 +6,8 @@
 #   (action bar), "[BrimstoneSanctum] Refilled Refuge anchor", charges=4 and SpawnDimension "minecraft:the_nether";
 #   after emptying it the same day it stays at charges=0 (Test passed); after /time add 24000 it's back to 4
 # - fire: Health stays 20.0 after 6 lava damage inside the sanctum as a Tiefling, then drops outside it
-# - trades: as a Tiefling Warlock the Pactbroker lists 14 trades (9, 4 Infernal Regalia, 1 Wither piece) at kin
-#   prices; as a Human Alchemist 10 (the Fast Brewing Stand last)
+# - trades: as a Tiefling Warlock the Pactbroker lists 16 trades (11, 4 Infernal Regalia, 1 Wither piece) at kin
+#   prices; as a Human Alchemist 12 (the Fast Brewing Stand last)
 # - rebuke: "[BrimstoneSanctum] <exile> rebuked Dev (fire 4 s)" and a Fire value above 0 after hitting an Exile,
 #   then "[BrimstoneSanctum] Exile ... threw a fireball at Dev" from the Exile 10 blocks off
 wait 40

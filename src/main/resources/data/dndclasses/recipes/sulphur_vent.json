@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "minecraft:gunpowder"
+    },
+    "#": {
+      "item": "dndclasses:brimstone"
+    }
+  },
+  "pattern": [
+    "G",
+    "#"
+  ],
+  "result": {
+    "item": "dndclasses:sulphur_vent"
+  },
+  "show_notification": true
+}

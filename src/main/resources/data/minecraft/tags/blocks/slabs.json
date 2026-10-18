@@ -1,6 +1,10 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:runic_deepslate_brick_slab"
+    "dndclasses:runic_deepslate_brick_slab",
+    "dndclasses:brimstone_slab",
+    "dndclasses:polished_brimstone_slab",
+    "dndclasses:brimstone_brick_slab",
+    "dndclasses:cut_hellbrass_slab"
   ]
 }

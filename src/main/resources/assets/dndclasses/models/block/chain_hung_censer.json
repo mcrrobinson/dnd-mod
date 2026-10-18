@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_lantern",
+  "textures": {
+    "lantern": "dndclasses:block/chain_hung_censer"
+  }
+}

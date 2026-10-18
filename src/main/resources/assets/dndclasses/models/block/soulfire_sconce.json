@@ -1,0 +1,298 @@
+{
+  "parent": "minecraft:block/block",
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "dndclasses:block/soulfire_sconce",
+    "sconce": "dndclasses:block/soulfire_sconce"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        4,
+        5.5
+      ],
+      "to": [
+        1,
+        12,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        7,
+        7.5
+      ],
+      "to": [
+        4,
+        8,
+        8.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        8,
+        5.5
+      ],
+      "to": [
+        7.5,
+        10,
+        10.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#sconce"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        9.5,
+        8
+      ],
+      "to": [
+        8,
+        17.5,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          5,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      },
+      "shade": false,
+      "faces": {
+        "north": {
+          "uv": [
+            8,
+            0,
+            16,
+            11
+          ],
+          "texture": "#sconce"
+        },
+        "south": {
+          "uv": [
+            8,
+            0,
+            16,
+            11
+          ],
+          "texture": "#sconce"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        9.5,
+        5
+      ],
+      "to": [
+        5,
+        17.5,
+        11
+      ],
+      "rotation": {
+        "origin": [
+          5,
+          8,
+          8
+        ],
+        "axis": "y",
+        "angle": 45
+      },
+      "shade": false,
+      "faces": {
+        "east": {
+          "uv": [
+            8,
+            0,
+            16,
+            11
+          ],
+          "texture": "#sconce"
+        },
+        "west": {
+          "uv": [
+            8,
+            0,
+            16,
+            11
+          ],
+          "texture": "#sconce"
+        }
+      }
+    }
+  ]
+}

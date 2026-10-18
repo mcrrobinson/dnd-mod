@@ -21,7 +21,7 @@ Plots only go on dry, fairly level ground, so a village on hilly land can come o
 
 **The Green Dragon** has a thatched roof (about one block in five gone mossy), half-timbered wattle-and-daub walls, a round green door in a stone arch, a sign out front ("Ales & Suppers") and a yellow banner beside the door with the inn's [Green Dragon](../items/banner-patterns.md), a hearth-stone fireplace, a bar backed by Ale Casks you can draw from and tables of food. The innkeeper stands behind the bar and the bounty board hangs on the wall. See [Hobbit Tavern](hobbit-tavern.md).
 
-![The Green Dragon inn's front, its banner beside the round door](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/inn-sign-after.png)
+![The Green Dragon inn's front, its banner beside the round door](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/inn-sign-after-v2.png)
 
 **Market stalls** have a low thatched roof with a striped valance at the front, a wattle-and-daub back wall and Pipe-weed Bundles among the pumpkins and melons. **Gardens** keep a Pipe-weed Bundle in one corner.
 

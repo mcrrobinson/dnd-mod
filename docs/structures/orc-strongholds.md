@@ -14,8 +14,8 @@ Every hold is a circle round its Fighting Pit, turned so its gate faces one of t
 | Yurts | 3 round hide tents, 9 across and 7 high: walls and roof of Tanned Hide (brown, pale and grey), the Bloodtusk mark (Painted Hide) on the back wall opposite the door, a conical roof round a spruce pole, the door facing the pit. Each holds a supply chest, two straw beds and a cauldron on a Tanned Hide Carpet. |
 | Totems and bone heaps | 2-4 between the buildings: a totem pole of logs with a War Totem face, fence arms and a skull, or a heap of bone blocks round skulls. |
 
-![The gatehouse towers hung with red Bloodtusk war banners](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/stronghold-gate-after.png)
-![The war drum under its Bloodtusk banner in front of the Great Longhouse](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/stronghold-pit-after.png)
+![The gatehouse towers hung with red Bloodtusk war banners](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/stronghold-gate-after-v2.png)
+![The war drum under its Bloodtusk banner in front of the Great Longhouse](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/stronghold-pit-after-v2.png)
 
 ### Building blocks
 The hold is built from its own blocks, all in the **DnD Building Blocks** creative tab. Every one drops itself when mined, so you can take them from a hold.

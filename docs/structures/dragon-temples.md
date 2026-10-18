@@ -14,7 +14,7 @@ Every temple is the same plan, turned to climb into its slope:
 | Cloister | Down one side, under the same Ember Dragonscale roof: six small rooms off a corridor (4-6 monks' cells with a Temple Lacquer floor, a red bed, a chest and a candle; the rest storerooms with barrels), 12 prayer wheels set into the corridor walls either side of the doors, paper lanterns overhead, lacquered beams across, an Ancestor Relief at each end of the corridor, a cross-hall with the door onto the courtyard, and the library (28 bookshelves in Temple Lacquer frames, two lecterns, a lacquered reading table) |
 | Training yard | Down the other side: coarse dirt and gravel, three targets on hay bales, three sparring posts, three armour stands in the Knight set (one complete, two partial), a grindstone, an anvil and a barrel |
 
-![The sanctum's breath altars under their Three Breaths banners](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/temple-sanctum-after.png)
+![The sanctum's breath altars under their Three Breaths banners](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/temple-sanctum-after-v2.png)
 
 The breath altars, each on a gilded step with its tiles' stairs either side, an incense brazier of its colour at each front corner and Breath-Scorched Stone of its colour on the floor in front (a 3 by 2 patch with a ragged edge):
 

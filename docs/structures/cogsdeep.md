@@ -22,7 +22,7 @@ west workshop  <-  Commons (15 x 15)  ->  east workshop  ->  lush grotto
 | Gem room | South of the Commons: 13 x 15, 5 high, a calcite and smooth basalt checker floor. Polishing benches (grindstones, stonecutters, smooth stone slabs with end-rod lamps) along both walls, calcite pedestals with amethyst clusters and buds between tinted glass, a Glowcrystal in the wall over each bench, and the gem chest between two Glowcrystals at the far wall. |
 | Lush grotto | Beyond the east workshop, through a short tunnel: a cave about 17 x 10 x 19 of moss and rooted dirt round a clay-bottomed pool with big dripleaf. Azaleas, moss carpet, grass and small dripleaf on the floor, glow berry vines, spore blossoms, hanging roots and glow lichen from the ceiling, an azalea stump. |
 
-![The observatory door under its Gnome Cog banner](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/cogsdeep-door-after.png)
+![The observatory door under its Gnome Cog banner](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/racial-banners/cogsdeep-door-after-v2.png)
 
 Every room is a sealed shell: walls, floor and ceiling are always built whole, so no water, lava or gravel from the caves and aquifers round it gets in, and the burrow is never open to a cave. Real lush caves are rare under forests, so the gnomes grow their own.
 

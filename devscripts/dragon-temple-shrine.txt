@@ -14,19 +14,32 @@ include _reset.txt
 /gamemode survival
 /effect give @s resistance 600 4 true
 /dndrace set @s dragonborn ember
+# With no class the class picker opens and pauses the game, so the server never runs the rest.
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
 /dndhome temple ember
+waitserver 2
 wait 200
+# The Elder often stands between the player and the Ember altar: put it behind the player before each use.
+/execute at @s rotated ~ 0 as @e[type=dndclasses:dragonborn_elder,distance=..6] run tp @s ^ ^ ^-2
+wait 2
 screenshot dts-ember-altar
 use
 wait 20
 screenshot dts-blessed
 press key.dnd-classes.racial
 wait 20
+/execute at @s rotated ~ 0 as @e[type=dndclasses:dragonborn_elder,distance=..6] run tp @s ^ ^ ^-2
+wait 2
 use
 wait 20
 screenshot dts-blessed-again
 /dndhome temple frost
+waitserver 2
 wait 60
+/execute at @s rotated ~ 0 as @e[type=dndclasses:dragonborn_elder,distance=..6] run tp @s ^ ^ ^-2
 /clear @s
 /give @s minecraft:diamond 10
 hotbar 0
@@ -36,7 +49,9 @@ screenshot dts-reborn
 /dndrace get @s
 /execute if entity @s[nbt={Inventory:[{id:"minecraft:diamond"}]}]
 /dndhome temple storm
+waitserver 2
 wait 60
+/execute at @s rotated ~ 0 as @e[type=dndclasses:dragonborn_elder,distance=..6] run tp @s ^ ^ ^-2
 /give @s minecraft:diamond 9
 hotbar 0
 use
@@ -46,7 +61,10 @@ screenshot dts-rebirth-cost
 /clear @s
 /dndrace set @s human
 /dndhome temple ember
+waitserver 2
 wait 60
+/execute at @s rotated ~ 0 as @e[type=dndclasses:dragonborn_elder,distance=..6] run tp @s ^ ^ ^-2
+wait 2
 use
 wait 10
 screenshot dts-not-kin

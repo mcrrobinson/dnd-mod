@@ -50,7 +50,8 @@ hud on
 # Mining drops the block itself
 /gamemode survival
 /clear @s
-/tp @s 8.5 150 1.5 0 30
+# Out of pickup range, so the drops stay on the ground
+/tp @s 8.5 150 -4.5 0 30
 /setblock 8 150 3 minecraft:air destroy
 /setblock 10 150 4 minecraft:air destroy
 /setblock 8 152 4 minecraft:air destroy

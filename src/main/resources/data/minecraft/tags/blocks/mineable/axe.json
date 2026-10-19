@@ -59,6 +59,15 @@
     "dndclasses:dark_oak_tavern_table",
     "dndclasses:dark_oak_tavern_bench",
     "dndclasses:heartwood_tavern_table",
-    "dndclasses:heartwood_tavern_bench"
+    "dndclasses:heartwood_tavern_bench",
+    "dndclasses:stretched_hide",
+    "dndclasses:stretched_hide_stairs",
+    "dndclasses:stretched_hide_slab",
+    "dndclasses:stretched_hide_trapdoor",
+    "dndclasses:tent_canvas",
+    "dndclasses:tent_canvas_stairs",
+    "dndclasses:tent_canvas_slab",
+    "dndclasses:tent_canvas_trapdoor",
+    "dndclasses:tent_stake"
   ]
 }

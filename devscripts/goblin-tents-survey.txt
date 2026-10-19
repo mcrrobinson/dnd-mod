@@ -1,0 +1,94 @@
+# Before/after shots of goblin camp tents ("Goblin camps: realistic tents"). Visits three camps far from the
+# explored dev world (found by goblin-tents-locate.txt), so they generate fresh with the current tent layout.
+# Generates terrain: use a scratch copy of the run dir, a fresh one per build compared.
+# Run: timeout 900 ./gradlew runClient -PdevRunDir=run-tents -PdevScript=devscripts/goblin-tents-survey.txt
+# Check: screenshots/tents-<camp>-*.png; the goblin counts in [CHAT] ("Test passed").
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set 5000
+/weather clear
+/effect give @s minecraft:night_vision 99999 0 true
+# Camp a: centre 20168, 19896
+/tp @s 20168 200 19896
+wait 200
+waitserver 2
+/spreadplayers 20168 19896 0 1 false @s
+wait 20
+/tp @s 20168.5 ~30 19896.5 0 90
+wait 200
+hud off
+screenshot tents-a-top
+/tp @s 20168.5 ~-23 19879.5 0 22
+wait 40
+screenshot tents-a-n
+/tp @s 20185.5 ~ 19896.5 90 22
+wait 40
+screenshot tents-a-e
+/tp @s 20168.5 ~ 19913.5 180 22
+wait 40
+screenshot tents-a-s
+/tp @s 20151.5 ~ 19896.5 270 22
+wait 40
+screenshot tents-a-w
+hud on
+/execute positioned 20168 ~ 19896 if entity @e[type=dndclasses:goblin_warrior,distance=..40]
+/execute positioned 20168 ~ 19896 if block ~ ~ ~ minecraft:air
+# Camp b: centre 19896, -20152
+/tp @s 19896 200 -20152
+wait 200
+waitserver 2
+/spreadplayers 19896 -20152 0 1 false @s
+wait 20
+/tp @s 19896.5 ~30 -20151.5 0 90
+wait 200
+hud off
+screenshot tents-b-top
+/tp @s 19896.5 ~-23 -20168.5 0 22
+wait 40
+screenshot tents-b-n
+/tp @s 19913.5 ~ -20151.5 90 22
+wait 40
+screenshot tents-b-e
+/tp @s 19896.5 ~ -20134.5 180 22
+wait 40
+screenshot tents-b-s
+/tp @s 19879.5 ~ -20151.5 270 22
+wait 40
+screenshot tents-b-w
+hud on
+/execute positioned 19896 ~ -20152 if entity @e[type=dndclasses:goblin_warrior,distance=..40]
+/execute positioned 19896 ~ -20152 if block ~ ~ ~ minecraft:air
+# Camp c: centre -19592, 19432
+/tp @s -19592 200 19432
+wait 200
+waitserver 2
+/spreadplayers -19592 19432 0 1 false @s
+wait 20
+/tp @s -19591.5 ~30 19432.5 0 90
+wait 200
+hud off
+screenshot tents-c-top
+/tp @s -19591.5 ~-23 19415.5 0 22
+wait 40
+screenshot tents-c-n
+/tp @s -19574.5 ~ 19432.5 90 22
+wait 40
+screenshot tents-c-e
+/tp @s -19591.5 ~ 19449.5 180 22
+wait 40
+screenshot tents-c-s
+/tp @s -19608.5 ~ 19432.5 270 22
+wait 40
+screenshot tents-c-w
+hud on
+/execute positioned -19592 ~ 19432 if entity @e[type=dndclasses:goblin_warrior,distance=..40]
+/execute positioned -19592 ~ 19432 if block ~ ~ ~ minecraft:air
+wait 20
+quit

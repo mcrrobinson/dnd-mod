@@ -2092,5 +2092,14 @@
     "block.dndclasses.dark_oak_tavern_table": "Dark Oak Tavern Table",
     "block.dndclasses.dark_oak_tavern_bench": "Dark Oak Tavern Bench",
     "block.dndclasses.heartwood_tavern_table": "Heartwood Tavern Table",
-    "block.dndclasses.heartwood_tavern_bench": "Heartwood Tavern Bench"
+    "block.dndclasses.heartwood_tavern_bench": "Heartwood Tavern Bench",
+    "block.dndclasses.stretched_hide": "Stretched Hide",
+    "block.dndclasses.stretched_hide_stairs": "Stretched Hide Stairs",
+    "block.dndclasses.stretched_hide_slab": "Stretched Hide Slab",
+    "block.dndclasses.stretched_hide_trapdoor": "Stretched Hide Flap",
+    "block.dndclasses.tent_canvas": "Tent Canvas",
+    "block.dndclasses.tent_canvas_stairs": "Tent Canvas Stairs",
+    "block.dndclasses.tent_canvas_slab": "Tent Canvas Slab",
+    "block.dndclasses.tent_canvas_trapdoor": "Tent Canvas Flap",
+    "block.dndclasses.tent_stake": "Tent Stake"
 }

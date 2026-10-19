@@ -25,6 +25,8 @@
     "dndclasses:rimestone_brick_slab",
     "dndclasses:cracked_runic_deepslate_brick_slab",
     "dndclasses:mossy_runic_deepslate_brick_slab",
-    "dndclasses:ray_glazed_stone_slab"
+    "dndclasses:ray_glazed_stone_slab",
+    "dndclasses:stretched_hide_slab",
+    "dndclasses:tent_canvas_slab"
   ]
 }

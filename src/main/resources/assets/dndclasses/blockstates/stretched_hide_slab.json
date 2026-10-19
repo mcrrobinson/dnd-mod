@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/stretched_hide_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/stretched_hide"
+    },
+    "type=top": {
+      "model": "dndclasses:block/stretched_hide_slab_top"
+    }
+  }
+}

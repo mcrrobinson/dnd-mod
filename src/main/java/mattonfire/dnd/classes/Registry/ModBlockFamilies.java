@@ -161,6 +161,20 @@ public final class ModBlockFamilies {
     /** Stone melted smooth and glassy by a beholder's disintegration ray: its shaft and cavern. */
     public static final BlockFamily RAY_GLAZED_STONE = BlockFamily
             .builder("ray_glazed_stone", Blocks.POLISHED_DEEPSLATE).stoneShapes().build();
+    // --- Goblin camp tents ---
+    /** Door flaps open by hand with a leathery rustle; the tent cloths' trapdoor shape (the "flap"). */
+    public static final BlockSetType TENT_FLAP = new BlockSetType("tent_flap", BlockSoundGroup.WOOL,
+            net.minecraft.sound.SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, net.minecraft.sound.SoundEvents.ITEM_ARMOR_EQUIP_LEATHER,
+            net.minecraft.sound.SoundEvents.ITEM_ARMOR_EQUIP_LEATHER, net.minecraft.sound.SoundEvents.ITEM_ARMOR_EQUIP_LEATHER,
+            net.minecraft.sound.SoundEvents.BLOCK_WOOL_STEP, net.minecraft.sound.SoundEvents.BLOCK_WOOL_STEP,
+            net.minecraft.sound.SoundEvents.BLOCK_WOOL_STEP, net.minecraft.sound.SoundEvents.BLOCK_WOOL_STEP);
+    /** One big rawhide stretched taut: the goblin tents' walls and sloped roofs, and their door flaps. */
+    public static final BlockFamily STRETCHED_HIDE = BlockFamily.builder("stretched_hide", Blocks.BROWN_WOOL).stairs()
+            .slab().trapdoor(TENT_FLAP).build();
+    /** Grubby, sun-bleached canvas with a sewn seam: the other goblin tents, stolen from travellers. */
+    public static final BlockFamily TENT_CANVAS = BlockFamily.builder("tent_canvas",
+            FabricBlockSettings.copyOf(Blocks.WHITE_WOOL).mapColor(MapColor.PALE_YELLOW)).stairs().slab()
+            .trapdoor(TENT_FLAP).build();
 
     private ModBlockFamilies() {
     }

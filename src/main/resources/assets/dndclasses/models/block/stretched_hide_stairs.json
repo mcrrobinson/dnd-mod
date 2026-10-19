@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "dndclasses:block/stretched_hide",
+    "side": "dndclasses:block/stretched_hide",
+    "top": "dndclasses:block/stretched_hide"
+  }
+}

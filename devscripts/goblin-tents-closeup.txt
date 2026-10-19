@@ -1,0 +1,132 @@
+# Close-ups of the tents in the three camps goblin-tents-survey.txt visits (run it first, same run dir): each
+# tent's door from beside the fire and its side wall, the chief's from the corner, and inside the chief's.
+# Run: timeout 900 ./gradlew runClient -PdevRunDir=run-tents -PdevScript=devscripts/goblin-tents-closeup.txt
+# Check: screenshots/tents-<camp>-*.png; "Test passed" for each chief's chest and War Order Board.
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set 5000
+/weather clear
+/effect give @s minecraft:night_vision 99999 0 true
+# Camp a
+/tp @s 20168 105 19896
+wait 200
+waitserver 2
+hud off
+/execute if block 20161 86 19896 minecraft:chest
+/execute if block 20161 87 19896 dndclasses:war_order_board
+/tp @s 20155.5 94.0 19909.5 -152 25
+wait 80
+screenshot tents-a-chief-corner
+/tp @s 20167.0 87.0 19895.2 67 9
+wait 40
+screenshot tents-a-chief-door
+/tp @s 20158.0 90.5 19888.0 -28 21
+wait 40
+screenshot tents-a-chief-wall
+/tp @s 20167.2 87.0 19898.0 -23 9
+wait 40
+screenshot tents-a-left-door
+/tp @s 20160.0 90.5 19907.0 -118 21
+wait 40
+screenshot tents-a-left-wall
+/tp @s 20169.8 87.0 19895.0 157 9
+wait 40
+screenshot tents-a-right-door
+/tp @s 20177.0 90.5 19886.0 62 21
+wait 40
+screenshot tents-a-right-wall
+/tp @s 20158.0 87.2 19890.0 -59 22
+wait 40
+screenshot tents-a-chief-stake
+/tp @s 20163.9 86.6 19897.0 98 -0
+wait 40
+screenshot tents-a-chief-inside
+/tp @s 20160.9 86.5 19897.5 -108 -1
+wait 40
+screenshot tents-a-chief-inside-door
+hud on
+# Camp b
+/tp @s 19896 88 -20152
+wait 200
+waitserver 2
+hud off
+/execute if block 19896 69 -20159 minecraft:chest
+/execute if block 19896 70 -20159 dndclasses:war_order_board
+/tp @s 19883.5 77.0 -20164.5 -62 25
+wait 80
+screenshot tents-b-chief-corner
+/tp @s 19897.8 70.0 -20153.0 157 9
+wait 40
+screenshot tents-b-chief-door
+/tp @s 19905.0 73.5 -20162.0 62 21
+wait 40
+screenshot tents-b-chief-wall
+/tp @s 19895.0 70.0 -20152.8 67 9
+wait 40
+screenshot tents-b-left-door
+/tp @s 19886.0 73.5 -20160.0 -28 21
+wait 40
+screenshot tents-b-left-wall
+/tp @s 19898.0 70.0 -20150.2 -113 9
+wait 40
+screenshot tents-b-right-door
+/tp @s 19907.0 73.5 -20143.0 152 21
+wait 40
+screenshot tents-b-right-wall
+/tp @s 19903.0 70.2 -20162.0 31 22
+wait 40
+screenshot tents-b-chief-stake
+/tp @s 19896.0 69.6 -20156.1 -172 -0
+wait 40
+screenshot tents-b-chief-inside
+/tp @s 19895.5 69.5 -20159.1 -18 -1
+wait 40
+screenshot tents-b-chief-inside-door
+hud on
+# Camp c
+/tp @s -19592 109 19432
+wait 200
+waitserver 2
+hud off
+/execute if block -19585 90 19432 minecraft:chest
+/execute if block -19585 91 19432 dndclasses:war_order_board
+/tp @s -19578.5 98.0 19419.5 28 25
+wait 80
+screenshot tents-c-chief-corner
+/tp @s -19590.0 91.0 19433.8 -113 9
+wait 40
+screenshot tents-c-chief-door
+/tp @s -19581.0 94.5 19441.0 152 21
+wait 40
+screenshot tents-c-chief-wall
+/tp @s -19590.2 91.0 19431.0 157 9
+wait 40
+screenshot tents-c-left-door
+/tp @s -19583.0 94.5 19422.0 62 21
+wait 40
+screenshot tents-c-left-wall
+/tp @s -19592.8 91.0 19434.0 -23 9
+wait 40
+screenshot tents-c-right-door
+/tp @s -19600.0 94.5 19443.0 -118 21
+wait 40
+screenshot tents-c-right-wall
+/tp @s -19581.0 91.2 19439.0 121 22
+wait 40
+screenshot tents-c-chief-stake
+/tp @s -19586.9 90.6 19432.0 -82 -0
+wait 40
+screenshot tents-c-chief-inside
+/tp @s -19583.9 90.5 19431.5 72 -1
+wait 40
+screenshot tents-c-chief-inside-door
+hud on
+wait 20
+quit

@@ -1,0 +1,129 @@
+# A desolate Cogsdeep's caved-in observatory dome at every desolation level, in fresh land at x 260000-280000.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/desolate-observatory.txt
+# (move the /tp points to fresh land for a world where these have generated already).
+# Checks: screenshots dob-<level>-top (from above the door), -side (level with the rim), -inside (from the floor), -inside-high (over the floor),
+# -gallery (on the gallery by the telescope), -telescope (behind it) and -stair (by the stairwell's rail); "Pos" after /dndhome cogsdeep
+# observatory and the "[Home]" lines say which burrow it found.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/weather clear
+/gamerule doDaylightCycle false
+hud off
+/dndhome desolation raided
+/execute in minecraft:overworld run tp @s 262000 200 0
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/dndhome cogsdeep top
+wait 200
+screenshot dob-raided-top
+/dndhome cogsdeep slit
+wait 40
+/tp @s ^ ^-2 ^-3
+wait 40
+screenshot dob-raided-side
+/dndhome cogsdeep observatory
+wait 40
+screenshot dob-raided-inside
+/tp @s ^ ^6 ^-1 ~ 40
+wait 20
+screenshot dob-raided-inside-high
+/dndhome cogsdeep telescope
+wait 20
+screenshot dob-raided-gallery
+/tp @s ^ ^2 ^-2 ~ 35
+wait 20
+screenshot dob-raided-telescope
+/dndhome cogsdeep pillar
+wait 20
+screenshot dob-raided-stair
+/dndhome desolation abandoned
+/execute in minecraft:overworld run tp @s 266500 200 0
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/dndhome cogsdeep top
+wait 200
+screenshot dob-abandoned-top
+/dndhome cogsdeep slit
+wait 40
+/tp @s ^ ^-2 ^-3
+wait 40
+screenshot dob-abandoned-side
+/dndhome cogsdeep observatory
+wait 40
+screenshot dob-abandoned-inside
+/tp @s ^ ^6 ^-1 ~ 40
+wait 20
+screenshot dob-abandoned-inside-high
+/dndhome cogsdeep telescope
+wait 20
+screenshot dob-abandoned-gallery
+/tp @s ^ ^2 ^-2 ~ 35
+wait 20
+screenshot dob-abandoned-telescope
+/dndhome cogsdeep pillar
+wait 20
+screenshot dob-abandoned-stair
+/dndhome desolation forsaken
+/execute in minecraft:overworld run tp @s 271000 200 0
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/dndhome cogsdeep top
+wait 200
+screenshot dob-forsaken-top
+/dndhome cogsdeep slit
+wait 40
+/tp @s ^ ^-2 ^-3
+wait 40
+screenshot dob-forsaken-side
+/dndhome cogsdeep observatory
+wait 40
+screenshot dob-forsaken-inside
+/tp @s ^ ^6 ^-1 ~ 40
+wait 20
+screenshot dob-forsaken-inside-high
+/dndhome cogsdeep telescope
+wait 20
+screenshot dob-forsaken-gallery
+/tp @s ^ ^2 ^-2 ~ 35
+wait 20
+screenshot dob-forsaken-telescope
+/dndhome cogsdeep pillar
+wait 20
+screenshot dob-forsaken-stair
+/dndhome desolation overgrown
+/execute in minecraft:overworld run tp @s 275500 200 0
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/dndhome cogsdeep top
+wait 200
+screenshot dob-overgrown-top
+/dndhome cogsdeep slit
+wait 40
+/tp @s ^ ^-2 ^-3
+wait 40
+screenshot dob-overgrown-side
+/dndhome cogsdeep observatory
+wait 40
+screenshot dob-overgrown-inside
+/tp @s ^ ^6 ^-1 ~ 40
+wait 20
+screenshot dob-overgrown-inside-high
+/dndhome cogsdeep telescope
+wait 20
+screenshot dob-overgrown-gallery
+/tp @s ^ ^2 ^-2 ~ 35
+wait 20
+screenshot dob-overgrown-telescope
+/dndhome cogsdeep pillar
+wait 20
+screenshot dob-overgrown-stair
+/dndhome desolation random
+hud on
+quit

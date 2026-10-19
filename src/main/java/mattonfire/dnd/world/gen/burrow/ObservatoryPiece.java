@@ -8,11 +8,14 @@ import mattonfire.dnd.classes.Blocks.RubbleBlock;
 import mattonfire.dnd.classes.Registry.ModBannerPatterns;
 import mattonfire.dnd.classes.Registry.RuinBlocks;
 import mattonfire.dnd.world.gen.Desolation;
+import mattonfire.dnd.world.gen.DesolationLevel;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
 import net.minecraft.block.LightningRodBlock;
+import net.minecraft.block.StairsBlock;
+import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.enums.DoorHinge;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.item.ItemStack;
@@ -34,7 +37,9 @@ import net.minecraft.util.math.Direction;
  * cartography desk with a spyglass, a lectern, bookshelves and a chest. Trees and
  * plants round it are cleared; the floor sits on a foundation down to the ground.
  *
- * <p>In a desolate Cogsdeep the dome has caved in ({@link #caved}), and its copper lies on the floor.
+ * <p>In a desolate Cogsdeep the dome has caved in ({@link Cave}): the crown is gone, a jagged rim of copper stands
+ * where it's still held up, a section or two has slumped in over a broken wall top, the telescope is knocked off true
+ * and the copper lies heaped on the floor and the gallery.
  *
  * <p>y = 0 is where you stand on the floor (the ground's first air in the middle).
  */
@@ -56,11 +61,6 @@ public class ObservatoryPiece extends CogsdeepPiece {
     static final int TUBE = 4;
     /** Half the slit's width: it's 3 blocks wide. */
     static final int SLIT = 1;
-    /** A desolate dome's chance of a block having fallen in, at the walls and more for each row up. */
-    static final float CAVE_IN = 0.15F;
-    static final float CAVE_IN_PER_ROW = 0.13F;
-    /** Floor cells inside with something from the dome on them. */
-    static final float DEBRIS = 0.3F;
 
     public ObservatoryPiece(BlockPos center, Direction door, long seed, long burrow) {
         super(CogsdeepStructures.OBSERVATORY, center, door, seed, burrow, -CLEAR_RADIUS, -8, -CLEAR_RADIUS - 4,
@@ -86,43 +86,333 @@ public class ObservatoryPiece extends CogsdeepPiece {
         return this.at(0, 0, 9);
     }
 
-    /**
-     * In a desolate Cogsdeep, whether the dome's block at a/y/c has fallen in: most of the crown and less towards
-     * the walls, with a few chunks of the lower rows gone too.
-     */
-    private boolean caved(int a, int y, int c) {
-        if (!Desolation.active()) {
+    /** Whether a/c is a plank of the gallery's floor (at {@link #GALLERY}), the ladder's gap left out. */
+    static boolean gallery(int a, int c) {
+        return Math.abs(a) <= 2 && c >= -6 && c <= GALLERY_B && r(a, c) <= RADIUS - 1.0D && !(a == -1 && c == SCOPE_B - 1);
+    }
+
+    /** Whether a/y/c is a block of the dome's copper shell (the slit left out). */
+    static boolean shell(int a, int y, int c) {
+        if (y < DOME_BASE || Math.abs(a) <= SLIT && c < 0 && y > DOME_BASE) {
             return false;
         }
-        int up = y - DOME_BASE;
-        return Desolation.roll(this.seed, a, y, c, 50) < CAVE_IN + CAVE_IN_PER_ROW * up;
+        double d = Math.sqrt(a * a + c * c + (y - DOME_BASE) * (y - DOME_BASE));
+        return d <= DOME && d > DOME - 1.15D;
+    }
+
+    /** Whether a/c is in the tower's wall. */
+    static boolean wall(int a, int c) {
+        double r = r(a, c);
+        return r <= RADIUS && r > RADIUS - 1.0D;
     }
 
     /**
-     * What fell when the dome caved in: copper on the floor (blocks, slabs and Collapsed Rubble), kept off the
-     * stairwell in the middle and the door, and the lightning rod lying among it.
+     * How a desolate Cogsdeep's dome caved in. It's all worked out from the piece's seed ({@link Desolation#roll}),
+     * never from blocks, so every chunk the observatory crosses agrees on it:
+     * <ul>
+     *   <li>the dome is split into {@link #SECTORS} sectors round the middle, and each keeps its shell up to a
+     *   rim height (rows above the walls, the level's {@code rimMin} to {@code rimMax}), blended into its
+     *   neighbours and ragged by a block either way, so the crown is always gone and the rim is jagged;</li>
+     *   <li>some sectors (at least one) have slumped in: no shell at all, the wall top broken down a row or two
+     *   (never by the door or the ladder), and a heap of copper up to 3 high against the wall under them;</li>
+     *   <li>a few blocks of what's left are knocked out too ({@code holes});</li>
+     *   <li>then only what's held up stays: row by row from the walls up, a block stands on a block of the wall,
+     *   the shell or the gallery, or reaches at most {@link #REACH} blocks sideways along its row to one that
+     *   does, so nothing floats;</li>
+     *   <li>the telescope is knocked askew on its tripod or off it altogether, and copper lies on the floor (kept
+     *   off the stairwell's rail and the way in from the door) and the gallery.</li>
+     * </ul>
      */
-    private void fallenDome(Builder b) {
-        for (int a = -5; a <= 5; a++) {
-            for (int c = -5; c <= 5; c++) {
-                double r = r(a, c);
-                if (r < 2.5D || r > RADIUS - 1.2D || c >= 4 && Math.abs(a) <= 1) {
-                    continue;
+    static final class Cave {
+        static final int SECTORS = 10;
+        static final int TOP = DOME_BASE + 7;
+        /** How far along a row a block of the shell can reach from one that's standing on something. */
+        static final int REACH = 2;
+        static final Block[] CUT = {Blocks.CUT_COPPER, Blocks.EXPOSED_CUT_COPPER, Blocks.WEATHERED_CUT_COPPER, Blocks.OXIDIZED_CUT_COPPER};
+        static final Block[] SLABS = {Blocks.CUT_COPPER_SLAB, Blocks.EXPOSED_CUT_COPPER_SLAB, Blocks.WEATHERED_CUT_COPPER_SLAB,
+                Blocks.OXIDIZED_CUT_COPPER_SLAB};
+        static final Block[] STAIRS = {Blocks.CUT_COPPER_STAIRS, Blocks.EXPOSED_CUT_COPPER_STAIRS, Blocks.WEATHERED_CUT_COPPER_STAIRS,
+                Blocks.OXIDIZED_CUT_COPPER_STAIRS};
+
+        private final long seed;
+        /** Rows of shell above the walls each sector keeps (sector 0 starts due north and they go round east). */
+        final int rimMin;
+        final int rimMax;
+        /** Each sector's chance of having slumped in (one always has), and how many rows its wall top loses at most. */
+        final float slump;
+        final int wallDrop;
+        /** Blocks of what's left of the shell knocked out anyway. */
+        final float holes;
+        /** Floor cells with copper on them, outside a slumped sector's heap; half as many on the gallery. */
+        final float debris;
+        /** The chance the telescope is only knocked askew on its tripod, not off it. */
+        final float askew;
+        /** Stages of weathering the copper's gone on (0 or 1). */
+        final int age;
+
+        private final int[] rim = new int[SECTORS];
+        private final boolean[] slumped = new boolean[SECTORS];
+        /** The wall's top row in each column. */
+        private final int[][] wallTop = new int[15][15];
+        /** The wall and shell blocks still standing, at [a + 7][y][c + 7]. */
+        private final boolean[][][] kept = new boolean[15][TOP + 1][15];
+
+        Cave(long seed, DesolationLevel level) {
+            this.seed = seed;
+            switch (level) {
+                case RAIDED -> {
+                    this.rimMin = 0;
+                    this.rimMax = 3;
+                    this.slump = 0.25F;
+                    this.wallDrop = 2;
+                    this.holes = 0.12F;
+                    this.debris = 0.55F;
+                    this.askew = 0.25F;
+                    this.age = 0;
                 }
-                float roll = Desolation.roll(this.seed, a, 0, c, 51);
-                if (roll >= DEBRIS) {
-                    continue;
+                case ABANDONED -> {
+                    this.rimMin = 2;
+                    this.rimMax = 4;
+                    this.slump = 0.0F;
+                    this.wallDrop = 1;
+                    this.holes = 0.05F;
+                    this.debris = 0.4F;
+                    this.askew = 0.75F;
+                    this.age = 0;
                 }
-                BlockState piece = roll < DEBRIS * 0.35F ? Blocks.WEATHERED_CUT_COPPER.getDefaultState()
-                        : roll < DEBRIS * 0.7F ? bottomSlab(Blocks.WEATHERED_CUT_COPPER_SLAB)
-                        : RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, 1 + (int) (roll * 40) % 3);
-                if (b.inChunk(a, 0, c) && b.get(a, 0, c).isAir()) {
-                    b.set(a, 0, c, piece);
+                case FORSAKEN -> {
+                    this.rimMin = 1;
+                    this.rimMax = 3;
+                    this.slump = 0.2F;
+                    this.wallDrop = 2;
+                    this.holes = 0.1F;
+                    this.debris = 0.5F;
+                    this.askew = 0.45F;
+                    this.age = 1;
+                }
+                default -> {
+                    this.rimMin = 0;
+                    this.rimMax = 3;
+                    this.slump = 0.3F;
+                    this.wallDrop = 2;
+                    this.holes = 0.15F;
+                    this.debris = 0.5F;
+                    this.askew = 0.2F;
+                    this.age = 1;
+                }
+            }
+            for (int s = 0; s < SECTORS; s++) {
+                this.rim[s] = this.rimMin + (int) (this.roll(s, 0, 0, 80) * (this.rimMax - this.rimMin + 1));
+                this.slumped[s] = this.roll(s, 0, 0, 81) < this.slump;
+            }
+            this.slumped[(int) (this.roll(0, 0, 0, 82) * SECTORS)] = true;
+            for (int s = 0; s < SECTORS; s++) {
+                if (this.slumped[s]) {
+                    this.rim[s] = -2;
+                }
+            }
+
+            for (int a = -7; a <= 7; a++) {
+                for (int c = -7; c <= 7; c++) {
+                    int top = WALL_HEIGHT - 1;
+                    double u = sector(a, c);
+                    int nearest = Math.floorMod((int) Math.floor(u), SECTORS);
+                    // The wall top only breaks in the middle of a slumped sector, and never where the door's banner
+                    // or the ladder hang on it.
+                    if (wall(a, c) && Math.abs(a) > 2 && this.slumped[nearest] && Math.abs(u - Math.floor(u) - 0.5D) < 0.35D) {
+                        top -= this.wallDrop == 1 ? 1 : 1 + (this.roll(a, 0, c, 85) < 0.55F ? 1 : 0);
+                    }
+                    this.wallTop[a + 7][c + 7] = top;
+                    int rimHere = this.rimAt(a, c, u);
+                    for (int y = 0; y <= TOP; y++) {
+                        if (y < WALL_HEIGHT) {
+                            this.kept[a + 7][y][c + 7] = wall(a, c) && y <= top;
+                        } else if (ObservatoryPiece.shell(a, y, c)) {
+                            int dy = y - DOME_BASE;
+                            this.kept[a + 7][y][c + 7] = dy <= rimHere
+                                    && this.roll(a, y, c, 84) >= (dy == 0 ? this.holes * 0.4F : this.holes);
+                        }
+                    }
+                }
+            }
+            this.settle();
+        }
+
+        float roll(int a, int y, int c, int k) {
+            return Desolation.roll(this.seed, a, y, c, k);
+        }
+
+        /** Where a/c lies round the middle, in sectors from due north (0) going east. */
+        static double sector(int a, int c) {
+            double angle = Math.atan2(a, -c);
+            return (angle < 0.0D ? angle + 2.0D * Math.PI : angle) / (2.0D * Math.PI) * SECTORS;
+        }
+
+        /** How many rows above the walls the shell still stands at a/c: the sectors' rims blended, a block either way. */
+        private int rimAt(int a, int c, double u) {
+            double v = u - 0.5D;
+            int s0 = (int) Math.floor(v);
+            double t = v - s0;
+            double h = this.rim[Math.floorMod(s0, SECTORS)] * (1.0D - t) + this.rim[Math.floorMod(s0 + 1, SECTORS)] * t
+                    + (this.roll(a, 0, c, 83) - 0.5F) * 1.6F;
+            return Math.min(this.rimMax, (int) Math.floor(h + 0.5D));
+        }
+
+        /** Takes out, row by row from the walls up, every block of the shell that's left with nothing holding it up. */
+        private void settle() {
+            for (int y = DOME_BASE; y <= TOP; y++) {
+                int[][] reach = new int[15][15];
+                java.util.ArrayDeque<int[]> queue = new java.util.ArrayDeque<>();
+                for (int i = 0; i < 15; i++) {
+                    for (int j = 0; j < 15; j++) {
+                        reach[i][j] = -1;
+                        boolean onGallery = y - 1 == GALLERY && gallery(i - 7, j - 7);
+                        if (this.kept[i][y][j] && (this.kept[i][y - 1][j] || onGallery)) {
+                            reach[i][j] = 0;
+                            queue.add(new int[]{i, j});
+                        }
+                    }
+                }
+                while (!queue.isEmpty()) {
+                    int[] cell = queue.poll();
+                    int d = reach[cell[0]][cell[1]];
+                    if (d >= REACH) {
+                        continue;
+                    }
+                    for (Direction side : Direction.Type.HORIZONTAL) {
+                        int i = cell[0] + side.getOffsetX();
+                        int j = cell[1] + side.getOffsetZ();
+                        if (i >= 0 && i < 15 && j >= 0 && j < 15 && this.kept[i][y][j] && reach[i][j] < 0) {
+                            reach[i][j] = d + 1;
+                            queue.add(new int[]{i, j});
+                        }
+                    }
+                }
+                for (int i = 0; i < 15; i++) {
+                    for (int j = 0; j < 15; j++) {
+                        if (reach[i][j] < 0) {
+                            this.kept[i][y][j] = false;
+                        }
+                    }
                 }
             }
         }
-        if (b.inChunk(3, 0, 1) && b.get(3, 0, 1).isAir()) {
-            b.set(3, 0, 1, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.EAST));
+
+        /** The dome's block at a/y/c, {@code copper} as the living dome draws it: gone, or still there and older. */
+        BlockState shell(int a, int y, int c, Block copper) {
+            if (!this.kept[a + 7][y][c + 7]) {
+                return Blocks.AIR.getDefaultState();
+            }
+            int stage = 0;
+            while (stage < CUT.length - 1 && CUT[stage] != copper) {
+                stage++;
+            }
+            if (this.age > 0 && this.roll(a, y, c, 90) < 0.6F) {
+                stage = Math.min(CUT.length - 1, stage + this.age);
+            }
+            return CUT[stage].getDefaultState();
+        }
+
+        /** How weathered a fallen piece of copper is: about as the dome's, plus the level's age. */
+        private int stage(int a, int y, int c) {
+            float r = this.roll(a, y, c, 91);
+            int stage = r < 0.45F ? 0 : r < 0.7F ? 1 : r < 0.9F ? 2 : 3;
+            return Math.min(CUT.length - 1, stage + this.age);
+        }
+
+        /** The top of a heap of fallen copper: a block, a slab, a stair lying at some angle, or rubble. */
+        private BlockState piece(int a, int y, int c) {
+            int stage = this.stage(a, y, c);
+            float r = this.roll(a, y, c, 86);
+            if (r < 0.25F) {
+                return CUT[stage].getDefaultState();
+            }
+            if (r < 0.5F) {
+                return bottomSlab(SLABS[stage]);
+            }
+            if (r < 0.85F) {
+                Direction facing = Direction.fromHorizontal((int) (this.roll(a, y, c, 87) * 4));
+                return STAIRS[stage].getDefaultState().with(StairsBlock.FACING, facing)
+                        .with(StairsBlock.HALF, this.roll(a, y, c, 88) < 0.2F ? BlockHalf.TOP : BlockHalf.BOTTOM);
+            }
+            return RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, 1 + (int) (this.roll(a, y, c, 89) * 3));
+        }
+
+        /** How high the copper lies at a/c on the floor: a heap against the wall under a slumped sector. */
+        private int heap(int a, int c) {
+            double r = r(a, c);
+            if (this.slumped[Math.floorMod((int) Math.floor(sector(a, c)), SECTORS)]) {
+                return Math.min(3, 1 + (r > 4.4D ? 1 : 0) + (this.roll(a, 0, c, 92) < 0.45F ? 1 : 0));
+            }
+            if (this.roll(a, 0, c, 93) >= this.debris) {
+                return 0;
+            }
+            return this.roll(a, 0, c, 94) < 0.2F ? 2 : 1;
+        }
+
+        /** Piles copper from {@code y} up at a/c, {@code height} high, on air only. */
+        private void pile(Builder b, int a, int y, int c, int height) {
+            for (int i = 0; i < height; i++) {
+                if (!b.inChunk(a, y + i, c) || !b.get(a, y + i, c).isAir()) {
+                    return;
+                }
+                b.set(a, y + i, c, i == height - 1 ? this.piece(a, y + i, c) : CUT[this.stage(a, y + i, c)].getDefaultState());
+            }
+        }
+
+        /** The rest of the cave-in, once the observatory is built (the shell's already gone by {@link #shell}). */
+        void ruin(Builder b) {
+            // The wall top that came down with a slumped section, windows and all.
+            for (int a = -7; a <= 7; a++) {
+                for (int c = -7; c <= 7; c++) {
+                    if (wall(a, c)) {
+                        for (int y = this.wallTop[a + 7][c + 7] + 1; y < WALL_HEIGHT; y++) {
+                            b.set(a, y, c, Blocks.AIR);
+                        }
+                    }
+                }
+            }
+
+            // The telescope: slid off true down onto the gallery, or knocked off its tripod and lying across it with
+            // its lens on the floor below.
+            for (int c = SCOPE_B - TUBE; c <= SCOPE_B; c++) {
+                b.set(0, SCOPE_Y, c, Blocks.AIR);
+            }
+            BlockState rodNorth = Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.NORTH);
+            if (this.roll(0, 0, 0, 95) < this.askew) {
+                b.set(0, GALLERY + 1, SCOPE_B + 1, facing(Blocks.END_ROD, Direction.SOUTH));
+                b.set(0, GALLERY + 1, SCOPE_B, rodNorth);
+                b.set(0, SCOPE_Y, SCOPE_B - 1, rodNorth);
+                b.set(0, SCOPE_Y, SCOPE_B - 2, rodNorth);
+                b.set(0, SCOPE_Y, SCOPE_B - 3, facing(CogsdeepBlocks.TELESCOPE_LENS, Direction.NORTH));
+            } else {
+                BlockState rodEast = Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.EAST);
+                b.set(0, GALLERY + 1, SCOPE_B - 1, Blocks.AIR);
+                b.set(-1, GALLERY + 1, SCOPE_B + 1, facing(Blocks.END_ROD, Direction.WEST));
+                b.set(0, GALLERY + 1, SCOPE_B + 1, rodEast);
+                b.set(1, GALLERY + 1, SCOPE_B + 1, rodEast);
+                b.set(4, 0, -2, facing(CogsdeepBlocks.TELESCOPE_LENS, Direction.EAST));
+            }
+            // The lightning rod from the top of the dome.
+            b.set(-4, 0, -1, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.EAST));
+
+            // Copper on the floor, kept off the stairwell's rail (and the hole inside it) and the way in from the door.
+            for (int a = -6; a <= 6; a++) {
+                for (int c = -6; c <= 6; c++) {
+                    if (Math.max(Math.abs(a), Math.abs(c)) <= 3 || r(a, c) > RADIUS - 1.05D || c >= 4 && Math.abs(a) <= 1) {
+                        continue;
+                    }
+                    this.pile(b, a, 0, c, this.heap(a, c));
+                }
+            }
+            // And on the gallery, clear of the top of the ladder.
+            for (int a = -2; a <= 2; a++) {
+                for (int c = -6; c <= GALLERY_B; c++) {
+                    if (gallery(a, c) && !(a == -1 && c >= SCOPE_B - 1) && this.roll(a, GALLERY, c, 96) < this.debris * 0.5F) {
+                        this.pile(b, a, GALLERY + 1, c, 1);
+                    }
+                }
+            }
         }
     }
 
@@ -132,6 +422,8 @@ public class ObservatoryPiece extends CogsdeepPiece {
 
     @Override
     protected void build(Builder b) {
+        DesolationLevel level = Desolation.level();
+        Cave cave = level == null ? null : new Cave(this.seed, level);
         // Clear trees and plants round the tower (never the ground itself), and everything inside it.
         for (int a = -CLEAR_RADIUS; a <= CLEAR_RADIUS; a++) {
             for (int c = -CLEAR_RADIUS; c <= CLEAR_RADIUS; c++) {
@@ -191,16 +483,14 @@ public class ObservatoryPiece extends CogsdeepPiece {
                     if (d > DOME - 1.15D && !slit) {
                         // The copper's drawn either way, so a caved-in dome leaves the rest of the build as it was.
                         Block copper = cutCopper(b);
-                        b.set(a, y, c, this.caved(a, y, c) ? Blocks.AIR : copper);
+                        b.set(a, y, c, cave == null ? copper.getDefaultState() : cave.shell(a, y, c, copper));
                     } else {
                         b.set(a, y, c, Blocks.AIR);
                     }
                 }
             }
         }
-        if (Desolation.active()) {
-            this.fallenDome(b);
-        } else {
+        if (cave == null) {
             b.set(0, DOME_BASE + 7, 0, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP));
             b.hangingLantern(0, DOME_BASE + 5, 0, 2);
         }
@@ -289,6 +579,10 @@ public class ObservatoryPiece extends CogsdeepPiece {
         b.container(5, 0, 1, facing(Blocks.CHEST, Direction.WEST), COMMONS_LOOT);
         b.set(5, 0, 2, Blocks.BARREL);
         b.set(5, 1, 2, Blocks.LANTERN);
+
+        if (cave != null) {
+            cave.ruin(b);
+        }
     }
 
     private static BlockState door(DoubleBlockHalf half) {

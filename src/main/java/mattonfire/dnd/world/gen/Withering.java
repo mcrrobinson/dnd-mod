@@ -10,6 +10,7 @@ import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.classes.Registry.DesolateBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.RuinBlocks;
+import mattonfire.dnd.world.gen.burrow.ObservatoryPiece;
 import net.minecraft.block.AttachedStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -463,6 +464,10 @@ final class Withering {
         for (StructurePiece piece : this.start.getChildren()) {
             BlockBox b = piece.getBoundingBox();
             index++;
+            if (piece instanceof ObservatoryPiece) {
+                // Its dome caves in on its own plan, and a hole or breach would leave bits of the rim floating.
+                continue;
+            }
             float factor = MathHelper.clamp(b.getBlockCountX() * b.getBlockCountZ() / (float) (PIECE_SIZE * PIECE_SIZE),
                     MIN_PIECE_FACTOR, MAX_PIECE_FACTOR);
             int breaches = count(this.level.breaches * factor, this.roll(index, 0, 0, 60));

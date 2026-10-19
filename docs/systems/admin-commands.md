@@ -71,7 +71,7 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome trialreset <players>` | Lets the players take the Trial of Strength again today at the stronghold you stand in |
 | `/dndhome sanctum [hall\|offering\|anchor\|market\|den\|gate\|top\|side]` | Teleports you to that spot of the nearest [Brimstone Sanctum](../structures/brimstone-sanctums.md) (run it in the Nether) |
 | `/dndhome sanctumsurvey [grid] [spacing]` | Checks the nearest sanctum from each point of a grid round you is in a sanctum biome with all its pieces, with no lava under it and no cut ceiling (`[SanctumSurvey]` lines; run it in the Nether) |
-| `/dndhome cogsdeep [door\|top\|observatory\|ladder\|telescope\|slit\|stair\|foot\|commons\|workshop\|westworkshop\|clocktower\|strongbox\|gems\|grotto]` | Teleports you to that spot of the nearest [Cogsdeep](../structures/cogsdeep.md), looking at it |
+| `/dndhome cogsdeep [door\|top\|observatory\|ladder\|telescope\|slit\|stair\|foot\|commons\|workshop\|westworkshop\|clocktower\|strongbox\|gems\|grotto]` | Teleports you to that spot of the nearest [Cogsdeep](../structures/cogsdeep.md), living or desolate, looking at it |
 | `/dndhome cogsdeepsurvey [grid] [spacing]` | Checks the nearest burrow from each point of a grid round you: biome, pieces, depth, the observatory on the ground, dry rooms and no other structure within 5 chunks (`[CogsdeepSurvey]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 

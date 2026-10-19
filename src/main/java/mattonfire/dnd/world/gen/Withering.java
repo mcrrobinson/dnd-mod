@@ -1,11 +1,13 @@
 package mattonfire.dnd.world.gen;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import mattonfire.dnd.classes.Blocks.RubbleBlock;
 import mattonfire.dnd.classes.Blocks.dwarven.CoinPileBlock;
+import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.classes.Registry.DesolateBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
@@ -37,12 +39,15 @@ import net.minecraft.block.StemBlock;
 import net.minecraft.block.SweetBerryBushBlock;
 import net.minecraft.block.TallPlantBlock;
 import net.minecraft.block.VineBlock;
+import net.minecraft.block.entity.BannerBlockEntity;
 import net.minecraft.block.entity.BeehiveBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.entity.SkullBlockEntity;
 import net.minecraft.block.enums.DoubleBlockHalf;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.data.family.BlockFamilies;
+import net.minecraft.registry.Registries;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
@@ -73,6 +78,8 @@ import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
  *   <li>Collapses, planned per piece from the start alone so they carry across chunk borders: breaches knocked
  *   through its walls and roof, and holes down through its roof and floors. Some of what they knock out lies on
  *   the ground below as slabs, blocks or rubble.</li>
+ *   <li>Support ({@link #supports}): what the breaches leave without support comes down, planned per piece from
+ *   its breaches, and fragments left floating in this chunk fall ({@link #fragments}).</li>
  *   <li>Overgrowth: flowers and tall grass, vines down the walls, moss on floors, moss and soil on the roofs.</li>
  *   <li>Trees grown up inside.</li>
  * </ol>
@@ -131,8 +138,8 @@ final class Withering {
     private final int maxY;
     private final int minZ;
     private final int maxZ;
-    /** Containers emptied, blocks changed, collapses (breaches, holes and doorways). */
-    private final int[] counts = new int[3];
+    /** Containers emptied, blocks changed, collapses (breaches, holes and doorways), blocks fallen for want of support. */
+    private final int[] counts = new int[4];
 
     Withering(StructureWorldAccess world, StructureStart start, BlockBox chunkBox, ChunkGenerator generator, DesolationLevel level) {
         this.world = world;
@@ -167,6 +174,8 @@ final class Withering {
             }
         }
         this.collapses();
+        this.supports();
+        this.fragments();
         if (this.level.flowers > 0.0F || this.level.vines > 0.0F || this.level.roofs > 0.0F || this.level.floorMoss > 0.0F) {
             this.overgrow();
         }
@@ -515,6 +524,7 @@ final class Withering {
             }
         }
         float radius = this.level.breachMin + (this.level.breachMax - this.level.breachMin) * this.roll(index, j, 5, 64);
+        this.planned.add(new Breach(index, x, y, z, radius, face));
         int r = (int) Math.ceil(radius) + 1;
         if (x + r < this.chunkBox.getMinX() || x - r > this.chunkBox.getMaxX() || z + r < this.chunkBox.getMinZ()
                 || z - r > this.chunkBox.getMaxZ()) {
@@ -1055,6 +1065,336 @@ final class Withering {
             Random random = Random.create((long) (this.roll(x, base.getY(), z, 34) * Long.MAX_VALUE));
             this.world.getRegistryManager().get(RegistryKeys.CONFIGURED_FEATURE).getEntry(tree)
                     .ifPresent(entry -> entry.value().generate(this.world, this.generator, random, base));
+        }
+    }
+
+    // --- Support -----------------------------------------------------------------------------------------------
+    //
+    // What the breaches leave without support comes down. Two passes, both deterministic per chunk:
+    // supports() decides from the planned breaches alone (every chunk plans all of them) how much of each piece
+    // loses its support and applies that column by column; fragments() then drops whatever is left floating in
+    // this chunk, judged only from this chunk's own (finished) blocks.
+
+    /**
+     * A piece's share of its wall band (the columns within {@link #WALL_BAND} of its box's sides) under its wall
+     * breaches at or over which its roof caves in (the chance grows from here to {@link #HEAP_DAMAGE}).
+     */
+    static final float CAVE_DAMAGE = 0.25F;
+    /** The share at or over which the whole building comes down in a heap, its walls left 1 or 2 blocks high. */
+    static final float HEAP_DAMAGE = 0.55F;
+    static final int WALL_BAND = 2;
+    /** How far past a wall breach (in its radii) the roof may still fall in, less likely further out. */
+    static final float SAG_REACH = 1.0F;
+    /** The least share of a heaped building's blocks that lies on the ground as debris. */
+    static final float HEAP_RUBBLE = 0.7F;
+    /** How far above a piece's box its roof is looked for. */
+    static final int ROOF_SCAN = 3;
+
+    /** A breach planned for piece {@code piece} (counted from 1): centre, radius and face (0-3 walls, 4 roof, 5 inside). */
+    private record Breach(int piece, int x, int y, int z, float radius, int face) {
+        double distance(int px, int pz) {
+            return Math.sqrt((double) (px - this.x) * (px - this.x) + (double) (pz - this.z) * (pz - this.z));
+        }
+    }
+
+    /** Every piece's planned breaches, whether they reach this chunk or not ({@link #plannedBreach}). */
+    private final List<Breach> planned = new ArrayList<>();
+
+    /** Open space a falling block passes through or lands in: air or replaceable, liquids included (unlike {@link #open}). */
+    private static boolean clear(BlockState state) {
+        return state.isAir() || state.isReplaceable();
+    }
+
+    /** Whether natural (not stripped) logs are a tree's, which a building's collapse leaves alone. */
+    private static boolean naturalLog(BlockState state) {
+        return state.isIn(BlockTags.LOGS) && !Registries.BLOCK.getId(state.getBlock()).getPath().startsWith("stripped_");
+    }
+
+    /**
+     * Whether {@code pos} can come down for want of support: built (or a log, if {@code logs}), breakable, and
+     * holding no block entity but a banner or a head.
+     */
+    private boolean loose(BlockPos pos, BlockState state, boolean logs) {
+        if (!(built(state) && !naturalLog(state) || logs && state.isIn(BlockTags.LOGS)) || state.getHardness(this.world, pos) < 0.0F) {
+            return false;
+        }
+        BlockEntity blockEntity = this.world.getBlockEntity(pos);
+        return blockEntity == null || blockEntity instanceof BannerBlockEntity || blockEntity instanceof SkullBlockEntity;
+    }
+
+    /**
+     * Each piece in this chunk with wall breaches: how much of its wall band they cover (from the plan, so every
+     * chunk agrees) sets its fate. Under {@link #CAVE_DAMAGE} only what's over and next to each breach comes down;
+     * from there up its roof falls in in patches, more of it the more the walls are breached; from
+     * {@link #HEAP_DAMAGE} up it's a heap. Pieces of {@link #BIG_PIECE} or more (a whole goblin camp) only ever
+     * lose what's over and next to their breaches.
+     */
+    private void supports() {
+        int index = 0;
+        for (StructurePiece piece : this.start.getChildren()) {
+            index++;
+            BlockBox b = piece.getBoundingBox();
+            if (b.getMaxX() < this.chunkBox.getMinX() || b.getMinX() > this.chunkBox.getMaxX()
+                    || b.getMaxZ() < this.chunkBox.getMinZ() || b.getMinZ() > this.chunkBox.getMaxZ()) {
+                continue;
+            }
+            List<Breach> breaches = new ArrayList<>();
+            for (Breach breach : this.planned) {
+                // Its own wall breaches, and any other piece's that reach into it (a goblin camp's or the orc
+                // grounds' breaches land on the buildings inside them).
+                if (breach.face() != 4 && (breach.piece() == index || reaches(breach, b))) {
+                    breaches.add(breach);
+                }
+            }
+            if (breaches.isEmpty()) {
+                continue;
+            }
+            float area = b.getBlockCountX() * b.getBlockCountZ() / (float) (PIECE_SIZE * PIECE_SIZE);
+            float damage = area >= BIG_PIECE ? 0.0F : wallDamage(b, breaches);
+            boolean heap = damage >= HEAP_DAMAGE;
+            float caved = MathHelper.clamp((damage - CAVE_DAMAGE) / (HEAP_DAMAGE - CAVE_DAMAGE), 0.0F, 1.0F);
+            List<BlockPos> fallen = new ArrayList<>();
+            List<BlockState> states = new ArrayList<>();
+            for (int x = Math.max(b.getMinX(), this.chunkBox.getMinX()); x <= Math.min(b.getMaxX(), this.chunkBox.getMaxX()); x++) {
+                for (int z = Math.max(b.getMinZ(), this.chunkBox.getMinZ()); z <= Math.min(b.getMaxZ(), this.chunkBox.getMaxZ()); z++) {
+                    this.unsupported(b, breaches, x, z, caved, heap, fallen, states);
+                }
+            }
+            if (!fallen.isEmpty()) {
+                DnDClasses.LOGGER.debug("[Desolation] piece {} {} {}: wall damage {}, {}, {} blocks fell", index,
+                        piece.getClass().getSimpleName(), b.getCenter(), String.format("%.2f", damage),
+                        heap ? "heaped" : caved > 0.0F ? "caved " + String.format("%.2f", caved) : "local", fallen.size());
+            }
+            float chance = heap ? Math.max(this.level.rubble, HEAP_RUBBLE) : this.level.rubble;
+            for (int i = 0; i < fallen.size(); i++) {
+                BlockPos from = fallen.get(i);
+                if (this.roll(from.getX(), from.getY(), from.getZ(), 19) < chance) {
+                    this.settle(from, states.get(i), heap);
+                }
+            }
+        }
+    }
+
+    /** Whether {@code breach} (another piece's) reaches into {@code b}, between its floor and its top. */
+    private static boolean reaches(Breach breach, BlockBox b) {
+        int r = (int) Math.ceil(breach.radius());
+        return breach.x() + r >= b.getMinX() && breach.x() - r <= b.getMaxX() && breach.z() + r >= b.getMinZ()
+                && breach.z() - r <= b.getMaxZ() && breach.y() + r >= b.getMinY() && breach.y() - r <= b.getMaxY();
+    }
+
+    /** The share of {@code b}'s wall band (columns within {@link #WALL_BAND} of its sides) under a wall breach. */
+    private static float wallDamage(BlockBox b, List<Breach> breaches) {
+        int covered = 0;
+        int total = 0;
+        for (int x = b.getMinX(); x <= b.getMaxX(); x++) {
+            for (int z = b.getMinZ(); z <= b.getMaxZ(); z++) {
+                int edge = Math.min(Math.min(x - b.getMinX(), b.getMaxX() - x), Math.min(z - b.getMinZ(), b.getMaxZ() - z));
+                if (edge >= WALL_BAND) {
+                    continue;
+                }
+                total++;
+                for (Breach breach : breaches) {
+                    if (breach.face() != 4 && breach.distance(x, z) <= breach.radius()) {
+                        covered++;
+                        break;
+                    }
+                }
+            }
+        }
+        return total == 0 ? 0.0F : covered / (float) total;
+    }
+
+    /**
+     * Column x/z of piece {@code b}: its top run of built blocks (a roof, or a wall and the roof on it) comes down,
+     * into {@code fallen}, if
+     * <ul>
+     *   <li>it's over a breach (within the breach's ragged radius): everything above the breach's centre;</li>
+     *   <li>the piece is a heap: everything above 1 or 2 blocks over its floor;</li>
+     *   <li>it's a ceiling (open space under it) and either near a breach (likelier the nearer, out to
+     *   {@link #SAG_REACH} radii past it) or in a patch that caves in ({@code caved} of the roof does).</li>
+     * </ul>
+     * A column whose highest solid block isn't built (the ground over a dug-out room, a tree) is held up.
+     */
+    private void unsupported(BlockBox b, List<Breach> breaches, int x, int z, float caved, boolean heap,
+                             List<BlockPos> fallen, List<BlockState> states) {
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        int bottom = Math.max(b.getMinY(), this.chunkBox.getMinY());
+        int hi = Math.min(b.getMaxY() + ROOF_SCAN, this.chunkBox.getMaxY());
+        BlockState state = null;
+        for (; hi >= bottom; hi--) {
+            state = this.world.getBlockState(pos.set(x, hi, z));
+            if (!clear(state) && !state.isIn(BlockTags.LEAVES)) {
+                break;
+            }
+        }
+        if (hi < bottom || !this.loose(pos, state, heap)) {
+            return;
+        }
+        int lo = hi;
+        while (lo - 1 >= bottom && this.loose(pos.set(x, lo - 1, z), this.world.getBlockState(pos), heap)) {
+            lo--;
+        }
+        boolean ceiling = lo - 1 >= bottom && clear(this.world.getBlockState(pos.set(x, lo - 1, z)));
+        int shadow = Integer.MAX_VALUE;
+        float sag = 0.0F;
+        for (Breach breach : breaches) {
+            double d = breach.distance(x, z);
+            float reach = breach.radius() * (0.75F + 0.5F * this.roll(x, breach.y(), z, 80));
+            if (d <= reach) {
+                shadow = Math.min(shadow, breach.y());
+            } else {
+                sag = Math.max(sag, 1.0F - (float) (d - reach) / (breach.radius() * SAG_REACH));
+            }
+        }
+        int from;
+        if (heap) {
+            from = Math.max(lo, b.getMinY() + 2 + (this.roll(x, 0, z, 81) < 0.5F ? 1 : 0));
+        } else if (shadow != Integer.MAX_VALUE) {
+            from = Math.max(lo, shadow + 1);
+        } else if (ceiling && (this.roll(x, 0, z, 82) < sag || caved > 0.0F && Desolation.patches(this.salt, x, z, 4, 83) < caved)) {
+            from = lo;
+        } else {
+            return;
+        }
+        for (int y = from; y <= hi; y++) {
+            state = this.world.getBlockState(pos.set(x, y, z));
+            if (this.loose(pos, state, heap)) {
+                this.set(pos, Blocks.AIR.getDefaultState());
+                fallen.add(pos.toImmutable());
+                states.add(state);
+                this.counts[3]++;
+            }
+        }
+    }
+
+    /**
+     * Fragments: built blocks (and logs) in this chunk that touch nothing holding them up fall. Each group of
+     * touching blocks (edges and corners count, so stepped roofs hold together) is held up if any of it is ground,
+     * stone, a container or other block entity, or lies on the edge of this chunk's slice of the structure, where
+     * it may carry on into the next chunk. Only this chunk's blocks are read, and they're final by now.
+     */
+    private void fragments() {
+        int sx = this.maxX - this.minX + 1;
+        int sy = this.maxY - this.minY + 1;
+        int sz = this.maxZ - this.minZ + 1;
+        if (sx <= 0 || sy <= 0 || sz <= 0) {
+            return;
+        }
+        boolean[] seen = new boolean[sx * sy * sz];
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        IntArrayList queue = new IntArrayList();
+        IntArrayList group = new IntArrayList();
+        List<BlockPos> fallen = new ArrayList<>();
+        List<BlockState> states = new ArrayList<>();
+        for (int i = 0; i < seen.length; i++) {
+            if (seen[i]) {
+                continue;
+            }
+            seen[i] = true;
+            if (!this.member(this.at(i, pos))) {
+                continue;
+            }
+            boolean held = false;
+            queue.clear();
+            group.clear();
+            queue.add(i);
+            while (!queue.isEmpty()) {
+                int c = queue.removeInt(queue.size() - 1);
+                group.add(c);
+                this.at(c, pos);
+                int x = pos.getX();
+                int y = pos.getY();
+                int z = pos.getZ();
+                if (!held && (x == this.minX || x == this.maxX || y == this.minY || y == this.maxY || z == this.minZ || z == this.maxZ
+                        || !this.loose(pos, this.world.getBlockState(pos), true))) {
+                    held = true;
+                }
+                for (int dx = -1; dx <= 1; dx++) {
+                    for (int dy = -1; dy <= 1; dy++) {
+                        for (int dz = -1; dz <= 1; dz++) {
+                            int nx = x + dx;
+                            int ny = y + dy;
+                            int nz = z + dz;
+                            if (nx < this.minX || nx > this.maxX || ny < this.minY || ny > this.maxY || nz < this.minZ || nz > this.maxZ) {
+                                continue;
+                            }
+                            int n = ((ny - this.minY) * sz + (nz - this.minZ)) * sx + (nx - this.minX);
+                            if (seen[n]) {
+                                continue;
+                            }
+                            seen[n] = true;
+                            if (this.member(pos.set(nx, ny, nz))) {
+                                queue.add(n);
+                            }
+                        }
+                    }
+                }
+            }
+            if (held) {
+                continue;
+            }
+            for (int k = 0; k < group.size(); k++) {
+                this.at(group.getInt(k), pos);
+                states.add(this.world.getBlockState(pos));
+                fallen.add(pos.toImmutable());
+                this.set(pos, Blocks.AIR.getDefaultState());
+                this.counts[3]++;
+            }
+        }
+        for (int i = 0; i < fallen.size(); i++) {
+            BlockPos from = fallen.get(i);
+            if (this.roll(from.getX(), from.getY(), from.getZ(), 87) < this.level.rubble) {
+                this.settle(from, states.get(i), false);
+            }
+        }
+    }
+
+    /** Sets {@code pos} to cell {@code i} of this chunk's slice (x fastest, then z, then y). */
+    private BlockPos.Mutable at(int i, BlockPos.Mutable pos) {
+        int sx = this.maxX - this.minX + 1;
+        int sz = this.maxZ - this.minZ + 1;
+        return pos.set(this.minX + i % sx, this.minY + i / (sx * sz), this.minZ + i / sx % sz);
+    }
+
+    /** Whether {@code pos} is solid enough to hold up or be held up: not air, plants, fluids or leaves. */
+    private boolean member(BlockPos pos) {
+        BlockState state = this.world.getBlockState(pos);
+        return !clear(state) && !state.isIn(BlockTags.LEAVES);
+    }
+
+    /**
+     * Lays a fallen block of {@code state} on what's under {@code from}, scattered up to a block sideways. A
+     * {@code heap} piles up: rubble on rubble, and slabs on slabs of the same kind into double slabs.
+     */
+    private void settle(BlockPos from, BlockState state, boolean heap) {
+        int dx = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 84) * 3) - 1;
+        int dz = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 85) * 3) - 1;
+        BlockPos.Mutable pos = new BlockPos.Mutable(from.getX() + dx, from.getY(), from.getZ() + dz);
+        if (!this.chunkBox.contains(pos) || !clear(this.world.getBlockState(pos))) {
+            return;
+        }
+        for (int i = 0; i < RUBBLE_FALL && pos.getY() > this.chunkBox.getMinY() && clear(this.world.getBlockState(pos.down())); i++) {
+            pos.move(Direction.DOWN);
+        }
+        BlockPos down = pos.down();
+        BlockState below = this.world.getBlockState(down);
+        if (below.isOf(RuinBlocks.COLLAPSED_RUBBLE) && below.get(RubbleBlock.LAYERS) < RubbleBlock.MAX_LAYERS) {
+            int layers = below.get(RubbleBlock.LAYERS) + (heap ? 2 : 1);
+            this.set(down, below.with(RubbleBlock.LAYERS, Math.min(RubbleBlock.MAX_LAYERS, layers)));
+            return;
+        }
+        Block slab = slab(state.getBlock());
+        if (heap && slab != null && below.isOf(slab) && below.get(SlabBlock.TYPE) == SlabType.BOTTOM) {
+            this.set(down, below.with(SlabBlock.TYPE, SlabType.DOUBLE));
+            return;
+        }
+        boolean onRubble = below.isOf(RuinBlocks.COLLAPSED_RUBBLE);
+        if (!onRubble && !below.isSideSolidFullSquare(this.world, down, Direction.UP)) {
+            return;
+        }
+        BlockState piece = this.debris(state, this.roll(from.getX(), from.getY(), from.getZ(), 86), from, heap);
+        if (piece != null) {
+            this.set(pos, piece);
         }
     }
 }

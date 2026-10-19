@@ -2,17 +2,24 @@ package mattonfire.dnd.world.gen.enclave;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import mattonfire.dnd.classes.Blocks.elven.WovenRopePlankBlock;
 import mattonfire.dnd.classes.Registry.ElvenBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.FenceBlock;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
 
@@ -21,8 +28,15 @@ import net.minecraft.util.math.Direction;
  * one block in the middle (in half-block steps, like slabs, so it can be walked without jumping). The walkway
  * runs along a 4-connected line of cells at the bridge deck's height; at each end the platform's rail is cut
  * away where the bridge lands. Cells are in world x/z; the origin is (0, deck, 0).
+ *
+ * <p>The handrail stands on a stripped Heartwood stringer flush with the deck on each side, like the Heart Tree
+ * stair's rail. Its posts are placed already joined up, turn the corner where the walkway steps sideways, and stack
+ * two high where the rail drops a level at the sag, so each side reads as one continuous rail.
  */
 public class BridgePiece extends EnclavePiece {
+    /** The beam under the handrail. */
+    private static final Block STRINGER = ModBlockFamilies.STRIPPED_HEARTWOOD_LOG.base();
+
     /** World x, z of each walkway cell, in order. */
     private final int[] cells;
     /** World x, z of the platform cells the bridge lands on, whose rail is cut away. */
@@ -82,6 +96,8 @@ public class BridgePiece extends EnclavePiece {
             // Cut the platform's rail.
             b.air(this.landings[i], 1, this.landings[i + 1], this.landings[i], 3, this.landings[i + 1]);
         }
+        // The deck, and the rail cells either side of it: each at the height of the highest deck cell beside it.
+        Map<Long, Rail> rails = new LinkedHashMap<>();
         for (int i = 0; i < count; i++) {
             int x = this.cells[2 * i];
             int z = this.cells[2 * i + 1];
@@ -93,30 +109,98 @@ public class BridgePiece extends EnclavePiece {
             b.air(x, slabY + 1, z, x, slabY + 3, z);
             b.set(x, slabY, z, this.plank(i, count, sag != 1));
             for (Direction d : Direction.Type.HORIZONTAL) {
-                int nx = x + d.getOffsetX();
-                int nz = z + d.getOffsetZ();
-                long key = ChunkPos.toLong(nx, nz);
+                long key = ChunkPos.toLong(x + d.getOffsetX(), z + d.getOffsetZ());
                 if (walkway.contains(key) || landing.contains(key)) {
                     continue;
                 }
-                b.set(nx, railY, nz, Blocks.BIRCH_FENCE);
-                b.air(nx, railY + 1, nz, nx, railY + 2, nz);
-                // Lamps every few cells, and chains hanging under the rails like ropes.
-                if (i % 6 == 3) {
-                    b.set(nx, railY + 1, nz, lantern(false));
-                } else if (i % 3 == 1) {
-                    b.set(nx, railY - 1, nz, Blocks.CHAIN);
+                Rail rail = rails.get(key);
+                if (rail == null || rail.y < railY) {
+                    rails.put(key, new Rail(railY, i, this.axis(i, count)));
                 }
+            }
+        }
+        // Where the walkway steps sideways, the rail on the outside of the step has a gap at the corner: two posts
+        // that only touch diagonally. Fill the corner so the rail turns with the walkway.
+        Map<Long, Rail> corners = new HashMap<>();
+        for (Map.Entry<Long, Rail> entry : rails.entrySet()) {
+            int x = ChunkPos.getPackedX(entry.getKey());
+            int z = ChunkPos.getPackedZ(entry.getKey());
+            for (int dx = -1; dx <= 1; dx += 2) {
+                for (int dz = -1; dz <= 1; dz += 2) {
+                    Rail other = rails.get(ChunkPos.toLong(x + dx, z + dz));
+                    if (other == null) {
+                        continue;
+                    }
+                    long a = ChunkPos.toLong(x + dx, z);
+                    long c = ChunkPos.toLong(x, z + dz);
+                    long free = walkway.contains(a) ? c : walkway.contains(c) ? a : Long.MAX_VALUE;
+                    if (free != Long.MAX_VALUE && !walkway.contains(free) && !landing.contains(free) && !rails.containsKey(free)) {
+                        int y = Math.max(entry.getValue().y, other.y);
+                        corners.merge(free, new Rail(y, entry.getValue().index, Direction.Axis.Y), (p, q) -> p.y >= q.y ? p : q);
+                    }
+                }
+            }
+        }
+        rails.putAll(corners);
+        // Every fence post: one on each rail cell, and where the rail drops a level (the sag), a second post on top of
+        // the lower one so the two parts join.
+        Set<BlockPos> fences = new HashSet<>();
+        for (Map.Entry<Long, Rail> entry : rails.entrySet()) {
+            int x = ChunkPos.getPackedX(entry.getKey());
+            int z = ChunkPos.getPackedZ(entry.getKey());
+            int y = entry.getValue().y;
+            fences.add(new BlockPos(x, y, z));
+            for (Direction d : Direction.Type.HORIZONTAL) {
+                Rail next = rails.get(ChunkPos.toLong(x + d.getOffsetX(), z + d.getOffsetZ()));
+                if (next != null && next.y > y) {
+                    fences.add(new BlockPos(x, next.y, z));
+                }
+            }
+        }
+        for (Map.Entry<Long, Rail> entry : rails.entrySet()) {
+            int x = ChunkPos.getPackedX(entry.getKey());
+            int z = ChunkPos.getPackedZ(entry.getKey());
+            Rail rail = entry.getValue();
+            int top = fences.contains(new BlockPos(x, rail.y + 1, z)) ? rail.y + 1 : rail.y;
+            // A stripped Heartwood stringer flush with the deck under each post (like the Heart Tree stair's rail).
+            b.set(x, rail.y - 1, z, pillar(STRINGER, rail.axis));
+            b.air(x, rail.y, z, x, top + 2, z);
+            for (int y = rail.y; y <= top; y++) {
+                b.set(x, y, z, fence(fences, x, y, z));
+            }
+            // Lamps every few cells, and chains hanging under the stringer like ropes.
+            if (rail.index % 6 == 3) {
+                b.set(x, top + 1, z, lantern(false));
+            } else if (rail.index % 3 == 1) {
+                b.set(x, rail.y - 2, z, Blocks.CHAIN);
             }
         }
     }
 
+    /** A birch fence post at x/y/z, joined to the posts beside it ({@code fences}) without waiting on neighbour updates. */
+    private static BlockState fence(Set<BlockPos> fences, int x, int y, int z) {
+        return Blocks.BIRCH_FENCE.getDefaultState()
+                .with(FenceBlock.NORTH, fences.contains(new BlockPos(x, y, z - 1)))
+                .with(FenceBlock.SOUTH, fences.contains(new BlockPos(x, y, z + 1)))
+                .with(FenceBlock.WEST, fences.contains(new BlockPos(x - 1, y, z)))
+                .with(FenceBlock.EAST, fences.contains(new BlockPos(x + 1, y, z)));
+    }
+
+    /** A rail cell: its post's height, the walkway cell it's beside, and the way its stringer runs. */
+    private record Rail(int y, int index, Direction.Axis axis) {
+    }
+
     /** The deck plank for cell {@code i}, in the top or bottom half, lying along the way the walkway runs there. */
     private BlockState plank(int i, int count, boolean top) {
-        int j = i + 1 < count ? i + 1 : i - 1;
-        boolean alongX = j >= 0 && this.cells[2 * j] != this.cells[2 * i];
         return ElvenBlocks.WOVEN_ROPE_PLANK.getDefaultState()
                 .with(WovenRopePlankBlock.HALF, top ? BlockHalf.TOP : BlockHalf.BOTTOM)
-                .with(WovenRopePlankBlock.AXIS, alongX ? Direction.Axis.X : Direction.Axis.Z);
+                .with(WovenRopePlankBlock.AXIS, this.axis(i, count));
+    }
+
+    /** The way the walkway runs at cell {@code i}: towards the next cell (the last cell, from the one before). */
+    private Direction.Axis axis(int i, int count) {
+        int j = i + 1 < count ? i + 1 : i - 1;
+        boolean alongX = j >= 0 && this.cells[2 * j] != this.cells[2 * i];
+        return alongX ? Direction.Axis.X : Direction.Axis.Z;
     }
 }

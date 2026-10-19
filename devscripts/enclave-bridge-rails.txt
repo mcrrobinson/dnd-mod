@@ -1,0 +1,1100 @@
+# Checks the Elven Enclave's rope bridge handrails (board bug "fence handrails float and don't connect"): every rail
+# post stands on a block (a stringer flush with the deck), and no post stands alone. Runs on the dev world's enclave at
+# 43152 42016 (deck y 82; bridge boxes from enclave-bridge-locate.txt), generated fresh: copy the dev world and delete
+# its region, entities and poi files r.83..85.81..83 first:
+#   cp -r "run/saves/New World" run/saves/BridgeFresh && rm run/saves/BridgeFresh/{region,entities,poi}/r.8[345].8[123].mca
+#   timeout 400 ./gradlew runClient --offline -PdevWorld=BridgeFresh -PdevScript=devscripts/enclave-bridge-rails.txt
+# Expect in latest.log: no "bh:floating" or "bh:isolated" lines after "bh:check diagonal" and "bh:check long", some
+# "bh:chain" lines (chains hang under the long bridge's stringers), and
+# "walkto 43176 42038: reached" (the long bridge walked end to end without jumping). Screenshots bh-diag-top,
+# bh-diag-side, bh-long-top, bh-long-side, bh-long-below and bh-walk show the rails from above and from the side.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 43160 160 42024 0 90
+wait 400
+/tp @s 43165 90 42030 0 90
+wait 100
+/say bh:check diagonal
+/execute if block 43164 82 42013 minecraft:birch_fence unless block 43164 81 42013 #minecraft:planks unless block 43164 81 42013 #minecraft:logs unless block 43164 81 42013 minecraft:birch_fence run say bh:floating 43164 82 42013
+/execute if block 43164 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42013
+/execute if block 43164 83 42013 minecraft:birch_fence unless block 43164 82 42013 #minecraft:planks unless block 43164 82 42013 #minecraft:logs unless block 43164 82 42013 minecraft:birch_fence run say bh:floating 43164 83 42013
+/execute if block 43164 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42013
+/execute if block 43164 82 42014 minecraft:birch_fence unless block 43164 81 42014 #minecraft:planks unless block 43164 81 42014 #minecraft:logs unless block 43164 81 42014 minecraft:birch_fence run say bh:floating 43164 82 42014
+/execute if block 43164 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42014
+/execute if block 43164 83 42014 minecraft:birch_fence unless block 43164 82 42014 #minecraft:planks unless block 43164 82 42014 #minecraft:logs unless block 43164 82 42014 minecraft:birch_fence run say bh:floating 43164 83 42014
+/execute if block 43164 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42014
+/execute if block 43164 82 42015 minecraft:birch_fence unless block 43164 81 42015 #minecraft:planks unless block 43164 81 42015 #minecraft:logs unless block 43164 81 42015 minecraft:birch_fence run say bh:floating 43164 82 42015
+/execute if block 43164 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42015
+/execute if block 43164 83 42015 minecraft:birch_fence unless block 43164 82 42015 #minecraft:planks unless block 43164 82 42015 #minecraft:logs unless block 43164 82 42015 minecraft:birch_fence run say bh:floating 43164 83 42015
+/execute if block 43164 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42015
+/execute if block 43164 82 42016 minecraft:birch_fence unless block 43164 81 42016 #minecraft:planks unless block 43164 81 42016 #minecraft:logs unless block 43164 81 42016 minecraft:birch_fence run say bh:floating 43164 82 42016
+/execute if block 43164 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42016
+/execute if block 43164 83 42016 minecraft:birch_fence unless block 43164 82 42016 #minecraft:planks unless block 43164 82 42016 #minecraft:logs unless block 43164 82 42016 minecraft:birch_fence run say bh:floating 43164 83 42016
+/execute if block 43164 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42016
+/execute if block 43164 82 42017 minecraft:birch_fence unless block 43164 81 42017 #minecraft:planks unless block 43164 81 42017 #minecraft:logs unless block 43164 81 42017 minecraft:birch_fence run say bh:floating 43164 82 42017
+/execute if block 43164 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42017
+/execute if block 43164 83 42017 minecraft:birch_fence unless block 43164 82 42017 #minecraft:planks unless block 43164 82 42017 #minecraft:logs unless block 43164 82 42017 minecraft:birch_fence run say bh:floating 43164 83 42017
+/execute if block 43164 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42017
+/execute if block 43164 82 42018 minecraft:birch_fence unless block 43164 81 42018 #minecraft:planks unless block 43164 81 42018 #minecraft:logs unless block 43164 81 42018 minecraft:birch_fence run say bh:floating 43164 82 42018
+/execute if block 43164 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42018
+/execute if block 43164 83 42018 minecraft:birch_fence unless block 43164 82 42018 #minecraft:planks unless block 43164 82 42018 #minecraft:logs unless block 43164 82 42018 minecraft:birch_fence run say bh:floating 43164 83 42018
+/execute if block 43164 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42018
+/execute if block 43164 82 42019 minecraft:birch_fence unless block 43164 81 42019 #minecraft:planks unless block 43164 81 42019 #minecraft:logs unless block 43164 81 42019 minecraft:birch_fence run say bh:floating 43164 82 42019
+/execute if block 43164 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42019
+/execute if block 43164 83 42019 minecraft:birch_fence unless block 43164 82 42019 #minecraft:planks unless block 43164 82 42019 #minecraft:logs unless block 43164 82 42019 minecraft:birch_fence run say bh:floating 43164 83 42019
+/execute if block 43164 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42019
+/execute if block 43164 82 42020 minecraft:birch_fence unless block 43164 81 42020 #minecraft:planks unless block 43164 81 42020 #minecraft:logs unless block 43164 81 42020 minecraft:birch_fence run say bh:floating 43164 82 42020
+/execute if block 43164 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42020
+/execute if block 43164 83 42020 minecraft:birch_fence unless block 43164 82 42020 #minecraft:planks unless block 43164 82 42020 #minecraft:logs unless block 43164 82 42020 minecraft:birch_fence run say bh:floating 43164 83 42020
+/execute if block 43164 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42020
+/execute if block 43165 82 42013 minecraft:birch_fence unless block 43165 81 42013 #minecraft:planks unless block 43165 81 42013 #minecraft:logs unless block 43165 81 42013 minecraft:birch_fence run say bh:floating 43165 82 42013
+/execute if block 43165 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42013
+/execute if block 43165 83 42013 minecraft:birch_fence unless block 43165 82 42013 #minecraft:planks unless block 43165 82 42013 #minecraft:logs unless block 43165 82 42013 minecraft:birch_fence run say bh:floating 43165 83 42013
+/execute if block 43165 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42013
+/execute if block 43165 82 42014 minecraft:birch_fence unless block 43165 81 42014 #minecraft:planks unless block 43165 81 42014 #minecraft:logs unless block 43165 81 42014 minecraft:birch_fence run say bh:floating 43165 82 42014
+/execute if block 43165 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42014
+/execute if block 43165 83 42014 minecraft:birch_fence unless block 43165 82 42014 #minecraft:planks unless block 43165 82 42014 #minecraft:logs unless block 43165 82 42014 minecraft:birch_fence run say bh:floating 43165 83 42014
+/execute if block 43165 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42014
+/execute if block 43165 82 42015 minecraft:birch_fence unless block 43165 81 42015 #minecraft:planks unless block 43165 81 42015 #minecraft:logs unless block 43165 81 42015 minecraft:birch_fence run say bh:floating 43165 82 42015
+/execute if block 43165 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42015
+/execute if block 43165 83 42015 minecraft:birch_fence unless block 43165 82 42015 #minecraft:planks unless block 43165 82 42015 #minecraft:logs unless block 43165 82 42015 minecraft:birch_fence run say bh:floating 43165 83 42015
+/execute if block 43165 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42015
+/execute if block 43165 82 42016 minecraft:birch_fence unless block 43165 81 42016 #minecraft:planks unless block 43165 81 42016 #minecraft:logs unless block 43165 81 42016 minecraft:birch_fence run say bh:floating 43165 82 42016
+/execute if block 43165 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42016
+/execute if block 43165 83 42016 minecraft:birch_fence unless block 43165 82 42016 #minecraft:planks unless block 43165 82 42016 #minecraft:logs unless block 43165 82 42016 minecraft:birch_fence run say bh:floating 43165 83 42016
+/execute if block 43165 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42016
+/execute if block 43165 82 42017 minecraft:birch_fence unless block 43165 81 42017 #minecraft:planks unless block 43165 81 42017 #minecraft:logs unless block 43165 81 42017 minecraft:birch_fence run say bh:floating 43165 82 42017
+/execute if block 43165 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42017
+/execute if block 43165 83 42017 minecraft:birch_fence unless block 43165 82 42017 #minecraft:planks unless block 43165 82 42017 #minecraft:logs unless block 43165 82 42017 minecraft:birch_fence run say bh:floating 43165 83 42017
+/execute if block 43165 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42017
+/execute if block 43165 82 42018 minecraft:birch_fence unless block 43165 81 42018 #minecraft:planks unless block 43165 81 42018 #minecraft:logs unless block 43165 81 42018 minecraft:birch_fence run say bh:floating 43165 82 42018
+/execute if block 43165 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42018
+/execute if block 43165 83 42018 minecraft:birch_fence unless block 43165 82 42018 #minecraft:planks unless block 43165 82 42018 #minecraft:logs unless block 43165 82 42018 minecraft:birch_fence run say bh:floating 43165 83 42018
+/execute if block 43165 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42018
+/execute if block 43165 82 42019 minecraft:birch_fence unless block 43165 81 42019 #minecraft:planks unless block 43165 81 42019 #minecraft:logs unless block 43165 81 42019 minecraft:birch_fence run say bh:floating 43165 82 42019
+/execute if block 43165 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42019
+/execute if block 43165 83 42019 minecraft:birch_fence unless block 43165 82 42019 #minecraft:planks unless block 43165 82 42019 #minecraft:logs unless block 43165 82 42019 minecraft:birch_fence run say bh:floating 43165 83 42019
+/execute if block 43165 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42019
+/execute if block 43165 82 42020 minecraft:birch_fence unless block 43165 81 42020 #minecraft:planks unless block 43165 81 42020 #minecraft:logs unless block 43165 81 42020 minecraft:birch_fence run say bh:floating 43165 82 42020
+/execute if block 43165 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42020
+/execute if block 43165 83 42020 minecraft:birch_fence unless block 43165 82 42020 #minecraft:planks unless block 43165 82 42020 #minecraft:logs unless block 43165 82 42020 minecraft:birch_fence run say bh:floating 43165 83 42020
+/execute if block 43165 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42020
+/execute if block 43166 82 42013 minecraft:birch_fence unless block 43166 81 42013 #minecraft:planks unless block 43166 81 42013 #minecraft:logs unless block 43166 81 42013 minecraft:birch_fence run say bh:floating 43166 82 42013
+/execute if block 43166 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42013
+/execute if block 43166 83 42013 minecraft:birch_fence unless block 43166 82 42013 #minecraft:planks unless block 43166 82 42013 #minecraft:logs unless block 43166 82 42013 minecraft:birch_fence run say bh:floating 43166 83 42013
+/execute if block 43166 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42013
+/execute if block 43166 82 42014 minecraft:birch_fence unless block 43166 81 42014 #minecraft:planks unless block 43166 81 42014 #minecraft:logs unless block 43166 81 42014 minecraft:birch_fence run say bh:floating 43166 82 42014
+/execute if block 43166 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42014
+/execute if block 43166 83 42014 minecraft:birch_fence unless block 43166 82 42014 #minecraft:planks unless block 43166 82 42014 #minecraft:logs unless block 43166 82 42014 minecraft:birch_fence run say bh:floating 43166 83 42014
+/execute if block 43166 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42014
+/execute if block 43166 82 42015 minecraft:birch_fence unless block 43166 81 42015 #minecraft:planks unless block 43166 81 42015 #minecraft:logs unless block 43166 81 42015 minecraft:birch_fence run say bh:floating 43166 82 42015
+/execute if block 43166 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42015
+/execute if block 43166 83 42015 minecraft:birch_fence unless block 43166 82 42015 #minecraft:planks unless block 43166 82 42015 #minecraft:logs unless block 43166 82 42015 minecraft:birch_fence run say bh:floating 43166 83 42015
+/execute if block 43166 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42015
+/execute if block 43166 82 42016 minecraft:birch_fence unless block 43166 81 42016 #minecraft:planks unless block 43166 81 42016 #minecraft:logs unless block 43166 81 42016 minecraft:birch_fence run say bh:floating 43166 82 42016
+/execute if block 43166 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42016
+/execute if block 43166 83 42016 minecraft:birch_fence unless block 43166 82 42016 #minecraft:planks unless block 43166 82 42016 #minecraft:logs unless block 43166 82 42016 minecraft:birch_fence run say bh:floating 43166 83 42016
+/execute if block 43166 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42016
+/execute if block 43166 82 42017 minecraft:birch_fence unless block 43166 81 42017 #minecraft:planks unless block 43166 81 42017 #minecraft:logs unless block 43166 81 42017 minecraft:birch_fence run say bh:floating 43166 82 42017
+/execute if block 43166 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42017
+/execute if block 43166 83 42017 minecraft:birch_fence unless block 43166 82 42017 #minecraft:planks unless block 43166 82 42017 #minecraft:logs unless block 43166 82 42017 minecraft:birch_fence run say bh:floating 43166 83 42017
+/execute if block 43166 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42017
+/execute if block 43166 82 42018 minecraft:birch_fence unless block 43166 81 42018 #minecraft:planks unless block 43166 81 42018 #minecraft:logs unless block 43166 81 42018 minecraft:birch_fence run say bh:floating 43166 82 42018
+/execute if block 43166 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42018
+/execute if block 43166 83 42018 minecraft:birch_fence unless block 43166 82 42018 #minecraft:planks unless block 43166 82 42018 #minecraft:logs unless block 43166 82 42018 minecraft:birch_fence run say bh:floating 43166 83 42018
+/execute if block 43166 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42018
+/execute if block 43166 82 42019 minecraft:birch_fence unless block 43166 81 42019 #minecraft:planks unless block 43166 81 42019 #minecraft:logs unless block 43166 81 42019 minecraft:birch_fence run say bh:floating 43166 82 42019
+/execute if block 43166 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42019
+/execute if block 43166 83 42019 minecraft:birch_fence unless block 43166 82 42019 #minecraft:planks unless block 43166 82 42019 #minecraft:logs unless block 43166 82 42019 minecraft:birch_fence run say bh:floating 43166 83 42019
+/execute if block 43166 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42019
+/execute if block 43166 82 42020 minecraft:birch_fence unless block 43166 81 42020 #minecraft:planks unless block 43166 81 42020 #minecraft:logs unless block 43166 81 42020 minecraft:birch_fence run say bh:floating 43166 82 42020
+/execute if block 43166 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42020
+/execute if block 43166 83 42020 minecraft:birch_fence unless block 43166 82 42020 #minecraft:planks unless block 43166 82 42020 #minecraft:logs unless block 43166 82 42020 minecraft:birch_fence run say bh:floating 43166 83 42020
+/execute if block 43166 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42020
+/execute if block 43167 82 42013 minecraft:birch_fence unless block 43167 81 42013 #minecraft:planks unless block 43167 81 42013 #minecraft:logs unless block 43167 81 42013 minecraft:birch_fence run say bh:floating 43167 82 42013
+/execute if block 43167 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42013
+/execute if block 43167 83 42013 minecraft:birch_fence unless block 43167 82 42013 #minecraft:planks unless block 43167 82 42013 #minecraft:logs unless block 43167 82 42013 minecraft:birch_fence run say bh:floating 43167 83 42013
+/execute if block 43167 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42013
+/execute if block 43167 82 42014 minecraft:birch_fence unless block 43167 81 42014 #minecraft:planks unless block 43167 81 42014 #minecraft:logs unless block 43167 81 42014 minecraft:birch_fence run say bh:floating 43167 82 42014
+/execute if block 43167 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42014
+/execute if block 43167 83 42014 minecraft:birch_fence unless block 43167 82 42014 #minecraft:planks unless block 43167 82 42014 #minecraft:logs unless block 43167 82 42014 minecraft:birch_fence run say bh:floating 43167 83 42014
+/execute if block 43167 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42014
+/execute if block 43167 82 42015 minecraft:birch_fence unless block 43167 81 42015 #minecraft:planks unless block 43167 81 42015 #minecraft:logs unless block 43167 81 42015 minecraft:birch_fence run say bh:floating 43167 82 42015
+/execute if block 43167 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42015
+/execute if block 43167 83 42015 minecraft:birch_fence unless block 43167 82 42015 #minecraft:planks unless block 43167 82 42015 #minecraft:logs unless block 43167 82 42015 minecraft:birch_fence run say bh:floating 43167 83 42015
+/execute if block 43167 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42015
+/execute if block 43167 82 42016 minecraft:birch_fence unless block 43167 81 42016 #minecraft:planks unless block 43167 81 42016 #minecraft:logs unless block 43167 81 42016 minecraft:birch_fence run say bh:floating 43167 82 42016
+/execute if block 43167 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42016
+/execute if block 43167 83 42016 minecraft:birch_fence unless block 43167 82 42016 #minecraft:planks unless block 43167 82 42016 #minecraft:logs unless block 43167 82 42016 minecraft:birch_fence run say bh:floating 43167 83 42016
+/execute if block 43167 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42016
+/execute if block 43167 82 42017 minecraft:birch_fence unless block 43167 81 42017 #minecraft:planks unless block 43167 81 42017 #minecraft:logs unless block 43167 81 42017 minecraft:birch_fence run say bh:floating 43167 82 42017
+/execute if block 43167 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42017
+/execute if block 43167 83 42017 minecraft:birch_fence unless block 43167 82 42017 #minecraft:planks unless block 43167 82 42017 #minecraft:logs unless block 43167 82 42017 minecraft:birch_fence run say bh:floating 43167 83 42017
+/execute if block 43167 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42017
+/execute if block 43167 82 42018 minecraft:birch_fence unless block 43167 81 42018 #minecraft:planks unless block 43167 81 42018 #minecraft:logs unless block 43167 81 42018 minecraft:birch_fence run say bh:floating 43167 82 42018
+/execute if block 43167 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42018
+/execute if block 43167 83 42018 minecraft:birch_fence unless block 43167 82 42018 #minecraft:planks unless block 43167 82 42018 #minecraft:logs unless block 43167 82 42018 minecraft:birch_fence run say bh:floating 43167 83 42018
+/execute if block 43167 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42018
+/execute if block 43167 82 42019 minecraft:birch_fence unless block 43167 81 42019 #minecraft:planks unless block 43167 81 42019 #minecraft:logs unless block 43167 81 42019 minecraft:birch_fence run say bh:floating 43167 82 42019
+/execute if block 43167 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42019
+/execute if block 43167 83 42019 minecraft:birch_fence unless block 43167 82 42019 #minecraft:planks unless block 43167 82 42019 #minecraft:logs unless block 43167 82 42019 minecraft:birch_fence run say bh:floating 43167 83 42019
+/execute if block 43167 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42019
+/execute if block 43167 82 42020 minecraft:birch_fence unless block 43167 81 42020 #minecraft:planks unless block 43167 81 42020 #minecraft:logs unless block 43167 81 42020 minecraft:birch_fence run say bh:floating 43167 82 42020
+/execute if block 43167 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42020
+/execute if block 43167 83 42020 minecraft:birch_fence unless block 43167 82 42020 #minecraft:planks unless block 43167 82 42020 #minecraft:logs unless block 43167 82 42020 minecraft:birch_fence run say bh:floating 43167 83 42020
+/execute if block 43167 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42020
+/execute if block 43168 82 42013 minecraft:birch_fence unless block 43168 81 42013 #minecraft:planks unless block 43168 81 42013 #minecraft:logs unless block 43168 81 42013 minecraft:birch_fence run say bh:floating 43168 82 42013
+/execute if block 43168 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42013
+/execute if block 43168 83 42013 minecraft:birch_fence unless block 43168 82 42013 #minecraft:planks unless block 43168 82 42013 #minecraft:logs unless block 43168 82 42013 minecraft:birch_fence run say bh:floating 43168 83 42013
+/execute if block 43168 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42013
+/execute if block 43168 82 42014 minecraft:birch_fence unless block 43168 81 42014 #minecraft:planks unless block 43168 81 42014 #minecraft:logs unless block 43168 81 42014 minecraft:birch_fence run say bh:floating 43168 82 42014
+/execute if block 43168 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42014
+/execute if block 43168 83 42014 minecraft:birch_fence unless block 43168 82 42014 #minecraft:planks unless block 43168 82 42014 #minecraft:logs unless block 43168 82 42014 minecraft:birch_fence run say bh:floating 43168 83 42014
+/execute if block 43168 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42014
+/execute if block 43168 82 42015 minecraft:birch_fence unless block 43168 81 42015 #minecraft:planks unless block 43168 81 42015 #minecraft:logs unless block 43168 81 42015 minecraft:birch_fence run say bh:floating 43168 82 42015
+/execute if block 43168 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42015
+/execute if block 43168 83 42015 minecraft:birch_fence unless block 43168 82 42015 #minecraft:planks unless block 43168 82 42015 #minecraft:logs unless block 43168 82 42015 minecraft:birch_fence run say bh:floating 43168 83 42015
+/execute if block 43168 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42015
+/execute if block 43168 82 42016 minecraft:birch_fence unless block 43168 81 42016 #minecraft:planks unless block 43168 81 42016 #minecraft:logs unless block 43168 81 42016 minecraft:birch_fence run say bh:floating 43168 82 42016
+/execute if block 43168 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42016
+/execute if block 43168 83 42016 minecraft:birch_fence unless block 43168 82 42016 #minecraft:planks unless block 43168 82 42016 #minecraft:logs unless block 43168 82 42016 minecraft:birch_fence run say bh:floating 43168 83 42016
+/execute if block 43168 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42016
+/execute if block 43168 82 42017 minecraft:birch_fence unless block 43168 81 42017 #minecraft:planks unless block 43168 81 42017 #minecraft:logs unless block 43168 81 42017 minecraft:birch_fence run say bh:floating 43168 82 42017
+/execute if block 43168 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42017
+/execute if block 43168 83 42017 minecraft:birch_fence unless block 43168 82 42017 #minecraft:planks unless block 43168 82 42017 #minecraft:logs unless block 43168 82 42017 minecraft:birch_fence run say bh:floating 43168 83 42017
+/execute if block 43168 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42017
+/execute if block 43168 82 42018 minecraft:birch_fence unless block 43168 81 42018 #minecraft:planks unless block 43168 81 42018 #minecraft:logs unless block 43168 81 42018 minecraft:birch_fence run say bh:floating 43168 82 42018
+/execute if block 43168 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42018
+/execute if block 43168 83 42018 minecraft:birch_fence unless block 43168 82 42018 #minecraft:planks unless block 43168 82 42018 #minecraft:logs unless block 43168 82 42018 minecraft:birch_fence run say bh:floating 43168 83 42018
+/execute if block 43168 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42018
+/execute if block 43168 82 42019 minecraft:birch_fence unless block 43168 81 42019 #minecraft:planks unless block 43168 81 42019 #minecraft:logs unless block 43168 81 42019 minecraft:birch_fence run say bh:floating 43168 82 42019
+/execute if block 43168 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42019
+/execute if block 43168 83 42019 minecraft:birch_fence unless block 43168 82 42019 #minecraft:planks unless block 43168 82 42019 #minecraft:logs unless block 43168 82 42019 minecraft:birch_fence run say bh:floating 43168 83 42019
+/execute if block 43168 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42019
+/execute if block 43168 82 42020 minecraft:birch_fence unless block 43168 81 42020 #minecraft:planks unless block 43168 81 42020 #minecraft:logs unless block 43168 81 42020 minecraft:birch_fence run say bh:floating 43168 82 42020
+/execute if block 43168 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42020
+/execute if block 43168 83 42020 minecraft:birch_fence unless block 43168 82 42020 #minecraft:planks unless block 43168 82 42020 #minecraft:logs unless block 43168 82 42020 minecraft:birch_fence run say bh:floating 43168 83 42020
+/execute if block 43168 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42020
+/execute if block 43169 82 42013 minecraft:birch_fence unless block 43169 81 42013 #minecraft:planks unless block 43169 81 42013 #minecraft:logs unless block 43169 81 42013 minecraft:birch_fence run say bh:floating 43169 82 42013
+/execute if block 43169 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42013
+/execute if block 43169 83 42013 minecraft:birch_fence unless block 43169 82 42013 #minecraft:planks unless block 43169 82 42013 #minecraft:logs unless block 43169 82 42013 minecraft:birch_fence run say bh:floating 43169 83 42013
+/execute if block 43169 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42013
+/execute if block 43169 82 42014 minecraft:birch_fence unless block 43169 81 42014 #minecraft:planks unless block 43169 81 42014 #minecraft:logs unless block 43169 81 42014 minecraft:birch_fence run say bh:floating 43169 82 42014
+/execute if block 43169 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42014
+/execute if block 43169 83 42014 minecraft:birch_fence unless block 43169 82 42014 #minecraft:planks unless block 43169 82 42014 #minecraft:logs unless block 43169 82 42014 minecraft:birch_fence run say bh:floating 43169 83 42014
+/execute if block 43169 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42014
+/execute if block 43169 82 42015 minecraft:birch_fence unless block 43169 81 42015 #minecraft:planks unless block 43169 81 42015 #minecraft:logs unless block 43169 81 42015 minecraft:birch_fence run say bh:floating 43169 82 42015
+/execute if block 43169 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42015
+/execute if block 43169 83 42015 minecraft:birch_fence unless block 43169 82 42015 #minecraft:planks unless block 43169 82 42015 #minecraft:logs unless block 43169 82 42015 minecraft:birch_fence run say bh:floating 43169 83 42015
+/execute if block 43169 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42015
+/execute if block 43169 82 42016 minecraft:birch_fence unless block 43169 81 42016 #minecraft:planks unless block 43169 81 42016 #minecraft:logs unless block 43169 81 42016 minecraft:birch_fence run say bh:floating 43169 82 42016
+/execute if block 43169 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42016
+/execute if block 43169 83 42016 minecraft:birch_fence unless block 43169 82 42016 #minecraft:planks unless block 43169 82 42016 #minecraft:logs unless block 43169 82 42016 minecraft:birch_fence run say bh:floating 43169 83 42016
+/execute if block 43169 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42016
+/execute if block 43169 82 42017 minecraft:birch_fence unless block 43169 81 42017 #minecraft:planks unless block 43169 81 42017 #minecraft:logs unless block 43169 81 42017 minecraft:birch_fence run say bh:floating 43169 82 42017
+/execute if block 43169 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42017
+/execute if block 43169 83 42017 minecraft:birch_fence unless block 43169 82 42017 #minecraft:planks unless block 43169 82 42017 #minecraft:logs unless block 43169 82 42017 minecraft:birch_fence run say bh:floating 43169 83 42017
+/execute if block 43169 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42017
+/execute if block 43169 82 42018 minecraft:birch_fence unless block 43169 81 42018 #minecraft:planks unless block 43169 81 42018 #minecraft:logs unless block 43169 81 42018 minecraft:birch_fence run say bh:floating 43169 82 42018
+/execute if block 43169 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42018
+/execute if block 43169 83 42018 minecraft:birch_fence unless block 43169 82 42018 #minecraft:planks unless block 43169 82 42018 #minecraft:logs unless block 43169 82 42018 minecraft:birch_fence run say bh:floating 43169 83 42018
+/execute if block 43169 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42018
+/execute if block 43169 82 42019 minecraft:birch_fence unless block 43169 81 42019 #minecraft:planks unless block 43169 81 42019 #minecraft:logs unless block 43169 81 42019 minecraft:birch_fence run say bh:floating 43169 82 42019
+/execute if block 43169 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42019
+/execute if block 43169 83 42019 minecraft:birch_fence unless block 43169 82 42019 #minecraft:planks unless block 43169 82 42019 #minecraft:logs unless block 43169 82 42019 minecraft:birch_fence run say bh:floating 43169 83 42019
+/execute if block 43169 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42019
+/execute if block 43169 82 42020 minecraft:birch_fence unless block 43169 81 42020 #minecraft:planks unless block 43169 81 42020 #minecraft:logs unless block 43169 81 42020 minecraft:birch_fence run say bh:floating 43169 82 42020
+/execute if block 43169 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42020
+/execute if block 43169 83 42020 minecraft:birch_fence unless block 43169 82 42020 #minecraft:planks unless block 43169 82 42020 #minecraft:logs unless block 43169 82 42020 minecraft:birch_fence run say bh:floating 43169 83 42020
+/execute if block 43169 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42020
+/execute if block 43170 82 42013 minecraft:birch_fence unless block 43170 81 42013 #minecraft:planks unless block 43170 81 42013 #minecraft:logs unless block 43170 81 42013 minecraft:birch_fence run say bh:floating 43170 82 42013
+/execute if block 43170 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42013
+/execute if block 43170 83 42013 minecraft:birch_fence unless block 43170 82 42013 #minecraft:planks unless block 43170 82 42013 #minecraft:logs unless block 43170 82 42013 minecraft:birch_fence run say bh:floating 43170 83 42013
+/execute if block 43170 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42013
+/execute if block 43170 82 42014 minecraft:birch_fence unless block 43170 81 42014 #minecraft:planks unless block 43170 81 42014 #minecraft:logs unless block 43170 81 42014 minecraft:birch_fence run say bh:floating 43170 82 42014
+/execute if block 43170 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42014
+/execute if block 43170 83 42014 minecraft:birch_fence unless block 43170 82 42014 #minecraft:planks unless block 43170 82 42014 #minecraft:logs unless block 43170 82 42014 minecraft:birch_fence run say bh:floating 43170 83 42014
+/execute if block 43170 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42014
+/execute if block 43170 82 42015 minecraft:birch_fence unless block 43170 81 42015 #minecraft:planks unless block 43170 81 42015 #minecraft:logs unless block 43170 81 42015 minecraft:birch_fence run say bh:floating 43170 82 42015
+/execute if block 43170 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42015
+/execute if block 43170 83 42015 minecraft:birch_fence unless block 43170 82 42015 #minecraft:planks unless block 43170 82 42015 #minecraft:logs unless block 43170 82 42015 minecraft:birch_fence run say bh:floating 43170 83 42015
+/execute if block 43170 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42015
+/execute if block 43170 82 42016 minecraft:birch_fence unless block 43170 81 42016 #minecraft:planks unless block 43170 81 42016 #minecraft:logs unless block 43170 81 42016 minecraft:birch_fence run say bh:floating 43170 82 42016
+/execute if block 43170 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42016
+/execute if block 43170 83 42016 minecraft:birch_fence unless block 43170 82 42016 #minecraft:planks unless block 43170 82 42016 #minecraft:logs unless block 43170 82 42016 minecraft:birch_fence run say bh:floating 43170 83 42016
+/execute if block 43170 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42016
+/execute if block 43170 82 42017 minecraft:birch_fence unless block 43170 81 42017 #minecraft:planks unless block 43170 81 42017 #minecraft:logs unless block 43170 81 42017 minecraft:birch_fence run say bh:floating 43170 82 42017
+/execute if block 43170 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42017
+/execute if block 43170 83 42017 minecraft:birch_fence unless block 43170 82 42017 #minecraft:planks unless block 43170 82 42017 #minecraft:logs unless block 43170 82 42017 minecraft:birch_fence run say bh:floating 43170 83 42017
+/execute if block 43170 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42017
+/execute if block 43170 82 42018 minecraft:birch_fence unless block 43170 81 42018 #minecraft:planks unless block 43170 81 42018 #minecraft:logs unless block 43170 81 42018 minecraft:birch_fence run say bh:floating 43170 82 42018
+/execute if block 43170 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42018
+/execute if block 43170 83 42018 minecraft:birch_fence unless block 43170 82 42018 #minecraft:planks unless block 43170 82 42018 #minecraft:logs unless block 43170 82 42018 minecraft:birch_fence run say bh:floating 43170 83 42018
+/execute if block 43170 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42018
+/execute if block 43170 82 42019 minecraft:birch_fence unless block 43170 81 42019 #minecraft:planks unless block 43170 81 42019 #minecraft:logs unless block 43170 81 42019 minecraft:birch_fence run say bh:floating 43170 82 42019
+/execute if block 43170 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42019
+/execute if block 43170 83 42019 minecraft:birch_fence unless block 43170 82 42019 #minecraft:planks unless block 43170 82 42019 #minecraft:logs unless block 43170 82 42019 minecraft:birch_fence run say bh:floating 43170 83 42019
+/execute if block 43170 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42019
+/execute if block 43170 82 42020 minecraft:birch_fence unless block 43170 81 42020 #minecraft:planks unless block 43170 81 42020 #minecraft:logs unless block 43170 81 42020 minecraft:birch_fence run say bh:floating 43170 82 42020
+/execute if block 43170 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42020
+/execute if block 43170 83 42020 minecraft:birch_fence unless block 43170 82 42020 #minecraft:planks unless block 43170 82 42020 #minecraft:logs unless block 43170 82 42020 minecraft:birch_fence run say bh:floating 43170 83 42020
+/execute if block 43170 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42020
+/execute if block 43171 82 42013 minecraft:birch_fence unless block 43171 81 42013 #minecraft:planks unless block 43171 81 42013 #minecraft:logs unless block 43171 81 42013 minecraft:birch_fence run say bh:floating 43171 82 42013
+/execute if block 43171 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42013
+/execute if block 43171 83 42013 minecraft:birch_fence unless block 43171 82 42013 #minecraft:planks unless block 43171 82 42013 #minecraft:logs unless block 43171 82 42013 minecraft:birch_fence run say bh:floating 43171 83 42013
+/execute if block 43171 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42013
+/execute if block 43171 82 42014 minecraft:birch_fence unless block 43171 81 42014 #minecraft:planks unless block 43171 81 42014 #minecraft:logs unless block 43171 81 42014 minecraft:birch_fence run say bh:floating 43171 82 42014
+/execute if block 43171 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42014
+/execute if block 43171 83 42014 minecraft:birch_fence unless block 43171 82 42014 #minecraft:planks unless block 43171 82 42014 #minecraft:logs unless block 43171 82 42014 minecraft:birch_fence run say bh:floating 43171 83 42014
+/execute if block 43171 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42014
+/execute if block 43171 82 42015 minecraft:birch_fence unless block 43171 81 42015 #minecraft:planks unless block 43171 81 42015 #minecraft:logs unless block 43171 81 42015 minecraft:birch_fence run say bh:floating 43171 82 42015
+/execute if block 43171 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42015
+/execute if block 43171 83 42015 minecraft:birch_fence unless block 43171 82 42015 #minecraft:planks unless block 43171 82 42015 #minecraft:logs unless block 43171 82 42015 minecraft:birch_fence run say bh:floating 43171 83 42015
+/execute if block 43171 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42015
+/execute if block 43171 82 42016 minecraft:birch_fence unless block 43171 81 42016 #minecraft:planks unless block 43171 81 42016 #minecraft:logs unless block 43171 81 42016 minecraft:birch_fence run say bh:floating 43171 82 42016
+/execute if block 43171 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42016
+/execute if block 43171 83 42016 minecraft:birch_fence unless block 43171 82 42016 #minecraft:planks unless block 43171 82 42016 #minecraft:logs unless block 43171 82 42016 minecraft:birch_fence run say bh:floating 43171 83 42016
+/execute if block 43171 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42016
+/execute if block 43171 82 42017 minecraft:birch_fence unless block 43171 81 42017 #minecraft:planks unless block 43171 81 42017 #minecraft:logs unless block 43171 81 42017 minecraft:birch_fence run say bh:floating 43171 82 42017
+/execute if block 43171 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42017
+/execute if block 43171 83 42017 minecraft:birch_fence unless block 43171 82 42017 #minecraft:planks unless block 43171 82 42017 #minecraft:logs unless block 43171 82 42017 minecraft:birch_fence run say bh:floating 43171 83 42017
+/execute if block 43171 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42017
+/execute if block 43171 82 42018 minecraft:birch_fence unless block 43171 81 42018 #minecraft:planks unless block 43171 81 42018 #minecraft:logs unless block 43171 81 42018 minecraft:birch_fence run say bh:floating 43171 82 42018
+/execute if block 43171 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42018
+/execute if block 43171 83 42018 minecraft:birch_fence unless block 43171 82 42018 #minecraft:planks unless block 43171 82 42018 #minecraft:logs unless block 43171 82 42018 minecraft:birch_fence run say bh:floating 43171 83 42018
+/execute if block 43171 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42018
+/execute if block 43171 82 42019 minecraft:birch_fence unless block 43171 81 42019 #minecraft:planks unless block 43171 81 42019 #minecraft:logs unless block 43171 81 42019 minecraft:birch_fence run say bh:floating 43171 82 42019
+/execute if block 43171 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42019
+/execute if block 43171 83 42019 minecraft:birch_fence unless block 43171 82 42019 #minecraft:planks unless block 43171 82 42019 #minecraft:logs unless block 43171 82 42019 minecraft:birch_fence run say bh:floating 43171 83 42019
+/execute if block 43171 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42019
+/execute if block 43171 82 42020 minecraft:birch_fence unless block 43171 81 42020 #minecraft:planks unless block 43171 81 42020 #minecraft:logs unless block 43171 81 42020 minecraft:birch_fence run say bh:floating 43171 82 42020
+/execute if block 43171 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42020
+/execute if block 43171 83 42020 minecraft:birch_fence unless block 43171 82 42020 #minecraft:planks unless block 43171 82 42020 #minecraft:logs unless block 43171 82 42020 minecraft:birch_fence run say bh:floating 43171 83 42020
+/execute if block 43171 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42020
+/execute if block 43172 82 42013 minecraft:birch_fence unless block 43172 81 42013 #minecraft:planks unless block 43172 81 42013 #minecraft:logs unless block 43172 81 42013 minecraft:birch_fence run say bh:floating 43172 82 42013
+/execute if block 43172 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42013
+/execute if block 43172 83 42013 minecraft:birch_fence unless block 43172 82 42013 #minecraft:planks unless block 43172 82 42013 #minecraft:logs unless block 43172 82 42013 minecraft:birch_fence run say bh:floating 43172 83 42013
+/execute if block 43172 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42013
+/execute if block 43172 82 42014 minecraft:birch_fence unless block 43172 81 42014 #minecraft:planks unless block 43172 81 42014 #minecraft:logs unless block 43172 81 42014 minecraft:birch_fence run say bh:floating 43172 82 42014
+/execute if block 43172 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42014
+/execute if block 43172 83 42014 minecraft:birch_fence unless block 43172 82 42014 #minecraft:planks unless block 43172 82 42014 #minecraft:logs unless block 43172 82 42014 minecraft:birch_fence run say bh:floating 43172 83 42014
+/execute if block 43172 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42014
+/execute if block 43172 82 42015 minecraft:birch_fence unless block 43172 81 42015 #minecraft:planks unless block 43172 81 42015 #minecraft:logs unless block 43172 81 42015 minecraft:birch_fence run say bh:floating 43172 82 42015
+/execute if block 43172 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42015
+/execute if block 43172 83 42015 minecraft:birch_fence unless block 43172 82 42015 #minecraft:planks unless block 43172 82 42015 #minecraft:logs unless block 43172 82 42015 minecraft:birch_fence run say bh:floating 43172 83 42015
+/execute if block 43172 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42015
+/execute if block 43172 82 42016 minecraft:birch_fence unless block 43172 81 42016 #minecraft:planks unless block 43172 81 42016 #minecraft:logs unless block 43172 81 42016 minecraft:birch_fence run say bh:floating 43172 82 42016
+/execute if block 43172 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42016
+/execute if block 43172 83 42016 minecraft:birch_fence unless block 43172 82 42016 #minecraft:planks unless block 43172 82 42016 #minecraft:logs unless block 43172 82 42016 minecraft:birch_fence run say bh:floating 43172 83 42016
+/execute if block 43172 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42016
+/execute if block 43172 82 42017 minecraft:birch_fence unless block 43172 81 42017 #minecraft:planks unless block 43172 81 42017 #minecraft:logs unless block 43172 81 42017 minecraft:birch_fence run say bh:floating 43172 82 42017
+/execute if block 43172 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42017
+/execute if block 43172 83 42017 minecraft:birch_fence unless block 43172 82 42017 #minecraft:planks unless block 43172 82 42017 #minecraft:logs unless block 43172 82 42017 minecraft:birch_fence run say bh:floating 43172 83 42017
+/execute if block 43172 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42017
+/execute if block 43172 82 42018 minecraft:birch_fence unless block 43172 81 42018 #minecraft:planks unless block 43172 81 42018 #minecraft:logs unless block 43172 81 42018 minecraft:birch_fence run say bh:floating 43172 82 42018
+/execute if block 43172 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42018
+/execute if block 43172 83 42018 minecraft:birch_fence unless block 43172 82 42018 #minecraft:planks unless block 43172 82 42018 #minecraft:logs unless block 43172 82 42018 minecraft:birch_fence run say bh:floating 43172 83 42018
+/execute if block 43172 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42018
+/execute if block 43172 82 42019 minecraft:birch_fence unless block 43172 81 42019 #minecraft:planks unless block 43172 81 42019 #minecraft:logs unless block 43172 81 42019 minecraft:birch_fence run say bh:floating 43172 82 42019
+/execute if block 43172 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42019
+/execute if block 43172 83 42019 minecraft:birch_fence unless block 43172 82 42019 #minecraft:planks unless block 43172 82 42019 #minecraft:logs unless block 43172 82 42019 minecraft:birch_fence run say bh:floating 43172 83 42019
+/execute if block 43172 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42019
+/execute if block 43172 82 42020 minecraft:birch_fence unless block 43172 81 42020 #minecraft:planks unless block 43172 81 42020 #minecraft:logs unless block 43172 81 42020 minecraft:birch_fence run say bh:floating 43172 82 42020
+/execute if block 43172 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42020
+/execute if block 43172 83 42020 minecraft:birch_fence unless block 43172 82 42020 #minecraft:planks unless block 43172 82 42020 #minecraft:logs unless block 43172 82 42020 minecraft:birch_fence run say bh:floating 43172 83 42020
+/execute if block 43172 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42020
+/execute if block 43173 82 42013 minecraft:birch_fence unless block 43173 81 42013 #minecraft:planks unless block 43173 81 42013 #minecraft:logs unless block 43173 81 42013 minecraft:birch_fence run say bh:floating 43173 82 42013
+/execute if block 43173 82 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42013
+/execute if block 43173 83 42013 minecraft:birch_fence unless block 43173 82 42013 #minecraft:planks unless block 43173 82 42013 #minecraft:logs unless block 43173 82 42013 minecraft:birch_fence run say bh:floating 43173 83 42013
+/execute if block 43173 83 42013 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42013
+/execute if block 43173 82 42014 minecraft:birch_fence unless block 43173 81 42014 #minecraft:planks unless block 43173 81 42014 #minecraft:logs unless block 43173 81 42014 minecraft:birch_fence run say bh:floating 43173 82 42014
+/execute if block 43173 82 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42014
+/execute if block 43173 83 42014 minecraft:birch_fence unless block 43173 82 42014 #minecraft:planks unless block 43173 82 42014 #minecraft:logs unless block 43173 82 42014 minecraft:birch_fence run say bh:floating 43173 83 42014
+/execute if block 43173 83 42014 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42014
+/execute if block 43173 82 42015 minecraft:birch_fence unless block 43173 81 42015 #minecraft:planks unless block 43173 81 42015 #minecraft:logs unless block 43173 81 42015 minecraft:birch_fence run say bh:floating 43173 82 42015
+/execute if block 43173 82 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42015
+/execute if block 43173 83 42015 minecraft:birch_fence unless block 43173 82 42015 #minecraft:planks unless block 43173 82 42015 #minecraft:logs unless block 43173 82 42015 minecraft:birch_fence run say bh:floating 43173 83 42015
+/execute if block 43173 83 42015 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42015
+/execute if block 43173 82 42016 minecraft:birch_fence unless block 43173 81 42016 #minecraft:planks unless block 43173 81 42016 #minecraft:logs unless block 43173 81 42016 minecraft:birch_fence run say bh:floating 43173 82 42016
+/execute if block 43173 82 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42016
+/execute if block 43173 83 42016 minecraft:birch_fence unless block 43173 82 42016 #minecraft:planks unless block 43173 82 42016 #minecraft:logs unless block 43173 82 42016 minecraft:birch_fence run say bh:floating 43173 83 42016
+/execute if block 43173 83 42016 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42016
+/execute if block 43173 82 42017 minecraft:birch_fence unless block 43173 81 42017 #minecraft:planks unless block 43173 81 42017 #minecraft:logs unless block 43173 81 42017 minecraft:birch_fence run say bh:floating 43173 82 42017
+/execute if block 43173 82 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42017
+/execute if block 43173 83 42017 minecraft:birch_fence unless block 43173 82 42017 #minecraft:planks unless block 43173 82 42017 #minecraft:logs unless block 43173 82 42017 minecraft:birch_fence run say bh:floating 43173 83 42017
+/execute if block 43173 83 42017 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42017
+/execute if block 43173 82 42018 minecraft:birch_fence unless block 43173 81 42018 #minecraft:planks unless block 43173 81 42018 #minecraft:logs unless block 43173 81 42018 minecraft:birch_fence run say bh:floating 43173 82 42018
+/execute if block 43173 82 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42018
+/execute if block 43173 83 42018 minecraft:birch_fence unless block 43173 82 42018 #minecraft:planks unless block 43173 82 42018 #minecraft:logs unless block 43173 82 42018 minecraft:birch_fence run say bh:floating 43173 83 42018
+/execute if block 43173 83 42018 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42018
+/execute if block 43173 82 42019 minecraft:birch_fence unless block 43173 81 42019 #minecraft:planks unless block 43173 81 42019 #minecraft:logs unless block 43173 81 42019 minecraft:birch_fence run say bh:floating 43173 82 42019
+/execute if block 43173 82 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42019
+/execute if block 43173 83 42019 minecraft:birch_fence unless block 43173 82 42019 #minecraft:planks unless block 43173 82 42019 #minecraft:logs unless block 43173 82 42019 minecraft:birch_fence run say bh:floating 43173 83 42019
+/execute if block 43173 83 42019 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42019
+/execute if block 43173 82 42020 minecraft:birch_fence unless block 43173 81 42020 #minecraft:planks unless block 43173 81 42020 #minecraft:logs unless block 43173 81 42020 minecraft:birch_fence run say bh:floating 43173 82 42020
+/execute if block 43173 82 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42020
+/execute if block 43173 83 42020 minecraft:birch_fence unless block 43173 82 42020 #minecraft:planks unless block 43173 82 42020 #minecraft:logs unless block 43173 82 42020 minecraft:birch_fence run say bh:floating 43173 83 42020
+/execute if block 43173 83 42020 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42020
+/say bh:check long
+/execute if block 43154 82 42037 minecraft:birch_fence unless block 43154 81 42037 #minecraft:planks unless block 43154 81 42037 #minecraft:logs unless block 43154 81 42037 minecraft:birch_fence run say bh:floating 43154 82 42037
+/execute if block 43154 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 82 42037
+/execute if block 43154 83 42037 minecraft:birch_fence unless block 43154 82 42037 #minecraft:planks unless block 43154 82 42037 #minecraft:logs unless block 43154 82 42037 minecraft:birch_fence run say bh:floating 43154 83 42037
+/execute if block 43154 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 83 42037
+/execute if block 43154 82 42038 minecraft:birch_fence unless block 43154 81 42038 #minecraft:planks unless block 43154 81 42038 #minecraft:logs unless block 43154 81 42038 minecraft:birch_fence run say bh:floating 43154 82 42038
+/execute if block 43154 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 82 42038
+/execute if block 43154 83 42038 minecraft:birch_fence unless block 43154 82 42038 #minecraft:planks unless block 43154 82 42038 #minecraft:logs unless block 43154 82 42038 minecraft:birch_fence run say bh:floating 43154 83 42038
+/execute if block 43154 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 83 42038
+/execute if block 43154 82 42039 minecraft:birch_fence unless block 43154 81 42039 #minecraft:planks unless block 43154 81 42039 #minecraft:logs unless block 43154 81 42039 minecraft:birch_fence run say bh:floating 43154 82 42039
+/execute if block 43154 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 82 42039
+/execute if block 43154 83 42039 minecraft:birch_fence unless block 43154 82 42039 #minecraft:planks unless block 43154 82 42039 #minecraft:logs unless block 43154 82 42039 minecraft:birch_fence run say bh:floating 43154 83 42039
+/execute if block 43154 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 83 42039
+/execute if block 43154 82 42040 minecraft:birch_fence unless block 43154 81 42040 #minecraft:planks unless block 43154 81 42040 #minecraft:logs unless block 43154 81 42040 minecraft:birch_fence run say bh:floating 43154 82 42040
+/execute if block 43154 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 82 42040
+/execute if block 43154 83 42040 minecraft:birch_fence unless block 43154 82 42040 #minecraft:planks unless block 43154 82 42040 #minecraft:logs unless block 43154 82 42040 minecraft:birch_fence run say bh:floating 43154 83 42040
+/execute if block 43154 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 83 42040
+/execute if block 43154 82 42041 minecraft:birch_fence unless block 43154 81 42041 #minecraft:planks unless block 43154 81 42041 #minecraft:logs unless block 43154 81 42041 minecraft:birch_fence run say bh:floating 43154 82 42041
+/execute if block 43154 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 82 42041
+/execute if block 43154 83 42041 minecraft:birch_fence unless block 43154 82 42041 #minecraft:planks unless block 43154 82 42041 #minecraft:logs unless block 43154 82 42041 minecraft:birch_fence run say bh:floating 43154 83 42041
+/execute if block 43154 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43154 83 42041
+/execute if block 43155 82 42037 minecraft:birch_fence unless block 43155 81 42037 #minecraft:planks unless block 43155 81 42037 #minecraft:logs unless block 43155 81 42037 minecraft:birch_fence run say bh:floating 43155 82 42037
+/execute if block 43155 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 82 42037
+/execute if block 43155 83 42037 minecraft:birch_fence unless block 43155 82 42037 #minecraft:planks unless block 43155 82 42037 #minecraft:logs unless block 43155 82 42037 minecraft:birch_fence run say bh:floating 43155 83 42037
+/execute if block 43155 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 83 42037
+/execute if block 43155 82 42038 minecraft:birch_fence unless block 43155 81 42038 #minecraft:planks unless block 43155 81 42038 #minecraft:logs unless block 43155 81 42038 minecraft:birch_fence run say bh:floating 43155 82 42038
+/execute if block 43155 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 82 42038
+/execute if block 43155 83 42038 minecraft:birch_fence unless block 43155 82 42038 #minecraft:planks unless block 43155 82 42038 #minecraft:logs unless block 43155 82 42038 minecraft:birch_fence run say bh:floating 43155 83 42038
+/execute if block 43155 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 83 42038
+/execute if block 43155 82 42039 minecraft:birch_fence unless block 43155 81 42039 #minecraft:planks unless block 43155 81 42039 #minecraft:logs unless block 43155 81 42039 minecraft:birch_fence run say bh:floating 43155 82 42039
+/execute if block 43155 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 82 42039
+/execute if block 43155 83 42039 minecraft:birch_fence unless block 43155 82 42039 #minecraft:planks unless block 43155 82 42039 #minecraft:logs unless block 43155 82 42039 minecraft:birch_fence run say bh:floating 43155 83 42039
+/execute if block 43155 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 83 42039
+/execute if block 43155 82 42040 minecraft:birch_fence unless block 43155 81 42040 #minecraft:planks unless block 43155 81 42040 #minecraft:logs unless block 43155 81 42040 minecraft:birch_fence run say bh:floating 43155 82 42040
+/execute if block 43155 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 82 42040
+/execute if block 43155 83 42040 minecraft:birch_fence unless block 43155 82 42040 #minecraft:planks unless block 43155 82 42040 #minecraft:logs unless block 43155 82 42040 minecraft:birch_fence run say bh:floating 43155 83 42040
+/execute if block 43155 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 83 42040
+/execute if block 43155 82 42041 minecraft:birch_fence unless block 43155 81 42041 #minecraft:planks unless block 43155 81 42041 #minecraft:logs unless block 43155 81 42041 minecraft:birch_fence run say bh:floating 43155 82 42041
+/execute if block 43155 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 82 42041
+/execute if block 43155 83 42041 minecraft:birch_fence unless block 43155 82 42041 #minecraft:planks unless block 43155 82 42041 #minecraft:logs unless block 43155 82 42041 minecraft:birch_fence run say bh:floating 43155 83 42041
+/execute if block 43155 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43155 83 42041
+/execute if block 43156 82 42037 minecraft:birch_fence unless block 43156 81 42037 #minecraft:planks unless block 43156 81 42037 #minecraft:logs unless block 43156 81 42037 minecraft:birch_fence run say bh:floating 43156 82 42037
+/execute if block 43156 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 82 42037
+/execute if block 43156 83 42037 minecraft:birch_fence unless block 43156 82 42037 #minecraft:planks unless block 43156 82 42037 #minecraft:logs unless block 43156 82 42037 minecraft:birch_fence run say bh:floating 43156 83 42037
+/execute if block 43156 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 83 42037
+/execute if block 43156 82 42038 minecraft:birch_fence unless block 43156 81 42038 #minecraft:planks unless block 43156 81 42038 #minecraft:logs unless block 43156 81 42038 minecraft:birch_fence run say bh:floating 43156 82 42038
+/execute if block 43156 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 82 42038
+/execute if block 43156 83 42038 minecraft:birch_fence unless block 43156 82 42038 #minecraft:planks unless block 43156 82 42038 #minecraft:logs unless block 43156 82 42038 minecraft:birch_fence run say bh:floating 43156 83 42038
+/execute if block 43156 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 83 42038
+/execute if block 43156 82 42039 minecraft:birch_fence unless block 43156 81 42039 #minecraft:planks unless block 43156 81 42039 #minecraft:logs unless block 43156 81 42039 minecraft:birch_fence run say bh:floating 43156 82 42039
+/execute if block 43156 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 82 42039
+/execute if block 43156 83 42039 minecraft:birch_fence unless block 43156 82 42039 #minecraft:planks unless block 43156 82 42039 #minecraft:logs unless block 43156 82 42039 minecraft:birch_fence run say bh:floating 43156 83 42039
+/execute if block 43156 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 83 42039
+/execute if block 43156 82 42040 minecraft:birch_fence unless block 43156 81 42040 #minecraft:planks unless block 43156 81 42040 #minecraft:logs unless block 43156 81 42040 minecraft:birch_fence run say bh:floating 43156 82 42040
+/execute if block 43156 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 82 42040
+/execute if block 43156 83 42040 minecraft:birch_fence unless block 43156 82 42040 #minecraft:planks unless block 43156 82 42040 #minecraft:logs unless block 43156 82 42040 minecraft:birch_fence run say bh:floating 43156 83 42040
+/execute if block 43156 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 83 42040
+/execute if block 43156 82 42041 minecraft:birch_fence unless block 43156 81 42041 #minecraft:planks unless block 43156 81 42041 #minecraft:logs unless block 43156 81 42041 minecraft:birch_fence run say bh:floating 43156 82 42041
+/execute if block 43156 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 82 42041
+/execute if block 43156 83 42041 minecraft:birch_fence unless block 43156 82 42041 #minecraft:planks unless block 43156 82 42041 #minecraft:logs unless block 43156 82 42041 minecraft:birch_fence run say bh:floating 43156 83 42041
+/execute if block 43156 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43156 83 42041
+/execute if block 43157 82 42037 minecraft:birch_fence unless block 43157 81 42037 #minecraft:planks unless block 43157 81 42037 #minecraft:logs unless block 43157 81 42037 minecraft:birch_fence run say bh:floating 43157 82 42037
+/execute if block 43157 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 82 42037
+/execute if block 43157 83 42037 minecraft:birch_fence unless block 43157 82 42037 #minecraft:planks unless block 43157 82 42037 #minecraft:logs unless block 43157 82 42037 minecraft:birch_fence run say bh:floating 43157 83 42037
+/execute if block 43157 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 83 42037
+/execute if block 43157 82 42038 minecraft:birch_fence unless block 43157 81 42038 #minecraft:planks unless block 43157 81 42038 #minecraft:logs unless block 43157 81 42038 minecraft:birch_fence run say bh:floating 43157 82 42038
+/execute if block 43157 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 82 42038
+/execute if block 43157 83 42038 minecraft:birch_fence unless block 43157 82 42038 #minecraft:planks unless block 43157 82 42038 #minecraft:logs unless block 43157 82 42038 minecraft:birch_fence run say bh:floating 43157 83 42038
+/execute if block 43157 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 83 42038
+/execute if block 43157 82 42039 minecraft:birch_fence unless block 43157 81 42039 #minecraft:planks unless block 43157 81 42039 #minecraft:logs unless block 43157 81 42039 minecraft:birch_fence run say bh:floating 43157 82 42039
+/execute if block 43157 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 82 42039
+/execute if block 43157 83 42039 minecraft:birch_fence unless block 43157 82 42039 #minecraft:planks unless block 43157 82 42039 #minecraft:logs unless block 43157 82 42039 minecraft:birch_fence run say bh:floating 43157 83 42039
+/execute if block 43157 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 83 42039
+/execute if block 43157 82 42040 minecraft:birch_fence unless block 43157 81 42040 #minecraft:planks unless block 43157 81 42040 #minecraft:logs unless block 43157 81 42040 minecraft:birch_fence run say bh:floating 43157 82 42040
+/execute if block 43157 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 82 42040
+/execute if block 43157 83 42040 minecraft:birch_fence unless block 43157 82 42040 #minecraft:planks unless block 43157 82 42040 #minecraft:logs unless block 43157 82 42040 minecraft:birch_fence run say bh:floating 43157 83 42040
+/execute if block 43157 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 83 42040
+/execute if block 43157 82 42041 minecraft:birch_fence unless block 43157 81 42041 #minecraft:planks unless block 43157 81 42041 #minecraft:logs unless block 43157 81 42041 minecraft:birch_fence run say bh:floating 43157 82 42041
+/execute if block 43157 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 82 42041
+/execute if block 43157 83 42041 minecraft:birch_fence unless block 43157 82 42041 #minecraft:planks unless block 43157 82 42041 #minecraft:logs unless block 43157 82 42041 minecraft:birch_fence run say bh:floating 43157 83 42041
+/execute if block 43157 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43157 83 42041
+/execute if block 43158 82 42037 minecraft:birch_fence unless block 43158 81 42037 #minecraft:planks unless block 43158 81 42037 #minecraft:logs unless block 43158 81 42037 minecraft:birch_fence run say bh:floating 43158 82 42037
+/execute if block 43158 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 82 42037
+/execute if block 43158 83 42037 minecraft:birch_fence unless block 43158 82 42037 #minecraft:planks unless block 43158 82 42037 #minecraft:logs unless block 43158 82 42037 minecraft:birch_fence run say bh:floating 43158 83 42037
+/execute if block 43158 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 83 42037
+/execute if block 43158 82 42038 minecraft:birch_fence unless block 43158 81 42038 #minecraft:planks unless block 43158 81 42038 #minecraft:logs unless block 43158 81 42038 minecraft:birch_fence run say bh:floating 43158 82 42038
+/execute if block 43158 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 82 42038
+/execute if block 43158 83 42038 minecraft:birch_fence unless block 43158 82 42038 #minecraft:planks unless block 43158 82 42038 #minecraft:logs unless block 43158 82 42038 minecraft:birch_fence run say bh:floating 43158 83 42038
+/execute if block 43158 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 83 42038
+/execute if block 43158 82 42039 minecraft:birch_fence unless block 43158 81 42039 #minecraft:planks unless block 43158 81 42039 #minecraft:logs unless block 43158 81 42039 minecraft:birch_fence run say bh:floating 43158 82 42039
+/execute if block 43158 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 82 42039
+/execute if block 43158 83 42039 minecraft:birch_fence unless block 43158 82 42039 #minecraft:planks unless block 43158 82 42039 #minecraft:logs unless block 43158 82 42039 minecraft:birch_fence run say bh:floating 43158 83 42039
+/execute if block 43158 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 83 42039
+/execute if block 43158 82 42040 minecraft:birch_fence unless block 43158 81 42040 #minecraft:planks unless block 43158 81 42040 #minecraft:logs unless block 43158 81 42040 minecraft:birch_fence run say bh:floating 43158 82 42040
+/execute if block 43158 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 82 42040
+/execute if block 43158 83 42040 minecraft:birch_fence unless block 43158 82 42040 #minecraft:planks unless block 43158 82 42040 #minecraft:logs unless block 43158 82 42040 minecraft:birch_fence run say bh:floating 43158 83 42040
+/execute if block 43158 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 83 42040
+/execute if block 43158 82 42041 minecraft:birch_fence unless block 43158 81 42041 #minecraft:planks unless block 43158 81 42041 #minecraft:logs unless block 43158 81 42041 minecraft:birch_fence run say bh:floating 43158 82 42041
+/execute if block 43158 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 82 42041
+/execute if block 43158 83 42041 minecraft:birch_fence unless block 43158 82 42041 #minecraft:planks unless block 43158 82 42041 #minecraft:logs unless block 43158 82 42041 minecraft:birch_fence run say bh:floating 43158 83 42041
+/execute if block 43158 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43158 83 42041
+/execute if block 43159 82 42037 minecraft:birch_fence unless block 43159 81 42037 #minecraft:planks unless block 43159 81 42037 #minecraft:logs unless block 43159 81 42037 minecraft:birch_fence run say bh:floating 43159 82 42037
+/execute if block 43159 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 82 42037
+/execute if block 43159 83 42037 minecraft:birch_fence unless block 43159 82 42037 #minecraft:planks unless block 43159 82 42037 #minecraft:logs unless block 43159 82 42037 minecraft:birch_fence run say bh:floating 43159 83 42037
+/execute if block 43159 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 83 42037
+/execute if block 43159 82 42038 minecraft:birch_fence unless block 43159 81 42038 #minecraft:planks unless block 43159 81 42038 #minecraft:logs unless block 43159 81 42038 minecraft:birch_fence run say bh:floating 43159 82 42038
+/execute if block 43159 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 82 42038
+/execute if block 43159 83 42038 minecraft:birch_fence unless block 43159 82 42038 #minecraft:planks unless block 43159 82 42038 #minecraft:logs unless block 43159 82 42038 minecraft:birch_fence run say bh:floating 43159 83 42038
+/execute if block 43159 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 83 42038
+/execute if block 43159 82 42039 minecraft:birch_fence unless block 43159 81 42039 #minecraft:planks unless block 43159 81 42039 #minecraft:logs unless block 43159 81 42039 minecraft:birch_fence run say bh:floating 43159 82 42039
+/execute if block 43159 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 82 42039
+/execute if block 43159 83 42039 minecraft:birch_fence unless block 43159 82 42039 #minecraft:planks unless block 43159 82 42039 #minecraft:logs unless block 43159 82 42039 minecraft:birch_fence run say bh:floating 43159 83 42039
+/execute if block 43159 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 83 42039
+/execute if block 43159 82 42040 minecraft:birch_fence unless block 43159 81 42040 #minecraft:planks unless block 43159 81 42040 #minecraft:logs unless block 43159 81 42040 minecraft:birch_fence run say bh:floating 43159 82 42040
+/execute if block 43159 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 82 42040
+/execute if block 43159 83 42040 minecraft:birch_fence unless block 43159 82 42040 #minecraft:planks unless block 43159 82 42040 #minecraft:logs unless block 43159 82 42040 minecraft:birch_fence run say bh:floating 43159 83 42040
+/execute if block 43159 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 83 42040
+/execute if block 43159 82 42041 minecraft:birch_fence unless block 43159 81 42041 #minecraft:planks unless block 43159 81 42041 #minecraft:logs unless block 43159 81 42041 minecraft:birch_fence run say bh:floating 43159 82 42041
+/execute if block 43159 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 82 42041
+/execute if block 43159 83 42041 minecraft:birch_fence unless block 43159 82 42041 #minecraft:planks unless block 43159 82 42041 #minecraft:logs unless block 43159 82 42041 minecraft:birch_fence run say bh:floating 43159 83 42041
+/execute if block 43159 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43159 83 42041
+/execute if block 43160 82 42037 minecraft:birch_fence unless block 43160 81 42037 #minecraft:planks unless block 43160 81 42037 #minecraft:logs unless block 43160 81 42037 minecraft:birch_fence run say bh:floating 43160 82 42037
+/execute if block 43160 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 82 42037
+/execute if block 43160 83 42037 minecraft:birch_fence unless block 43160 82 42037 #minecraft:planks unless block 43160 82 42037 #minecraft:logs unless block 43160 82 42037 minecraft:birch_fence run say bh:floating 43160 83 42037
+/execute if block 43160 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 83 42037
+/execute if block 43160 82 42038 minecraft:birch_fence unless block 43160 81 42038 #minecraft:planks unless block 43160 81 42038 #minecraft:logs unless block 43160 81 42038 minecraft:birch_fence run say bh:floating 43160 82 42038
+/execute if block 43160 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 82 42038
+/execute if block 43160 83 42038 minecraft:birch_fence unless block 43160 82 42038 #minecraft:planks unless block 43160 82 42038 #minecraft:logs unless block 43160 82 42038 minecraft:birch_fence run say bh:floating 43160 83 42038
+/execute if block 43160 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 83 42038
+/execute if block 43160 82 42039 minecraft:birch_fence unless block 43160 81 42039 #minecraft:planks unless block 43160 81 42039 #minecraft:logs unless block 43160 81 42039 minecraft:birch_fence run say bh:floating 43160 82 42039
+/execute if block 43160 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 82 42039
+/execute if block 43160 83 42039 minecraft:birch_fence unless block 43160 82 42039 #minecraft:planks unless block 43160 82 42039 #minecraft:logs unless block 43160 82 42039 minecraft:birch_fence run say bh:floating 43160 83 42039
+/execute if block 43160 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 83 42039
+/execute if block 43160 82 42040 minecraft:birch_fence unless block 43160 81 42040 #minecraft:planks unless block 43160 81 42040 #minecraft:logs unless block 43160 81 42040 minecraft:birch_fence run say bh:floating 43160 82 42040
+/execute if block 43160 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 82 42040
+/execute if block 43160 83 42040 minecraft:birch_fence unless block 43160 82 42040 #minecraft:planks unless block 43160 82 42040 #minecraft:logs unless block 43160 82 42040 minecraft:birch_fence run say bh:floating 43160 83 42040
+/execute if block 43160 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 83 42040
+/execute if block 43160 82 42041 minecraft:birch_fence unless block 43160 81 42041 #minecraft:planks unless block 43160 81 42041 #minecraft:logs unless block 43160 81 42041 minecraft:birch_fence run say bh:floating 43160 82 42041
+/execute if block 43160 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 82 42041
+/execute if block 43160 83 42041 minecraft:birch_fence unless block 43160 82 42041 #minecraft:planks unless block 43160 82 42041 #minecraft:logs unless block 43160 82 42041 minecraft:birch_fence run say bh:floating 43160 83 42041
+/execute if block 43160 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43160 83 42041
+/execute if block 43161 82 42037 minecraft:birch_fence unless block 43161 81 42037 #minecraft:planks unless block 43161 81 42037 #minecraft:logs unless block 43161 81 42037 minecraft:birch_fence run say bh:floating 43161 82 42037
+/execute if block 43161 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 82 42037
+/execute if block 43161 83 42037 minecraft:birch_fence unless block 43161 82 42037 #minecraft:planks unless block 43161 82 42037 #minecraft:logs unless block 43161 82 42037 minecraft:birch_fence run say bh:floating 43161 83 42037
+/execute if block 43161 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 83 42037
+/execute if block 43161 82 42038 minecraft:birch_fence unless block 43161 81 42038 #minecraft:planks unless block 43161 81 42038 #minecraft:logs unless block 43161 81 42038 minecraft:birch_fence run say bh:floating 43161 82 42038
+/execute if block 43161 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 82 42038
+/execute if block 43161 83 42038 minecraft:birch_fence unless block 43161 82 42038 #minecraft:planks unless block 43161 82 42038 #minecraft:logs unless block 43161 82 42038 minecraft:birch_fence run say bh:floating 43161 83 42038
+/execute if block 43161 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 83 42038
+/execute if block 43161 82 42039 minecraft:birch_fence unless block 43161 81 42039 #minecraft:planks unless block 43161 81 42039 #minecraft:logs unless block 43161 81 42039 minecraft:birch_fence run say bh:floating 43161 82 42039
+/execute if block 43161 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 82 42039
+/execute if block 43161 83 42039 minecraft:birch_fence unless block 43161 82 42039 #minecraft:planks unless block 43161 82 42039 #minecraft:logs unless block 43161 82 42039 minecraft:birch_fence run say bh:floating 43161 83 42039
+/execute if block 43161 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 83 42039
+/execute if block 43161 82 42040 minecraft:birch_fence unless block 43161 81 42040 #minecraft:planks unless block 43161 81 42040 #minecraft:logs unless block 43161 81 42040 minecraft:birch_fence run say bh:floating 43161 82 42040
+/execute if block 43161 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 82 42040
+/execute if block 43161 83 42040 minecraft:birch_fence unless block 43161 82 42040 #minecraft:planks unless block 43161 82 42040 #minecraft:logs unless block 43161 82 42040 minecraft:birch_fence run say bh:floating 43161 83 42040
+/execute if block 43161 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 83 42040
+/execute if block 43161 82 42041 minecraft:birch_fence unless block 43161 81 42041 #minecraft:planks unless block 43161 81 42041 #minecraft:logs unless block 43161 81 42041 minecraft:birch_fence run say bh:floating 43161 82 42041
+/execute if block 43161 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 82 42041
+/execute if block 43161 83 42041 minecraft:birch_fence unless block 43161 82 42041 #minecraft:planks unless block 43161 82 42041 #minecraft:logs unless block 43161 82 42041 minecraft:birch_fence run say bh:floating 43161 83 42041
+/execute if block 43161 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43161 83 42041
+/execute if block 43162 82 42037 minecraft:birch_fence unless block 43162 81 42037 #minecraft:planks unless block 43162 81 42037 #minecraft:logs unless block 43162 81 42037 minecraft:birch_fence run say bh:floating 43162 82 42037
+/execute if block 43162 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 82 42037
+/execute if block 43162 83 42037 minecraft:birch_fence unless block 43162 82 42037 #minecraft:planks unless block 43162 82 42037 #minecraft:logs unless block 43162 82 42037 minecraft:birch_fence run say bh:floating 43162 83 42037
+/execute if block 43162 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 83 42037
+/execute if block 43162 82 42038 minecraft:birch_fence unless block 43162 81 42038 #minecraft:planks unless block 43162 81 42038 #minecraft:logs unless block 43162 81 42038 minecraft:birch_fence run say bh:floating 43162 82 42038
+/execute if block 43162 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 82 42038
+/execute if block 43162 83 42038 minecraft:birch_fence unless block 43162 82 42038 #minecraft:planks unless block 43162 82 42038 #minecraft:logs unless block 43162 82 42038 minecraft:birch_fence run say bh:floating 43162 83 42038
+/execute if block 43162 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 83 42038
+/execute if block 43162 82 42039 minecraft:birch_fence unless block 43162 81 42039 #minecraft:planks unless block 43162 81 42039 #minecraft:logs unless block 43162 81 42039 minecraft:birch_fence run say bh:floating 43162 82 42039
+/execute if block 43162 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 82 42039
+/execute if block 43162 83 42039 minecraft:birch_fence unless block 43162 82 42039 #minecraft:planks unless block 43162 82 42039 #minecraft:logs unless block 43162 82 42039 minecraft:birch_fence run say bh:floating 43162 83 42039
+/execute if block 43162 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 83 42039
+/execute if block 43162 82 42040 minecraft:birch_fence unless block 43162 81 42040 #minecraft:planks unless block 43162 81 42040 #minecraft:logs unless block 43162 81 42040 minecraft:birch_fence run say bh:floating 43162 82 42040
+/execute if block 43162 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 82 42040
+/execute if block 43162 83 42040 minecraft:birch_fence unless block 43162 82 42040 #minecraft:planks unless block 43162 82 42040 #minecraft:logs unless block 43162 82 42040 minecraft:birch_fence run say bh:floating 43162 83 42040
+/execute if block 43162 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 83 42040
+/execute if block 43162 82 42041 minecraft:birch_fence unless block 43162 81 42041 #minecraft:planks unless block 43162 81 42041 #minecraft:logs unless block 43162 81 42041 minecraft:birch_fence run say bh:floating 43162 82 42041
+/execute if block 43162 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 82 42041
+/execute if block 43162 83 42041 minecraft:birch_fence unless block 43162 82 42041 #minecraft:planks unless block 43162 82 42041 #minecraft:logs unless block 43162 82 42041 minecraft:birch_fence run say bh:floating 43162 83 42041
+/execute if block 43162 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43162 83 42041
+/execute if block 43163 82 42037 minecraft:birch_fence unless block 43163 81 42037 #minecraft:planks unless block 43163 81 42037 #minecraft:logs unless block 43163 81 42037 minecraft:birch_fence run say bh:floating 43163 82 42037
+/execute if block 43163 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 82 42037
+/execute if block 43163 83 42037 minecraft:birch_fence unless block 43163 82 42037 #minecraft:planks unless block 43163 82 42037 #minecraft:logs unless block 43163 82 42037 minecraft:birch_fence run say bh:floating 43163 83 42037
+/execute if block 43163 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 83 42037
+/execute if block 43163 82 42038 minecraft:birch_fence unless block 43163 81 42038 #minecraft:planks unless block 43163 81 42038 #minecraft:logs unless block 43163 81 42038 minecraft:birch_fence run say bh:floating 43163 82 42038
+/execute if block 43163 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 82 42038
+/execute if block 43163 83 42038 minecraft:birch_fence unless block 43163 82 42038 #minecraft:planks unless block 43163 82 42038 #minecraft:logs unless block 43163 82 42038 minecraft:birch_fence run say bh:floating 43163 83 42038
+/execute if block 43163 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 83 42038
+/execute if block 43163 82 42039 minecraft:birch_fence unless block 43163 81 42039 #minecraft:planks unless block 43163 81 42039 #minecraft:logs unless block 43163 81 42039 minecraft:birch_fence run say bh:floating 43163 82 42039
+/execute if block 43163 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 82 42039
+/execute if block 43163 83 42039 minecraft:birch_fence unless block 43163 82 42039 #minecraft:planks unless block 43163 82 42039 #minecraft:logs unless block 43163 82 42039 minecraft:birch_fence run say bh:floating 43163 83 42039
+/execute if block 43163 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 83 42039
+/execute if block 43163 82 42040 minecraft:birch_fence unless block 43163 81 42040 #minecraft:planks unless block 43163 81 42040 #minecraft:logs unless block 43163 81 42040 minecraft:birch_fence run say bh:floating 43163 82 42040
+/execute if block 43163 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 82 42040
+/execute if block 43163 83 42040 minecraft:birch_fence unless block 43163 82 42040 #minecraft:planks unless block 43163 82 42040 #minecraft:logs unless block 43163 82 42040 minecraft:birch_fence run say bh:floating 43163 83 42040
+/execute if block 43163 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 83 42040
+/execute if block 43163 82 42041 minecraft:birch_fence unless block 43163 81 42041 #minecraft:planks unless block 43163 81 42041 #minecraft:logs unless block 43163 81 42041 minecraft:birch_fence run say bh:floating 43163 82 42041
+/execute if block 43163 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 82 42041
+/execute if block 43163 83 42041 minecraft:birch_fence unless block 43163 82 42041 #minecraft:planks unless block 43163 82 42041 #minecraft:logs unless block 43163 82 42041 minecraft:birch_fence run say bh:floating 43163 83 42041
+/execute if block 43163 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43163 83 42041
+/execute if block 43164 82 42037 minecraft:birch_fence unless block 43164 81 42037 #minecraft:planks unless block 43164 81 42037 #minecraft:logs unless block 43164 81 42037 minecraft:birch_fence run say bh:floating 43164 82 42037
+/execute if block 43164 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42037
+/execute if block 43164 83 42037 minecraft:birch_fence unless block 43164 82 42037 #minecraft:planks unless block 43164 82 42037 #minecraft:logs unless block 43164 82 42037 minecraft:birch_fence run say bh:floating 43164 83 42037
+/execute if block 43164 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42037
+/execute if block 43164 82 42038 minecraft:birch_fence unless block 43164 81 42038 #minecraft:planks unless block 43164 81 42038 #minecraft:logs unless block 43164 81 42038 minecraft:birch_fence run say bh:floating 43164 82 42038
+/execute if block 43164 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42038
+/execute if block 43164 83 42038 minecraft:birch_fence unless block 43164 82 42038 #minecraft:planks unless block 43164 82 42038 #minecraft:logs unless block 43164 82 42038 minecraft:birch_fence run say bh:floating 43164 83 42038
+/execute if block 43164 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42038
+/execute if block 43164 82 42039 minecraft:birch_fence unless block 43164 81 42039 #minecraft:planks unless block 43164 81 42039 #minecraft:logs unless block 43164 81 42039 minecraft:birch_fence run say bh:floating 43164 82 42039
+/execute if block 43164 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42039
+/execute if block 43164 83 42039 minecraft:birch_fence unless block 43164 82 42039 #minecraft:planks unless block 43164 82 42039 #minecraft:logs unless block 43164 82 42039 minecraft:birch_fence run say bh:floating 43164 83 42039
+/execute if block 43164 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42039
+/execute if block 43164 82 42040 minecraft:birch_fence unless block 43164 81 42040 #minecraft:planks unless block 43164 81 42040 #minecraft:logs unless block 43164 81 42040 minecraft:birch_fence run say bh:floating 43164 82 42040
+/execute if block 43164 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42040
+/execute if block 43164 83 42040 minecraft:birch_fence unless block 43164 82 42040 #minecraft:planks unless block 43164 82 42040 #minecraft:logs unless block 43164 82 42040 minecraft:birch_fence run say bh:floating 43164 83 42040
+/execute if block 43164 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42040
+/execute if block 43164 82 42041 minecraft:birch_fence unless block 43164 81 42041 #minecraft:planks unless block 43164 81 42041 #minecraft:logs unless block 43164 81 42041 minecraft:birch_fence run say bh:floating 43164 82 42041
+/execute if block 43164 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 82 42041
+/execute if block 43164 83 42041 minecraft:birch_fence unless block 43164 82 42041 #minecraft:planks unless block 43164 82 42041 #minecraft:logs unless block 43164 82 42041 minecraft:birch_fence run say bh:floating 43164 83 42041
+/execute if block 43164 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43164 83 42041
+/execute if block 43165 82 42037 minecraft:birch_fence unless block 43165 81 42037 #minecraft:planks unless block 43165 81 42037 #minecraft:logs unless block 43165 81 42037 minecraft:birch_fence run say bh:floating 43165 82 42037
+/execute if block 43165 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42037
+/execute if block 43165 83 42037 minecraft:birch_fence unless block 43165 82 42037 #minecraft:planks unless block 43165 82 42037 #minecraft:logs unless block 43165 82 42037 minecraft:birch_fence run say bh:floating 43165 83 42037
+/execute if block 43165 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42037
+/execute if block 43165 82 42038 minecraft:birch_fence unless block 43165 81 42038 #minecraft:planks unless block 43165 81 42038 #minecraft:logs unless block 43165 81 42038 minecraft:birch_fence run say bh:floating 43165 82 42038
+/execute if block 43165 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42038
+/execute if block 43165 83 42038 minecraft:birch_fence unless block 43165 82 42038 #minecraft:planks unless block 43165 82 42038 #minecraft:logs unless block 43165 82 42038 minecraft:birch_fence run say bh:floating 43165 83 42038
+/execute if block 43165 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42038
+/execute if block 43165 82 42039 minecraft:birch_fence unless block 43165 81 42039 #minecraft:planks unless block 43165 81 42039 #minecraft:logs unless block 43165 81 42039 minecraft:birch_fence run say bh:floating 43165 82 42039
+/execute if block 43165 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42039
+/execute if block 43165 83 42039 minecraft:birch_fence unless block 43165 82 42039 #minecraft:planks unless block 43165 82 42039 #minecraft:logs unless block 43165 82 42039 minecraft:birch_fence run say bh:floating 43165 83 42039
+/execute if block 43165 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42039
+/execute if block 43165 82 42040 minecraft:birch_fence unless block 43165 81 42040 #minecraft:planks unless block 43165 81 42040 #minecraft:logs unless block 43165 81 42040 minecraft:birch_fence run say bh:floating 43165 82 42040
+/execute if block 43165 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42040
+/execute if block 43165 83 42040 minecraft:birch_fence unless block 43165 82 42040 #minecraft:planks unless block 43165 82 42040 #minecraft:logs unless block 43165 82 42040 minecraft:birch_fence run say bh:floating 43165 83 42040
+/execute if block 43165 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42040
+/execute if block 43165 82 42041 minecraft:birch_fence unless block 43165 81 42041 #minecraft:planks unless block 43165 81 42041 #minecraft:logs unless block 43165 81 42041 minecraft:birch_fence run say bh:floating 43165 82 42041
+/execute if block 43165 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 82 42041
+/execute if block 43165 83 42041 minecraft:birch_fence unless block 43165 82 42041 #minecraft:planks unless block 43165 82 42041 #minecraft:logs unless block 43165 82 42041 minecraft:birch_fence run say bh:floating 43165 83 42041
+/execute if block 43165 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43165 83 42041
+/execute if block 43166 82 42037 minecraft:birch_fence unless block 43166 81 42037 #minecraft:planks unless block 43166 81 42037 #minecraft:logs unless block 43166 81 42037 minecraft:birch_fence run say bh:floating 43166 82 42037
+/execute if block 43166 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42037
+/execute if block 43166 83 42037 minecraft:birch_fence unless block 43166 82 42037 #minecraft:planks unless block 43166 82 42037 #minecraft:logs unless block 43166 82 42037 minecraft:birch_fence run say bh:floating 43166 83 42037
+/execute if block 43166 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42037
+/execute if block 43166 82 42038 minecraft:birch_fence unless block 43166 81 42038 #minecraft:planks unless block 43166 81 42038 #minecraft:logs unless block 43166 81 42038 minecraft:birch_fence run say bh:floating 43166 82 42038
+/execute if block 43166 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42038
+/execute if block 43166 83 42038 minecraft:birch_fence unless block 43166 82 42038 #minecraft:planks unless block 43166 82 42038 #minecraft:logs unless block 43166 82 42038 minecraft:birch_fence run say bh:floating 43166 83 42038
+/execute if block 43166 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42038
+/execute if block 43166 82 42039 minecraft:birch_fence unless block 43166 81 42039 #minecraft:planks unless block 43166 81 42039 #minecraft:logs unless block 43166 81 42039 minecraft:birch_fence run say bh:floating 43166 82 42039
+/execute if block 43166 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42039
+/execute if block 43166 83 42039 minecraft:birch_fence unless block 43166 82 42039 #minecraft:planks unless block 43166 82 42039 #minecraft:logs unless block 43166 82 42039 minecraft:birch_fence run say bh:floating 43166 83 42039
+/execute if block 43166 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42039
+/execute if block 43166 82 42040 minecraft:birch_fence unless block 43166 81 42040 #minecraft:planks unless block 43166 81 42040 #minecraft:logs unless block 43166 81 42040 minecraft:birch_fence run say bh:floating 43166 82 42040
+/execute if block 43166 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42040
+/execute if block 43166 83 42040 minecraft:birch_fence unless block 43166 82 42040 #minecraft:planks unless block 43166 82 42040 #minecraft:logs unless block 43166 82 42040 minecraft:birch_fence run say bh:floating 43166 83 42040
+/execute if block 43166 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42040
+/execute if block 43166 82 42041 minecraft:birch_fence unless block 43166 81 42041 #minecraft:planks unless block 43166 81 42041 #minecraft:logs unless block 43166 81 42041 minecraft:birch_fence run say bh:floating 43166 82 42041
+/execute if block 43166 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 82 42041
+/execute if block 43166 83 42041 minecraft:birch_fence unless block 43166 82 42041 #minecraft:planks unless block 43166 82 42041 #minecraft:logs unless block 43166 82 42041 minecraft:birch_fence run say bh:floating 43166 83 42041
+/execute if block 43166 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43166 83 42041
+/execute if block 43167 82 42037 minecraft:birch_fence unless block 43167 81 42037 #minecraft:planks unless block 43167 81 42037 #minecraft:logs unless block 43167 81 42037 minecraft:birch_fence run say bh:floating 43167 82 42037
+/execute if block 43167 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42037
+/execute if block 43167 83 42037 minecraft:birch_fence unless block 43167 82 42037 #minecraft:planks unless block 43167 82 42037 #minecraft:logs unless block 43167 82 42037 minecraft:birch_fence run say bh:floating 43167 83 42037
+/execute if block 43167 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42037
+/execute if block 43167 82 42038 minecraft:birch_fence unless block 43167 81 42038 #minecraft:planks unless block 43167 81 42038 #minecraft:logs unless block 43167 81 42038 minecraft:birch_fence run say bh:floating 43167 82 42038
+/execute if block 43167 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42038
+/execute if block 43167 83 42038 minecraft:birch_fence unless block 43167 82 42038 #minecraft:planks unless block 43167 82 42038 #minecraft:logs unless block 43167 82 42038 minecraft:birch_fence run say bh:floating 43167 83 42038
+/execute if block 43167 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42038
+/execute if block 43167 82 42039 minecraft:birch_fence unless block 43167 81 42039 #minecraft:planks unless block 43167 81 42039 #minecraft:logs unless block 43167 81 42039 minecraft:birch_fence run say bh:floating 43167 82 42039
+/execute if block 43167 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42039
+/execute if block 43167 83 42039 minecraft:birch_fence unless block 43167 82 42039 #minecraft:planks unless block 43167 82 42039 #minecraft:logs unless block 43167 82 42039 minecraft:birch_fence run say bh:floating 43167 83 42039
+/execute if block 43167 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42039
+/execute if block 43167 82 42040 minecraft:birch_fence unless block 43167 81 42040 #minecraft:planks unless block 43167 81 42040 #minecraft:logs unless block 43167 81 42040 minecraft:birch_fence run say bh:floating 43167 82 42040
+/execute if block 43167 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42040
+/execute if block 43167 83 42040 minecraft:birch_fence unless block 43167 82 42040 #minecraft:planks unless block 43167 82 42040 #minecraft:logs unless block 43167 82 42040 minecraft:birch_fence run say bh:floating 43167 83 42040
+/execute if block 43167 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42040
+/execute if block 43167 82 42041 minecraft:birch_fence unless block 43167 81 42041 #minecraft:planks unless block 43167 81 42041 #minecraft:logs unless block 43167 81 42041 minecraft:birch_fence run say bh:floating 43167 82 42041
+/execute if block 43167 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 82 42041
+/execute if block 43167 83 42041 minecraft:birch_fence unless block 43167 82 42041 #minecraft:planks unless block 43167 82 42041 #minecraft:logs unless block 43167 82 42041 minecraft:birch_fence run say bh:floating 43167 83 42041
+/execute if block 43167 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43167 83 42041
+/execute if block 43168 82 42037 minecraft:birch_fence unless block 43168 81 42037 #minecraft:planks unless block 43168 81 42037 #minecraft:logs unless block 43168 81 42037 minecraft:birch_fence run say bh:floating 43168 82 42037
+/execute if block 43168 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42037
+/execute if block 43168 83 42037 minecraft:birch_fence unless block 43168 82 42037 #minecraft:planks unless block 43168 82 42037 #minecraft:logs unless block 43168 82 42037 minecraft:birch_fence run say bh:floating 43168 83 42037
+/execute if block 43168 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42037
+/execute if block 43168 82 42038 minecraft:birch_fence unless block 43168 81 42038 #minecraft:planks unless block 43168 81 42038 #minecraft:logs unless block 43168 81 42038 minecraft:birch_fence run say bh:floating 43168 82 42038
+/execute if block 43168 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42038
+/execute if block 43168 83 42038 minecraft:birch_fence unless block 43168 82 42038 #minecraft:planks unless block 43168 82 42038 #minecraft:logs unless block 43168 82 42038 minecraft:birch_fence run say bh:floating 43168 83 42038
+/execute if block 43168 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42038
+/execute if block 43168 82 42039 minecraft:birch_fence unless block 43168 81 42039 #minecraft:planks unless block 43168 81 42039 #minecraft:logs unless block 43168 81 42039 minecraft:birch_fence run say bh:floating 43168 82 42039
+/execute if block 43168 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42039
+/execute if block 43168 83 42039 minecraft:birch_fence unless block 43168 82 42039 #minecraft:planks unless block 43168 82 42039 #minecraft:logs unless block 43168 82 42039 minecraft:birch_fence run say bh:floating 43168 83 42039
+/execute if block 43168 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42039
+/execute if block 43168 82 42040 minecraft:birch_fence unless block 43168 81 42040 #minecraft:planks unless block 43168 81 42040 #minecraft:logs unless block 43168 81 42040 minecraft:birch_fence run say bh:floating 43168 82 42040
+/execute if block 43168 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42040
+/execute if block 43168 83 42040 minecraft:birch_fence unless block 43168 82 42040 #minecraft:planks unless block 43168 82 42040 #minecraft:logs unless block 43168 82 42040 minecraft:birch_fence run say bh:floating 43168 83 42040
+/execute if block 43168 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42040
+/execute if block 43168 82 42041 minecraft:birch_fence unless block 43168 81 42041 #minecraft:planks unless block 43168 81 42041 #minecraft:logs unless block 43168 81 42041 minecraft:birch_fence run say bh:floating 43168 82 42041
+/execute if block 43168 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 82 42041
+/execute if block 43168 83 42041 minecraft:birch_fence unless block 43168 82 42041 #minecraft:planks unless block 43168 82 42041 #minecraft:logs unless block 43168 82 42041 minecraft:birch_fence run say bh:floating 43168 83 42041
+/execute if block 43168 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43168 83 42041
+/execute if block 43169 82 42037 minecraft:birch_fence unless block 43169 81 42037 #minecraft:planks unless block 43169 81 42037 #minecraft:logs unless block 43169 81 42037 minecraft:birch_fence run say bh:floating 43169 82 42037
+/execute if block 43169 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42037
+/execute if block 43169 83 42037 minecraft:birch_fence unless block 43169 82 42037 #minecraft:planks unless block 43169 82 42037 #minecraft:logs unless block 43169 82 42037 minecraft:birch_fence run say bh:floating 43169 83 42037
+/execute if block 43169 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42037
+/execute if block 43169 82 42038 minecraft:birch_fence unless block 43169 81 42038 #minecraft:planks unless block 43169 81 42038 #minecraft:logs unless block 43169 81 42038 minecraft:birch_fence run say bh:floating 43169 82 42038
+/execute if block 43169 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42038
+/execute if block 43169 83 42038 minecraft:birch_fence unless block 43169 82 42038 #minecraft:planks unless block 43169 82 42038 #minecraft:logs unless block 43169 82 42038 minecraft:birch_fence run say bh:floating 43169 83 42038
+/execute if block 43169 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42038
+/execute if block 43169 82 42039 minecraft:birch_fence unless block 43169 81 42039 #minecraft:planks unless block 43169 81 42039 #minecraft:logs unless block 43169 81 42039 minecraft:birch_fence run say bh:floating 43169 82 42039
+/execute if block 43169 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42039
+/execute if block 43169 83 42039 minecraft:birch_fence unless block 43169 82 42039 #minecraft:planks unless block 43169 82 42039 #minecraft:logs unless block 43169 82 42039 minecraft:birch_fence run say bh:floating 43169 83 42039
+/execute if block 43169 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42039
+/execute if block 43169 82 42040 minecraft:birch_fence unless block 43169 81 42040 #minecraft:planks unless block 43169 81 42040 #minecraft:logs unless block 43169 81 42040 minecraft:birch_fence run say bh:floating 43169 82 42040
+/execute if block 43169 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42040
+/execute if block 43169 83 42040 minecraft:birch_fence unless block 43169 82 42040 #minecraft:planks unless block 43169 82 42040 #minecraft:logs unless block 43169 82 42040 minecraft:birch_fence run say bh:floating 43169 83 42040
+/execute if block 43169 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42040
+/execute if block 43169 82 42041 minecraft:birch_fence unless block 43169 81 42041 #minecraft:planks unless block 43169 81 42041 #minecraft:logs unless block 43169 81 42041 minecraft:birch_fence run say bh:floating 43169 82 42041
+/execute if block 43169 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 82 42041
+/execute if block 43169 83 42041 minecraft:birch_fence unless block 43169 82 42041 #minecraft:planks unless block 43169 82 42041 #minecraft:logs unless block 43169 82 42041 minecraft:birch_fence run say bh:floating 43169 83 42041
+/execute if block 43169 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43169 83 42041
+/execute if block 43170 82 42037 minecraft:birch_fence unless block 43170 81 42037 #minecraft:planks unless block 43170 81 42037 #minecraft:logs unless block 43170 81 42037 minecraft:birch_fence run say bh:floating 43170 82 42037
+/execute if block 43170 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42037
+/execute if block 43170 83 42037 minecraft:birch_fence unless block 43170 82 42037 #minecraft:planks unless block 43170 82 42037 #minecraft:logs unless block 43170 82 42037 minecraft:birch_fence run say bh:floating 43170 83 42037
+/execute if block 43170 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42037
+/execute if block 43170 82 42038 minecraft:birch_fence unless block 43170 81 42038 #minecraft:planks unless block 43170 81 42038 #minecraft:logs unless block 43170 81 42038 minecraft:birch_fence run say bh:floating 43170 82 42038
+/execute if block 43170 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42038
+/execute if block 43170 83 42038 minecraft:birch_fence unless block 43170 82 42038 #minecraft:planks unless block 43170 82 42038 #minecraft:logs unless block 43170 82 42038 minecraft:birch_fence run say bh:floating 43170 83 42038
+/execute if block 43170 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42038
+/execute if block 43170 82 42039 minecraft:birch_fence unless block 43170 81 42039 #minecraft:planks unless block 43170 81 42039 #minecraft:logs unless block 43170 81 42039 minecraft:birch_fence run say bh:floating 43170 82 42039
+/execute if block 43170 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42039
+/execute if block 43170 83 42039 minecraft:birch_fence unless block 43170 82 42039 #minecraft:planks unless block 43170 82 42039 #minecraft:logs unless block 43170 82 42039 minecraft:birch_fence run say bh:floating 43170 83 42039
+/execute if block 43170 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42039
+/execute if block 43170 82 42040 minecraft:birch_fence unless block 43170 81 42040 #minecraft:planks unless block 43170 81 42040 #minecraft:logs unless block 43170 81 42040 minecraft:birch_fence run say bh:floating 43170 82 42040
+/execute if block 43170 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42040
+/execute if block 43170 83 42040 minecraft:birch_fence unless block 43170 82 42040 #minecraft:planks unless block 43170 82 42040 #minecraft:logs unless block 43170 82 42040 minecraft:birch_fence run say bh:floating 43170 83 42040
+/execute if block 43170 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42040
+/execute if block 43170 82 42041 minecraft:birch_fence unless block 43170 81 42041 #minecraft:planks unless block 43170 81 42041 #minecraft:logs unless block 43170 81 42041 minecraft:birch_fence run say bh:floating 43170 82 42041
+/execute if block 43170 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 82 42041
+/execute if block 43170 83 42041 minecraft:birch_fence unless block 43170 82 42041 #minecraft:planks unless block 43170 82 42041 #minecraft:logs unless block 43170 82 42041 minecraft:birch_fence run say bh:floating 43170 83 42041
+/execute if block 43170 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43170 83 42041
+/execute if block 43171 82 42037 minecraft:birch_fence unless block 43171 81 42037 #minecraft:planks unless block 43171 81 42037 #minecraft:logs unless block 43171 81 42037 minecraft:birch_fence run say bh:floating 43171 82 42037
+/execute if block 43171 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42037
+/execute if block 43171 83 42037 minecraft:birch_fence unless block 43171 82 42037 #minecraft:planks unless block 43171 82 42037 #minecraft:logs unless block 43171 82 42037 minecraft:birch_fence run say bh:floating 43171 83 42037
+/execute if block 43171 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42037
+/execute if block 43171 82 42038 minecraft:birch_fence unless block 43171 81 42038 #minecraft:planks unless block 43171 81 42038 #minecraft:logs unless block 43171 81 42038 minecraft:birch_fence run say bh:floating 43171 82 42038
+/execute if block 43171 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42038
+/execute if block 43171 83 42038 minecraft:birch_fence unless block 43171 82 42038 #minecraft:planks unless block 43171 82 42038 #minecraft:logs unless block 43171 82 42038 minecraft:birch_fence run say bh:floating 43171 83 42038
+/execute if block 43171 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42038
+/execute if block 43171 82 42039 minecraft:birch_fence unless block 43171 81 42039 #minecraft:planks unless block 43171 81 42039 #minecraft:logs unless block 43171 81 42039 minecraft:birch_fence run say bh:floating 43171 82 42039
+/execute if block 43171 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42039
+/execute if block 43171 83 42039 minecraft:birch_fence unless block 43171 82 42039 #minecraft:planks unless block 43171 82 42039 #minecraft:logs unless block 43171 82 42039 minecraft:birch_fence run say bh:floating 43171 83 42039
+/execute if block 43171 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42039
+/execute if block 43171 82 42040 minecraft:birch_fence unless block 43171 81 42040 #minecraft:planks unless block 43171 81 42040 #minecraft:logs unless block 43171 81 42040 minecraft:birch_fence run say bh:floating 43171 82 42040
+/execute if block 43171 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42040
+/execute if block 43171 83 42040 minecraft:birch_fence unless block 43171 82 42040 #minecraft:planks unless block 43171 82 42040 #minecraft:logs unless block 43171 82 42040 minecraft:birch_fence run say bh:floating 43171 83 42040
+/execute if block 43171 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42040
+/execute if block 43171 82 42041 minecraft:birch_fence unless block 43171 81 42041 #minecraft:planks unless block 43171 81 42041 #minecraft:logs unless block 43171 81 42041 minecraft:birch_fence run say bh:floating 43171 82 42041
+/execute if block 43171 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 82 42041
+/execute if block 43171 83 42041 minecraft:birch_fence unless block 43171 82 42041 #minecraft:planks unless block 43171 82 42041 #minecraft:logs unless block 43171 82 42041 minecraft:birch_fence run say bh:floating 43171 83 42041
+/execute if block 43171 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43171 83 42041
+/execute if block 43172 82 42037 minecraft:birch_fence unless block 43172 81 42037 #minecraft:planks unless block 43172 81 42037 #minecraft:logs unless block 43172 81 42037 minecraft:birch_fence run say bh:floating 43172 82 42037
+/execute if block 43172 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42037
+/execute if block 43172 83 42037 minecraft:birch_fence unless block 43172 82 42037 #minecraft:planks unless block 43172 82 42037 #minecraft:logs unless block 43172 82 42037 minecraft:birch_fence run say bh:floating 43172 83 42037
+/execute if block 43172 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42037
+/execute if block 43172 82 42038 minecraft:birch_fence unless block 43172 81 42038 #minecraft:planks unless block 43172 81 42038 #minecraft:logs unless block 43172 81 42038 minecraft:birch_fence run say bh:floating 43172 82 42038
+/execute if block 43172 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42038
+/execute if block 43172 83 42038 minecraft:birch_fence unless block 43172 82 42038 #minecraft:planks unless block 43172 82 42038 #minecraft:logs unless block 43172 82 42038 minecraft:birch_fence run say bh:floating 43172 83 42038
+/execute if block 43172 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42038
+/execute if block 43172 82 42039 minecraft:birch_fence unless block 43172 81 42039 #minecraft:planks unless block 43172 81 42039 #minecraft:logs unless block 43172 81 42039 minecraft:birch_fence run say bh:floating 43172 82 42039
+/execute if block 43172 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42039
+/execute if block 43172 83 42039 minecraft:birch_fence unless block 43172 82 42039 #minecraft:planks unless block 43172 82 42039 #minecraft:logs unless block 43172 82 42039 minecraft:birch_fence run say bh:floating 43172 83 42039
+/execute if block 43172 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42039
+/execute if block 43172 82 42040 minecraft:birch_fence unless block 43172 81 42040 #minecraft:planks unless block 43172 81 42040 #minecraft:logs unless block 43172 81 42040 minecraft:birch_fence run say bh:floating 43172 82 42040
+/execute if block 43172 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42040
+/execute if block 43172 83 42040 minecraft:birch_fence unless block 43172 82 42040 #minecraft:planks unless block 43172 82 42040 #minecraft:logs unless block 43172 82 42040 minecraft:birch_fence run say bh:floating 43172 83 42040
+/execute if block 43172 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42040
+/execute if block 43172 82 42041 minecraft:birch_fence unless block 43172 81 42041 #minecraft:planks unless block 43172 81 42041 #minecraft:logs unless block 43172 81 42041 minecraft:birch_fence run say bh:floating 43172 82 42041
+/execute if block 43172 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 82 42041
+/execute if block 43172 83 42041 minecraft:birch_fence unless block 43172 82 42041 #minecraft:planks unless block 43172 82 42041 #minecraft:logs unless block 43172 82 42041 minecraft:birch_fence run say bh:floating 43172 83 42041
+/execute if block 43172 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43172 83 42041
+/execute if block 43173 82 42037 minecraft:birch_fence unless block 43173 81 42037 #minecraft:planks unless block 43173 81 42037 #minecraft:logs unless block 43173 81 42037 minecraft:birch_fence run say bh:floating 43173 82 42037
+/execute if block 43173 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42037
+/execute if block 43173 83 42037 minecraft:birch_fence unless block 43173 82 42037 #minecraft:planks unless block 43173 82 42037 #minecraft:logs unless block 43173 82 42037 minecraft:birch_fence run say bh:floating 43173 83 42037
+/execute if block 43173 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42037
+/execute if block 43173 82 42038 minecraft:birch_fence unless block 43173 81 42038 #minecraft:planks unless block 43173 81 42038 #minecraft:logs unless block 43173 81 42038 minecraft:birch_fence run say bh:floating 43173 82 42038
+/execute if block 43173 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42038
+/execute if block 43173 83 42038 minecraft:birch_fence unless block 43173 82 42038 #minecraft:planks unless block 43173 82 42038 #minecraft:logs unless block 43173 82 42038 minecraft:birch_fence run say bh:floating 43173 83 42038
+/execute if block 43173 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42038
+/execute if block 43173 82 42039 minecraft:birch_fence unless block 43173 81 42039 #minecraft:planks unless block 43173 81 42039 #minecraft:logs unless block 43173 81 42039 minecraft:birch_fence run say bh:floating 43173 82 42039
+/execute if block 43173 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42039
+/execute if block 43173 83 42039 minecraft:birch_fence unless block 43173 82 42039 #minecraft:planks unless block 43173 82 42039 #minecraft:logs unless block 43173 82 42039 minecraft:birch_fence run say bh:floating 43173 83 42039
+/execute if block 43173 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42039
+/execute if block 43173 82 42040 minecraft:birch_fence unless block 43173 81 42040 #minecraft:planks unless block 43173 81 42040 #minecraft:logs unless block 43173 81 42040 minecraft:birch_fence run say bh:floating 43173 82 42040
+/execute if block 43173 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42040
+/execute if block 43173 83 42040 minecraft:birch_fence unless block 43173 82 42040 #minecraft:planks unless block 43173 82 42040 #minecraft:logs unless block 43173 82 42040 minecraft:birch_fence run say bh:floating 43173 83 42040
+/execute if block 43173 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42040
+/execute if block 43173 82 42041 minecraft:birch_fence unless block 43173 81 42041 #minecraft:planks unless block 43173 81 42041 #minecraft:logs unless block 43173 81 42041 minecraft:birch_fence run say bh:floating 43173 82 42041
+/execute if block 43173 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 82 42041
+/execute if block 43173 83 42041 minecraft:birch_fence unless block 43173 82 42041 #minecraft:planks unless block 43173 82 42041 #minecraft:logs unless block 43173 82 42041 minecraft:birch_fence run say bh:floating 43173 83 42041
+/execute if block 43173 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43173 83 42041
+/execute if block 43174 82 42037 minecraft:birch_fence unless block 43174 81 42037 #minecraft:planks unless block 43174 81 42037 #minecraft:logs unless block 43174 81 42037 minecraft:birch_fence run say bh:floating 43174 82 42037
+/execute if block 43174 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 82 42037
+/execute if block 43174 83 42037 minecraft:birch_fence unless block 43174 82 42037 #minecraft:planks unless block 43174 82 42037 #minecraft:logs unless block 43174 82 42037 minecraft:birch_fence run say bh:floating 43174 83 42037
+/execute if block 43174 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 83 42037
+/execute if block 43174 82 42038 minecraft:birch_fence unless block 43174 81 42038 #minecraft:planks unless block 43174 81 42038 #minecraft:logs unless block 43174 81 42038 minecraft:birch_fence run say bh:floating 43174 82 42038
+/execute if block 43174 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 82 42038
+/execute if block 43174 83 42038 minecraft:birch_fence unless block 43174 82 42038 #minecraft:planks unless block 43174 82 42038 #minecraft:logs unless block 43174 82 42038 minecraft:birch_fence run say bh:floating 43174 83 42038
+/execute if block 43174 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 83 42038
+/execute if block 43174 82 42039 minecraft:birch_fence unless block 43174 81 42039 #minecraft:planks unless block 43174 81 42039 #minecraft:logs unless block 43174 81 42039 minecraft:birch_fence run say bh:floating 43174 82 42039
+/execute if block 43174 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 82 42039
+/execute if block 43174 83 42039 minecraft:birch_fence unless block 43174 82 42039 #minecraft:planks unless block 43174 82 42039 #minecraft:logs unless block 43174 82 42039 minecraft:birch_fence run say bh:floating 43174 83 42039
+/execute if block 43174 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 83 42039
+/execute if block 43174 82 42040 minecraft:birch_fence unless block 43174 81 42040 #minecraft:planks unless block 43174 81 42040 #minecraft:logs unless block 43174 81 42040 minecraft:birch_fence run say bh:floating 43174 82 42040
+/execute if block 43174 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 82 42040
+/execute if block 43174 83 42040 minecraft:birch_fence unless block 43174 82 42040 #minecraft:planks unless block 43174 82 42040 #minecraft:logs unless block 43174 82 42040 minecraft:birch_fence run say bh:floating 43174 83 42040
+/execute if block 43174 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 83 42040
+/execute if block 43174 82 42041 minecraft:birch_fence unless block 43174 81 42041 #minecraft:planks unless block 43174 81 42041 #minecraft:logs unless block 43174 81 42041 minecraft:birch_fence run say bh:floating 43174 82 42041
+/execute if block 43174 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 82 42041
+/execute if block 43174 83 42041 minecraft:birch_fence unless block 43174 82 42041 #minecraft:planks unless block 43174 82 42041 #minecraft:logs unless block 43174 82 42041 minecraft:birch_fence run say bh:floating 43174 83 42041
+/execute if block 43174 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43174 83 42041
+/execute if block 43175 82 42037 minecraft:birch_fence unless block 43175 81 42037 #minecraft:planks unless block 43175 81 42037 #minecraft:logs unless block 43175 81 42037 minecraft:birch_fence run say bh:floating 43175 82 42037
+/execute if block 43175 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 82 42037
+/execute if block 43175 83 42037 minecraft:birch_fence unless block 43175 82 42037 #minecraft:planks unless block 43175 82 42037 #minecraft:logs unless block 43175 82 42037 minecraft:birch_fence run say bh:floating 43175 83 42037
+/execute if block 43175 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 83 42037
+/execute if block 43175 82 42038 minecraft:birch_fence unless block 43175 81 42038 #minecraft:planks unless block 43175 81 42038 #minecraft:logs unless block 43175 81 42038 minecraft:birch_fence run say bh:floating 43175 82 42038
+/execute if block 43175 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 82 42038
+/execute if block 43175 83 42038 minecraft:birch_fence unless block 43175 82 42038 #minecraft:planks unless block 43175 82 42038 #minecraft:logs unless block 43175 82 42038 minecraft:birch_fence run say bh:floating 43175 83 42038
+/execute if block 43175 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 83 42038
+/execute if block 43175 82 42039 minecraft:birch_fence unless block 43175 81 42039 #minecraft:planks unless block 43175 81 42039 #minecraft:logs unless block 43175 81 42039 minecraft:birch_fence run say bh:floating 43175 82 42039
+/execute if block 43175 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 82 42039
+/execute if block 43175 83 42039 minecraft:birch_fence unless block 43175 82 42039 #minecraft:planks unless block 43175 82 42039 #minecraft:logs unless block 43175 82 42039 minecraft:birch_fence run say bh:floating 43175 83 42039
+/execute if block 43175 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 83 42039
+/execute if block 43175 82 42040 minecraft:birch_fence unless block 43175 81 42040 #minecraft:planks unless block 43175 81 42040 #minecraft:logs unless block 43175 81 42040 minecraft:birch_fence run say bh:floating 43175 82 42040
+/execute if block 43175 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 82 42040
+/execute if block 43175 83 42040 minecraft:birch_fence unless block 43175 82 42040 #minecraft:planks unless block 43175 82 42040 #minecraft:logs unless block 43175 82 42040 minecraft:birch_fence run say bh:floating 43175 83 42040
+/execute if block 43175 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 83 42040
+/execute if block 43175 82 42041 minecraft:birch_fence unless block 43175 81 42041 #minecraft:planks unless block 43175 81 42041 #minecraft:logs unless block 43175 81 42041 minecraft:birch_fence run say bh:floating 43175 82 42041
+/execute if block 43175 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 82 42041
+/execute if block 43175 83 42041 minecraft:birch_fence unless block 43175 82 42041 #minecraft:planks unless block 43175 82 42041 #minecraft:logs unless block 43175 82 42041 minecraft:birch_fence run say bh:floating 43175 83 42041
+/execute if block 43175 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43175 83 42041
+/execute if block 43176 82 42037 minecraft:birch_fence unless block 43176 81 42037 #minecraft:planks unless block 43176 81 42037 #minecraft:logs unless block 43176 81 42037 minecraft:birch_fence run say bh:floating 43176 82 42037
+/execute if block 43176 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 82 42037
+/execute if block 43176 83 42037 minecraft:birch_fence unless block 43176 82 42037 #minecraft:planks unless block 43176 82 42037 #minecraft:logs unless block 43176 82 42037 minecraft:birch_fence run say bh:floating 43176 83 42037
+/execute if block 43176 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 83 42037
+/execute if block 43176 82 42038 minecraft:birch_fence unless block 43176 81 42038 #minecraft:planks unless block 43176 81 42038 #minecraft:logs unless block 43176 81 42038 minecraft:birch_fence run say bh:floating 43176 82 42038
+/execute if block 43176 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 82 42038
+/execute if block 43176 83 42038 minecraft:birch_fence unless block 43176 82 42038 #minecraft:planks unless block 43176 82 42038 #minecraft:logs unless block 43176 82 42038 minecraft:birch_fence run say bh:floating 43176 83 42038
+/execute if block 43176 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 83 42038
+/execute if block 43176 82 42039 minecraft:birch_fence unless block 43176 81 42039 #minecraft:planks unless block 43176 81 42039 #minecraft:logs unless block 43176 81 42039 minecraft:birch_fence run say bh:floating 43176 82 42039
+/execute if block 43176 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 82 42039
+/execute if block 43176 83 42039 minecraft:birch_fence unless block 43176 82 42039 #minecraft:planks unless block 43176 82 42039 #minecraft:logs unless block 43176 82 42039 minecraft:birch_fence run say bh:floating 43176 83 42039
+/execute if block 43176 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 83 42039
+/execute if block 43176 82 42040 minecraft:birch_fence unless block 43176 81 42040 #minecraft:planks unless block 43176 81 42040 #minecraft:logs unless block 43176 81 42040 minecraft:birch_fence run say bh:floating 43176 82 42040
+/execute if block 43176 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 82 42040
+/execute if block 43176 83 42040 minecraft:birch_fence unless block 43176 82 42040 #minecraft:planks unless block 43176 82 42040 #minecraft:logs unless block 43176 82 42040 minecraft:birch_fence run say bh:floating 43176 83 42040
+/execute if block 43176 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 83 42040
+/execute if block 43176 82 42041 minecraft:birch_fence unless block 43176 81 42041 #minecraft:planks unless block 43176 81 42041 #minecraft:logs unless block 43176 81 42041 minecraft:birch_fence run say bh:floating 43176 82 42041
+/execute if block 43176 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 82 42041
+/execute if block 43176 83 42041 minecraft:birch_fence unless block 43176 82 42041 #minecraft:planks unless block 43176 82 42041 #minecraft:logs unless block 43176 82 42041 minecraft:birch_fence run say bh:floating 43176 83 42041
+/execute if block 43176 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43176 83 42041
+/execute if block 43177 82 42037 minecraft:birch_fence unless block 43177 81 42037 #minecraft:planks unless block 43177 81 42037 #minecraft:logs unless block 43177 81 42037 minecraft:birch_fence run say bh:floating 43177 82 42037
+/execute if block 43177 82 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 82 42037
+/execute if block 43177 83 42037 minecraft:birch_fence unless block 43177 82 42037 #minecraft:planks unless block 43177 82 42037 #minecraft:logs unless block 43177 82 42037 minecraft:birch_fence run say bh:floating 43177 83 42037
+/execute if block 43177 83 42037 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 83 42037
+/execute if block 43177 82 42038 minecraft:birch_fence unless block 43177 81 42038 #minecraft:planks unless block 43177 81 42038 #minecraft:logs unless block 43177 81 42038 minecraft:birch_fence run say bh:floating 43177 82 42038
+/execute if block 43177 82 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 82 42038
+/execute if block 43177 83 42038 minecraft:birch_fence unless block 43177 82 42038 #minecraft:planks unless block 43177 82 42038 #minecraft:logs unless block 43177 82 42038 minecraft:birch_fence run say bh:floating 43177 83 42038
+/execute if block 43177 83 42038 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 83 42038
+/execute if block 43177 82 42039 minecraft:birch_fence unless block 43177 81 42039 #minecraft:planks unless block 43177 81 42039 #minecraft:logs unless block 43177 81 42039 minecraft:birch_fence run say bh:floating 43177 82 42039
+/execute if block 43177 82 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 82 42039
+/execute if block 43177 83 42039 minecraft:birch_fence unless block 43177 82 42039 #minecraft:planks unless block 43177 82 42039 #minecraft:logs unless block 43177 82 42039 minecraft:birch_fence run say bh:floating 43177 83 42039
+/execute if block 43177 83 42039 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 83 42039
+/execute if block 43177 82 42040 minecraft:birch_fence unless block 43177 81 42040 #minecraft:planks unless block 43177 81 42040 #minecraft:logs unless block 43177 81 42040 minecraft:birch_fence run say bh:floating 43177 82 42040
+/execute if block 43177 82 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 82 42040
+/execute if block 43177 83 42040 minecraft:birch_fence unless block 43177 82 42040 #minecraft:planks unless block 43177 82 42040 #minecraft:logs unless block 43177 82 42040 minecraft:birch_fence run say bh:floating 43177 83 42040
+/execute if block 43177 83 42040 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 83 42040
+/execute if block 43177 82 42041 minecraft:birch_fence unless block 43177 81 42041 #minecraft:planks unless block 43177 81 42041 #minecraft:logs unless block 43177 81 42041 minecraft:birch_fence run say bh:floating 43177 82 42041
+/execute if block 43177 82 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 82 42041
+/execute if block 43177 83 42041 minecraft:birch_fence unless block 43177 82 42041 #minecraft:planks unless block 43177 82 42041 #minecraft:logs unless block 43177 82 42041 minecraft:birch_fence run say bh:floating 43177 83 42041
+/execute if block 43177 83 42041 minecraft:birch_fence[north=false,south=false,east=false,west=false] run say bh:isolated 43177 83 42041
+/execute if block 43154 80 42037 minecraft:chain if block 43154 81 42037 #minecraft:logs run say bh:chain 43154 80 42037
+/execute if block 43154 81 42037 minecraft:chain if block 43154 82 42037 #minecraft:logs run say bh:chain 43154 81 42037
+/execute if block 43154 80 42038 minecraft:chain if block 43154 81 42038 #minecraft:logs run say bh:chain 43154 80 42038
+/execute if block 43154 81 42038 minecraft:chain if block 43154 82 42038 #minecraft:logs run say bh:chain 43154 81 42038
+/execute if block 43154 80 42039 minecraft:chain if block 43154 81 42039 #minecraft:logs run say bh:chain 43154 80 42039
+/execute if block 43154 81 42039 minecraft:chain if block 43154 82 42039 #minecraft:logs run say bh:chain 43154 81 42039
+/execute if block 43154 80 42040 minecraft:chain if block 43154 81 42040 #minecraft:logs run say bh:chain 43154 80 42040
+/execute if block 43154 81 42040 minecraft:chain if block 43154 82 42040 #minecraft:logs run say bh:chain 43154 81 42040
+/execute if block 43154 80 42041 minecraft:chain if block 43154 81 42041 #minecraft:logs run say bh:chain 43154 80 42041
+/execute if block 43154 81 42041 minecraft:chain if block 43154 82 42041 #minecraft:logs run say bh:chain 43154 81 42041
+/execute if block 43155 80 42037 minecraft:chain if block 43155 81 42037 #minecraft:logs run say bh:chain 43155 80 42037
+/execute if block 43155 81 42037 minecraft:chain if block 43155 82 42037 #minecraft:logs run say bh:chain 43155 81 42037
+/execute if block 43155 80 42038 minecraft:chain if block 43155 81 42038 #minecraft:logs run say bh:chain 43155 80 42038
+/execute if block 43155 81 42038 minecraft:chain if block 43155 82 42038 #minecraft:logs run say bh:chain 43155 81 42038
+/execute if block 43155 80 42039 minecraft:chain if block 43155 81 42039 #minecraft:logs run say bh:chain 43155 80 42039
+/execute if block 43155 81 42039 minecraft:chain if block 43155 82 42039 #minecraft:logs run say bh:chain 43155 81 42039
+/execute if block 43155 80 42040 minecraft:chain if block 43155 81 42040 #minecraft:logs run say bh:chain 43155 80 42040
+/execute if block 43155 81 42040 minecraft:chain if block 43155 82 42040 #minecraft:logs run say bh:chain 43155 81 42040
+/execute if block 43155 80 42041 minecraft:chain if block 43155 81 42041 #minecraft:logs run say bh:chain 43155 80 42041
+/execute if block 43155 81 42041 minecraft:chain if block 43155 82 42041 #minecraft:logs run say bh:chain 43155 81 42041
+/execute if block 43156 80 42037 minecraft:chain if block 43156 81 42037 #minecraft:logs run say bh:chain 43156 80 42037
+/execute if block 43156 81 42037 minecraft:chain if block 43156 82 42037 #minecraft:logs run say bh:chain 43156 81 42037
+/execute if block 43156 80 42038 minecraft:chain if block 43156 81 42038 #minecraft:logs run say bh:chain 43156 80 42038
+/execute if block 43156 81 42038 minecraft:chain if block 43156 82 42038 #minecraft:logs run say bh:chain 43156 81 42038
+/execute if block 43156 80 42039 minecraft:chain if block 43156 81 42039 #minecraft:logs run say bh:chain 43156 80 42039
+/execute if block 43156 81 42039 minecraft:chain if block 43156 82 42039 #minecraft:logs run say bh:chain 43156 81 42039
+/execute if block 43156 80 42040 minecraft:chain if block 43156 81 42040 #minecraft:logs run say bh:chain 43156 80 42040
+/execute if block 43156 81 42040 minecraft:chain if block 43156 82 42040 #minecraft:logs run say bh:chain 43156 81 42040
+/execute if block 43156 80 42041 minecraft:chain if block 43156 81 42041 #minecraft:logs run say bh:chain 43156 80 42041
+/execute if block 43156 81 42041 minecraft:chain if block 43156 82 42041 #minecraft:logs run say bh:chain 43156 81 42041
+/execute if block 43157 80 42037 minecraft:chain if block 43157 81 42037 #minecraft:logs run say bh:chain 43157 80 42037
+/execute if block 43157 81 42037 minecraft:chain if block 43157 82 42037 #minecraft:logs run say bh:chain 43157 81 42037
+/execute if block 43157 80 42038 minecraft:chain if block 43157 81 42038 #minecraft:logs run say bh:chain 43157 80 42038
+/execute if block 43157 81 42038 minecraft:chain if block 43157 82 42038 #minecraft:logs run say bh:chain 43157 81 42038
+/execute if block 43157 80 42039 minecraft:chain if block 43157 81 42039 #minecraft:logs run say bh:chain 43157 80 42039
+/execute if block 43157 81 42039 minecraft:chain if block 43157 82 42039 #minecraft:logs run say bh:chain 43157 81 42039
+/execute if block 43157 80 42040 minecraft:chain if block 43157 81 42040 #minecraft:logs run say bh:chain 43157 80 42040
+/execute if block 43157 81 42040 minecraft:chain if block 43157 82 42040 #minecraft:logs run say bh:chain 43157 81 42040
+/execute if block 43157 80 42041 minecraft:chain if block 43157 81 42041 #minecraft:logs run say bh:chain 43157 80 42041
+/execute if block 43157 81 42041 minecraft:chain if block 43157 82 42041 #minecraft:logs run say bh:chain 43157 81 42041
+/execute if block 43158 80 42037 minecraft:chain if block 43158 81 42037 #minecraft:logs run say bh:chain 43158 80 42037
+/execute if block 43158 81 42037 minecraft:chain if block 43158 82 42037 #minecraft:logs run say bh:chain 43158 81 42037
+/execute if block 43158 80 42038 minecraft:chain if block 43158 81 42038 #minecraft:logs run say bh:chain 43158 80 42038
+/execute if block 43158 81 42038 minecraft:chain if block 43158 82 42038 #minecraft:logs run say bh:chain 43158 81 42038
+/execute if block 43158 80 42039 minecraft:chain if block 43158 81 42039 #minecraft:logs run say bh:chain 43158 80 42039
+/execute if block 43158 81 42039 minecraft:chain if block 43158 82 42039 #minecraft:logs run say bh:chain 43158 81 42039
+/execute if block 43158 80 42040 minecraft:chain if block 43158 81 42040 #minecraft:logs run say bh:chain 43158 80 42040
+/execute if block 43158 81 42040 minecraft:chain if block 43158 82 42040 #minecraft:logs run say bh:chain 43158 81 42040
+/execute if block 43158 80 42041 minecraft:chain if block 43158 81 42041 #minecraft:logs run say bh:chain 43158 80 42041
+/execute if block 43158 81 42041 minecraft:chain if block 43158 82 42041 #minecraft:logs run say bh:chain 43158 81 42041
+/execute if block 43159 80 42037 minecraft:chain if block 43159 81 42037 #minecraft:logs run say bh:chain 43159 80 42037
+/execute if block 43159 81 42037 minecraft:chain if block 43159 82 42037 #minecraft:logs run say bh:chain 43159 81 42037
+/execute if block 43159 80 42038 minecraft:chain if block 43159 81 42038 #minecraft:logs run say bh:chain 43159 80 42038
+/execute if block 43159 81 42038 minecraft:chain if block 43159 82 42038 #minecraft:logs run say bh:chain 43159 81 42038
+/execute if block 43159 80 42039 minecraft:chain if block 43159 81 42039 #minecraft:logs run say bh:chain 43159 80 42039
+/execute if block 43159 81 42039 minecraft:chain if block 43159 82 42039 #minecraft:logs run say bh:chain 43159 81 42039
+/execute if block 43159 80 42040 minecraft:chain if block 43159 81 42040 #minecraft:logs run say bh:chain 43159 80 42040
+/execute if block 43159 81 42040 minecraft:chain if block 43159 82 42040 #minecraft:logs run say bh:chain 43159 81 42040
+/execute if block 43159 80 42041 minecraft:chain if block 43159 81 42041 #minecraft:logs run say bh:chain 43159 80 42041
+/execute if block 43159 81 42041 minecraft:chain if block 43159 82 42041 #minecraft:logs run say bh:chain 43159 81 42041
+/execute if block 43160 80 42037 minecraft:chain if block 43160 81 42037 #minecraft:logs run say bh:chain 43160 80 42037
+/execute if block 43160 81 42037 minecraft:chain if block 43160 82 42037 #minecraft:logs run say bh:chain 43160 81 42037
+/execute if block 43160 80 42038 minecraft:chain if block 43160 81 42038 #minecraft:logs run say bh:chain 43160 80 42038
+/execute if block 43160 81 42038 minecraft:chain if block 43160 82 42038 #minecraft:logs run say bh:chain 43160 81 42038
+/execute if block 43160 80 42039 minecraft:chain if block 43160 81 42039 #minecraft:logs run say bh:chain 43160 80 42039
+/execute if block 43160 81 42039 minecraft:chain if block 43160 82 42039 #minecraft:logs run say bh:chain 43160 81 42039
+/execute if block 43160 80 42040 minecraft:chain if block 43160 81 42040 #minecraft:logs run say bh:chain 43160 80 42040
+/execute if block 43160 81 42040 minecraft:chain if block 43160 82 42040 #minecraft:logs run say bh:chain 43160 81 42040
+/execute if block 43160 80 42041 minecraft:chain if block 43160 81 42041 #minecraft:logs run say bh:chain 43160 80 42041
+/execute if block 43160 81 42041 minecraft:chain if block 43160 82 42041 #minecraft:logs run say bh:chain 43160 81 42041
+/execute if block 43161 80 42037 minecraft:chain if block 43161 81 42037 #minecraft:logs run say bh:chain 43161 80 42037
+/execute if block 43161 81 42037 minecraft:chain if block 43161 82 42037 #minecraft:logs run say bh:chain 43161 81 42037
+/execute if block 43161 80 42038 minecraft:chain if block 43161 81 42038 #minecraft:logs run say bh:chain 43161 80 42038
+/execute if block 43161 81 42038 minecraft:chain if block 43161 82 42038 #minecraft:logs run say bh:chain 43161 81 42038
+/execute if block 43161 80 42039 minecraft:chain if block 43161 81 42039 #minecraft:logs run say bh:chain 43161 80 42039
+/execute if block 43161 81 42039 minecraft:chain if block 43161 82 42039 #minecraft:logs run say bh:chain 43161 81 42039
+/execute if block 43161 80 42040 minecraft:chain if block 43161 81 42040 #minecraft:logs run say bh:chain 43161 80 42040
+/execute if block 43161 81 42040 minecraft:chain if block 43161 82 42040 #minecraft:logs run say bh:chain 43161 81 42040
+/execute if block 43161 80 42041 minecraft:chain if block 43161 81 42041 #minecraft:logs run say bh:chain 43161 80 42041
+/execute if block 43161 81 42041 minecraft:chain if block 43161 82 42041 #minecraft:logs run say bh:chain 43161 81 42041
+/execute if block 43162 80 42037 minecraft:chain if block 43162 81 42037 #minecraft:logs run say bh:chain 43162 80 42037
+/execute if block 43162 81 42037 minecraft:chain if block 43162 82 42037 #minecraft:logs run say bh:chain 43162 81 42037
+/execute if block 43162 80 42038 minecraft:chain if block 43162 81 42038 #minecraft:logs run say bh:chain 43162 80 42038
+/execute if block 43162 81 42038 minecraft:chain if block 43162 82 42038 #minecraft:logs run say bh:chain 43162 81 42038
+/execute if block 43162 80 42039 minecraft:chain if block 43162 81 42039 #minecraft:logs run say bh:chain 43162 80 42039
+/execute if block 43162 81 42039 minecraft:chain if block 43162 82 42039 #minecraft:logs run say bh:chain 43162 81 42039
+/execute if block 43162 80 42040 minecraft:chain if block 43162 81 42040 #minecraft:logs run say bh:chain 43162 80 42040
+/execute if block 43162 81 42040 minecraft:chain if block 43162 82 42040 #minecraft:logs run say bh:chain 43162 81 42040
+/execute if block 43162 80 42041 minecraft:chain if block 43162 81 42041 #minecraft:logs run say bh:chain 43162 80 42041
+/execute if block 43162 81 42041 minecraft:chain if block 43162 82 42041 #minecraft:logs run say bh:chain 43162 81 42041
+/execute if block 43163 80 42037 minecraft:chain if block 43163 81 42037 #minecraft:logs run say bh:chain 43163 80 42037
+/execute if block 43163 81 42037 minecraft:chain if block 43163 82 42037 #minecraft:logs run say bh:chain 43163 81 42037
+/execute if block 43163 80 42038 minecraft:chain if block 43163 81 42038 #minecraft:logs run say bh:chain 43163 80 42038
+/execute if block 43163 81 42038 minecraft:chain if block 43163 82 42038 #minecraft:logs run say bh:chain 43163 81 42038
+/execute if block 43163 80 42039 minecraft:chain if block 43163 81 42039 #minecraft:logs run say bh:chain 43163 80 42039
+/execute if block 43163 81 42039 minecraft:chain if block 43163 82 42039 #minecraft:logs run say bh:chain 43163 81 42039
+/execute if block 43163 80 42040 minecraft:chain if block 43163 81 42040 #minecraft:logs run say bh:chain 43163 80 42040
+/execute if block 43163 81 42040 minecraft:chain if block 43163 82 42040 #minecraft:logs run say bh:chain 43163 81 42040
+/execute if block 43163 80 42041 minecraft:chain if block 43163 81 42041 #minecraft:logs run say bh:chain 43163 80 42041
+/execute if block 43163 81 42041 minecraft:chain if block 43163 82 42041 #minecraft:logs run say bh:chain 43163 81 42041
+/execute if block 43164 80 42037 minecraft:chain if block 43164 81 42037 #minecraft:logs run say bh:chain 43164 80 42037
+/execute if block 43164 81 42037 minecraft:chain if block 43164 82 42037 #minecraft:logs run say bh:chain 43164 81 42037
+/execute if block 43164 80 42038 minecraft:chain if block 43164 81 42038 #minecraft:logs run say bh:chain 43164 80 42038
+/execute if block 43164 81 42038 minecraft:chain if block 43164 82 42038 #minecraft:logs run say bh:chain 43164 81 42038
+/execute if block 43164 80 42039 minecraft:chain if block 43164 81 42039 #minecraft:logs run say bh:chain 43164 80 42039
+/execute if block 43164 81 42039 minecraft:chain if block 43164 82 42039 #minecraft:logs run say bh:chain 43164 81 42039
+/execute if block 43164 80 42040 minecraft:chain if block 43164 81 42040 #minecraft:logs run say bh:chain 43164 80 42040
+/execute if block 43164 81 42040 minecraft:chain if block 43164 82 42040 #minecraft:logs run say bh:chain 43164 81 42040
+/execute if block 43164 80 42041 minecraft:chain if block 43164 81 42041 #minecraft:logs run say bh:chain 43164 80 42041
+/execute if block 43164 81 42041 minecraft:chain if block 43164 82 42041 #minecraft:logs run say bh:chain 43164 81 42041
+/execute if block 43165 80 42037 minecraft:chain if block 43165 81 42037 #minecraft:logs run say bh:chain 43165 80 42037
+/execute if block 43165 81 42037 minecraft:chain if block 43165 82 42037 #minecraft:logs run say bh:chain 43165 81 42037
+/execute if block 43165 80 42038 minecraft:chain if block 43165 81 42038 #minecraft:logs run say bh:chain 43165 80 42038
+/execute if block 43165 81 42038 minecraft:chain if block 43165 82 42038 #minecraft:logs run say bh:chain 43165 81 42038
+/execute if block 43165 80 42039 minecraft:chain if block 43165 81 42039 #minecraft:logs run say bh:chain 43165 80 42039
+/execute if block 43165 81 42039 minecraft:chain if block 43165 82 42039 #minecraft:logs run say bh:chain 43165 81 42039
+/execute if block 43165 80 42040 minecraft:chain if block 43165 81 42040 #minecraft:logs run say bh:chain 43165 80 42040
+/execute if block 43165 81 42040 minecraft:chain if block 43165 82 42040 #minecraft:logs run say bh:chain 43165 81 42040
+/execute if block 43165 80 42041 minecraft:chain if block 43165 81 42041 #minecraft:logs run say bh:chain 43165 80 42041
+/execute if block 43165 81 42041 minecraft:chain if block 43165 82 42041 #minecraft:logs run say bh:chain 43165 81 42041
+/execute if block 43166 80 42037 minecraft:chain if block 43166 81 42037 #minecraft:logs run say bh:chain 43166 80 42037
+/execute if block 43166 81 42037 minecraft:chain if block 43166 82 42037 #minecraft:logs run say bh:chain 43166 81 42037
+/execute if block 43166 80 42038 minecraft:chain if block 43166 81 42038 #minecraft:logs run say bh:chain 43166 80 42038
+/execute if block 43166 81 42038 minecraft:chain if block 43166 82 42038 #minecraft:logs run say bh:chain 43166 81 42038
+/execute if block 43166 80 42039 minecraft:chain if block 43166 81 42039 #minecraft:logs run say bh:chain 43166 80 42039
+/execute if block 43166 81 42039 minecraft:chain if block 43166 82 42039 #minecraft:logs run say bh:chain 43166 81 42039
+/execute if block 43166 80 42040 minecraft:chain if block 43166 81 42040 #minecraft:logs run say bh:chain 43166 80 42040
+/execute if block 43166 81 42040 minecraft:chain if block 43166 82 42040 #minecraft:logs run say bh:chain 43166 81 42040
+/execute if block 43166 80 42041 minecraft:chain if block 43166 81 42041 #minecraft:logs run say bh:chain 43166 80 42041
+/execute if block 43166 81 42041 minecraft:chain if block 43166 82 42041 #minecraft:logs run say bh:chain 43166 81 42041
+/execute if block 43167 80 42037 minecraft:chain if block 43167 81 42037 #minecraft:logs run say bh:chain 43167 80 42037
+/execute if block 43167 81 42037 minecraft:chain if block 43167 82 42037 #minecraft:logs run say bh:chain 43167 81 42037
+/execute if block 43167 80 42038 minecraft:chain if block 43167 81 42038 #minecraft:logs run say bh:chain 43167 80 42038
+/execute if block 43167 81 42038 minecraft:chain if block 43167 82 42038 #minecraft:logs run say bh:chain 43167 81 42038
+/execute if block 43167 80 42039 minecraft:chain if block 43167 81 42039 #minecraft:logs run say bh:chain 43167 80 42039
+/execute if block 43167 81 42039 minecraft:chain if block 43167 82 42039 #minecraft:logs run say bh:chain 43167 81 42039
+/execute if block 43167 80 42040 minecraft:chain if block 43167 81 42040 #minecraft:logs run say bh:chain 43167 80 42040
+/execute if block 43167 81 42040 minecraft:chain if block 43167 82 42040 #minecraft:logs run say bh:chain 43167 81 42040
+/execute if block 43167 80 42041 minecraft:chain if block 43167 81 42041 #minecraft:logs run say bh:chain 43167 80 42041
+/execute if block 43167 81 42041 minecraft:chain if block 43167 82 42041 #minecraft:logs run say bh:chain 43167 81 42041
+/execute if block 43168 80 42037 minecraft:chain if block 43168 81 42037 #minecraft:logs run say bh:chain 43168 80 42037
+/execute if block 43168 81 42037 minecraft:chain if block 43168 82 42037 #minecraft:logs run say bh:chain 43168 81 42037
+/execute if block 43168 80 42038 minecraft:chain if block 43168 81 42038 #minecraft:logs run say bh:chain 43168 80 42038
+/execute if block 43168 81 42038 minecraft:chain if block 43168 82 42038 #minecraft:logs run say bh:chain 43168 81 42038
+/execute if block 43168 80 42039 minecraft:chain if block 43168 81 42039 #minecraft:logs run say bh:chain 43168 80 42039
+/execute if block 43168 81 42039 minecraft:chain if block 43168 82 42039 #minecraft:logs run say bh:chain 43168 81 42039
+/execute if block 43168 80 42040 minecraft:chain if block 43168 81 42040 #minecraft:logs run say bh:chain 43168 80 42040
+/execute if block 43168 81 42040 minecraft:chain if block 43168 82 42040 #minecraft:logs run say bh:chain 43168 81 42040
+/execute if block 43168 80 42041 minecraft:chain if block 43168 81 42041 #minecraft:logs run say bh:chain 43168 80 42041
+/execute if block 43168 81 42041 minecraft:chain if block 43168 82 42041 #minecraft:logs run say bh:chain 43168 81 42041
+/execute if block 43169 80 42037 minecraft:chain if block 43169 81 42037 #minecraft:logs run say bh:chain 43169 80 42037
+/execute if block 43169 81 42037 minecraft:chain if block 43169 82 42037 #minecraft:logs run say bh:chain 43169 81 42037
+/execute if block 43169 80 42038 minecraft:chain if block 43169 81 42038 #minecraft:logs run say bh:chain 43169 80 42038
+/execute if block 43169 81 42038 minecraft:chain if block 43169 82 42038 #minecraft:logs run say bh:chain 43169 81 42038
+/execute if block 43169 80 42039 minecraft:chain if block 43169 81 42039 #minecraft:logs run say bh:chain 43169 80 42039
+/execute if block 43169 81 42039 minecraft:chain if block 43169 82 42039 #minecraft:logs run say bh:chain 43169 81 42039
+/execute if block 43169 80 42040 minecraft:chain if block 43169 81 42040 #minecraft:logs run say bh:chain 43169 80 42040
+/execute if block 43169 81 42040 minecraft:chain if block 43169 82 42040 #minecraft:logs run say bh:chain 43169 81 42040
+/execute if block 43169 80 42041 minecraft:chain if block 43169 81 42041 #minecraft:logs run say bh:chain 43169 80 42041
+/execute if block 43169 81 42041 minecraft:chain if block 43169 82 42041 #minecraft:logs run say bh:chain 43169 81 42041
+/execute if block 43170 80 42037 minecraft:chain if block 43170 81 42037 #minecraft:logs run say bh:chain 43170 80 42037
+/execute if block 43170 81 42037 minecraft:chain if block 43170 82 42037 #minecraft:logs run say bh:chain 43170 81 42037
+/execute if block 43170 80 42038 minecraft:chain if block 43170 81 42038 #minecraft:logs run say bh:chain 43170 80 42038
+/execute if block 43170 81 42038 minecraft:chain if block 43170 82 42038 #minecraft:logs run say bh:chain 43170 81 42038
+/execute if block 43170 80 42039 minecraft:chain if block 43170 81 42039 #minecraft:logs run say bh:chain 43170 80 42039
+/execute if block 43170 81 42039 minecraft:chain if block 43170 82 42039 #minecraft:logs run say bh:chain 43170 81 42039
+/execute if block 43170 80 42040 minecraft:chain if block 43170 81 42040 #minecraft:logs run say bh:chain 43170 80 42040
+/execute if block 43170 81 42040 minecraft:chain if block 43170 82 42040 #minecraft:logs run say bh:chain 43170 81 42040
+/execute if block 43170 80 42041 minecraft:chain if block 43170 81 42041 #minecraft:logs run say bh:chain 43170 80 42041
+/execute if block 43170 81 42041 minecraft:chain if block 43170 82 42041 #minecraft:logs run say bh:chain 43170 81 42041
+/execute if block 43171 80 42037 minecraft:chain if block 43171 81 42037 #minecraft:logs run say bh:chain 43171 80 42037
+/execute if block 43171 81 42037 minecraft:chain if block 43171 82 42037 #minecraft:logs run say bh:chain 43171 81 42037
+/execute if block 43171 80 42038 minecraft:chain if block 43171 81 42038 #minecraft:logs run say bh:chain 43171 80 42038
+/execute if block 43171 81 42038 minecraft:chain if block 43171 82 42038 #minecraft:logs run say bh:chain 43171 81 42038
+/execute if block 43171 80 42039 minecraft:chain if block 43171 81 42039 #minecraft:logs run say bh:chain 43171 80 42039
+/execute if block 43171 81 42039 minecraft:chain if block 43171 82 42039 #minecraft:logs run say bh:chain 43171 81 42039
+/execute if block 43171 80 42040 minecraft:chain if block 43171 81 42040 #minecraft:logs run say bh:chain 43171 80 42040
+/execute if block 43171 81 42040 minecraft:chain if block 43171 82 42040 #minecraft:logs run say bh:chain 43171 81 42040
+/execute if block 43171 80 42041 minecraft:chain if block 43171 81 42041 #minecraft:logs run say bh:chain 43171 80 42041
+/execute if block 43171 81 42041 minecraft:chain if block 43171 82 42041 #minecraft:logs run say bh:chain 43171 81 42041
+/execute if block 43172 80 42037 minecraft:chain if block 43172 81 42037 #minecraft:logs run say bh:chain 43172 80 42037
+/execute if block 43172 81 42037 minecraft:chain if block 43172 82 42037 #minecraft:logs run say bh:chain 43172 81 42037
+/execute if block 43172 80 42038 minecraft:chain if block 43172 81 42038 #minecraft:logs run say bh:chain 43172 80 42038
+/execute if block 43172 81 42038 minecraft:chain if block 43172 82 42038 #minecraft:logs run say bh:chain 43172 81 42038
+/execute if block 43172 80 42039 minecraft:chain if block 43172 81 42039 #minecraft:logs run say bh:chain 43172 80 42039
+/execute if block 43172 81 42039 minecraft:chain if block 43172 82 42039 #minecraft:logs run say bh:chain 43172 81 42039
+/execute if block 43172 80 42040 minecraft:chain if block 43172 81 42040 #minecraft:logs run say bh:chain 43172 80 42040
+/execute if block 43172 81 42040 minecraft:chain if block 43172 82 42040 #minecraft:logs run say bh:chain 43172 81 42040
+/execute if block 43172 80 42041 minecraft:chain if block 43172 81 42041 #minecraft:logs run say bh:chain 43172 80 42041
+/execute if block 43172 81 42041 minecraft:chain if block 43172 82 42041 #minecraft:logs run say bh:chain 43172 81 42041
+/execute if block 43173 80 42037 minecraft:chain if block 43173 81 42037 #minecraft:logs run say bh:chain 43173 80 42037
+/execute if block 43173 81 42037 minecraft:chain if block 43173 82 42037 #minecraft:logs run say bh:chain 43173 81 42037
+/execute if block 43173 80 42038 minecraft:chain if block 43173 81 42038 #minecraft:logs run say bh:chain 43173 80 42038
+/execute if block 43173 81 42038 minecraft:chain if block 43173 82 42038 #minecraft:logs run say bh:chain 43173 81 42038
+/execute if block 43173 80 42039 minecraft:chain if block 43173 81 42039 #minecraft:logs run say bh:chain 43173 80 42039
+/execute if block 43173 81 42039 minecraft:chain if block 43173 82 42039 #minecraft:logs run say bh:chain 43173 81 42039
+/execute if block 43173 80 42040 minecraft:chain if block 43173 81 42040 #minecraft:logs run say bh:chain 43173 80 42040
+/execute if block 43173 81 42040 minecraft:chain if block 43173 82 42040 #minecraft:logs run say bh:chain 43173 81 42040
+/execute if block 43173 80 42041 minecraft:chain if block 43173 81 42041 #minecraft:logs run say bh:chain 43173 80 42041
+/execute if block 43173 81 42041 minecraft:chain if block 43173 82 42041 #minecraft:logs run say bh:chain 43173 81 42041
+/execute if block 43174 80 42037 minecraft:chain if block 43174 81 42037 #minecraft:logs run say bh:chain 43174 80 42037
+/execute if block 43174 81 42037 minecraft:chain if block 43174 82 42037 #minecraft:logs run say bh:chain 43174 81 42037
+/execute if block 43174 80 42038 minecraft:chain if block 43174 81 42038 #minecraft:logs run say bh:chain 43174 80 42038
+/execute if block 43174 81 42038 minecraft:chain if block 43174 82 42038 #minecraft:logs run say bh:chain 43174 81 42038
+/execute if block 43174 80 42039 minecraft:chain if block 43174 81 42039 #minecraft:logs run say bh:chain 43174 80 42039
+/execute if block 43174 81 42039 minecraft:chain if block 43174 82 42039 #minecraft:logs run say bh:chain 43174 81 42039
+/execute if block 43174 80 42040 minecraft:chain if block 43174 81 42040 #minecraft:logs run say bh:chain 43174 80 42040
+/execute if block 43174 81 42040 minecraft:chain if block 43174 82 42040 #minecraft:logs run say bh:chain 43174 81 42040
+/execute if block 43174 80 42041 minecraft:chain if block 43174 81 42041 #minecraft:logs run say bh:chain 43174 80 42041
+/execute if block 43174 81 42041 minecraft:chain if block 43174 82 42041 #minecraft:logs run say bh:chain 43174 81 42041
+/execute if block 43175 80 42037 minecraft:chain if block 43175 81 42037 #minecraft:logs run say bh:chain 43175 80 42037
+/execute if block 43175 81 42037 minecraft:chain if block 43175 82 42037 #minecraft:logs run say bh:chain 43175 81 42037
+/execute if block 43175 80 42038 minecraft:chain if block 43175 81 42038 #minecraft:logs run say bh:chain 43175 80 42038
+/execute if block 43175 81 42038 minecraft:chain if block 43175 82 42038 #minecraft:logs run say bh:chain 43175 81 42038
+/execute if block 43175 80 42039 minecraft:chain if block 43175 81 42039 #minecraft:logs run say bh:chain 43175 80 42039
+/execute if block 43175 81 42039 minecraft:chain if block 43175 82 42039 #minecraft:logs run say bh:chain 43175 81 42039
+/execute if block 43175 80 42040 minecraft:chain if block 43175 81 42040 #minecraft:logs run say bh:chain 43175 80 42040
+/execute if block 43175 81 42040 minecraft:chain if block 43175 82 42040 #minecraft:logs run say bh:chain 43175 81 42040
+/execute if block 43175 80 42041 minecraft:chain if block 43175 81 42041 #minecraft:logs run say bh:chain 43175 80 42041
+/execute if block 43175 81 42041 minecraft:chain if block 43175 82 42041 #minecraft:logs run say bh:chain 43175 81 42041
+/execute if block 43176 80 42037 minecraft:chain if block 43176 81 42037 #minecraft:logs run say bh:chain 43176 80 42037
+/execute if block 43176 81 42037 minecraft:chain if block 43176 82 42037 #minecraft:logs run say bh:chain 43176 81 42037
+/execute if block 43176 80 42038 minecraft:chain if block 43176 81 42038 #minecraft:logs run say bh:chain 43176 80 42038
+/execute if block 43176 81 42038 minecraft:chain if block 43176 82 42038 #minecraft:logs run say bh:chain 43176 81 42038
+/execute if block 43176 80 42039 minecraft:chain if block 43176 81 42039 #minecraft:logs run say bh:chain 43176 80 42039
+/execute if block 43176 81 42039 minecraft:chain if block 43176 82 42039 #minecraft:logs run say bh:chain 43176 81 42039
+/execute if block 43176 80 42040 minecraft:chain if block 43176 81 42040 #minecraft:logs run say bh:chain 43176 80 42040
+/execute if block 43176 81 42040 minecraft:chain if block 43176 82 42040 #minecraft:logs run say bh:chain 43176 81 42040
+/execute if block 43176 80 42041 minecraft:chain if block 43176 81 42041 #minecraft:logs run say bh:chain 43176 80 42041
+/execute if block 43176 81 42041 minecraft:chain if block 43176 82 42041 #minecraft:logs run say bh:chain 43176 81 42041
+/execute if block 43177 80 42037 minecraft:chain if block 43177 81 42037 #minecraft:logs run say bh:chain 43177 80 42037
+/execute if block 43177 81 42037 minecraft:chain if block 43177 82 42037 #minecraft:logs run say bh:chain 43177 81 42037
+/execute if block 43177 80 42038 minecraft:chain if block 43177 81 42038 #minecraft:logs run say bh:chain 43177 80 42038
+/execute if block 43177 81 42038 minecraft:chain if block 43177 82 42038 #minecraft:logs run say bh:chain 43177 81 42038
+/execute if block 43177 80 42039 minecraft:chain if block 43177 81 42039 #minecraft:logs run say bh:chain 43177 80 42039
+/execute if block 43177 81 42039 minecraft:chain if block 43177 82 42039 #minecraft:logs run say bh:chain 43177 81 42039
+/execute if block 43177 80 42040 minecraft:chain if block 43177 81 42040 #minecraft:logs run say bh:chain 43177 80 42040
+/execute if block 43177 81 42040 minecraft:chain if block 43177 82 42040 #minecraft:logs run say bh:chain 43177 81 42040
+/execute if block 43177 80 42041 minecraft:chain if block 43177 81 42041 #minecraft:logs run say bh:chain 43177 80 42041
+/execute if block 43177 81 42041 minecraft:chain if block 43177 82 42041 #minecraft:logs run say bh:chain 43177 81 42041
+/say bh:checks-done
+hud off
+/tp @s 43168.5 93 42016.5 0 90
+wait 60
+closescreen
+screenshot bh-diag-top
+/tp @s 43161.5 85.5 42010.5 -45 20
+wait 60
+closescreen
+screenshot bh-diag-side
+/tp @s 43165.5 93 42039.5 0 90
+wait 60
+closescreen
+screenshot bh-long-top
+/tp @s 43165.5 84 42047.5 180 10
+wait 60
+closescreen
+screenshot bh-long-side
+/tp @s 43165.5 79 42046.5 180 -15
+wait 40
+closescreen
+screenshot bh-long-below
+hud on
+/gamemode survival
+/effect give @s minecraft:resistance 60 4 true
+/tp @s 43155.5 83 42040.5 -90 0
+wait 40
+walkto 43176 42038 400
+perspective back
+hud off
+wait 5
+screenshot bh-walk
+perspective first
+hud on
+/gamemode spectator
+quit

@@ -23,6 +23,8 @@ import net.minecraft.util.math.Direction;
  * Inside: a fire pit in the middle, log benches, four War Drums, a trophy wall of mob heads on the back wall,
  * Tusk Racks on the end walls and behind the seat, and at the far end the War Chief's seat of blackstone and
  * gold on a dais with a Hide Rug before it, and the hoard chest beside it. The War Chief waits by the seat.
+ * The end walls are timber-framed, with a hide-clad gable bearing the Bloodtusk mark, skulls on the posts outside
+ * and a skull on each end of the ridge, under a roof that overhangs them by one.
  */
 public class LonghousePiece extends StrongholdPiece {
     static final int A = 10;
@@ -38,7 +40,7 @@ public class LonghousePiece extends StrongholdPiece {
     static final int SEAT_B = BACK + 2;
 
     public LonghousePiece(BlockPos center, Direction gate, long seed, long hold) {
-        super(OrcStrongholdStructures.LONGHOUSE, center, gate, seed, hold, -A, 0, BACK, A, 10, FRONT);
+        super(OrcStrongholdStructures.LONGHOUSE, center, gate, seed, hold, -A - 1, 0, BACK, A + 1, 10, FRONT);
     }
 
     public LonghousePiece(NbtCompound nbt) {
@@ -61,6 +63,46 @@ public class LonghousePiece extends StrongholdPiece {
 
     private static net.minecraft.block.BlockState rack(Direction facing) {
         return OrcBuildingBlocks.TUSK_RACK.getDefaultState().with(TuskRackBlock.FACING, facing);
+    }
+
+    /**
+     * The end walls: a dark oak frame (a beam at the eaves, three posts under it and a king post above it) round
+     * spruce below and tanned hide in the gable, with the Bloodtusk mark either side of the king post. Outside,
+     * skulls hang on the side posts and sit on the ridge ends, and the roof runs one block past the wall.
+     */
+    private static void gableEnds(Builder b) {
+        for (int side = -1; side <= 1; side += 2) {
+            int x = side * A;
+            int out = side * (A + 1);
+            Direction outward = side > 0 ? Direction.EAST : Direction.WEST;
+            for (int z = BACK; z <= FRONT; z++) {
+                int top = roofY(z);
+                if (z == RIDGE) {
+                    b.set(out, top, z, Blocks.DARK_OAK_PLANKS);
+                } else {
+                    Block stair = Math.abs(z - RIDGE) % 2 == 0 ? Blocks.DARK_OAK_STAIRS : Blocks.SPRUCE_STAIRS;
+                    b.set(out, top, z, stairs(stair, z > RIDGE ? Direction.NORTH : Direction.SOUTH, false));
+                }
+                if (z == BACK || z == FRONT) {
+                    continue;
+                }
+                b.set(x, 4, z, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Z));
+                for (int y = 5; y < top; y++) {
+                    b.set(x, y, z, z == RIDGE ? pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y) : ModBlockFamilies.TANNED_HIDE.base().getDefaultState());
+                }
+            }
+            for (int z = RIDGE - 3; z <= RIDGE + 3; z += 3) {
+                for (int y = 1; y <= 3; y++) {
+                    b.set(x, y, z, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
+                }
+            }
+            b.set(x, 5, RIDGE - 2, ModBlockFamilies.PAINTED_HIDE.base());
+            b.set(x, 5, RIDGE + 2, ModBlockFamilies.PAINTED_HIDE.base());
+            for (int z = RIDGE - 3; z <= RIDGE + 3; z += 6) {
+                b.set(out, 3, z, b.pick(WALL_HEADS).getDefaultState().with(WallSkullBlock.FACING, outward));
+            }
+            b.set(out, roofY(RIDGE) + 1, RIDGE, skull(b.random));
+        }
     }
 
     @Override
@@ -89,6 +131,7 @@ public class LonghousePiece extends StrongholdPiece {
                 }
             }
         }
+        gableEnds(b);
         // The door, facing the pit.
         b.air(-1, 1, FRONT, 1, 2, FRONT);
         // A hide flap over the top of the doorway, and the Bloodtusk mark either side of it.

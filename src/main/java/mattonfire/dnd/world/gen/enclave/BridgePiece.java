@@ -185,7 +185,7 @@ public class BridgePiece extends EnclavePiece {
         }
         DesolationLevel level = Desolation.level();
         if (level != null && Desolation.roll(this.seed, 0, 0, 0, 40) < level.bridgesFallen) {
-            this.fall(b, walkway, landing);
+            this.fall(b, walkway, landing, rails.keySet());
         }
     }
 
@@ -199,18 +199,17 @@ public class BridgePiece extends EnclavePiece {
      * <p>Every column is decided from the piece's seed, its cells and the blocks in that column, so each chunk places
      * its part of the same fall.
      */
-    private void fall(Builder b, Set<Long> walkway, Set<Long> landing) {
+    private void fall(Builder b, Set<Long> walkway, Set<Long> landing, Set<Long> rails) {
         int count = this.cells.length / 2;
         for (int i = 0; i < count; i++) {
             int x = this.cells[2 * i];
             int z = this.cells[2 * i + 1];
             this.clearBridge(b, x, z);
-            for (Direction d : Direction.Type.HORIZONTAL) {
-                long key = ChunkPos.toLong(x + d.getOffsetX(), z + d.getOffsetZ());
-                if (!walkway.contains(key) && !landing.contains(key)) {
-                    this.clearBridge(b, x + d.getOffsetX(), z + d.getOffsetZ());
-                }
-            }
+        }
+        // Every rail column, the corner posts where the walkway steps sideways included (those only touch the
+        // walkway diagonally).
+        for (long key : rails) {
+            this.clearBridge(b, ChunkPos.getPackedX(key), ChunkPos.getPackedZ(key));
         }
         // Where it snapped: cells below `snap` hang from the first end, the rest from the last.
         float end = Desolation.roll(this.seed, 3, 0, 0, 41);

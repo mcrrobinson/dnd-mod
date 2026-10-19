@@ -1,0 +1,28 @@
+# Shots from above of the fallen bridges in the enclaves enclave-bridges-3.txt places
+# (run that first with -PdevRunDir=run-2; for another world, move these to its "[Desolation] bridge of ..." lines in
+# debug.log). Checks: screenshots span-<n>-above: nothing of a fallen span is left in the air, only the
+# end posts at the landings; the rest of it hangs from them or lies on the leaves and ground under its path.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+hud off
+/tp @s 237333.5 89 -162544.5 180 65
+wait 200
+closescreen
+wait 5
+screenshot span-a-above
+/tp @s 237332.5 89 -162520.5 180 65
+wait 60
+screenshot span-b-above
+/tp @s 237347.5 89 -162530.5 180 65
+wait 60
+screenshot span-c-above
+/tp @s 251106.5 121 -191451.5 180 65
+wait 60
+screenshot span-d-above
+/tp @s 251099.5 121 -191471.5 180 65
+wait 60
+screenshot span-e-above
+quit

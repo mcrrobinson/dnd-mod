@@ -2,6 +2,10 @@
   "structures": [
     {
       "structure": "dndclasses:dwarven_fortress",
+      "weight": 4
+    },
+    {
+      "structure": "dndclasses:desolate_dwarven_fortress",
       "weight": 1
     }
   ],

@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:desolate_hobbit_village",
+    "dndclasses:desolate_dwarven_fortress",
+    "dndclasses:desolate_elven_enclave",
+    "dndclasses:desolate_orc_stronghold",
+    "dndclasses:desolate_cogsdeep",
+    "dndclasses:desolate_goblin_camp"
+  ]
+}

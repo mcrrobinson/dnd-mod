@@ -4,7 +4,11 @@ import static mattonfire.dnd.classes.Registry.ModBlockFamilies.*;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
+import mattonfire.dnd.classes.Blocks.RubbleBlock;
 import mattonfire.dnd.classes.Registry.ModBannerPatterns;
+import mattonfire.dnd.classes.Registry.RuinBlocks;
+import mattonfire.dnd.world.gen.Desolation;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.DoorBlock;
@@ -30,6 +34,8 @@ import net.minecraft.util.math.Direction;
  * cartography desk with a spyglass, a lectern, bookshelves and a chest. Trees and
  * plants round it are cleared; the floor sits on a foundation down to the ground.
  *
+ * <p>In a desolate Cogsdeep the dome has caved in ({@link #caved}), and its copper lies on the floor.
+ *
  * <p>y = 0 is where you stand on the floor (the ground's first air in the middle).
  */
 public class ObservatoryPiece extends CogsdeepPiece {
@@ -50,6 +56,11 @@ public class ObservatoryPiece extends CogsdeepPiece {
     static final int TUBE = 4;
     /** Half the slit's width: it's 3 blocks wide. */
     static final int SLIT = 1;
+    /** A desolate dome's chance of a block having fallen in, at the walls and more for each row up. */
+    static final float CAVE_IN = 0.15F;
+    static final float CAVE_IN_PER_ROW = 0.13F;
+    /** Floor cells inside with something from the dome on them. */
+    static final float DEBRIS = 0.3F;
 
     public ObservatoryPiece(BlockPos center, Direction door, long seed, long burrow) {
         super(CogsdeepStructures.OBSERVATORY, center, door, seed, burrow, -CLEAR_RADIUS, -8, -CLEAR_RADIUS - 4,
@@ -73,6 +84,46 @@ public class ObservatoryPiece extends CogsdeepPiece {
     /** Just outside the door, in the world. */
     public BlockPos outside() {
         return this.at(0, 0, 9);
+    }
+
+    /**
+     * In a desolate Cogsdeep, whether the dome's block at a/y/c has fallen in: most of the crown and less towards
+     * the walls, with a few chunks of the lower rows gone too.
+     */
+    private boolean caved(int a, int y, int c) {
+        if (!Desolation.active()) {
+            return false;
+        }
+        int up = y - DOME_BASE;
+        return Desolation.roll(this.seed, a, y, c, 50) < CAVE_IN + CAVE_IN_PER_ROW * up;
+    }
+
+    /**
+     * What fell when the dome caved in: copper on the floor (blocks, slabs and Collapsed Rubble), kept off the
+     * stairwell in the middle and the door, and the lightning rod lying among it.
+     */
+    private void fallenDome(Builder b) {
+        for (int a = -5; a <= 5; a++) {
+            for (int c = -5; c <= 5; c++) {
+                double r = r(a, c);
+                if (r < 2.5D || r > RADIUS - 1.2D || c >= 4 && Math.abs(a) <= 1) {
+                    continue;
+                }
+                float roll = Desolation.roll(this.seed, a, 0, c, 51);
+                if (roll >= DEBRIS) {
+                    continue;
+                }
+                BlockState piece = roll < DEBRIS * 0.35F ? Blocks.WEATHERED_CUT_COPPER.getDefaultState()
+                        : roll < DEBRIS * 0.7F ? bottomSlab(Blocks.WEATHERED_CUT_COPPER_SLAB)
+                        : RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, 1 + (int) (roll * 40) % 3);
+                if (b.inChunk(a, 0, c) && b.get(a, 0, c).isAir()) {
+                    b.set(a, 0, c, piece);
+                }
+            }
+        }
+        if (b.inChunk(3, 0, 1) && b.get(3, 0, 1).isAir()) {
+            b.set(3, 0, 1, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.EAST));
+        }
     }
 
     private static double r(int a, int b) {
@@ -138,15 +189,21 @@ public class ObservatoryPiece extends CogsdeepPiece {
                     }
                     boolean slit = Math.abs(a) <= SLIT && c < 0 && y > DOME_BASE;
                     if (d > DOME - 1.15D && !slit) {
-                        b.set(a, y, c, cutCopper(b));
+                        // The copper's drawn either way, so a caved-in dome leaves the rest of the build as it was.
+                        Block copper = cutCopper(b);
+                        b.set(a, y, c, this.caved(a, y, c) ? Blocks.AIR : copper);
                     } else {
                         b.set(a, y, c, Blocks.AIR);
                     }
                 }
             }
         }
-        b.set(0, DOME_BASE + 7, 0, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP));
-        b.hangingLantern(0, DOME_BASE + 5, 0, 2);
+        if (Desolation.active()) {
+            this.fallenDome(b);
+        } else {
+            b.set(0, DOME_BASE + 7, 0, Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP));
+            b.hangingLantern(0, DOME_BASE + 5, 0, 2);
+        }
 
         // The door, facing out to the south, and a dirt path from it.
         b.set(0, 0, 6, door(DoubleBlockHalf.LOWER));

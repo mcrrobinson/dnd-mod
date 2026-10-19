@@ -20,6 +20,8 @@ import net.minecraft.world.gen.structure.Structure;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import mattonfire.dnd.classes.Race.RaceLifecycle;
+import mattonfire.dnd.world.gen.Desolation;
+import mattonfire.dnd.world.gen.DesolationLevel;
 import mattonfire.dnd.world.gen.RacialHomes;
 import net.minecraft.command.argument.EntityArgumentType;
 import net.minecraft.registry.Registries;
@@ -119,8 +121,65 @@ public final class DndHomeCommand {
                 .then(CommandManager.literal("trialreset")
                         .then(CommandManager.argument("players", EntityArgumentType.players())
                                 .executes(context -> StrongholdCommands.trialReset(context, EntityArgumentType.getPlayers(context, "players")))))
+                .then(CommandManager.literal("visit")
+                        .then(CommandManager.argument("structure", net.minecraft.command.argument.IdentifierArgumentType.identifier())
+                                .executes(context -> visit(context, net.minecraft.command.argument.IdentifierArgumentType
+                                        .getIdentifier(context, "structure")))))
+                .then(CommandManager.literal("desolation")
+                        .then(CommandManager.argument("level", StringArgumentType.word())
+                                .suggests((context, builder) -> {
+                                    builder.suggest("random");
+                                    for (DesolationLevel level : DesolationLevel.values()) {
+                                        builder.suggest(level.name().toLowerCase(java.util.Locale.ROOT));
+                                    }
+                                    return builder.buildFuture();
+                                })
+                                .executes(context -> desolation(context, StringArgumentType.getString(context, "level")))))
                 .then(CommandManager.argument("player", EntityArgumentType.player())
                         .executes(context -> info(context, EntityArgumentType.getPlayer(context, "player")))));
+    }
+
+    /**
+     * {@code /dndhome visit <structure>}: teleports you 200 high over the nearest start of that structure (within 100
+     * chunks), for scripted checks that can't read {@code /locate}'s answer.
+     */
+    private static int visit(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        ServerWorld world = context.getSource().getWorld();
+        var registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
+        var entry = registry.getEntry(net.minecraft.registry.RegistryKey.of(RegistryKeys.STRUCTURE, id));
+        if (entry.isEmpty()) {
+            context.getSource().sendError(Text.literal("[Home] No structure " + id));
+            return 0;
+        }
+        var found = world.getChunkManager().getChunkGenerator().locateStructure(world,
+                net.minecraft.registry.entry.RegistryEntryList.of(entry.get()), player.getBlockPos(), 100, false);
+        if (found == null) {
+            context.getSource().sendError(Text.literal("[Home] No " + id + " within 100 chunks"));
+            return 0;
+        }
+        BlockPos pos = found.getFirst();
+        player.teleport(world, pos.getX() + 0.5D, 200.0D, pos.getZ() + 0.5D, player.getYaw(), player.getPitch());
+        context.getSource().sendFeedback(Text.literal("[Home] " + id + " at " + pos.getX() + " " + pos.getZ()), false);
+        return 1;
+    }
+
+    /** {@code /dndhome desolation <level|random>}: the level every desolate settlement generated from now on gets. */
+    private static int desolation(CommandContext<ServerCommandSource> context, String name) {
+        if (name.equals("random")) {
+            Desolation.force(null);
+            context.getSource().sendFeedback(Text.literal("[Home] Desolate settlements roll their level"), true);
+            return 1;
+        }
+        for (DesolationLevel level : DesolationLevel.values()) {
+            if (level.name().equalsIgnoreCase(name)) {
+                Desolation.force(level);
+                context.getSource().sendFeedback(Text.literal("[Home] New desolate settlements are " + name), true);
+                return 1;
+            }
+        }
+        context.getSource().sendError(Text.literal("[Home] No desolation level " + name));
+        return 0;
     }
 
     private static int info(CommandContext<ServerCommandSource> context, ServerPlayerEntity player) {

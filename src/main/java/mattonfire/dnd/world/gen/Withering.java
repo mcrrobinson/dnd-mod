@@ -1,0 +1,802 @@
+package mattonfire.dnd.world.gen;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import mattonfire.dnd.classes.Blocks.RubbleBlock;
+import mattonfire.dnd.classes.Blocks.dwarven.CoinPileBlock;
+import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.DesolateBlocks;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.RuinBlocks;
+import net.minecraft.block.AttachedStemBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.block.CakeBlock;
+import net.minecraft.block.CampfireBlock;
+import net.minecraft.block.CandleCakeBlock;
+import net.minecraft.block.CarpetBlock;
+import net.minecraft.block.CarvedPumpkinBlock;
+import net.minecraft.block.CropBlock;
+import net.minecraft.block.DeadBushBlock;
+import net.minecraft.block.DoorBlock;
+import net.minecraft.block.DyedCarpetBlock;
+import net.minecraft.block.FlowerPotBlock;
+import net.minecraft.block.LanternBlock;
+import net.minecraft.block.LeavesBlock;
+import net.minecraft.block.Material;
+import net.minecraft.block.MushroomPlantBlock;
+import net.minecraft.block.PaneBlock;
+import net.minecraft.block.PlantBlock;
+import net.minecraft.block.SlabBlock;
+import net.minecraft.block.StainedGlassBlock;
+import net.minecraft.block.StemBlock;
+import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.block.TallPlantBlock;
+import net.minecraft.block.VineBlock;
+import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.LootableContainerBlockEntity;
+import net.minecraft.block.enums.DoubleBlockHalf;
+import net.minecraft.block.enums.SlabType;
+import net.minecraft.data.family.BlockFamilies;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.registry.tag.BlockTags;
+import net.minecraft.state.property.Properties;
+import net.minecraft.structure.StructurePiece;
+import net.minecraft.structure.StructureStart;
+import net.minecraft.util.Clearable;
+import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.random.Random;
+import net.minecraft.world.StructureWorldAccess;
+import net.minecraft.world.gen.chunk.ChunkGenerator;
+import net.minecraft.world.gen.feature.ConfiguredFeature;
+import net.minecraft.world.gen.feature.TreeConfiguredFeatures;
+
+/**
+ * Wears one chunk's slice of a desolate settlement down to its {@link DesolationLevel}, after its pieces are
+ * placed ({@link Desolation#end}). Every decision comes from {@link Desolation#roll} on the block position and the
+ * start, so chunks agree where they meet. In order:
+ * <ol>
+ *   <li>Every block, top down: containers and beehives emptied, gold looted, then the level's changes (ground,
+ *   plants, leaves, lights, glass, carpets, doors, cracked and mossy bricks, cobwebs). Snow on a block that's
+ *   gone goes with it.</li>
+ *   <li>Fallen doorways (before the rest, so the doors are still there to find): the door and the lintel over it
+ *   come down in a heap on the threshold.</li>
+ *   <li>Collapses, planned per piece from the start alone so they carry across chunk borders: breaches knocked
+ *   through its walls and roof, and holes down through its roof and floors. Some of what they knock out lies on
+ *   the ground below as slabs, blocks or rubble.</li>
+ *   <li>Overgrowth: flowers and tall grass, vines down the walls, moss on floors, moss and soil on the roofs.</li>
+ *   <li>Trees grown up inside.</li>
+ * </ol>
+ * It covers the structure's box and {@link #ABOVE} blocks above it, fading out over the outer {@link #FADE}.
+ */
+final class Withering {
+    /** Blocks over which the withering fades in from the edge of the structure's box. */
+    static final int FADE = 6;
+    /**
+     * Blocks above the structure's box that are withered too: pieces build above their own boxes (the hobbit
+     * party tree, the grass on top of the grounds).
+     */
+    static final int ABOVE = 24;
+    static final float DEAD_BUSH = 0.3F;
+    /** How far a breach looks down for the ground its rubble falls on. */
+    static final int RUBBLE_FALL = 24;
+    /** A piece this many blocks square gets the level's number of breaches and holes; others by their area. */
+    static final int PIECE_SIZE = 12;
+    /** The most a big piece multiplies them by, and the least a small one does. */
+    static final float MAX_PIECE_FACTOR = 12.0F;
+    static final float MIN_PIECE_FACTOR = 0.4F;
+    /**
+     * A piece this many times {@link #PIECE_SIZE}'s area or more (a goblin camp is one piece) has half its breaches
+     * anywhere inside it rather than on its sides, where its buildings are.
+     */
+    static final float BIG_PIECE = 2.0F;
+    /** A fallen doorway's lintel blocks that come down, in the first and second rows over the door. */
+    static final float LINTEL_FALLS = 0.8F;
+    static final float LINTEL_TOP_FALLS = 0.5F;
+    /** How many floors (and roofs) a hole goes down through. */
+    static final int HOLE_FLOORS = 3;
+
+    private static final Block[] FLOWERS = {Blocks.GRASS, Blocks.GRASS, Blocks.GRASS, Blocks.FERN, Blocks.DANDELION,
+            Blocks.POPPY, Blocks.OXEYE_DAISY, Blocks.CORNFLOWER, Blocks.AZURE_BLUET, Blocks.ALLIUM};
+    private static final List<RegistryKey<ConfiguredFeature<?, ?>>> TREES = List.of(TreeConfiguredFeatures.OAK,
+            TreeConfiguredFeatures.BIRCH, TreeConfiguredFeatures.OAK);
+    private static Map<Block, Block> slabs;
+
+    private final StructureWorldAccess world;
+    private final StructureStart start;
+    private final BlockBox box;
+    private final BlockBox chunkBox;
+    private final ChunkGenerator generator;
+    private final DesolationLevel level;
+    private final long salt;
+    private final int minX;
+    private final int maxX;
+    private final int minY;
+    private final int maxY;
+    private final int minZ;
+    private final int maxZ;
+    /** Containers emptied, blocks changed, collapses (breaches, holes and doorways). */
+    private final int[] counts = new int[3];
+
+    Withering(StructureWorldAccess world, StructureStart start, BlockBox chunkBox, ChunkGenerator generator, DesolationLevel level) {
+        this.world = world;
+        this.start = start;
+        this.box = start.getBoundingBox();
+        this.chunkBox = chunkBox;
+        this.generator = generator;
+        this.level = level;
+        this.salt = start.getPos().toLong();
+        this.minX = Math.max(this.box.getMinX(), chunkBox.getMinX());
+        this.maxX = Math.min(this.box.getMaxX(), chunkBox.getMaxX());
+        this.minZ = Math.max(this.box.getMinZ(), chunkBox.getMinZ());
+        this.maxZ = Math.min(this.box.getMaxZ(), chunkBox.getMaxZ());
+        this.minY = Math.max(this.box.getMinY(), chunkBox.getMinY());
+        this.maxY = Math.min(this.box.getMaxY() + ABOVE, chunkBox.getMaxY());
+    }
+
+    /** Returns containers emptied, blocks changed and breaches made. */
+    int[] run() {
+        this.doorways();
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        for (int x = this.minX; x <= this.maxX; x++) {
+            for (int z = this.minZ; z <= this.maxZ; z++) {
+                if (this.faded(x, z)) {
+                    continue;
+                }
+                // Top down, so a cobweb sees the ceiling above it as it ends up.
+                for (int y = this.maxY; y >= this.minY; y--) {
+                    pos.set(x, y, z);
+                    this.witherBlock(pos);
+                }
+            }
+        }
+        this.collapses();
+        if (this.level.flowers > 0.0F || this.level.vines > 0.0F || this.level.roofs > 0.0F || this.level.floorMoss > 0.0F) {
+            this.overgrow();
+        }
+        this.trees();
+        return this.counts;
+    }
+
+    private float roll(int x, int y, int z, int k) {
+        return Desolation.roll(this.salt, x, y, z, k);
+    }
+
+    /** Whether column x/z is left alone, near the edge of the structure's box. */
+    private boolean faded(int x, int z) {
+        int edge = Math.min(Math.min(x - this.box.getMinX(), this.box.getMaxX() - x), Math.min(z - this.box.getMinZ(), this.box.getMaxZ() - z));
+        return this.roll(x, 0, z, 0) >= (edge + 1) / (float) (FADE + 1);
+    }
+
+    private void set(BlockPos pos, BlockState state) {
+        this.world.setBlockState(pos, state, PieceBlocks.UPDATE);
+        this.counts[1]++;
+        BlockPos up = pos.up();
+        if (!state.isSideSolidFullSquare(this.world, pos, Direction.UP) && this.chunkBox.contains(up)
+                && this.world.getBlockState(up).isOf(Blocks.SNOW)) {
+            // Snow that lay on leaves or a roof that's gone.
+            this.world.setBlockState(up, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
+        }
+    }
+
+    private void witherBlock(BlockPos pos) {
+        BlockState state = this.world.getBlockState(pos);
+        BlockEntity blockEntity = this.world.getBlockEntity(pos);
+        if (blockEntity instanceof BeehiveBlockEntity) {
+            // A fresh hive: no bees, no honey.
+            this.world.setBlockState(pos, Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
+            this.world.setBlockState(pos, state.with(Properties.HONEY_LEVEL, 0), PieceBlocks.UPDATE);
+            this.counts[0]++;
+            return;
+        }
+        if (blockEntity instanceof Clearable) {
+            if (blockEntity instanceof LootableContainerBlockEntity container) {
+                container.setLootTable(null, 0L);
+            }
+            Clearable.clear(blockEntity);
+            this.counts[0]++;
+        }
+        BlockState withered = this.withered(pos, state);
+        if (withered != state) {
+            this.set(pos, withered);
+            if (state.getBlock() instanceof PaneBlock) {
+                // Panes beside a broken one lose their arm towards it.
+                for (Direction side : Direction.Type.HORIZONTAL) {
+                    BlockPos next = pos.offset(side);
+                    if (this.chunkBox.contains(next)) {
+                        this.world.getChunk(next).markBlockForPostProcessing(next);
+                    }
+                }
+            }
+        }
+    }
+
+    /** Whether {@code state} is part of a building rather than the land: what a breach knocks out. */
+    static boolean built(BlockState state) {
+        if (state.isAir() || !state.getFluidState().isEmpty() || state.isReplaceable()) {
+            return false;
+        }
+        return !(state.isIn(BlockTags.BASE_STONE_OVERWORLD) || state.isIn(BlockTags.DIRT) || state.isIn(BlockTags.SAND)
+                || state.isIn(BlockTags.LEAVES) || state.isIn(BlockTags.LOGS) || state.isIn(BlockTags.TERRACOTTA)
+                || state.isIn(BlockTags.SNOW) || state.isIn(BlockTags.ICE) || state.isIn(BlockTags.COAL_ORES)
+                || state.isIn(BlockTags.IRON_ORES) || state.isIn(BlockTags.COPPER_ORES) || state.isIn(BlockTags.GOLD_ORES)
+                || state.isIn(BlockTags.REDSTONE_ORES) || state.isIn(BlockTags.LAPIS_ORES) || state.isIn(BlockTags.DIAMOND_ORES)
+                || state.isIn(BlockTags.EMERALD_ORES) || state.isOf(Blocks.GRAVEL) || state.isOf(Blocks.BEDROCK)
+                || state.isOf(Blocks.SANDSTONE) || state.isOf(Blocks.RED_SANDSTONE) || state.isOf(Blocks.CLAY)
+                || state.isOf(Blocks.CALCITE) || state.isOf(Blocks.DRIPSTONE_BLOCK) || state.isOf(Blocks.POINTED_DRIPSTONE)
+                || state.isOf(Blocks.AMETHYST_BLOCK) || state.isOf(Blocks.BUDDING_AMETHYST) || state.isOf(Blocks.OBSIDIAN));
+    }
+
+    /** What {@code state} at {@code pos} becomes ({@code state} itself to leave it). */
+    private BlockState withered(BlockPos pos, BlockState state) {
+        DesolationLevel l = this.level;
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        float roll = this.roll(x, y, z, 1);
+        Block block = state.getBlock();
+        BlockState empty = state.getFluidState().isStill() ? Blocks.WATER.getDefaultState() : Blocks.AIR.getDefaultState();
+        if (state.isAir()) {
+            return roll < l.cobwebs && this.world.getBlockState(pos.up()).isOpaqueFullCube(this.world, pos.up())
+                    ? Blocks.COBWEB.getDefaultState() : state;
+        }
+        // Looted.
+        if (block == Blocks.GOLD_BLOCK || block instanceof CoinPileBlock || block instanceof CakeBlock || block instanceof CandleCakeBlock) {
+            return Blocks.AIR.getDefaultState();
+        }
+        // The ground.
+        if (block == Blocks.GRASS_BLOCK) {
+            if (Desolation.patches(this.salt, x, z, 6, 2) < l.bareGround) {
+                return l == DesolationLevel.RAIDED && roll < 0.2F ? Blocks.DIRT_PATH.getDefaultState()
+                        : roll < 0.55F ? Blocks.COARSE_DIRT.getDefaultState() : Blocks.DIRT.getDefaultState();
+            }
+            return state;
+        }
+        if (block == Blocks.DIRT || block == Blocks.COARSE_DIRT || block == Blocks.DIRT_PATH || block == Blocks.FARMLAND) {
+            BlockState above = this.world.getBlockState(pos.up());
+            boolean open = above.isAir() || above.isReplaceable() && above.getFluidState().isEmpty();
+            if (open && l.regrowth > 0.0F && Desolation.patches(this.salt, x, z, 5, 3) < l.regrowth) {
+                return Blocks.GRASS_BLOCK.getDefaultState();
+            }
+            if (block == Blocks.FARMLAND) {
+                return (l == DesolationLevel.ABANDONED ? Blocks.DIRT : Blocks.COARSE_DIRT).getDefaultState();
+            }
+            return state;
+        }
+        if (block == Blocks.MOSS_BLOCK && l == DesolationLevel.FORSAKEN) {
+            return Blocks.COARSE_DIRT.getDefaultState();
+        }
+        // Plants.
+        if (block instanceof CropBlock || block instanceof StemBlock || block instanceof AttachedStemBlock || block instanceof SweetBerryBushBlock) {
+            if (l == DesolationLevel.OVERGROWN) {
+                return roll < 0.7F ? Blocks.GRASS.getDefaultState() : this.flower(x, y, z);
+            }
+            return roll < DEAD_BUSH ? Blocks.DEAD_BUSH.getDefaultState() : Blocks.AIR.getDefaultState();
+        }
+        if (block instanceof PlantBlock && !(block instanceof DeadBushBlock) && !(block instanceof MushroomPlantBlock)) {
+            // A tall plant decides by its lower half, so both halves agree.
+            boolean lower = !(block instanceof TallPlantBlock) || state.get(TallPlantBlock.HALF) == DoubleBlockHalf.LOWER;
+            int base = lower ? y : y - 1;
+            if (this.roll(x, base, z, 4) >= l.wildDie) {
+                return state;
+            }
+            return lower && roll < DEAD_BUSH && state.getFluidState().isEmpty() ? Blocks.DEAD_BUSH.getDefaultState() : empty;
+        }
+        if (block instanceof LeavesBlock) {
+            return roll < l.leavesKept ? state : empty;
+        }
+        if (block == Blocks.FIRE || block == Blocks.SOUL_FIRE) {
+            return Blocks.AIR.getDefaultState();
+        }
+        if (l == DesolationLevel.FORSAKEN && (block == Blocks.VINE || block == Blocks.GLOW_LICHEN || block == Blocks.MOSS_CARPET
+                || block == Blocks.SUGAR_CANE || block == Blocks.HANGING_ROOTS || block == Blocks.SPORE_BLOSSOM)) {
+            return empty;
+        }
+        if (block instanceof FlowerPotBlock pot && pot.getContent() != Blocks.AIR && l != DesolationLevel.OVERGROWN) {
+            return roll < 0.5F ? Blocks.POTTED_DEAD_BUSH.getDefaultState() : Blocks.FLOWER_POT.getDefaultState();
+        }
+        // Lights.
+        if (block == Blocks.TORCH || block == Blocks.WALL_TORCH || block == Blocks.SOUL_TORCH || block == Blocks.SOUL_WALL_TORCH) {
+            return roll < l.torchesKept ? state : Blocks.AIR.getDefaultState();
+        }
+        if (block instanceof LanternBlock) {
+            return roll < l.lanternsKept ? state : empty;
+        }
+        if (block == Blocks.JACK_O_LANTERN) {
+            return Blocks.CARVED_PUMPKIN.getDefaultState().with(CarvedPumpkinBlock.FACING, state.get(CarvedPumpkinBlock.FACING));
+        }
+        if (state.contains(Properties.LIT) && state.get(Properties.LIT)) {
+            // Campfires may still smoulder after a raid; candles, furnaces and lamps are out.
+            return block instanceof CampfireBlock && roll < l.firesLit ? state : state.with(Properties.LIT, false);
+        }
+        if (block == Blocks.GLASS || block instanceof StainedGlassBlock || block instanceof PaneBlock && block != Blocks.IRON_BARS) {
+            return roll < l.glassBroken ? empty : state;
+        }
+        if (block instanceof CarpetBlock && block != Blocks.MOSS_CARPET) {
+            if (roll < l.carpetsGone) {
+                return Blocks.AIR.getDefaultState();
+            }
+            if (block instanceof DyedCarpetBlock dyed && roll < l.carpetsGone + l.carpetsTattered) {
+                return DesolateBlocks.tatteredCarpet(dyed.getDyeColor()).getDefaultState();
+            }
+            return state;
+        }
+        if (block instanceof DoorBlock) {
+            int base = state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER ? y : y - 1;
+            return this.roll(x, base, z, 9) < l.doorsBroken ? empty : state;
+        }
+        float wear = this.roll(x, y, z, 10);
+        if (wear < l.cracked + l.mossy) {
+            Block worn = wear < l.cracked ? cracked(block) : mossy(block);
+            if (worn != null) {
+                return worn.getDefaultState();
+            }
+        }
+        return state;
+    }
+
+    private BlockState flower(int x, int y, int z) {
+        return FLOWERS[(int) (this.roll(x, y, z, 5) * FLOWERS.length)].getDefaultState();
+    }
+
+    private static Block cracked(Block block) {
+        if (block == Blocks.STONE_BRICKS) {
+            return Blocks.CRACKED_STONE_BRICKS;
+        }
+        if (block == Blocks.DEEPSLATE_BRICKS) {
+            return Blocks.CRACKED_DEEPSLATE_BRICKS;
+        }
+        if (block == Blocks.DEEPSLATE_TILES) {
+            return Blocks.CRACKED_DEEPSLATE_TILES;
+        }
+        if (block == Blocks.POLISHED_BLACKSTONE_BRICKS) {
+            return Blocks.CRACKED_POLISHED_BLACKSTONE_BRICKS;
+        }
+        if (block == Blocks.NETHER_BRICKS) {
+            return Blocks.CRACKED_NETHER_BRICKS;
+        }
+        if (block == ModBlockFamilies.RUNIC_DEEPSLATE_BRICKS.base()) {
+            return ModBlockFamilies.CRACKED_RUNIC_DEEPSLATE_BRICKS.base();
+        }
+        return null;
+    }
+
+    private static Block mossy(Block block) {
+        if (block == Blocks.STONE_BRICKS) {
+            return Blocks.MOSSY_STONE_BRICKS;
+        }
+        if (block == Blocks.COBBLESTONE) {
+            return Blocks.MOSSY_COBBLESTONE;
+        }
+        if (block == ModBlockFamilies.RUNIC_DEEPSLATE_BRICKS.base()) {
+            return ModBlockFamilies.MOSSY_RUNIC_DEEPSLATE_BRICKS.base();
+        }
+        if (block == ModBlockFamilies.THATCH.base()) {
+            return ModBlockFamilies.MOSSY_THATCH.base();
+        }
+        return null;
+    }
+
+    // --- Collapses ---------------------------------------------------------------------------------------------
+
+    /** Whether {@code pos} is a built block a collapse can knock out: no block entity, not unbreakable. */
+    private boolean knockable(BlockPos pos, BlockState state) {
+        return built(state) && this.world.getBlockEntity(pos) == null && state.getHardness(this.world, pos) >= 0.0F;
+    }
+
+    /** {@code mean} as a whole number: its whole part, plus one with the chance of its fraction. */
+    private static int count(float mean, float roll) {
+        return (int) mean + (roll < mean - (int) mean ? 1 : 0);
+    }
+
+    /**
+     * Fallen doorways: each door in this chunk falls in with the level's chance, taking the lintel over it (the
+     * two rows above, along the wall) and leaving a heap on the threshold.
+     */
+    private void doorways() {
+        if (this.level.doorways <= 0.0F) {
+            return;
+        }
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        List<BlockPos> doors = new ArrayList<>();
+        for (int x = this.minX; x <= this.maxX; x++) {
+            for (int z = this.minZ; z <= this.maxZ; z++) {
+                if (this.faded(x, z)) {
+                    continue;
+                }
+                for (int y = this.minY; y <= this.maxY; y++) {
+                    BlockState state = this.world.getBlockState(pos.set(x, y, z));
+                    if (state.getBlock() instanceof DoorBlock && state.get(DoorBlock.HALF) == DoubleBlockHalf.LOWER
+                            && this.roll(x, y, z, 70) < this.level.doorways) {
+                        doors.add(pos.toImmutable());
+                    }
+                }
+            }
+        }
+        for (BlockPos door : doors) {
+            this.counts[2]++;
+            Direction along = this.world.getBlockState(door).get(DoorBlock.FACING).rotateYClockwise();
+            BlockState lintel = null;
+            this.set(door, Blocks.AIR.getDefaultState());
+            if (this.world.getBlockState(door.up()).getBlock() instanceof DoorBlock) {
+                this.set(door.up(), Blocks.AIR.getDefaultState());
+            }
+            for (int dy = 2; dy <= 3; dy++) {
+                for (int side = -1; side <= 1; side++) {
+                    BlockPos at = door.up(dy).offset(along, side);
+                    if (!this.chunkBox.contains(at)) {
+                        continue;
+                    }
+                    BlockState state = this.world.getBlockState(at);
+                    float chance = dy == 2 ? LINTEL_FALLS : LINTEL_TOP_FALLS;
+                    if (this.knockable(at, state) && this.roll(at.getX(), at.getY(), at.getZ(), 71) < chance) {
+                        this.set(at, Blocks.AIR.getDefaultState());
+                        lintel = lintel == null ? state : lintel;
+                        if (side != 0) {
+                            this.fall(at, state);
+                        }
+                    }
+                }
+            }
+            // The heap where the door was.
+            BlockState heap = lintel == null ? null : this.debris(lintel, this.roll(door.getX(), door.getY(), door.getZ(), 72), door, true);
+            if (heap != null && this.world.getBlockState(door.down()).isSideSolidFullSquare(this.world, door.down(), Direction.UP)) {
+                this.set(door, heap);
+            }
+        }
+    }
+
+    /**
+     * Breaches and holes, planned per piece from the start's pieces and the start's salt, so every chunk plans the
+     * same ones and carves its own part of each.
+     */
+    private void collapses() {
+        int index = 0;
+        for (StructurePiece piece : this.start.getChildren()) {
+            BlockBox b = piece.getBoundingBox();
+            index++;
+            float factor = MathHelper.clamp(b.getBlockCountX() * b.getBlockCountZ() / (float) (PIECE_SIZE * PIECE_SIZE),
+                    MIN_PIECE_FACTOR, MAX_PIECE_FACTOR);
+            int breaches = count(this.level.breaches * factor, this.roll(index, 0, 0, 60));
+            for (int j = 0; j < breaches; j++) {
+                this.plannedBreach(b, index, j, factor >= BIG_PIECE && this.roll(index, j, 0, 69) < 0.5F);
+            }
+            int holes = count(this.level.floorHoles * factor, this.roll(index, 0, 0, 65));
+            for (int j = 0; j < holes; j++) {
+                this.hole(b, index, j);
+            }
+        }
+    }
+
+    /**
+     * Breach {@code j} of piece {@code index}: on one of its four walls (its box's sides) or its roof, or anywhere
+     * inside it if {@code inside}.
+     */
+    private void plannedBreach(BlockBox b, int index, int j, boolean inside) {
+        int face = inside ? 5 : (int) (this.roll(index, j, 1, 61) * 5);
+        float t = this.roll(index, j, 2, 62);
+        float h = this.roll(index, j, 3, 63);
+        int x = b.getMinX() + (int) (t * b.getBlockCountX());
+        int z = b.getMinZ() + (int) (t * b.getBlockCountZ());
+        int y = b.getMinY() + 1 + (int) (h * Math.max(1, b.getBlockCountY() - 2));
+        switch (face) {
+            case 0 -> z = b.getMinZ() + 1;
+            case 1 -> z = b.getMaxZ() - 1;
+            case 2 -> x = b.getMinX() + 1;
+            case 3 -> x = b.getMaxX() - 1;
+            case 5 -> z = b.getMinZ() + (int) (this.roll(index, j, 4, 62) * b.getBlockCountZ());
+            default -> {
+                x = b.getMinX() + (int) (t * b.getBlockCountX());
+                z = b.getMinZ() + (int) (this.roll(index, j, 4, 62) * b.getBlockCountZ());
+                y = b.getMaxY() - (int) (h * 3);
+            }
+        }
+        float radius = this.level.breachMin + (this.level.breachMax - this.level.breachMin) * this.roll(index, j, 5, 64);
+        int r = (int) Math.ceil(radius) + 1;
+        if (x + r < this.chunkBox.getMinX() || x - r > this.chunkBox.getMaxX() || z + r < this.chunkBox.getMinZ()
+                || z - r > this.chunkBox.getMaxZ()) {
+            return;
+        }
+        this.breach(new BlockPos(x, y, z), radius);
+    }
+
+    /**
+     * Knocks a ragged hole of about {@code radius} through the built blocks round {@code centre} (the part in this
+     * chunk), and drops rubble.
+     */
+    private void breach(BlockPos centre, float radius) {
+        this.counts[2]++;
+        List<BlockPos> knocked = new ArrayList<>();
+        List<BlockState> states = new ArrayList<>();
+        int r = (int) Math.ceil(radius * 1.25F);
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        for (int dy = r; dy >= -r; dy--) {
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    pos.set(centre.getX() + dx, centre.getY() + dy, centre.getZ() + dz);
+                    if (!this.chunkBox.contains(pos)) {
+                        continue;
+                    }
+                    // Ragged: each block's own reach, between 0.75 and 1.25 of the radius.
+                    double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                    if (d > radius * (0.75F + 0.5F * this.roll(pos.getX(), pos.getY(), pos.getZ(), 13))) {
+                        continue;
+                    }
+                    BlockState state = this.world.getBlockState(pos);
+                    if (!this.knockable(pos, state)) {
+                        continue;
+                    }
+                    this.set(pos, Blocks.AIR.getDefaultState());
+                    knocked.add(pos.toImmutable());
+                    states.add(state);
+                }
+            }
+        }
+        this.rubble(knocked, states);
+    }
+
+    /**
+     * Hole {@code j} of piece {@code index}: a ragged shaft about 1 to 2.5 blocks across down through the piece's
+     * roof and floors. In each column it takes the top block of each of the first {@link #HOLE_FLOORS} floors
+     * (built blocks with open space over them), and half the time the one under it too.
+     */
+    private void hole(BlockBox b, int index, int j) {
+        int cx = b.getMinX() + 1 + (int) (this.roll(index, j, 6, 66) * Math.max(1, b.getBlockCountX() - 2));
+        int cz = b.getMinZ() + 1 + (int) (this.roll(index, j, 7, 66) * Math.max(1, b.getBlockCountZ() - 2));
+        float radius = 1.0F + 1.5F * this.roll(index, j, 8, 66);
+        int r = (int) Math.ceil(radius * 1.3F);
+        if (cx + r < this.chunkBox.getMinX() || cx - r > this.chunkBox.getMaxX() || cz + r < this.chunkBox.getMinZ()
+                || cz - r > this.chunkBox.getMaxZ()) {
+            return;
+        }
+        this.counts[2]++;
+        List<BlockPos> knocked = new ArrayList<>();
+        List<BlockState> states = new ArrayList<>();
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        int top = Math.min(b.getMaxY() + 2, this.chunkBox.getMaxY() - 1);
+        for (int x = cx - r; x <= cx + r; x++) {
+            for (int z = cz - r; z <= cz + r; z++) {
+                double d = Math.sqrt((x - cx) * (x - cx) + (z - cz) * (z - cz));
+                if (!this.chunkBox.contains(x, top, z) || d > radius * (0.7F + 0.6F * this.roll(x, 0, z, 67))) {
+                    continue;
+                }
+                int floors = 0;
+                for (int y = top; y >= b.getMinY() && floors < HOLE_FLOORS; y--) {
+                    BlockState state = this.world.getBlockState(pos.set(x, y, z));
+                    BlockState above = this.world.getBlockState(pos.up());
+                    if (!above.isAir() || !this.knockable(pos, state)) {
+                        continue;
+                    }
+                    floors++;
+                    this.set(pos, Blocks.AIR.getDefaultState());
+                    knocked.add(pos.toImmutable());
+                    states.add(state);
+                    pos.move(Direction.DOWN);
+                    BlockState under = this.world.getBlockState(pos);
+                    if (this.roll(x, y, z, 68) < 0.5F && this.knockable(pos, under)) {
+                        this.set(pos, Blocks.AIR.getDefaultState());
+                        knocked.add(pos.toImmutable());
+                        states.add(under);
+                    }
+                    y = pos.getY();
+                }
+            }
+        }
+        this.rubble(knocked, states);
+    }
+
+    /** Some of the {@code knocked} blocks (the level's rubble chance) lie on the ground below where they were. */
+    private void rubble(List<BlockPos> knocked, List<BlockState> states) {
+        for (int i = 0; i < knocked.size(); i++) {
+            BlockPos from = knocked.get(i);
+            if (this.roll(from.getX(), from.getY(), from.getZ(), 15) < this.level.rubble) {
+                this.fall(from, states.get(i));
+            }
+        }
+    }
+
+    /** Drops a piece of {@code state} from {@code from} onto the ground below it, scattered up to a block sideways. */
+    private void fall(BlockPos from, BlockState state) {
+        int dx = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 16) * 3) - 1;
+        int dz = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 17) * 3) - 1;
+        BlockPos.Mutable pos = new BlockPos.Mutable(from.getX() + dx, from.getY(), from.getZ() + dz);
+        if (!this.chunkBox.contains(pos)) {
+            return;
+        }
+        for (int i = 0; i < RUBBLE_FALL && pos.getY() > this.chunkBox.getMinY(); i++) {
+            BlockState below = this.world.getBlockState(pos.down());
+            if (!below.isAir() && !below.isReplaceable()) {
+                break;
+            }
+            pos.move(Direction.DOWN);
+        }
+        BlockState here = this.world.getBlockState(pos);
+        BlockState below = this.world.getBlockState(pos.down());
+        if (here.isOf(RuinBlocks.COLLAPSED_RUBBLE) && here.get(RubbleBlock.LAYERS) < RubbleBlock.MAX_LAYERS) {
+            this.set(pos, here.with(RubbleBlock.LAYERS, here.get(RubbleBlock.LAYERS) + 1));
+            return;
+        }
+        if (!(here.isAir() || here.isReplaceable() && here.getFluidState().isEmpty())
+                || !below.isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
+            return;
+        }
+        BlockState piece = this.debris(state, this.roll(from.getX(), from.getY(), from.getZ(), 18), from, false);
+        if (piece != null) {
+            this.set(pos, piece);
+        }
+    }
+
+    /**
+     * What a fallen block of {@code state} lies on the ground as: a slab of its material, a few layers of Collapsed
+     * Rubble for stone, or the block itself; null for nothing. {@code heap} piles the rubble higher.
+     */
+    private BlockState debris(BlockState state, float roll, BlockPos from, boolean heap) {
+        Block slab = slab(state.getBlock());
+        if (slab != null && roll < 0.6F) {
+            return slab.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM);
+        }
+        if (state.getMaterial() == Material.STONE && roll < 0.85F) {
+            int layers = 1 + (int) (roll * 10) % 3 + (heap ? 2 : 0);
+            return RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, layers);
+        }
+        if (state.isFullCube(this.world, from)) {
+            return state.getBlock().getDefaultState();
+        }
+        return null;
+    }
+
+    /** The slab of {@code block}'s family (vanilla or the mod's), from its base block or its stairs. */
+    private static Block slab(Block block) {
+        if (slabs == null) {
+            Map<Block, Block> map = new HashMap<>();
+            BlockFamilies.getFamilies().forEach(family -> {
+                Block slab = family.getVariant(net.minecraft.data.family.BlockFamily.Variant.SLAB);
+                if (slab != null) {
+                    map.put(family.getBaseBlock(), slab);
+                    family.getVariants().values().forEach(variant -> map.putIfAbsent(variant, slab));
+                }
+            });
+            for (BlockFamily family : BlockFamily.all()) {
+                if (family.has(BlockFamily.Shape.SLAB)) {
+                    for (Block member : family.blocks()) {
+                        map.putIfAbsent(member, family.slab());
+                    }
+                }
+            }
+            slabs = map;
+        }
+        return slabs.get(block);
+    }
+
+    // --- Overgrowth --------------------------------------------------------------------------------------------
+
+    private void overgrow() {
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        for (int x = this.minX; x <= this.maxX; x++) {
+            for (int z = this.minZ; z <= this.maxZ; z++) {
+                if (this.faded(x, z)) {
+                    continue;
+                }
+                boolean top = true;
+                for (int y = this.maxY; y >= this.minY; y--) {
+                    pos.set(x, y, z);
+                    BlockState state = this.world.getBlockState(pos);
+                    if (state.isAir()) {
+                        this.overgrowAir(pos);
+                        continue;
+                    }
+                    if (top) {
+                        top = false;
+                        this.overgrowTop(pos, state);
+                    }
+                }
+            }
+        }
+    }
+
+    /** The highest block of a column: flowers on grass, moss or soil on a roof. */
+    private void overgrowTop(BlockPos pos, BlockState state) {
+        BlockPos up = pos.up();
+        if (!this.chunkBox.contains(up) || !this.world.getBlockState(up).isAir()) {
+            return;
+        }
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        float roll = this.roll(x, y, z, 20);
+        if (state.isOf(Blocks.GRASS_BLOCK)) {
+            if (roll < this.level.flowers) {
+                this.set(up, this.flower(x, y, z));
+            }
+            return;
+        }
+        if (!built(state) || roll >= this.level.roofs) {
+            return;
+        }
+        float kind = this.roll(x, y, z, 21);
+        if (kind < 0.35F && state.isOpaqueFullCube(this.world, pos)) {
+            // Soil blown up onto the roof, grassed over.
+            this.set(pos, Blocks.GRASS_BLOCK.getDefaultState());
+            if (kind < 0.12F) {
+                this.set(up, this.flower(x, y, z));
+            }
+        } else if (state.isSideSolidFullSquare(this.world, pos, Direction.UP)) {
+            this.set(up, Blocks.MOSS_CARPET.getDefaultState());
+        }
+    }
+
+    /** Vines down the walls beside it, or moss carpet on the floor under it. */
+    private void overgrowAir(BlockPos pos) {
+        int x = pos.getX();
+        int y = pos.getY();
+        int z = pos.getZ();
+        BlockState above = this.chunkBox.contains(pos.up()) ? this.world.getBlockState(pos.up()) : Blocks.AIR.getDefaultState();
+        BlockState vine = Blocks.VINE.getDefaultState();
+        boolean any = false;
+        for (Direction side : Direction.Type.HORIZONTAL) {
+            BlockPos wall = pos.offset(side);
+            if (!this.chunkBox.contains(wall)) {
+                continue;
+            }
+            BlockState wallState = this.world.getBlockState(wall);
+            if (!built(wallState) || !wallState.isSideSolidFullSquare(this.world, wall, side.getOpposite())) {
+                continue;
+            }
+            boolean hanging = above.isOf(Blocks.VINE) && above.get(VineBlock.getFacingProperty(side));
+            float roll = this.roll(x, y, z, 22 + side.getHorizontal());
+            if (hanging ? roll < 0.75F : roll < this.level.vines) {
+                vine = vine.with(VineBlock.getFacingProperty(side), true);
+                any = true;
+            }
+        }
+        if (any) {
+            this.set(pos, vine);
+            return;
+        }
+        BlockPos down = pos.down();
+        if (this.level.floorMoss > 0.0F && this.chunkBox.contains(down) && this.roll(x, y, z, 26) < this.level.floorMoss) {
+            BlockState floor = this.world.getBlockState(down);
+            if (built(floor) && floor.isSideSolidFullSquare(this.world, down, Direction.UP)) {
+                this.set(pos, Blocks.MOSS_CARPET.getDefaultState());
+            }
+        }
+    }
+
+    // --- Trees -------------------------------------------------------------------------------------------------
+
+    /** Trees grown up inside: on open ground, at least 3 blocks inside the chunk so their crowns stay in it. */
+    private void trees() {
+        int cx = this.chunkBox.getMinX();
+        int cz = this.chunkBox.getMinZ();
+        float perChunk = this.level.trees;
+        int count = (int) perChunk + (this.roll(cx, 1, cz, 30) < perChunk - (int) perChunk ? 1 : 0);
+        for (int i = 0; i < count; i++) {
+            int x = cx + 3 + (int) (this.roll(cx, i, cz, 31) * 10);
+            int z = cz + 3 + (int) (this.roll(cx, i, cz, 32) * 10);
+            if (x < this.minX || x > this.maxX || z < this.minZ || z > this.maxZ || this.faded(x, z)) {
+                continue;
+            }
+            BlockPos.Mutable pos = new BlockPos.Mutable(x, this.maxY, z);
+            while (pos.getY() > this.minY && this.world.getBlockState(pos).isAir()) {
+                pos.move(Direction.DOWN);
+            }
+            BlockState ground = this.world.getBlockState(pos);
+            if (!ground.isOf(Blocks.GRASS_BLOCK) && !ground.isOf(Blocks.DIRT) && !ground.isOf(Blocks.COARSE_DIRT)) {
+                continue;
+            }
+            RegistryKey<ConfiguredFeature<?, ?>> tree = TREES.get((int) (this.roll(x, i, z, 33) * TREES.size()));
+            BlockPos base = pos.up().toImmutable();
+            Random random = Random.create((long) (this.roll(x, base.getY(), z, 34) * Long.MAX_VALUE));
+            this.world.getRegistryManager().get(RegistryKeys.CONFIGURED_FEATURE).getEntry(tree)
+                    .ifPresent(entry -> entry.value().generate(this.world, this.generator, random, base));
+        }
+    }
+}

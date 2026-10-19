@@ -2,6 +2,10 @@
   "structures": [
     {
       "structure": "dndclasses:elven_enclave",
+      "weight": 4
+    },
+    {
+      "structure": "dndclasses:desolate_elven_enclave",
       "weight": 1
     }
   ],

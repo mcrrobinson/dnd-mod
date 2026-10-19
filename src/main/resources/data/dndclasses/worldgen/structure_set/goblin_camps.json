@@ -2,6 +2,10 @@
   "structures": [
     {
       "structure": "dndclasses:goblin_camp",
+      "weight": 4
+    },
+    {
+      "structure": "dndclasses:desolate_goblin_camp",
       "weight": 1
     }
   ],

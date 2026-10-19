@@ -2,6 +2,10 @@
   "structures": [
     {
       "structure": "dndclasses:hobbit_village",
+      "weight": 4
+    },
+    {
+      "structure": "dndclasses:desolate_hobbit_village",
       "weight": 1
     }
   ],

@@ -1,0 +1,22 @@
+# Lists the pieces (bridges included) of the dev world's Elven Enclave at 43152 42016 and takes an overview shot.
+# Run on a fresh world copy so the enclave generates during the run (see enclave-bridge-rails.txt).
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/weather clear
+/tp @s 43160 160 42024 0 90
+wait 400
+/tp @s 43160 90 42024 0 90
+wait 100
+/dndhome pieces
+hud off
+/tp @s 43160 135 42024 0 90
+wait 100
+closescreen
+screenshot bh-top
+hud on
+quit

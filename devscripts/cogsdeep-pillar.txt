@@ -1,0 +1,41 @@
+# Shots of the Cogsdeep spiral stair's pillar: from the observatory floor, from the stair halfway down, from the
+# Commons. Run on a fresh copy of the dev world so the burrow generates with the current code:
+#   rm -rf "run/saves/PillarTest" && cp -r "run/saves/New World" "run/saves/PillarTest"
+#   timeout 600 ./gradlew runClient -PdevWorld=PillarTest -PdevScript=devscripts/cogsdeep-pillar.txt
+# Checks, in latest.log: the "[Home] Cogsdeep at chunk ..." line (stair axis, a/b directions, top); screenshots
+# cd-pillar-top, cd-pillar-top-night, cd-pillar-mid, cd-pillar-foot, cd-pillar-commons.
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamemode spectator
+/gamerule doDaylightCycle false
+/time set noon
+/tp @s 400000 160 400000
+wait 100
+/dndhome cogsdeep pillar
+waitserver 2
+wait 300
+hud off
+/dndhome cogsdeep pillar
+wait 60
+screenshot cd-pillar-top
+/dndhome cogsdeep pillarmid
+wait 60
+screenshot cd-pillar-mid
+/dndhome cogsdeep stair
+wait 40
+screenshot cd-pillar-stair
+/dndhome cogsdeep foot
+wait 60
+screenshot cd-pillar-foot
+/dndhome cogsdeep commons
+wait 60
+screenshot cd-pillar-commons
+/time set midnight
+/dndhome cogsdeep pillar
+wait 40
+screenshot cd-pillar-top-night
+hud on
+quit

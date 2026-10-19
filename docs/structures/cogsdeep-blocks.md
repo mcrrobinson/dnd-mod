@@ -22,9 +22,10 @@ Every block drops itself, so mining one out of a burrow gives the block, no silk
 ### In Cogsdeep
 | Where | What changed |
 |-|-|
-| Every room's walls, the observatory tower, the stair | Gnomish Bricks instead of stone bricks (a few tuff and mossy stone bricks remain); the stair's pillar, steps and floor ring are Gnomish Bricks and Gnomish Brick Stairs instead of polished andesite and stone brick stairs; the door's posts are Gnomish Brick Walls |
+| Every room's walls, the observatory tower, the stair | Gnomish Bricks instead of stone bricks (a few tuff and mossy stone bricks remain); the stair's steps and floor ring are Gnomish Bricks and Gnomish Brick Stairs instead of stone brick stairs; the door's posts are Gnomish Brick Walls |
 | Observatory | a Riveted Brass footing and a Cut Riveted Brass course under the dome (the inner frame) instead of polished andesite; a Cut Riveted Brass floor ring instead of cut copper; the telescope's last rod is a Telescope Lens poking out of the slit |
 | Workshops | a band of Cut Riveted Brass round the walls under the ceiling; a Cogwork Panel in the wall above each bench; Cogwork Panels instead of observers in the contraptions and the machine islands; Glowcrystals instead of redstone lamps; Riveted Brass and Cut Riveted Brass machine housings instead of copper blocks and polished andesite; two runs of Pipework along the ceiling; a Blueprint Table in each hall |
+| Stair pillar | Gnomish Bricks with Cut Riveted Brass bands, Gearwalls and Cogwork Panels down each face and amber Glowcrystals instead of polished andesite and glowstone; a Riveted Brass cap with a Clockface on each side under the copper beacon |
 | Commons | eight Glowcrystal lamps in the walls, two runs of Pipework along the ceiling, a Gnomish Brick ring round the stair's foot |
 | Clocktower | a Gnomish Brick floor; the great clock face's rim in Cut Riveted Brass; a Clockface at its hub keeping the real time (instead of a clock in an item frame); three rows of Gearwall along both side walls (instead of grindstones); a Riveted Brass pendulum bob |
 | Gem room | a Glowcrystal set into the wall over each polishing bench, and two flanking the gem chest instead of amethyst blocks |

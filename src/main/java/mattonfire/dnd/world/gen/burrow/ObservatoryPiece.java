@@ -100,6 +100,12 @@ public class ObservatoryPiece extends CogsdeepPiece {
         return d <= DOME && d > DOME - 1.15D;
     }
 
+    /** Window {@code i} of 8 (a/c): every 45 degrees, but not by the door or the telescope. */
+    static int[] window(int i) {
+        double angle = i * Math.PI / 4.0D + Math.PI / 8.0D;
+        return new int[]{(int) Math.round(Math.sin(angle) * 6.0D), (int) Math.round(Math.cos(angle) * 6.0D)};
+    }
+
     /** Whether a/c is in the tower's wall. */
     static boolean wall(int a, int c) {
         double r = r(a, c);
@@ -223,7 +229,23 @@ public class ObservatoryPiece extends CogsdeepPiece {
                         top -= this.wallDrop == 1 ? 1 : 1 + (this.roll(a, 0, c, 85) < 0.55F ? 1 : 0);
                     }
                     this.wallTop[a + 7][c + 7] = top;
-                    int rimHere = this.rimAt(a, c, u);
+                }
+            }
+            // A window's top course stands on its glass: with the wall beside it broken down, it comes down too.
+            for (int i = 0; i < 8; i++) {
+                int[] w = window(i);
+                for (Direction side : Direction.Type.HORIZONTAL) {
+                    int na = w[0] + side.getOffsetX();
+                    int nc = w[1] + side.getOffsetZ();
+                    if (wall(na, nc) && this.wallTop[na + 7][nc + 7] < WALL_HEIGHT - 1) {
+                        this.wallTop[w[0] + 7][w[1] + 7] = 1;
+                    }
+                }
+            }
+            for (int a = -7; a <= 7; a++) {
+                for (int c = -7; c <= 7; c++) {
+                    int top = this.wallTop[a + 7][c + 7];
+                    int rimHere = this.rimAt(a, c, sector(a, c));
                     for (int y = 0; y <= TOP; y++) {
                         if (y < WALL_HEIGHT) {
                             this.kept[a + 7][y][c + 7] = wall(a, c) && y <= top;
@@ -464,11 +486,9 @@ public class ObservatoryPiece extends CogsdeepPiece {
         }
         // Windows every 45 degrees, but not by the door or the telescope.
         for (int i = 0; i < 8; i++) {
-            double angle = i * Math.PI / 4.0D + Math.PI / 8.0D;
-            int a = (int) Math.round(Math.sin(angle) * 6.0D);
-            int c = (int) Math.round(Math.cos(angle) * 6.0D);
-            b.set(a, 2, c, Blocks.GLASS_PANE);
-            b.set(a, 3, c, Blocks.GLASS_PANE);
+            int[] w = window(i);
+            b.set(w[0], 2, w[1], Blocks.GLASS_PANE);
+            b.set(w[0], 3, w[1], Blocks.GLASS_PANE);
         }
 
         // The dome: a shell of cut copper on the walls, with a slit 3 wide open to the north.

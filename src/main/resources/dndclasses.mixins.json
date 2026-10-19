@@ -50,6 +50,8 @@
         "MineshaftCollapseMixin",
         "StrongholdHiddenClosetMixin",
         "StructureStartPlacingMixin",
+        "DesolateSpawnMixin",
+        "DesolateAnimalsMixin",
         "BossMinionDropMixin",
         "PotionItemMixin",
         "AlchemistPotionMixin",

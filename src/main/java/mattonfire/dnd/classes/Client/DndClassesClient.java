@@ -292,6 +292,11 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.RuinBlocks.EYE_STALK_GROWTH);
+        // Desolate settlements' Tattered Carpets have holes torn through
+        for (net.minecraft.block.Block carpet : mattonfire.dnd.classes.Registry.DesolateBlocks.tatteredCarpets()) {
+            net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlock(carpet,
+                    net.minecraft.client.render.RenderLayer.getCutout());
+        }
         // Shared adventuring blocks: the Wanted Poster's torn edges, and the signpost's text
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),

@@ -2,6 +2,10 @@
   "structures": [
     {
       "structure": "dndclasses:cogsdeep",
+      "weight": 4
+    },
+    {
+      "structure": "dndclasses:desolate_cogsdeep",
       "weight": 1
     }
   ],

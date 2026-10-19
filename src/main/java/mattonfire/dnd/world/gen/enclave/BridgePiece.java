@@ -11,12 +11,16 @@ import java.util.Set;
 import mattonfire.dnd.classes.Blocks.elven.WovenRopePlankBlock;
 import mattonfire.dnd.classes.Registry.ElvenBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.world.gen.Desolation;
+import mattonfire.dnd.world.gen.DesolationLevel;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.FenceBlock;
+import net.minecraft.block.LanternBlock;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -32,6 +36,8 @@ import net.minecraft.util.math.Direction;
  * <p>The handrail stands on a stripped Heartwood stringer flush with the deck on each side, like the Heart Tree
  * stair's rail. Its posts are placed already joined up, turn the corner where the walkway steps sideways, and stack
  * two high where the rail drops a level at the sag, so each side reads as one continuous rail.
+ *
+ * <p>In a desolate enclave a bridge may have fallen ({@link DesolationLevel#bridgesFallen}): see {@link #fall}.
  */
 public class BridgePiece extends EnclavePiece {
     /** The beam under the handrail. */
@@ -173,6 +179,72 @@ public class BridgePiece extends EnclavePiece {
                 b.set(x, top + 1, z, lantern(false));
             } else if (rail.index % 3 == 1) {
                 b.set(x, rail.y - 2, z, Blocks.CHAIN);
+            }
+        }
+        DesolationLevel level = Desolation.level();
+        if (level != null && Desolation.roll(this.seed, 0, 0, 0, 40) < level.bridgesFallen) {
+            this.fall(b, walkway, landing);
+        }
+    }
+
+    /**
+     * A desolate enclave's bridge that has fallen: a stub of 1 or 2 cells is left at each end and the rest lies in
+     * pieces on the ground below. Only the bridge's own blocks are taken out, never the tree or platform.
+     */
+    private void fall(Builder b, Set<Long> walkway, Set<Long> landing) {
+        int count = this.cells.length / 2;
+        int first = 1 + (int) (Desolation.roll(this.seed, 1, 0, 0, 41) * 2);
+        int last = count - 1 - (int) (Desolation.roll(this.seed, 2, 0, 0, 41) * 2);
+        for (int i = first; i < last; i++) {
+            int x = this.cells[2 * i];
+            int z = this.cells[2 * i + 1];
+            boolean fell = this.clearBridge(b, x, z);
+            for (Direction d : Direction.Type.HORIZONTAL) {
+                long key = ChunkPos.toLong(x + d.getOffsetX(), z + d.getOffsetZ());
+                if (!walkway.contains(key) && !landing.contains(key)) {
+                    this.clearBridge(b, x + d.getOffsetX(), z + d.getOffsetZ());
+                }
+            }
+            // The plank lies on the ground below, or a bit of rail does.
+            float roll = Desolation.roll(this.seed, x, 0, z, 42);
+            if (fell && roll < 0.6F) {
+                this.land(b, x, z, roll < 0.45F ? this.plank(i, count, false) : Blocks.BIRCH_FENCE.getDefaultState());
+            }
+        }
+    }
+
+    /** Takes the bridge's blocks out of column x/z; returns whether there were any. */
+    private boolean clearBridge(Builder b, int x, int z) {
+        boolean any = false;
+        for (int y = -2; y <= 3; y++) {
+            if (!b.inChunk(x, y, z)) {
+                continue;
+            }
+            BlockState state = b.get(x, y, z);
+            if (state.isOf(ElvenBlocks.WOVEN_ROPE_PLANK) || state.isOf(Blocks.BIRCH_FENCE) || state.isOf(STRINGER)
+                    || state.isOf(Blocks.CHAIN) || state.getBlock() instanceof LanternBlock) {
+                b.set(x, y, z, Blocks.AIR);
+                any = true;
+            }
+        }
+        return any;
+    }
+
+    /** Puts {@code state} on the ground under column x/z, if it's in this chunk and there's ground in reach. */
+    private void land(Builder b, int x, int z, BlockState state) {
+        for (int y = -3; y > -48; y--) {
+            if (!b.inChunk(x, y, z)) {
+                return;
+            }
+            BlockState below = b.get(x, y - 1, z);
+            if (!below.getFluidState().isEmpty()) {
+                return;
+            }
+            if (!below.isAir() && !below.isReplaceable() && !below.isIn(BlockTags.LEAVES)) {
+                if (b.get(x, y, z).isAir() || b.get(x, y, z).isReplaceable()) {
+                    b.set(x, y, z, state);
+                }
+                return;
             }
         }
     }

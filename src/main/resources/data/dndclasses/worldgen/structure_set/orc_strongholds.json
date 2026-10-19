@@ -2,6 +2,10 @@
   "structures": [
     {
       "structure": "dndclasses:orc_stronghold",
+      "weight": 4
+    },
+    {
+      "structure": "dndclasses:desolate_orc_stronghold",
       "weight": 1
     }
   ],

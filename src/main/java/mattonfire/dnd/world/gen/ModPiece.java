@@ -211,6 +211,11 @@ public abstract class ModPiece<B extends ModPiece<B>.Builder> extends StructureP
 
         /** A mimic sitting where a chest would be, holding that chest's loot. */
         public void mimic(int x, int y, int z, Direction facing, Identifier lootTable) {
+            if (Desolation.active()) {
+                // No mimic in an abandoned settlement, just the (emptied) chest it would have sat in.
+                this.set(x, y, z, PieceBlocks.facing(Blocks.CHEST, facing));
+                return;
+            }
             this.set(x, y, z, Blocks.AIR);
             BlockPos pos = this.pos(x, y, z);
             if (!this.chunkBox.contains(pos)) {

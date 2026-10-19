@@ -1,0 +1,353 @@
+# Screenshots of every desolate settlement at every desolation level, in fresh land east of x 100000.
+# Run: timeout 1800 ./gradlew runClient -PdevScript=devscripts/desolate-shots.txt (move the start points for a
+# world where these have generated already).
+# Checks: screenshots desolate-<level>-<structure> (aerial) and -low; "Test failed" for each entity check (no
+# entities round the settlement) and "[<mob>] here" for any there are; "[Desolation] ... (<LEVEL>)" lines with
+# the entities dropped, containers emptied, blocks withered and breaches per chunk in <run dir>/logs/debug.log.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+hud off
+/dndhome desolation raided
+/execute in minecraft:overworld run tp @s 100000 200 0
+/dndhome visit dndclasses:desolate_hobbit_village
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-raided-hobbit_village
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-raided-hobbit_village-low
+/execute in minecraft:overworld run tp @s 100000 200 0
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-raided-elven_enclave
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-raided-elven_enclave-low
+/execute in minecraft:overworld run tp @s 100000 200 0
+/dndhome visit dndclasses:desolate_goblin_camp
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-raided-goblin_camp
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-raided-goblin_camp-low
+/execute in minecraft:overworld run tp @s 100000 200 0
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-raided-dwarven_fortress
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-raided-dwarven_fortress-low
+/execute in minecraft:overworld run tp @s 100000 200 0
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-raided-cogsdeep
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-raided-cogsdeep-low
+/execute in minecraft:overworld run tp @s 100000 200 0
+/dndhome visit dndclasses:desolate_orc_stronghold
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-raided-orc_stronghold
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-raided-orc_stronghold-low
+/dndhome desolation abandoned
+/execute in minecraft:overworld run tp @s 100000 200 10000
+/dndhome visit dndclasses:desolate_hobbit_village
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-abandoned-hobbit_village
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-abandoned-hobbit_village-low
+/execute in minecraft:overworld run tp @s 100000 200 10000
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-abandoned-elven_enclave
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-abandoned-elven_enclave-low
+/execute in minecraft:overworld run tp @s 100000 200 10000
+/dndhome visit dndclasses:desolate_goblin_camp
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-abandoned-goblin_camp
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-abandoned-goblin_camp-low
+/execute in minecraft:overworld run tp @s 100000 200 10000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-abandoned-dwarven_fortress
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-abandoned-dwarven_fortress-low
+/execute in minecraft:overworld run tp @s 100000 200 10000
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-abandoned-cogsdeep
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-abandoned-cogsdeep-low
+/execute in minecraft:overworld run tp @s 100000 200 10000
+/dndhome visit dndclasses:desolate_orc_stronghold
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-abandoned-orc_stronghold
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-abandoned-orc_stronghold-low
+/dndhome desolation forsaken
+/execute in minecraft:overworld run tp @s 100000 200 20000
+/dndhome visit dndclasses:desolate_hobbit_village
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-forsaken-hobbit_village
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-forsaken-hobbit_village-low
+/execute in minecraft:overworld run tp @s 100000 200 20000
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-forsaken-elven_enclave
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-forsaken-elven_enclave-low
+/execute in minecraft:overworld run tp @s 100000 200 20000
+/dndhome visit dndclasses:desolate_goblin_camp
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-forsaken-goblin_camp
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-forsaken-goblin_camp-low
+/execute in minecraft:overworld run tp @s 100000 200 20000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-forsaken-dwarven_fortress
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-forsaken-dwarven_fortress-low
+/execute in minecraft:overworld run tp @s 100000 200 20000
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-forsaken-cogsdeep
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-forsaken-cogsdeep-low
+/execute in minecraft:overworld run tp @s 100000 200 20000
+/dndhome visit dndclasses:desolate_orc_stronghold
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-forsaken-orc_stronghold
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-forsaken-orc_stronghold-low
+/dndhome desolation overgrown
+/execute in minecraft:overworld run tp @s 100000 200 30000
+/dndhome visit dndclasses:desolate_hobbit_village
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-overgrown-hobbit_village
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-overgrown-hobbit_village-low
+/execute in minecraft:overworld run tp @s 100000 200 30000
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-overgrown-elven_enclave
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-overgrown-elven_enclave-low
+/execute in minecraft:overworld run tp @s 100000 200 30000
+/dndhome visit dndclasses:desolate_goblin_camp
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-overgrown-goblin_camp
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-overgrown-goblin_camp-low
+/execute in minecraft:overworld run tp @s 100000 200 30000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-overgrown-dwarven_fortress
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-overgrown-dwarven_fortress-low
+/execute in minecraft:overworld run tp @s 100000 200 30000
+/dndhome visit dndclasses:desolate_cogsdeep
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-overgrown-cogsdeep
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-overgrown-cogsdeep-low
+/execute in minecraft:overworld run tp @s 100000 200 30000
+/dndhome visit dndclasses:desolate_orc_stronghold
+waitserver 2
+wait 300
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/execute at @s positioned ~-40 ~-30 ~-40 if entity @e[type=!player,dx=80,dy=60,dz=80]
+/execute at @s positioned ~-40 ~-30 ~-40 as @e[type=!player,dx=80,dy=60,dz=80] run say here
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot desolate-overgrown-orc_stronghold
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot desolate-overgrown-orc_stronghold-low
+/dndhome desolation random
+quit

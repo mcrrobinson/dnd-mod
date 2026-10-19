@@ -610,6 +610,21 @@ def resources():
     bf.blockstate('woven_rope_plank', {'variants': variants})
     item('woven_rope_plank', {'parent': ref('block/woven_rope_plank_bottom')})
 
+    # Hanging rope plank: the same deck on edge, a 3-px panel against the block's north side (facing south),
+    # ropes running up and down; turned for the other facings. No item.
+    edge = {'texture': '#side'}
+    model('hanging_rope_plank', {
+        'parent': 'minecraft:block/block',
+        'textures': {'particle': ref('block/woven_rope_plank'), 'face': ref('block/woven_rope_plank'),
+                     'side': ref('block/woven_rope_plank_side')},
+        'elements': [{'from': [0, 0, 0], 'to': [16, 16, 3], 'faces': {
+            'north': {'texture': '#face', 'cullface': 'north'}, 'south': {'texture': '#face'},
+            'east': {'uv': [13, 0, 16, 16], **edge}, 'west': {'uv': [0, 0, 3, 16], **edge},
+            'up': {'uv': [0, 0, 16, 3], **edge}, 'down': {'uv': [0, 13, 16, 16], **edge}}}]})
+    bf.blockstate('hanging_rope_plank', {'variants': {
+        f'facing={facing}': bf.variant('hanging_rope_plank', y=y)
+        for facing, y in (('south', 0), ('west', 90), ('north', 180), ('east', 270))}})
+
     # Sylvan glyph stone: a 12x12 standing stone, two blocks high.
     for half in ('lower', 'upper'):
         side = ref('block/sylvan_glyph_stone_' + ('top' if half == 'upper' else 'bottom'))
@@ -659,6 +674,7 @@ def resources():
     # Loot: most drop themselves; the glyph stone from its lower half; glass needs silk touch, leaves silk
     # touch or shears.
     bf.loot('woven_rope_plank')
+    bf.loot('hanging_rope_plank', {'name': ref('woven_rope_plank')})
     bf.loot('glimmercap')
     bf.loot('moonpetal')
     bf.loot('sylvan_glyph_stone', {'conditions': [{'block': ref('sylvan_glyph_stone'),
@@ -697,7 +713,8 @@ def resources():
         bf.add_to_tag(kind, 'leaves', [ref('silverleaf')])
         bf.add_to_tag(kind, 'flowers', [ref('moonpetal')])
         bf.add_to_tag(kind, 'small_flowers', [ref('moonpetal')])
-    bf.add_to_tag('blocks', 'mineable/axe', [ref('woven_rope_plank')])
+    bf.add_to_tag('blocks', 'mineable/axe', [ref('woven_rope_plank'), ref('hanging_rope_plank')])
+    bf.add_to_tag('blocks', 'climbable', [ref('hanging_rope_plank')])
     bf.add_to_tag('blocks', 'mineable/hoe', [ref('silverleaf')])
     bf.add_to_tag('blocks', 'mineable/pickaxe', [ref('sylvan_glyph_stone')])
     bf.add_to_tag('blocks', 'impermeable', [ref('starglass')])
@@ -705,6 +722,7 @@ def resources():
     lang({
         'block.dndclasses.silverleaf': 'Silverleaf',
         'block.dndclasses.woven_rope_plank': 'Woven Rope Plank',
+        'block.dndclasses.hanging_rope_plank': 'Hanging Rope Plank',
         'block.dndclasses.sylvan_glyph_stone': 'Sylvan Glyph Stone',
         'block.dndclasses.glimmercap': 'Glimmercap',
         'block.dndclasses.moonpetal': 'Moonpetal',

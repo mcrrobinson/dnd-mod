@@ -68,6 +68,7 @@
     "dndclasses:tent_canvas_stairs",
     "dndclasses:tent_canvas_slab",
     "dndclasses:tent_canvas_trapdoor",
-    "dndclasses:tent_stake"
+    "dndclasses:tent_stake",
+    "dndclasses:hanging_rope_plank"
   ]
 }

@@ -1,0 +1,31 @@
+# Top-down shots (pitch 90, like looking down from a platform) over the gaps of fallen bridges in the enclaves
+# enclave-bridges-4.txt places (run that first with -PdevRunDir=run-2; for another world, move these to its
+# "[Desolation] bridge of ..." lines in debug.log). Checks: screenshots trail-<n>: a trail of planks, chain, posts
+# and lanterns on the ground under the whole old span, between the two hanging halves.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+hud off
+/tp @s 226435.5 91 -223599.5 180 90
+wait 200
+closescreen
+wait 5
+screenshot trail-a
+/tp @s 226431.5 91 -223607.5 180 90
+wait 60
+screenshot trail-b
+/tp @s 226413.5 91 -223594.5 180 90
+wait 60
+screenshot trail-c
+/tp @s 246056.5 96 -251374.5 180 90
+wait 60
+screenshot trail-d
+/tp @s 246050.5 96 -251356.5 180 90
+wait 60
+screenshot trail-e
+/tp @s 226435.5 70 -223591.5 180 35
+wait 40
+screenshot trail-a-low
+quit

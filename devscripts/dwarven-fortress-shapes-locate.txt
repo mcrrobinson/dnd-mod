@@ -1,0 +1,14 @@
+# Finds fortresses in untouched parts of the dev world for the before/after shapes survey (dwarven-fortress-shapes.txt).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dwarven-fortress-shapes-locate.txt
+# Check: "[CHAT]" lines with "The nearest dndclasses:dwarven_fortress" in latest.log.
+wait 40
+closescreen
+/gamemode spectator
+/execute positioned 40000 100 40000 run locate structure dndclasses:dwarven_fortress
+waitserver 2
+/execute positioned -40000 100 40000 run locate structure dndclasses:dwarven_fortress
+waitserver 2
+/execute positioned 40000 100 -40000 run locate structure dndclasses:dwarven_fortress
+waitserver 2
+wait 40
+quit

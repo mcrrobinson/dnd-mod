@@ -85,6 +85,8 @@ public class TreasuryPiece extends FortressPiece {
             b.chest(MID + 2, 2, z, Direction.WEST, TREASURY);
         }
         b.set(MID, 1, DEPTH - 2, Blocks.AMETHYST_BLOCK);
+        b.runicColumn(MID - 1, 1, HEIGHT - 2, DEPTH - 2);
+        b.runicColumn(MID + 1, 1, HEIGHT - 2, DEPTH - 2);
         b.set(MID, 2, DEPTH - 2, Blocks.AMETHYST_CLUSTER.getDefaultState().with(AmethystClusterBlock.FACING, Direction.UP));
 
         for (int z = 3; z < DEPTH - 1; z += 3) {

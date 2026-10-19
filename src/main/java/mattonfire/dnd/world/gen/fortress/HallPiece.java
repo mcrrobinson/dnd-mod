@@ -129,14 +129,23 @@ public class HallPiece extends FortressPiece {
             // The clan's anvil on every banner, in the hall's other colour.
             ModBannerPatterns.Layer anvil = ModBannerPatterns.CLAN_ANVIL.in(colours[((z - FIRST_PILLAR) / BAY + 1) % 2]);
             for (int x : PILLAR_X) {
-                b.column(x, z, top - 1);
                 boolean west = x < MID;
+                // no plinth on the wall side, so the side aisle stays two wide
+                b.column(x, z, top - 1, west ? Direction.WEST : Direction.EAST);
                 b.banner(west ? x + 1 : x - 1, 9, z, west ? Direction.EAST : Direction.WEST, colour, anvil);
             }
-            b.set(1, 5, z, slab(RUNIC, false));
+            b.corbel(1, 5, z, Direction.EAST);
             b.set(1, 4, z, lantern(true));
-            b.set(WIDTH - 2, 5, z, slab(RUNIC, false));
+            b.corbel(WIDTH - 2, 5, z, Direction.WEST);
             b.set(WIDTH - 2, 4, z, lantern(true));
+            // A stepped arch from this pillar to the next one down the hall.
+            if (z + BAY <= length - 5) {
+                for (int x : PILLAR_X) {
+                    b.fill(x, top - 1, z + 1, x, top - 1, z + BAY - 1, RUNIC.base());
+                    b.set(x, top - 2, z + 2, slab(RUNIC, true));
+                    b.set(x, top - 2, z + BAY - 2, slab(RUNIC, true));
+                }
+            }
             b.banner(1, 9, z, Direction.EAST, colour, anvil);
             b.banner(WIDTH - 2, 9, z, Direction.WEST, colour, anvil);
         }

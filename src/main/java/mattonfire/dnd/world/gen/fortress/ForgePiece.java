@@ -68,6 +68,8 @@ public class ForgePiece extends FortressPiece {
         b.fill(1, 2, 2, 1, HEIGHT - 2, back - 2, FORGE_BRICKS.base());
         for (int z = 1; z < back - 1; z++) {
             b.set(2, 4, z, stairs(FORGE_BRICKS, Direction.WEST, true));
+            // the hood's sloping top, up to the chimney breast
+            b.set(2, 5, z, stairs(FORGE_BRICKS, Direction.WEST, false));
         }
 
         // Anvils, smithing tables and a grindstone down the right wall.
@@ -78,6 +80,9 @@ public class ForgePiece extends FortressPiece {
         b.set(WIDTH - 2, 1, 6, Blocks.STONECUTTER);
         b.set(WIDTH - 2, 1, 8, facing(Blocks.GRINDSTONE, Direction.WEST));
         b.set(WIDTH - 2, 1, 9, Blocks.SMITHING_TABLE);
+        // Forge-brick counters at table height between them.
+        b.set(WIDTH - 2, 1, 4, slab(FORGE_BRICKS, true));
+        b.set(WIDTH - 2, 1, 7, slab(FORGE_BRICKS, true));
 
         // The great hearth: a lava cauldron in a gilded ring, a chain-hung hood above.
         b.fill(MID - 1, 1, 5, MID + 1, 1, 7, Blocks.GILDED_BLACKSTONE);
@@ -86,6 +91,14 @@ public class ForgePiece extends FortressPiece {
         b.set(MID + 1, 2, 7, Blocks.CAMPFIRE);
         b.fill(MID - 1, 5, 5, MID + 1, 5, 7, FORGE_BRICKS.base());
         b.set(MID, 5, 6, Blocks.IRON_BARS);
+        // The hood rises in a stepped pyramid to the chain.
+        b.set(MID - 1, 6, 6, stairs(FORGE_BRICKS, Direction.EAST, false));
+        b.set(MID + 1, 6, 6, stairs(FORGE_BRICKS, Direction.WEST, false));
+        b.set(MID, 6, 5, stairs(FORGE_BRICKS, IN, false));
+        b.set(MID, 6, 7, stairs(FORGE_BRICKS, OUT, false));
+        for (int[] c : new int[][]{{-1, 5}, {1, 5}, {-1, 7}, {1, 7}}) {
+            b.set(MID + c[0], 6, c[1], slab(FORGE_BRICKS, false));
+        }
         b.fill(MID, 6, 6, MID, HEIGHT - 2, 6, Blocks.CHAIN);
         b.set(MID - 1, 4, 5, lantern(true));
         b.set(MID + 1, 4, 7, lantern(true));

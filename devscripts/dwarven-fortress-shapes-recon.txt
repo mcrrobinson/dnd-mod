@@ -1,0 +1,73 @@
+# Recon for the shapes survey: generates the fortresses found by dwarven-fortress-shapes-locate.txt and lists their pieces.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dwarven-fortress-shapes-recon.txt
+# Check: "[Home] piece" lines in latest.log.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 39296 200 40240
+wait 600
+/tp @s 39296 60 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 66 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 72 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 78 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 84 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 90 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 96 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 102 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 108 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 114 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 120 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 126 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 132 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 138 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 144 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 150 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 156 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 162 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 168 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 174 40240
+waitserver 2
+/dndhome pieces
+/tp @s 39296 180 40240
+waitserver 2
+/dndhome pieces
+wait 20
+quit

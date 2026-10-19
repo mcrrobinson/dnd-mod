@@ -71,6 +71,9 @@ public class BarracksPiece extends FortressPiece {
         }
         b.chest(MID, 1, back - 1, OUT, BARRACKS);
         b.fill(1, 5, back - 1, WIDTH - 2, 5, back - 1, Blocks.SPRUCE_PLANKS);
+        for (int x = 1; x <= WIDTH - 2; x += 2) {
+            b.corbel(x, 4, back - 1, OUT);
+        }
         b.set(MID, HEIGHT - 2, 3, lantern(true));
         b.set(MID, HEIGHT - 2, back - 3, lantern(true));
 

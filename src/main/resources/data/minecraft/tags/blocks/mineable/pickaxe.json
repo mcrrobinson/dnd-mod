@@ -156,6 +156,9 @@
     "dndclasses:ember_dragonstone_eye",
     "dndclasses:frost_dragonstone_eye",
     "dndclasses:storm_dragonstone_eye",
-    "dndclasses:dragon_horn"
+    "dndclasses:dragon_horn",
+    "dndclasses:runic_column",
+    "dndclasses:runic_corbel",
+    "dndclasses:runic_deepslate_brick_vertical_slab"
   ]
 }

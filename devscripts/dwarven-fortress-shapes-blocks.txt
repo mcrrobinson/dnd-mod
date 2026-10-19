@@ -1,0 +1,46 @@
+# The Dwarven Fortresses' new shapes: Runic Column (parts follow the stack), Runic Corbel and Runic Deepslate Brick
+# Vertical Slab. Places them in the air, checks their states, drops and stonecutter recipes, and takes a close-up.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/dwarven-fortress-shapes-blocks.txt
+# Check: "Test passed" for every /execute line, "Gave 1"/"Gave 2" loot lines and "Unlocked 1 recipe" lines in
+# latest.log; screenshot shapes-blocks.png.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/time set 6000
+/weather clear
+/tp @s 1005.5 152 998.5 0 10
+wait 60
+/fill 1000 149 1000 1010 155 1006 minecraft:air
+/fill 1000 149 1000 1010 149 1006 minecraft:polished_deepslate
+/fill 1000 150 1006 1010 155 1006 dndclasses:runic_deepslate_bricks
+/setblock 1002 150 1003 dndclasses:runic_column
+/setblock 1002 151 1003 dndclasses:runic_column
+/setblock 1002 152 1003 dndclasses:runic_column
+/setblock 1004 150 1003 dndclasses:runic_column
+/setblock 1006 154 1005 dndclasses:runic_corbel[facing=north]
+/setblock 1006 153 1005 minecraft:lantern[hanging=true]
+/fill 1008 150 1005 1008 153 1005 dndclasses:runic_deepslate_brick_vertical_slab[facing=north]
+waitserver 2
+/execute if block 1002 150 1003 dndclasses:runic_column[part=base]
+/execute if block 1002 151 1003 dndclasses:runic_column[part=shaft]
+/execute if block 1002 152 1003 dndclasses:runic_column[part=capital]
+/execute if block 1004 150 1003 dndclasses:runic_column[part=single]
+/execute if block 1006 153 1005 minecraft:lantern
+/recipe give @s dndclasses:runic_column_from_runic_deepslate_bricks_stonecutting
+/recipe give @s dndclasses:runic_corbel_from_runic_deepslate_bricks_stonecutting
+/recipe give @s dndclasses:runic_deepslate_brick_vertical_slab_from_runic_deepslate_bricks_stonecutting
+/recipe give @s dndclasses:runic_deepslate_brick_vertical_slab
+/loot give @s mine 1004 150 1003 minecraft:diamond_pickaxe
+/loot give @s mine 1006 154 1005 minecraft:diamond_pickaxe
+/loot give @s mine 1008 150 1005 minecraft:diamond_pickaxe
+/gamemode spectator
+hud off
+/tp @s 1005.5 152 998.5 0 10
+wait 40
+screenshot shapes-blocks
+/setblock 1002 152 1003 minecraft:air
+waitserver 2
+/execute if block 1002 151 1003 dndclasses:runic_column[part=capital]
+hud on
+quit

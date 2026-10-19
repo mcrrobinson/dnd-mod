@@ -4,6 +4,9 @@ import java.util.List;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Blocks.dwarven.CarvedFaceBlock;
 import mattonfire.dnd.classes.Blocks.dwarven.CoinPileBlock;
+import mattonfire.dnd.classes.Blocks.dwarven.RunicColumnBlock;
+import mattonfire.dnd.classes.Blocks.dwarven.RunicCorbelBlock;
+import mattonfire.dnd.classes.Blocks.dwarven.VerticalSlabBlock;
 import mattonfire.dnd.classes.Blocks.dwarven.WaystoneBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -39,13 +42,21 @@ public final class DwarvenBlocks {
     /** A two-block standing stone that names the hold and your standing with the dwarves. */
     public static final Block WAYSTONE = new WaystoneBlock(FabricBlockSettings.copyOf(Blocks.STONE)
             .luminance(state -> 5).nonOpaque());
+    /** A slender chamfered column with a gold rune band; stacks get a stepped base and a capital. */
+    public static final Block RUNIC_COLUMN = new RunicColumnBlock(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS));
+    /** A stepped bracket jutting out of a wall, under ledges, cornices and lamps. */
+    public static final Block RUNIC_CORBEL = new RunicCorbelBlock(FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS));
+    /** Half a runic brick on its edge, for pilasters and wall trim. */
+    public static final Block RUNIC_DEEPSLATE_BRICK_VERTICAL_SLAB = new VerticalSlabBlock(
+            FabricBlockSettings.copyOf(Blocks.DEEPSLATE_BRICKS));
 
     private DwarvenBlocks() {
     }
 
     /** The blocks in tab order. */
     public static List<Block> all() {
-        return List.of(CLAN_CREST, ANCESTOR_STATUE, ALE_KEG_WALL, TREASURY_COIN_PILE, MITHRAL_LATTICE, WAYSTONE);
+        return List.of(CLAN_CREST, ANCESTOR_STATUE, ALE_KEG_WALL, TREASURY_COIN_PILE, MITHRAL_LATTICE, WAYSTONE, RUNIC_COLUMN,
+                RUNIC_CORBEL, RUNIC_DEEPSLATE_BRICK_VERTICAL_SLAB);
     }
 
     public static void register() {
@@ -55,6 +66,9 @@ public final class DwarvenBlocks {
         register("treasury_coin_pile", TREASURY_COIN_PILE);
         register("mithral_lattice", MITHRAL_LATTICE);
         register("waystone", WAYSTONE);
+        register("runic_column", RUNIC_COLUMN);
+        register("runic_corbel", RUNIC_CORBEL);
+        register("runic_deepslate_brick_vertical_slab", RUNIC_DEEPSLATE_BRICK_VERTICAL_SLAB);
     }
 
     private static void register(String name, Block block) {

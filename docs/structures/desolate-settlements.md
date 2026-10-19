@@ -49,6 +49,12 @@ Then each one rolls a **level**, all four equally likely. The numbers are per bl
   - **Breaches** are ragged holes knocked through a wall (one of the building's four sides) or its roof.
   - **Holes** come down through the roof and up to 3 floors under it, 1 to 2.5 blocks across, taking each floor's top block and half the time the one under it.
   - **Fallen doorways**: the door is gone and so is most of the lintel over it (80% of the row above the door and the blocks either side, 50% of the row above that), lying in a heap on the threshold.
+- **What loses its support comes down.** How much of a building's walls are breached (the band of blocks within 2 of its sides, by its own breaches and any of a bigger piece's that land on it) decides its fate:
+  - under 25%: only what was over a breach falls (the wall above it and the roof on it), and the roof next to it falls in in places, less often further away, out to the breach's radius again past it;
+  - 25% to 55%: its roof falls in as well, in patches about 4 blocks across: none of it at 25%, all of it at 55%. The walls stand, and so does a centre pole;
+  - 55% or more: the whole building is a heap, its walls left 1 or 2 blocks high, with at least 70% of what fell lying on its floor and the pieces piling up.
+  - Big pieces (twice the 12 by 12 area or more, like a goblin camp) only lose what's over and next to their breaches. A building with ground or stone over it (a hobbit smial, a fortress hall) is held up.
+  - Whatever is left hanging after that, touching nothing that holds it up, falls too: a stretch of roof, a wall top or a pole cap.
 - Some of what a collapse knocks out lies on the ground below, scattered up to a block sideways: as a slab of the same material, a few layers of [Collapsed Rubble](dungeons.md) for stone, or the block itself.
 - **Tattered Carpets** replace the vanilla carpets: the same colour, worn, stained and with holes torn through. There's one for each dye colour, and they can be mined and placed.
 - **Overgrowth**: flowers and tall grass on open grass, vines hanging down walls (each vine 75% likely to carry on down), moss carpet on floors, and roofs with moss carpet or grassed-over soil (and the odd flower). Oak and birch trees grow up on open ground inside.
@@ -70,6 +76,7 @@ See [Admin commands](../systems/admin-commands.md).
 - Only chunks the structure's box reaches are withered, so ground just past the edge of a settlement stays as it was.
 - A tree that a neighbouring chunk grows after the settlement has withered keeps its leaves and the grass under it.
 - Rubble only falls within its own chunk, and a fallen doorway's lintel is only taken out on the door's side of a chunk border.
+- A fragment that crosses a chunk border is left hanging: each chunk only drops what floats wholly inside it.
 - A collapse is aimed at the building's box, not its walls, so one now and then lands in the open and takes out nothing.
 - Water and lava are left alone.
 
@@ -79,4 +86,10 @@ See [Admin commands](../systems/admin-commands.md).
 - `DesolateBlocks` registers the Tattered Carpets; `tools/tattered_carpet_textures.py` draws them and writes their resources.
 - The structure JSONs are copies of the originals with empty `spawn_overrides` for every spawn group. Each structure set lists the original at weight 4 and the desolate one at weight 1.
 - Each withered chunk logs `[Desolation] <structure> (<LEVEL>) at <start>: chunk x z: ...` at DEBUG (in `debug.log`) with the entities dropped, containers emptied, blocks changed and collapses (breaches, holes and fallen doorways).
+- **Support** (`Withering.supports` and `fragments`). A real flood fill of what's connected to the ground can't work across chunks in worldgen, so it's done in two deterministic parts:
+  - `plannedBreach` records every piece's breaches (centre, radius, face) before checking whether they reach this chunk, so every chunk has the whole plan. Per piece, the share of its wall band (columns within `WALL_BAND` = 2 of its box's sides) inside the radius of a breach (its own wall and inside breaches, and any other piece's that reach into its box) is its wall damage. It sets the piece's fate: local (under `CAVE_DAMAGE` = 0.25), caved (the share of the roof that falls rises from 0 to 1 up to `HEAP_DAMAGE` = 0.55, by `Desolation.patches` noise 4 blocks across) or heaped (0.55 and up). Pieces of `BIG_PIECE` area are always local.
+  - Then column by column in this chunk: the column's top run of built blocks (a roof, or a wall and its roof) is found from the top down; if the highest solid block isn't built, the column is held up. The run comes down above a breach's centre if the column is within the breach's ragged radius (0.75 to 1.25 of it), above the 1 or 2 block wall stub in a heap, and wholly if it's a ceiling (open space under it) and rolls under the sag chance (1 at the breach's edge, 0 at `SAG_REACH` = 1 radius past it) or the caved patches. Only that column's blocks are read and written, and what falls is laid with `settle`, which piles heaps up.
+  - `fragments` then floods this chunk's slice of the structure (edges and corners connect, so stepped roofs hold together) and drops each group with nothing holding it up: none of it is ground, stone, a natural log or a block entity (but banners and heads), and none of it lies on the slice's edge, where it may carry on into the next chunk. A chunk's blocks are final when it runs, so the result doesn't depend on the order chunks are made in.
+  - Each piece that loses blocks logs `[Desolation] piece <n> <class> <centre>: wall damage <share>, <local|caved x|heaped>, <n> blocks fell` at DEBUG, and the chunk line counts the blocks fallen unsupported.
+- Devscript: `desolate-collapse.txt` screenshots a desolate orc stronghold at each level.
 - Devscript: `desolate-shots.txt` visits every desolate settlement at every level and screenshots it.

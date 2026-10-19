@@ -98,9 +98,9 @@ public final class Desolation {
         }
         LEVEL.remove();
         int[] counts = new Withering(world, start, chunkBox, generator, level).run();
-        DnDClasses.LOGGER.debug("[Desolation] {} ({}) at {}: chunk {} {}: {} entities dropped, {} containers emptied, {} blocks withered, {} breaches",
+        DnDClasses.LOGGER.debug("[Desolation] {} ({}) at {}: chunk {} {}: {} entities dropped, {} containers emptied, {} blocks withered, {} breaches, {} fallen unsupported",
                 world.getRegistryManager().get(RegistryKeys.STRUCTURE).getId(start.getStructure()), level, start.getPos(),
-                chunkBox.getMinX() >> 4, chunkBox.getMinZ() >> 4, DROPPED.get()[0], counts[0], counts[1], counts[2]);
+                chunkBox.getMinX() >> 4, chunkBox.getMinZ() >> 4, DROPPED.get()[0], counts[0], counts[1], counts[2], counts[3]);
     }
 
     /** Counts an entity dropped by {@code DesolateSpawnMixin}. */

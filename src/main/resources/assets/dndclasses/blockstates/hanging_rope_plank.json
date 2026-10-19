@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "dndclasses:block/hanging_rope_plank"
+    },
+    "facing=west": {
+      "model": "dndclasses:block/hanging_rope_plank",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "dndclasses:block/hanging_rope_plank",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "dndclasses:block/hanging_rope_plank",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,78 @@
+# Desolate fortress gates: the outside battered by the siege, at every level, in fresh land at x 200000+.
+# Run: timeout 1500 ./gradlew runClient -PdevScript=devscripts/desolate-fortress-gate.txt (move Z for a world where these have generated).
+# Checks: screenshots fortress-gate-<level> (in front), -close and -side; "[Home] dndclasses:dwarven_gate ... facing" in the log;
+# "[Desolation] dndclasses:desolate_dwarven_fortress (<LEVEL>)" lines in <run dir>/logs/debug.log.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+hud off
+/time set noon
+/gamerule doDaylightCycle false
+/dndhome desolation raided
+/execute in minecraft:overworld run tp @s 200000 200 60000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/dndhome visit dndclasses:desolate_dwarven_fortress dndclasses:dwarven_gate
+waitserver 2
+wait 200
+closescreen
+screenshot fortress-gate-raided
+/execute at @s run tp @s ^ ^-3 ^12 ~ 5
+wait 80
+screenshot fortress-gate-raided-close
+/execute at @s run tp @s ^-12 ^4 ^-2 ~-40 20
+wait 80
+screenshot fortress-gate-raided-side
+/dndhome desolation abandoned
+/execute in minecraft:overworld run tp @s 206000 200 60000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/dndhome visit dndclasses:desolate_dwarven_fortress dndclasses:dwarven_gate
+waitserver 2
+wait 200
+closescreen
+screenshot fortress-gate-abandoned
+/execute at @s run tp @s ^ ^-3 ^12 ~ 5
+wait 80
+screenshot fortress-gate-abandoned-close
+/execute at @s run tp @s ^-12 ^4 ^-2 ~-40 20
+wait 80
+screenshot fortress-gate-abandoned-side
+/dndhome desolation forsaken
+/execute in minecraft:overworld run tp @s 212000 200 60000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/dndhome visit dndclasses:desolate_dwarven_fortress dndclasses:dwarven_gate
+waitserver 2
+wait 200
+closescreen
+screenshot fortress-gate-forsaken
+/execute at @s run tp @s ^ ^-3 ^12 ~ 5
+wait 80
+screenshot fortress-gate-forsaken-close
+/execute at @s run tp @s ^-12 ^4 ^-2 ~-40 20
+wait 80
+screenshot fortress-gate-forsaken-side
+/dndhome desolation overgrown
+/execute in minecraft:overworld run tp @s 218000 200 60000
+/dndhome visit dndclasses:desolate_dwarven_fortress
+waitserver 2
+wait 300
+/dndhome visit dndclasses:desolate_dwarven_fortress dndclasses:dwarven_gate
+waitserver 2
+wait 200
+closescreen
+screenshot fortress-gate-overgrown
+/execute at @s run tp @s ^ ^-3 ^12 ~ 5
+wait 80
+screenshot fortress-gate-overgrown-close
+/execute at @s run tp @s ^-12 ^4 ^-2 ~-40 20
+wait 80
+screenshot fortress-gate-overgrown-side
+/gamerule doDaylightCycle true
+/dndhome desolation random
+quit

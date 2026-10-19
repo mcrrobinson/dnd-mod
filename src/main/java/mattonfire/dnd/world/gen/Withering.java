@@ -12,6 +12,7 @@ import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.classes.Registry.DesolateBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.RuinBlocks;
+import mattonfire.dnd.world.gen.burrow.ObservatoryPiece;
 import net.minecraft.block.AttachedStemBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -110,6 +111,13 @@ final class Withering {
     static final float LINTEL_TOP_FALLS = 0.5F;
     /** How many floors (and roofs) a hole goes down through. */
     static final int HOLE_FLOORS = 3;
+    /** The least share of the blocks a {@link Ruinable} piece knocks out that are thrown onto the ground. */
+    static final float THROWN_RUBBLE = 0.5F;
+    /** How far a thrown block can fall to the ground (down a slope from the top of a wall). */
+    static final int THROWN_FALL = 40;
+    /** How far round a {@link Ruinable} piece's breach its bricks are cracked, and how many of them. */
+    static final float RIM = 1.5F;
+    static final float RIM_CRACKED = 0.6F;
 
     private static final Block[] FLOWERS = {Blocks.GRASS, Blocks.GRASS, Blocks.GRASS, Blocks.FERN, Blocks.DANDELION,
             Blocks.POPPY, Blocks.OXEYE_DAISY, Blocks.CORNFLOWER, Blocks.AZURE_BLUET, Blocks.ALLIUM};
@@ -472,6 +480,13 @@ final class Withering {
         for (StructurePiece piece : this.start.getChildren()) {
             BlockBox b = piece.getBoundingBox();
             index++;
+            if (piece instanceof ObservatoryPiece) {
+                // Its dome caves in on its own plan, and a hole or breach would leave bits of the rim floating.
+                continue;
+            }
+            if (piece instanceof Ruinable ruinable && ruinable.ruin(new PieceRuin(index))) {
+                continue;
+            }
             float factor = MathHelper.clamp(b.getBlockCountX() * b.getBlockCountZ() / (float) (PIECE_SIZE * PIECE_SIZE),
                     MIN_PIECE_FACTOR, MAX_PIECE_FACTOR);
             int breaches = count(this.level.breaches * factor, this.roll(index, 0, 0, 60));
@@ -617,31 +632,82 @@ final class Withering {
     private void fall(BlockPos from, BlockState state) {
         int dx = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 16) * 3) - 1;
         int dz = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 17) * 3) - 1;
-        BlockPos.Mutable pos = new BlockPos.Mutable(from.getX() + dx, from.getY(), from.getZ() + dz);
-        if (!this.chunkBox.contains(pos)) {
+        BlockPos pos = this.ground(from.getX() + dx, from.getY(), from.getZ() + dz, RUBBLE_FALL);
+        if (pos != null) {
+            this.land(pos, this.debris(state, this.roll(from.getX(), from.getY(), from.getZ(), 18), from, false), 1);
+        }
+    }
+
+    /**
+     * Throws a block knocked out at {@code from} (the level's rubble chance, at least {@link #THROWN_RUBBLE})
+     * {@code out}, 1 to {@code reach} blocks and up to a block sideways, onto the ground there.
+     */
+    private void thrown(BlockPos from, BlockState state, Direction out, int reach) {
+        int x = from.getX();
+        int y = from.getY();
+        int z = from.getZ();
+        if (this.roll(x, y, z, 15) >= Math.max(this.level.rubble, THROWN_RUBBLE)) {
             return;
         }
-        for (int i = 0; i < RUBBLE_FALL && pos.getY() > this.chunkBox.getMinY(); i++) {
+        int dist = 1 + (int) (this.roll(x, y, z, 16) * reach);
+        int side = (int) (this.roll(x, y, z, 17) * 3) - 1;
+        Direction across = out.rotateYClockwise();
+        BlockPos pos = this.ground(x + out.getOffsetX() * dist + across.getOffsetX() * side, y,
+                z + out.getOffsetZ() * dist + across.getOffsetZ() * side, THROWN_FALL);
+        if (pos != null) {
+            this.land(pos, this.debris(state, this.roll(x, y, z, 18), from, false), 1);
+        }
+    }
+
+    /**
+     * Where something dropped in column x/z at height y comes to rest: the open block above the first solid one
+     * below it, at most {@code fall} down. Null if that's outside this chunk or y itself isn't open.
+     */
+    private BlockPos ground(int x, int y, int z, int fall) {
+        BlockPos.Mutable pos = new BlockPos.Mutable(x, y, z);
+        if (!this.chunkBox.contains(pos) || !open(this.world.getBlockState(pos))) {
+            return null;
+        }
+        for (int i = 0; i < fall && pos.getY() > this.chunkBox.getMinY() + 1; i++) {
             BlockState below = this.world.getBlockState(pos.down());
             if (!below.isAir() && !below.isReplaceable()) {
                 break;
             }
             pos.move(Direction.DOWN);
         }
+        return pos.toImmutable();
+    }
+
+    private static boolean open(BlockState state) {
+        return state.isAir() || state.isReplaceable() && state.getFluidState().isEmpty();
+    }
+
+    /**
+     * Lays {@code piece} at {@code pos} if it has firm ground under it (not leaves). On a heap of Collapsed Rubble
+     * it adds {@code layers} to the heap instead. Returns whether anything was laid.
+     */
+    private boolean land(BlockPos pos, BlockState piece, int layers) {
+        if (piece == null) {
+            return false;
+        }
         BlockState here = this.world.getBlockState(pos);
+        if (here.isOf(RuinBlocks.COLLAPSED_RUBBLE)) {
+            if (here.get(RubbleBlock.LAYERS) >= RubbleBlock.MAX_LAYERS) {
+                return false;
+            }
+            this.set(pos, here.with(RubbleBlock.LAYERS, Math.min(RubbleBlock.MAX_LAYERS, here.get(RubbleBlock.LAYERS) + layers)));
+            return true;
+        }
         BlockState below = this.world.getBlockState(pos.down());
-        if (here.isOf(RuinBlocks.COLLAPSED_RUBBLE) && here.get(RubbleBlock.LAYERS) < RubbleBlock.MAX_LAYERS) {
-            this.set(pos, here.with(RubbleBlock.LAYERS, here.get(RubbleBlock.LAYERS) + 1));
-            return;
+        if (!open(here) || below.isIn(BlockTags.LEAVES) || !below.isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
+            return false;
         }
-        if (!(here.isAir() || here.isReplaceable() && here.getFluidState().isEmpty())
-                || !below.isSideSolidFullSquare(this.world, pos.down(), Direction.UP)) {
-            return;
+        if (here.getBlock() instanceof TallPlantBlock && this.chunkBox.contains(pos.up())
+                && this.world.getBlockState(pos.up()).getBlock() instanceof TallPlantBlock) {
+            this.world.setBlockState(pos.up(), Blocks.AIR.getDefaultState(), PieceBlocks.UPDATE);
         }
-        BlockState piece = this.debris(state, this.roll(from.getX(), from.getY(), from.getZ(), 18), from, false);
-        if (piece != null) {
-            this.set(pos, piece);
-        }
+        this.set(pos, piece);
+        return true;
     }
 
     /**
@@ -684,6 +750,198 @@ final class Withering {
             slabs = map;
         }
         return slabs.get(block);
+    }
+
+    // --- Pieces with their own ruin -----------------------------------------------------------------------------
+
+    /** The {@link Ruinable.Ruin} for piece {@code index} of the start, carving in this chunk. */
+    private final class PieceRuin implements Ruinable.Ruin {
+        private final long pieceSalt;
+
+        PieceRuin(int index) {
+            this.pieceSalt = Withering.this.salt + index * 0x632BE59BD9B4E019L;
+        }
+
+        @Override
+        public DesolationLevel level() {
+            return Withering.this.level;
+        }
+
+        @Override
+        public float roll(int a, int b, int c, int k) {
+            return Desolation.roll(this.pieceSalt, a, b, c, k);
+        }
+
+        @Override
+        public float patches(int a, int b, int size, int k) {
+            return Desolation.patches(this.pieceSalt, a, b, size, k);
+        }
+
+        @Override
+        public boolean near(int x, int z, int r) {
+            BlockBox c = Withering.this.chunkBox;
+            return x + r >= c.getMinX() && x - r <= c.getMaxX() && z + r >= c.getMinZ() && z - r <= c.getMaxZ();
+        }
+
+        @Override
+        public void breach(BlockPos from, BlockPos to, float radius, Direction out, int reach) {
+            int r = (int) Math.ceil(radius * 1.25F) + 2;
+            int x1 = Math.min(from.getX(), to.getX()) - r;
+            int x2 = Math.max(from.getX(), to.getX()) + r;
+            int z1 = Math.min(from.getZ(), to.getZ()) - r;
+            int z2 = Math.max(from.getZ(), to.getZ()) + r;
+            BlockBox c = Withering.this.chunkBox;
+            if (x2 < c.getMinX() || x1 > c.getMaxX() || z2 < c.getMinZ() || z1 > c.getMaxZ()) {
+                return;
+            }
+            Withering.this.counts[2]++;
+            double sx = to.getX() - from.getX();
+            double sy = to.getY() - from.getY();
+            double sz = to.getZ() - from.getZ();
+            double length2 = sx * sx + sy * sy + sz * sz;
+            BlockPos.Mutable pos = new BlockPos.Mutable();
+            // Top down, so what's thrown from high up lands on what's left below.
+            for (int y = Math.max(from.getY(), to.getY()) + r; y >= Math.min(from.getY(), to.getY()) - r; y--) {
+                for (int x = Math.max(x1, c.getMinX()); x <= Math.min(x2, c.getMaxX()); x++) {
+                    for (int z = Math.max(z1, c.getMinZ()); z <= Math.min(z2, c.getMaxZ()); z++) {
+                        double px = x - from.getX();
+                        double py = y - from.getY();
+                        double pz = z - from.getZ();
+                        double t = length2 == 0 ? 0 : MathHelper.clamp((px * sx + py * sy + pz * sz) / length2, 0, 1);
+                        double dx = px - t * sx;
+                        double dy = py - t * sy;
+                        double dz = pz - t * sz;
+                        double d = Math.sqrt(dx * dx + dy * dy + dz * dz);
+                        double edge = radius * (0.75F + 0.5F * Withering.this.roll(x, y, z, 13));
+                        if (d > edge + RIM) {
+                            continue;
+                        }
+                        pos.set(x, y, z);
+                        BlockState state = Withering.this.world.getBlockState(pos);
+                        if (!Withering.this.knockable(pos, state)) {
+                            continue;
+                        }
+                        if (d > edge) {
+                            // The rim round the hole, cracked by the blows.
+                            Block cracked = cracked(state.getBlock());
+                            if (cracked != null && Withering.this.roll(x, y, z, 14) < RIM_CRACKED) {
+                                Withering.this.set(pos, cracked.getDefaultState());
+                            }
+                            continue;
+                        }
+                        Withering.this.set(pos, Blocks.AIR.getDefaultState());
+                        Withering.this.thrown(pos.toImmutable(), state, out, reach);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void crumble(int x, int z, int top, int bottom, int cover, Direction out, int reach) {
+            if (!Withering.this.chunkBox.contains(x, top, z) || top < bottom) {
+                return;
+            }
+            StructureWorldAccess world = Withering.this.world;
+            BlockPos.Mutable pos = new BlockPos.Mutable(x, top + 1, z);
+            BlockState above = world.getBlockState(pos);
+            if (!above.isAir()) {
+                if (!open(above)) {
+                    return;
+                }
+                Withering.this.set(pos, Blocks.AIR.getDefaultState());
+            }
+            for (int y = top; y >= bottom; y--) {
+                pos.setY(y);
+                BlockState state = world.getBlockState(pos);
+                if (state.isAir()) {
+                    continue;
+                }
+                boolean heaped = y > cover && state.getFluidState().isEmpty() && world.getBlockEntity(pos) == null
+                        && state.getHardness(world, pos) >= 0.0F;
+                if (!heaped && !Withering.this.knockable(pos, state)) {
+                    continue;
+                }
+                Withering.this.set(pos, Blocks.AIR.getDefaultState());
+                if (!heaped) {
+                    Withering.this.thrown(pos.toImmutable(), state, out, reach);
+                }
+            }
+        }
+
+        @Override
+        public void topple(BlockPos foot, Direction out, BlockState[] fallen) {
+            Withering.this.counts[2]++;
+            for (int i = 0; i < fallen.length; i++) {
+                int x = foot.getX() + out.getOffsetX() * i;
+                int z = foot.getZ() + out.getOffsetZ() * i;
+                BlockPos pos = Withering.this.ground(x, foot.getY(), z, THROWN_FALL);
+                if (pos == null) {
+                    continue;
+                }
+                float roll = this.roll(x, i, z, 90);
+                BlockState piece = fallen[i];
+                if (roll < 0.15F) {
+                    continue;
+                }
+                if (roll < 0.4F) {
+                    piece = RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, 2 + (int) (roll * 10) % 3);
+                } else if (piece.contains(Properties.AXIS)) {
+                    piece = piece.with(Properties.AXIS, out.getAxis());
+                }
+                Withering.this.land(pos, piece, 2);
+            }
+        }
+
+        @Override
+        public void scree(int x, int y, int z, float amount, BlockState[] materials) {
+            if (amount <= 0.0F || x < Withering.this.box.getMinX() || x > Withering.this.box.getMaxX()
+                    || z < Withering.this.box.getMinZ() || z > Withering.this.box.getMaxZ()) {
+                return;
+            }
+            BlockPos pos = Withering.this.ground(x, y, z, THROWN_FALL + 8);
+            if (pos == null) {
+                return;
+            }
+            float roll = this.roll(x, 0, z, 80);
+            BlockState material = materials[(int) (this.roll(x, 1, z, 81) * materials.length)];
+            if (roll < 0.22F * amount) {
+                if (Withering.this.land(pos, material.getBlock().getDefaultState(), 2)
+                        && this.roll(x, 2, z, 82) < 0.35F * amount) {
+                    // A second block, or a broken bit of one, on top.
+                    BlockState top = this.roll(x, 3, z, 82) < 0.5F ? material.getBlock().getDefaultState()
+                            : Withering.this.debris(material, this.roll(x, 4, z, 82), pos, false);
+                    Withering.this.land(pos.up(), top, 1);
+                }
+            } else if (roll < 0.62F * amount) {
+                int layers = Math.min(RubbleBlock.MAX_LAYERS, 1 + (int) (this.roll(x, 5, z, 83) * (1 + 5 * Math.min(amount, 1.2F))));
+                Withering.this.land(pos, RuinBlocks.COLLAPSED_RUBBLE.getDefaultState().with(RubbleBlock.LAYERS, layers), layers);
+            } else if (roll < 0.82F * amount) {
+                Block slab = slab(material.getBlock());
+                if (slab != null) {
+                    Withering.this.land(pos, slab.getDefaultState().with(SlabBlock.TYPE, SlabType.BOTTOM), 1);
+                }
+            }
+        }
+
+        @Override
+        public void tidy(BlockBox area) {
+            BlockBox c = Withering.this.chunkBox;
+            StructureWorldAccess world = Withering.this.world;
+            BlockPos.Mutable pos = new BlockPos.Mutable();
+            // One in from the chunk's edges, so every block a support check looks at is in this chunk.
+            for (int x = Math.max(area.getMinX(), c.getMinX() + 1); x <= Math.min(area.getMaxX(), c.getMaxX() - 1); x++) {
+                for (int z = Math.max(area.getMinZ(), c.getMinZ() + 1); z <= Math.min(area.getMaxZ(), c.getMaxZ() - 1); z++) {
+                    for (int y = area.getMaxY(); y >= area.getMinY(); y--) {
+                        BlockState state = world.getBlockState(pos.set(x, y, z));
+                        if (state.isAir() || !state.getFluidState().isEmpty() || state.isFullCube(world, pos)
+                                || state.canPlaceAt(world, pos)) {
+                            continue;
+                        }
+                        Withering.this.set(pos, Blocks.AIR.getDefaultState());
+                    }
+                }
+            }
+        }
     }
 
     // --- Overgrowth --------------------------------------------------------------------------------------------

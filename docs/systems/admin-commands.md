@@ -64,6 +64,7 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome pieces` | Lists every piece of the settlement you're standing in, with its box and facing (the side its back faces, for village buildings) |
 | `/dndhome desolation <raided\|abandoned\|forsaken\|overgrown\|random>` | Gives every [desolate settlement](../structures/desolate-settlements.md) generated from now on that level (`random` rolls it again, the default); for testing, not saved |
 | `/dndhome visit <structure>` | Teleports you 200 blocks up over the nearest start of that structure (within 100 chunks), for devscripts that can't read `/locate`'s answer |
+| `/dndhome visit <structure> <piece>` | Puts you 20 blocks out in front of the first piece of that type in the nearest start (e.g. `dndclasses:dwarven_gate`), 10 up and looking at it |
 | `/dndhome temple [ember\|frost\|storm]` | Teleports you into the nearest [Dragon Temple](../structures/dragon-temples.md)'s sanctum, in front of that breath altar |
 | `/dndhome stronghold [pit\|seat\|hoard\|smithy\|gate]` | Teleports you to that spot of the nearest [Orc Stronghold](../structures/orc-strongholds.md); `pit` stands you in the pit looking at the war drum |
 | `/dndhome strongholdsurvey [grid] [spacing]` | Checks the nearest stronghold from each point of a grid round you is in the badlands with all its pieces (`[StrongholdSurvey]` lines) |
@@ -71,7 +72,7 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome trialreset <players>` | Lets the players take the Trial of Strength again today at the stronghold you stand in |
 | `/dndhome sanctum [hall\|offering\|anchor\|market\|den\|gate\|top\|side]` | Teleports you to that spot of the nearest [Brimstone Sanctum](../structures/brimstone-sanctums.md) (run it in the Nether) |
 | `/dndhome sanctumsurvey [grid] [spacing]` | Checks the nearest sanctum from each point of a grid round you is in a sanctum biome with all its pieces, with no lava under it and no cut ceiling (`[SanctumSurvey]` lines; run it in the Nether) |
-| `/dndhome cogsdeep [door\|top\|observatory\|ladder\|telescope\|slit\|stair\|foot\|commons\|workshop\|westworkshop\|clocktower\|strongbox\|gems\|grotto]` | Teleports you to that spot of the nearest [Cogsdeep](../structures/cogsdeep.md), looking at it |
+| `/dndhome cogsdeep [door\|top\|observatory\|ladder\|telescope\|slit\|stair\|foot\|commons\|workshop\|westworkshop\|clocktower\|strongbox\|gems\|grotto]` | Teleports you to that spot of the nearest [Cogsdeep](../structures/cogsdeep.md), living or desolate, looking at it |
 | `/dndhome cogsdeepsurvey [grid] [spacing]` | Checks the nearest burrow from each point of a grid round you: biome, pieces, depth, the observatory on the ground, dry rooms and no other structure within 5 chunks (`[CogsdeepSurvey]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 

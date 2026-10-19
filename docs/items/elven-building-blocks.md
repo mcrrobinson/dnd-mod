@@ -11,12 +11,13 @@ The Elven Enclaves' own materials: **Heartwood**, the Heart Tree's wood; **Moons
 | Living Wood | block | Pale bark with small leaves, curling tendrils and tiny flowers growing out of it. Birch wood's hardness | the talans' trunks above their platforms, the Heart Tree's trunk round the Speaker's Hall |
 | Silverleaf | leaves | Silver-green leaves with lighter edges and a few glinting pixels; not tinted by the biome. Mined with shears or silk touch, like leaves | the Heart Tree's canopy |
 | Woven Rope Plank | slab-thin | Birch slats lashed with rope along both edges, 3 pixels thick, in the top or bottom half of the block like a slab (placed by where you click). The slats lie across the way you face when you place it. Needs nothing under it | the rope bridges' decks |
+| Hanging Rope Plank | panel | A Woven Rope Plank on edge: a 3-pixel panel against one side of its block, the ropes running up and down. No collision; climbed like a ladder. No item: it drops a Woven Rope Plank | the fallen bridges of [desolate enclaves](../structures/desolate-settlements.md) |
 | Sylvan Glyph Stone | 2 high | A mossy grey standing stone with a pale green leaf glyph that glows (light 6). Placed and broken as one, like a door, and needs solid ground | 2-4 round the edge of the enclave's grounds |
 | Glimmercap | plant | A cluster of pale blue mushrooms with glowing caps (light 7). Grows on dirt, grass and moss | round the Heart Tree's roots, the flower gardens |
 | Moonpetal | flower | A white flower: a closed bud by day, open silver petals at night (13000-23000), checked every 10 s once a random tick or placing it wakes it up. Makes Night Vision suspicious stew | round the Moonwell, the flower gardens |
 | Starglass | block, Pane | Clear glass with a faint blue tint, small white star specks and a thin silver frame. Needs silk touch, like glass | the Speaker's Hall balustrade (Pane) |
 
-Every block drops itself when mined (Silverleaf and Starglass need the tool above, Woven Rope Planks and Glimmercaps need nothing).
+Every block but the Hanging Rope Plank drops itself when mined (Silverleaf and Starglass need the tool above, Woven Rope Planks and Glimmercaps need nothing).
 
 Recipes:
 - Heartwood Planks: 1 Heartwood Log, Wood or Stripped Log makes 4. Heartwood Wood: 4 logs make 3. The shapes use the usual recipes (stairs, slab, fence, gate, door, trapdoor).

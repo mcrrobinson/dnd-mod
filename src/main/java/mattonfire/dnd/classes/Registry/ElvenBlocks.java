@@ -5,6 +5,7 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Blocks.elven.GlimmercapBlock;
+import mattonfire.dnd.classes.Blocks.elven.HangingRopePlankBlock;
 import mattonfire.dnd.classes.Blocks.elven.MoonpetalBlock;
 import mattonfire.dnd.classes.Blocks.elven.SylvanGlyphStoneBlock;
 import mattonfire.dnd.classes.Blocks.elven.WovenRopePlankBlock;
@@ -36,6 +37,9 @@ public final class ElvenBlocks {
     /** A rope bridge's deck, slab-thin (see {@link WovenRopePlankBlock}). */
     public static final WovenRopePlankBlock WOVEN_ROPE_PLANK = new WovenRopePlankBlock(
             FabricBlockSettings.copyOf(Blocks.BIRCH_PLANKS).strength(1.0F).nonOpaque());
+    /** A Woven Rope Plank hanging on edge from a fallen bridge (see {@link HangingRopePlankBlock}); no item. */
+    public static final HangingRopePlankBlock HANGING_ROPE_PLANK = new HangingRopePlankBlock(
+            FabricBlockSettings.copyOf(Blocks.BIRCH_PLANKS).strength(1.0F).nonOpaque().noCollision());
     /** Two-high standing stone marking the edge of Sylvan Law; its glyph glows (light 6). */
     public static final SylvanGlyphStoneBlock SYLVAN_GLYPH_STONE = new SylvanGlyphStoneBlock(
             FabricBlockSettings.copyOf(Blocks.MOSSY_COBBLESTONE).luminance(state -> 6).nonOpaque());
@@ -56,6 +60,7 @@ public final class ElvenBlocks {
     public static void register() {
         register("silverleaf", SILVERLEAF);
         register("woven_rope_plank", WOVEN_ROPE_PLANK);
+        Registry.register(Registries.BLOCK, new Identifier(DnDClasses.MOD_ID, "hanging_rope_plank"), HANGING_ROPE_PLANK);
         register("sylvan_glyph_stone", SYLVAN_GLYPH_STONE);
         register("glimmercap", GLIMMERCAP);
         register("moonpetal", MOONPETAL);
@@ -73,6 +78,7 @@ public final class ElvenBlocks {
             fire.add(ModBlockFamilies.HEARTWOOD_PLANKS.get(shape), 5, 20);
         }
         fire.add(WOVEN_ROPE_PLANK, 5, 20);
+        fire.add(HANGING_ROPE_PLANK, 5, 20);
         fire.add(SILVERLEAF, 30, 60);
         ItemGroupEvents.modifyEntriesEvent(ModItemGroup.BUILDING_BLOCKS_ITEMGROUP).register(entries -> ITEMS.forEach(entries::add));
     }
@@ -88,7 +94,7 @@ public final class ElvenBlocks {
 
     /** Blocks the client draws cut out (with see-through pixels). */
     public static List<Block> cutoutBlocks() {
-        return List.of(WOVEN_ROPE_PLANK, GLIMMERCAP, MOONPETAL);
+        return List.of(WOVEN_ROPE_PLANK, HANGING_ROPE_PLANK, GLIMMERCAP, MOONPETAL);
     }
 
     /** Blocks the client draws translucent (tinted glass). */

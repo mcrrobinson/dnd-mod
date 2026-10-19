@@ -20,6 +20,7 @@ import mattonfire.dnd.world.gen.burrow.ObservatoryPiece;
 import mattonfire.dnd.world.gen.burrow.ShaftPiece;
 import net.minecraft.block.BlockState;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.registry.tag.TagKey;
@@ -62,9 +63,23 @@ final class CogsdeepCommands {
     private CogsdeepCommands() {
     }
 
+    static final TagKey<Structure> DESOLATE_COGSDEEPS = TagKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "desolate_cogsdeeps"));
+    static final RegistryKey<Structure> DESOLATE_KEY = RegistryKey.of(RegistryKeys.STRUCTURE, new Identifier(DnDClasses.MOD_ID, "desolate_cogsdeep"));
+
     /** The start of the nearest burrow to {@code from} (within 100 chunks), or null. */
     private static StructureStart nearest(ServerWorld world, BlockPos from) {
         return HomeCommandUtil.nearestStart(world, COGSDEEPS, CogsdeepStructures.KEY, from);
+    }
+
+    /** The nearest burrow, living or desolate, to {@code from} (within 100 chunks), or null: for the teleports. */
+    private static StructureStart nearestAny(ServerWorld world, BlockPos from) {
+        StructureStart living = nearest(world, from);
+        StructureStart desolate = HomeCommandUtil.nearestStart(world, DESOLATE_COGSDEEPS, DESOLATE_KEY, from);
+        if (living == null || desolate == null) {
+            return living == null ? desolate : living;
+        }
+        return living.getPos().getStartPos().getSquaredDistance(from) <= desolate.getPos().getStartPos().getSquaredDistance(from)
+                ? living : desolate;
     }
 
     private static <P extends StructurePiece> P piece(StructureStart start, Class<P> type, int nth) {
@@ -80,7 +95,7 @@ final class CogsdeepCommands {
     static int teleport(CommandContext<ServerCommandSource> context, String spot) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         ServerWorld world = player.getWorld();
-        StructureStart start = nearest(world, player.getBlockPos());
+        StructureStart start = nearestAny(world, player.getBlockPos());
         if (start == null) {
             context.getSource().sendError(Text.literal("[Home] No Cogsdeep within 100 chunks"));
             return 0;

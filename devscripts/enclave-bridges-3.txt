@@ -1,0 +1,37 @@
+# Fallen rope bridges in desolate elven enclaves (overgrown, then raided), in fresh land at x 231000+, z -160000 and -190000.
+# Run: timeout 900 ./gradlew runClient -PdevRunDir=run-2 -PdevScript=devscripts/enclave-bridges-3.txt (a second spot,
+# for a world where enclave-bridges-2.txt's have generated already).
+# Checks: screenshots bridges-<level> (aerial) and -low; "[Desolation] bridge of <n> fell, snapped at <k>: hangs
+# from <pos> and <pos>" in <run dir>/logs/debug.log gives each fallen bridge's ends for close shots.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+hud off
+/dndhome desolation overgrown
+/execute in minecraft:overworld run tp @s 231000 200 -160000
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 400
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot bridges-overgrown
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot bridges-overgrown-low
+/dndhome desolation raided
+/execute in minecraft:overworld run tp @s 249000 200 -190000
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 400
+/execute at @s run spreadplayers ~ ~ 0 1 false @s
+wait 5
+/tp @s ~ ~30 ~40 180 40
+wait 200
+screenshot bridges-raided
+/tp @s ~ ~-24 ~-25 180 15
+wait 100
+screenshot bridges-raided-low
+quit

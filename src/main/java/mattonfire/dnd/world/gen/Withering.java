@@ -1100,7 +1100,8 @@ final class Withering {
     /** Every piece's planned breaches, whether they reach this chunk or not ({@link #plannedBreach}). */
     private final List<Breach> planned = new ArrayList<>();
 
-    private static boolean open(BlockState state) {
+    /** Open space a falling block passes through or lands in: air or replaceable, liquids included (unlike {@link #open}). */
+    private static boolean clear(BlockState state) {
         return state.isAir() || state.isReplaceable();
     }
 
@@ -1222,7 +1223,7 @@ final class Withering {
         BlockState state = null;
         for (; hi >= bottom; hi--) {
             state = this.world.getBlockState(pos.set(x, hi, z));
-            if (!open(state) && !state.isIn(BlockTags.LEAVES)) {
+            if (!clear(state) && !state.isIn(BlockTags.LEAVES)) {
                 break;
             }
         }
@@ -1233,7 +1234,7 @@ final class Withering {
         while (lo - 1 >= bottom && this.loose(pos.set(x, lo - 1, z), this.world.getBlockState(pos), heap)) {
             lo--;
         }
-        boolean ceiling = lo - 1 >= bottom && open(this.world.getBlockState(pos.set(x, lo - 1, z)));
+        boolean ceiling = lo - 1 >= bottom && clear(this.world.getBlockState(pos.set(x, lo - 1, z)));
         int shadow = Integer.MAX_VALUE;
         float sag = 0.0F;
         for (Breach breach : breaches) {
@@ -1358,7 +1359,7 @@ final class Withering {
     /** Whether {@code pos} is solid enough to hold up or be held up: not air, plants, fluids or leaves. */
     private boolean member(BlockPos pos) {
         BlockState state = this.world.getBlockState(pos);
-        return !open(state) && !state.isIn(BlockTags.LEAVES);
+        return !clear(state) && !state.isIn(BlockTags.LEAVES);
     }
 
     /**
@@ -1369,10 +1370,10 @@ final class Withering {
         int dx = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 84) * 3) - 1;
         int dz = (int) (this.roll(from.getX(), from.getY(), from.getZ(), 85) * 3) - 1;
         BlockPos.Mutable pos = new BlockPos.Mutable(from.getX() + dx, from.getY(), from.getZ() + dz);
-        if (!this.chunkBox.contains(pos) || !open(this.world.getBlockState(pos))) {
+        if (!this.chunkBox.contains(pos) || !clear(this.world.getBlockState(pos))) {
             return;
         }
-        for (int i = 0; i < RUBBLE_FALL && pos.getY() > this.chunkBox.getMinY() && open(this.world.getBlockState(pos.down())); i++) {
+        for (int i = 0; i < RUBBLE_FALL && pos.getY() > this.chunkBox.getMinY() && clear(this.world.getBlockState(pos.down())); i++) {
             pos.move(Direction.DOWN);
         }
         BlockPos down = pos.down();

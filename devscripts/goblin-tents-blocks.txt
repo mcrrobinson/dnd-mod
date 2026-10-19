@@ -1,0 +1,65 @@
+# The goblin tent blocks on a platform in the air: Stretched Hide and Tent Canvas walls with stairs, slabs and
+# flaps (open and closed), and Tent Stakes roped to them; then mines a few and checks they drop themselves.
+# Run: timeout 300 ./gradlew runClient -PdevRunDir=run-tents -PdevScript=devscripts/goblin-tents-blocks.txt
+# Check: screenshots/tent-blocks-*.png; "Test passed" lines in [CHAT]; the slots output after mining.
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/gamemode creative
+/time set 6000
+/weather clear
+/fill 0 149 0 12 149 8 minecraft:grass_block
+/fill 0 150 0 12 156 8 minecraft:air
+# A hide wall with a stake roped to it on each side
+/fill 2 150 4 4 151 4 dndclasses:stretched_hide
+/setblock 3 150 3 dndclasses:tent_stake[south=true]
+/setblock 3 150 5 dndclasses:tent_stake[north=true]
+/fill 2 152 4 4 152 4 dndclasses:stretched_hide_slab
+# A canvas wall: stairs both ways, a flap open and one closed
+/fill 7 150 4 9 150 4 dndclasses:tent_canvas
+/setblock 7 151 4 dndclasses:tent_canvas_stairs[facing=east]
+/setblock 9 151 4 dndclasses:tent_canvas_stairs[facing=west]
+/setblock 8 151 4 dndclasses:tent_canvas
+/setblock 8 152 4 dndclasses:tent_canvas_slab
+/setblock 10 150 4 dndclasses:tent_canvas_trapdoor[open=true,facing=east]
+/setblock 10 151 4 dndclasses:tent_canvas_trapdoor[open=true,facing=east]
+/setblock 6 150 4 dndclasses:stretched_hide_trapdoor[open=true,facing=east]
+/setblock 6 151 4 dndclasses:stretched_hide_trapdoor[open=true,facing=east]
+/setblock 8 150 3 dndclasses:tent_stake[south=true]
+/setblock 11 151 4 dndclasses:tent_canvas_trapdoor[half=top]
+# A stake placed by a block update: it ropes itself to the wall beside it
+/setblock 1 150 4 dndclasses:tent_stake
+/setblock 1 150 4 dndclasses:tent_stake
+/execute if block 1 150 4 dndclasses:tent_stake[east=true]
+/gamemode spectator
+/tp @s 6.5 153 -2.5 0 25
+wait 60
+hud off
+screenshot tent-blocks-front
+/tp @s 6.5 152.5 11.5 180 20
+wait 20
+screenshot tent-blocks-back
+/tp @s 0.3 151.0 2.0 -60 20
+wait 20
+screenshot tent-blocks-stake
+hud on
+# Mining drops the block itself
+/gamemode survival
+/clear @s
+# Out of pickup range, so the drops stay on the ground
+/tp @s 8.5 150 -4.5 0 30
+/setblock 8 150 3 minecraft:air destroy
+/setblock 10 150 4 minecraft:air destroy
+/setblock 8 152 4 minecraft:air destroy
+wait 20
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:tent_stake"}},distance=..12]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:tent_canvas_trapdoor"}},distance=..12]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:tent_canvas_slab"}},distance=..12]
+/kill @e[type=item,distance=..20]
+/gamemode creative
+wait 10
+quit

@@ -1,0 +1,18 @@
+# Finds goblin camps far from the explored part of the dev world, for goblin-tents-survey.txt (fresh camps,
+# generated with the current tent layout). Read-only: /locate generates nothing.
+# Run: timeout 600 ./gradlew runClient -PdevRunDir=run-tents -PdevScript=devscripts/goblin-tents-locate.txt
+# Check: "The nearest dndclasses:goblin_camp is at" lines in [CHAT].
+wait 40
+closescreen
+/execute positioned 20000 80 20000 run locate structure dndclasses:goblin_camp
+waitserver 2
+/execute positioned -20000 80 20000 run locate structure dndclasses:goblin_camp
+waitserver 2
+/execute positioned 20000 80 -20000 run locate structure dndclasses:goblin_camp
+waitserver 2
+/execute positioned -20000 80 -20000 run locate structure dndclasses:goblin_camp
+waitserver 2
+/execute positioned 30000 80 0 run locate structure dndclasses:goblin_camp
+waitserver 2
+wait 40
+quit

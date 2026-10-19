@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "S": {
+      "item": "minecraft:stick"
+    }
+  },
+  "pattern": [
+    "LL",
+    "LS"
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:stretched_hide"
+  },
+  "show_notification": true
+}

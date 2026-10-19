@@ -1,0 +1,86 @@
+{
+  "textures": {
+    "stake": "dndclasses:block/tent_stake",
+    "particle": "dndclasses:block/tent_stake"
+  },
+  "elements": [
+    {
+      "from": [
+        7.5,
+        8.5,
+        -3
+      ],
+      "to": [
+        8.5,
+        9.5,
+        8
+      ],
+      "rotation": {
+        "origin": [
+          8,
+          9,
+          8
+        ],
+        "axis": "x",
+        "angle": 45
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            6,
+            0,
+            7,
+            1
+          ],
+          "texture": "#stake"
+        },
+        "south": {
+          "uv": [
+            6,
+            0,
+            7,
+            1
+          ],
+          "texture": "#stake"
+        },
+        "east": {
+          "uv": [
+            5,
+            1,
+            16,
+            2
+          ],
+          "texture": "#stake"
+        },
+        "west": {
+          "uv": [
+            5,
+            1,
+            16,
+            2
+          ],
+          "texture": "#stake"
+        },
+        "up": {
+          "uv": [
+            6,
+            0,
+            7,
+            11
+          ],
+          "texture": "#stake",
+          "rotation": 0
+        },
+        "down": {
+          "uv": [
+            7,
+            0,
+            8,
+            11
+          ],
+          "texture": "#stake"
+        }
+      }
+    }
+  ]
+}

@@ -4,6 +4,7 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Blocks.JunkPileBlock;
+import mattonfire.dnd.classes.Blocks.TentStakeBlock;
 import mattonfire.dnd.classes.Blocks.WarOrderBoardBlock;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.object.builder.v1.block.FabricBlockSettings;
@@ -50,13 +51,17 @@ public final class GoblinBlocks {
     public static final WarOrderBoardBlock WAR_ORDER_BOARD = new WarOrderBoardBlock(
             FabricBlockSettings.copyOf(Blocks.SPRUCE_PLANKS).strength(1.0F).nonOpaque());
 
+    /** A spruce stake with guy ropes running up to the tent walls beside it (no collision but the stake). */
+    public static final TentStakeBlock TENT_STAKE = new TentStakeBlock(FabricBlockSettings.copyOf(Blocks.SPRUCE_FENCE)
+            .strength(0.5F).nonOpaque());
+
     private GoblinBlocks() {
     }
 
     /** In creative-tab order. */
     public static List<Block> all() {
         return List.of(PATCHWORK_HIDE, PATCHWORK_HIDE_CARPET, GOBLIN_JUNK_PILE, CRUDE_GLYPH_DAUB,
-                GLYPH_DAUBED_SPRUCE_LOG, ROPE_AND_BONE_FENCE, WAR_ORDER_BOARD);
+                GLYPH_DAUBED_SPRUCE_LOG, ROPE_AND_BONE_FENCE, WAR_ORDER_BOARD, TENT_STAKE);
     }
 
     public static void register() {
@@ -67,6 +72,7 @@ public final class GoblinBlocks {
         register("glyph_daubed_spruce_log", GLYPH_DAUBED_SPRUCE_LOG);
         register("rope_and_bone_fence", ROPE_AND_BONE_FENCE);
         register("war_order_board", WAR_ORDER_BOARD);
+        register("tent_stake", TENT_STAKE);
 
         // Burn like the vanilla blocks they stand in for (wool, carpet, logs, fences, planks).
         FlammableBlockRegistry flammable = FlammableBlockRegistry.getDefaultInstance();
@@ -75,6 +81,12 @@ public final class GoblinBlocks {
         flammable.add(GLYPH_DAUBED_SPRUCE_LOG, 5, 5);
         flammable.add(ROPE_AND_BONE_FENCE, 5, 20);
         flammable.add(WAR_ORDER_BOARD, 5, 20);
+        flammable.add(TENT_STAKE, 5, 20);
+        for (BlockFamily family : List.of(ModBlockFamilies.STRETCHED_HIDE, ModBlockFamilies.TENT_CANVAS)) {
+            for (Block block : family.blocks()) {
+                flammable.add(block, 30, 60);
+            }
+        }
         for (Block block : ModBlockFamilies.SCRAP_LASHED_PLANKS.blocks()) {
             flammable.add(block, 5, 20);
         }

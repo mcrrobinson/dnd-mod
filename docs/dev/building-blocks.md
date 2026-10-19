@@ -36,7 +36,7 @@ The first family is **Runic Deepslate Bricks** (base, stairs, slab and wall), th
    ```java
    public static final BlockFamily THATCH = BlockFamily.builder("thatch", Blocks.HAY_BLOCK).stairs().slab().build();
    ```
-2. Add the same family to `FAMILIES` in `tools/block_families.py` (same name, stem and shapes; `material='wood'` for axe-mined wood, `material='hide'` for axe-mined blocks that aren't wood: plain shape tags, no stonecutter; `tool='hoe'` or `'shovel'` for another mineable tag, and `cut=False` for a stone family that shouldn't stonecut, e.g. thatch) and run `python3 tools/block_families.py`. It writes the blockstates, block and item models, loot tables and recipes, adds the lang names and tag entries, and leaves everything else alone, so it's safe to rerun.
+2. Add the same family to `FAMILIES` in `tools/block_families.py` (same name, stem and shapes; `material='wood'` for axe-mined wood, `material='hide'` for axe-mined blocks that aren't wood: plain shape tags, no stonecutter; `tool='hoe'` or `'shovel'` for another mineable tag, and `cut=False` for a stone family that shouldn't stonecut, e.g. thatch; `shape_titles={'trapdoor': 'Tent Canvas Flap'}` to name a shape something other than `<stem title> <Shape>`) and run `python3 tools/block_families.py`. It writes the blockstates, block and item models, loot tables and recipes, adds the lang names and tag entries, and leaves everything else alone, so it's safe to rerun.
 3. Draw the textures listed in the table above in the area's texture script (`tools/<area>_block_textures.py`, 16x16 with `pngio`).
 4. `./gradlew build`. On startup, `BlockFamily.register()` logs `[BlockFamily] <id> has no generated resources; run tools/block_families.py` for any block whose blockstate or loot table is missing.
 
@@ -60,5 +60,6 @@ Merchant offers are built in each merchant's `*Trades` class (`TieflingTrades.pa
 - `classes/Client/DndClassesClient.java`: doors and trapdoors on the cutout render layer (`BlockFamily.cutoutBlocks()`)
 - `world/gen/PieceBlocks.java`: the placement helpers
 - `tools/block_families.py`: the resources; `tools/dwarven_block_textures.py`: the Dwarven Fortresses textures, `tools/dwarven_blocks.py`: the resources of their one-off blocks (`DwarvenBlocks`)
+- `tools/goblin_tent_textures.py`: the goblin camp tents' textures (Stretched Hide, Tent Canvas, their flaps, the Tent Stake)
 - `tools/lair_block_textures.py`: the Dragon & Frost lairs' textures and the resources of their one-off blocks (`LairBlocks`)
 - `devscripts/block-families.txt`: places the sample family's shapes, checks the drops and the stonecutter, and takes screenshots

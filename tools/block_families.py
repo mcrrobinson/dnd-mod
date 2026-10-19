@@ -39,10 +39,11 @@ class Family:
               'count': n}
     tool:     the mineable tag, if not the material's (e.g. 'hoe' for straw, 'shovel' for earth)
     cut:      whether the shapes get stonecutter recipes; default for stone families only (not wood or hide)
+    shape_titles: English names for shapes that aren't '<stem title> <Shape>', e.g. {'trapdoor': 'Hide Flap'}
     """
 
     def __init__(self, name, title, shapes, material='stone', stem=None, stem_title=None, axis=False, top=None,
-                 bottom=None, craft=None, tool=None, cut=None):
+                 bottom=None, craft=None, tool=None, cut=None, shape_titles=None):
         self.name = name
         self.title = title
         self.shapes = shapes
@@ -59,6 +60,7 @@ class Family:
         self.craft = craft
         self.tool = tool or ('pickaxe' if material == 'stone' else 'axe')
         self.cut = (material == 'stone') if cut is None else cut
+        self.shape_titles = shape_titles or {}
         unknown = set(shapes) - set(SHAPES)
         if unknown:
             raise ValueError(f'{name}: unknown shapes {unknown}')
@@ -212,6 +214,13 @@ FAMILIES = [
            craft={'pattern': ['G', '#'], 'key': {'G': 'minecraft:gilded_blackstone', '#': 'minecraft:polished_deepslate'},
                   'count': 2}),
     Family('ray_glazed_stone', 'Ray-glazed Stone', ['stairs', 'slab', 'wall']),
+    # --- Goblin camp tents ---
+    Family('stretched_hide', 'Stretched Hide', ['stairs', 'slab', 'trapdoor'], material='hide',
+           shape_titles={'trapdoor': 'Stretched Hide Flap'},
+           craft={'pattern': ['LL', 'LS'], 'key': {'L': 'minecraft:leather', 'S': 'minecraft:stick'}, 'count': 2}),
+    Family('tent_canvas', 'Tent Canvas', ['stairs', 'slab', 'trapdoor'], material='hide',
+           shape_titles={'trapdoor': 'Tent Canvas Flap'},
+           craft={'pattern': ['WS', 'SW'], 'key': {'W': 'minecraft:white_wool', 'S': 'minecraft:string'}, 'count': 2}),
 ]
 
 
@@ -532,7 +541,7 @@ def gen_lang():
         entries[f'block.{NS}.{f.name}'] = f.title
         for shape in f.shapes:
             words = shape.replace('_', ' ').title()
-            entries[f'block.{NS}.{f.id(shape)}'] = f'{f.stem_title} {words}'
+            entries[f'block.{NS}.{f.id(shape)}'] = f.shape_titles.get(shape, f'{f.stem_title} {words}')
     path = os.path.join(ASSETS, 'lang/en_us.json')
     with open(path) as fh:
         text = fh.read()

@@ -6,6 +6,7 @@ import java.util.List;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Blocks.Temple.AncestorReliefBlock;
+import mattonfire.dnd.classes.Blocks.Temple.DragonHornBlock;
 import mattonfire.dnd.classes.Blocks.Temple.IncenseBrazierBlock;
 import mattonfire.dnd.classes.Blocks.Temple.PaperLanternBlock;
 import mattonfire.dnd.classes.Blocks.Temple.PrayerWheelBlock;
@@ -50,7 +51,29 @@ public final class ModTempleBlocks {
     public static final SparringPostBlock SPARRING_POST = new SparringPostBlock(
             FabricBlockSettings.copyOf(Blocks.HAY_BLOCK).strength(1.5F).sounds(BlockSoundGroup.WOOD));
 
+    // --- Dragon Temple rework ---
+    /** The dragon statues' eyes: Dragonstone with a glowing slit-pupilled eye on its front, like a furnace. */
+    public static final AncestorReliefBlock EMBER_DRAGONSTONE_EYE = eye();
+    public static final AncestorReliefBlock FROST_DRAGONSTONE_EYE = eye();
+    public static final AncestorReliefBlock STORM_DRAGONSTONE_EYE = eye();
+    /** The statues' horns, claws and spines. */
+    public static final DragonHornBlock DRAGON_HORN = new DragonHornBlock(
+            FabricBlockSettings.copyOf(Blocks.BONE_BLOCK).strength(1.5F, 6.0F).nonOpaque());
+
     private ModTempleBlocks() {
+    }
+
+    private static AncestorReliefBlock eye() {
+        return new AncestorReliefBlock(FabricBlockSettings.copyOf(Blocks.POLISHED_DEEPSLATE).luminance(state -> 9));
+    }
+
+    /** The statue eye of an ancestry (Ember for NONE). */
+    public static Block statueEye(DragonAncestry kind) {
+        return switch (kind) {
+            case FROST -> FROST_DRAGONSTONE_EYE;
+            case STORM -> STORM_DRAGONSTONE_EYE;
+            default -> EMBER_DRAGONSTONE_EYE;
+        };
     }
 
     private static IncenseBrazierBlock brazier(int smoke) {
@@ -81,6 +104,11 @@ public final class ModTempleBlocks {
         add("paper_lantern", PAPER_LANTERN);
         add("sparring_post", SPARRING_POST);
         SparringPostBlock.register();
+        // --- Dragon Temple rework ---
+        add("ember_dragonstone_eye", EMBER_DRAGONSTONE_EYE);
+        add("frost_dragonstone_eye", FROST_DRAGONSTONE_EYE);
+        add("storm_dragonstone_eye", STORM_DRAGONSTONE_EYE);
+        add("dragon_horn", DRAGON_HORN);
     }
 
     private static void add(String name, Block block) {

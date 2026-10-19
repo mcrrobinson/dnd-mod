@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "dndclasses:block/frost_dragonstone",
+    "side": "dndclasses:block/frost_dragonstone",
+    "top": "dndclasses:block/frost_dragonstone"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "decorations",
+  "key": {
+    "B": {
+      "item": "minecraft:bone"
+    }
+  },
+  "pattern": [
+    "  B",
+    " B ",
+    "B  "
+  ],
+  "result": {
+    "count": 2,
+    "item": "dndclasses:dragon_horn"
+  },
+  "show_notification": true
+}

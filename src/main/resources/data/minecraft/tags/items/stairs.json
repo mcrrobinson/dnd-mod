@@ -27,6 +27,12 @@
     "dndclasses:mossy_runic_deepslate_brick_stairs",
     "dndclasses:ray_glazed_stone_stairs",
     "dndclasses:stretched_hide_stairs",
-    "dndclasses:tent_canvas_stairs"
+    "dndclasses:tent_canvas_stairs",
+    "dndclasses:ember_dragonstone_stairs",
+    "dndclasses:frost_dragonstone_stairs",
+    "dndclasses:storm_dragonstone_stairs",
+    "dndclasses:ember_dragon_belly_stairs",
+    "dndclasses:frost_dragon_belly_stairs",
+    "dndclasses:storm_dragon_belly_stairs"
   ]
 }

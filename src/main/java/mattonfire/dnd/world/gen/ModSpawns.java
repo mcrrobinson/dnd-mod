@@ -310,7 +310,8 @@ public class ModSpawns {
             return false;
         }
         for (StructurePiece piece : start.getChildren()) {
-            if (piece.getBoundingBox().contains(pos)) {
+            // The slope round the terrace is only ground.
+            if (!(piece instanceof mattonfire.dnd.world.gen.temple.SlopePiece) && piece.getBoundingBox().contains(pos)) {
                 return true;
             }
         }

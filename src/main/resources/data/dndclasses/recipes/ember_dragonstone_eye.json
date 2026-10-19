@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "#": {
+      "item": "dndclasses:ember_dragonstone"
+    }
+  },
+  "pattern": [
+    "G",
+    "#"
+  ],
+  "result": {
+    "item": "dndclasses:ember_dragonstone_eye"
+  },
+  "show_notification": true
+}

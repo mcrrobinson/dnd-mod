@@ -221,6 +221,25 @@ FAMILIES = [
     Family('tent_canvas', 'Tent Canvas', ['stairs', 'slab', 'trapdoor'], material='hide',
            shape_titles={'trapdoor': 'Tent Canvas Flap'},
            craft={'pattern': ['WS', 'SW'], 'key': {'W': 'minecraft:white_wool', 'S': 'minecraft:string'}, 'count': 2}),
+    # --- Dragon Temple rework ---
+    Family('ember_dragonstone', 'Ember Dragonstone', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['###', '#D#', '###'], 'key': {'#': 'minecraft:polished_blackstone',
+                                                           'D': 'minecraft:red_dye'}, 'count': 8}),
+    Family('frost_dragonstone', 'Frost Dragonstone', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['###', '#D#', '###'], 'key': {'#': 'minecraft:polished_blackstone',
+                                                           'D': 'minecraft:light_blue_dye'}, 'count': 8}),
+    Family('storm_dragonstone', 'Storm Dragonstone', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['###', '#D#', '###'], 'key': {'#': 'minecraft:polished_blackstone',
+                                                           'D': 'minecraft:cyan_dye'}, 'count': 8}),
+    Family('ember_dragon_belly', 'Ember Dragon Belly', ['stairs', 'slab'],
+           craft={'pattern': ['#B'], 'key': {'#': 'dndclasses:ember_dragonstone', 'B': 'minecraft:bone_meal'},
+                  'count': 1}),
+    Family('frost_dragon_belly', 'Frost Dragon Belly', ['stairs', 'slab'],
+           craft={'pattern': ['#B'], 'key': {'#': 'dndclasses:frost_dragonstone', 'B': 'minecraft:bone_meal'},
+                  'count': 1}),
+    Family('storm_dragon_belly', 'Storm Dragon Belly', ['stairs', 'slab'],
+           craft={'pattern': ['#B'], 'key': {'#': 'dndclasses:storm_dragonstone', 'B': 'minecraft:bone_meal'},
+                  'count': 1}),
 ]
 
 

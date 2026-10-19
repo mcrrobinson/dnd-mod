@@ -14,6 +14,9 @@
     "dndclasses:rimestone_brick_wall",
     "dndclasses:cracked_runic_deepslate_brick_wall",
     "dndclasses:mossy_runic_deepslate_brick_wall",
-    "dndclasses:ray_glazed_stone_wall"
+    "dndclasses:ray_glazed_stone_wall",
+    "dndclasses:ember_dragonstone_wall",
+    "dndclasses:frost_dragonstone_wall",
+    "dndclasses:storm_dragonstone_wall"
   ]
 }

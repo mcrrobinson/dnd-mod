@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab",
+  "textures": {
+    "bottom": "dndclasses:block/storm_dragon_belly",
+    "side": "dndclasses:block/storm_dragon_belly",
+    "top": "dndclasses:block/storm_dragon_belly"
+  }
+}

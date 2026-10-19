@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:frost_dragonstone"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    }
+  },
+  "pattern": [
+    "#B"
+  ],
+  "result": {
+    "item": "dndclasses:frost_dragon_belly"
+  },
+  "show_notification": true
+}

@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:frost_dragonstone"
+  },
+  "result": "dndclasses:frost_dragonstone_wall"
+}

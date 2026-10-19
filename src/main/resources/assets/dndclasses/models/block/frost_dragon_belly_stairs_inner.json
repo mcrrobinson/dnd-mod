@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "dndclasses:block/frost_dragon_belly",
+    "side": "dndclasses:block/frost_dragon_belly",
+    "top": "dndclasses:block/frost_dragon_belly"
+  }
+}

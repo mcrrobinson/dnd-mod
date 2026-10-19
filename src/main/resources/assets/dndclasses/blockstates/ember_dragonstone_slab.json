@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/ember_dragonstone_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/ember_dragonstone"
+    },
+    "type=top": {
+      "model": "dndclasses:block/ember_dragonstone_slab_top"
+    }
+  }
+}

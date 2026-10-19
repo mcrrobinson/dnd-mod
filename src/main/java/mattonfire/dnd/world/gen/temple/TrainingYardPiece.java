@@ -2,6 +2,8 @@ package mattonfire.dnd.world.gen.temple;
 
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
+import mattonfire.dnd.classes.Registry.BlockFamily;
+import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.ModItems;
 import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import mattonfire.dnd.entity.ModEntityTypes;
@@ -14,8 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * The training yard along the other side of the courtyard: a beaten floor of coarse dirt and gravel, three
- * targets on hay bales along the parapet, three sparring posts, armour stands in the Knight set, a grindstone and an anvil, and a
+ * The training yard along the other side of the courtyard: a beaten floor of coarse dirt and gravel, four sparring
+ * posts between paper lanterns along the parapet and three more in the yard, armour stands in the Knight set, a
+ * grindstone and an anvil, and a
  * Templar or two at drill.
  */
 public class TrainingYardPiece extends TemplePiece {
@@ -38,10 +41,15 @@ public class TrainingYardPiece extends TemplePiece {
                 b.set(x, 0, z, b.pick(FLOOR));
             }
         }
-        // Targets on hay bales along the outer parapet, facing in.
+        // More sparring posts along the outer parapet, facing in, each between paper lanterns on lacquered posts.
+        BlockFamily lacquer = ModBlockFamilies.TEMPLE_LACQUER_PLANKS;
         for (int z = 5; z < DEPTH - 3; z += 6) {
-            b.set(1, 1, z, Blocks.HAY_BLOCK);
-            b.set(1, 2, z, Blocks.TARGET);
+            b.set(1, 1, z, facing(ModTempleBlocks.SPARRING_POST, Direction.EAST));
+            b.set(1, 2, z, slab(lacquer, false));
+            for (int dz : new int[]{-2, 2}) {
+                b.set(1, 1, z + dz, lacquer.fence());
+                b.set(1, 2, z + dz, ModTempleBlocks.PAPER_LANTERN);
+            }
         }
         // Sparring posts, their padded fronts towards the middle of the yard.
         for (int z = 8; z <= 20; z += 6) {

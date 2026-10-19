@@ -1,0 +1,47 @@
+# The Dragon Temple statue blocks on a platform in the sky: Dragonstone (and its shapes), Dragon Belly, the eyes
+# and the Dragon Horn in each direction, then checks a Dragonstone, an eye, a horn and a belly block each drop
+# themselves when mined with a pickaxe.
+# Run: timeout 300 ./gradlew runClient --offline -PdevScript=devscripts/dragon-temple-statue-blocks.txt
+# Checks: screenshot dtsb-blocks; four "Test passed" lines from the /execute checks.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/time set 6000
+/weather clear
+/fill 0 199 0 12 199 6 minecraft:polished_deepslate
+/fill 0 200 0 12 205 6 minecraft:air
+/setblock 1 200 1 dndclasses:ember_dragonstone
+/setblock 1 201 1 dndclasses:ember_dragonstone_eye[facing=south]
+/setblock 1 202 1 dndclasses:dragon_horn[facing=up]
+/setblock 3 200 1 dndclasses:frost_dragonstone
+/setblock 3 201 1 dndclasses:frost_dragonstone_eye[facing=south]
+/setblock 3 202 1 dndclasses:dragon_horn[facing=north]
+/setblock 5 200 1 dndclasses:storm_dragonstone
+/setblock 5 201 1 dndclasses:storm_dragonstone_eye[facing=south]
+/setblock 5 202 1 dndclasses:dragon_horn[facing=east]
+/setblock 7 200 1 dndclasses:ember_dragon_belly
+/setblock 7 201 1 dndclasses:frost_dragon_belly
+/setblock 7 202 1 dndclasses:storm_dragon_belly
+/setblock 9 200 1 dndclasses:ember_dragonstone_stairs[facing=north]
+/setblock 9 201 1 dndclasses:frost_dragonstone_slab
+/setblock 9 202 1 dndclasses:storm_dragonstone_wall
+/setblock 11 200 1 dndclasses:ember_dragon_belly_stairs[facing=north]
+/setblock 11 201 1 dndclasses:dragon_horn[facing=down]
+/tp @s 6 202 -6 0 15
+waitserver 5
+wait 60
+hud off
+screenshot dtsb-blocks
+hud on
+/kill @e[type=item]
+/loot spawn 1 203 -2 mine 1 200 1 minecraft:diamond_pickaxe
+/loot spawn 1 203 -2 mine 1 201 1 minecraft:diamond_pickaxe
+/loot spawn 1 203 -2 mine 1 202 1 minecraft:diamond_pickaxe
+/loot spawn 1 203 -2 mine 7 200 1 minecraft:diamond_pickaxe
+waitserver 2
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ember_dragonstone"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ember_dragonstone_eye"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:dragon_horn"}}]
+/execute if entity @e[type=item,nbt={Item:{id:"dndclasses:ember_dragon_belly"}}]
+quit

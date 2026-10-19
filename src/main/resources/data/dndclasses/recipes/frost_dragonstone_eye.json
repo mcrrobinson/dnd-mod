@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "G": {
+      "item": "minecraft:glowstone_dust"
+    },
+    "#": {
+      "item": "dndclasses:frost_dragonstone"
+    }
+  },
+  "pattern": [
+    "G",
+    "#"
+  ],
+  "result": {
+    "item": "dndclasses:frost_dragonstone_eye"
+  },
+  "show_notification": true
+}

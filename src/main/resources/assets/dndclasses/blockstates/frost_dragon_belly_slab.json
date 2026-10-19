@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/frost_dragon_belly_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/frost_dragon_belly"
+    },
+    "type=top": {
+      "model": "dndclasses:block/frost_dragon_belly_slab_top"
+    }
+  }
+}

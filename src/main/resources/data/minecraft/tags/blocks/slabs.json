@@ -27,6 +27,12 @@
     "dndclasses:mossy_runic_deepslate_brick_slab",
     "dndclasses:ray_glazed_stone_slab",
     "dndclasses:stretched_hide_slab",
-    "dndclasses:tent_canvas_slab"
+    "dndclasses:tent_canvas_slab",
+    "dndclasses:ember_dragonstone_slab",
+    "dndclasses:frost_dragonstone_slab",
+    "dndclasses:storm_dragonstone_slab",
+    "dndclasses:ember_dragon_belly_slab",
+    "dndclasses:frost_dragon_belly_slab",
+    "dndclasses:storm_dragon_belly_slab"
   ]
 }

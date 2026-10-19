@@ -175,6 +175,21 @@ public final class ModBlockFamilies {
     public static final BlockFamily TENT_CANVAS = BlockFamily.builder("tent_canvas",
             FabricBlockSettings.copyOf(Blocks.WHITE_WOOL).mapColor(MapColor.PALE_YELLOW)).stairs().slab()
             .trapdoor(TENT_FLAP).build();
+    // --- Dragon Temple rework ---
+    /** The dragon statues' carved stone: diamond scales in relief, in each breath's colour. */
+    public static final BlockFamily EMBER_DRAGONSTONE = BlockFamily
+            .builder("ember_dragonstone", Blocks.POLISHED_DEEPSLATE).stoneShapes().build();
+    public static final BlockFamily FROST_DRAGONSTONE = BlockFamily
+            .builder("frost_dragonstone", Blocks.POLISHED_DEEPSLATE).stoneShapes().build();
+    public static final BlockFamily STORM_DRAGONSTONE = BlockFamily
+            .builder("storm_dragonstone", Blocks.POLISHED_DEEPSLATE).stoneShapes().build();
+    /** The statues' chests and bellies: broad carved plates. */
+    public static final BlockFamily EMBER_DRAGON_BELLY = BlockFamily
+            .builder("ember_dragon_belly", Blocks.POLISHED_DEEPSLATE).stairs().slab().build();
+    public static final BlockFamily FROST_DRAGON_BELLY = BlockFamily
+            .builder("frost_dragon_belly", Blocks.POLISHED_DEEPSLATE).stairs().slab().build();
+    public static final BlockFamily STORM_DRAGON_BELLY = BlockFamily
+            .builder("storm_dragon_belly", Blocks.POLISHED_DEEPSLATE).stairs().slab().build();
 
     private ModBlockFamilies() {
     }
@@ -201,6 +216,25 @@ public final class ModBlockFamilies {
             case FROST -> FROST_SCORCHED_STONE;
             case STORM -> STORM_SCORCHED_STONE;
             default -> EMBER_SCORCHED_STONE;
+        };
+    }
+
+    // --- Dragon Temple rework ---
+    /** The statue Dragonstone of an ancestry (Ember for NONE). */
+    public static BlockFamily dragonstone(mattonfire.dnd.classes.Race.DragonAncestry kind) {
+        return switch (kind) {
+            case FROST -> FROST_DRAGONSTONE;
+            case STORM -> STORM_DRAGONSTONE;
+            default -> EMBER_DRAGONSTONE;
+        };
+    }
+
+    /** The statue belly plates of an ancestry (Ember for NONE). */
+    public static BlockFamily dragonBelly(mattonfire.dnd.classes.Race.DragonAncestry kind) {
+        return switch (kind) {
+            case FROST -> FROST_DRAGON_BELLY;
+            case STORM -> STORM_DRAGON_BELLY;
+            default -> EMBER_DRAGON_BELLY;
         };
     }
 }

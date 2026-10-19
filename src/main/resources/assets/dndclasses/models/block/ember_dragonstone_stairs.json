@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "dndclasses:block/ember_dragonstone",
+    "side": "dndclasses:block/ember_dragonstone",
+    "top": "dndclasses:block/ember_dragonstone"
+  }
+}

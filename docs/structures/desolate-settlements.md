@@ -18,7 +18,7 @@ Dragon Temples and Brimstone Sanctums never go desolate.
 Every desolate settlement:
 - **Has no one in it.** None of the residents, guards, merchants, bosses, mimics, item frames, armour stands or minecarts are placed, and no mobs or animals spawn inside it, either when its chunks are made or later. Animals can still wander in from outside. A mimic's spot gets a plain chest.
 - **Has been looted.** Every chest, barrel, Larder Shelf and other container is empty, beehives have no bees or honey, the gold blocks and coin heaps are gone and so are the cakes on the tables.
-- **Has lost something.** The Cogsdeep observatory's dome has caved in, most of all at the crown, and its copper lies on the floor round the stairwell; the burrow underneath is only worn like the rest. Each of an elven enclave's rope bridges may have fallen (the chance depends on the level): it snapped somewhere in its middle 60% and each half swung down and hangs from its platform, the deck on edge (Hanging Rope Planks, which can be climbed like a ladder) between its two rails' chains, which hang from the end posts. Each half hangs as long as it was; one that reaches the ground lies along it, away from the tree, for the rest. One fallen bridge in 4 snapped at one end and hangs whole from the other.
+- **Has lost something.** The Cogsdeep observatory's dome has caved in, most of all at the crown, and its copper lies on the floor round the stairwell; the burrow underneath is only worn like the rest. Each of an elven enclave's rope bridges may have fallen (the chance depends on the level): it snapped somewhere in its middle 60% and each half swung down and hangs from its platform, the deck on edge (Hanging Rope Planks, which can be climbed like a ladder) between its two rails' chains, which hang from the end posts. Each half hangs as long as it was until it hits something: the ground, a canopy, a roof. The rest of it lies on top of whatever is under its path, away from the tree (85% of those planks, with a length of chain beside 35% of them), so the fallen bridge stays in one piece. One fallen bridge in 4 snapped at one end and hangs whole from the other.
 
 Then each one rolls a **level**, all four equally likely. The numbers are per block unless they say otherwise:
 
@@ -69,7 +69,7 @@ See [Admin commands](../systems/admin-commands.md).
 ## Known limitations
 - Only chunks the structure's box reaches are withered, so ground just past the edge of a settlement stays as it was.
 - A tree that a neighbouring chunk grows after the settlement has withered keeps its leaves and the grass under it.
-- A fallen bridge's half that reaches the ground judges how much is left to lie there from each column's own ground, not the drop under the platform, so on a slope it can lie a little short or long.
+- A fallen bridge's half that hits something judges how much is left to lie there from each column's own drop, not the drop under the platform, so on a slope it can lie a little short or long.
 - Rubble only falls within its own chunk, and a fallen doorway's lintel is only taken out on the door's side of a chunk border.
 - A collapse is aimed at the building's box, not its walls, so one now and then lands in the open and takes out nothing.
 - Water and lava are left alone.
@@ -80,4 +80,4 @@ See [Admin commands](../systems/admin-commands.md).
 - `DesolateBlocks` registers the Tattered Carpets; `tools/tattered_carpet_textures.py` draws them and writes their resources.
 - The structure JSONs are copies of the originals with empty `spawn_overrides` for every spawn group. Each structure set lists the original at weight 4 and the desolate one at weight 1.
 - Each withered chunk logs `[Desolation] <structure> (<LEVEL>) at <start>: chunk x z: ...` at DEBUG (in `debug.log`) with the entities dropped, containers emptied, blocks changed and collapses (breaches, holes and fallen doorways).
-- Devscripts: `desolate-shots.txt` visits every desolate settlement at every level and screenshots it; `enclave-bridges.txt` visits an overgrown and a raided enclave for their fallen bridges and `enclave-bridges-close.txt` takes close shots of two of them.
+- Devscripts: `desolate-shots.txt` visits every desolate settlement at every level and screenshots it; `enclave-bridges.txt` visits an overgrown and a raided enclave for their fallen bridges and `enclave-bridges-close.txt` takes close shots of two of them; `enclave-bridges-2.txt` and `enclave-bridges-canopy.txt` do the same in fresh land, from above and below the canopies.

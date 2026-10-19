@@ -19,10 +19,10 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ChainBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LanternBlock;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -192,8 +192,8 @@ public class BridgePiece extends EnclavePiece {
     /**
      * A desolate enclave's bridge that has fallen: it snapped somewhere along its span and each half swung down and
      * hangs from its platform on edge ({@link ElvenBlocks#HANGING_ROPE_PLANK}), as long as that half was, with its two
-     * rails hanging beside it as chains from the end posts. A half that would reach the ground lies along it for the
-     * rest of its length. One bridge in 4 snapped at one end only and hangs whole from the other. Only the bridge's
+     * rails hanging beside it as chains from the end posts. A half that reaches the ground, or is caught on a canopy
+     * or roof first, lies along the top of whatever it hit for the rest of its length, with bits of rope beside it. One bridge in 4 snapped at one end only and hangs whole from the other. Only the bridge's
      * own blocks are taken out, never the tree or platform.
      *
      * <p>Every column is decided from the piece's seed, its cells and the blocks in that column, so each chunk places
@@ -242,15 +242,15 @@ public class BridgePiece extends EnclavePiece {
         int ax = this.cells[2 * anchor];
         int az = this.cells[2 * anchor + 1];
         Direction out = this.outwards(anchor, step, landing);
-        // The deck, hanging on edge against the platform's side, ropes up and down; where it reaches the ground the
-        // next plank lies on it.
+        // The deck, hanging on edge against the platform's side, ropes up and down; where it reaches the ground or
+        // something else under it (leaves, a roof), the next plank lies on top.
         BlockState hanging = ElvenBlocks.HANGING_ROPE_PLANK.getDefaultState().with(HangingRopePlankBlock.FACING, out);
         for (int j = 0; j < length; j++) {
             int y = -j;
             if (!open(b.get(ax, y, az))) {
                 break;
             }
-            if (j < length - 1 && ground(b.get(ax, y - 1, az))) {
+            if (j < length - 1 && surface(b.get(ax, y - 1, az))) {
                 b.set(ax, y, az, this.plank(anchor, count, false));
                 break;
             }
@@ -272,22 +272,37 @@ public class BridgePiece extends EnclavePiece {
                 b.set(x, -j, z, Blocks.CHAIN);
             }
         }
-        // What doesn't fit hanging lies on the ground away from the platform, under where the bridge was. The drop
-        // is taken from each column's own ground (close to the anchor's), so no chunk needs another's blocks.
+        // What doesn't fit hanging lies away from the platform, under where the bridge was, on the first thing below
+        // it: the ground, a canopy, a roof. Some of its rails' ropes lie beside it. How far it reaches is taken from
+        // each column's own drop (close to the anchor's), so no chunk needs another's blocks.
         for (int m = 1; m < length; m++) {
             int i = anchor + step * m;
             int x = this.cells[2 * i];
             int z = this.cells[2 * i + 1];
-            if (!b.inChunk(x, 0, z)) {
-                continue;
+            Direction.Axis axis = this.axis(i, count);
+            this.lie(b, x, z, m, length, 0.85F, this.plank(i, count, false));
+            BlockState rope = Blocks.CHAIN.getDefaultState().with(ChainBlock.AXIS, axis);
+            for (int s = -1; s <= 1; s += 2) {
+                int sx = x + (axis == Direction.Axis.Z ? s : 0);
+                int sz = z + (axis == Direction.Axis.X ? s : 0);
+                if (!walkway.contains(ChunkPos.toLong(sx, sz)) && !landing.contains(ChunkPos.toLong(sx, sz))) {
+                    this.lie(b, sx, sz, m, length, 0.35F, rope);
+                }
             }
-            int y = groundY(b, x, z);
-            if (y == Integer.MIN_VALUE || 1 - y + m > length) {
-                continue;
-            }
-            if (Desolation.roll(this.seed, x, y, z, 42) < 0.85F) {
-                b.set(x, y, z, this.plank(i, count, false));
-            }
+        }
+    }
+
+    /**
+     * Lays {@code state} on the first thing under column x/z, {@code m} cells out along a hanging half of
+     * {@code length}, if that much of it is left once it has hung down to there; {@code chance} of it is left.
+     */
+    private void lie(Builder b, int x, int z, int m, int length, float chance, BlockState state) {
+        if (!b.inChunk(x, 0, z)) {
+            return;
+        }
+        int y = surfaceY(b, x, z);
+        if (y != Integer.MIN_VALUE && 1 - y + m <= length && Desolation.roll(this.seed, x, y, z, 42) < chance) {
+            b.set(x, y, z, state);
         }
     }
 
@@ -315,20 +330,23 @@ public class BridgePiece extends EnclavePiece {
         return state != null && (state.isAir() || state.isReplaceable()) && state.getFluidState().isEmpty();
     }
 
-    /** Whether {@code state} is ground a plank can lie on. */
-    private static boolean ground(BlockState state) {
-        return state != null && !open(state) && state.getFluidState().isEmpty() && !state.isIn(BlockTags.LEAVES);
+    /** Whether a fallen plank can lie on {@code state}: the ground, leaves, a roof, anything but air, plants and liquid. */
+    private static boolean surface(BlockState state) {
+        return state != null && !open(state) && state.getFluidState().isEmpty();
     }
 
-    /** The height (below the deck) a plank lies at on the ground under column x/z, or MIN_VALUE if there's none. */
-    private static int groundY(Builder b, int x, int z) {
+    /** The height (below the deck) a plank lies at on the first thing under column x/z, or MIN_VALUE if none. */
+    private static int surfaceY(Builder b, int x, int z) {
+        if (!open(b.get(x, -1, z))) {
+            return Integer.MIN_VALUE;
+        }
         for (int y = -1; y > -64; y--) {
             BlockState below = b.get(x, y - 1, z);
             if (below == null || !below.getFluidState().isEmpty()) {
                 return Integer.MIN_VALUE;
             }
-            if (ground(below)) {
-                return open(b.get(x, y, z)) ? y : Integer.MIN_VALUE;
+            if (surface(below)) {
+                return y;
             }
         }
         return Integer.MIN_VALUE;

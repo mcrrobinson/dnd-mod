@@ -34,6 +34,8 @@ public final class DragonTempleStructures {
     /** The monks' cells and the library. */
     public static final StructurePieceType CLOISTER = piece("dragon_temple_cloister", CloisterPiece::new);
     public static final StructurePieceType YARD = piece("dragon_temple_yard", TrainingYardPiece::new);
+    /** The ground round the terrace, reshaped to blend it into the slope (built first; only ground). */
+    public static final StructurePieceType SLOPE = piece("dragon_temple_slope", SlopePiece::new);
 
     private DragonTempleStructures() {
     }

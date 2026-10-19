@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/storm_dragonstone_eye"
+    },
+    "facing=east": {
+      "model": "dndclasses:block/storm_dragonstone_eye",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/storm_dragonstone_eye",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/storm_dragonstone_eye",
+      "y": 270
+    }
+  }
+}

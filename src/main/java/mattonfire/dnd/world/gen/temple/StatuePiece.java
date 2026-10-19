@@ -3,36 +3,49 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import mattonfire.dnd.classes.Race.DragonAncestry;
+import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.ModTempleBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.LightningRodBlock;
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * One of the courtyard's three dragon statues, block-built on a plinth of its colour's Dragonscale Tiles with
- * gilded corners and 10 blocks tall: a dragon
- * sitting up on its haunches with its wings half spread, looking down the stair.
+ * One of the courtyard's three dragon statues, carved from its ancestry's Dragonstone (scales in relief) with
+ * Dragon Belly plates down its chest and neck, glowing Dragonstone Eyes, ivory Dragon Horns for its horns, claws,
+ * fangs, spines and tail tip, and wing membranes of its colour's Dragonscale Tiles. Each sits up on its haunches
+ * on a plinth of its colour's tiles with gilded corners, forelegs planted, tail curled round behind, its neck
+ * curving up and forward so its open-jawed head looks out past the plinth towards the stair, wings raised and
+ * spread. The shapes are voxel drawings in {@link StatueModels}.
  * <ul>
- * <li>Ember: red nether brick, magma eyes and red horns (red nether brick walls stand in for fire coral,
- * which dies out of water).</li>
- * <li>Frost: quartz, packed ice and snow.</li>
- * <li>Storm: lapis, prismarine and lightning-rod horns.</li>
+ * <li>Ember, in the middle of the courtyard: the great one, 18 blocks tall on a two-tier plinth, its wings
+ * spread 13 blocks wide over the paths either side.</li>
+ * <li>Frost and Storm, the guardians at the front corners: 15 blocks tall, wings 9 wide.</li>
  * </ul>
  * Each statue is its own piece, so "is this block part of a statue" is a box test (damaging one is a temple
  * grudge, see {@code TempleLaw}).
  */
 public class StatuePiece extends TemplePiece {
-    static final int SIZE = 5;
-    static final int HEIGHT = 11;
+    /** The plinths: the guardians' and the great Ember statue's. */
+    static final int GUARDIAN_WIDTH = 5;
+    static final int GUARDIAN_DEPTH = 7;
+    static final int GREAT_WIDTH = 7;
+    static final int GREAT_DEPTH = 9;
+    /** How far back in its box a plinth starts: the head looks out over the gap. */
+    static final int SETBACK = 2;
+    private static final Model GUARDIAN = new Model(StatueModels.GUARDIAN);
+    private static final Model GREAT = new Model(StatueModels.GREAT);
     private final DragonAncestry kind;
 
     public StatuePiece(BlockPos front, Direction facing, DragonAncestry kind, long seed) {
-        super(DragonTempleStructures.STATUE, boxFrom(front, facing, SIZE, HEIGHT, SIZE), facing, seed);
+        super(DragonTempleStructures.STATUE, boxFrom(front, facing, model(kind).width, model(kind).height(), model(kind).depth),
+                facing, seed);
         this.kind = kind;
     }
 
@@ -47,6 +60,23 @@ public class StatuePiece extends TemplePiece {
         this.kind = kind;
     }
 
+    /** Whether {@code kind}'s statue is the great one in the middle. */
+    static boolean great(DragonAncestry kind) {
+        return kind == DragonAncestry.EMBER;
+    }
+
+    private static Model model(DragonAncestry kind) {
+        return great(kind) ? GREAT : GUARDIAN;
+    }
+
+    static int plinthWidth(DragonAncestry kind) {
+        return great(kind) ? GREAT_WIDTH : GUARDIAN_WIDTH;
+    }
+
+    static int plinthDepth(DragonAncestry kind) {
+        return great(kind) ? GREAT_DEPTH : GUARDIAN_DEPTH;
+    }
+
     public DragonAncestry kind() {
         return this.kind;
     }
@@ -57,71 +87,85 @@ public class StatuePiece extends TemplePiece {
         nbt.putInt("Kind", this.kind.getValue());
     }
 
-    /** body, wings, belly and eyes; horns are placed separately. */
-    private Block[] palette() {
-        return switch (this.kind) {
-            case FROST -> new Block[]{Blocks.QUARTZ_BLOCK, Blocks.PACKED_ICE, Blocks.SNOW_BLOCK, Blocks.BLUE_ICE};
-            case STORM -> new Block[]{Blocks.LAPIS_BLOCK, Blocks.PRISMARINE, Blocks.DARK_PRISMARINE, Blocks.SEA_LANTERN};
-            default -> new Block[]{Blocks.RED_NETHER_BRICKS, Blocks.NETHER_BRICKS, Blocks.NETHER_WART_BLOCK, Blocks.MAGMA_BLOCK};
-        };
-    }
-
-    private BlockState horn() {
-        return switch (this.kind) {
-            case FROST -> pillar(Blocks.QUARTZ_PILLAR, Direction.Axis.Y);
-            case STORM -> Blocks.LIGHTNING_ROD.getDefaultState().with(LightningRodBlock.FACING, Direction.UP);
-            default -> Blocks.RED_NETHER_BRICK_WALL.getDefaultState();
-        };
-    }
-
     @Override
     protected void build(Builder b) {
-        Block[] p = this.palette();
-        Block body = p[0];
-        Block wing = p[1];
-        Block belly = p[2];
-        Block eye = p[3];
-        // The plinth: the statue's Dragonscale Tiles with gilded corners.
-        Block tiles = ModBlockFamilies.dragonscale(this.kind).base();
-        for (int x = 0; x < SIZE; x++) {
-            for (int z = 0; z < SIZE; z++) {
-                boolean corner = (x == 0 || x == SIZE - 1) && (z == 0 || z == SIZE - 1);
-                b.set(x, 0, z, corner ? Blocks.GILDED_BLACKSTONE : tiles);
+        Model model = model(this.kind);
+        for (int y = 0; y < model.height(); y++) {
+            String[] rows = model.layers.get(y);
+            for (int z = 0; z < rows.length; z++) {
+                for (int x = 0; x < rows[z].length(); x++) {
+                    BlockState state = this.block(rows[z].charAt(x));
+                    if (state != null) {
+                        b.set(x, y, z, state);
+                    }
+                }
             }
         }
-        // Haunches and the tail curled round the back.
-        b.fill(1, 1, 2, 3, 2, 4, body);
-        b.set(4, 1, 4, body);
-        b.set(4, 1, 3, wing);
-        b.set(0, 1, 4, wing);
-        // Forelegs.
-        b.fill(1, 1, 0, 1, 3, 1, body);
-        b.fill(3, 1, 0, 3, 3, 1, body);
-        // Claws: slabs at the toes.
-        BlockState toe = slab(this.kind == DragonAncestry.FROST ? Blocks.QUARTZ_SLAB
-                : this.kind == DragonAncestry.STORM ? Blocks.PRISMARINE_BRICK_SLAB : Blocks.RED_NETHER_BRICK_SLAB, false);
-        b.set(1, 1, 0, toe);
-        b.set(3, 1, 0, toe);
-        // Chest and belly.
-        b.fill(1, 3, 2, 3, 6, 3, body);
-        b.fill(2, 3, 1, 2, 5, 1, belly);
-        // Wings, half spread: up from the shoulders and out to the sides.
-        for (int y = 5; y <= 8; y++) {
-            b.fill(0, y, 3, 0, y, 4 - (y - 5) / 2, wing);
-            b.fill(4, y, 3, 4, y, 4 - (y - 5) / 2, wing);
+    }
+
+    /** The block a model character stands for, in this statue's colours, or null for air. */
+    private BlockState block(char c) {
+        BlockFamily stone = ModBlockFamilies.dragonstone(this.kind);
+        BlockFamily belly = ModBlockFamilies.dragonBelly(this.kind);
+        BlockFamily tiles = ModBlockFamilies.dragonscale(this.kind);
+        Block horn = ModTempleBlocks.DRAGON_HORN;
+        return switch (c) {
+            case '#' -> stone.base().getDefaultState();
+            case 'b' -> belly.base().getDefaultState();
+            case '=' -> slab(stone, false);
+            case '-' -> slab(stone, true);
+            case '|' -> wall(stone);
+            case 'N' -> stairs(stone, BACK, false);
+            case 'S' -> stairs(stone, FRONT, false);
+            case 'E' -> stairs(stone, Direction.EAST, false);
+            case 'W' -> stairs(stone, Direction.WEST, false);
+            case 'n' -> stairs(stone, BACK, true);
+            case 's' -> stairs(stone, FRONT, true);
+            case 'e' -> stairs(stone, Direction.EAST, true);
+            case 'w' -> stairs(stone, Direction.WEST, true);
+            case 'P' -> stairs(belly, BACK, false);
+            case 'p' -> stairs(belly, BACK, true);
+            case 't' -> tiles.base().getDefaultState();
+            case 'T' -> stairs(tiles, FRONT, false);
+            case 'O' -> facing(ModTempleBlocks.statueEye(this.kind), FRONT);
+            case 'H' -> facing(horn, Direction.UP);
+            case 'h' -> facing(horn, BACK);
+            case 'k' -> facing(horn, FRONT);
+            case 'v' -> facing(horn, Direction.DOWN);
+            case 'L' -> facing(horn, Direction.WEST);
+            case 'R' -> facing(horn, Direction.EAST);
+            case 'x' -> tiles.base().getDefaultState();
+            case 'g' -> Blocks.GILDED_BLACKSTONE.getDefaultState();
+            case 'X' -> Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState();
+            case 'c' -> Blocks.CHISELED_POLISHED_BLACKSTONE.getDefaultState();
+            default -> null;
+        };
+    }
+
+    /** A {@link StatueModels} drawing, parsed: its layers from the bottom up, each a row per z of a char per x. */
+    private static final class Model {
+        final List<String[]> layers = new ArrayList<>();
+        final int width;
+        final int depth;
+
+        Model(String drawing) {
+            List<String> rows = new ArrayList<>();
+            for (String line : drawing.split("\n")) {
+                String row = line.strip();
+                if (row.equals("~")) {
+                    this.layers.add(rows.toArray(new String[0]));
+                    rows.clear();
+                } else if (!row.isEmpty()) {
+                    rows.add(row);
+                }
+            }
+            this.layers.add(rows.toArray(new String[0]));
+            this.width = this.layers.get(0)[0].length();
+            this.depth = this.layers.get(0).length;
         }
-        b.set(0, 9, 4, wing);
-        b.set(4, 9, 4, wing);
-        // The neck, leaning forward.
-        b.fill(2, 7, 2, 2, 8, 2, body);
-        b.set(2, 8, 1, body);
-        // The head, looking down the stair, with its eyes, snout and horns.
-        b.fill(1, 9, 1, 3, 9, 2, body);
-        b.set(2, 9, 0, body);
-        b.set(1, 9, 1, eye);
-        b.set(3, 9, 1, eye);
-        b.set(2, 8, 0, belly);
-        b.set(1, 10, 2, this.horn());
-        b.set(3, 10, 2, this.horn());
+
+        int height() {
+            return this.layers.size();
+        }
     }
 }

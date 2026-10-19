@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:storm_dragon_belly"
+  },
+  "result": "dndclasses:storm_dragon_belly_slab"
+}

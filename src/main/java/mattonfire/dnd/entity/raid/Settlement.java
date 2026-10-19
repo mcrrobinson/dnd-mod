@@ -129,6 +129,9 @@ public record Settlement(Kind kind, long key, BlockPos rally, @Nullable Directio
         Direction outward = null;
         List<BlockBox> pieces = new ArrayList<>();
         for (StructurePiece piece : start.getChildren()) {
+            if (piece instanceof mattonfire.dnd.world.gen.temple.SlopePiece) {
+                continue; // only ground, no buildings to sample
+            }
             pieces.add(piece.getBoundingBox());
             if (kind == Kind.VILLAGE && piece instanceof VillageGreenPiece) {
                 // The lawn is the box's bottom layer; stand on it.

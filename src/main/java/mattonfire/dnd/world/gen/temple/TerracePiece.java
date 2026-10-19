@@ -8,9 +8,10 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * The terrace the temple stands on, cut into the slope: the whole footprint is levelled to one floor, the
- * rock above it is cut away and the drops below are built up with cobbled deepslate. A low parapet runs
- * along the open edges. The other pieces build on top of it.
+ * The terrace the temple stands on, cut into the slope: the whole footprint is levelled to one floor (the
+ * {@link SlopePiece} has already cleared the rock above it and shaped the ground round it) and the drops below
+ * are built up, faced with deepslate bricks. A low parapet runs along the open edges. The other pieces build
+ * on top of it.
  */
 public class TerracePiece extends TemplePiece {
     static final int WIDTH = DragonTemplePlanner.WIDTH;
@@ -32,10 +33,12 @@ public class TerracePiece extends TemplePiece {
     @Override
     protected void build(Builder b) {
         BlockState fill = Blocks.COBBLED_DEEPSLATE.getDefaultState();
+        BlockState face = Blocks.DEEPSLATE_BRICKS.getDefaultState();
         for (int x = 0; x < WIDTH; x++) {
             for (int z = 0; z < DEPTH; z++) {
-                b.foundation(x, 0, z, fill);
                 boolean edge = x == 0 || z == 0 || x == WIDTH - 1 || z == DEPTH - 1;
+                // Dressed deepslate bricks on the faces that show, rubble behind them.
+                b.foundation(x, 0, z, edge ? face : fill);
                 b.set(x, 0, z, edge ? Blocks.POLISHED_BLACKSTONE_BRICKS.getDefaultState()
                         : (x + z) % 7 == 0 ? Blocks.CHISELED_DEEPSLATE.getDefaultState() : Blocks.POLISHED_DEEPSLATE.getDefaultState());
                 b.air(x, 1, z, x, CLEAR, z);

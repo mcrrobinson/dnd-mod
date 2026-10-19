@@ -26,7 +26,7 @@ public final class DragonTemplePlanner {
     public static final int MAX_RISE = 12;
     public static final int WIDTH = 39;
     public static final int HALF_WIDTH = WIDTH / 2;
-    public static final int DEPTH = 28;
+    public static final int DEPTH = 30;
     static final int SIDE_WIDTH = 9;
     static final int COURT_WIDTH = 21;
     static final int COURT_DEPTH = 15;
@@ -54,6 +54,8 @@ public final class DragonTemplePlanner {
         int terraceZ = rise + 1;
         int side = HALF_WIDTH - SIDE_WIDTH / 2;
 
+        // The ground first, so the rest builds on the reshaped slope.
+        collector.addPiece(new SlopePiece(site.at(0, rise - SlopePiece.DOWN, terraceZ - SlopePiece.FRONT_MARGIN), in, random.nextLong()));
         collector.addPiece(new TerracePiece(site.at(0, rise, terraceZ), in, random.nextLong()));
         collector.addPiece(new GrandStairPiece(site.at(0, 0, 0), in, rise, random.nextLong()));
         collector.addPiece(new CourtyardPiece(site.at(0, rise, terraceZ), in, random.nextLong()));

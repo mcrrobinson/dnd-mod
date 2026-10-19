@@ -37,6 +37,8 @@ import net.minecraft.util.math.BlockPos;
  * /dndhome pieces: every piece of that settlement with its box, to find rooms (e.g. a forge) by hand.
  * /dndhome templesurvey [grid] [spacing]: from a grid of points round you, finds the nearest Dragon Temple to
  * each and checks a dragon lair or frost lair starts within 10 chunks of it (logged as {@code [TempleSurvey]}).
+ * /dndhome templeplace: builds a Dragon Temple on the best site within 6 chunks of you, skipping the rule that a
+ * lair must be near (for trying temples on varied ground); /dndhome temple finds it afterwards.
  * /dndhome temple [ember|frost|storm]: teleports you to the nearest Dragon Temple's sanctum, two blocks in front
  * of that breath altar (Ember by default) and looking at it, so a script can {@code use} it.
  * /dndhome stronghold [pit|seat|hoard|smithy|gate]: teleports you to that spot of the nearest Orc Stronghold
@@ -68,6 +70,7 @@ public final class DndHomeCommand {
                         .executes(context -> temple(context, DragonAncestry.EMBER))
                         .then(CommandManager.argument("altar", StringArgumentType.word())
                                 .executes(context -> temple(context, DragonAncestry.byId(StringArgumentType.getString(context, "altar"))))))
+                .then(CommandManager.literal("templeplace").executes(DndHomeCommand::templePlace))
                 .then(CommandManager.literal("templesurvey")
                         .executes(context -> templeSurvey(context, 3, 2000))
                         .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
@@ -191,13 +194,19 @@ public final class DndHomeCommand {
             context.getSource().sendError(Text.literal("[Home] Which altar? ember, frost or storm"));
             return 0;
         }
-        BlockPos found = world.locateStructure(TEMPLES, player.getBlockPos(), 100, false);
         Structure structure = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(DragonTempleStructures.KEY);
-        if (found == null || structure == null) {
-            context.getSource().sendError(Text.literal("[Home] No Dragon Temple within 100 chunks"));
-            return 0;
+        StructureStart start;
+        if (lastPlaced != null && lastPlaced.getBoundingBox().getCenter().isWithinDistance(player.getBlockPos(), 160.0D)) {
+            // /locate doesn't know about temples placed by command.
+            start = lastPlaced;
+        } else {
+            BlockPos found = world.locateStructure(TEMPLES, player.getBlockPos(), 100, false);
+            if (found == null || structure == null) {
+                context.getSource().sendError(Text.literal("[Home] No Dragon Temple within 100 chunks"));
+                return 0;
+            }
+            start = world.getChunk(found.getX() >> 4, found.getZ() >> 4).getStructureStart(structure);
         }
-        StructureStart start = world.getChunk(found.getX() >> 4, found.getZ() >> 4).getStructureStart(structure);
         SanctumPiece sanctum = null;
         if (start != null) {
             for (StructurePiece piece : start.getChildren()) {
@@ -207,7 +216,7 @@ public final class DndHomeCommand {
             }
         }
         if (sanctum == null) {
-            context.getSource().sendError(Text.literal("[Home] The temple at " + found.toShortString() + " has no sanctum"));
+            context.getSource().sendError(Text.literal("[Home] That temple has no sanctum"));
             return 0;
         }
         BlockPos stand = sanctum.inFrontOf(altar);
@@ -221,5 +230,60 @@ public final class DndHomeCommand {
                 + altar.id() + " altar (" + sanctum.altarTop(altar).toShortString() + "), reliquary at "
                 + reliquary.toShortString()), false);
         return 1;
+    }
+
+    /**
+     * Builds a Dragon Temple on the nearest chunk round the player (out to 6 chunks) whose terrain and biome give
+     * a site, ignoring the lair and fortress rules, and records it in the chunks like a generated one, so
+     * {@code /dndhome temple}, homes and temple law find it.
+     */
+    /** The last temple {@code templeplace} built, which {@code /dndhome temple} prefers when it's near. */
+    private static StructureStart lastPlaced;
+
+    private static int templePlace(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
+        ServerWorld world = player.getWorld();
+        Structure structure = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(DragonTempleStructures.KEY);
+        var generator = world.getChunkManager().getChunkGenerator();
+        ChunkPos center = new ChunkPos(player.getBlockPos());
+        for (int r = 0; r <= 6; r++) {
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+                        continue;
+                    }
+                    ChunkPos chunk = new ChunkPos(center.x + dx, center.z + dz);
+                    StructureStart start;
+                    DragonTempleStructure.ignoreNeighbours = true;
+                    try {
+                        start = structure.createStructureStart(world.getRegistryManager(), generator, generator.getBiomeSource(),
+                                world.getChunkManager().getNoiseConfig(), world.getStructureTemplateManager(), world.getSeed(),
+                                chunk, 0, world, biome -> true);
+                    } finally {
+                        DragonTempleStructure.ignoreNeighbours = false;
+                    }
+                    if (!start.hasChildren()) {
+                        continue;
+                    }
+                    net.minecraft.util.math.BlockBox box = start.getBoundingBox();
+                    ChunkPos min = new ChunkPos(box.getMinX() >> 4, box.getMinZ() >> 4);
+                    ChunkPos max = new ChunkPos(box.getMaxX() >> 4, box.getMaxZ() >> 4);
+                    world.getChunk(chunk.x, chunk.z).setStructureStart(structure, start);
+                    ChunkPos.stream(min, max).forEach(c -> {
+                        world.getChunk(c.x, c.z).addStructureReference(structure, chunk.toLong());
+                        start.place(world, world.getStructureAccessor(), generator, world.getRandom(),
+                                new net.minecraft.util.math.BlockBox(c.getStartX(), world.getBottomY(), c.getStartZ(),
+                                        c.getEndX(), world.getTopY(), c.getEndZ()), c);
+                    });
+                    lastPlaced = start;
+                    context.getSource().sendFeedback(Text.literal("[Home] Placed a Dragon Temple at chunk " + chunk
+                            + ", box " + box.getMinX() + " " + box.getMinY() + " " + box.getMinZ() + " to " + box.getMaxX()
+                            + " " + box.getMaxY() + " " + box.getMaxZ()), true);
+                    return 1;
+                }
+            }
+        }
+        context.getSource().sendError(Text.literal("[Home] No Dragon Temple site within 6 chunks"));
+        return 0;
     }
 }

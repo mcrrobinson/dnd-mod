@@ -1,0 +1,585 @@
+# Dragon Temple rework: survey shots of four temples from the same angles.
+# Run: timeout 2400 ./gradlew runClient --offline -PdevScript=devscripts/dragon-temple-rework-survey.txt
+# a2 is the natural temple near 27248 44672 (frozen peaks; run on a world where it hasn't generated yet to see
+# the current pieces); m4, m3 and m1 are built with /dndhome templeplace on a snowy taiga mountain, a grassy hill
+# and jagged peaks near 30220 34208, 31952 35376 and 32272 35184 (those are dev-world spots; any mountain works).
+# Each temple: <p>-front, -fronthigh, -back, -left, -right, -court, -statue, -guardian, -cornerL, -cornerR,
+# -backhigh, -library, -sanctumin, -libraryin, -yard, -facade, -top. Check in the shots: the terrace's back and
+# sides meet the slope with a 3-block stone retaining wall and a stepped, snow- or grass-covered slope (no sheer
+# cut), the double-roofed sanctum, the monks' hall and pagoda library, the three carved dragon statues, sparring
+# posts (no target blocks) in the yard. "[Home] Placed a Dragon Temple ..." in the log for each placed temple.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+/tp @s 27248 220 44672
+waitserver 5
+wait 300
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^14 ^-60 ~ 10
+waitserver 5
+wait 140
+screenshot a2-front
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^26 ^-36 ~ 32
+waitserver 5
+wait 140
+screenshot a2-fronthigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^20 ^30 ~180 32
+waitserver 5
+wait 140
+screenshot a2-back
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^36 ^12 ^-8 ~90 16
+waitserver 5
+wait 140
+screenshot a2-left
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-36 ^12 ^-8 ~-90 16
+waitserver 5
+wait 140
+screenshot a2-right
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-21 ~ -6
+waitserver 5
+wait 140
+screenshot a2-court
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-5 ^6 ^-32 ~10 8
+waitserver 5
+wait 140
+screenshot a2-statue
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-2 ^4 ^-24 ~-35 4
+waitserver 5
+wait 140
+screenshot a2-guardian
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^30 ^20 ^-10 ~31 30
+waitserver 5
+wait 140
+screenshot a2-cornerL
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-30 ^20 ^-10 ~-31 30
+waitserver 5
+wait 140
+screenshot a2-cornerR
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^42 ^34 ~180 50
+waitserver 5
+wait 140
+screenshot a2-backhigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^10 ^7 ^-20 ~-58 8
+waitserver 5
+wait 140
+screenshot a2-library
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-4 ~ 4
+waitserver 5
+wait 140
+screenshot a2-sanctumin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^15 ^1 ^-3 ~ 12
+waitserver 5
+wait 140
+screenshot a2-libraryin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-8 ^7 ^-12 ~-50 35
+waitserver 5
+wait 140
+screenshot a2-yard
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^6 ^3 ^-11 ~-20 -12
+waitserver 5
+wait 140
+screenshot a2-facade
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^48 ^-8 ~ 90
+waitserver 5
+wait 140
+screenshot a2-top
+/tp @s 30220 220 34208
+waitserver 5
+wait 300
+/dndhome templeplace
+waitserver 5
+wait 100
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^14 ^-60 ~ 10
+waitserver 5
+wait 140
+screenshot m4-front
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^26 ^-36 ~ 32
+waitserver 5
+wait 140
+screenshot m4-fronthigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^20 ^30 ~180 32
+waitserver 5
+wait 140
+screenshot m4-back
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^36 ^12 ^-8 ~90 16
+waitserver 5
+wait 140
+screenshot m4-left
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-36 ^12 ^-8 ~-90 16
+waitserver 5
+wait 140
+screenshot m4-right
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-21 ~ -6
+waitserver 5
+wait 140
+screenshot m4-court
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-5 ^6 ^-32 ~10 8
+waitserver 5
+wait 140
+screenshot m4-statue
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-2 ^4 ^-24 ~-35 4
+waitserver 5
+wait 140
+screenshot m4-guardian
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^30 ^20 ^-10 ~31 30
+waitserver 5
+wait 140
+screenshot m4-cornerL
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-30 ^20 ^-10 ~-31 30
+waitserver 5
+wait 140
+screenshot m4-cornerR
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^42 ^34 ~180 50
+waitserver 5
+wait 140
+screenshot m4-backhigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^10 ^7 ^-20 ~-58 8
+waitserver 5
+wait 140
+screenshot m4-library
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-4 ~ 4
+waitserver 5
+wait 140
+screenshot m4-sanctumin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^15 ^1 ^-3 ~ 12
+waitserver 5
+wait 140
+screenshot m4-libraryin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-8 ^7 ^-12 ~-50 35
+waitserver 5
+wait 140
+screenshot m4-yard
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^6 ^3 ^-11 ~-20 -12
+waitserver 5
+wait 140
+screenshot m4-facade
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^48 ^-8 ~ 90
+waitserver 5
+wait 140
+screenshot m4-top
+/tp @s 31952 220 35376
+waitserver 5
+wait 300
+/dndhome templeplace
+waitserver 5
+wait 100
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^14 ^-60 ~ 10
+waitserver 5
+wait 140
+screenshot m3-front
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^26 ^-36 ~ 32
+waitserver 5
+wait 140
+screenshot m3-fronthigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^20 ^30 ~180 32
+waitserver 5
+wait 140
+screenshot m3-back
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^36 ^12 ^-8 ~90 16
+waitserver 5
+wait 140
+screenshot m3-left
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-36 ^12 ^-8 ~-90 16
+waitserver 5
+wait 140
+screenshot m3-right
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-21 ~ -6
+waitserver 5
+wait 140
+screenshot m3-court
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-5 ^6 ^-32 ~10 8
+waitserver 5
+wait 140
+screenshot m3-statue
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-2 ^4 ^-24 ~-35 4
+waitserver 5
+wait 140
+screenshot m3-guardian
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^30 ^20 ^-10 ~31 30
+waitserver 5
+wait 140
+screenshot m3-cornerL
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-30 ^20 ^-10 ~-31 30
+waitserver 5
+wait 140
+screenshot m3-cornerR
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^42 ^34 ~180 50
+waitserver 5
+wait 140
+screenshot m3-backhigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^10 ^7 ^-20 ~-58 8
+waitserver 5
+wait 140
+screenshot m3-library
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-4 ~ 4
+waitserver 5
+wait 140
+screenshot m3-sanctumin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^15 ^1 ^-3 ~ 12
+waitserver 5
+wait 140
+screenshot m3-libraryin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-8 ^7 ^-12 ~-50 35
+waitserver 5
+wait 140
+screenshot m3-yard
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^6 ^3 ^-11 ~-20 -12
+waitserver 5
+wait 140
+screenshot m3-facade
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^48 ^-8 ~ 90
+waitserver 5
+wait 140
+screenshot m3-top
+/tp @s 32272 220 35184
+waitserver 5
+wait 300
+/dndhome templeplace
+waitserver 5
+wait 100
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^14 ^-60 ~ 10
+waitserver 5
+wait 140
+screenshot m1-front
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^26 ^-36 ~ 32
+waitserver 5
+wait 140
+screenshot m1-fronthigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^20 ^30 ~180 32
+waitserver 5
+wait 140
+screenshot m1-back
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^36 ^12 ^-8 ~90 16
+waitserver 5
+wait 140
+screenshot m1-left
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-36 ^12 ^-8 ~-90 16
+waitserver 5
+wait 140
+screenshot m1-right
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-21 ~ -6
+waitserver 5
+wait 140
+screenshot m1-court
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-5 ^6 ^-32 ~10 8
+waitserver 5
+wait 140
+screenshot m1-statue
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-2 ^4 ^-24 ~-35 4
+waitserver 5
+wait 140
+screenshot m1-guardian
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^30 ^20 ^-10 ~31 30
+waitserver 5
+wait 140
+screenshot m1-cornerL
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-30 ^20 ^-10 ~-31 30
+waitserver 5
+wait 140
+screenshot m1-cornerR
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^42 ^34 ~180 50
+waitserver 5
+wait 140
+screenshot m1-backhigh
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^10 ^7 ^-20 ~-58 8
+waitserver 5
+wait 140
+screenshot m1-library
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^1 ^-4 ~ 4
+waitserver 5
+wait 140
+screenshot m1-sanctumin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^15 ^1 ^-3 ~ 12
+waitserver 5
+wait 140
+screenshot m1-libraryin
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^-8 ^7 ^-12 ~-50 35
+waitserver 5
+wait 140
+screenshot m1-yard
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^6 ^3 ^-11 ~-20 -12
+waitserver 5
+wait 140
+screenshot m1-facade
+/dndhome temple ember
+waitserver 5
+wait 20
+/tp @s ~ ~ ~ ~ 0
+/tp @s ^ ^48 ^-8 ~ 90
+waitserver 5
+wait 140
+screenshot m1-top
+hud on
+quit

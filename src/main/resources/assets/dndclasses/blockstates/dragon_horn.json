@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "dndclasses:block/dragon_horn"
+    },
+    "facing=down": {
+      "model": "dndclasses:block/dragon_horn",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "dndclasses:block/dragon_horn",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/dragon_horn",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "dndclasses:block/dragon_horn",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "dndclasses:block/dragon_horn",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

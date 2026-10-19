@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "dndclasses:ember_dragonstone"
+    },
+    "B": {
+      "item": "minecraft:bone_meal"
+    }
+  },
+  "pattern": [
+    "#B"
+  ],
+  "result": {
+    "item": "dndclasses:ember_dragon_belly"
+  },
+  "show_notification": true
+}

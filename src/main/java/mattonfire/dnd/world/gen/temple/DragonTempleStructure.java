@@ -29,6 +29,9 @@ public class DragonTempleStructure extends Structure {
     /** No dwarven fortress may start within this many chunks. */
     public static final int FORTRESS_CLEARANCE = 4;
 
+    /** Set by {@code /dndhome templeplace} while it places a temple: skip the lair and fortress rules. */
+    public static volatile boolean ignoreNeighbours;
+
     public DragonTempleStructure(Config config) {
         super(config);
     }
@@ -38,12 +41,13 @@ public class DragonTempleStructure extends Structure {
         ChunkPos chunk = context.chunkPos();
         TempleTerrain terrain = new TempleTerrain(context);
         // Cheapest first: the biome, then whether any lair grid slot is near at all.
+        boolean anywhere = ignoreNeighbours;
         if (!terrain.biomeAllowed(chunk.getCenterX(), chunk.getCenterZ())
-                || !StructureProximity.near(context, DRAGON_LAIRS, LAIR_RADIUS) && !StructureProximity.near(context, FROST_LAIRS, LAIR_RADIUS)) {
+                || !anywhere && !StructureProximity.near(context, DRAGON_LAIRS, LAIR_RADIUS) && !StructureProximity.near(context, FROST_LAIRS, LAIR_RADIUS)) {
             return Optional.empty();
         }
         Optional<DragonTemplePlanner.Site> site = terrain.findSite(chunk.getCenterX(), chunk.getCenterZ());
-        if (site.isEmpty() || !nearLair(context) || StructureProximity.nearGenerating(context, DWARVEN_FORTRESSES, FORTRESS_CLEARANCE)) {
+        if (site.isEmpty() || !anywhere && (!nearLair(context) || StructureProximity.nearGenerating(context, DWARVEN_FORTRESSES, FORTRESS_CLEARANCE))) {
             return Optional.empty();
         }
         DragonTemplePlanner.Site s = site.get();

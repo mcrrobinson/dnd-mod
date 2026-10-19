@@ -3,7 +3,6 @@ package mattonfire.dnd.world.gen.temple;
 import static mattonfire.dnd.world.gen.PieceBlocks.*;
 
 import java.util.function.Consumer;
-import java.util.function.IntFunction;
 import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.entity.DragonbornEntity;
 import mattonfire.dnd.world.gen.FacingPiece;
@@ -71,29 +70,65 @@ public abstract class TemplePiece extends FacingPiece<TemplePiece.Builder> {
     }
 
     /**
-     * A stepped hip roof of Dragonscale Tiles on top of a {@code width} by {@code depth} building, from {@code y}
-     * up: {@code tiers} rings of stairs, each one block in and one up from the last and climbing to the middle,
-     * capped with a flat top of double slabs. {@code tilesAt} gives each column's tiles (local x), so a roof
-     * can carry stripes of another colour. The hollow under the upper rings is filled with hidden stone.
+     * A hip roof of {@code tiles} over the rectangle x0..x1 by z0..z1, its eaves at {@code y}: rings of stairs
+     * rising towards the middle, ring {@code k} (0 at the eaves) {@code rise[k]} above the eaves. Rises that
+     * start flat and then climb give the curved, flared look of a temple roof. Rings past the end of
+     * {@code rise} are left open (a lower roof skirting an upper storey). Where the rings from front and back
+     * meet in a single row it's a ridge of double slabs. With {@code upturned}, the four eave corners sweep up
+     * a block. Double slabs, never the tiles' base block: in the sanctum that's an altar plinth.
      */
-    protected static void roof(Builder b, int width, int depth, int y, int tiers, IntFunction<BlockFamily> tilesAt) {
-        for (int x = 0; x < width; x++) {
-            for (int z = 0; z < depth; z++) {
-                int inset = Math.min(Math.min(x, width - 1 - x), Math.min(z, depth - 1 - z));
+    protected static void hipRoof(Builder b, int x0, int z0, int x1, int z1, int y, int[] rise, BlockFamily tiles,
+                                  boolean upturned) {
+        hipRoof(b, x0, z0, x1, z1, y, rise, x -> tiles, upturned);
+    }
+
+    /** {@link #hipRoof(Builder, int, int, int, int, int, int[], BlockFamily, boolean)} with each column's tiles. */
+    protected static void hipRoof(Builder b, int x0, int z0, int x1, int z1, int y, int[] rise,
+                                  java.util.function.IntFunction<BlockFamily> tilesAt, boolean upturned) {
+        int midZ = (z1 - z0) / 2;
+        int midX = (x1 - x0) / 2;
+        for (int x = x0; x <= x1; x++) {
+            for (int z = z0; z <= z1; z++) {
+                int kx = Math.min(x - x0, x1 - x);
+                int kz = Math.min(z - z0, z1 - z);
+                int k = Math.min(kx, kz);
+                if (k >= rise.length) {
+                    continue;
+                }
+                int yy = y + rise[k];
                 BlockFamily tiles = tilesAt.apply(x);
-                for (int k = 0; k < tiers && k <= inset; k++) {
-                    if (k == inset) {
-                        // The ring: stairs rising towards the middle (their full back faces inwards).
-                        Direction in = z == k ? BACK : z == depth - 1 - k ? FRONT : x == k ? Direction.EAST : Direction.WEST;
-                        b.set(x, y + k, z, stairs(tiles, in, false));
-                    } else if (k == tiers - 1) {
-                        b.set(x, y + k, z, tiles.slab().getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE));
-                    } else {
-                        b.set(x, y + k, z, Blocks.POLISHED_BLACKSTONE_BRICKS);
-                    }
+                BlockState ridge = tiles.slab().getDefaultState().with(SlabBlock.TYPE, SlabType.DOUBLE);
+                boolean ridgeRow = (z1 - z0) % 2 == 0 && k == kz && kz == midZ
+                        || (x1 - x0) % 2 == 0 && k == kx && kx == midX;
+                if (ridgeRow) {
+                    b.set(x, yy, z, ridge);
+                    continue;
+                }
+                Direction up = k == kz ? (z - z0 <= z1 - z ? BACK : FRONT) : x - x0 <= x1 - x ? Direction.EAST : Direction.WEST;
+                if (upturned && kx == 0 && kz == 0) {
+                    // The corner sweeps up: a tile slab under a raised stair.
+                    b.set(x, yy, z, tiles.slab().getDefaultState().with(SlabBlock.TYPE, SlabType.TOP));
+                    b.set(x, yy + 1, z, stairs(tiles, up, false));
+                } else {
+                    b.set(x, yy, z, stairs(tiles, up, false));
                 }
             }
         }
+    }
+
+    /** A rough natural-stone block for retaining walls, picked by position so every chunk agrees. */
+    protected static Block rubble(long hash) {
+        int r = (int) Math.floorMod(hash, 100L);
+        return r < 30 ? Blocks.COBBLESTONE : r < 55 ? Blocks.STONE_BRICKS : r < 70 ? Blocks.ANDESITE
+                : r < 82 ? Blocks.CRACKED_STONE_BRICKS : r < 92 ? Blocks.MOSSY_COBBLESTONE : Blocks.STONE;
+    }
+
+    /** A well-mixed hash of a world position and a seed. */
+    protected static long hash(int x, int y, int z, long seed) {
+        long h = seed ^ x * 0x9E3779B97F4A7C15L ^ y * 0xC2B2AE3D27D4EB4FL ^ z * 0x165667B19E3779F9L;
+        h = (h ^ (h >>> 33)) * 0xFF51AFD7ED558CCDL;
+        h = (h ^ (h >>> 33)) * 0xC4CEB9FE1A85EC53L;
+        return h ^ (h >>> 33);
     }
 
     /** Places blocks, containers and entities for one chunk's slice of a piece, in local coordinates. */

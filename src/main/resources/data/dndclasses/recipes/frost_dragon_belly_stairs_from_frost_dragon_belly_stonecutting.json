@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:frost_dragon_belly"
+  },
+  "result": "dndclasses:frost_dragon_belly_stairs"
+}

@@ -124,7 +124,11 @@ public final class DndHomeCommand {
                 .then(CommandManager.literal("visit")
                         .then(CommandManager.argument("structure", net.minecraft.command.argument.IdentifierArgumentType.identifier())
                                 .executes(context -> visit(context, net.minecraft.command.argument.IdentifierArgumentType
-                                        .getIdentifier(context, "structure")))))
+                                        .getIdentifier(context, "structure"), null))
+                                .then(CommandManager.argument("piece", net.minecraft.command.argument.IdentifierArgumentType.identifier())
+                                        .executes(context -> visit(context, net.minecraft.command.argument.IdentifierArgumentType
+                                                .getIdentifier(context, "structure"), net.minecraft.command.argument.IdentifierArgumentType
+                                                .getIdentifier(context, "piece"))))))
                 .then(CommandManager.literal("desolation")
                         .then(CommandManager.argument("level", StringArgumentType.word())
                                 .suggests((context, builder) -> {
@@ -141,9 +145,10 @@ public final class DndHomeCommand {
 
     /**
      * {@code /dndhome visit <structure>}: teleports you 200 high over the nearest start of that structure (within 100
-     * chunks), for scripted checks that can't read {@code /locate}'s answer.
+     * chunks), for scripted checks that can't read {@code /locate}'s answer. {@code /dndhome visit <structure> <piece>}
+     * instead puts you out in front of the first piece of that type (its open side, by its facing), looking at it.
      */
-    private static int visit(CommandContext<ServerCommandSource> context, Identifier id) throws CommandSyntaxException {
+    private static int visit(CommandContext<ServerCommandSource> context, Identifier id, Identifier pieceId) throws CommandSyntaxException {
         ServerPlayerEntity player = context.getSource().getPlayerOrThrow();
         ServerWorld world = context.getSource().getWorld();
         var registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
@@ -159,6 +164,25 @@ public final class DndHomeCommand {
             return 0;
         }
         BlockPos pos = found.getFirst();
+        if (pieceId != null) {
+            StructureStart start = world.getChunk(pos.getX() >> 4, pos.getZ() >> 4, net.minecraft.world.chunk.ChunkStatus.STRUCTURE_STARTS)
+                    .getStructureStart(entry.get().value());
+            StructurePiece piece = start == null ? null : start.getChildren().stream()
+                    .filter(p -> pieceId.equals(Registries.STRUCTURE_PIECE.getId(p.getType()))).findFirst().orElse(null);
+            if (piece == null || piece.getFacing() == null) {
+                context.getSource().sendError(Text.literal("[Home] No " + pieceId + " piece with a facing in " + id + " at " + pos.getX() + " " + pos.getZ()));
+                return 0;
+            }
+            BlockBox box = piece.getBoundingBox();
+            net.minecraft.util.math.Direction facing = piece.getFacing();
+            Vec3d center = Vec3d.ofCenter(box.getCenter());
+            double back = Math.max(box.getBlockCountX(), box.getBlockCountZ()) / 2.0D + 20.0D;
+            player.teleport(world, center.x - facing.getOffsetX() * back, box.getMinY() + 10.0D, center.z - facing.getOffsetZ() * back,
+                    facing.asRotation(), 15.0F);
+            context.getSource().sendFeedback(Text.literal("[Home] " + pieceId + " of " + id + " at " + box.getCenter().toShortString()
+                    + " facing " + facing.asString()), false);
+            return 1;
+        }
         player.teleport(world, pos.getX() + 0.5D, 200.0D, pos.getZ() + 0.5D, player.getYaw(), player.getPitch());
         context.getSource().sendFeedback(Text.literal("[Home] " + id + " at " + pos.getX() + " " + pos.getZ()), false);
         return 1;

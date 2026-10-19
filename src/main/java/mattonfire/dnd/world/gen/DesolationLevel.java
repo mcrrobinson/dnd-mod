@@ -8,22 +8,22 @@ public enum DesolationLevel {
     /** Sacked not long ago: walls breached, rubble everywhere, doors smashed, a few fires still smouldering. */
     RAIDED(new Builder().bareGround(0.25F).wildDie(0.35F).torches(0.35F).lanterns(0.5F).firesLit(0.35F).glass(0.6F)
             .cracked(0.15F).breaches(2.5F, 1.8F, 3.5F).floorHoles(0.8F).doorways(0.5F).rubble(0.6F).carpets(0.5F, 0.1F)
-            .doors(0.5F).bridges(0.35F)),
+            .doors(0.5F).bridges(0.35F).siege(1.0F)),
     /** Left in a hurry: tidy, empty and cold, the crops gone to seed and the first cobwebs up. */
     ABANDONED(new Builder().bareGround(0.08F).wildDie(0.05F).torches(0.3F).lanterns(0.6F).glass(0.15F).cracked(0.08F)
             .mossy(0.04F).cobwebs(0.03F).breaches(0.6F, 1.2F, 2.2F).floorHoles(0.2F).doorways(0.1F).rubble(0.3F)
             .carpets(0.3F, 0.0F).doors(0.1F)
-            .bridges(0.1F).flowers(0.04F)),
+            .bridges(0.1F).flowers(0.04F).siege(0.2F)),
     /** Empty for years: the grass worn down to dirt, most plants and leaves dead, the walls crumbling. */
     FORSAKEN(new Builder().bareGround(0.6F).wildDie(0.6F).leaves(0.4F).torches(0.15F).lanterns(0.4F).glass(0.35F)
             .cracked(0.2F).mossy(0.05F).cobwebs(0.05F).breaches(1.5F, 1.5F, 3.0F).floorHoles(0.6F).doorways(0.35F)
             .rubble(0.45F).carpets(0.7F, 0.15F)
-            .doors(0.3F).bridges(0.3F)),
+            .doors(0.3F).bridges(0.3F).siege(0.55F)),
     /** Lost long ago: the grass and trees have come back, moss and vines over everything, soil on the roofs. */
     OVERGROWN(new Builder().regrowth(0.5F).torches(0.0F).lanterns(0.2F).glass(0.7F).cracked(0.25F).mossy(0.4F)
             .cobwebs(0.1F).breaches(2.2F, 1.8F, 3.5F).floorHoles(1.0F).doorways(0.6F).rubble(0.5F).carpets(0.6F, 0.4F)
             .doors(0.6F).bridges(0.6F)
-            .flowers(0.2F).vines(0.15F).roofs(0.3F).floorMoss(0.08F).trees(0.35F));
+            .flowers(0.2F).vines(0.15F).roofs(0.3F).floorMoss(0.08F).trees(0.35F).siege(0.7F));
 
     /** Grass blocks that are bare dirt, in patches. */
     public final float bareGround;
@@ -69,6 +69,11 @@ public enum DesolationLevel {
     public final float floorMoss;
     /** Trees grown up inside, per chunk on average. */
     public final float trees;
+    /**
+     * How battered a settlement's outside is, 0 to 1: a piece with its own ruin ({@link Ruinable}, the dwarven
+     * fortress gate) scales its breaches, broken battlements, toppled pillars and heaps of rubble by it.
+     */
+    public final float siege;
 
     DesolationLevel(Builder b) {
         this.bareGround = b.bareGround;
@@ -97,6 +102,7 @@ public enum DesolationLevel {
         this.roofs = b.roofs;
         this.floorMoss = b.floorMoss;
         this.trees = b.trees;
+        this.siege = b.siege;
     }
 
     /** The level for a start, from a number in [0, 1). */
@@ -132,6 +138,12 @@ public enum DesolationLevel {
         float roofs;
         float floorMoss;
         float trees;
+        float siege;
+
+        Builder siege(float s) {
+            this.siege = s;
+            return this;
+        }
 
         Builder bareGround(float p) {
             this.bareGround = p;

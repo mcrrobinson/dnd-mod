@@ -1,0 +1,99 @@
+# Walks the Cogsdeep spiral stair from the observatory floor down to the Commons and one turn back up, without
+# jumping, past the pillar. Needs the burrow from cogsdeep-pillar.txt: run on the same fresh PillarTest copy of the
+# dev world, after cogsdeep-pillar.txt (its burrow's stair axis is 399896 14 398904, a = -x, b = -z, top 49).
+#   timeout 600 ./gradlew runClient -PdevWorld=PillarTest -PdevScript=devscripts/cogsdeep-pillar-walk.txt
+# Checks: every `walkto` line says "reached", one block lower each step, ending at y 14 on the Commons floor and
+# back at y 30 a turn up; screenshot cd-pillar-walk-mid (lit by the pillar's Glowcrystals only, at midnight).
+wait 40
+closescreen
+include _reset.txt
+wait 40
+closescreen
+/gamemode survival
+/gamerule fallDamage false
+/effect give @s minecraft:resistance 99999 255 true
+/effect give @s minecraft:saturation 99999 10 true
+/gamerule doDaylightCycle false
+/time set midnight
+/kill @e[type=dndclasses:clockwork_sentinel,distance=..60]
+/tp @s 399896.5 64 398900.5 180 30
+wait 60
+/data get entity @s Pos
+walkto 399896 398901 80
+walkto 399896 398902 80
+walkto 399895 398902 80
+walkto 399894 398902 80
+walkto 399894 398903 80
+walkto 399894 398904 80
+walkto 399894 398905 80
+walkto 399894 398906 80
+walkto 399895 398906 80
+walkto 399896 398906 80
+walkto 399897 398906 80
+walkto 399898 398906 80
+walkto 399898 398905 80
+walkto 399898 398904 80
+walkto 399898 398903 80
+walkto 399898 398902 80
+walkto 399897 398902 80
+walkto 399896 398902 80
+walkto 399895 398902 80
+walkto 399894 398902 80
+walkto 399894 398903 80
+walkto 399894 398904 80
+walkto 399894 398905 80
+walkto 399894 398906 80
+walkto 399895 398906 80
+walkto 399896 398906 80
+hud off
+screenshot cd-pillar-walk-mid
+hud on
+walkto 399897 398906 80
+walkto 399898 398906 80
+walkto 399898 398905 80
+walkto 399898 398904 80
+walkto 399898 398903 80
+walkto 399898 398902 80
+walkto 399897 398902 80
+walkto 399896 398902 80
+walkto 399895 398902 80
+walkto 399894 398902 80
+walkto 399894 398903 80
+walkto 399894 398904 80
+walkto 399894 398905 80
+walkto 399894 398906 80
+walkto 399895 398906 80
+walkto 399896 398906 80
+walkto 399897 398906 80
+walkto 399898 398906 80
+walkto 399898 398905 80
+walkto 399898 398904 80
+walkto 399898 398903 80
+walkto 399898 398902 80
+walkto 399897 398902 80
+walkto 399896 398902 80
+walkto 399895 398902 80
+/data get entity @s Pos
+walkto 399894 398901 80
+/data get entity @s Pos
+walkto 399895 398902 80
+walkto 399896 398902 80
+walkto 399897 398902 80
+walkto 399898 398902 80
+walkto 399898 398903 80
+walkto 399898 398904 80
+walkto 399898 398905 80
+walkto 399898 398906 80
+walkto 399897 398906 80
+walkto 399896 398906 80
+walkto 399895 398906 80
+walkto 399894 398906 80
+walkto 399894 398905 80
+walkto 399894 398904 80
+walkto 399894 398903 80
+walkto 399894 398902 80
+walkto 399895 398902 80
+/data get entity @s Pos
+/gamemode spectator
+/time set noon
+quit

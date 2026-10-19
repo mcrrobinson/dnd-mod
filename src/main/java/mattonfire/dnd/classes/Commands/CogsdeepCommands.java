@@ -43,7 +43,7 @@ import net.minecraft.world.gen.structure.Structure;
 /**
  * The Cogsdeep parts of {@link DndHomeCommand}:
  * <ul>
- * <li>{@code /dndhome cogsdeep [door|top|observatory|ladder|telescope|slit|stair|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]}:
+ * <li>{@code /dndhome cogsdeep [door|top|observatory|ladder|telescope|slit|stair|pillar|pillarmid|foot|commons|workshop|westworkshop|clocktower|strongbox|gems|grotto]}:
  * teleports you to that spot of the nearest burrow, looking at it.</li>
  * <li>{@code /dndhome cogsdeepsurvey [grid] [spacing]}: from a grid of points round you, finds the nearest burrow
  * to each and checks it (logged as {@code [CogsdeepSurvey]}): a forest, flower forest or meadow biome at the door,
@@ -127,6 +127,17 @@ final class CogsdeepCommands {
                 stand = shaft.stepAt(half).up();
                 look = shaft.stepAt(half + 4);
             }
+            case "pillar" -> {
+                // On the observatory floor by the rail, looking at the top of the stair's pillar.
+                stand = shaft.at(4, shaft.top() + 1, 3);
+                look = shaft.at(0, shaft.top() + 1, 0);
+            }
+            case "pillarmid" -> {
+                // On a corner step halfway down, looking at the pillar's corner.
+                int corner = shaft.top() / 2 / ShaftPiece.RING.length * ShaftPiece.RING.length + 2;
+                stand = shaft.stepAt(corner).up();
+                look = shaft.at(0, shaft.stepAt(corner).getY() - shaft.center().getY() + 1, 0);
+            }
             case "foot" -> {
                 // In the Commons, a few blocks out from the stair's last step, looking up the last turn.
                 int[] cell = ShaftPiece.RING[shaft.top() % ShaftPiece.RING.length];
@@ -171,7 +182,9 @@ final class CogsdeepCommands {
         context.getSource().sendFeedback(Text.literal("[Home] Cogsdeep at chunk " + start.getPos() + " (ground y "
                 + observatory.center().getY() + ", burrow floor y " + commons.center().getY() + "): at the " + spot
                 + ", counter " + commons.counter().toShortString() + ", strongbox " + clocktower.strongbox().toShortString()
-                + ", gem chest " + gems.gemChest().toShortString()), false);
+                + ", gem chest " + gems.gemChest().toShortString() + ", stair axis " + shaft.at(0, 0, 0).toShortString()
+                + " (a " + shaft.at(1, 0, 0).subtract(shaft.at(0, 0, 0)).toShortString() + ", b "
+                + shaft.at(0, 0, 1).subtract(shaft.at(0, 0, 0)).toShortString() + ", top " + shaft.top() + ")"), false);
         return 1;
     }
 

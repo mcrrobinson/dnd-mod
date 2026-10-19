@@ -1,6 +1,6 @@
 # Fallen rope bridges in desolate elven enclaves (overgrown, then raided), in fresh land at x 236000+, z -40000 and -70000.
-# Run: timeout 900 ./gradlew runClient -PdevRunDir=run-2 -PdevScript=devscripts/enclave-bridges-2.txt (a second spot, for a world
-# world where these have generated already).
+# Run: timeout 900 ./gradlew runClient -PdevRunDir=run-2 -PdevScript=devscripts/enclave-bridges-2.txt (a second spot,
+# for a world where enclave-bridges.txt's have generated already).
 # Checks: screenshots bridges-<level> (aerial) and -low; "[Desolation] bridge of <n> fell, snapped at <k>: hangs
 # from <pos> and <pos>" in <run dir>/logs/debug.log gives each fallen bridge's ends for close shots.
 wait 40

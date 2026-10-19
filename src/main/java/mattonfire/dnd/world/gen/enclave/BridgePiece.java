@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
+import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Blocks.elven.HangingRopePlankBlock;
 import mattonfire.dnd.classes.Blocks.elven.WovenRopePlankBlock;
 import mattonfire.dnd.classes.Registry.ElvenBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
@@ -17,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.block.Blocks;
+import net.minecraft.block.ChainBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LanternBlock;
 import net.minecraft.nbt.NbtCompound;
@@ -183,39 +186,230 @@ public class BridgePiece extends EnclavePiece {
         }
         DesolationLevel level = Desolation.level();
         if (level != null && Desolation.roll(this.seed, 0, 0, 0, 40) < level.bridgesFallen) {
-            this.fall(b, walkway, landing);
+            this.fall(b, walkway, landing, rails);
         }
     }
 
     /**
-     * A desolate enclave's bridge that has fallen: a stub of 1 or 2 cells is left at each end and the rest lies in
-     * pieces on the ground below. Only the bridge's own blocks are taken out, never the tree or platform.
+     * A desolate enclave's bridge that has fallen: it snapped somewhere along its span and each half swung down and
+     * hangs from its platform on edge ({@link ElvenBlocks#HANGING_ROPE_PLANK}), with its two rails hanging beside it as
+     * chains from the end posts. A plank or two by the snap broke off; the rest of each half hangs as long as it was.
+     * Under the whole old span lies a trail of what fell, on the first thing below it (the ground, a canopy, a roof):
+     * planks, and beside them lengths of rope, broken posts and the odd lamp. One bridge in 4 snapped at one end only
+     * and hangs whole from the other. Only the bridge's own blocks are taken out, never the tree or platform.
+     *
+     * <p>Every column is decided from the piece's seed, its cells and the blocks in that column, so each chunk places
+     * its part of the same fall.
      */
-    private void fall(Builder b, Set<Long> walkway, Set<Long> landing) {
+    private void fall(Builder b, Set<Long> walkway, Set<Long> landing, Map<Long, Rail> rails) {
         int count = this.cells.length / 2;
-        int first = 1 + (int) (Desolation.roll(this.seed, 1, 0, 0, 41) * 2);
-        int last = count - 1 - (int) (Desolation.roll(this.seed, 2, 0, 0, 41) * 2);
-        for (int i = first; i < last; i++) {
+        for (int i = 0; i < count; i++) {
             int x = this.cells[2 * i];
             int z = this.cells[2 * i + 1];
-            boolean fell = this.clearBridge(b, x, z);
-            for (Direction d : Direction.Type.HORIZONTAL) {
-                long key = ChunkPos.toLong(x + d.getOffsetX(), z + d.getOffsetZ());
-                if (!walkway.contains(key) && !landing.contains(key)) {
-                    this.clearBridge(b, x + d.getOffsetX(), z + d.getOffsetZ());
-                }
+            this.clearBridge(b, x, z);
+        }
+        // Every rail column, the corner posts where the walkway steps sideways included (those only touch the
+        // walkway diagonally).
+        for (long key : rails.keySet()) {
+            this.clearBridge(b, ChunkPos.getPackedX(key), ChunkPos.getPackedZ(key));
+        }
+        // Where it snapped: cells below `snap` hang from the first end, the rest from the last.
+        float end = Desolation.roll(this.seed, 3, 0, 0, 41);
+        int snap;
+        if (end < 0.25F || count < 4) {
+            snap = end < 0.125F ? 0 : count;
+        } else {
+            float at = 0.2F + 0.6F * Desolation.roll(this.seed, 1, 0, 0, 41);
+            snap = Math.max(1, Math.min(count - 1, Math.round(at * count)));
+        }
+        if (b.inChunk(this.cells[0], 0, this.cells[1])) {
+            DnDClasses.LOGGER.debug("[Desolation] bridge of {} fell, snapped at {}: hangs from {} and {}", count, snap,
+                    b.pos(this.cells[0], 0, this.cells[1]).toShortString(),
+                    b.pos(this.cells[2 * count - 2], 0, this.cells[2 * count - 1]).toShortString());
+        }
+        // A plank or two by the snap broke off rather than hang.
+        int first = snap;
+        int last = count - snap;
+        if (snap > 0 && snap < count) {
+            first = Math.max(1, snap - 1 - (int) (Desolation.roll(this.seed, 4, 0, 0, 41) * 2));
+            last = Math.max(1, count - snap - 1 - (int) (Desolation.roll(this.seed, 5, 0, 0, 41) * 2));
+        }
+        this.hang(b, 0, 1, first, walkway, landing);
+        this.hang(b, count - 1, -1, last, walkway, landing);
+        // The rest lies under the old span on the first thing below it (the ground, a canopy, a roof): a trail of
+        // planks, most lying where they were, more where a hanging half reached the ground and lies on along it.
+        // How far a half reaches is taken from each column's own drop (close to the anchor's), so no chunk needs
+        // another's blocks.
+        for (int i = 0; i < count; i++) {
+            int m = i < snap ? i : count - 1 - i;
+            int hung = i < snap ? first : last;
+            int x = this.cells[2 * i];
+            int z = this.cells[2 * i + 1];
+            if (m == 0 && hung > 0 || !b.inChunk(x, 0, z)) {
+                continue;
             }
-            // The plank lies on the ground below, or a bit of rail does.
-            float roll = Desolation.roll(this.seed, x, 0, z, 42);
-            if (fell && roll < 0.6F) {
-                this.land(b, x, z, roll < 0.45F ? this.plank(i, count, false) : Blocks.BIRCH_FENCE.getDefaultState());
+            int y = surfaceY(b, x, z);
+            if (y == Integer.MIN_VALUE) {
+                continue;
+            }
+            boolean draped = 1 - y + m <= hung;
+            if (Desolation.roll(this.seed, x, y, z, 42) < (draped ? 0.9F : 0.75F)) {
+                b.set(x, y, z, this.debrisPlank(b, i, count, x, y, z));
+            }
+            // A few bits were flung a little wider, onto the crowns or ground beside the old path.
+            Direction.Axis axis = this.axis(i, count);
+            for (int s = -2; s <= 2; s += 4) {
+                int wx = x + (axis == Direction.Axis.Z ? s : 0);
+                int wz = z + (axis == Direction.Axis.X ? s : 0);
+                long key = ChunkPos.toLong(wx, wz);
+                if (walkway.contains(key) || landing.contains(key) || rails.containsKey(key) || !b.inChunk(wx, 0, wz)) {
+                    continue;
+                }
+                int wy = surfaceY(b, wx, wz);
+                float roll = Desolation.roll(this.seed, wx, wy, wz, 44);
+                if (wy == Integer.MIN_VALUE || roll >= (b.get(wx, wy - 1, wz).isOf(Blocks.WATER) ? 0.2F : 0.3F)) {
+                    continue;
+                }
+                b.set(wx, wy, wz, roll < 0.2F ? this.debrisPlank(b, i, count, wx, wy, wz)
+                        : Blocks.CHAIN.getDefaultState().with(ChainBlock.AXIS, axis));
+            }
+        }
+        // And bits of the rails beside it: lengths of rope, broken posts, now and then a lamp.
+        for (Map.Entry<Long, Rail> entry : rails.entrySet()) {
+            int x = ChunkPos.getPackedX(entry.getKey());
+            int z = ChunkPos.getPackedZ(entry.getKey());
+            if (!b.inChunk(x, 0, z)) {
+                continue;
+            }
+            int y = surfaceY(b, x, z);
+            if (y == Integer.MIN_VALUE) {
+                continue;
+            }
+            if (b.get(x, y - 1, z).isOf(Blocks.WATER)) {
+                continue;
+            }
+            Rail rail = entry.getValue();
+            float roll = Desolation.roll(this.seed, x, y, z, 43);
+            Direction.Axis axis = rail.axis() == Direction.Axis.Y ? this.axis(rail.index(), count) : rail.axis();
+            if (rail.index() % 6 == 3 && roll < 0.35F) {
+                b.set(x, y, z, lantern(false));
+            } else if (roll < 0.3F) {
+                b.set(x, y, z, Blocks.CHAIN.getDefaultState().with(ChainBlock.AXIS, axis));
+            } else if (roll < 0.45F) {
+                b.set(x, y, z, Blocks.BIRCH_FENCE);
             }
         }
     }
 
-    /** Takes the bridge's blocks out of column x/z; returns whether there were any. */
-    private boolean clearBridge(Builder b, int x, int z) {
-        boolean any = false;
+    /**
+     * Hangs {@code length} cells of the bridge from the cell at {@code anchor}, the others being {@code anchor + step},
+     * {@code anchor + 2 * step} and so on.
+     */
+    private void hang(Builder b, int anchor, int step, int length, Set<Long> walkway, Set<Long> landing) {
+        if (length <= 0) {
+            return;
+        }
+        int count = this.cells.length / 2;
+        int ax = this.cells[2 * anchor];
+        int az = this.cells[2 * anchor + 1];
+        Direction out = this.outwards(anchor, step, landing);
+        // The deck, hanging on edge against the platform's side, ropes up and down; where it reaches the ground or
+        // something else under it (leaves, a roof), the next plank lies on top.
+        BlockState hanging = ElvenBlocks.HANGING_ROPE_PLANK.getDefaultState().with(HangingRopePlankBlock.FACING, out);
+        for (int j = 0; j < length; j++) {
+            int y = -j;
+            if (!open(b.get(ax, y, az))) {
+                break;
+            }
+            if (j < length - 1 && surface(b.get(ax, y - 1, az))) {
+                b.set(ax, y, az, this.plank(anchor, count, false));
+                break;
+            }
+            b.set(ax, y, az, hanging);
+        }
+        // The rails: the end posts are still standing, with the rails' ropes hanging from them.
+        Direction side = out.rotateYClockwise();
+        for (Direction d : new Direction[]{side, side.getOpposite()}) {
+            int x = ax + d.getOffsetX();
+            int z = az + d.getOffsetZ();
+            long key = ChunkPos.toLong(x, z);
+            if (walkway.contains(key) || landing.contains(key) || !b.inChunk(x, 0, z)) {
+                continue;
+            }
+            if (open(b.get(x, 1, z))) {
+                b.set(x, 1, z, Blocks.BIRCH_FENCE);
+            }
+            for (int j = 0; j < length && open(b.get(x, -j, z)); j++) {
+                b.set(x, -j, z, Blocks.CHAIN);
+            }
+        }
+    }
+
+    /** The way from the platform out along the bridge at its end cell {@code anchor}. */
+    private Direction outwards(int anchor, int step, Set<Long> landing) {
+        int ax = this.cells[2 * anchor];
+        int az = this.cells[2 * anchor + 1];
+        for (Direction d : Direction.Type.HORIZONTAL) {
+            if (landing.contains(ChunkPos.toLong(ax - d.getOffsetX(), az - d.getOffsetZ()))) {
+                return d;
+            }
+        }
+        int next = anchor + step;
+        if (next >= 0 && next < this.cells.length / 2) {
+            Direction d = Direction.fromVector(this.cells[2 * next] - ax, 0, this.cells[2 * next + 1] - az);
+            if (d != null) {
+                return d;
+            }
+        }
+        return Direction.SOUTH;
+    }
+
+    /** Whether something can hang through {@code state}: air or a plant, not liquid. Null (another chunk) can't. */
+    private static boolean open(BlockState state) {
+        return state != null && (state.isAir() || state.isReplaceable()) && state.getFluidState().isEmpty();
+    }
+
+    /**
+     * A fallen deck plank at x/y/z for cell {@code i}: lying flat, or caught on edge in a crown, now and then where
+     * it came down on leaves and always where they reach right up under the old deck (lying flat there, it would look
+     * like the deck still in place).
+     */
+    private BlockState debrisPlank(Builder b, int i, int count, int x, int y, int z) {
+        BlockState below = b.get(x, y - 1, z);
+        if (below != null && below.isIn(BlockTags.LEAVES) && (y >= -1 || Desolation.roll(this.seed, x, y, z, 45) < 0.3F)) {
+            Direction facing = this.axis(i, count) == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
+            if (Desolation.roll(this.seed, x, y, z, 46) < 0.5F) {
+                facing = facing.getOpposite();
+            }
+            return ElvenBlocks.HANGING_ROPE_PLANK.getDefaultState().with(HangingRopePlankBlock.FACING, facing);
+        }
+        return this.plank(i, count, false);
+    }
+
+    /** Whether a fallen plank can lie on {@code state}: the ground, leaves, a roof, anything but air, plants and liquid. */
+    private static boolean surface(BlockState state) {
+        return state != null && !open(state) && state.getFluidState().isEmpty();
+    }
+
+    /** The height (at or below the deck) a plank lies at on the first thing under column x/z (floating on water), or MIN_VALUE if none. */
+    private static int surfaceY(Builder b, int x, int z) {
+        // From the deck's own height down, so a crown that reached right up under the bridge still catches it.
+        for (int y = 0; y > -64; y--) {
+            BlockState at = b.get(x, y, z);
+            BlockState below = b.get(x, y - 1, z);
+            if (!open(at) || below == null) {
+                return Integer.MIN_VALUE;
+            }
+            // On water it floats.
+            if (surface(below) || below.isOf(Blocks.WATER)) {
+                return y;
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
+
+    /** Takes the bridge's blocks out of column x/z. */
+    private void clearBridge(Builder b, int x, int z) {
         for (int y = -2; y <= 3; y++) {
             if (!b.inChunk(x, y, z)) {
                 continue;
@@ -224,27 +418,6 @@ public class BridgePiece extends EnclavePiece {
             if (state.isOf(ElvenBlocks.WOVEN_ROPE_PLANK) || state.isOf(Blocks.BIRCH_FENCE) || state.isOf(STRINGER)
                     || state.isOf(Blocks.CHAIN) || state.getBlock() instanceof LanternBlock) {
                 b.set(x, y, z, Blocks.AIR);
-                any = true;
-            }
-        }
-        return any;
-    }
-
-    /** Puts {@code state} on the ground under column x/z, if it's in this chunk and there's ground in reach. */
-    private void land(Builder b, int x, int z, BlockState state) {
-        for (int y = -3; y > -48; y--) {
-            if (!b.inChunk(x, y, z)) {
-                return;
-            }
-            BlockState below = b.get(x, y - 1, z);
-            if (!below.getFluidState().isEmpty()) {
-                return;
-            }
-            if (!below.isAir() && !below.isReplaceable() && !below.isIn(BlockTags.LEAVES)) {
-                if (b.get(x, y, z).isAir() || b.get(x, y, z).isReplaceable()) {
-                    b.set(x, y, z, state);
-                }
-                return;
             }
         }
     }

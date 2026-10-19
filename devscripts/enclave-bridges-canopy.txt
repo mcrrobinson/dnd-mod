@@ -1,0 +1,36 @@
+# Close shots, from above and below, of fallen bridges that enclave-bridges-2.txt places (run that first with
+# -PdevRunDir=run-2; for another world, move these to its "[Desolation] bridge of ..." lines in debug.log).
+# Checks: screenshots canopy-<n>-above / -below: the rest of a half that didn't get to hang lies on the leaves.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+hud off
+/tp @s 239819.5 90 -47913.5 180 60
+wait 200
+closescreen
+wait 5
+screenshot canopy-a-above
+/tp @s 239819.5 71 -47914.5 180 -55
+wait 40
+screenshot canopy-a-below
+/tp @s 239828.5 90 -47912.5 180 60
+wait 60
+screenshot canopy-b-above
+/tp @s 239828.5 71 -47913.5 180 -55
+wait 40
+screenshot canopy-b-below
+/tp @s 245275.5 87 -69909.5 180 60
+wait 60
+screenshot canopy-c-above
+/tp @s 245275.5 68 -69910.5 180 -55
+wait 40
+screenshot canopy-c-below
+/tp @s 245272.5 87 -69918.5 180 60
+wait 60
+screenshot canopy-d-above
+/tp @s 245272.5 68 -69919.5 180 -55
+wait 40
+screenshot canopy-d-below
+quit

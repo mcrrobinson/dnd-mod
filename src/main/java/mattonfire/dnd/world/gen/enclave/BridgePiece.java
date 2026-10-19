@@ -23,6 +23,7 @@ import net.minecraft.block.ChainBlock;
 import net.minecraft.block.FenceBlock;
 import net.minecraft.block.LanternBlock;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
@@ -253,7 +254,24 @@ public class BridgePiece extends EnclavePiece {
             }
             boolean draped = 1 - y + m <= hung;
             if (Desolation.roll(this.seed, x, y, z, 42) < (draped ? 0.9F : 0.75F)) {
-                b.set(x, y, z, this.plank(i, count, false));
+                b.set(x, y, z, this.debrisPlank(b, i, count, x, y, z));
+            }
+            // A few bits were flung a little wider, onto the crowns or ground beside the old path.
+            Direction.Axis axis = this.axis(i, count);
+            for (int s = -2; s <= 2; s += 4) {
+                int wx = x + (axis == Direction.Axis.Z ? s : 0);
+                int wz = z + (axis == Direction.Axis.X ? s : 0);
+                long key = ChunkPos.toLong(wx, wz);
+                if (walkway.contains(key) || landing.contains(key) || rails.containsKey(key) || !b.inChunk(wx, 0, wz)) {
+                    continue;
+                }
+                int wy = surfaceY(b, wx, wz);
+                float roll = Desolation.roll(this.seed, wx, wy, wz, 44);
+                if (wy == Integer.MIN_VALUE || roll >= (b.get(wx, wy - 1, wz).isOf(Blocks.WATER) ? 0.2F : 0.3F)) {
+                    continue;
+                }
+                b.set(wx, wy, wz, roll < 0.2F ? this.debrisPlank(b, i, count, wx, wy, wz)
+                        : Blocks.CHAIN.getDefaultState().with(ChainBlock.AXIS, axis));
             }
         }
         // And bits of the rails beside it: lengths of rope, broken posts, now and then a lamp.
@@ -265,6 +283,9 @@ public class BridgePiece extends EnclavePiece {
             }
             int y = surfaceY(b, x, z);
             if (y == Integer.MIN_VALUE) {
+                continue;
+            }
+            if (b.get(x, y - 1, z).isOf(Blocks.WATER)) {
                 continue;
             }
             Rail rail = entry.getValue();
@@ -348,22 +369,39 @@ public class BridgePiece extends EnclavePiece {
         return state != null && (state.isAir() || state.isReplaceable()) && state.getFluidState().isEmpty();
     }
 
+    /**
+     * A fallen deck plank at x/y/z for cell {@code i}: lying flat, or caught on edge in a crown, now and then where
+     * it came down on leaves and always where they reach right up under the old deck (lying flat there, it would look
+     * like the deck still in place).
+     */
+    private BlockState debrisPlank(Builder b, int i, int count, int x, int y, int z) {
+        BlockState below = b.get(x, y - 1, z);
+        if (below != null && below.isIn(BlockTags.LEAVES) && (y >= -1 || Desolation.roll(this.seed, x, y, z, 45) < 0.3F)) {
+            Direction facing = this.axis(i, count) == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
+            if (Desolation.roll(this.seed, x, y, z, 46) < 0.5F) {
+                facing = facing.getOpposite();
+            }
+            return ElvenBlocks.HANGING_ROPE_PLANK.getDefaultState().with(HangingRopePlankBlock.FACING, facing);
+        }
+        return this.plank(i, count, false);
+    }
+
     /** Whether a fallen plank can lie on {@code state}: the ground, leaves, a roof, anything but air, plants and liquid. */
     private static boolean surface(BlockState state) {
         return state != null && !open(state) && state.getFluidState().isEmpty();
     }
 
-    /** The height (below the deck) a plank lies at on the first thing under column x/z, or MIN_VALUE if none. */
+    /** The height (at or below the deck) a plank lies at on the first thing under column x/z (floating on water), or MIN_VALUE if none. */
     private static int surfaceY(Builder b, int x, int z) {
-        if (!open(b.get(x, -1, z))) {
-            return Integer.MIN_VALUE;
-        }
-        for (int y = -1; y > -64; y--) {
+        // From the deck's own height down, so a crown that reached right up under the bridge still catches it.
+        for (int y = 0; y > -64; y--) {
+            BlockState at = b.get(x, y, z);
             BlockState below = b.get(x, y - 1, z);
-            if (below == null || !below.getFluidState().isEmpty()) {
+            if (!open(at) || below == null) {
                 return Integer.MIN_VALUE;
             }
-            if (surface(below)) {
+            // On water it floats.
+            if (surface(below) || below.isOf(Blocks.WATER)) {
                 return y;
             }
         }

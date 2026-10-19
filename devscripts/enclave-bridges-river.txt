@@ -1,0 +1,34 @@
+# The user's overgrown enclave at 403184 79648 (bridge of 25 hanging whole from 403199 80 79655 over a river and a
+# crown): shots straight down and from the side of the trail it leaves on the leaves and water. Run in a copy of the
+# dev world where that area is fresh (-PdevRunDir=run-2; to redo it, move the player away first, then delete
+# region/, entities/ and poi/ r.787.155.mca). Checks: screenshots enclave403-*.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+hud off
+/dndhome desolation overgrown
+/execute in minecraft:overworld run tp @s 400000 200 80000
+/dndhome visit dndclasses:desolate_elven_enclave
+waitserver 2
+wait 400
+/tp @s 403210.5 92 79653.5 180 90
+wait 200
+screenshot enclave403-top
+/tp @s 403203.5 86 79655.5 180 90
+wait 40
+screenshot enclave403-canopy
+/tp @s 403210.5 100 79670.5 180 45
+wait 40
+screenshot enclave403-angle
+/tp @s 403210.5 66 79653.5 180 -90
+wait 40
+screenshot enclave403-under
+/tp @s 403206.5 86 79661.5 facing 403206 77 79655
+wait 40
+screenshot enclave403-close
+/tp @s 403200.5 112 79652.5 180 90
+wait 40
+screenshot enclave403-wide
+quit

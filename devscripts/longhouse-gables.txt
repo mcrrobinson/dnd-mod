@@ -1,0 +1,31 @@
+# The Great Longhouse's gable ends: timber frame, hide gable with the Bloodtusk mark, skulls and roof overhang.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/longhouse-gables.txt
+# Goes far out so the stronghold is generated fresh with this build (older holds keep the blocks they were built with).
+# Check in <run dir>/logs/latest.log: "[Home] Orc Stronghold at chunk ..."; screenshots lg-east-angle (outside)
+# and lg-inside.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/execute in minecraft:overworld run tp @s 260000 150 260000
+wait 60
+/dndhome stronghold seat
+waitserver 2
+wait 200
+hud off
+# From the seat, facing the back wall: the +x gable is 10 blocks to the right. The palisade runs close behind the
+# end walls, so the shot is from the yard at an angle.
+/tp @s ^-17 ^4 ^-6 ~-55 15
+wait 60
+screenshot lg-east-angle
+/dndhome stronghold seat
+waitserver 2
+wait 20
+/tp @s ^ ^1 ^1 ~-90 5
+wait 40
+screenshot lg-inside
+hud on
+quit

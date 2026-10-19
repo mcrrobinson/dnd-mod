@@ -96,7 +96,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits, dressed with fulgurite, storm glass, a woven dragon nest, coin piles and shed scales that drop dragon scales
 - [Frost Lairs](structures/frost-lairs.md): Frost Drake nests on Frozen Peaks summits, the Staff of Ice's source; rimestone, hoarfrost crystals and shed frost scales
-- [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food
+- [Hobbit Villages](structures/hobbit-villages.md): Shire-style villages full of food, with smials whose hills, cuttings and fronts differ one to the next
 - [Dwarven Fortresses](structures/dwarven-fortresses.md): mountain halls of runic brick with a Dwarf King, a coin-heaped treasury and their own building blocks (clan crests, ancestor statues, forge bricks, a waystone naming the hold)
 - [Elven Enclaves](structures/elven-enclaves.md): treetop halls round a giant Heart Tree in birch and flower forests, rope bridges, a Moonwell and Sylvan Law; the Elf home
 - [Dragon Temples](structures/dragon-temples.md): terraced shrines on mountain slopes, only near a dragon or frost lair; three breath altars with the Blessing of the Ancestors and the Rite of Rebirth; the Dragonborn home; built from Dragonscale Tiles, Temple Lacquer, Breath-Scorched Stone, Ancestor Reliefs, prayer wheels, incense braziers, paper lanterns and sparring posts

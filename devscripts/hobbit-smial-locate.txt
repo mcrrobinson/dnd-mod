@@ -1,0 +1,9 @@
+# Finds two fresh hobbit villages far from the dev world's explored area, for hobbit-smial-pieces.txt and hobbit-smial-fronts.txt.
+wait 40
+closescreen
+/execute positioned 60000 100 -60000 run locate structure dndclasses:hobbit_village
+waitserver 2
+/execute positioned -60000 100 -60000 run locate structure dndclasses:hobbit_village
+waitserver 2
+wait 20
+quit

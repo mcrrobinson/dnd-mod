@@ -148,7 +148,7 @@ public final class DndHomeCommand {
             BlockBox box = piece.getBoundingBox();
             context.getSource().sendFeedback(Text.literal("[Home] piece " + Registries.STRUCTURE_PIECE.getId(piece.getType())
                     + " " + box.getMinX() + " " + box.getMinY() + " " + box.getMinZ()
-                    + " to " + box.getMaxX() + " " + box.getMaxY() + " " + box.getMaxZ()), false);
+                    + " to " + box.getMaxX() + " " + box.getMaxY() + " " + box.getMaxZ() + " facing " + piece.getFacing()), false);
         }
         return visit.start().getChildren().size();
     }

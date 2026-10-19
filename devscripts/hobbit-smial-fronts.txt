@@ -1,0 +1,42 @@
+# Close-ups of every smial in the two villages hobbit-smial-locate.txt finds (boxes from hobbit-smial-pieces.txt): the front, and from higher up to see the hill.
+# A piece's facing points out of its back, so the front is on the opposite side.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/hobbit-smial-fronts.txt. Check: run/screenshots/smial-*.png.
+wait 40
+closescreen
+/gamemode spectator
+/time set 1000
+/gamerule doDaylightCycle false
+/weather clear
+hud off
+/tp @s 58159.5 132 -57439 0 12
+wait 300
+screenshot smial-front-1
+/tp @s 58159.5 148 -57451 0 40
+wait 40
+screenshot smial-hill-1
+/tp @s 58180 129 -57431.5 -90 12
+wait 80
+screenshot smial-front-2
+/tp @s 58168 145 -57431.5 -90 40
+wait 40
+screenshot smial-hill-2
+/tp @s -60436 124 -60976.5 90 12
+wait 300
+screenshot smial-front-3
+/tp @s -60424 140 -60976.5 90 40
+wait 40
+screenshot smial-hill-3
+/tp @s -60412.5 124 -61023 180 12
+wait 80
+screenshot smial-front-4
+/tp @s -60412.5 140 -61011 180 40
+wait 40
+screenshot smial-hill-4
+/tp @s -60438.5 124 -60961 0 12
+wait 80
+screenshot smial-front-5
+/tp @s -60438.5 140 -60973 0 40
+wait 40
+screenshot smial-hill-5
+hud on
+quit

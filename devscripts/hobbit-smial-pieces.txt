@@ -1,0 +1,16 @@
+# Lists the smials (box and facing) of the two villages hobbit-smial-locate.txt finds, for hobbit-smial-fronts.txt.
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 58160 120 -57472
+wait 200
+/spreadplayers 58160 -57472 0 1 false @s
+waitserver 2
+/dndhome pieces
+/tp @s -60432 120 -61008
+wait 200
+/spreadplayers -60432 -61008 0 1 false @s
+waitserver 2
+/dndhome pieces
+wait 10
+quit

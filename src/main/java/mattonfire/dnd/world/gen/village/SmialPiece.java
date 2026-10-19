@@ -8,8 +8,11 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.CampfireBlock;
 import net.minecraft.block.FarmlandBlock;
+import net.minecraft.block.LeavesBlock;
 import net.minecraft.block.LeveledCauldronBlock;
 import net.minecraft.block.SweetBerryBushBlock;
+import net.minecraft.block.TrapdoorBlock;
+import net.minecraft.block.enums.BlockHalf;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
@@ -20,13 +23,18 @@ import net.minecraft.util.DyeColor;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.Direction;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 
 /**
- * A hobbit hole: rooms dug into a grassy hill, a round door in a stone arch and round windows in a
- * wattle-and-daub front wall under the hill's cut turf face, a fenced front garden, and inside a
+ * A hobbit hole: rooms dug into a grassy hill, a round door and windows in a front wall under the hill's cut
+ * turf face, a fenced front garden, and inside a
  * panelled hall with a fireplace on a sooty hearth, a kitchen with larder shelves and herbs hanging
  * from the ceiling, and a table laid for second breakfast. Bigger smials add a pantry and a bedroom either side of the hall.
+ * <p>
+ * Each smial's outside is picked from its seed (see {@link Look}): the front wall's material and whether it arches
+ * down into the hill at the ends, the door frame, round or square windows and where they sit, leaves draping over
+ * the turf lip, and the garden's fence, path and lamps. So the smials of a village don't look alike.
  */
 public class SmialPiece extends HobbitPiece {
     public enum Size {
@@ -54,11 +62,37 @@ public class SmialPiece extends HobbitPiece {
             new DoorStyle(Blocks.BIRCH_DOOR, Blocks.BIRCH_PLANKS),
             new DoorStyle(Blocks.CRIMSON_DOOR, Blocks.CRIMSON_PLANKS)
     };
+    /** What the front wall is made of. */
+    private enum Front { EARTH, FIELDSTONE, MUD, DAUB, TIMBER }
+
+    /** What the round door's frame is made of. */
+    private enum Frame { STONE, TIMBER, BRICK }
+
+    /** What the front garden is fenced with. */
+    private enum Fence { OAK, SPRUCE, BIRCH, HEDGE, WALL }
+
+    /** What the garden path is laid with. */
+    private enum Path { DIRT, GRAVEL, STEPPING }
+
+    /**
+     * A smial's outside, hashed from its seed rather than drawn from the builder's random, so it's the same in
+     * every chunk and leaves the rest of the piece's draws alone. {@code arch}: the wall's top curves down
+     * towards the ends, with bare earth above. {@code windows}: x offsets from the door. {@code flip}: the water
+     * butt and bench swap sides. {@code lamps}: 0 none, 1 on both gate posts, 2 on one.
+     */
+    private record Look(Front front, boolean arch, Frame frame, boolean roundWindows, int[] windows, boolean drape,
+                        Fence fence, Path path, boolean flip, int lamps) {
+    }
+
+    private static final Front[] FRONTS = {Front.EARTH, Front.FIELDSTONE, Front.FIELDSTONE, Front.MUD, Front.DAUB, Front.TIMBER};
+    private static final int[][] SMALL_WINDOWS = {{-4, 4}, {-4}, {4}};
+    private static final int[][] MEDIUM_WINDOWS = {{-4, 4, 7}, {-7, -4, 4}, {-4, 5}};
+    private static final int[][] LARGE_WINDOWS = {{-8, -4, 5}, {-7, 4, 8}, {-8, -4, 4}, {-5, 4}};
     private static final DyeColor[] RUGS = {DyeColor.RED, DyeColor.ORANGE, DyeColor.BROWN, DyeColor.GREEN, DyeColor.YELLOW};
     private static final Block[] CROPS = {Blocks.CARROTS, Blocks.POTATOES, Blocks.BEETROOTS, Blocks.WHEAT};
 
-    /** Blocks of hillside around the rooms. */
-    private static final int SLOPE = 6;
+    /** Blocks of hillside around the rooms: room for the farthest a hill reaches, plus its ragged edge. */
+    private static final int SLOPE = 10;
     /** z of the front wall; the garden is in front of it. */
     private static final int FACADE = 5;
     private static final int HEIGHT = 13;
@@ -109,24 +143,145 @@ public class SmialPiece extends HobbitPiece {
     }
 
     /**
-     * Height of the hill at a column, or -1 for none: level over the rooms, sloping down all
-     * round, with two wings reaching forward beside the front garden.
+     * Height of the hill at a column, or -1 for none. Over the rooms it's a lumpy crown at least 7 high; from there
+     * it falls away in a smooth curve, reaching out a different way on each side and behind, with a ragged edge.
+     * In front it wraps round the ends of the front wall, leaving the garden's cutting open (see {@link #garden}),
+     * and some hills have a second, smaller mound to one side or behind. All of it is smooth noise on the piece's
+     * seed, so no two hills are the same shape and none of them looks drawn with a compass.
      */
     private int hillTop(int x, int z) {
+        if (this.garden(x, z)) {
+            return -1;
+        }
         int x0 = this.cx() - this.size.half - 1;
         int x1 = this.cx() + this.size.half + 1;
         int z1 = this.backWall();
-        int dx = x < x0 ? x0 - x : Math.max(x - x1, 0);
-        int dz = z < FACADE ? FACADE - z : Math.max(z - z1, 0);
-        if (z < FACADE && dx == 0) {
-            return -1;
+        boolean left = x < this.cx();
+        double reach = left ? this.span(20, 6.0D, 8.5D) : this.span(21, 6.0D, 8.5D);
+        double dx = (x < x0 ? x0 - x : Math.max(x - x1, 0)) * 8.0D / reach;
+        double dz = (z > z1 ? z - z1 : 0) * 8.0D / this.span(22, 6.0D, 8.5D);
+        // In front of the facade the hill runs out over a different distance each side.
+        double front = z < FACADE ? (FACADE - z) * (left ? this.span(23, 0.9D, 2.0D) : this.span(24, 0.9D, 2.0D)) : 0.0D;
+        double d = Math.sqrt(dx * dx + dz * dz + front * front) + 1.5D * this.noise(x, z, 4.5D, 25);
+        int top = 0;
+        if (d < 8.0D) {
+            double crown = 7.0D + Math.max(0.0D, 1.8D * this.noise(x, z, 7.0D, 26) + 0.5D);
+            top = (int) Math.round(crown * 0.5D * (1.0D + Math.cos(Math.PI * Math.max(d, 0.0D) / 8.0D)));
         }
-        if (dx == 0 && dz == 0) {
-            int edge = Math.min(Math.min(x - x0, x1 - x), Math.min(z - FACADE, z1 - z));
-            return edge >= 3 ? 7 : 6;
-        }
-        int top = (int) Math.round(6.4D - Math.sqrt(dx * dx + dz * dz) * 1.15D);
+        top = Math.max(top, this.mound(x, z, x0, x1, z1));
+        // Over the front wall the hill comes down to the turf lip, then rises behind it, so no dirt cliff towers
+        // over the door; in front of the wall it stays below the lip.
+        top = Math.min(top, z >= FACADE ? 6 + (z - FACADE) : 6);
         return top >= 1 ? top : -1;
+    }
+
+    /** Whether x/z is on the garden's fence line: its front edge, or a side the hill doesn't close in. */
+    private boolean rim(int x, int z) {
+        if (!this.garden(x, z)) {
+            return false;
+        }
+        return z == 0 || (!this.garden(x - 1, z) && this.hillTop(x - 1, z) < 1)
+                || (!this.garden(x + 1, z) && this.hillTop(x + 1, z) < 1);
+    }
+
+    /** Height of the smaller second mound some hills have, to the left, right or behind, or 0. */
+    private int mound(int x, int z, int x0, int x1, int z1) {
+        int where = this.style(44, 5);
+        if (where >= 3) {
+            return 0; // two in five hills have none
+        }
+        double mx = where == 0 ? x0 - this.span(45, 1.0D, 3.0D) : where == 1 ? x1 + this.span(45, 1.0D, 3.0D)
+                : this.span(45, x0 + 2, x1 - 2);
+        double mz = where == 2 ? z1 + this.span(46, 1.0D, 3.0D) : this.span(46, FACADE + 2, z1);
+        double radius = this.span(47, 4.0D, 6.5D);
+        double d = Math.sqrt((x - mx) * (x - mx) + (z - mz) * (z - mz)) + this.noise(x, z, 3.5D, 48);
+        if (d >= radius) {
+            return 0;
+        }
+        return (int) Math.round(this.span(49, 4.0D, 7.0D) * 0.5D * (1.0D + Math.cos(Math.PI * Math.max(d, 0.0D) / radius)));
+    }
+
+    /**
+     * How far the cutting in front of the wall is open on each side of the door, at the wall: from just past the
+     * bench and water butt to the whole wall. The hill covers the rest of the wall's front.
+     */
+    private int openHalf(boolean left) {
+        int x0 = this.cx() - this.size.half - 1;
+        int x1 = this.cx() + this.size.half + 1;
+        int full = left ? this.doorX() - x0 - 1 : x1 - this.doorX() - 1;
+        return 4 + this.style(left ? 40 : 41, Math.max(1, full - 3));
+    }
+
+    /**
+     * Whether x/z is in the front garden: the cutting in front of the wall, open {@link #openHalf} either side of
+     * the door at the wall and widening towards the gate by a seeded amount each side (none: straight sides).
+     */
+    private boolean garden(int x, int z) {
+        int x0 = this.cx() - this.size.half - 1;
+        int x1 = this.cx() + this.size.half + 1;
+        if (z < 0 || z >= FACADE || x < x0 || x > x1) {
+            return false;
+        }
+        boolean left = x < this.doorX();
+        double spread = this.span(left ? 42 : 43, 0.0D, 1.3D);
+        return Math.abs(x - this.doorX()) <= this.openHalf(left) + (FACADE - 1 - z) * spread;
+    }
+
+    /** A number between {@code min} and {@code max} from the piece's seed and {@code salt}. */
+    private double span(int salt, double min, double max) {
+        return min + (max - min) * this.style(salt, 1000) / 999.0D;
+    }
+
+    /** Smooth value noise in [-1, 1] at local x/z, with features about {@code scale} blocks across. */
+    private double noise(double x, double z, double scale, int salt) {
+        double fx = x / scale;
+        double fz = z / scale;
+        int ix = MathHelper.floor(fx);
+        int iz = MathHelper.floor(fz);
+        double tx = fx - ix;
+        double tz = fz - iz;
+        tx = tx * tx * (3.0D - 2.0D * tx);
+        tz = tz * tz * (3.0D - 2.0D * tz);
+        return MathHelper.lerp(tz, MathHelper.lerp(tx, this.lattice(ix, iz, salt), this.lattice(ix + 1, iz, salt)),
+                MathHelper.lerp(tx, this.lattice(ix, iz + 1, salt), this.lattice(ix + 1, iz + 1, salt)));
+    }
+
+    private double lattice(int x, int z, int salt) {
+        long h = (MathHelper.hashCode(x, salt, z) ^ this.seed) * 0x9E3779B97F4A7C15L;
+        return ((h >>> 40) & 0xFFFF) / 32767.5D - 1.0D;
+    }
+
+    /** A number in [0, n) from the piece's seed and {@code salt}. */
+    private int style(int salt, int n) {
+        long h = (this.seed ^ (salt * 0x632BE59BD9B4E019L)) * 0x9E3779B97F4A7C15L;
+        return (int) Math.floorMod(h >>> 33, (long) n);
+    }
+
+    /** A number in [0, n) for the block at local x/y/z, from the piece's seed. */
+    private int mix(int x, int y, int z, int n) {
+        long h = (MathHelper.hashCode(x, y, z) ^ this.seed) * 0x9E3779B97F4A7C15L;
+        return (int) Math.floorMod(h >>> 33, (long) n);
+    }
+
+    private Look look() {
+        Front front = FRONTS[this.style(1, FRONTS.length)];
+        int[][] layouts = this.size == Size.SMALL ? SMALL_WINDOWS : this.size == Size.MEDIUM ? MEDIUM_WINDOWS : LARGE_WINDOWS;
+        return new Look(front, front != Front.EARTH && this.style(2, 4) != 0, Frame.values()[this.style(3, Frame.values().length)],
+                this.style(4, 3) != 0, layouts[this.style(5, layouts.length)], this.style(6, 2) == 0,
+                Fence.values()[this.style(7, Fence.values().length)], Path.values()[this.style(8, Path.values().length)],
+                this.style(9, 2) == 0, this.style(10, 3));
+    }
+
+    /** Local x of the front door: a little off the middle of the front, either way, so the front isn't mirrored. */
+    private int doorX() {
+        int most = this.size == Size.SMALL ? 1 : 2;
+        return this.cx() + this.style(11, 2 * most + 1) - most;
+    }
+
+    /** The garden path, and so the lane, leads to the door. */
+    @Override
+    protected int entranceX() {
+        return this.doorX();
     }
 
     private static Block fieldstone(Builder b) {
@@ -143,11 +298,12 @@ public class SmialPiece extends HobbitPiece {
         int iz1 = FACADE + this.size.depth;
         int back = iz1 + 1;
 
+        Look look = this.look();
         b.lawn(x0, 0, x1, FACADE - 1, 10);
         this.buildHill(b, x0, x1);
         this.buildRooms(b, cx, x0, x1, iz0, iz1, back);
-        this.buildGarden(b, cx, x0, x1);
-        this.buildFacade(b, cx, x0, x1);
+        this.buildGarden(b, look, this.doorX(), x0, x1);
+        this.buildFacade(b, look, this.doorX(), x0, x1);
 
         int hx0 = this.size == Size.SMALL ? cx - h : cx - 5;
         int hx1 = this.size == Size.LARGE ? cx + 5 : cx + h;
@@ -161,32 +317,47 @@ public class SmialPiece extends HobbitPiece {
     }
 
     private void buildHill(Builder b, int x0, int x1) {
+        BlockState bush = Blocks.AZALEA_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true);
+        BlockState flowering = Blocks.FLOWERING_AZALEA_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true);
         for (int x = 0; x < this.width(); x++) {
             for (int z = 0; z < this.depth(); z++) {
                 int top = this.hillTop(x, z);
                 if (top < 1) {
                     continue;
                 }
-                // Fieldstone retaining walls where the wings meet the front garden.
-                boolean wall = z < FACADE && (x == x0 - 1 || x == x1 + 1);
+                // Where a wing meets the front garden its side is a bare bank: earth with boulders showing.
+                boolean bank = z < FACADE && (this.garden(x - 1, z) || this.garden(x + 1, z));
                 b.ground(x, z, Blocks.DIRT);
                 for (int y = 1; y < top; y++) {
-                    b.set(x, y, z, wall ? fieldstone(b) : Blocks.DIRT);
+                    b.set(x, y, z, bank ? this.bank(x, z, y) : Blocks.DIRT.getDefaultState());
                 }
-                // The retaining walls' tops, and the hill's face over the front wall, are cut turf.
-                b.set(x, top, z, wall ? ModBlockFamilies.SMIAL_TURF_WALL.base() : Blocks.GRASS_BLOCK);
-                float roll = b.random.nextFloat();
-                if (roll < 0.3F) {
-                    b.set(x, top + 1, z, Blocks.GRASS);
-                } else if (roll < 0.38F) {
+                b.set(x, top, z, Blocks.GRASS_BLOCK);
+                // Long grass and flowers come in patches, with the odd bush or mossy boulder.
+                double meadow = this.noise(x, z, 3.5D, 30);
+                int roll = this.mix(x, top + 1, z, 1000);
+                if (roll < 8 && !bank) {
+                    b.set(x, top + 1, z, roll < 3 ? flowering : bush);
+                } else if (roll < 11 && !bank) {
+                    b.set(x, top + 1, z, Blocks.MOSSY_COBBLESTONE);
+                } else if (meadow > 0.35D && roll < 400) {
                     b.flower(x, top + 1, z);
-                } else if (roll < 0.4F) {
-                    b.set(x, top + 1, z, Blocks.FERN);
+                } else if (roll < 300 + (int) (meadow * 300.0D)) {
+                    b.set(x, top + 1, z, roll % 7 == 0 ? Blocks.FERN : Blocks.GRASS);
                 } else {
                     b.set(x, top + 1, z, Blocks.AIR);
                 }
             }
         }
+    }
+
+    /** A block in a wing's bare bank beside the garden: earth, with boulders in patches. */
+    private BlockState bank(int x, int z, int y) {
+        double rock = this.noise(z + x * 7.0D, y * 1.5D, 2.5D, 31);
+        if (rock > 0.3D) {
+            return (this.mix(x, y, z, 3) == 0 ? Blocks.MOSSY_COBBLESTONE : Blocks.STONE).getDefaultState();
+        }
+        int roll = this.mix(x, y, z, 10);
+        return (roll < 6 ? Blocks.DIRT : roll < 8 ? Blocks.COARSE_DIRT : Blocks.ROOTED_DIRT).getDefaultState();
     }
 
     private void buildRooms(Builder b, int cx, int x0, int x1, int iz0, int iz1, int back) {
@@ -252,49 +423,147 @@ public class SmialPiece extends HobbitPiece {
         }
     }
 
-    private void buildFacade(Builder b, int cx, int x0, int x1) {
-        // A fieldstone footing, wattle and daub under a timbered top course, and the hill's cut turf face above.
+    /** {@code cx} here is the door's x, which the windows, the arch and the posts are laid out from. */
+    private void buildFacade(Builder b, Look look, int cx, int x0, int x1) {
+        // The front wall on a footing, up to its top course (lower towards the ends when it arches), bare earth
+        // above that, and the hill's cut turf face on top.
         for (int x = x0; x <= x1; x++) {
+            int top = this.wallTop(look, x, cx);
             for (int y = 1; y <= 5; y++) {
-                b.set(x, y, FACADE, y == 1 ? fieldstone(b).getDefaultState()
-                        : (y == 5 ? ModBlockFamilies.TIMBERED_WATTLE_AND_DAUB : ModBlockFamilies.WATTLE_AND_DAUB)
-                                .base().getDefaultState());
+                BlockState state;
+                if (y > top) {
+                    state = this.earth(x, y);
+                } else if (y == 1) {
+                    state = look.front() == Front.EARTH ? Blocks.COARSE_DIRT.getDefaultState() : fieldstone(b).getDefaultState();
+                } else {
+                    state = this.wall(look.front(), x, y, top, cx, x0, x1);
+                }
+                b.set(x, y, FACADE, state);
             }
-            b.set(x, 6, FACADE, ModBlockFamilies.SMIAL_TURF_WALL.base());
+            // The cut turf lip only where the hill comes down to it; where it rises higher, more bare earth.
+            b.set(x, 6, FACADE, this.hillTop(x, FACADE) > 6 ? this.earth(x, 6) : ModBlockFamilies.SMIAL_TURF_WALL.base().getDefaultState());
         }
 
         DoorStyle style = DOORS[this.door];
-        b.roundDoor(cx, 1, FACADE, style.door(), style.planks());
-
-        this.window(b, cx - 4);
-        this.window(b, cx + 4);
-        if (this.size == Size.MEDIUM) {
-            this.window(b, cx + 7);
+        switch (look.frame()) {
+            case STONE -> b.roundDoor(cx, 1, FACADE, style.door(), style.planks());
+            case TIMBER -> b.roundDoor(cx, 1, FACADE, style.door(), style.planks(),
+                    pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.Y), pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X),
+                    pillar(Blocks.SPRUCE_LOG, Direction.Axis.Z), stairs(Blocks.SPRUCE_STAIRS, Direction.WEST, true),
+                    stairs(Blocks.SPRUCE_STAIRS, Direction.EAST, true));
+            case BRICK -> b.roundDoor(cx, 1, FACADE, style.door(), style.planks(),
+                    Blocks.BRICKS.getDefaultState(), Blocks.BRICKS.getDefaultState(), Blocks.CHISELED_STONE_BRICKS.getDefaultState(),
+                    stairs(Blocks.BRICK_STAIRS, Direction.WEST, true), stairs(Blocks.BRICK_STAIRS, Direction.EAST, true));
         }
-        if (this.size == Size.LARGE) {
-            this.window(b, cx - 8);
-            this.window(b, cx + 8);
+
+        for (int offset : look.windows()) {
+            if (cx + offset < x0 + 2 || cx + offset > x1 - 2 || Math.abs(offset) + 1 > this.openHalf(offset < 0)) {
+                continue; // past the end of the wall, or behind the hill where it wraps round the wall
+            }
+            if (look.roundWindows()) {
+                b.roundWindow(cx + offset, 3, FACADE, true);
+            } else {
+                this.squareWindow(b, cx + offset);
+            }
+        }
+
+        // Leaves spilling over the turf lip here and there.
+        if (look.drape()) {
+            BlockState[] leaves = {
+                    Blocks.AZALEA_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true),
+                    Blocks.FLOWERING_AZALEA_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true)
+            };
+            for (int x = x0; x <= x1; x++) {
+                int roll = this.mix(x, 6, FACADE - 1, 6);
+                if (roll < 3 && this.garden(x, FACADE - 1)) {
+                    b.set(x, 6, FACADE - 1, leaves[roll % 2]);
+                    if (roll == 0 && Math.abs(x - cx) > 2) {
+                        b.set(x, 5, FACADE - 1, leaves[1]);
+                    }
+                }
+            }
         }
     }
 
-    private void window(Builder b, int x) {
-        b.roundWindow(x, 3, FACADE, true);
+    /** Height of the front wall's top course at x: 5, or curving down to 3 at the ends when it arches. */
+    private int wallTop(Look look, int x, int cx) {
+        if (!look.arch()) {
+            return 5;
+        }
+        double d = (x - cx) / (this.size.half + 1.0D);
+        return Math.max(2, 5 - (int) Math.round(2.4D * d * d));
     }
 
-    private void buildGarden(Builder b, int cx, int x0, int x1) {
+    /** Bare earth in the hill's face: mostly dirt, with coarse and rooted dirt mixed in. */
+    private BlockState earth(int x, int y) {
+        int roll = this.mix(x, y, FACADE, 20);
+        return (roll < 12 ? Blocks.DIRT : roll < 17 ? Blocks.COARSE_DIRT : Blocks.ROOTED_DIRT).getDefaultState();
+    }
+
+    /** The front wall's block at x/y, above the footing and up to its top course {@code top}. */
+    private BlockState wall(Front front, int x, int y, int top, int cx, int x0, int x1) {
+        int d = Math.abs(x - cx);
+        boolean post = x == x0 || x == x1 || d == 3 || d == 7;
+        return switch (front) {
+            case EARTH -> this.mix(x, y, FACADE, 9) == 0 ? Blocks.MOSS_BLOCK.getDefaultState() : this.earth(x, y);
+            case FIELDSTONE -> {
+                int roll = this.mix(x, y, FACADE, 10);
+                yield (roll < 4 ? Blocks.COBBLESTONE : roll < 7 ? Blocks.MOSSY_COBBLESTONE : roll < 9 ? Blocks.STONE : Blocks.ANDESITE)
+                        .getDefaultState();
+            }
+            case MUD -> (y == top ? Blocks.MUD_BRICKS : Blocks.PACKED_MUD).getDefaultState();
+            case DAUB -> y == top ? ModBlockFamilies.TIMBERED_WATTLE_AND_DAUB.base().getDefaultState()
+                    : post ? pillar(Blocks.SPRUCE_LOG, Direction.Axis.Y) : ModBlockFamilies.WATTLE_AND_DAUB.base().getDefaultState();
+            case TIMBER -> y == top ? pillar(Blocks.STRIPPED_SPRUCE_LOG, Direction.Axis.X)
+                    : post ? pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y) : Blocks.SPRUCE_PLANKS.getDefaultState();
+        };
+    }
+
+    /** A square window three wide and two high, under a little trapdoor hood. */
+    private void squareWindow(Builder b, int x) {
+        b.fill(x - 1, 2, FACADE, x + 1, 3, FACADE, Blocks.GLASS_PANE);
+        b.fill(x - 1, 4, FACADE - 1, x + 1, 4, FACADE - 1, Blocks.SPRUCE_TRAPDOOR.getDefaultState()
+                .with(TrapdoorBlock.FACING, OUT).with(TrapdoorBlock.HALF, BlockHalf.TOP));
+    }
+
+    /** {@code cx} here is the door's x: the path, the gate and the beds either side are laid out from it. */
+    private void buildGarden(Builder b, Look look, int cx, int x0, int x1) {
+        BlockState fence = switch (look.fence()) {
+            case OAK -> Blocks.OAK_FENCE.getDefaultState();
+            case SPRUCE -> Blocks.SPRUCE_FENCE.getDefaultState();
+            case BIRCH -> Blocks.BIRCH_FENCE.getDefaultState();
+            case HEDGE -> Blocks.OAK_LEAVES.getDefaultState().with(LeavesBlock.PERSISTENT, true);
+            case WALL -> Blocks.MOSSY_COBBLESTONE_WALL.getDefaultState();
+        };
+        Block gate = switch (look.fence()) {
+            case SPRUCE, HEDGE -> Blocks.SPRUCE_FENCE_GATE;
+            case BIRCH -> Blocks.BIRCH_FENCE_GATE;
+            default -> Blocks.OAK_FENCE_GATE;
+        };
+        // The fence runs along the front, and up the sides only where no bank of the hill closes the garden in.
         for (int x = x0; x <= x1; x++) {
-            b.set(x, 1, 0, Blocks.OAK_FENCE);
-        }
-        for (int z = 1; z < FACADE; z++) {
-            b.set(x0, 1, z, Blocks.OAK_FENCE);
-            b.set(x1, 1, z, Blocks.OAK_FENCE);
+            for (int z = 0; z < FACADE; z++) {
+                if (this.rim(x, z)) {
+                    b.set(x, 1, z, fence);
+                }
+            }
         }
         for (int z = 0; z < FACADE; z++) {
-            b.ground(cx, z, Blocks.DIRT_PATH);
+            b.ground(cx, z, switch (look.path()) {
+                case DIRT -> Blocks.DIRT_PATH;
+                case GRAVEL -> Blocks.GRAVEL;
+                case STEPPING -> z % 2 == 0 ? (this.mix(cx, 0, z, 2) == 0 ? Blocks.COBBLESTONE : Blocks.MOSSY_COBBLESTONE)
+                        : Blocks.DIRT_PATH;
+            });
         }
-        b.gate(cx, 1, 0, Blocks.OAK_FENCE_GATE, OUT);
-        b.set(cx - 1, 2, 0, lantern(false));
-        b.set(cx + 1, 2, 0, lantern(false));
+        b.gate(cx, 1, 0, gate, OUT);
+        int near = look.flip() ? -1 : 1;
+        if (look.lamps() == 1) {
+            b.set(cx - 1, 2, 0, lantern(false));
+            b.set(cx + 1, 2, 0, lantern(false));
+        } else if (look.lamps() == 2) {
+            b.set(cx + near, 2, 0, lantern(false));
+        }
 
         // A bed of flowers, vegetables or pumpkins and berries either side of the path.
         for (int side = -1; side <= 1; side += 2) {
@@ -304,6 +573,9 @@ public class SmialPiece extends HobbitPiece {
             int to = side < 0 ? cx - 1 : x1 - 1;
             for (int x = from; x <= to; x++) {
                 for (int z = 1; z < FACADE; z++) {
+                    if (!this.garden(x, z) || this.rim(x, z)) {
+                        continue; // under the hill, or the fence
+                    }
                     if (z == FACADE - 1 && Math.abs(x - cx) == 1) {
                         continue; // doorstep
                     }
@@ -328,13 +600,13 @@ public class SmialPiece extends HobbitPiece {
             }
         }
 
-        // A water butt by the door and a bench against the wall.
-        b.set(cx - 2, 1, FACADE - 1, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3));
-        b.set(cx - 2, 2, FACADE - 1, Blocks.AIR);
-        b.set(cx + 2, 1, FACADE - 1, stairs(Blocks.OAK_STAIRS, IN, false));
-        b.set(cx + 3, 1, FACADE - 1, stairs(Blocks.OAK_STAIRS, IN, false));
-        b.set(cx + 2, 2, FACADE - 1, Blocks.AIR);
-        b.set(cx + 3, 2, FACADE - 1, Blocks.AIR);
+        // A water butt by the door and a bench against the wall, on either side.
+        b.set(cx - 2 * near, 1, FACADE - 1, Blocks.WATER_CAULDRON.getDefaultState().with(LeveledCauldronBlock.LEVEL, 3));
+        b.set(cx - 2 * near, 2, FACADE - 1, Blocks.AIR);
+        b.set(cx + 2 * near, 1, FACADE - 1, stairs(Blocks.OAK_STAIRS, IN, false));
+        b.set(cx + 3 * near, 1, FACADE - 1, stairs(Blocks.OAK_STAIRS, IN, false));
+        b.set(cx + 2 * near, 2, FACADE - 1, Blocks.AIR);
+        b.set(cx + 3 * near, 2, FACADE - 1, Blocks.AIR);
     }
 
     private void furnishHall(Builder b, int cx, int hx0, int hx1, int iz0, int iz1) {

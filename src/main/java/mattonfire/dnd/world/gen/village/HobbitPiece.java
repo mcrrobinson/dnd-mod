@@ -206,15 +206,26 @@ public abstract class HobbitPiece extends FacingPiece<HobbitPiece.Builder> {
          */
         void roundDoor(int x, int y, int z, Block door, Block planks) {
             BlockFamily frame = ModBlockFamilies.ROUND_DOOR_FRAME_STONE;
+            this.roundDoor(x, y, z, door, planks, frame.base().getDefaultState(), frame.base().getDefaultState(),
+                    ModBlockFamilies.ROUND_DOOR_KEYSTONE.base().getDefaultState(),
+                    stairs(frame, Direction.WEST, true), stairs(frame, Direction.EAST, true));
+        }
+
+        /**
+         * A round door in any frame: {@code post} up both sides, {@code lintel} over the door with {@code keystone}
+         * in the middle, and {@code left}/{@code right} (upside-down stairs) rounding the top corners.
+         */
+        void roundDoor(int x, int y, int z, Block door, Block planks, BlockState post, BlockState lintel,
+                       BlockState keystone, BlockState left, BlockState right) {
             this.fill(x - 1, y, z, x + 1, y + 2, z, planks);
             this.door(x, y, z, door, IN);
-            this.fill(x - 2, y, z, x - 2, y + 2, z, frame.base());
-            this.fill(x + 2, y, z, x + 2, y + 2, z, frame.base());
-            this.set(x - 1, y + 3, z, frame.base());
-            this.set(x, y + 3, z, ModBlockFamilies.ROUND_DOOR_KEYSTONE.base());
-            this.set(x + 1, y + 3, z, frame.base());
-            this.set(x - 2, y + 3, z, stairs(frame, Direction.WEST, true));
-            this.set(x + 2, y + 3, z, stairs(frame, Direction.EAST, true));
+            this.fill(x - 2, y, z, x - 2, y + 2, z, post);
+            this.fill(x + 2, y, z, x + 2, y + 2, z, post);
+            this.set(x - 1, y + 3, z, lintel);
+            this.set(x, y + 3, z, keystone);
+            this.set(x + 1, y + 3, z, lintel);
+            this.set(x - 2, y + 3, z, left);
+            this.set(x + 2, y + 3, z, right);
             // A knob on the right-hand panel.
             this.set(x + 1, y + 1, z - 1, Blocks.POLISHED_BLACKSTONE_BUTTON.getDefaultState()
                     .with(net.minecraft.block.WallMountedBlock.FACING, OUT));

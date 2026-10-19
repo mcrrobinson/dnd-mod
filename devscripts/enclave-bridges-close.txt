@@ -1,0 +1,24 @@
+# Close shots of two fallen bridges in the raided enclave from enclave-bridges.txt (run that first; for another
+# world, move the coordinates to its "[Desolation] bridge of ... hangs from <pos> and <pos>" lines in debug.log):
+# one hanging whole from its south end, one snapped in the middle. Checks: screenshots rclose-*.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+hud off
+/tp @s 240185.5 74 35621.5 0 15
+wait 200
+closescreen
+wait 5
+screenshot rclose-1a
+/tp @s 240189.5 70 35619.5 135 25
+wait 40
+screenshot rclose-1b
+/tp @s 240173.5 75 35608.5 -90 15
+wait 40
+screenshot rclose-2a
+/tp @s 240170.5 75 35608.5 90 15
+wait 40
+screenshot rclose-2b
+quit

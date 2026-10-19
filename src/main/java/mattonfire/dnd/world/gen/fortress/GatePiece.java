@@ -62,9 +62,10 @@ public class GatePiece extends FortressPiece {
             b.set(0, 1, z, wall(RUNIC));
             b.set(WIDTH - 1, 1, z, wall(RUNIC));
         }
+        // Runic Column posts along the parapet, each with a lantern on top.
         for (int x : new int[]{0, MID - 4, MID + 4, WIDTH - 1}) {
-            b.set(x, 1, 0, chiseledRunic());
-            b.set(x, 2, 0, lantern(false));
+            b.runicColumn(x, 1, 2, 0);
+            b.set(x, 3, 0, lantern(false));
         }
         b.brazier(2, 1, 2);
         b.brazier(WIDTH - 3, 1, 2);
@@ -83,11 +84,27 @@ public class GatePiece extends FortressPiece {
         b.fill(0, 1, FACADE, WIDTH - 1, 1, FACADE, RUNIC.base());
         b.fill(0, 11, FACADE, WIDTH - 1, 11, FACADE, chiseledRunic());
         b.fill(0, 15, FACADE, WIDTH - 1, 15, FACADE, Blocks.GILDED_BLACKSTONE);
+        // A battered plinth: the foot of the facade slopes out onto the terrace, except at the door.
+        for (int x = 0; x < WIDTH; x++) {
+            if (Math.abs(x - MID) > 3) {
+                b.set(x, 1, FACADE - 1, stairs(RUNIC, IN, false));
+            }
+        }
+        // Buttresses up the facade's corners: vertical slabs on the plinth.
+        for (int x : new int[]{0, WIDTH - 1}) {
+            b.fill(x, 2, FACADE - 1, x, 14, FACADE - 1, facing(DwarvenBlocks.RUNIC_DEEPSLATE_BRICK_VERTICAL_SLAB, OUT));
+        }
+        // Corbels under the cornice.
+        for (int x = 1; x < WIDTH; x += 2) {
+            b.corbel(x, 15, FACADE - 1, OUT);
+        }
         // Cornice overhanging the terrace, and battlements along the top.
         for (int x = 0; x < WIDTH; x++) {
             b.set(x, 16, FACADE - 1, stairs(Blocks.DEEPSLATE_TILE_STAIRS, OUT, true));
             if (x % 2 == 1) {
                 b.set(x, HEIGHT - 1, FACADE, Blocks.AIR);
+            } else {
+                b.set(x, HEIGHT - 1, FACADE, wall(RUNIC));
             }
         }
 
@@ -96,8 +113,7 @@ public class GatePiece extends FortressPiece {
         b.fill(MID - 2, 0, FACADE, MID + 2, 0, DEPTH - 1, RUNIC.base());
         b.fill(MID - 1, 1, FACADE, MID + 1, 1, DEPTH - 1, Blocks.RED_CARPET);
         b.fill(MID - 2, 7, FACADE + 1, MID + 2, 7, FACADE + 1, Blocks.IRON_BARS);
-        b.set(MID - 2, 7, FACADE, stairs(RUNIC, Direction.EAST, true));
-        b.set(MID + 2, 7, FACADE, stairs(RUNIC, Direction.WEST, true));
+        b.archTop(MID - 2, MID + 2, 7, FACADE);
         b.set(MID, 7, DEPTH - 2, lantern(true));
         // Chiseled runic door frame with a gold keystone.
         b.fill(MID - 3, 1, FACADE, MID - 3, 8, FACADE, chiseledRunic());
@@ -115,7 +131,7 @@ public class GatePiece extends FortressPiece {
 
         // Pillars standing out in front of the facade, with banners between them and the door.
         for (int x : new int[]{4, WIDTH - 5}) {
-            b.column(x, FACADE - 1, 14);
+            b.column(x, FACADE - 1, 14, IN);
             b.set(x, 15, FACADE - 1, Blocks.GOLD_BLOCK);
         }
         b.banner(MID - 5, 10, FACADE - 1, OUT, banner, ModBannerPatterns.CLAN_ANVIL.in(DyeColor.YELLOW));
@@ -130,6 +146,7 @@ public class GatePiece extends FortressPiece {
         // Arrow slits.
         for (int x : new int[]{2, WIDTH - 3}) {
             b.fill(x, 8, FACADE, x, 9, FACADE, Blocks.IRON_BARS);
+            b.corbel(x, 7, FACADE - 1, OUT);
         }
 
         // Wanted Posters on the facade either side of the door, between the frame and the banner walls.

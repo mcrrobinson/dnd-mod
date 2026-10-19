@@ -1,0 +1,111 @@
+# Before/after survey for the Dwarven Fortresses shaped blocks (docs/structures/dwarven-fortresses.md#building-blocks):
+# screenshots of the gate, great hall, throne room, forge and the other rooms of one fortress, then walks the main
+# routes (terrace -> gate -> great hall -> throne dais, and into each side room) to check they're still passable.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/dwarven-fortress-shapes.txt
+# Uses the dev world's fortress at 39296, 40240 (found with dwarven-fortress-shapes-locate.txt, piece boxes from
+# dwarven-fortress-shapes-recon.txt; gate facing south, floor y = 75). It must be generated fresh by the code under
+# test: restore an untouched copy of the world first, or the fortress keeps the blocks it was first built with.
+# Check: screenshots shapes-*.png, and "[DevScript] walkto ... reached" for every walkto step in latest.log.
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/time set 6000
+/gamerule doDaylightCycle false
+/weather clear
+/effect give @s minecraft:night_vision 1000 0 true
+hud off
+/tp @s 39312.5 84 40221.5 0 8
+wait 600
+/kill @e[type=dndclasses:mountain_dwarf,distance=..80]
+/kill @e[type=minecraft:item,distance=..80]
+wait 20
+screenshot shapes-gate
+/tp @s 39312.5 78 40235.5 0 -12
+wait 20
+screenshot shapes-gate-close
+/tp @s 39303.5 80 40236.5 -45 5
+wait 20
+screenshot shapes-gate-side
+/tp @s 39312.5 92 40236.5 0 10
+wait 20
+screenshot shapes-gate-top
+fov 90
+/tp @s 39312.5 78.5 40251.5 0 6
+wait 20
+screenshot shapes-hall
+/tp @s 39315.5 79 40265.5 90 -5
+wait 20
+screenshot shapes-hall-side
+/tp @s 39306.5 77 40258.5 30 -2
+wait 20
+screenshot shapes-hall-pillar
+/tp @s 39312.5 79 40282.5 0 8
+wait 20
+screenshot shapes-throne
+/tp @s 39306.5 80 40290.5 -40 15
+wait 20
+screenshot shapes-throne-dais
+/tp @s 39297.5 78.5 40273.5 90 12
+wait 20
+screenshot shapes-forge
+/tp @s 39289.5 79 40276.5 -120 10
+wait 20
+screenshot shapes-forge-back
+/tp @s 39292.5 77 40278.5 180 8
+wait 20
+screenshot shapes-forge-breast
+/tp @s 39327.5 78.5 40273.5 -90 10
+wait 20
+screenshot shapes-brewhall
+/tp @s 39297.5 78.5 40259.5 90 12
+wait 20
+screenshot shapes-barracks
+/tp @s 39327.5 76.5 40259.5 -90 -8
+wait 20
+screenshot shapes-mine
+/tp @s 39312.5 79 40299.5 0 25
+wait 20
+screenshot shapes-treasury
+fov 70
+/tp @s 39312.5 115 40205.5 0 30
+wait 40
+screenshot shapes-outside
+hud on
+# Walk the routes in survival: a creative player keeps flying from spectator and never steps up.
+# Dwarves keep turning up and stand in the way: clear them (and the gate's guards) just before walking.
+/gamemode survival
+/effect give @s minecraft:resistance 600 4 true
+/tp @s 39312.5 76 40241.5 0 0
+wait 20
+/execute as @e[type=dndclasses:mountain_dwarf,distance=..80] run data get entity @s Pos
+/kill @e[type=dndclasses:mountain_dwarf,distance=..80]
+/kill @e[type=minecraft:item,distance=..80]
+wait 5
+walkto 39312 40252
+walkto 39312 40259
+walkto 39300 40259
+walkto 39296 40259
+walkto 39312 40259
+walkto 39324 40259
+walkto 39328 40259
+walkto 39312 40259
+walkto 39312 40273
+walkto 39300 40273
+walkto 39295 40273
+walkto 39312 40273
+walkto 39324 40273
+walkto 39328 40273
+walkto 39312 40273
+walkto 39312 40289
+walkto 39312 40294
+/tp @s 39312.5 76 40252.5 0 0
+wait 10
+/kill @e[type=dndclasses:mountain_dwarf,distance=..80]
+walkto 39306 40253
+walkto 39306 40278
+walkto 39318 40278
+walkto 39318 40253
+/gamemode spectator
+wait 20
+quit

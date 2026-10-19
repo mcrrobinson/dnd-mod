@@ -30,6 +30,9 @@ LANG = {
     'block.dndclasses.treasury_coin_pile': 'Treasury Coin Pile',
     'block.dndclasses.mithral_lattice': 'Mithral Lattice',
     'block.dndclasses.waystone': 'Waystone',
+    'block.dndclasses.runic_column': 'Runic Column',
+    'block.dndclasses.runic_corbel': 'Runic Corbel',
+    'block.dndclasses.runic_deepslate_brick_vertical_slab': 'Runic Deepslate Brick Vertical Slab',
     'block.dndclasses.waystone.hold': 'Here stands %s Hold',
     'block.dndclasses.waystone.standing': 'Your standing with the %s: %s',
 }
@@ -140,6 +143,74 @@ def waystone():
                                 'properties': {'half': 'lower'}}]})
 
 
+FACES = ('down', 'up', 'north', 'south', 'west', 'east')
+
+
+def element(frm, to, textures, cull=True):
+    """A box with every face; a face on the block's edge is culled against the neighbour there. {@code textures}
+    maps a face name to a texture variable, with 'side' for any face it doesn't name."""
+    edge = {'down': frm[1] == 0, 'up': to[1] == 16, 'north': frm[2] == 0, 'south': to[2] == 16,
+            'west': frm[0] == 0, 'east': to[0] == 16}
+    faces = {}
+    for face in FACES:
+        f = {'texture': '#' + textures.get(face, textures['side'])}
+        if cull and edge[face]:
+            f['cullface'] = face
+        faces[face] = f
+    return {'from': frm, 'to': to, 'faces': faces}
+
+
+def shaped_model(model, textures, elements, particle):
+    bf.write(os.path.join(bf.ASSETS, 'models/block', model + '.json'), {
+        'parent': 'minecraft:block/block',
+        'textures': dict({'particle': ref('block/' + particle)}, **{k: ref('block/' + v) for k, v in textures.items()}),
+        'elements': elements,
+    })
+
+
+def column():
+    """The Runic Column: a chamfered shaft, with a stepped foot at the bottom of a stack and a capital at the top."""
+    name = 'runic_column'
+    textures = {'shaft': name, 'end': name + '_top', 'cap': name + '_cap', 'cap_top': 'runic_deepslate_bricks'}
+    shaft_tex = {'side': 'shaft', 'up': 'end', 'down': 'end'}
+    cap_tex = {'side': 'cap', 'up': 'cap_top', 'down': 'cap_top'}
+
+    def shaft(y1, y2):
+        return [element([3, y1, 4], [13, y2, 12], shaft_tex), element([4, y1, 3], [12, y2, 13], shaft_tex)]
+
+    foot = [element([1, 0, 1], [15, 3, 15], cap_tex), element([2, 3, 2], [14, 5, 14], cap_tex)]
+    head = [element([2, 11, 2], [14, 13, 14], cap_tex), element([1, 13, 1], [15, 16, 15], cap_tex)]
+    parts = {'single': foot + shaft(5, 11) + head, 'base': foot + shaft(5, 16), 'shaft': shaft(0, 16),
+             'capital': shaft(0, 11) + head}
+    for part, elements in parts.items():
+        shaped_model(f'{name}_{part}', textures, elements, name)
+    blockstate(name, {'variants': {f'part={part}': variant(f'{name}_{part}') for part in parts}})
+    item_model(name, ref(f'block/{name}_single'))
+    loot(name)
+
+
+def corbel():
+    """The Runic Corbel: a full plate on top stepping back to the wall in two steps (modelled facing north)."""
+    name = 'runic_corbel'
+    tex = {'side': 'side', 'up': 'top'}
+    elements = [element([0, 11, 0], [16, 16, 16], tex), element([2, 6, 4], [14, 11, 16], tex),
+                element([5, 0, 7], [11, 6, 16], tex)]
+    shaped_model(name, {'side': name, 'top': 'runic_deepslate_bricks'}, elements, name)
+    blockstate(name, {'variants': {f'facing={f}': variant(name, y=y) for f, y in FACING_Y.items()}})
+    item_model(name, ref('block/' + name))
+    loot(name)
+
+
+def vertical_slab():
+    """Half a runic brick on its edge, filling the back (south) half when facing north."""
+    name = 'runic_deepslate_brick_vertical_slab'
+    shaped_model(name, {'side': 'runic_deepslate_bricks'}, [element([0, 0, 8], [16, 16, 16], {'side': 'side'})],
+                 'runic_deepslate_bricks')
+    blockstate(name, {'variants': {f'facing={f}': variant(name, y=y, uvlock=True) for f, y in FACING_Y.items()}})
+    item_model(name, ref('block/' + name))
+    loot(name)
+
+
 def recipes():
     shaped('clan_crest', ['G', '#'], {'G': 'minecraft:gold_ingot', '#': ref('chiseled_runic_deepslate_bricks')},
            ref('clan_crest'), 1)
@@ -152,11 +223,16 @@ def recipes():
              ref('ancestor_statue'), 1)
     stonecut('chiseled_runic_deepslate_bricks_from_runic_deepslate_bricks_stonecutting',
              ref('runic_deepslate_bricks'), ref('chiseled_runic_deepslate_bricks'), 1)
+    for name, count in (('runic_column', 1), ('runic_corbel', 1), ('runic_deepslate_brick_vertical_slab', 2)):
+        stonecut(f'{name}_from_runic_deepslate_bricks_stonecutting', ref('runic_deepslate_bricks'), ref(name), count)
+    shaped('runic_deepslate_brick_vertical_slab', ['#', '#', '#'], {'#': ref('runic_deepslate_bricks')},
+           ref('runic_deepslate_brick_vertical_slab'), 6)
 
 
 def tags():
     bf.add_to_tag('blocks', 'mineable/pickaxe', [ref(b) for b in ('clan_crest', 'ancestor_statue', 'mithral_lattice',
-                                                                  'waystone')])
+                                                                  'waystone', 'runic_column', 'runic_corbel',
+                                                                  'runic_deepslate_brick_vertical_slab')])
     bf.add_to_tag('blocks', 'mineable/axe', [ref('ale_keg_wall')])
     bf.add_to_tag('blocks', 'mineable/shovel', [ref('treasury_coin_pile')])
 
@@ -191,6 +267,9 @@ def main():
     coin_pile()
     lattice()
     waystone()
+    column()
+    corbel()
+    vertical_slab()
     recipes()
     tags()
     lang()

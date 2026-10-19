@@ -86,6 +86,15 @@ public class BrewhallPiece extends FortressPiece {
         b.set(MID, 1, back - 1, Blocks.CAMPFIRE.getDefaultState().with(CampfireBlock.FACING, OUT));
         b.air(MID, 2, back - 1, MID, 2, back - 1);
         b.fill(MID, 3, back - 1, MID, HEIGHT - 1, back - 1, FORGE_BRICKS.base());
+        // Runic pilasters either side of the hearth.
+        b.fill(MID - 3, 1, back - 1, MID - 3, 5, back - 1, facing(DwarvenBlocks.RUNIC_DEEPSLATE_BRICK_VERTICAL_SLAB, OUT));
+        b.fill(MID + 3, 1, back - 1, MID + 3, 5, back - 1, facing(DwarvenBlocks.RUNIC_DEEPSLATE_BRICK_VERTICAL_SLAB, OUT));
+        // The chimney breast tapers in stairs from the hearth to the flue.
+        b.set(MID - 2, 5, back - 1, stairs(FORGE_BRICKS, Direction.EAST, false));
+        b.fill(MID - 1, 5, back - 1, MID + 1, 5, back - 1, FORGE_BRICKS.base());
+        b.set(MID + 2, 5, back - 1, stairs(FORGE_BRICKS, Direction.WEST, false));
+        b.set(MID - 1, 6, back - 1, stairs(FORGE_BRICKS, Direction.EAST, false));
+        b.set(MID + 1, 6, back - 1, stairs(FORGE_BRICKS, Direction.WEST, false));
         b.set(MID - 1, 1, back - 1, facing(Blocks.SMOKER, OUT));
         b.set(MID + 1, 1, back - 1, facing(Blocks.SMOKER, OUT));
         b.fill(MID - 2, 5, back - 2, MID + 2, 5, back - 2, stairs(FORGE_BRICKS, OUT, true));

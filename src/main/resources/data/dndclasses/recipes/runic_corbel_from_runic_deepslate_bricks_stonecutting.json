@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:runic_deepslate_bricks"
+  },
+  "result": "dndclasses:runic_corbel"
+}

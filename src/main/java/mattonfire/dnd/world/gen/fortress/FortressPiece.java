@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Blocks.dwarven.RunicColumnBlock;
 import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.classes.Registry.DwarvenBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
@@ -143,9 +144,24 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
             this.fill(x1 - 1, 1, z, x1 - 1, height, z, chiseledRunic());
             this.fill(x2 + 1, 1, z, x2 + 1, height, z, chiseledRunic());
             this.fill(x1 - 1, height + 1, z, x2 + 1, height + 1, z, chiseledRunic());
-            if (width >= 3) {
-                this.set(x1, height, z, stairs(RUNIC, Direction.EAST, true));
-                this.set(x2, height, z, stairs(RUNIC, Direction.WEST, true));
+            this.archTop(x1, x2, height, z);
+        }
+
+        /**
+         * Steps the top corners of an opening (x1 to x2, its top course at y = height) in towards the middle with
+         * upside-down stairs: one step on a narrow opening, two on one five or more wide.
+         */
+        void archTop(int x1, int x2, int height, int z) {
+            if (x2 - x1 >= 4) {
+                this.set(x1, height, z, RUNIC.base());
+                this.set(x2, height, z, RUNIC.base());
+                this.set(x1 + 1, height, z, stairs(RUNIC, Direction.WEST, true));
+                this.set(x2 - 1, height, z, stairs(RUNIC, Direction.EAST, true));
+                this.set(x1, height - 1, z, stairs(RUNIC, Direction.WEST, true));
+                this.set(x2, height - 1, z, stairs(RUNIC, Direction.EAST, true));
+            } else if (x2 - x1 >= 2) {
+                this.set(x1, height, z, stairs(RUNIC, Direction.WEST, true));
+                this.set(x2, height, z, stairs(RUNIC, Direction.EAST, true));
             }
         }
 
@@ -164,12 +180,42 @@ public abstract class FortressPiece extends FacingPiece<FortressPiece.Builder> {
             }
         }
 
-        /** A gold-veined pillar on a chiseled runic base, with a gold capital under a chiseled runic cap. */
-        void column(int x, int z, int top) {
+        /**
+         * A gold-veined pillar on a chiseled runic base, with a gold capital under a chiseled runic cap. Stairs round
+         * the foot step it out onto the floor and upside-down stairs round the gold corbel the capital out, on every
+         * side except those in {@code skip} (local directions, e.g. a wall the pillar stands against).
+         */
+        void column(int x, int z, int top, Direction... skip) {
             this.set(x, 1, z, chiseledRunic());
             this.fill(x, 2, z, x, top - 2, z, pillar(ModBlockFamilies.GOLD_VEINED_PILLAR, Direction.Axis.Y));
             this.set(x, top - 1, z, Blocks.GOLD_BLOCK);
             this.set(x, top, z, chiseledRunic());
+            for (Direction d : Direction.Type.HORIZONTAL) {
+                if (java.util.Arrays.asList(skip).contains(d)) {
+                    continue;
+                }
+                int sx = x + d.getOffsetX();
+                // Local z runs the other way to the direction's z: local NORTH is +z.
+                int sz = z - d.getOffsetZ();
+                this.set(sx, 1, sz, stairs(RUNIC, d.getOpposite(), false));
+                this.set(sx, top - 1, sz, stairs(RUNIC, d.getOpposite(), true));
+            }
+        }
+
+        /**
+         * Runic Columns from y1 to y2 at x/z: a stepped base at the bottom, a capital at the top, plain shaft between
+         * (or both on a column one block tall).
+         */
+        void runicColumn(int x, int y1, int y2, int z) {
+            for (int y = y1; y <= y2; y++) {
+                this.set(x, y, z, DwarvenBlocks.RUNIC_COLUMN.getDefaultState().with(RunicColumnBlock.PART,
+                        RunicColumnBlock.Part.of(y < y2, y > y1)));
+            }
+        }
+
+        /** A Runic Corbel at x/y/z jutting out {@code facing}, the wall behind it. */
+        void corbel(int x, int y, int z, Direction facing) {
+            this.set(x, y, z, facing(DwarvenBlocks.RUNIC_CORBEL, facing));
         }
 
         /** A Clan Crest at x/y/z, its sigil facing {@code facing}. */

@@ -100,8 +100,11 @@ public class MinePiece extends FortressPiece {
                 b.fill(x, 1, z, x, 3, z, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.Y));
             }
             b.fill(MID - 3, 4, z, MID + 3, 4, z, pillar(Blocks.DARK_OAK_LOG, Direction.Axis.X));
-            b.set(MID - 2, 3, z, lantern(true));
-            b.set(MID + 2, 3, z, lantern(true));
+            // braces from the posts to the cap beam, and lamps hung inside them
+            b.set(MID - 2, 3, z, stairs(Blocks.DARK_OAK_STAIRS, Direction.WEST, true));
+            b.set(MID + 2, 3, z, stairs(Blocks.DARK_OAK_STAIRS, Direction.EAST, true));
+            b.set(MID - 1, 3, z, lantern(true));
+            b.set(MID + 1, 3, z, lantern(true));
         }
 
         // Amethyst growing up from the floor, and the miners' gear.

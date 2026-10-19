@@ -507,6 +507,83 @@ def waystone_side():
     return rows
 
 
+# --- Dwarven Fortresses shapes ---------------------------------------------------------------------------------
+COLUMN = (70, 70, 78)
+
+
+def runic_column():
+    """The column's shaft: fluted dark stone with one gold rune down the middle face (the faces use x 3-13)."""
+    rng = random.Random(131)
+    rows = blank()
+    for y in range(N):
+        for x in range(N):
+            f = (x - 3) % 3
+            d = (8, 0, -12)[f] + rng.randint(-3, 3)
+            if x in (3, 4):
+                d += 6
+            if x in (11, 12):
+                d -= 8
+            rows[y][x] = px(COLUMN, d)
+    # a sunken panel for the rune, and the rune in it
+    for y in range(4, 12):
+        for x in range(6, 10):
+            rows[y][x] = px(COLUMN, -18 + rng.randint(-2, 2))
+    for (x, y) in ((7, 5), (7, 6), (7, 7), (7, 8), (7, 9), (7, 10), (8, 6), (8, 8), (6, 7), (8, 10)):
+        rows[y][x] = (GOLD if y < 8 else GOLD_DARK) + (255,)
+    return rows
+
+
+def runic_column_top():
+    rng = random.Random(137)
+    rows = blank()
+    for y in range(N):
+        for x in range(N):
+            r = max(abs(x - 7.5), abs(y - 7.5)) * 0.7 + min(abs(x - 7.5), abs(y - 7.5)) * 0.4
+            if r < 1.2:
+                rows[y][x] = GOLD + (255,)
+                continue
+            d = (6 if int(r) % 2 else -6) + rng.randint(-3, 3)
+            rows[y][x] = px(COLUMN, d)
+    return rows
+
+
+def runic_column_cap():
+    """The base and capital mouldings: the capital's faces use rows 0-4, the base's rows 11-15."""
+    rng = random.Random(139)
+    bands = {0: 18, 1: 6, 2: -8, 3: None, 4: -16, 11: -10, 12: None, 13: 14, 14: 2, 15: -18}
+    rows = blank()
+    for y in range(N):
+        for x in range(N):
+            band = bands.get(y, 0)
+            if band is None:
+                rows[y][x] = (GOLD if x % 4 else GOLD_DARK) + (255,)
+                continue
+            rows[y][x] = px(STONE, band + rng.randint(-4, 4) + (4 if x == 0 else -4 if x == N - 1 else 0))
+    return rows
+
+
+def runic_corbel():
+    """The bracket's faces: the top plate (rows 0-4) with a gold band, then two receding steps (rows 5-9, 10-15)."""
+    rng = random.Random(149)
+    rows = blank()
+    for y in range(N):
+        for x in range(N):
+            d = rng.randint(-4, 4)
+            if y in (0, 5, 10):
+                d += 14
+            elif y in (4, 9, 15):
+                d -= 18
+            elif y in (6, 11):
+                d += 4
+            rows[y][x] = px(STONE, d)
+    for x in range(N):
+        rows[2][x] = (GOLD if x % 3 else GOLD_DARK) + (255,)
+    # a gold drop on the lowest step, like a rivet
+    for (x, y) in ((7, 12), (8, 12), (7, 13), (8, 13)):
+        rows[y][x] = (GOLD if y == 12 else GOLD_DARK) + (255,)
+    return rows
+
+
 TEXTURES = {
     'runic_deepslate_bricks': runic_bricks,
     'chiseled_runic_deepslate_bricks': chiseled_runic,
@@ -525,6 +602,10 @@ TEXTURES = {
     'waystone_lower': lambda: waystone(False),
     'waystone_upper': lambda: waystone(True),
     'waystone_side': waystone_side,
+    'runic_column': runic_column,
+    'runic_column_top': runic_column_top,
+    'runic_column_cap': runic_column_cap,
+    'runic_corbel': runic_corbel,
 }
 
 

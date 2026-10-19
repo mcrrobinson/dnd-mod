@@ -2126,5 +2126,8 @@
     "block.dndclasses.ember_dragonstone_eye": "Ember Dragonstone Eye",
     "block.dndclasses.frost_dragonstone_eye": "Frost Dragonstone Eye",
     "block.dndclasses.storm_dragonstone_eye": "Storm Dragonstone Eye",
-    "block.dndclasses.dragon_horn": "Dragon Horn"
+    "block.dndclasses.dragon_horn": "Dragon Horn",
+    "block.dndclasses.runic_column": "Runic Column",
+    "block.dndclasses.runic_corbel": "Runic Corbel",
+    "block.dndclasses.runic_deepslate_brick_vertical_slab": "Runic Deepslate Brick Vertical Slab"
 }

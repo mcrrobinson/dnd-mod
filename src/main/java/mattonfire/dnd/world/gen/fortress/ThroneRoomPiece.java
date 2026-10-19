@@ -60,10 +60,22 @@ public class ThroneRoomPiece extends FortressPiece {
 
         // Pillars down both sides.
         for (int z = 3; z <= 11; z += 4) {
-            b.column(3, z, top - 1);
-            b.column(WIDTH - 4, z, top - 1);
+            b.column(3, z, top - 1, Direction.WEST);
+            b.column(WIDTH - 4, z, top - 1, Direction.EAST);
             b.banner(4, 10, z, Direction.EAST, colour);
             b.banner(WIDTH - 5, 10, z, Direction.WEST, colour);
+            // A stepped arch to the next pillar.
+            if (z + 4 <= 11) {
+                for (int x : new int[]{3, WIDTH - 4}) {
+                    b.fill(x, top - 1, z + 1, x, top - 1, z + 3, RUNIC.base());
+                    b.set(x, top - 2, z + 2, slab(RUNIC, true));
+                }
+            }
+        }
+        // Corbels under the gold band down both walls.
+        for (int z = 1; z < DEPTH - 1; z += 2) {
+            b.corbel(1, 9, z, Direction.EAST);
+            b.corbel(WIDTH - 2, 9, z, Direction.WEST);
         }
 
         // The dais: two broad steps up to the throne.
@@ -71,7 +83,11 @@ public class ThroneRoomPiece extends FortressPiece {
         b.fill(4, 1, 11, WIDTH - 5, 1, 11, stairs(RUNIC, IN, false));
         b.fill(6, 2, 13, WIDTH - 7, 2, back - 1, RUNIC.base());
         b.fill(6, 2, 12, WIDTH - 7, 2, 12, stairs(RUNIC, IN, false));
-        b.fill(MID - 1, 3, 12, MID + 1, 3, 13, Blocks.RED_CARPET);
+        // (only on the top step: carpet over the stairs' front half would catch your head on the way up)
+        b.fill(MID - 1, 3, 13, MID + 1, 3, 13, Blocks.RED_CARPET);
+        // Balustrades along the sides of the dais, from the braziers to the back wall.
+        b.fill(4, 2, 13, 4, 2, back - 1, wall(RUNIC));
+        b.fill(WIDTH - 5, 2, 13, WIDTH - 5, 2, back - 1, wall(RUNIC));
 
         // The throne: a gold seat with arms and a tall back, under a hanging crown of lanterns.
         b.set(MID, 3, 14, stairs(RUNIC, IN, false));

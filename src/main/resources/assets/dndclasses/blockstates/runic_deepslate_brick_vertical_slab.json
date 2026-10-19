@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "dndclasses:block/runic_deepslate_brick_vertical_slab",
+      "uvlock": true
+    },
+    "facing=east": {
+      "model": "dndclasses:block/runic_deepslate_brick_vertical_slab",
+      "uvlock": true,
+      "y": 90
+    },
+    "facing=south": {
+      "model": "dndclasses:block/runic_deepslate_brick_vertical_slab",
+      "uvlock": true,
+      "y": 180
+    },
+    "facing=west": {
+      "model": "dndclasses:block/runic_deepslate_brick_vertical_slab",
+      "uvlock": true,
+      "y": 270
+    }
+  }
+}

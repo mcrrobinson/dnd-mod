@@ -106,7 +106,7 @@ The first time a Human opens a villager's trades, that villager gains 10 `minor_
 
 ## Commands
 - `/dndhome [player]` (operators): which racial home the player is in, the piece under their feet, and whether it's their own home and hearth.
-- `/dndhome pieces` (operators): every piece of the settlement you're standing in, with its box. Use it to find a room such as the forge.
+- `/dndhome pieces` (operators): every piece of the settlement you're standing in, with its box and facing. Use it to find a room such as the forge.
 - `/dndrace set <player> <race>` switches race to try the bonuses (see [Races](races.md)).
 
 ## Configuration

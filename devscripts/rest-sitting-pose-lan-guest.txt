@@ -17,5 +17,5 @@ hud off
 screenshot lan-guest-sees-stood
 hud on
 /me guest-saw-stood
-wait 40
+wait 5
 quit

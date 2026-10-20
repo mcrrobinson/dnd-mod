@@ -44,5 +44,6 @@ wait 20
 /execute unless entity @e[type=dndclasses:rest_seat]
 /say host-stood
 waitchat guest-saw-stood
-wait 20
+# Let the guest quit first: its script stalls once the host has gone
+wait 100
 quit

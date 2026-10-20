@@ -98,6 +98,7 @@ public final class RestSession {
         DnDClasses.LOGGER.info("[Rest] {} started a short rest at {}", player.getEntityName(), campfire.toShortString());
         player.sendMessage(Text.literal("Short rest 0 / 30 s").formatted(Formatting.GOLD), true);
         RestSync.setSession(player, RestKind.SHORT, 0, SHORT_REST_TICKS);
+        RestSeatEntity.sit(player, campfire);
         return true;
     }
 
@@ -107,13 +108,17 @@ public final class RestSession {
             return;
         }
         RestSync.clearSession(player);
+        RestSeatEntity.standUp(player);
         DnDClasses.LOGGER.info("[Rest] {} short rest interrupted: {}", player.getEntityName(), reason);
         if (reason != null) {
             player.sendMessage(Text.literal("Short rest interrupted: " + reason).formatted(Formatting.RED), true);
         }
     }
 
-    /** Drops the rest without a message (disconnect, death, class reset). */
+    /**
+     * Drops the rest without a message (disconnect, death, class reset). The player's
+     * {@link RestSeatEntity} notices on its next tick and stands them up.
+     */
     public static void forget(UUID player) {
         SESSIONS.remove(player);
         RECENT.remove(player);
@@ -162,6 +167,7 @@ public final class RestSession {
             session.finishedAt = server.getTicks();
             RECENT.put(player.getUuid(), session);
             RestSync.clearSession(player);
+            RestSeatEntity.standUp(player);
             List<ServerPlayerEntity> resting = companions.get(player);
             DnDClasses.LOGGER.info("[Rest] {} finished a short rest with {}", player.getEntityName(),
                     resting.stream().map(ServerPlayerEntity::getEntityName).toList());

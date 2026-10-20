@@ -283,6 +283,18 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // The invisible seat a player sits on during a campfire short rest (classes/Rest/RestSeatEntity)
+    public static final EntityType<mattonfire.dnd.classes.Rest.RestSeatEntity> REST_SEAT = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "rest_seat"),
+            FabricEntityTypeBuilder.<mattonfire.dnd.classes.Rest.RestSeatEntity>create(SpawnGroup.MISC,
+                            mattonfire.dnd.classes.Rest.RestSeatEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.0f, 0.0f))
+                    .disableSummon().disableSaving()
+                    .trackRangeBlocks(10).trackedUpdateRate(20)
+                    .build()
+    );
+
     public static void registerEntityTypes() {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LairDragonEntity.createLairDragonAttributes());

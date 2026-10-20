@@ -1,0 +1,113 @@
+# Sitting pose during a campfire short rest: the player sits on an invisible seat (dndclasses:rest_seat),
+# turned to face the fire, and stands back up where they sat whichever way the rest ends. Checks a fresh
+# sneak (gets up), damage, death and a finished rest, and that no seat is left behind each time.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/rest-sitting-pose.txt
+# The finished rest at the end starts the 3-minute short rest cooldown, which runs on world time, so a rerun
+# straight after this one is refused ("You can short rest again in ..."): leave the world open 3 minutes first.
+# Output: [CHAT] lines in logs/latest.log ("Test passed" = as expected; each check's expectation is in the
+# comment above it); screenshots sit-front, sit-side, sit-back, sit-firstperson, sit-stood.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule dndRests true
+/gamerule doImmediateRespawn true
+/time set 1000
+/kill @e[type=dndclasses:rest_seat]
+/fill -4 149 -4 4 149 6 minecraft:grass_block
+/fill -4 150 -4 4 155 6 minecraft:air
+/setblock 0 150 2 minecraft:campfire[lit=true]
+/dndclass set @s fighter
+/clear @s
+/dndclass rest @s long
+# Clicking the fire at an angle (yaw 30): sitting down turns the player to face its centre (yaw 36.87)
+/tp @s 2.0 150 0.5 30 28
+wait 20
+clearchat
+sneak on
+use
+wait 5
+sneak off
+wait 10
+# Expect: a seat exists, the player rides it, Pos y 149.35, Rotation [36.869896f, ...]
+/execute if entity @e[type=dndclasses:rest_seat]
+/execute on vehicle if entity @s[type=dndclasses:rest_seat]
+/data get entity @s Pos
+/data get entity @s Rotation
+hud off
+look 37 -5
+perspective front
+wait 10
+screenshot sit-front
+look 37 30
+perspective back
+wait 10
+screenshot sit-back
+# Head turned 80 degrees to the right: the camera behind sees the legs from the side
+look 117 15
+wait 10
+screenshot sit-side
+perspective first
+look 37 20
+wait 10
+screenshot sit-firstperson
+hud on
+# A fresh sneak gets up. Expect "Short rest interrupted: you got up", no seat ("Test passed"), Pos y 150
+sneak on
+wait 5
+sneak off
+wait 5
+/execute unless entity @e[type=dndclasses:rest_seat]
+/data get entity @s Pos
+hud off
+look 270 20
+perspective back
+wait 10
+screenshot sit-stood
+perspective first
+hud on
+# Damage. Expect "interrupted: you were hurt", no seat, Pos y 150
+/tp @s 0.5 150 0.5 0 35
+wait 5
+sneak on
+use
+wait 5
+sneak off
+wait 10
+/execute if entity @e[type=dndclasses:rest_seat]
+/damage @s 1 minecraft:generic
+wait 5
+/execute unless entity @e[type=dndclasses:rest_seat]
+/data get entity @s Pos
+# Death. Expect no seat after respawning
+/tp @s 0.5 150 0.5 0 35
+wait 5
+sneak on
+use
+wait 5
+sneak off
+wait 10
+/execute if entity @e[type=dndclasses:rest_seat]
+/kill @s
+wait 20
+respawn
+wait 20
+/clear @s dndclasses:class_guidebook
+/execute unless entity @e[type=dndclasses:rest_seat]
+# A finished rest. Expect "Short rest complete", no seat, Pos y 150
+/tp @s 0.5 150 0.5 0 35
+/effect clear @s
+/dndclass rest @s long
+wait 5
+sneak on
+use
+wait 5
+sneak off
+wait 10
+/execute if entity @e[type=dndclasses:rest_seat]
+wait 610
+/execute unless entity @e[type=dndclasses:rest_seat]
+/data get entity @s Pos
+quit

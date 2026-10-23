@@ -75,8 +75,7 @@ public class GoblinWarriorEntity extends HostileEntity implements GeoEntity, mat
     @Override
     protected void initGoals() {
         this.goalSelector.add(1, new SwimGoal(this));
-        // Frightened (the Warlord's Warhorn): runs from players instead of fighting
-        this.goalSelector.add(1, new mattonfire.dnd.entity.ai.goal.FrightenedFleeGoal(this, 16.0F, 1.0D, 1.3D));
+        // Frightened (the Warlord's Warhorn): ConditionFleeGoal, added to every path mob when it loads
         this.goalSelector.add(2, new SlowMeleeAttackGoal(this, 1.0D));
         // Walks back into range of its position target (a camp goblin's fire, a Warlord's guard spot) after a fight.
         this.goalSelector.add(4, new GoToWalkTargetGoal(this, 1.0D));

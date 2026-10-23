@@ -21,7 +21,6 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.tag.DamageTypeTags;
 import mattonfire.dnd.classes.Progression.Ranks;
@@ -467,7 +466,8 @@ public class PaladinSkills extends ClassSkills {
     /** Conquering Presence: Frightened (their blows land at half strength) for 3 seconds. */
     private static void frighten(ServerPlayerEntity player, LivingEntity mob) {
         if (mob.isAlive()) {
-            mob.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, CONQUERING_FRIGHT_TICKS, 0), player);
+            mattonfire.dnd.classes.Conditions.Conditions.of(mob, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED).source(player)
+                    .ticks(CONQUERING_FRIGHT_TICKS).apply();
         }
     }
 

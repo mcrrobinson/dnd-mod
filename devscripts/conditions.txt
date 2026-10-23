@@ -1,0 +1,203 @@
+# The Conditions system (docs/systems/conditions.md).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions.txt
+# The player is a Wizard on a y=150 platform. Check run/logs/latest.log:
+# 1. Stunned 100: "[DevScript] conditions: stunned(..t)", screenshot conditions-hud (icon above the save lane),
+#    "attack" on the husk logs "[Conditions] Dev blocked: attack" and no "[D20] Dev Attack" line; the movement
+#    speed attribute reads 0.
+# 2. /dm save dex while Stunned: "[D20] Dev DEX save auto-fail (Stunned)".
+# 3. Repeat save (forced 2 then 20): "[D20] Dev Stunned 2 ..." FAILURE, "[D20] Dev Stunned 20 ..." and
+#    "[Conditions] Dev -stunned (saved)".
+# 4. Escalation (forced 2): "[Conditions] Dev restrained -> petrified"; screenshot conditions-petrified; the husk
+#    3 blocks away has no target ("target" step).
+# 5. Prone: "[Conditions] Dev -prone (stood up)" after pressing jump.
+# 6. Frightened clamp: walking toward the husk barely moves z (< 0.2); walking away moves it.
+# 7. Mob stun: the husk's Pos is unchanged over 40 ticks; petrified -1 makes a statue (screenshot
+#    conditions-statue); a bare hand does nothing ("statue Husk hit by Dev ... no effect", Test passed), a pickaxe
+#    breaks it ("... iron_pickaxe): shatters", then Test failed).
+# 8. Boss: the Lich's stunned is capped to 20t ("list"), and "immune ... petrified: boss".
+# 9. Retrofits: an Owlbear hug (forced 2) lists "restrained (grapple)", struggling free (forced 20) ends it;
+#    a charge with a forced 2 logs "+prone (Owlbear".
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+respawn
+wait 10
+/dndclass set @s wizard
+wait 5
+closescreen
+/clear @s
+/fill -6 149 -6 14 149 14 minecraft:stone
+/fill -6 150 -6 14 156 14 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:health_boost 900 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 5
+
+# ---- 1. Stunned: HUD icon, attacks blocked, rooted ----
+/summon minecraft:husk 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f],Tags:["condtest"],PersistenceRequired:1b}
+/tp @s 4.5 150 3.5 0 0
+wait 5
+/dndcondition apply @s stunned 100
+wait 5
+conditions
+clearchat
+screenshot conditions-hud
+attack
+wait 5
+/attribute @s minecraft:generic.movement_speed get
+/dndcondition list @s
+
+# ---- 2. A DEX save while Stunned fails automatically ----
+/dm save @s dex 5
+wait 10
+/dndcondition remove @s all
+wait 10
+
+# ---- 3. Repeat save: fails once (2), then shakes it off (20) ----
+/dndclass forceroll @s 2 20
+/dndcondition apply @s stunned 400 save int 10 40
+wait 5
+conditions
+wait 90
+conditions
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 5
+
+# ---- 4. Escalation: Restrained -> Petrified on a failed CON save; mobs ignore the statue ----
+/dndclass forceroll @s 2
+/dndcondition apply @s restrained 400 save con 14 40 escalate petrified 100
+wait 50
+/dndcondition list @s
+perspective back
+wait 5
+clearchat
+screenshot conditions-petrified
+/summon minecraft:husk 4.5 150 7.5 {Tags:["condtest","hunter"]}
+wait 40
+target @e[tag=hunter]
+perspective first
+/kill @e[tag=hunter]
+/kill @e[type=minecraft:item]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 5
+
+# ---- 5. Prone: stand up with jump ----
+/dndcondition apply @s prone 200
+wait 15
+perspective back
+wait 2
+screenshot conditions-prone
+perspective first
+press key.jump
+wait 5
+conditions
+/dndcondition remove @s all
+wait 5
+
+# ---- 6. Frightened: can't walk toward the source while it's in sight ----
+/kill @e[tag=condtest]
+/summon minecraft:husk 4.5 150 -2.5 {NoAI:1b,Tags:["condtest","fear"],PersistenceRequired:1b}
+/tp @s 4.5 150 3.5 180 0
+wait 5
+/dndcondition apply @s frightened 200 from @e[tag=fear,limit=1]
+wait 5
+conditions
+/data get entity @s Pos
+holdkey key.forward on
+wait 20
+holdkey key.forward off
+wait 5
+/data get entity @s Pos
+look 0 0
+holdkey key.forward on
+wait 20
+holdkey key.forward off
+wait 5
+/data get entity @s Pos
+/dndcondition remove @s all
+/kill @e[tag=condtest]
+wait 5
+
+# ---- 7. A stunned mob stands still; a petrified one is a statue only a pickaxe breaks ----
+/tp @s 4.5 150 3.5 0 0
+/summon minecraft:husk 4.5 150 9.5 {Tags:["condtest","statue"],PersistenceRequired:1b}
+wait 5
+/dndcondition apply @e[tag=statue] stunned 100
+wait 2
+/data get entity @e[tag=statue,limit=1] Pos
+wait 40
+/data get entity @e[tag=statue,limit=1] Pos
+/dndcondition apply @e[tag=statue] petrified -1
+/dndcondition list @e[tag=statue,limit=1]
+/tp @s 4.5 150 7.5 0 20
+wait 5
+clearchat
+screenshot conditions-statue
+hotbar 1
+attack
+wait 15
+/execute if entity @e[tag=statue]
+/kill @e[type=minecraft:item]
+/clear @s
+/give @s minecraft:iron_pickaxe
+wait 2
+hotbar 0
+wait 25
+attack
+wait 10
+/execute if entity @e[tag=statue]
+/kill @e[tag=condtest]
+/kill @e[type=minecraft:item]
+wait 5
+
+# ---- 8. Bosses: control capped to 20 ticks, petrify immune ----
+/summon dndclasses:lich 4.5 150 12.5 {NoAI:1b,Tags:["condtest","boss"]}
+wait 5
+/dndcondition apply @e[tag=boss] stunned 200
+/dndcondition list @e[tag=boss,limit=1]
+/dndcondition immune @e[tag=boss,limit=1] petrified
+wait 30
+/dndcondition apply @e[tag=boss] stunned 200
+/kill @e[tag=boss]
+wait 10
+
+# ---- 9. Retrofits: an Owlbear hug Restrains (struggle free ends it), a charge knocks Prone ----
+/effect give @s minecraft:instant_health 1 9 true
+/tp @s 4.5 150 3.5 0 0
+/dndclass forceroll @s 2
+/summon dndclasses:owlbear 4.5 150 5.6 {Rotation:[180f,0f],HugChance:1.0f,Tags:["condtest"]}
+wait 25
+/dndcondition list @s
+/dndclass forceroll @s 20
+press key.jump
+wait 12
+press key.jump
+wait 12
+/dndcondition list @s
+/kill @e[type=dndclasses:owlbear]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 20
+/tp @s 4.5 150 -4.5 0 0
+/dndclass forceroll @s 2
+/summon dndclasses:owlbear 4.5 150 9.5 {Rotation:[180f,0f],HugChance:0.0f,Tags:["condtest"]}
+wait 120
+/dndcondition list @s
+/kill @e[type=dndclasses:owlbear]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/clear @s
+quit

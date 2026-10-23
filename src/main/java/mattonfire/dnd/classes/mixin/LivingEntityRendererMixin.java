@@ -4,6 +4,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import mattonfire.dnd.classes.Conditions.Condition;
+import mattonfire.dnd.classes.Conditions.Conditions;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -39,10 +41,17 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         float greenModifier = 1;
         float blueModifier = 1;
 
-        if (entity.hasStatusEffect(ModEffects.FREEZE)) {
+        if (entity.hasStatusEffect(ModEffects.FREEZE)
+                || Conditions.has(entity, Condition.PARALYZED)) {
             redModifier = 0.5f;
             greenModifier = 0.5f;
             blueModifier = 1.5f;
+        }
+        if (Conditions.has(entity, Condition.PETRIFIED)) {
+            // Grey stone: pull every channel towards the same dull grey
+            redModifier = 0.55f;
+            greenModifier = 0.55f;
+            blueModifier = 0.58f;
         }
 
         float tintedRed = red * redModifier;

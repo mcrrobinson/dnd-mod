@@ -594,6 +594,8 @@ public class ModItems {
 
         public static final Item GELATINOUS_CUBE_SPAWN_EGG = registerItem("gelatinous_cube_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, 0x7FD46A, 0x3C8A2E, new FabricItemSettings()));
+        public static final Item RUST_MONSTER_SPAWN_EGG = registerItem("rust_monster_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.RUST_MONSTER, 0xB25626, 0x707C8E, new FabricItemSettings()));
 
         /** Magic item (attunement): +1 armor and +1 toughness for its bonded wearer, anywhere in the inventory. */
         public static final Item CLOAK_OF_PROTECTION = registerItem("cloak_of_protection",

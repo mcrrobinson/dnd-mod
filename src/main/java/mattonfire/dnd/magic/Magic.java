@@ -48,6 +48,7 @@ public final class Magic {
     public static void register() {
         MagicItems.registerDefaults();
         MagicGear.register();
+        Corrosion.register();
         MagicItemLootFunction.register();
         MagicLoot.register();
         Attunement.register();

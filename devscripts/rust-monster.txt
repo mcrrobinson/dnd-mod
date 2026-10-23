@@ -1,0 +1,135 @@
+# Rust Monster: looks, antenna touch (DEX save DC 12) corroding armour, crumbling, +N weapons losing their +N
+# before they corrode, eating dropped iron (sated, no target), dwarves attacking it, anvil repair clearing rust.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/rust-monster.txt
+# Check in latest.log: [Rust] lines, [CHAT] results and the [DevScript] target / slots / tooltip readouts.
+# Glass platform at y=149 round 0 0; the player faces south (+z).
+wait 40
+closescreen
+include _reset.txt
+/time set day
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobLoot false
+/gamemode survival
+/kill @e[type=dndclasses:rust_monster]
+/kill @e[type=dndclasses:mountain_dwarf,distance=..30]
+/fill -8 149 -8 8 149 12 glass
+/fill -8 150 -8 8 154 12 air
+/kill @e[type=item,distance=..30]
+/clear @s
+/effect give @s resistance 600 4 true
+/effect give @s saturation 600 1 true
+
+# ---- Looks
+hud off
+/tp @s 0 150 1 0 20
+wait 20
+/summon dndclasses:rust_monster 0 150 4 {NoAI:1b,Rotation:[180f,0f],Tags:["rusttest"]}
+wait 40
+screenshot rust-monster-front
+/tp @s 3 150 4.5 90 20
+wait 20
+screenshot rust-monster-side
+/kill @e[type=dndclasses:rust_monster]
+hud on
+
+# ---- 1-2. Antenna touch: the first save fails (natural 2) and corrodes the chestplate; later ones succeed
+/item replace entity @s armor.chest with minecraft:iron_chestplate
+/attribute @s minecraft:generic.armor get
+/tp @s 0 150 0 0 20
+/summon dndclasses:rust_monster 0 150 2 {NoAI:1b,Rotation:[180f,0f],Tags:["rusttest"]}
+/dndclass forceroll @s 2 20 20 20 20
+/data merge entity @e[type=dndclasses:rust_monster,limit=1] {NoAI:0b}
+waitserver 120
+target @e[type=dndclasses:rust_monster]
+/data get entity @s Inventory[{Slot:102b}].tag.dndCorrosion
+/attribute @s minecraft:generic.armor get
+screenshot rust-monster-touch
+
+# ---- 3. A chestplate at 3/3 crumbles on the next failed save
+/dndclass forceroll @s clear
+/item replace entity @s armor.chest with minecraft:iron_chestplate{dndCorrosion:3}
+/dndclass forceroll @s 2 20 20 20
+/tp @e[type=dndclasses:rust_monster] 0 150 2
+waitserver 60
+/execute if data entity @s Inventory[{Slot:102b}]
+/kill @e[type=dndclasses:rust_monster]
+/dndclass forceroll @s clear
+
+# ---- 4. A +2 iron sword that hits it loses its +2, then corrodes (WeaponCorrodeChance 1 for the test)
+/dndmagic give @s minecraft:iron_sword uncommon 2
+hotbar 0
+/summon dndclasses:rust_monster 0 150 2 {NoAI:1b,Rotation:[180f,0f],Tags:["rusttest"],WeaponCorrodeChance:1.0f}
+/tp @s 0 150 0 0 25
+/dndclass forceroll @s 10 10 10 10
+wait 10
+attack
+wait 25
+attack
+wait 25
+attack
+wait 25
+attack
+wait 10
+/data get entity @s SelectedItem.tag
+tooltips 0
+wait 10
+screenshot rust-monster-tooltip
+closescreen
+/kill @e[type=dndclasses:rust_monster]
+/clear @s
+/dndclass forceroll @s clear
+
+# ---- 5. It stops to eat thrown iron: heals, then sated (no target) for 200 ticks
+/item replace entity @s armor.chest with minecraft:iron_chestplate
+/summon dndclasses:rust_monster 0 150 5 {NoAI:1b,Rotation:[180f,0f],Tags:["rusttest"],Health:20f}
+/data merge entity @e[type=dndclasses:rust_monster,limit=1] {NoAI:0b}
+/summon item 0 150.2 8 {Item:{id:"minecraft:iron_ingot",Count:3b},PickupDelay:32767}
+/tp @s 0 150 0 0 20
+waitserver 80
+/data get entity @e[type=dndclasses:rust_monster,limit=1] Health
+/data get entity @e[type=dndclasses:rust_monster,limit=1] SatedTicks
+target @e[type=dndclasses:rust_monster]
+/execute if entity @e[type=item,distance=..30]
+waitserver 60
+target @e[type=dndclasses:rust_monster]
+/kill @e[type=dndclasses:rust_monster]
+/item replace entity @s armor.chest with minecraft:air
+
+# ---- 6. Mountain dwarves attack it on sight (standing reset to Neutral, so the dwarf isn't after the player)
+/rep @s dndclasses:mountain_dwarves set 0
+/rep @s
+/summon dndclasses:rust_monster 0 150 8 {NoAI:1b,Rotation:[180f,0f],Tags:["rusttest"]}
+/summon dndclasses:mountain_dwarf 4 150 8 {Tags:["rusttest"]}
+waitserver 60
+target @e[type=dndclasses:mountain_dwarf,tag=rusttest]
+/kill @e[type=dndclasses:mountain_dwarf,tag=rusttest]
+# Killing it gains +3 with the Mountain Dwarves (monster_kills): 0 -> 3
+/damage @e[type=dndclasses:rust_monster,limit=1] 1000 minecraft:player_attack by @s
+waitserver 5
+/rep @s
+/kill @e[tag=rusttest]
+
+# ---- 7. Anvil: a corroded chestplate + an iron ingot comes out clean
+/clear @s
+/xp add @s 30 levels
+/give @s minecraft:iron_chestplate{dndCorrosion:2,Damage:100}
+/give @s minecraft:iron_ingot 2
+/setblock 0 150 2 minecraft:anvil
+/tp @s 0 150 0 0 30
+wait 10
+use
+wait 10
+# Anvil slots: 0 item, 1 addition, 2 output, 3-29 inventory, 30-38 hotbar
+slot 30
+slot 0
+slot 31
+slot 1
+wait 10
+slots
+screenshot rust-monster-anvil
+closescreen
+/setblock 0 150 2 minecraft:air
+/clear @s
+/kill @e[type=item,distance=..30]
+quit

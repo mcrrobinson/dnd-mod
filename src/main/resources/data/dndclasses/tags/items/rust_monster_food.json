@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "#dndclasses:corrodible",
+    "minecraft:iron_ingot",
+    "minecraft:gold_ingot",
+    "minecraft:iron_nugget",
+    "minecraft:gold_nugget",
+    "minecraft:raw_iron",
+    "minecraft:raw_gold"
+  ]
+}

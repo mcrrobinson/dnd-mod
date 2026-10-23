@@ -27,7 +27,7 @@ Each dwarf gets one of six looks and a dwarven name, like "Gimli Stonebeard". It
 It wears an iron helmet 45% of the time, a golden one 30%, a chainmail one 10%, and nothing on its head otherwise. One in five also wears an iron chestplate.
 
 ### Who it fights
-A dwarf stays within 32 blocks of the spot it spawned and hunts monsters in that area, except creepers. A sleeping [Mimic](mimic.md) passes for a chest, so dwarves ignore it until it wakes.
+A dwarf stays within 32 blocks of the spot it spawned and hunts monsters in that area, except creepers. A sleeping [Mimic](mimic.md) passes for a chest, so dwarves ignore it until it wakes. They go for a [Rust Monster](rust-monster.md) first, on sight, and killing one gains +3 standing with them.
 
 It turns on a player for three reasons:
 

@@ -208,6 +208,7 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.client.MimicTexture.register();
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, mattonfire.dnd.client.renderer.GelatinousCubeRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.RUST_MONSTER, mattonfire.dnd.client.renderer.RustMonsterRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, mattonfire.dnd.client.renderer.BeholderRenderer::new);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
@@ -225,6 +226,10 @@ public class DndClassesClient implements ClientModInitializer {
             java.util.UUID viewer = mc.player == null ? null : mc.player.getUuid();
             for (net.minecraft.text.Text extra : mattonfire.dnd.magic.MagicNames.tooltipExtras(stack, viewer))
                 lines.add(Math.min(at++, lines.size()), extra);
+            // Rust Monster damage: "Corroded (2/3): -2 armor"
+            net.minecraft.text.Text rust = mattonfire.dnd.magic.Corrosion.tooltipLine(stack);
+            if (rust != null)
+                lines.add(Math.min(at++, lines.size()), rust);
         });
         ClientPlayNetworking.registerGlobalReceiver(mattonfire.dnd.magic.Attunement.S2C_SYNC,
                 (client, handler, buf, sender) -> {

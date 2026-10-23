@@ -131,6 +131,8 @@ public class MountainDwarfEntity extends PathAwareEntity implements GuardAnger {
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false, this::shouldAngerAt));
         // Exalted with the dwarves: they fight at your side.
         this.targetSelector.add(2, new mattonfire.dnd.entity.ai.goal.DwarfFriendGoal(this));
+        // Rust Monsters eat dwarven steel: every dwarf goes for one on sight.
+        this.targetSelector.add(2, new ActiveTargetGoal<>(this, RustMonsterEntity.class, true));
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, MobEntity.class, 5, true, false,
                 entity -> entity instanceof Monster && !(entity instanceof CreeperEntity)
                         // A sleeping mimic passes for a chest, even to a dwarf.

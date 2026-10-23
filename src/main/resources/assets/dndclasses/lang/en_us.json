@@ -1605,6 +1605,7 @@
     "item.dndclasses.halfling_sling.tooltip": "Right-click to sling a cobblestone from your inventory for 4 damage. 0.8 s cooldown.",
     "item.dndclasses.halfling_sling.no_ammo": "You need cobblestone to sling.",
     "entity.dndclasses.sling_stone": "Sling Stone",
+    "entity.dndclasses.rest_seat": "Rest Seat",
     "magic.dndclasses.type.sling": "Sling",
     "tooltip.dndclasses.racial_gear.made_for": "Made for %s",
     "tooltip.dndclasses.racial_gear.and": " and ",

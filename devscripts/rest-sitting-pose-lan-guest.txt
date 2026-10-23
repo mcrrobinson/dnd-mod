@@ -1,0 +1,21 @@
+# Guest for rest-sitting-pose-lan-host.txt: screenshots the host sitting by the fire, then standing.
+#   timeout 400 ./gradlew runClient -PdevRunDir=run-2 -PdevServer=localhost:25617 -PdevScript=devscripts/rest-sitting-pose-lan-guest.txt
+wait 40
+closescreen
+respawn
+wait 60
+/me guest-ready
+waitchat host-sitting
+wait 20
+hud off
+screenshot lan-guest-sees-sitting
+hud on
+/me guest-saw-sitting
+waitchat host-stood
+wait 20
+hud off
+screenshot lan-guest-sees-stood
+hud on
+/me guest-saw-stood
+wait 5
+quit

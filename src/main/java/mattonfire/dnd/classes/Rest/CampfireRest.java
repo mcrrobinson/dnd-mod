@@ -25,7 +25,7 @@ import net.minecraft.util.math.BlockPos;
 
 /**
  * Short rests at campfires: sneak + right-click a lit campfire (or soul campfire)
- * with an empty main hand to sit for {@link RestSession#SHORT_REST_TICKS}.
+ * with an empty main hand to sit (on a {@link RestSeatEntity}) for {@link RestSession#SHORT_REST_TICKS}.
  * Attacking, using an item, block or entity, or taking damage interrupts it; the
  * power-up key does too (in {@code DnDClasses.sendPowerupPacket}).
  */
@@ -35,8 +35,11 @@ public final class CampfireRest {
 
     static void register() {
         ServerTickEvents.END_SERVER_TICK.register(RestSession::tick);
-        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> RestSession.forget(
-                handler.getPlayer().getUuid()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
+            // Stand up before the player is saved, so they log back in on their feet, not in the ground.
+            RestSeatEntity.standUp(handler.getPlayer());
+            RestSession.forget(handler.getPlayer().getUuid());
+        });
 
         UseBlockCallback.EVENT.register((player, world, hand, hit) -> {
             if (hand != Hand.MAIN_HAND) {

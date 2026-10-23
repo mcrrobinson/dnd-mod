@@ -73,6 +73,12 @@ public class ModSpawns {
                         BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
                 SpawnGroup.MONSTER, ModEntityTypes.OWLBEAR, 12, 1, 1);
 
+        // Trolls lurk in swamps, taigas and dark forests (monsters: they need the dark too).
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP,
+                        BiomeKeys.TAIGA, BiomeKeys.SNOWY_TAIGA, BiomeKeys.OLD_GROWTH_PINE_TAIGA,
+                        BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, BiomeKeys.DARK_FOREST),
+                SpawnGroup.MONSTER, ModEntityTypes.TROLL, 6, 1, 1);
+
 
         // Gelatinous Cubes ooze through dark caves and dungeons anywhere in the Overworld, well below sea level.
         BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
@@ -106,6 +112,8 @@ public class ModSpawns {
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canMagmamuncherAlphaSpawn);
 
         SpawnRestriction.register(ModEntityTypes.OWLBEAR, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+        SpawnRestriction.register(ModEntityTypes.TROLL, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
 
         // Goblin Warriors join the Nether Fortress spawn pool (see SpawnHelperMixin)

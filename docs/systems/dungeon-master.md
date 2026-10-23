@@ -41,6 +41,7 @@ The launch set:
 | `goblin_warband` | 5 Goblin Warriors and a Goblin Warlord | deadly |
 | `owlbear_ambush` | 1 Owlbear | medium |
 | `owlbear_den` | 2 Owlbears | hard |
+| `troll_bridge` | 1 Troll ("Troll under the Bridge") | hard |
 | `undead_crypt` | 4 zombies, 2 skeletons, 1 wither skeleton | hard |
 | `restless_dead` | 6 zombies | medium |
 | `mimic_hoard` | 1 Mimic and 2 treasury chests (`chests/dwarven_fortress_treasury`, un-rolled so a Rogue has to pick them) | medium |

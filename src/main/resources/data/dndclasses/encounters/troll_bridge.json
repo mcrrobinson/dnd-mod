@@ -1,0 +1,8 @@
+{
+  "name": "Troll under the Bridge",
+  "difficulty": "hard",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:troll", "count": 1}
+  ]
+}

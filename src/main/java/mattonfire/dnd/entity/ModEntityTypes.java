@@ -240,6 +240,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // Troll (feat/troll)
+    public static final EntityType<TrollEntity> TROLL = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "troll"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, TrollEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.3f, 2.9f))
+                    .build()
+    );
+
     public static final EntityType<GelatinousCubeEntity> GELATINOUS_CUBE = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "gelatinous_cube"),
@@ -325,6 +334,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(ORC_CHAMPION, OrcChampionEntity.createOrcChampionAttributes());
         FabricDefaultAttributeRegistry.register(ORC_WAR_CHIEF, OrcWarChiefEntity.createOrcWarChiefAttributes());
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
+        FabricDefaultAttributeRegistry.register(TROLL, TrollEntity.createTrollAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());

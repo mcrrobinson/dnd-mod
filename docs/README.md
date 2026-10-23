@@ -40,7 +40,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Class selection](systems/class-selection.md): the class picker and what picking a class does
 - [Character creation](systems/character-creation.md): new players pick race and class on one screen with a combined summary (health, speed, ability scores, traits) and one chat intro
 - [Mana and class specials](systems/mana.md): the 9-pip mana bar (1 pip every 2 s), the power-up key (Z) and every class's 9-mana root special
-- [Rests and charges](systems/rests.md): charges for major actives, short rests sitting at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice (PR #271)
+- [Rests and charges](systems/rests.md): charges for major actives, short rests sitting at campfires, long rests in beds, tavern rooms and party camps (watch rolls, ambushes), Hit Dice
 - [Downed and death saves](systems/death-saves.md): at 0 HP with an ally near you crawl and roll death saves; mobs ignore you, bosses punish party wipes; solo players get one Last Stand roll; allies stabilise, heal or feed you back up; a downed HUD, party status and red ally outlines show who's down
 - [Class progression](systems/class-progression.md): class XP sources, subclasses chosen at level 3, ability ranks at the Attunement Table (1 point each, levels 3/6/9), the per-class point budget and the tiered Bard/Druid bestiary
 - [Admin commands](systems/admin-commands.md): `/dndclass` (class, progress, XP, ranks, subclass, rests, sheet, Downed), `/dndrace`, `/dndhome`, `/goblinraid`, and pointers to `/dungeon`, `/dndobstacle`, `/dm`, `/party`, `/quest` and `/rep`

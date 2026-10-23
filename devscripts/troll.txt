@@ -88,7 +88,26 @@ wait 10
 /kill @e[type=item,distance=..60]
 /clear @s
 
-# 6. Rend: a live troll against a survival player (Resistance keeps them up)
+# 6. Study card with a natural 20: shows the fire/acid weakness
+/dndclass set @s bard
+/clear @s
+/dndclass lore @s forget dndclasses:troll
+hud on
+/summon dndclasses:troll 26 150 4 {NoAI:1b,Rotation:[180f,0f],Tags:["trolltest"]}
+/tp @s 26 150 1.5 0 0
+wait 10
+/dndclass forceroll @s 20
+press key.dnd-classes.study
+wait 20
+screenshot troll-study
+hud off
+/kill @e[tag=trolltest]
+/dndclass set @s none
+wait 5
+closescreen
+/clear @s
+
+# 7. Rend: a live troll against a survival player (Resistance keeps them up)
 /tp @s 26 150 0 0 0
 /gamemode survival
 /effect give @s minecraft:resistance 60 3

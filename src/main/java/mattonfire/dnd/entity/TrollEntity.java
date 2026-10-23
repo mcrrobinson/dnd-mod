@@ -340,7 +340,13 @@ public class TrollEntity extends HostileEntity implements GeoEntity {
         this.comboTicks = COMBO_GAP;
         this.triggerAnim("attack_controller", CLAW_LEFT);
         this.swingHand(Hand.MAIN_HAND);
+        // The left claw hooks rather than shoves: undo the usual hit knockback so the right claw can follow.
+        Vec3d velocity = target.getVelocity();
         this.firstClawLanded = this.claw(target, 0.0F, 0.0D);
+        if (this.firstClawLanded) {
+            target.setVelocity(velocity);
+            target.velocityModified = true;
+        }
     }
 
     public boolean isInCombo() {

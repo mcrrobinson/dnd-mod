@@ -21,7 +21,7 @@ It can step up full blocks. It hunts players, villagers, wandering traders and i
 ### Rend
 Once its target is within 2.8 blocks it starts a two-claw combo:
 
-1. A left claw for 7 damage, straight away.
+1. A left claw for 7 damage, straight away. It hooks rather than shoves: no knockback, so the second claw can follow.
 2. 0.4 seconds later a right claw for 7, if the target is still within 3.2 blocks. The second claw isn't blocked by the first one's hit cooldown.
 3. If both claws land, the second one is a **Rend**: 11 damage (7 + 4) and a strong knockback (0.8).
 

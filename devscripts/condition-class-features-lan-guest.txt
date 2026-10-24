@@ -1,0 +1,19 @@
+# Guest half of condition-class-features-lan-host.txt (no reset header: guests aren't ops).
+wait 40
+closescreen
+waitchat ready
+wait 10
+/me guest-ready
+waitchat petrified
+wait 5
+clearchat
+screenshot ccf-lan-statue
+/me guest-petrified-done
+waitchat cured
+wait 5
+conditions
+clearchat
+screenshot ccf-lan-cured
+/me guest-cured-done
+wait 20
+quit

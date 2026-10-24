@@ -40,6 +40,9 @@ import net.minecraft.util.Identifier;
  * the Bard isn't proficient in.</li>
  * <li><b>Monk, Diamond Soul</b> (level {@value #DIAMOND_SOUL_LEVEL}): proficient in every save.</li>
  * </ul>
+ * The features that work through conditions (Aura of Courage, Mindless Rage, Stillness of Mind, Diamond Soul's
+ * repeat-save reroll, Stunning Strike, Cure Wounds, Countercharm, poison immunity) are in
+ * {@link ClassConditionFeatures}.
  * Each one adds a line to the sheet's breakdown ({@code /dndclass sheet}).
  */
 public final class ClassSaveFeatures {
@@ -72,6 +75,7 @@ public final class ClassSaveFeatures {
         AbilityScores.register(LIVE_FEATURES, ClassSaveFeatures::liveFeatures, true);
         SavingThrow.registerResultHook(ClassSaveFeatures::evasion);
         SavingThrow.registerReroll(ClassSaveFeatures::indomitable);
+        ClassConditionFeatures.register();
         // Server ticks restart with the server: don't carry one world's cooldowns into the next
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> INDOMITABLE_READY.clear());
     }
@@ -99,11 +103,15 @@ public final class ClassSaveFeatures {
         return has(player, INDOMITABLE_LEVEL, DndCharacter.FIGHTER);
     }
 
+    public static boolean hasDiamondSoul(PlayerEntity player) {
+        return has(player, DIAMOND_SOUL_LEVEL, DndCharacter.MONK);
+    }
+
     private static void levelFeatures(PlayerEntity player, Contribution c) {
         if (has(player, JACK_OF_ALL_TRADES_LEVEL, DndCharacter.BARD)) {
             c.checkProficiencyFloor(Proficiency.HALF, "Jack of All Trades");
         }
-        if (has(player, DIAMOND_SOUL_LEVEL, DndCharacter.MONK)) {
+        if (hasDiamondSoul(player)) {
             for (Ability a : Ability.values()) {
                 c.saveProficiency(a, Proficiency.PROFICIENT, "Diamond Soul");
             }
@@ -120,6 +128,7 @@ public final class ClassSaveFeatures {
         if (hasIndomitable(player)) {
             c.feature("reroll a failed save, once every 5 minutes", "Indomitable");
         }
+        ClassConditionFeatures.levelFeatures(player, c);
     }
 
     private static void liveFeatures(PlayerEntity player, Contribution c) {
@@ -132,6 +141,7 @@ public final class ClassSaveFeatures {
             c.saveBonus(null, aura.bonus(), aura.paladin() == player ? "Aura of Protection"
                     : "Aura of Protection (" + aura.paladin().getEntityName() + ")");
         }
+        ClassConditionFeatures.liveFeatures(player, c);
     }
 
     /** Evasion: a Rogue's or Monk's half-damage DEX save takes nothing on a success and half on a failure. */

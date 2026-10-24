@@ -1,5 +1,5 @@
 # Passive racial traits
-The racial traits that are always on: Darkvision, the racial resistances, Elf Keen Senses and Trance, Dwarf Dwarven Resilience and Stonecunning, Halfling Second Breakfast, Gnome Gnome Cunning and Tinker, and Human Ambitious and Diplomat. Like every racial trait, they need the `dndRaces` gamerule on. The dice and combat traits are on their own page: [d20 and combat traits](combat-traits.md).
+The racial traits that are always on: Darkvision, the racial resistances, Elf Keen Senses, Trance and Fey Ancestry, Dwarf Dwarven Resilience and Stonecunning, Halfling Second Breakfast, Gnome Gnome Cunning and Tinker, and Human Ambitious and Diplomat. Like every racial trait, they need the `dndRaces` gamerule on. The dice and combat traits are on their own page: [d20 and combat traits](combat-traits.md).
 
 ![Darkvision: the same sealed room as an Elf and as a Human](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/passive-racial-traits/darkvision-elf.png)
 
@@ -12,6 +12,7 @@ The racial traits that are always on: Darkvision, the racial resistances, Elf Ke
 | Elf | **Darkvision** | See below. |
 | Elf | **Keen Senses** | While you sneak, hostile mobs within 12 blocks get a white outline, through walls. Only you see it. |
 | Elf | **Trance** | You never need sleep, so phantoms never spawn for you. You can still sleep to skip the night. |
+| Elf | **Fey Ancestry** | Advantage on saves against being charmed: saves tagged `charm` and repeat saves against the [Charmed](../systems/conditions.md) condition. Immunity to magical sleep is waiting for something that casts it. |
 | Dwarf | **Darkvision** | See below. |
 | Dwarf | **Dwarven Resilience** | Poison you get lasts half as long, and its ticks deal 0.5 damage instead of 1. Advantage on saving throws against poison (saves tagged `poison`, such as a needle trap's). |
 | Dwarf | **Stonecunning** | Mines stone, deepslate, tuff and ores 20% faster (`#dndclasses:stonecunning`). While you sneak in a dungeon, its bricked-up hidden doorways within 8 blocks are outlined in gold dust (stonework ones: cracked stone bricks or cracked deepslate bricks, `#dndclasses:secret_door`; the Goblin Warren's packed-earth tunnels don't count). It also finds [Hidden Door obstacles](../systems/obstacles.md) within 8 blocks: once a second, while you sneak, each one still hidden from you is checked against your passive Perception or Investigation (the better one) + 5 for advantage, and if that meets its DC you find it as a Ranger would (it's revealed to your party and you earn its XP, once per reset). Advantage on the camp watch underground. |

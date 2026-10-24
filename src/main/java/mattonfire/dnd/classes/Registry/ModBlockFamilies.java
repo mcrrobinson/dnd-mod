@@ -191,6 +191,12 @@ public final class ModBlockFamilies {
     public static final BlockFamily STORM_DRAGON_BELLY = BlockFamily
             .builder("storm_dragon_belly", Blocks.POLISHED_DEEPSLATE).stairs().slab().build();
 
+    // --- Underdark ---
+    /** Zurkhwood sawn into dusky lavender-grey boards: the Underdark's building wood. Like Nether wood, it won't burn. */
+    public static final BlockFamily ZURKHWOOD_PLANKS = BlockFamily.builder("zurkhwood_planks", Blocks.CRIMSON_PLANKS)
+            .stem("zurkhwood").stairs().slab().fence().fenceGate(WoodType.CRIMSON).door(BlockSetType.CRIMSON)
+            .trapdoor(BlockSetType.CRIMSON).build();
+
     private ModBlockFamilies() {
     }
 

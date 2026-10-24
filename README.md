@@ -114,6 +114,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Dungeons](docs/structures/dungeons.md): underground Crypts, Goblin Warrens and Dwarven Ruins with a planned route of rooms, a boss room and a vault (`/locate structure #dndclasses:dungeons`). Rooms seal and fill with monsters scaled to your party, up to a Lich, the Goblin Warlord or the Beholder; see [Dungeon encounters](docs/systems/dungeon-encounters.md).
 - [Nether Fortress additions](docs/structures/nether-fortresses.md): goblins and a Warlord in every fortress.
 - Beholder Lairs: sealed domed caverns deep in the deepslate, reached by a spiral stair (`dndclasses:beholder_lair`). See [Beholder](docs/bosses/beholder.md).
+- [The Underdark](docs/systems/underdark.md): a dimension of glowing fungal caverns under the bedrock, with five regions (`/underdark go` for now).
 
 ### Goblin Raids
 At night, goblin war parties raid hobbit villages and dwarven fortresses in waves, ending with a Goblin Warlord. Players nearby see a raid bar and the settlement's health and hear raid music. Defenders who win are rewarded; if the settlement's health runs out, it falls and the raid is lost. Start one by hand with `/goblinraid start`. See [Goblin raids](docs/systems/goblin-raids.md).

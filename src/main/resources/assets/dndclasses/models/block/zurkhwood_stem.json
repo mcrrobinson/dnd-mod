@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "dndclasses:block/zurkhwood_stem_top",
+    "side": "dndclasses:block/zurkhwood_stem"
+  }
+}

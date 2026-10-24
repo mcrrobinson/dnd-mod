@@ -14,6 +14,8 @@ public final class GameTime {
     public static final long DUSK = 13000L;
     /** ...to dawn ({@code < 23000}). */
     public static final long DAWN = 23000L;
+    /** The Underdark's fixed time of day (its dimension type's {@code fixed_time}): midnight. */
+    public static final long UNDERDARK_TIME = 18000L;
 
     private GameTime() {
     }
@@ -33,8 +35,14 @@ public final class GameTime {
         return ticks / TICKS_PER_DAY;
     }
 
-    /** The time within the day, 0 (sunrise) to 23999. */
+    /**
+     * The time within the day, 0 (sunrise) to 23999. The Underdark has no sun: it's always {@link #UNDERDARK_TIME}
+     * (midnight) there, whatever the Overworld's clock says, so night-only features are always on.
+     */
     public static long timeOfDay(World world) {
+        if (mattonfire.dnd.world.underdark.Underdark.isUnderdark(world)) {
+            return UNDERDARK_TIME;
+        }
         return world.getTimeOfDay() % TICKS_PER_DAY;
     }
 

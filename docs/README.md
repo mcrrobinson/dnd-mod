@@ -85,7 +85,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Mimic](mobs/mimic.md): a chest that bites and grabs (STR save, jump to struggle free); hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs (STR saves, jump to struggle free); Druids can take its form
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
-- [Basilisk](mobs/basilisk.md): slow, armoured deep-cave lizard whose close-range gaze petrifies (CON save; a raised shield turns it to stone) and whose bite poisons; its eye makes a Salve of Stone to Flesh
+- [Basilisk](mobs/basilisk.md): slow, armoured deep-cave lizard whose close-range gaze petrifies (CON save; a raised shield turns it to stone) and whose bite poisons; its eye makes a Salve of Stone to Flesh (PR #279)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, dragons)

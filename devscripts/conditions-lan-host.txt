@@ -1,0 +1,40 @@
+# Other players see your conditions (the tracked mask). Host half; start conditions-lan-guest.txt once the log
+# says "Started serving on":
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions-lan-host.txt
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions-lan-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25611
+# The host goes Prone, then Petrified; the guest logs the host's pose ("sizes": SWIMMING while Prone) and takes
+# screenshots of the host as a statue (conditions-lan-statue) and stunned with stars (conditions-lan-stunned).
+/time set noon
+/gamerule doMobSpawning false
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s wizard
+wait 5
+closescreen
+/clear @s dndclasses:class_guidebook
+/gamemode survival
+/tp @s 4.5 150 3.5 0 0
+/publish false survival 25611
+waitchat joined the game
+wait 60
+/tp @a[name=!Dev] 4.5 150 7.5 180 10
+/say ready
+waitchat guest-ready
+/dndcondition apply @s prone 400
+wait 20
+/say prone
+waitchat guest-prone-done
+/dndcondition remove @s all
+/dndcondition apply @s petrified 400
+wait 10
+/say petrified
+waitchat guest-petrified-done
+/dndcondition remove @s all
+/dndcondition apply @s stunned 400
+wait 10
+/say stunned
+waitchat guest-stunned-done
+/dndcondition remove @s all
+wait 40
+quit

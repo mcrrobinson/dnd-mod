@@ -1,0 +1,27 @@
+# Conditions survive a relog (docs/systems/conditions.md). Run this, then conditions-relog-check.txt:
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions-relog-set.txt
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions-relog-check.txt
+# This half gives the player Frightened for 2400 ticks and turns a tagged husk into a statue, then quits.
+/time set noon
+/gamerule doMobSpawning false
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s wizard
+wait 5
+closescreen
+/clear @s dndclasses:class_guidebook
+/gamemode survival
+/kill @e[tag=relog]
+/dndcondition remove @s all
+/tp @s 4.5 150 3.5 0 0
+/summon minecraft:husk 4.5 150 7.5 {NoAI:1b,Tags:["relog"],PersistenceRequired:1b,Rotation:[180f,0f]}
+wait 5
+/dndcondition apply @s frightened 2400
+/dndcondition apply @e[tag=relog] petrified -1
+wait 20
+conditions
+/dndcondition list @s
+/dndcondition list @e[tag=relog,limit=1]
+wait 10
+quit

@@ -66,7 +66,7 @@ import java.util.List;
  * up items lying in its path (they float about inside it, visible through the jelly) and drops them all
  * when it dies.
  */
-public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
+public class GelatinousCubeEntity extends HostileEntity implements GeoEntity, mattonfire.dnd.classes.SkillChecks.Grapple.Holder {
     /** How many different stacks it can hold (and show) at once. */
     public static final int MAX_ABSORBED = 6;
     /** Junk it may already have inside when it spawns. */
@@ -204,6 +204,9 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
             if (ticksInside == 0) {
                 this.triggerAnim("engulf_controller", "engulf");
                 this.playSound(SoundEvents.ENTITY_SLIME_ATTACK, 1.0F, 0.5F);
+                // Restrained while engulfed (key "engulf"); a player can struggle free with jump
+                mattonfire.dnd.classes.SkillChecks.Grapple.hold(victim, this, GrabSaves.CUBE_ENGULF_DC,
+                        "grapple.dndclasses.cube", "engulf");
             }
             this.holdInside(victim, ticksInside);
             if (ticksInside % DIGEST_INTERVAL == 0) {
@@ -211,8 +214,25 @@ public class GelatinousCubeEntity extends HostileEntity implements GeoEntity {
             }
             stillInside.put(victim.getId(), ticksInside + 1);
         }
+        for (int id : this.engulfed.keySet()) {
+            if (!stillInside.containsKey(id) && this.world.getEntityById(id) instanceof LivingEntity left) {
+                mattonfire.dnd.classes.SkillChecks.Grapple.release(left, this);
+            }
+        }
         this.engulfed.clear();
         this.engulfed.putAll(stillInside);
+    }
+
+    @Override
+    public boolean isHolding(LivingEntity victim) {
+        return this.isAlive() && !this.isRemoved() && this.engulfed.containsKey(victim.getId());
+    }
+
+    /** Struggled free (Athletics or Acrobatics against the engulf DC): pushed out, not engulfed again at once. */
+    @Override
+    public void breakFree(LivingEntity victim) {
+        this.engulfed.remove(victim.getId());
+        this.shoveOut(victim, GrabSaves.CUBE_SPURN_TICKS, 0.3D);
     }
 
     /** Throws a Downed player out of the jelly, away from the middle, so allies can reach them. */

@@ -17,7 +17,7 @@ Saving throws against status effects and damage types from any mob, vanilla incl
   - effects with no source, such as a potion you drink yourself or a trap's poison;
   - effects or damage from yourself or another player;
   - poison or wither from a non-hostile source (`hostile_source_only`);
-  - effects you're immune to: Rogue (poison), Wizard (Freeze), the Alchemist's Iron Stomach (poison, wither, nausea), the Devotion Paladin's Purity of Spirit, magic items (Frostbrand, Eye of the Tyrant), potion immunities (Fighter, Artificer, Paladin) and anything the player can't get at all (Draconic Scale).
+  - effects you're immune to (`SaveRules.immune`, public so the Conditions follow-up can reuse it): Rogue (poison), Wizard (Freeze), the Alchemist's Iron Stomach (poison, wither, nausea), the Devotion Paladin's Purity of Spirit, magic items (Frostbrand, Eye of the Tyrant), potion immunities (Fighter, Artificer, Paladin) and anything the player can't get at all (Draconic Scale).
 - A success halves the effect's duration (amplifier unchanged) or the damage. The save comes before armour and the Paladin's aura.
 - The tags (`poison`, `wither`, `necrotic`, `thunder`, `breath`) feed advantage filters on the [character sheet](ability-scores.md), such as a Dwarf's advantage against poison.
 - [Creature study](creature-study.md) lists the rules that name a creature in `dc_by_source`: studying a cave spider shows "Poison: CON save DC 11, half duration".
@@ -50,6 +50,7 @@ Rules live in `data/<namespace>/saving_throws/*.json`. The defaults are in `data
 | `label` | Translation key shown on the save lane (default: the effect's name, or "Damage") |
 | `tags` | Advantage-filter keywords |
 | `window` | Ticks one roll covers per source (default 40) |
+| `condition` | Effect rules: a [condition](conditions.md) id the effect also gives for its final (possibly halved) length, from the same source. The default `poison.json` sets `"poisoned"` |
 | `enabled` | `false` switches the rule off |
 
 To switch a default off, add a datapack with a file of the same name (for example `data/dndclasses/saving_throws/poison.json`) containing `{"enabled": false}`. A file with errors is skipped and logged as `[SaveRules] Skipping saving throw ...`.

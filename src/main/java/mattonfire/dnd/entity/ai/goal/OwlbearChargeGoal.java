@@ -144,6 +144,9 @@ public class OwlbearChargeGoal extends Goal {
         }
     }
 
+    /** How long a failed STR save against the charge leaves the target Prone. */
+    public static final int PRONE_TICKS = 60;
+
     private void ram(LivingEntity hit) {
         float damage = (float) this.owlbear.getAttributeValue(
                 net.minecraft.entity.attribute.EntityAttributes.GENERIC_ATTACK_DAMAGE) * DAMAGE_MULTIPLIER;
@@ -160,6 +163,9 @@ public class OwlbearChargeGoal extends Goal {
                 hit.takeKnockback(KNOCKBACK, -this.direction.x, -this.direction.z);
                 hit.addVelocity(0.0D, 0.4D, 0.0D);
                 hit.velocityModified = true;
+                // Bowled over: Prone (players stand again with jump)
+                mattonfire.dnd.classes.Conditions.Conditions.of(hit, mattonfire.dnd.classes.Conditions.Condition.PRONE).source(this.owlbear).key("charge")
+                        .ticks(PRONE_TICKS).apply();
             }
         }
         this.owlbear.playSound(SoundEvents.ENTITY_RAVAGER_ATTACK, 1.5F, 0.8F);

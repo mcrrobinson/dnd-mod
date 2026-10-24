@@ -1,0 +1,201 @@
+# Gorgon's Temples (docs/bosses/medusa.md): places real desert pyramids and jungle temples with /place structure
+# (the vanilla generator, so the temple mixins run) at eight (desert) and five (jungle) spots, far from spawn, and checks each one.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/medusa-temple.txt
+# Check run/logs/latest.log: "[GorgonTemple] desert pyramid at x, y, z: Gorgon's Temple, Medusa placed" (or "an
+# ordinary temple") for each; about one in three is a Gorgon's Temple. For those, "Test passed" for the Medusa
+# check and a count of 3-6 for the statues ("dndclasses.gorgon_statue"); screenshots medusa-temple-* (taken from
+# in front of the nearest Medusa, in creative so her gaze can't touch you).
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/effect give @s minecraft:night_vision 900 0 true
+
+/say desert 1
+/tp @s 3000 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 3000 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 3000 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 3000 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert1
+
+/say desert 2
+/tp @s 3400 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 3400 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 3400 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 3400 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert2
+
+/say desert 3
+/tp @s 3800 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 3800 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 3800 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 3800 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert3
+
+/say desert 4
+/tp @s 4200 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 4200 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 4200 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 4200 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert4
+
+/say desert 5
+/tp @s 4600 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 4600 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 4600 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 4600 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert5
+
+/say desert 6
+/tp @s 5000 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 5000 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 5000 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 5000 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert6
+
+/say desert 7
+/tp @s 5400 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 5400 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 5400 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 5400 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert7
+
+/say desert 8
+/tp @s 5800 120 4400
+wait 80
+/place structure minecraft:desert_pyramid 5800 64 4400
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 5800 100 4400 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 5800 100 4400 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^5 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-desert8
+
+/say jungle 1
+/tp @s 3000 120 3600
+wait 80
+/place structure minecraft:jungle_pyramid 3000 64 3600
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 3000 100 3600 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 3000 100 3600 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^4 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-jungle1
+
+/say jungle 2
+/tp @s 3400 120 3600
+wait 80
+/place structure minecraft:jungle_pyramid 3400 64 3600
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 3400 100 3600 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 3400 100 3600 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^4 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-jungle2
+
+/say jungle 3
+/tp @s 3800 120 3600
+wait 80
+/place structure minecraft:jungle_pyramid 3800 64 3600
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 3800 100 3600 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 3800 100 3600 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^4 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-jungle3
+
+/say jungle 4
+/tp @s 4200 120 3600
+wait 80
+/place structure minecraft:jungle_pyramid 4200 64 3600
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 4200 100 3600 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 4200 100 3600 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^4 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-jungle4
+
+/say jungle 5
+/tp @s 4600 120 3600
+wait 80
+/place structure minecraft:jungle_pyramid 4600 64 3600
+waitserver 2
+# The placed mobs take a moment to show up in entity selectors
+wait 60
+/execute positioned 4600 100 3600 if entity @e[type=dndclasses:medusa,distance=..80]
+/execute positioned 4600 100 3600 if entity @e[tag=dndclasses.gorgon_statue,distance=..80]
+/execute at @e[type=dndclasses:medusa,limit=1,sort=nearest] run tp @s ^ ^ ^4 facing entity @e[type=dndclasses:medusa,limit=1,sort=nearest] eyes
+wait 20
+clearchat
+screenshot medusa-temple-jungle5
+/gamemode survival
+quit

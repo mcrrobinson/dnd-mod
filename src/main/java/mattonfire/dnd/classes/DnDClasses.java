@@ -116,6 +116,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.DragonSaves.register();
                 mattonfire.dnd.entity.BossSaves.register();
                 mattonfire.dnd.entity.GrabSaves.register();
+                mattonfire.dnd.entity.MedusaSaves.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
@@ -259,6 +260,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Downed.Revives.register();
                 mattonfire.dnd.classes.Downed.Stabilise.register();
                 mattonfire.dnd.classes.Downed.DownedHudSync.register();
+                // Conditions (Prone, Frightened, Restrained, Stunned, Petrified...): after Downed, which it clears on
+                mattonfire.dnd.classes.Conditions.Conditions.bootstrap();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         LOGGER.info("Identity mod is loaded");

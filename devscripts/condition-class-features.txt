@@ -1,0 +1,213 @@
+# Class and race features that work with conditions (docs/systems/conditions.md, "Class features").
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/condition-class-features.txt
+# Check run/logs/latest.log:
+# 1. Conquest Paladin: "[Conditions] Dev Aura of Courage (Dev) ends frightened" within a second of unlocking the
+#    aura; then "immune to frightened (aura_of_courage)" and the immune command prints "Aura of Courage".
+# 2. Berserker: Rage logs "Mindless Rage ends fear and charm" (both "-frightened" and "-charmed"); then
+#    "immune to frightened (mindless_rage)"; the sheet has "Mindless Rage".
+# 3. Monk L7: "+frightened (no source, 100t)" for a 200-tick apply; the repeat save rolls "(3 adv)";
+#    the sheet has "Stillness of Mind".
+# 4. Monk L10: the first failed repeat save logs "Diamond Soul: rerolling save 2", the next failure doesn't.
+# 5. Open Hand Stunning Strike: the husk forced to 2 gets "+stunned (Dev, 40t)", the one forced to 20 doesn't and
+#    has Slowness (amplifier 3) instead; "[D20] Husk Stunning Strike" lines show the DC.
+# 6. Cleric Cure Wounds: on self "-poisoned" (Poisoned ends before Frightened), Frightened stays; the petrified
+#    tamed wolf logs "Cure Wounds (Dev) ends petrified" and its Health rises (screenshots ccf-wolf-statue/-cured).
+# 7. Bard / Elf: the plain Bard's Frightened repeat save has no advantage; the Elf's Charmed one does
+#    ("Elf (Fey Ancestry)"); after playing the lute "Countercharm for 200t" and the Frightened one does.
+# 8. Rogue: "immune to poisoned (poison)".
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/gamerule dndRests false
+/gamerule sendCommandFeedback true
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/fill -6 149 -6 14 149 14 minecraft:stone
+/fill -6 150 -6 14 156 14 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/dndclass forceroll @s clear
+/tp @s 4.5 150 3.5 0 0
+wait 5
+
+# ---- 1. Conquest Paladin: Aura of Courage ----
+/dndclass set @s paladin
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 900
+/dndclass subclass @s paladin.conquest
+/dndcondition apply @s frightened 1200
+wait 5
+/dndcondition list @s
+/dndclass unlock @s paladin.hellforged
+/dndclass unlock @s paladin.divine_shield
+/dndclass unlock @s paladin.aura_of_courage
+wait 30
+/dndcondition list @s
+/dndcondition apply @s frightened 200
+/dndcondition immune @s frightened
+/dndclass sheet @s
+wait 10
+/dndcondition remove @s all
+
+# ---- 2. Berserker: Mindless Rage ----
+/dndclass set @s barbarian
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 450
+/dndclass subclass @s barbarian.berserker
+wait 5
+/dndcondition apply @s frightened 400
+/dndcondition apply @s charmed 400
+wait 5
+press key.dnd-classes.power-up
+wait 10
+/dndcondition list @s
+/dndcondition apply @s frightened 200
+/dndcondition immune @s charmed
+/dndclass sheet @s
+wait 10
+/effect clear @s minecraft:strength
+/dndcondition remove @s all
+
+# ---- 3. Monk L7: Stillness of Mind ----
+/dndclass set @s monk
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 1350
+wait 5
+/dndcondition apply @s frightened 200
+/dndcondition list @s
+/dndcondition remove @s all
+/dndclass forceroll @s 3 17
+/dndcondition apply @s frightened 400 save wis 30 20
+wait 30
+conditions
+clearchat
+screenshot ccf-monk-frightened
+/dndcondition remove @s all
+/dndclass forceroll @s clear
+/dndclass sheet @s
+wait 10
+
+# ---- 4. Monk L10: Diamond Soul rerolls the first failed repeat save ----
+/dndclass xp @s set 2700
+wait 5
+/dndclass forceroll @s 2 3 4
+/dndcondition apply @s blinded 600 save con 30 20
+wait 50
+/dndcondition remove @s all
+/dndclass forceroll @s clear
+wait 10
+
+# ---- 5. Open Hand Stunning Strike ----
+/dndclass resetprogress @s
+/dndclass xp @s set 700
+/dndclass subclass @s monk.open_hand
+/dndclass unlock @s monk.flurry_of_blows
+/dndclass unlock @s monk.stunning_strike
+/dndclass equip @s monk.stunning_strike
+/summon minecraft:husk 3.5 150 6.5 {NoAI:1b,Rotation:[180f,0f],Tags:["ccf","ss1"],PersistenceRequired:1b}
+/summon minecraft:husk 5.5 150 6.5 {NoAI:1b,Rotation:[180f,0f],Tags:["ccf","ss2"],PersistenceRequired:1b}
+/tp @s 4.5 150 3.5 0 10
+wait 40
+/dndclass forceroll @e[tag=ss1,limit=1] 2
+/dndclass forceroll @e[tag=ss2,limit=1] 20
+press key.dnd-classes.power-up
+wait 3
+clearchat
+screenshot ccf-stunning-strike
+/dndcondition list @e[tag=ss1,limit=1]
+/dndcondition list @e[tag=ss2,limit=1]
+/data get entity @e[tag=ss2,limit=1] ActiveEffects
+/data get entity @e[tag=ss1,limit=1] ActiveEffects
+/kill @e[tag=ccf]
+wait 5
+
+# ---- 6. Cleric Cure Wounds ----
+/dndclass set @s cleric
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 900
+/dndclass subclass @s cleric.life
+/dndclass unlock @s cleric.preserve_life
+/dndclass unlock @s cleric.cure_wounds
+/dndclass equip @s cleric.cure_wounds
+/summon minecraft:wolf 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f],Tags:["ccf","cwwolf"],PersistenceRequired:1b}
+wait 5
+/data modify entity @e[tag=cwwolf,limit=1] Owner set from entity @s UUID
+/damage @e[tag=cwwolf,limit=1] 12 minecraft:generic
+/dndcondition apply @e[tag=cwwolf,limit=1] petrified -1
+/dndcondition apply @s poisoned 400
+/dndcondition apply @s frightened 400
+/tp @s 4.5 150 3.5 0 20
+wait 40
+clearchat
+screenshot ccf-wolf-statue
+/data get entity @e[tag=cwwolf,limit=1] Health
+press key.dnd-classes.power-up
+wait 10
+clearchat
+screenshot ccf-wolf-cured
+/dndcondition list @e[tag=cwwolf,limit=1]
+/data get entity @e[tag=cwwolf,limit=1] Health
+/dndcondition list @s
+/dndcondition remove @s all
+/kill @e[tag=ccf]
+wait 5
+
+# ---- 7. Bard Countercharm and Elf Fey Ancestry ----
+/dndclass set @s bard
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+wait 5
+/dndclass forceroll @s 5
+/dndcondition apply @s frightened 400 save wis 30 20
+wait 30
+/dndcondition remove @s all
+/dndrace set @s elf
+wait 5
+closescreen
+/dndclass forceroll @s 6 14
+/dndcondition apply @s charmed 400 save wis 30 20
+wait 30
+/dndcondition remove @s all
+/dndclass sheet @s
+wait 10
+/give @s dndclasses:lute
+hotbar 0
+wait 5
+use
+wait 10
+/dndclass forceroll @s 7 13
+/dndcondition apply @s frightened 400 save wis 30 20
+wait 30
+/dndcondition remove @s all
+/dndclass forceroll @s clear
+/dndrace set @s none
+wait 5
+closescreen
+
+# ---- 8. Rogue: poison immunity covers Poisoned ----
+/dndclass set @s rogue
+wait 5
+closescreen
+/dndcondition immune @s poisoned
+/dndcondition apply @s poisoned 200
+wait 10
+quit

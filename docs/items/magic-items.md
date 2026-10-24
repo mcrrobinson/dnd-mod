@@ -15,7 +15,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 7 | Ring of Protection | Rare ring | yes | +2 armor, +1 to every saving throw |
 | 8 | Amulet of Health | Rare wondrous item | yes | +6 max health (3 hearts), and your Constitution is at least 19 |
 | 9 | Doss Lute | Rare wondrous item | yes, Bard | A Lute whose song gives Regeneration II to players within 24 blocks; Animal Friends companions get +4 max health |
-| 10 | Warlord's Warhorn | Rare wondrous item | no | Right-click: you and your party within 16 blocks get Strength I and Speed I for 15 s; goblins within 16 blocks are Frightened for 6 s. 120 s cooldown |
+| 10 | Warlord's Warhorn | Rare wondrous item | no | Right-click: you and your party within 16 blocks get Strength I and Speed I for 15 s; goblins within 16 blocks are [Frightened](../systems/conditions.md) of you for 6 s. 120 s cooldown |
 | 11 | Heart of the Furnace | Rare wondrous item (amulet) | yes | Fire Resistance; your melee hits set the target alight for 3 s. Water and rain deal 1 damage every 2 s |
 | 12 | Storm-Chaser Boots | Rare armor (boots) | yes | Diamond boots. Worn: Speed I, Speed II while it rains or storms; lightning can't hurt you |
 | 13 | Wyvern-Scale Cloak | Rare wondrous item (cloak) | yes | Half fall damage; sneak in mid-air to glide |
@@ -66,7 +66,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 - It's used up only if there was a subclass to clear ("You have no subclass to forget.").
 
 ### Warlord's Warhorn
-- Right-click to sound it (a raid horn, heard far away). You and every [party](../systems/party.md) member within 16 blocks get **Strength I** and **Speed I** for 15 s. Every goblin (Goblin Warriors, raid goblins, a Goblin Warlord) within 16 blocks gets **Frightened** for 6 s: it deals half damage, stops chasing whoever sounded it and runs from players (`FrightenedFleeGoal`).
+- Right-click to sound it (a raid horn, heard far away). You and every [party](../systems/party.md) member within 16 blocks get **Strength I** and **Speed I** for 15 s. Every goblin (Goblin Warriors, raid goblins, a Goblin Warlord) within 16 blocks gets **Frightened** for 6 s: it deals half damage, stops chasing you and runs from you (`ConditionFleeGoal`).
 - The action bar says how many were rallied and frightened. 120 s cooldown, kept on the item (`hornReadyAt`), shown as the usual cooldown sweep; using it again before then says "Your lungs need a rest (N s)" on the action bar. No attunement, but it has to be identified.
 
 ### Heart of the Furnace
@@ -106,7 +106,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 
 ### Eye of the Tyrant
 - Attuned, right-click a creature you're looking at within 32 blocks (not through walls). It fires one of three rays at random, drawn as a coloured beam:
-  - **Paralysis** (blue): Freeze for 3 s.
+  - **Paralysis** (blue): [Paralyzed](../systems/conditions.md) for 3 s (can't move or act, STR/DEX saves fail, close hits crit; a boss shakes it off after 1 s).
   - **Telekinesis** (purple): Levitation II for 3 s.
   - **Disintegration** (green): 12 magic damage (ignores armor), credited to you.
 - 3 charges (tooltip and a green bar), 1 s between rays. One charge comes back at each dawn and on a long rest. Creative mode doesn't spend charges.
@@ -179,5 +179,5 @@ Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water
 - `WarlordsWarhornItem`, `EyeOfTheTyrantItem`, `PhylacteryLocketItem`, `BurglarsRingItem` (puts the curse on every copy), `NamedWeaponItem` (Mace, Frostbrand), `DescribedItem` (passive items, with `DescribedItem.Armor` for the boots).
 - `BossItemDrops`: one `LootTableEvents.MODIFY` pool per mob table (`dndclasses:entities/<mob>`), with `MagicItemLootFunction.unidentified()`. The Lich's table isn't edited, only extended here.
 - `Curse.RINGS_CALL`: outside the random pool; the day clock is `dndRingsCallSince` in the player's persistent data, the health modifier `RINGS_CALL_UUID`.
-- Goblins: `entity/ai/goal/FrightenedFleeGoal` in `GoblinWarriorEntity.initGoals`.
+- Goblins: `Conditions/ai/ConditionFleeGoal`, added to every path mob on load.
 - Textures: `python3 tools/wondrous_item_textures.py` and `python3 tools/boss_item_textures.py`.

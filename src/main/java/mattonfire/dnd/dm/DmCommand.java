@@ -111,6 +111,8 @@ public final class DmCommand {
                                                 IntegerArgumentType.getInteger(context, "n"))))))
                 .then(DmRolls.check())
                 .then(DmRolls.save())
+                // Conditions on players and mobs: the same tree as /dndcondition
+                .then(mattonfire.dnd.classes.Conditions.ConditionCommand.node("condition"))
                 .then(DmRolls.roll())
                 .then(DmRolls.apply())
                 .then(DmNarration.narrate())

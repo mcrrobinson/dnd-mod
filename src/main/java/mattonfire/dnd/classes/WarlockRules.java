@@ -107,7 +107,8 @@ public class WarlockRules {
                 || !player.getMainHandStack().isEmpty()) {
             return;
         }
-        if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)) {
+        if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)
+                || !mattonfire.dnd.classes.Conditions.Conditions.canAct(player)) {
             return;
         }
 

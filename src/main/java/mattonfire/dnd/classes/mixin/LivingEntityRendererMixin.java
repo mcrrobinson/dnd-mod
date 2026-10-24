@@ -4,6 +4,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import mattonfire.dnd.classes.Conditions.Condition;
+import mattonfire.dnd.classes.Conditions.Conditions;
 import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -39,10 +41,19 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
         float greenModifier = 1;
         float blueModifier = 1;
 
-        if (entity.hasStatusEffect(ModEffects.FREEZE)) {
+        if (entity.hasStatusEffect(ModEffects.FREEZE)
+                || Conditions.has(entity, Condition.PARALYZED)) {
             redModifier = 0.5f;
             greenModifier = 0.5f;
             blueModifier = 1.5f;
+        }
+        if (Conditions.has(entity, Condition.PETRIFIED)) {
+            // Grey stone: the white flash overlay washes the colours out, the tint darkens them to stone grey
+            overlay = net.minecraft.client.render.OverlayTexture.packUv(
+                    net.minecraft.client.render.OverlayTexture.getU(0.65f), overlay >> 16 & 0xFFFF);
+            redModifier = 0.6f;
+            greenModifier = 0.6f;
+            blueModifier = 0.62f;
         }
 
         float tintedRed = red * redModifier;

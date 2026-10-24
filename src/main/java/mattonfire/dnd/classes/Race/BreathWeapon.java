@@ -142,7 +142,8 @@ public final class BreathWeapon {
 
     /** The racial key: fires the race's active power. Only Dragonborn have one. */
     public static void useRacialPower(ServerPlayerEntity player) {
-        if (!player.isAlive() || player.isSpectator()) {
+        if (!player.isAlive() || player.isSpectator()
+                || !mattonfire.dnd.classes.Conditions.Conditions.canAct(player)) {
             return;
         }
         DndRace race = RaceLifecycle.activeRaceOf(player);

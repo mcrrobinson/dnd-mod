@@ -5,7 +5,6 @@ import java.util.List;
 import org.jetbrains.annotations.Nullable;
 
 import mattonfire.dnd.classes.DnDClasses;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.magic.MagicData;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.entity.Entity;
@@ -136,8 +135,8 @@ public class EyeOfTheTyrantItem extends Item {
         world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.PLAYERS,
                 0.5F, 1.8F);
         switch (ray) {
-            case PARALYSIS -> target.addStatusEffect(
-                    new StatusEffectInstance(ModEffects.FREEZE, PARALYSIS_SECONDS * 20, 0), player);
+            case PARALYSIS -> mattonfire.dnd.classes.Conditions.Conditions.of(target, mattonfire.dnd.classes.Conditions.Condition.PARALYZED).source(player)
+                    .key("eye_ray").ticks(PARALYSIS_SECONDS * 20).apply();
             case TELEKINESIS -> target.addStatusEffect(
                     new StatusEffectInstance(StatusEffects.LEVITATION, TELEKINESIS_SECONDS * 20, 1), player);
             case DISINTEGRATION -> {

@@ -1,0 +1,22 @@
+# Guest half of conditions-lan-host.txt (no reset header: guests aren't ops).
+wait 40
+closescreen
+waitchat ready
+wait 10
+/me guest-ready
+waitchat prone
+wait 5
+sizes
+/me guest-prone-done
+waitchat petrified
+wait 10
+clearchat
+screenshot conditions-lan-statue
+/me guest-petrified-done
+waitchat stunned
+wait 15
+clearchat
+screenshot conditions-lan-stunned
+/me guest-stunned-done
+wait 20
+quit

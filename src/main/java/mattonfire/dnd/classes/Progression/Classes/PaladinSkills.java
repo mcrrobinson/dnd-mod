@@ -21,7 +21,6 @@ import mattonfire.dnd.classes.Party.PartyManager;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.registry.tag.DamageTypeTags;
 import mattonfire.dnd.classes.Progression.Ranks;
@@ -91,6 +90,8 @@ public class PaladinSkills extends ClassSkills {
 
     public static final String DEVOTION = "paladin.devotion";
     public static final String CONQUEST = "paladin.conquest";
+    /** Conquest passive: no Weakness, Slowness or Frightened within 8 blocks ({@code ClassConditionFeatures}). */
+    public static final String AURA_OF_COURAGE = "paladin.aura_of_courage";
     /** Purity of Spirit: damage from undead is multiplied by this. */
     public static final float PURITY_UNDEAD_MULTIPLIER = 0.85F;
     /** Conquering Presence: how long Divine Judgment frightens hostile mobs. */
@@ -151,7 +152,7 @@ public class PaladinSkills extends ClassSkills {
                         "Absorption III and no knockback for 15 seconds.", "minecraft:shield", 5, 1, 0, 2,
                         HELLFORGED),
                 passive("paladin.aura_of_courage", "Aura of Courage",
-                        "You and players within 8 blocks can't be weakened or slowed.", "minecraft:golden_helmet", 1,
+                        "You and players within 8 blocks can't be weakened, slowed or frightened.", "minecraft:golden_helmet", 1,
                         0, 1, "paladin.divine_shield"),
                 active("paladin.avenging_angel", "Avenging Angel",
                         "Strength II, Regeneration II and Resistance II for 20 seconds; undead within 10 blocks burn.",
@@ -258,10 +259,14 @@ public class PaladinSkills extends ClassSkills {
             player.removeStatusEffect(StatusEffects.WITHER);
             player.removeStatusEffect(StatusEffects.POISON);
         }
-        if (progress.hasPassive("paladin.aura_of_courage")) {
-            for (PlayerEntity ally : playersNear(player, AURA_RADIUS)) {
+        if (progress.hasPassive(AURA_OF_COURAGE)) {
+            List<PlayerEntity> covered = playersNear(player, AURA_RADIUS);
+            for (PlayerEntity ally : covered) {
                 ally.removeStatusEffect(StatusEffects.WEAKNESS);
                 ally.removeStatusEffect(StatusEffects.SLOWNESS);
+            }
+            if (!Downed.is(player)) {
+                mattonfire.dnd.classes.Abilities.ClassConditionFeatures.auraOfCourageTick(player, covered);
             }
         }
         if (AVENGING_ANGEL.active(player)) {
@@ -467,7 +472,8 @@ public class PaladinSkills extends ClassSkills {
     /** Conquering Presence: Frightened (their blows land at half strength) for 3 seconds. */
     private static void frighten(ServerPlayerEntity player, LivingEntity mob) {
         if (mob.isAlive()) {
-            mob.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, CONQUERING_FRIGHT_TICKS, 0), player);
+            mattonfire.dnd.classes.Conditions.Conditions.of(mob, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED).source(player)
+                    .ticks(CONQUERING_FRIGHT_TICKS).apply();
         }
     }
 

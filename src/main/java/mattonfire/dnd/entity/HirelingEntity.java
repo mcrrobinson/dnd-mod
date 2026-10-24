@@ -5,6 +5,7 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Misc.BardCompanions;
 import mattonfire.dnd.classes.Registry.ModItems;
+import mattonfire.dnd.entity.hireling.HirelingAbilities;
 import mattonfire.dnd.entity.hireling.HirelingGoals;
 import mattonfire.dnd.entity.hireling.HirelingRace;
 import mattonfire.dnd.entity.hireling.HirelingRegistry;
@@ -68,8 +69,8 @@ import org.jetbrains.annotations.Nullable;
  * cost loyalty, and it leaves at 0 loyalty or after two unpaid days running. A blow that would kill it
  * knocks it out instead ({@link #knockOut}).
  *
- * <p>Role abilities and party synergies are the follow-up ticket: hook them on {@link #role()} and
- * {@link Hirelings#hirelingsOf}.
+ * <p>Each role has an automatic ability ({@link HirelingAbilities}) and counts for its owner's party
+ * synergies ({@code PartySynergies}).
  */
 public class HirelingEntity extends PathAwareEntity {
     private static final TrackedData<Integer> ROLE = DataTracker.registerData(HirelingEntity.class,
@@ -131,6 +132,15 @@ public class HirelingEntity extends PathAwareEntity {
     private Vec3d departTo;
     private int generation;
     private boolean leaveWhenUp;
+    /** Ticks until its role ability is ready again ({@link HirelingAbilities}). */
+    private int abilityCooldown;
+    /** The Guide's torch stock. */
+    private int torches = HirelingAbilities.TORCH_STOCK;
+    /** Blocks walked in the dark since the Guide's last torch (not saved). */
+    public double torchWalked;
+    /** Where it was last tick, for the Guide's torch distance (not saved). */
+    @Nullable
+    public Vec3d lastTorchPos;
 
     public HirelingEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -381,6 +391,22 @@ public class HirelingEntity extends PathAwareEntity {
         return this.unpaidStreak;
     }
 
+    public int abilityCooldown() {
+        return this.abilityCooldown;
+    }
+
+    public void setAbilityCooldown(int ticks) {
+        this.abilityCooldown = Math.max(0, ticks);
+    }
+
+    public int torches() {
+        return this.torches;
+    }
+
+    public void setTorches(int torches) {
+        this.torches = MathHelper.clamp(torches, 0, HirelingAbilities.TORCH_STOCK);
+    }
+
     /** Days of wages left in the purse (for the owner's wage). */
     public int daysPaid() {
         ServerPlayerEntity player = this.ownerPlayer();
@@ -620,6 +646,9 @@ public class HirelingEntity extends PathAwareEntity {
         if (this.isKnockedOut()) {
             this.knockedOutTick();
         }
+        if (this.isActive()) {
+            HirelingAbilities.tick(this);
+        }
         if (this.age % 20 == 0) {
             this.wageTick();
         }
@@ -766,7 +795,8 @@ public class HirelingEntity extends PathAwareEntity {
         }
         ItemStack held = player.getStackInHand(hand);
         if (this.world.isClient) {
-            return held.isEmpty() || HirelingWages.isGold(held) || held.isFood() ? ActionResult.SUCCESS : ActionResult.PASS;
+            return held.isEmpty() || HirelingWages.isGold(held) || held.isFood()
+                    || held.isOf(Items.TORCH) && this.role() == HirelingRole.UTILITY ? ActionResult.SUCCESS : ActionResult.PASS;
         }
         ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
         this.getLookControl().lookAt(player);
@@ -802,6 +832,9 @@ public class HirelingEntity extends PathAwareEntity {
             }
             if (HirelingWages.isGold(held)) {
                 Hirelings.payFromHand(serverPlayer, this, held);
+                return ActionResult.SUCCESS;
+            }
+            if (HirelingAbilities.refillTorches(serverPlayer, this, held)) {
                 return ActionResult.SUCCESS;
             }
             if (held.isEmpty()) {
@@ -855,6 +888,8 @@ public class HirelingEntity extends PathAwareEntity {
         nbt.putInt("DepartTicks", this.departTicks);
         nbt.putInt("Generation", this.generation);
         nbt.putBoolean("LeaveWhenUp", this.leaveWhenUp);
+        nbt.putInt("AbilityCooldown", this.abilityCooldown);
+        nbt.putInt("Torches", this.torches);
     }
 
     @Override
@@ -882,6 +917,8 @@ public class HirelingEntity extends PathAwareEntity {
         this.departTicks = nbt.getInt("DepartTicks");
         this.generation = nbt.getInt("Generation");
         this.leaveWhenUp = nbt.getBoolean("LeaveWhenUp");
+        this.abilityCooldown = nbt.getInt("AbilityCooldown");
+        this.torches = nbt.contains("Torches") ? nbt.getInt("Torches") : HirelingAbilities.TORCH_STOCK;
         if (this.isKnockedOut()) {
             this.setPose(EntityPose.SLEEPING);
         }

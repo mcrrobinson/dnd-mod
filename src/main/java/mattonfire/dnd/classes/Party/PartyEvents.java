@@ -95,7 +95,10 @@ public class PartyEvents {
         List<ServerPlayerEntity> nearby = PartyManager.nearbyMembers(collector, PartyManager.SHARE_RADIUS);
         // A Dungeon Master takes no share of the party's XP.
         nearby.removeIf(DungeonMaster::isDm);
-        if (nearby.isEmpty() || amount <= 0) {
+        // Hirelings' roles count for a Balanced party (class XP only); they take no share.
+        List<mattonfire.dnd.entity.HirelingEntity> hirelings = XP_PROGRESSION.equals(channel) && amount > 0
+                ? PartySynergies.sharingHirelings(collector, PartyManager.SHARE_RADIUS) : List.of();
+        if (nearby.isEmpty() && hirelings.isEmpty() || amount <= 0) {
             grant.accept(collector, amount);
             return;
         }
@@ -103,12 +106,14 @@ public class PartyEvents {
 
         double pool = amount;
         if (XP_PROGRESSION.equals(channel)) {
-            // Balanced party: 3+ different primary roles among the sharers earn more class XP
-            int roles = PartySynergies.distinctRoles(nearby);
+            // Balanced party: 3+ different primary roles among the sharers (and their hirelings) earn more class XP
+            int roles = PartySynergies.distinctRoles(nearby, hirelings);
             double multiplier = PartySynergies.balancedMultiplier(roles);
             pool = amount * multiplier;
-            DnDClasses.LOGGER.info("[Party] Balanced party: {} class XP shared by {} with {} role(s): x{} = {}",
-                    amount, nearby.size(), roles, multiplier, pool);
+            DnDClasses.LOGGER.info("[Party] Balanced party: {} class XP shared by {} with {} role(s){}: x{} = {}",
+                    amount, nearby.size(), roles, hirelings.isEmpty() ? "" : " (hirelings: "
+                            + hirelings.stream().map(h -> h.firstName() + " " + h.role().id()).toList() + ")",
+                    multiplier, pool);
         }
 
         double share = pool / nearby.size();

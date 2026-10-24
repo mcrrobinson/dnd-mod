@@ -37,7 +37,7 @@ Every class has a job in a party: **Tank**, **Healer**, **Damage**, **Support** 
 - **Party HUD**: a 7x7 role icon before each member's name. Offline members show no icon. The rows widen so long names don't run into the health text.
 - **README**: the Player Classes table has a Role column (primary in bold, secondary below).
 
-In a `/party`, each primary role gives the others a bonus: see [Party synergies](party-synergies.md).
+In a `/party`, each primary role gives the others a bonus: see [Party synergies](party-synergies.md). [Hirelings](hirelings.md) have a role too: they count for your synergies and each uses its role's ability.
 
 ## Where to find it
 Open the class picker (first join, or after `/dndclass set <player> none`), read your Class Guidebook, or join a `/party`.

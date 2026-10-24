@@ -173,12 +173,13 @@ public final class PerceptionService {
         return found;
     }
 
-    static String describe(Perceivable thing) {
+    public static String describe(Perceivable thing) {
         if (thing instanceof Entity e) {
             return e.getType().getUntranslatedName() + " " + e.getBlockPos().toShortString();
         }
         if (thing instanceof BlockEntity be) {
-            return be.getType().toString().replaceAll(".*\\.", "") + " " + be.getPos().toShortString();
+            return net.minecraft.registry.Registries.BLOCK.getId(be.getCachedState().getBlock()).getPath() + " "
+                    + be.getPos().toShortString();
         }
         return thing.toString();
     }

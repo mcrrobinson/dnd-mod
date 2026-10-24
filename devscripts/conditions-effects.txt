@@ -12,6 +12,8 @@
 #    target.
 # 8. Frightened goblin (from the player): its distance grows (ConditionFleeGoal); Pos before and after.
 # 9. Incapacitated: "use" with a bow logs "blocked: use item".
+# 10. A cave spider bite (forced 2 on the CON save): "[Conditions] Dev +poisoned (Cave Spider, ...)" and
+#     "poisoned (rule:dndclasses:poison)" in the list.
 /time set noon
 /weather clear
 /gamerule doDaylightCycle false
@@ -132,4 +134,17 @@ use
 wait 5
 /dndcondition remove @s all
 /clear @s
+
+# ---- 10. Cave spider poison (data-driven save with "condition": "poisoned") ----
+/effect clear @s minecraft:poison
+/time set midnight
+/dndclass forceroll @s 2
+/summon minecraft:cave_spider 4.5 150 5.0 {Tags:["fx"]}
+wait 60
+/dndcondition list @s
+/time set noon
+/kill @e[tag=fx]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/effect clear @s minecraft:poison
 quit

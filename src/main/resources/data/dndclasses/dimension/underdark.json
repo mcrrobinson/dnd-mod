@@ -1,0 +1,102 @@
+{
+  "type": "dndclasses:underdark",
+  "generator": {
+    "type": "minecraft:noise",
+    "settings": "dndclasses:underdark",
+    "biome_source": {
+      "type": "minecraft:multi_noise",
+      "biomes": [
+        {
+          "biome": "dndclasses:fungal_forest",
+          "parameters": {
+            "temperature": [
+              -0.1378,
+              0.1378
+            ],
+            "humidity": [
+              -0.0633,
+              2.0
+            ],
+            "continentalness": 0.0,
+            "erosion": 0.0,
+            "weirdness": 0.0,
+            "depth": 0.0,
+            "offset": 0.0
+          }
+        },
+        {
+          "biome": "dndclasses:mycelial_caverns",
+          "parameters": {
+            "temperature": [
+              0.1378,
+              2.0
+            ],
+            "humidity": [
+              -0.0633,
+              2.0
+            ],
+            "continentalness": 0.0,
+            "erosion": 0.0,
+            "weirdness": 0.0,
+            "depth": 0.0,
+            "offset": 0.0
+          }
+        },
+        {
+          "biome": "dndclasses:darklake",
+          "parameters": {
+            "temperature": [
+              -2.0,
+              -0.1378
+            ],
+            "humidity": [
+              -0.0633,
+              2.0
+            ],
+            "continentalness": 0.0,
+            "erosion": 0.0,
+            "weirdness": 0.0,
+            "depth": 0.0,
+            "offset": 0.0
+          }
+        },
+        {
+          "biome": "dndclasses:faerzress_hollows",
+          "parameters": {
+            "temperature": [
+              -2.0,
+              0.0
+            ],
+            "humidity": [
+              -2.0,
+              -0.0633
+            ],
+            "continentalness": 0.0,
+            "erosion": 0.0,
+            "weirdness": 0.0,
+            "depth": 0.0,
+            "offset": 0.0
+          }
+        },
+        {
+          "biome": "dndclasses:grey_reaches",
+          "parameters": {
+            "temperature": [
+              0.0,
+              2.0
+            ],
+            "humidity": [
+              -2.0,
+              -0.0633
+            ],
+            "continentalness": 0.0,
+            "erosion": 0.0,
+            "weirdness": 0.0,
+            "depth": 0.0,
+            "offset": 0.0
+          }
+        }
+      ]
+    }
+  }
+}

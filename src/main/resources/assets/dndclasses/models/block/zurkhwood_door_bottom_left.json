@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "dndclasses:block/zurkhwood_door_bottom",
+    "top": "dndclasses:block/zurkhwood_door_top"
+  }
+}

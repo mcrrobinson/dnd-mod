@@ -1,0 +1,29 @@
+{
+  "type": "minecraft:huge_red_mushroom",
+  "config": {
+    "cap_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "dndclasses:nightlight_cap",
+        "Properties": {
+          "down": "true",
+          "east": "true",
+          "north": "true",
+          "south": "true",
+          "up": "true",
+          "west": "true"
+        }
+      }
+    },
+    "stem_provider": {
+      "type": "minecraft:simple_state_provider",
+      "state": {
+        "Name": "dndclasses:zurkhwood_stem",
+        "Properties": {
+          "axis": "y"
+        }
+      }
+    },
+    "foliage_radius": 2
+  }
+}

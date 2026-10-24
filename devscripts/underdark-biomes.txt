@@ -1,0 +1,128 @@
+# Checks the Underdark dimension (docs/systems/underdark.md): /underdark go lands on a floor, each biome locates and
+# looks distinct, the survey's numbers, /underdark back, dying there, and monsters spawning only in the dark.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/underdark-biomes.txt
+# Expect in latest.log:
+# - "[Underdark] Dev descends at x y z (found|carved)" with y between -75 and -250
+# - "The nearest dndclasses:<biome> is at ..." for each of the 5 /locate biome lines
+# - "[Underdark] biome <biome> at ..." for each /underdark biome line, and screenshots underdark-<biome> (hud off)
+# - "[Underdark] survey ...": every biome 8-35%, water 8-25%, bedrockFloorTop <= -251, bedrockRoofBottom >= -70
+# - "[<mob>] in-the-dark-room" lines (monsters spawned in the dark room) and no "in-the-lit-room" lines (none in the
+#   glowstone-lit room)
+# - /underdark back: Dimension "minecraft:overworld" at the saved spot; after dying in the Underdark, the respawn
+#   is in the Overworld
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/difficulty normal
+/gamerule doMobSpawning true
+/gamerule doDaylightCycle false
+/time set noon
+/execute in minecraft:overworld run tp @s 8.5 150 8.5 0 0
+/fill 6 149 6 10 149 10 minecraft:stone
+wait 20
+/underdark go
+wait 60
+waitserver 2
+/data get entity @s Dimension
+/data get entity @s Pos
+debug on
+wait 5
+screenshot underdark-go
+debug off
+# Each biome: locate it, go there, look round
+/execute in dndclasses:underdark run locate biome dndclasses:fungal_forest
+/execute in dndclasses:underdark run locate biome dndclasses:mycelial_caverns
+/execute in dndclasses:underdark run locate biome dndclasses:darklake
+/execute in dndclasses:underdark run locate biome dndclasses:faerzress_hollows
+/execute in dndclasses:underdark run locate biome dndclasses:grey_reaches
+waitserver 2
+# The biome shots as an Elf: what a player with Darkvision sees (the Underdark is pitch dark without it or a light)
+/dndrace set @s elf
+wait 5
+closescreen
+hud off
+/underdark biome fungal_forest
+waitserver 2
+wait 100
+screenshot underdark-fungal_forest
+/underdark biome mycelial_caverns
+waitserver 2
+wait 100
+screenshot underdark-mycelial_caverns
+/underdark biome darklake
+waitserver 2
+wait 100
+screenshot underdark-darklake
+/underdark biome faerzress_hollows
+waitserver 2
+wait 100
+screenshot underdark-faerzress_hollows
+/underdark biome grey_reaches
+waitserver 2
+wait 100
+screenshot underdark-grey_reaches
+# One Night Vision shot for detail (Night Vision also brightens the fog, so unrendered distance shows bright)
+/effect give @s minecraft:night_vision 60 0 true
+/underdark biome fungal_forest
+waitserver 2
+wait 100
+screenshot underdark-fungal_forest-nightvision
+/effect clear @s minecraft:night_vision
+/dndrace set @s none
+wait 5
+closescreen
+hud on
+/execute positioned 8 0 8 run underdark survey 256
+waitserver 2
+# Spawning: a dark deepslate room 30 blocks east and a glowstone-lit room 30 blocks west. The caverns round about
+# fill the monster cap fast, so every 150 ticks: check both rooms (dark first, then lit), then kill every mob
+/execute at @s run fill ~30 ~-1 ~-10 ~44 ~4 ~4 minecraft:deepslate hollow
+/execute at @s run fill ~-44 ~-1 ~-10 ~-30 ~4 ~4 minecraft:glowstone hollow
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+waitserver 150
+/execute at @s positioned ~30 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-dark-room
+/execute at @s positioned ~-44 ~ ~-10 as @e[type=!minecraft:player,type=!minecraft:bat,type=!minecraft:item,dx=14,dy=4,dz=14] run say in-the-lit-room
+/kill @e[type=!minecraft:player]
+/gamemode creative
+/underdark back
+waitserver 2
+/data get entity @s Dimension
+/data get entity @s Pos
+# Dying in the Underdark respawns you in the Overworld
+/underdark go
+waitserver 2
+/kill @s
+wait 20
+respawn
+wait 40
+/data get entity @s Dimension
+quit

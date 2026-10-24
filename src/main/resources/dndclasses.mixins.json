@@ -91,6 +91,7 @@
         "SavingThrowMixin"
     ],
     "client": [
+        "IntegratedServerLoaderMixin",
         "CrossbowRenderMixin",
         "CrossbowArmPoseMixin",
         "DownedHudMixin",

@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:heartwood_fence_gate"
+    "dndclasses:heartwood_fence_gate",
+    "dndclasses:zurkhwood_fence_gate"
   ]
 }

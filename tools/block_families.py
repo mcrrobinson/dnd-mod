@@ -240,6 +240,10 @@ FAMILIES = [
     Family('storm_dragon_belly', 'Storm Dragon Belly', ['stairs', 'slab'],
            craft={'pattern': ['#B'], 'key': {'#': 'dndclasses:storm_dragonstone', 'B': 'minecraft:bone_meal'},
                   'count': 1}),
+    # --- Underdark ---
+    Family('zurkhwood_planks', 'Zurkhwood Planks', ['stairs', 'slab', 'fence', 'fence_gate', 'door', 'trapdoor'],
+           material='wood', stem='zurkhwood', stem_title='Zurkhwood',
+           craft={'pattern': ['#'], 'key': {'#': 'dndclasses:zurkhwood_stem'}, 'count': 4}),
 ]
 
 

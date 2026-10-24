@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:fungal_forest",
+    "dndclasses:mycelial_caverns",
+    "dndclasses:darklake",
+    "dndclasses:faerzress_hollows",
+    "dndclasses:grey_reaches"
+  ]
+}

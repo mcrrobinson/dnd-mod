@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "dndclasses:block/zurkhwood_stem_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "dndclasses:block/zurkhwood_stem"
+    },
+    "axis=z": {
+      "model": "dndclasses:block/zurkhwood_stem_horizontal",
+      "x": 90
+    }
+  }
+}

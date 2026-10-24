@@ -20,7 +20,7 @@ It hunts players and iron golems and oozes straight into them. It has no swing; 
 ### Engulfing
 Anything living whose hitbox overlaps the cube sinks into it instead of being pushed aside. That covers players and mobs, but not creative or spectator players, armor stands or other cubes.
 
-On first contact you make a **DEX saving throw, DC 12**. On a success you slip aside as it closes in: you're shoved about a block out of the jelly, and it can't engulf you again for 1 second (20 ticks). If you're still touching it after that, you save again. On a failure you're engulfed. Mobs save silently with +1. There's no struggle check here: once you're in, walk out.
+On first contact you make a **DEX saving throw, DC 12**. On a success you slip aside as it closes in: you're shoved about a block out of the jelly, and it can't engulf you again for 1 second (20 ticks). If you're still touching it after that, you save again. On a failure you're engulfed and **[Restrained](../systems/conditions.md)** while inside: you can't walk, so press jump to struggle out (the better of Athletics or Acrobatics against DC 12, at most once every half second). A success shoves you out and the cube can't engulf you again for 1 second. Mobs save silently with +1 and can't struggle.
 
 While you're inside:
 

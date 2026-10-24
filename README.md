@@ -98,6 +98,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Mimic](docs/mobs/mimic.md): a chest that isn't. It bites and grabs whoever opens or hits it, and hides in dungeons, dragon lairs and dwarven fortresses.
 - [Owlbear](docs/mobs/owlbear.md): a hostile owl-headed bear in dark and old-growth forests that charges and bear-hugs. Druids who kill one can take its form.
 - [Gelatinous Cube](docs/mobs/gelatinous-cube.md): a slow jelly cube in dark caves and dungeons that engulfs whatever it touches and soaks up items.
+- [Mind Flayer](docs/mobs/mind-flayer.md): an illithid in the deepest caves that stuns with a Mind Blast, extracts stunned brains and keeps charmed thralls.
 - Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md), the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md), the [Lich](docs/bosses/lich.md) (reforms from its phylactery until that's smashed) and the [Beholder](docs/bosses/beholder.md) (its anti-magic cone blocks class specials). See [Boss fights](docs/bosses/boss-fights.md).
 
 ### Structures

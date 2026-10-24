@@ -33,6 +33,7 @@ public final class BossItemDrops {
                 table("wyvern"), new Drop[] { new Drop(ModItems.WYVERN_SCALE_CLOAK, 0.08F, 0.0F) },
                 table("ember_wyvern"), new Drop[] { new Drop(ModItems.WYVERN_SCALE_CLOAK, 0.08F, 0.0F) },
                 table("owlbear"), new Drop[] { new Drop(ModItems.BELT_OF_OWLBEAR_MIGHT, 0.08F, 0.02F) },
+                table("mind_flayer"), new Drop[] { new Drop(ModItems.TOME_OF_CLEAR_THOUGHT, 0.08F, 0.02F) },
                 table("frost_drake"), new Drop[] { new Drop(ModItems.FROSTBRAND, 0.10F, 0.05F) },
                 table("lich"), new Drop[] { new Drop(ModItems.MACE_OF_DISRUPTION, 0.25F, 0.0F),
                         new Drop(ModItems.PHYLACTERY_LOCKET, 0.20F, 0.0F) },

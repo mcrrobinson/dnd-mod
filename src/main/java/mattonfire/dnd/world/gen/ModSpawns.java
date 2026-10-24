@@ -80,6 +80,13 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.GELATINOUS_CUBE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.GelatinousCubeEntity::canSpawn);
 
+        // Mind Flayers haunt the deepest caves, below y=-32 in the dark, with two thralls each (a stand-in for
+        // the Underdark, which adds its own weight through data/dndclasses/underdark_spawns/mind_flayer.json).
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER, ModEntityTypes.MIND_FLAYER, 1, 1, 1);
+        SpawnRestriction.register(ModEntityTypes.MIND_FLAYER, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.MindFlayerEntity::canSpawn);
+
         // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
         // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.
         SpawnRestriction.register(ModEntityTypes.WYVERN, SpawnRestriction.Location.ON_GROUND,

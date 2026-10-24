@@ -195,6 +195,22 @@ public final class SaveLaneHud {
         if (!landed) {
             return line.append(Text.literal(" ...").formatted(Formatting.GRAY).styled(s -> s.withBold(false)));
         }
+        if (roll.natural() <= 0) {
+            // An automatic failure (Stunned on a DEX save): no die was rolled, so no sum
+            if (roll.dc() > 0 && !roll.secret() && compact < NO_DC) {
+                line.append(Text.translatable("save.dndclasses.lane.vs", roll.dc())
+                        .styled(s -> s.withBold(false).withColor(0xD0D0D0)));
+            }
+            MutableText tail = Text.literal(" \u2718");
+            if (compact < NO_DETAIL && !detail.getString().isEmpty()) {
+                tail.append(" ").append(detail);
+            }
+            line.append(tail.styled(s -> s.withBold(false).withColor(roll.outcome().color())));
+            if (count > 1) {
+                line.append(Text.literal(" \u00d7" + count).styled(s -> s.withBold(true).withColor(0xFFD23F)));
+            }
+            return line;
+        }
         MutableText sum = Text.literal(" " + roll.natural());
         if (roll.natural2() > 0 && compact < NO_DC) {
             sum.append(Text.literal("(" + roll.natural2() + (roll.mode() == Advantage.ADVANTAGE ? " adv)" : " dis)"))
@@ -291,7 +307,7 @@ public final class SaveLaneHud {
                     64);
             RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
             if (!spinning) {
-                String face = Integer.toString(row.roll.natural());
+                String face = row.roll.natural() <= 0 ? "-" : Integer.toString(row.roll.natural());
                 int faceColor = row.roll.natural() == 20 ? 0xFFE066 : row.roll.natural() == 1 ? 0x202020 : 0xFFFFFF;
                 matrices.scale(0.75f, 0.75f, 1.0f);
                 text.drawWithShadow(matrices, face, -text.getWidth(face) / 2.0f + 0.5f, -3.0f, faceColor | alpha);

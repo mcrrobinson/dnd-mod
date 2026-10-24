@@ -33,6 +33,10 @@ public final class BossSaves {
     public static final double DREAD_RADIUS = 24.0;
     /** How long a failed Dread Presence save leaves a player Frightened. */
     public static final int DREAD_FRIGHTENED_TICKS = 160;
+    /** How long a failed fear ray save leaves a creature Frightened. */
+    public static final int FEAR_RAY_TICKS = 160;
+    /** Frightened by a boss: a repeat WIS save to shake it off this often (the entry's DC, +1 in the last phase). */
+    public static final int FEAR_REPEAT_TICKS = 60;
 
     public static final MobSaveInfo.Entry SLOWING_RAY = MobSaveInfo.register(ModEntityTypes.BEHOLDER,
             "save.dndclasses.slowing_ray", Ability.DEX, BOSS_DC, false, "save.dndclasses.effect.slowing_ray");

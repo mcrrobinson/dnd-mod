@@ -102,6 +102,46 @@ public final class SavingThrow {
         Text claim(ServerPlayerEntity player, Ability ability, D20.Roll failed);
     }
 
+    /**
+     * Looks at a save before it's rolled (Conditions: STR and DEX auto-fail while Stunned, DEX at disadvantage
+     * while Restrained). Asked for every target, players or not; return null to leave the save alone.
+     */
+    @FunctionalInterface
+    public interface PreRoll {
+        @Nullable
+        Outcome before(LivingEntity target, Ability ability, List<String> tags);
+
+        /** What a {@link PreRoll} does to the save. */
+        final class Outcome {
+            @Nullable
+            final Text autoFail;
+            final Advantage mode;
+            final Text reason;
+
+            private Outcome(@Nullable Text autoFail, Advantage mode, Text reason) {
+                this.autoFail = autoFail;
+                this.mode = mode;
+                this.reason = reason;
+            }
+
+            /** The save fails without a roll (lane: "DEX save ✘ auto-fail (Stunned)"); rerolls can't save it. */
+            public static Outcome autoFail(Text reason) {
+                return new Outcome(reason, Advantage.NORMAL, reason);
+            }
+
+            /** Adds advantage or disadvantage, for players and non-players alike. */
+            public static Outcome mode(Advantage mode, Text reason) {
+                return new Outcome(null, mode, reason);
+            }
+        }
+    }
+
+    private static final List<PreRoll> PRE_ROLLS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerPreRoll(PreRoll preRoll) {
+        PRE_ROLLS.add(preRoll);
+    }
+
     private static final List<ResultHook> RESULT_HOOKS = new java.util.concurrent.CopyOnWriteArrayList<>();
     private static final List<Reroll> REROLLS = new java.util.concurrent.CopyOnWriteArrayList<>();
 
@@ -285,6 +325,22 @@ public final class SavingThrow {
                     return cached.result().cached();
                 }
             }
+            Text autoFail = null;
+            List<String> tagList = List.of(tags);
+            for (PreRoll preRoll : PRE_ROLLS) {
+                PreRoll.Outcome outcome = preRoll.before(target, ability, tagList);
+                if (outcome == null) {
+                    continue;
+                }
+                if (outcome.autoFail != null) {
+                    autoFail = outcome.autoFail;
+                    break;
+                }
+                mode(outcome.mode);
+            }
+            if (autoFail != null) {
+                return autoFail(autoFail, now);
+            }
             D20.Roll roll = rollDie();
             if (!roll.outcome().succeeded() && !silent && target instanceof ServerPlayerEntity player
                     && !player.isCreative() && !player.isSpectator()) {
@@ -300,6 +356,30 @@ public final class SavingThrow {
             }
             if (target instanceof PlayerEntity player) {
                 D20.show(player, roll, detail(result));
+            }
+            return result;
+        }
+
+        /** A save that fails without a roll ({@link PreRoll.Outcome#autoFail}): natural 0 on the lane. */
+        private SaveResult autoFail(Text reason, long now) {
+            boolean hidden = silent || !(target instanceof PlayerEntity player) || player.isCreative()
+                    || player.isSpectator();
+            Text shown = label != null ? label : Text.translatable(ability.saveTranslationKey());
+            D20.Roll roll = new D20.Roll(shown, ability, RollKind.SAVE, 0, 0, Advantage.NORMAL, 0, 0, List.of(), dc,
+                    D20.Outcome.FAILURE, hidden ? D20.Display.SILENT : display, 0);
+            String name = target instanceof PlayerEntity ? target.getEntityName() : target.getName().getString();
+            DnDClasses.LOGGER.info("[D20] {} {} auto-fail ({}) vs DC {} -> FAILURE", name, shown.getString(),
+                    reason.getString(), dc);
+            SaveResult result = new SaveResult(roll, halvesDamage, true);
+            for (ResultHook hook : RESULT_HOOKS) {
+                result = hook.apply(target, ability, result);
+            }
+            if (exposureKey != null) {
+                EXPOSURES.computeIfAbsent(target.getUuid(), k -> new HashMap<>()).put(exposureKey,
+                        new Cached(result, now + exposureTicks));
+            }
+            if (target instanceof PlayerEntity player) {
+                D20.show(player, roll, Text.translatable("save.dndclasses.auto_fail", reason));
             }
             return result;
         }

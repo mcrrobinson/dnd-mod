@@ -35,5 +35,7 @@ public abstract class ModEntityDataSaverMixin implements IEntityDataSaver {
         if (nbt.contains(DND$DATA_KEY)) {
             this.dnd$persistentData = nbt.getCompound(DND$DATA_KEY);
         }
+        // Saved conditions are re-read from the new data the next time the server looks
+        mattonfire.dnd.classes.Conditions.Conditions.onNbtRead((Entity) (Object) this);
     }
 }

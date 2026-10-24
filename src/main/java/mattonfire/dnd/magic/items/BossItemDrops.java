@@ -26,17 +26,19 @@ public final class BossItemDrops {
     }
 
     private static Map<Identifier, Drop[]> drops() {
-        return Map.of(
-                table("goblin_warlord"), new Drop[] { new Drop(ModItems.WARLORDS_WARHORN, 0.35F, 0.0F) },
-                table("magmamuncher_alpha"), new Drop[] { new Drop(ModItems.HEART_OF_THE_FURNACE, 0.20F, 0.05F) },
-                table("lightning_chaser"), new Drop[] { new Drop(ModItems.STORM_CHASER_BOOTS, 0.12F, 0.03F) },
-                table("wyvern"), new Drop[] { new Drop(ModItems.WYVERN_SCALE_CLOAK, 0.08F, 0.0F) },
-                table("ember_wyvern"), new Drop[] { new Drop(ModItems.WYVERN_SCALE_CLOAK, 0.08F, 0.0F) },
-                table("owlbear"), new Drop[] { new Drop(ModItems.BELT_OF_OWLBEAR_MIGHT, 0.08F, 0.02F) },
-                table("frost_drake"), new Drop[] { new Drop(ModItems.FROSTBRAND, 0.10F, 0.05F) },
-                table("lich"), new Drop[] { new Drop(ModItems.MACE_OF_DISRUPTION, 0.25F, 0.0F),
-                        new Drop(ModItems.PHYLACTERY_LOCKET, 0.20F, 0.0F) },
-                table("beholder"), new Drop[] { new Drop(ModItems.EYE_OF_THE_TYRANT, 0.12F, 0.03F) });
+        // Map.ofEntries, not Map.of: Map.of stops at ten tables
+        return Map.ofEntries(
+                Map.entry(table("goblin_warlord"), new Drop[] { new Drop(ModItems.WARLORDS_WARHORN, 0.35F, 0.0F) }),
+                Map.entry(table("magmamuncher_alpha"), new Drop[] { new Drop(ModItems.HEART_OF_THE_FURNACE, 0.20F, 0.05F) }),
+                Map.entry(table("lightning_chaser"), new Drop[] { new Drop(ModItems.STORM_CHASER_BOOTS, 0.12F, 0.03F) }),
+                Map.entry(table("wyvern"), new Drop[] { new Drop(ModItems.WYVERN_SCALE_CLOAK, 0.08F, 0.0F) }),
+                Map.entry(table("ember_wyvern"), new Drop[] { new Drop(ModItems.WYVERN_SCALE_CLOAK, 0.08F, 0.0F) }),
+                Map.entry(table("owlbear"), new Drop[] { new Drop(ModItems.BELT_OF_OWLBEAR_MIGHT, 0.08F, 0.02F) }),
+                Map.entry(table("frost_drake"), new Drop[] { new Drop(ModItems.FROSTBRAND, 0.10F, 0.05F) }),
+                Map.entry(table("lich"), new Drop[] { new Drop(ModItems.MACE_OF_DISRUPTION, 0.25F, 0.0F),
+                        new Drop(ModItems.PHYLACTERY_LOCKET, 0.20F, 0.0F) }),
+                Map.entry(table("beholder"), new Drop[] { new Drop(ModItems.EYE_OF_THE_TYRANT, 0.12F, 0.03F) }),
+                Map.entry(table("medusa"), new Drop[] { new Drop(ModItems.GORGONS_GAZE, 0.25F, 0.05F) }));
     }
 
     private BossItemDrops() {

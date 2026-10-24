@@ -48,10 +48,12 @@ public abstract class LivingEntityRendererMixin<T extends LivingEntity, M extend
             blueModifier = 1.5f;
         }
         if (Conditions.has(entity, Condition.PETRIFIED)) {
-            // Grey stone: pull every channel towards the same dull grey
-            redModifier = 0.55f;
-            greenModifier = 0.55f;
-            blueModifier = 0.58f;
+            // Grey stone: the white flash overlay washes the colours out, the tint darkens them to stone grey
+            overlay = net.minecraft.client.render.OverlayTexture.packUv(
+                    net.minecraft.client.render.OverlayTexture.getU(0.65f), overlay >> 16 & 0xFFFF);
+            redModifier = 0.6f;
+            greenModifier = 0.6f;
+            blueModifier = 0.62f;
         }
 
         float tintedRed = red * redModifier;

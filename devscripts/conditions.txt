@@ -3,7 +3,7 @@
 # The player is a Wizard on a y=150 platform. Check run/logs/latest.log:
 # 1. Stunned 100: "[DevScript] conditions: stunned(..t)", screenshot conditions-hud (icon above the save lane),
 #    "attack" on the husk logs "[Conditions] Dev blocked: attack" and no "[D20] Dev Attack" line; the movement
-#    speed attribute reads 0.
+#    speed attribute reads 0; "/dm condition list" lists it like /dndcondition.
 # 2. /dm save dex while Stunned: "[D20] Dev DEX save auto-fail (Stunned)".
 # 3. Repeat save (forced 2 then 20): "[D20] Dev Stunned 2 ..." FAILURE, "[D20] Dev Stunned 20 ..." and
 #    "[Conditions] Dev -stunned (saved)".
@@ -57,6 +57,7 @@ attack
 wait 5
 /attribute @s minecraft:generic.movement_speed get
 /dndcondition list @s
+/dm condition list @s
 
 # ---- 2. A DEX save while Stunned fails automatically ----
 /dm save @s dex 5

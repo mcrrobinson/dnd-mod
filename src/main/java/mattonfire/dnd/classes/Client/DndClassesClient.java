@@ -188,6 +188,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.PHYLACTERY, mattonfire.dnd.client.renderer.PhylacteryRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.HOBBIT, mattonfire.dnd.client.renderer.HobbitRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.tavern.Tavern.INNKEEPER, mattonfire.dnd.client.renderer.HobbitRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.hireling.Hirelings.HIRELING, mattonfire.dnd.client.renderer.HirelingRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MOUNTAIN_DWARF, mattonfire.dnd.client.renderer.MountainDwarfRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WOOD_ELF, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elf);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ELF_WARDEN, mattonfire.dnd.client.renderer.RacialHumanoidRenderer::elf);
@@ -232,6 +233,7 @@ public class DndClassesClient implements ClientModInitializer {
                     client.execute(() -> mattonfire.dnd.magic.AttunementSnapshot.client = snapshot);
                 });
         mattonfire.dnd.classes.Client.Hud.PartyHud.register();
+        mattonfire.dnd.classes.Client.Hud.HirelingHud.register();
         mattonfire.dnd.classes.Client.Hud.DiceRollHud.register();
         DownedClient.register();
         mattonfire.dnd.classes.Client.Hud.DownedHud.register();

@@ -1,0 +1,69 @@
+# Hirelings: the roster (a summoned innkeeper on a platform at y 150; the dev world's Green Dragon has lost its
+# innkeeper), the hire card, hiring, following, fighting, wages and leaving. Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hirelings.txt
+# Expect in latest.log:
+#  roster: "[Hireling] ... roster for day" and three "For hire:" lines; screenshot hirelings-roster
+#  card: [CHAT] "Wage:" and "[Hire: 54 gold nuggets]" after `use` on a candidate (54 for a Tank or Sellsword at Neutral; reputation changes it)
+#  hire: "[Hireling] Dev hired ...", then "/clear ... 0" finds 60 minus the fee in nuggets
+#  follow: after a /tp 30 blocks, "Test passed" for a hireling within 6 blocks; screenshot hirelings-follow
+#  fight: `target` shows the hireling's target is the zombie
+#  wages: newday with 1 day in the purse: loyalty up, then two unpaid days: "leaves your service"
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doMobSpawning false
+/time set 1000
+/weather clear
+/party leave
+/hireling dismiss all
+/fill 40 149 20 90 149 40 minecraft:stone
+/fill 40 150 20 90 156 40 minecraft:air
+/tp @s 50.5 150 35.5 180 15
+wait 20
+/kill @e[type=dndclasses:hireling]
+/kill @e[type=dndclasses:innkeeper,tag=hinn]
+/summon dndclasses:innkeeper 50.5 150 28.5 {NoAI:1b,Tags:["hinn"],Rotation:[0f,0f]}
+/hireling admin roster @e[type=dndclasses:innkeeper,tag=hinn,limit=1] reroll
+wait 30
+screenshot hirelings-roster
+# Bring the nearest candidate in front of the player, frozen, and read its card with an empty hand.
+/clear @s
+/execute as @e[type=dndclasses:hireling,limit=1,sort=nearest] run data merge entity @s {NoAI:1b}
+/tp @e[type=dndclasses:hireling,limit=1,sort=nearest] 50.5 150 33.0 0 0
+/tp @s 50.5 150 35.0 180 10
+wait 10
+use
+wait 10
+screenshot hirelings-card
+/give @s minecraft:gold_nugget 60
+/hireling hire nearest
+wait 5
+/clear @s minecraft:gold_nugget 0
+/execute as @e[type=dndclasses:hireling,limit=1,sort=nearest] run data merge entity @s {NoAI:0b}
+/hireling list
+# Follow: walk 30 blocks away (to the village green); it catches up.
+/tp @s 82.5 150 30.5 -90 0
+wait 60
+/execute if entity @e[type=dndclasses:hireling,distance=..6]
+/hireling list
+screenshot hirelings-follow
+# Fight: a zombie that goes for the player (a helmet so the sun doesn't burn it).
+/summon minecraft:zombie 86.5 150 30.5 {Tags:["hz"],ArmorItems:[{},{},{},{id:"minecraft:leather_helmet",Count:1b}]}
+wait 40
+target @e[type=dndclasses:hireling]
+target @e[tag=hz]
+wait 60
+screenshot hirelings-fight
+target @e[type=dndclasses:hireling]
+/kill @e[tag=hz]
+# Wages: one day in the purse, then two unpaid days.
+/execute as @e[type=dndclasses:hireling,limit=1,sort=nearest] run hireling admin purse @s 18
+/hireling admin newday @s
+/hireling admin newday @s
+/hireling admin newday @s
+wait 20
+/hireling list
+/kill @e[type=dndclasses:innkeeper,tag=hinn]
+/kill @e[type=dndclasses:hireling]
+wait 10
+quit

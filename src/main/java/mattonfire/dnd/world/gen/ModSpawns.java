@@ -80,6 +80,13 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.GELATINOUS_CUBE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.GelatinousCubeEntity::canSpawn);
 
+        // Basilisks lurk in the deep caves, below y=-16 in the dark, always alone. (The Underdark's own spawns
+        // read data/dndclasses/underdark_spawns/basilisk.json.)
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER, ModEntityTypes.BASILISK, 2, 1, 1);
+        SpawnRestriction.register(ModEntityTypes.BASILISK, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.BasiliskEntity::canSpawn);
+
         // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
         // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.
         SpawnRestriction.register(ModEntityTypes.WYVERN, SpawnRestriction.Location.ON_GROUND,

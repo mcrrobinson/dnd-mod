@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import mattonfire.dnd.classes.DnDClasses;
 
 import mattonfire.dnd.classes.Abilities.AbilityScores;
+import mattonfire.dnd.classes.Abilities.Advantage;
 import mattonfire.dnd.classes.Abilities.RollKind;
 import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
 import net.minecraft.entity.Entity;
@@ -58,6 +59,21 @@ public final class AttackRolls {
 
     private static final List<AutoCrit> AUTO_CRITS = new CopyOnWriteArrayList<>();
 
+    /**
+     * A source of advantage or disadvantage on a player's attack roll against a target (Conditions: attacks against
+     * a Stunned target have advantage, a Prone attacker has disadvantage). All sources are added and cancel as usual.
+     */
+    @FunctionalInterface
+    public interface Mode {
+        Advantage mode(PlayerEntity player, Entity target);
+    }
+
+    private static final List<Mode> MODES = new CopyOnWriteArrayList<>();
+
+    public static void registerMode(Mode mode) {
+        MODES.add(mode);
+    }
+
     public static void registerAutoCrit(AutoCrit autoCrit) {
         AUTO_CRITS.add(autoCrit);
     }
@@ -88,10 +104,14 @@ public final class AttackRolls {
                     || player.getAttackCooldownProgress(0.5f) < 0.9f) {
                 return ActionResult.PASS;
             }
-            D20.Roll roll = D20.roll(player).label(D20.ATTACK).kind(RollKind.ATTACK)
+            D20.Builder builder = D20.roll(player).label(D20.ATTACK).kind(RollKind.ATTACK)
                     .modifier(attackBonus(player) + mattonfire.dnd.magic.MagicGear.attackBonus(player.getMainHandStack()))
                     .critRange(critRange(player))
-                    .rerollNaturalOnes(AbilityScores.sheet(player).rerollNaturalOnes()).roll();
+                    .rerollNaturalOnes(AbilityScores.sheet(player).rerollNaturalOnes());
+            for (Mode mode : MODES) {
+                builder.mode(mode.mode(player, entity));
+            }
+            D20.Roll roll = builder.roll();
             String autoCrit = roll.outcome() == D20.Outcome.CRITICAL ? null : autoCrit(player, entity);
             if (autoCrit != null) {
                 // A guaranteed crit can't fumble either

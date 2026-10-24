@@ -1,0 +1,15 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_basilisk_eye": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {"items": [{"items": ["dndclasses:basilisk_eye"]}]}
+    },
+    "has_the_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {"recipe": "dndclasses:salve_of_stone_to_flesh"}
+    }
+  },
+  "requirements": [["has_basilisk_eye", "has_the_recipe"]],
+  "rewards": {"recipes": ["dndclasses:salve_of_stone_to_flesh"]}
+}

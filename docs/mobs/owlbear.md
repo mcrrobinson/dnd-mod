@@ -22,7 +22,7 @@ When its target is 5 to 16 blocks away, in sight, and within 3 blocks of its hei
 
 1. It rears up and roars, then paws the ground for 1 second.
 2. It rushes in a straight line at 0.65 blocks a tick, for up to 1.5 seconds, towards where the target stood when the rush began. It doesn't steer, so a sidestep dodges it.
-3. The first living thing in its path takes 12 damage (1.5 times its swipe) and makes a **STR saving throw, DC 13**. On a failure it's thrown back and up; on a success it stands its ground (full damage, no knockback at all).
+3. The first living thing in its path takes 12 damage (1.5 times its swipe) and makes a **STR saving throw, DC 13**. On a failure it's thrown back and up and knocked **[Prone](../systems/conditions.md)** for 3 seconds (a player stands again with jump); on a success it stands its ground (full damage, no knockback at all).
 4. If it runs into a wall or a tree instead, it's stunned for 2.5 seconds. It can't move or attack, and crit particles circle its head.
 
 It charges at most once every 6 seconds (every 4 seconds below half health for Grimclaw, the Goblin Warren's champion: see [Dungeon encounters](../systems/dungeon-encounters.md)).
@@ -30,7 +30,7 @@ It charges at most once every 6 seconds (every 4 seconds below half health for G
 ### Bear hug
 A swipe that lands has a 35% chance to turn into a hug. This only works on targets up to 1.5 blocks wide that aren't riding anything and aren't in creative mode. The target makes a **STR saving throw, DC 13**: on a success it's just the swipe (and the owlbear waits out its 8-second hug cooldown before trying again); on a failure the hug starts.
 
-It rears up and holds the target in front of it for 3 seconds with heavy Slowness, crushing it for 3 damage every half second. The crush ignores the usual hit cooldown. Two ways out early:
+It rears up and holds the target in front of it for 3 seconds, **[Restrained](../systems/conditions.md)** (can't move; attacks against it have advantage) and with heavy Slowness, crushing it for 3 damage every half second. The crush ignores the usual hit cooldown. Two ways out early:
 - **Struggle:** press jump. Each press is an escape check, the better of your Athletics (STR) or Acrobatics (DEX) against DC 13, at most once every half second. A success ends the hug. The action bar reminds you when the hug starts.
 - **Fight:** deal 6 damage to the owlbear yourself, in total; hits from anyone else don't count.
 

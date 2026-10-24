@@ -12,6 +12,9 @@ import mattonfire.dnd.classes.Abilities.CharacterSheet;
 import mattonfire.dnd.classes.Abilities.Skill;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import mattonfire.dnd.classes.Conditions.Condition;
+import mattonfire.dnd.classes.Conditions.Conditions;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.MinecraftServer;
@@ -52,6 +55,15 @@ public final class Grapple {
     private record Hold(Holder holder, int dc, Text name) {
     }
 
+    /** Key of the Restrained condition a hold applies. */
+    public static final String CONDITION_KEY = "grapple";
+
+    private record Restraint(Holder holder, String key) {
+    }
+
+    /** Every held creature (players and mobs) to who restrains it. */
+    private static final Map<LivingEntity, Restraint> RESTRAINED = new java.util.IdentityHashMap<>();
+
     /** Held player UUID to their hold. */
     private static final Map<UUID, Hold> HOLDS = new HashMap<>();
     /** Player UUID to the server tick of their last escape check. */
@@ -65,6 +77,16 @@ public final class Grapple {
      * hold in the escape check's result ("Mimic's jaws"). Non-players are ignored (they can't struggle).
      */
     public static synchronized void hold(LivingEntity victim, Holder holder, int dc, String nameKey) {
+        hold(victim, holder, dc, nameKey, CONDITION_KEY);
+    }
+
+    /**
+     * As {@link #hold(LivingEntity, Holder, int, String)}, with the key of the Restrained condition it applies
+     * ({@value #CONDITION_KEY} by default; the Gelatinous Cube uses "engulf").
+     */
+    public static synchronized void hold(LivingEntity victim, Holder holder, int dc, String nameKey,
+            String conditionKey) {
+        restrain(victim, holder, conditionKey);
         if (!(victim instanceof ServerPlayerEntity player)) {
             return;
         }
@@ -77,11 +99,38 @@ public final class Grapple {
 
     /** The hold on {@code victim} is over (if {@code holder} is the one holding it). */
     public static synchronized void release(LivingEntity victim, Holder holder) {
+        unrestrain(victim, holder);
         Hold hold = HOLDS.get(victim.getUuid());
         if (hold != null && hold.holder() == holder) {
             HOLDS.remove(victim.getUuid());
             if (victim instanceof ServerPlayerEntity player) {
                 sendHeld(player, false);
+            }
+        }
+    }
+
+    /** A held creature is Restrained (transient, source the holder when it's an entity) while the hold lasts. */
+    private static void restrain(LivingEntity victim, Holder holder, String conditionKey) {
+        if (victim.getWorld().isClient) {
+            return;
+        }
+        Conditions.Builder b = Conditions.of(victim, Condition.RESTRAINED).key(conditionKey).transientInstance();
+        if (holder instanceof Entity entity) {
+            b.source(entity);
+        }
+        if (b.apply() != null) {
+            RESTRAINED.put(victim, new Restraint(holder, conditionKey));
+        }
+    }
+
+    private static void unrestrain(LivingEntity victim, Holder holder) {
+        Restraint r = RESTRAINED.get(victim);
+        if (r != null && r.holder() == holder) {
+            RESTRAINED.remove(victim);
+            if (holder instanceof Entity entity) {
+                Conditions.remove(victim, Condition.RESTRAINED, entity);
+            } else {
+                Conditions.removeKey(victim, Condition.RESTRAINED, r.key());
             }
         }
     }
@@ -131,6 +180,14 @@ public final class Grapple {
     }
 
     private static synchronized void tick(MinecraftServer server) {
+        // Holders that let go without calling release (died, removed) free their Restrained victims
+        for (Map.Entry<LivingEntity, Restraint> e : new java.util.ArrayList<>(RESTRAINED.entrySet())) {
+            LivingEntity victim = e.getKey();
+            if (victim.isRemoved() || !e.getValue().holder().isHolding(victim)) {
+                unrestrain(victim, e.getValue().holder());
+                RESTRAINED.remove(victim);
+            }
+        }
         Iterator<Map.Entry<UUID, Hold>> it = HOLDS.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry<UUID, Hold> e = it.next();

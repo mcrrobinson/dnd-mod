@@ -1,0 +1,150 @@
+# What the conditions do in combat (docs/systems/conditions.md). Companion to conditions.txt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions-effects.txt
+# Check run/logs/latest.log:
+# 1. Paralyzed husk: "[D20] Dev attack auto-critical (Paralyzed)".
+# 2. Prone husk, forced 20 then 5: "[D20] Dev Attack Roll 20 (5 adv)".
+# 3. Poisoned player, forced 1 then 15: "[D20] Dev Attack Roll 1 (15 dis) ... FUMBLE".
+# 4. Restrained player: "/dm save @s dex" logs "(.. dis)".
+# 5. Milk: "[Conditions] Dev -poisoned (removed)" after drinking.
+# 6. Charmed husk (by the player): no target ("target" -> none); a second (NoAI) one hit by the player logs
+#    "-charmed (charm broken)".
+# 7. Blinded player: Blindness (Id 15) with ShowIcon 0b in ActiveEffects; a blinded husk 6 blocks away has no
+#    target.
+# 8. Frightened goblin (from the player): its distance grows (ConditionFleeGoal); Pos before and after.
+# 9. Incapacitated: "use" with a bow logs "blocked: use item".
+# 10. A cave spider bite (forced 2 on the CON save): "[Conditions] Dev +poisoned (Cave Spider, ...)" and
+#     "poisoned (rule:dndclasses:poison)" in the list.
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s wizard
+wait 5
+closescreen
+/clear @s
+/fill -6 149 -6 14 149 14 minecraft:stone
+/fill -6 150 -6 14 156 14 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:health_boost 900 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s clear
+wait 5
+
+# ---- 1. Paralyzed target: a close hit is a critical ----
+/summon minecraft:husk 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f],Tags:["fx"],PersistenceRequired:1b,Health:200f,Attributes:[{Name:"generic.max_health",Base:200d}]}
+/tp @s 4.5 150 3.5 0 10
+wait 5
+/dndcondition apply @e[tag=fx] paralyzed 200
+wait 25
+attack
+wait 5
+/dndcondition remove @e[tag=fx] all
+
+# ---- 2. Prone target: advantage within 3 blocks ----
+/dndcondition apply @e[tag=fx] prone 200
+/dndclass forceroll @s 20 5
+wait 25
+attack
+wait 5
+/dndcondition remove @e[tag=fx] all
+/dndclass forceroll @s clear
+
+# ---- 3. Poisoned attacker: disadvantage ----
+/dndcondition apply @s poisoned 400
+/dndclass forceroll @s 1 15
+wait 25
+attack
+wait 5
+/dndclass forceroll @s clear
+
+# ---- 4. Restrained: DEX saves at disadvantage ----
+/dndcondition apply @s restrained 100
+/dm save @s dex 5
+wait 5
+/dndcondition remove @s restrained
+
+# ---- 5. Milk ends Poisoned ----
+/give @s minecraft:milk_bucket
+wait 2
+hotbar 0
+holduse on
+wait 45
+holduse off
+wait 5
+/dndcondition list @s
+/clear @s
+
+# ---- 6. Charmed husk: won't target its charmer; a hit from the charmer breaks it ----
+/kill @e[tag=fx]
+/kill @e[type=minecraft:item]
+/summon minecraft:husk 4.5 150 8.5 {Tags:["fx","charm"],PersistenceRequired:1b}
+/dndcondition apply @e[tag=charm] charmed 400 from @s
+wait 40
+target @e[tag=charm]
+/kill @e[tag=charm]
+/summon minecraft:husk 4.5 150 5.5 {NoAI:1b,Rotation:[180f,0f],Tags:["fx","charm2"],PersistenceRequired:1b}
+/dndcondition apply @e[tag=charm2] charmed 400 from @s
+/tp @s 4.5 150 3.5 0 10
+wait 25
+attack
+wait 5
+/dndcondition list @e[tag=charm2,limit=1]
+/kill @e[tag=fx]
+
+# ---- 7. Blinded: hidden Blindness for players; blinded mobs see 4 blocks ----
+/tp @s 4.5 150 3.5 0 0
+/dndcondition apply @s blinded 100
+wait 15
+/data get entity @s ActiveEffects
+/dndcondition remove @s all
+wait 5
+/data get entity @s ActiveEffects
+/summon minecraft:husk 4.5 150 9.5 {Tags:["fx","blind"],PersistenceRequired:1b}
+/dndcondition apply @e[tag=blind] blinded 400
+wait 40
+target @e[tag=blind]
+/kill @e[tag=fx]
+/kill @e[type=minecraft:item]
+
+# ---- 8. A frightened goblin runs from the one who frightened it ----
+/summon dndclasses:goblin_warrior 4.5 150 8.5 {Tags:["fx","gob"],PersistenceRequired:1b}
+wait 5
+/dndcondition apply @e[tag=gob] frightened 200 from @s
+/data get entity @e[tag=gob,limit=1] Pos
+wait 60
+/data get entity @e[tag=gob,limit=1] Pos
+target @e[tag=gob]
+/kill @e[tag=fx]
+/kill @e[type=minecraft:item]
+
+# ---- 9. Incapacitated: can't use items ----
+/give @s minecraft:bow
+/give @s minecraft:arrow 4
+wait 2
+hotbar 0
+/dndcondition apply @s incapacitated 100
+wait 5
+use
+wait 5
+/dndcondition remove @s all
+/clear @s
+
+# ---- 10. Cave spider poison (data-driven save with "condition": "poisoned") ----
+/effect clear @s minecraft:poison
+/time set midnight
+/dndclass forceroll @s 2
+/summon minecraft:cave_spider 4.5 150 5.0 {Tags:["fx"]}
+wait 60
+/dndcondition list @s
+/time set noon
+/kill @e[tag=fx]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/effect clear @s minecraft:poison
+quit

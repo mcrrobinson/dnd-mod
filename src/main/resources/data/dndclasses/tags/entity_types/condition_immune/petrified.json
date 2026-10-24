@@ -1,0 +1,10 @@
+{
+    "replace": false,
+    "values": [
+        "minecraft:iron_golem",
+        "minecraft:snow_golem",
+        "dndclasses:clockwork_sentinel",
+        "dndclasses:gelatinous_cube",
+        "minecraft:warden"
+    ]
+}

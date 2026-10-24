@@ -121,6 +121,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
                 mattonfire.dnd.world.gen.village.HobbitVillageStructures.register();
                 mattonfire.dnd.tavern.Tavern.register();
+                mattonfire.dnd.entity.hireling.Hirelings.register();
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
@@ -259,6 +260,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Downed.Revives.register();
                 mattonfire.dnd.classes.Downed.Stabilise.register();
                 mattonfire.dnd.classes.Downed.DownedHudSync.register();
+                // Conditions (Prone, Frightened, Restrained, Stunned, Petrified...): after Downed, which it clears on
+                mattonfire.dnd.classes.Conditions.Conditions.bootstrap();
 
                 if (FabricLoader.getInstance().isModLoaded("identity")) {
                         LOGGER.info("Identity mod is loaded");

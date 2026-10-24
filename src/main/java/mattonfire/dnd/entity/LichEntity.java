@@ -6,7 +6,6 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.entity.ai.goal.CasterMovementGoal;
@@ -315,7 +314,13 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
                     .onFailure(Text.translatable("save.dndclasses.effect.dread_presence.failure"))
                     .roll();
             if (save.fresh() && save.failed()) {
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, BossSaves.DREAD_FRIGHTENED_TICKS, 0), this);
+                mattonfire.dnd.classes.Conditions.Conditions.of(player, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED).source(this).key("dread")
+                        .ticks(BossSaves.DREAD_FRIGHTENED_TICKS)
+                        .saveLabel(BossSaves.DREAD_PRESENCE.labelKey())
+                        .repeatSave(BossSaves.DREAD_PRESENCE.ability(),
+                                lastPhase ? BossSaves.LAST_PHASE_DC : BossSaves.DREAD_PRESENCE.dc(),
+                                BossSaves.FEAR_REPEAT_TICKS)
+                        .saveTags("fear").apply();
             }
         }
     }

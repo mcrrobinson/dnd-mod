@@ -1,0 +1,27 @@
+# Hirelings across a relog, part 1: two hirelings, one following and one waiting 10 blocks away; then quit.
+# Run this, then hirelings-relog-check.txt (no reset header in either: the check needs this state).
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/party leave
+/hireling dismiss all
+/fill 20 149 0 40 149 10 minecraft:stone
+/fill 20 150 0 40 155 10 minecraft:air
+/tp @s 25.5 150 5.5 -90 10
+wait 20
+/kill @e[type=dndclasses:hireling]
+/hireling admin spawn @s tank human Brannoc
+/hireling admin spawn @s damage elf Aelar
+wait 5
+/tp @e[type=dndclasses:hireling,nbt=!{Role:"damage"}] 25.5 150 5.5
+/tp @e[type=dndclasses:hireling,nbt={Role:"damage"}] 35.5 150 5.5
+/execute as @e[type=dndclasses:hireling] run data get entity @s HirelingName
+wait 5
+/hireling wait Aelar
+/hireling list
+wait 20
+/hireling admin list
+quit

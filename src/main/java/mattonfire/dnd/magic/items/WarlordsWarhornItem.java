@@ -7,7 +7,6 @@ import org.jetbrains.annotations.Nullable;
 
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Party.PartyManager;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.entity.GoblinWarriorEntity;
 import mattonfire.dnd.magic.MagicData;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
@@ -71,8 +70,8 @@ public class WarlordsWarhornItem extends Item {
         for (GoblinWarriorEntity goblin : world.getEntitiesByClass(GoblinWarriorEntity.class,
                 player.getBoundingBox().expand(RADIUS),
                 g -> g.isAlive() && g.squaredDistanceTo(player) <= RADIUS * RADIUS)) {
-            if (goblin.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, FRIGHTEN_SECONDS * 20, 0),
-                    player)) {
+            if (mattonfire.dnd.classes.Conditions.Conditions.of(goblin, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED).source(player)
+                    .ticks(FRIGHTEN_SECONDS * 20).apply() != null) {
                 frightened++;
                 if (goblin.getTarget() == player)
                     goblin.setTarget(null);

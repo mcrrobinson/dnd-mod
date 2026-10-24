@@ -83,6 +83,18 @@ public final class PartyHud {
         HudRenderCallback.EVENT.register((matrices, tickDelta) -> render(matrices));
     }
 
+    /**
+     * The first free line below the party rows (where the hireling HUD starts): the top margin when there are no
+     * rows to draw.
+     */
+    public static int bottom() {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client.options.hudHidden || client.options.debugEnabled) {
+            return Y;
+        }
+        return Y + members.size() * ROW_HEIGHT;
+    }
+
     /** Whether the client is in a party with anyone else (the server sends an empty list otherwise). */
     public static boolean inParty() {
         return !memberIds.isEmpty();

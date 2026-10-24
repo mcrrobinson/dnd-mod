@@ -64,6 +64,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code hostile_source_only}: only roll when the source is a hostile mob ({@link Monster}).</li>
  * <li>{@code label}: translation key shown on the save lane (defaults to the effect's name or "Damage").</li>
  * <li>{@code tags}: keywords for advantage filters ("poison").</li>
+ * <li>{@code condition}: a {@link mattonfire.dnd.classes.Conditions.Condition} id ("poisoned") the effect also
+ * gives for its final (possibly halved) length, from the same source. Effect rules only.</li>
  * <li>{@code window}: ticks one roll covers per source (one exposure); default {@link #DEFAULT_WINDOW}. Damage
  * from a cloud or projectile is keyed by that entity, so one breath cloud is one exposure.</li>
  * </ul>
@@ -93,7 +95,8 @@ public final class SaveRules {
     /** One loaded rule. Exactly one of {@code effect} and {@code damageType} is set. */
     public record Rule(Identifier id, @Nullable Identifier effect, @Nullable Identifier damageType, Ability ability,
             @Nullable Integer defaultDc, Map<Identifier, Integer> dcBySource, OnSuccess onSuccess,
-            boolean hostileSourceOnly, @Nullable String label, String[] tags, int window) {
+            boolean hostileSourceOnly, @Nullable String label, String[] tags, int window,
+            @Nullable mattonfire.dnd.classes.Conditions.Condition condition) {
 
         /** The DC against this source, or null when the rule doesn't cover it. */
         @Nullable
@@ -242,8 +245,18 @@ public final class SaveRules {
         boolean hostileOnly = o.has("hostile_source_only") && o.get("hostile_source_only").getAsBoolean();
         String label = o.has("label") ? o.get("label").getAsString() : null;
         int window = o.has("window") ? Math.max(1, o.get("window").getAsInt()) : DEFAULT_WINDOW;
+        mattonfire.dnd.classes.Conditions.Condition condition = null;
+        if (o.has("condition")) {
+            condition = mattonfire.dnd.classes.Conditions.Condition.byId(o.get("condition").getAsString());
+            if (condition == null) {
+                throw new IllegalArgumentException("unknown condition " + o.get("condition").getAsString());
+            }
+            if (effect == null) {
+                throw new IllegalArgumentException("\"condition\" needs an \"effect\"");
+            }
+        }
         return new Rule(id, effect, damageType, ability, defaultDc, Map.copyOf(bySource), onSuccess, hostileOnly,
-                label, tags, window);
+                label, tags, window, condition);
     }
 
     // ---------------------------------------------------------------- effects
@@ -282,6 +295,7 @@ public final class SaveRules {
                 .onSuccess(Text.translatable(rule.onSuccess().effectKey))
                 .onFailure(Text.translatable("save.dndclasses.effect.full_effect")).roll();
         if (result.failed()) {
+            applyCondition(rule, player, source, effect.getDuration());
             return effect;
         }
         if (rule.onSuccess() == OnSuccess.NEGATE) {
@@ -291,8 +305,17 @@ public final class SaveRules {
         if (ticks <= 0) {
             return null;
         }
+        applyCondition(rule, player, source, ticks);
         return new StatusEffectInstance(effect.getEffectType(), ticks, effect.getAmplifier(), effect.isAmbient(),
                 effect.shouldShowParticles(), effect.shouldShowIcon());
+    }
+
+    /** A rule with {@code "condition"} also gives that condition for the effect's final length, same source. */
+    private static void applyCondition(Rule rule, LivingEntity target, Entity source, int ticks) {
+        if (rule.condition() != null) {
+            mattonfire.dnd.classes.Conditions.Conditions.of(target, rule.condition()).source(source)
+                    .key("rule:" + rule.id()).ticks(ticks).apply();
+        }
     }
 
     /** Adds the saved-against effect without saving again. */
@@ -306,7 +329,7 @@ public final class SaveRules {
     }
 
     /** The existing immunities: no save when the effect wouldn't land (or is stripped straight away) anyway. */
-    static boolean immune(PlayerEntity player, StatusEffectInstance effect) {
+    public static boolean immune(PlayerEntity player, StatusEffectInstance effect) {
         StatusEffect type = effect.getEffectType();
         if (!player.canHaveStatusEffect(effect) || PaladinSkills.blocksEffect(player, type)
                 || BossItems.blocksEffect(player, type) || PotionImmunity.shouldBlock(player, type)) {

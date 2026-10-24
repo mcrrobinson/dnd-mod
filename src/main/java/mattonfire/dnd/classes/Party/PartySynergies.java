@@ -17,6 +17,9 @@ import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import mattonfire.dnd.dm.DungeonMaster;
+import mattonfire.dnd.entity.HirelingEntity;
+import mattonfire.dnd.entity.hireling.HirelingAbilities;
+import mattonfire.dnd.entity.hireling.HirelingRole;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.mob.Monster;
@@ -46,6 +49,11 @@ import net.minecraft.text.Text;
  * {@value #ASSIST_MAX} in all), and earns half the solver's class XP.</li>
  * </ul>
  * Every synergy logs a {@code [Party]} line.
+ *
+ * <p><b>Hirelings</b> count with their role for their owner's party, and for a solo owner as a party of one
+ * plus hirelings ({@link #rolesNear}): a Tank hireling is a Bodyguard and an Opportunist target, a Healer
+ * hireling's Cure Wounds gets Triage, a Support hireling Inspires, a Utility hireling Scouts (client side, from
+ * the hireling HUD packet), and hireling roles count towards a Balanced party (they take no XP share).
  */
 public final class PartySynergies {
     public static final double BODYGUARD_RADIUS = 12.0;
@@ -95,6 +103,45 @@ public final class PartySynergies {
         return roleOf(player) == role;
     }
 
+    /** Someone who brings a role to the party: a player or a hireling ({@code hireling} is null for a player). */
+    public record RoleHolder(String name, PartyRole role, LivingEntity entity, @Nullable HirelingEntity hireling) {
+    }
+
+    /**
+     * The roles around {@code player} within {@code radius} blocks: the player's own, their active party members'
+     * and the active hirelings of the player and their party. A hireling's name is "Brannoc (hireling)".
+     */
+    public static List<RoleHolder> rolesNear(ServerPlayerEntity player, double radius) {
+        List<RoleHolder> roles = new ArrayList<>();
+        if (!active(player)) {
+            return roles;
+        }
+        PartyRole own = roleOf(player);
+        if (own != null) {
+            roles.add(new RoleHolder(player.getEntityName(), own, player, null));
+        }
+        for (ServerPlayerEntity member : members(player, radius)) {
+            PartyRole role = roleOf(member);
+            if (role != null) {
+                roles.add(new RoleHolder(member.getEntityName(), role, member, null));
+            }
+        }
+        for (HirelingEntity hireling : HirelingAbilities.sideHirelings(player, radius)) {
+            roles.add(holder(hireling));
+        }
+        return roles;
+    }
+
+    private static RoleHolder holder(HirelingEntity hireling) {
+        return new RoleHolder(hireling.firstName() + " (hireling)", hireling.role().partyRole, hireling, hireling);
+    }
+
+    /** A Tank hireling that serves {@code player}'s side. */
+    private static boolean isSideTankHireling(@Nullable LivingEntity entity, PlayerEntity player) {
+        return entity instanceof HirelingEntity hireling && hireling.isActive() && hireling.role() == HirelingRole.TANK
+                && HirelingAbilities.alliedWith(hireling, player);
+    }
+
     // ---- Bodyguard ----
 
     /**
@@ -106,15 +153,27 @@ public final class PartySynergies {
             return;
         }
         if (mob.getTarget() instanceof ServerPlayerEntity current && current != victim
-                && hasRole(current, PartyRole.TANK) && PartyManager.areInSameParty(current, victim)) {
+                && hasRole(current, PartyRole.TANK) && PartyManager.areInSameParty(current, victim)
+                || isSideTankHireling(mob.getTarget(), victim)) {
             return; // already on a Tank
         }
-        ServerPlayerEntity tank = null;
+        LivingEntity tank = null;
+        String tankName = null;
         double best = BODYGUARD_RADIUS * BODYGUARD_RADIUS;
         for (ServerPlayerEntity member : PartyManager.nearbyMembers(victim, PartyManager.SHARE_RADIUS)) {
             double distance = member.squaredDistanceTo(mob);
             if (active(member) && hasRole(member, PartyRole.TANK) && distance <= best) {
                 tank = member;
+                tankName = member.getEntityName();
+                best = distance;
+            }
+        }
+        // Tank hirelings of the victim's side guard them too (a solo player with a Shieldbearer).
+        for (HirelingEntity hireling : HirelingAbilities.sideHirelings(victim, PartyManager.SHARE_RADIUS)) {
+            double distance = hireling.squaredDistanceTo(mob);
+            if (hireling.role() == HirelingRole.TANK && distance <= best) {
+                tank = hireling;
+                tankName = holder(hireling).name();
                 best = distance;
             }
         }
@@ -124,13 +183,18 @@ public final class PartySynergies {
         float roll = mob.getRandom().nextFloat();
         boolean switched = roll < BODYGUARD_CHANCE;
         DnDClasses.LOGGER.info("[Party] Bodyguard: {} hit {}, {} is {} blocks away, roll {} vs {} -> {}",
-                mob.getName().getString(), victim.getEntityName(), tank.getEntityName(),
+                mob.getName().getString(), victim.getEntityName(), tankName,
                 String.format("%.1f", Math.sqrt(best)), String.format("%.2f", roll), BODYGUARD_CHANCE,
                 switched ? "retarget" : "stays");
         if (switched) {
             mob.setTarget(tank);
-            tank.sendMessage(Text.translatable("party.dndclasses.bodyguard", mob.getDisplayName(),
-                    victim.getDisplayName()), true);
+            if (tank instanceof ServerPlayerEntity player) {
+                player.sendMessage(Text.translatable("party.dndclasses.bodyguard", mob.getDisplayName(),
+                        victim.getDisplayName()), true);
+            } else if (tank instanceof HirelingEntity hireling) {
+                victim.sendMessage(Text.translatable("party.dndclasses.bodyguard.hireling", hireling.firstName(),
+                        mob.getDisplayName()), true);
+            }
         }
     }
 
@@ -174,28 +238,35 @@ public final class PartySynergies {
     /** A player's hit on {@code target}: +15% for a party Damage dealer when the mob is on a party Tank. */
     public static float opportunist(PlayerEntity attacker, LivingEntity target, float amount) {
         if (!(attacker instanceof ServerPlayerEntity player) || !(target instanceof MobEntity mob)
-                || !(mob.getTarget() instanceof ServerPlayerEntity tank) || tank == player
-                || !hasRole(player, PartyRole.DAMAGE) || !hasRole(tank, PartyRole.TANK) || !active(player)
-                || !active(tank) || !PartyManager.areInSameParty(player, tank)) {
+                || !hasRole(player, PartyRole.DAMAGE) || !active(player)) {
+            return amount;
+        }
+        String tankName;
+        if (mob.getTarget() instanceof ServerPlayerEntity tank && tank != player && hasRole(tank, PartyRole.TANK)
+                && active(tank) && PartyManager.areInSameParty(player, tank)) {
+            tankName = tank.getEntityName();
+        } else if (isSideTankHireling(mob.getTarget(), player)) {
+            tankName = holder((HirelingEntity) mob.getTarget()).name();
+        } else {
             return amount;
         }
         float boosted = amount * OPPORTUNIST_MULTIPLIER;
         DnDClasses.LOGGER.info("[Party] Opportunist: {} hits {} (on {}) for {} instead of {}",
-                player.getEntityName(), mob.getName().getString(), tank.getEntityName(), boosted, amount);
+                player.getEntityName(), mob.getName().getString(), tankName, boosted, amount);
         return boosted;
     }
 
     // ---- Obstacle checks: Inspire and Assist ----
 
-    /** The party Support within {@value #INSPIRE_RADIUS} blocks inspiring {@code player}, or null. */
+    /**
+     * Who inspires {@code player}: a party Support or a Support hireling of their side within
+     * {@value #INSPIRE_RADIUS} blocks (not the player themselves), or null.
+     */
     @Nullable
-    public static ServerPlayerEntity inspirer(ServerPlayerEntity player) {
-        if (!active(player)) {
-            return null;
-        }
-        for (ServerPlayerEntity member : members(player, INSPIRE_RADIUS)) {
-            if (hasRole(member, PartyRole.SUPPORT)) {
-                return member;
+    public static RoleHolder inspirer(ServerPlayerEntity player) {
+        for (RoleHolder holder : rolesNear(player, INSPIRE_RADIUS)) {
+            if (holder.role() == PartyRole.SUPPORT && holder.entity() != player) {
+                return holder;
             }
         }
         return null;
@@ -221,11 +292,11 @@ public final class PartySynergies {
 
     /** Adds Inspire's advantage and the assist bonus to an obstacle roll. */
     public static D20.Builder obstacleRoll(D20.Builder builder, ServerPlayerEntity player, ObstacleType type) {
-        ServerPlayerEntity inspirer = inspirer(player);
+        RoleHolder inspirer = inspirer(player);
         if (inspirer != null) {
             builder.advantage();
             DnDClasses.LOGGER.info("[Party] Inspire: {} rolls {} with advantage ({})", player.getEntityName(),
-                    type.id(), inspirer.getEntityName());
+                    type.id(), inspirer.name());
         }
         List<ServerPlayerEntity> helpers = assisters(player, type);
         if (!helpers.isEmpty()) {
@@ -241,6 +312,11 @@ public final class PartySynergies {
 
     /** How many different primary roles there are among {@code sharers}. */
     public static int distinctRoles(List<ServerPlayerEntity> sharers) {
+        return distinctRoles(sharers, List.of());
+    }
+
+    /** How many different roles there are among {@code sharers} and the {@code hirelings} with them. */
+    public static int distinctRoles(List<ServerPlayerEntity> sharers, List<HirelingEntity> hirelings) {
         Set<PartyRole> roles = EnumSet.noneOf(PartyRole.class);
         for (ServerPlayerEntity member : sharers) {
             PartyRole role = roleOf(member);
@@ -248,7 +324,20 @@ public final class PartySynergies {
                 roles.add(role);
             }
         }
+        for (HirelingEntity hireling : hirelings) {
+            if (hireling.isActive()) {
+                roles.add(hireling.role().partyRole);
+            }
+        }
         return roles.size();
+    }
+
+    /**
+     * The active hirelings within {@code radius} of {@code collector} that serve any of the {@code sharers}: their
+     * roles count for a Balanced party.
+     */
+    public static List<HirelingEntity> sharingHirelings(ServerPlayerEntity collector, double radius) {
+        return HirelingAbilities.sideHirelings(collector, radius);
     }
 
     /** The class XP multiplier for that many different roles: 1 + 10 / 15 / 20% for 3 / 4 / 5. */

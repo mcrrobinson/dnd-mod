@@ -6,7 +6,6 @@ import mattonfire.dnd.classes.Obstacles.ObstacleAuras;
 import mattonfire.dnd.classes.Obstacles.ObstacleState;
 import mattonfire.dnd.classes.Obstacles.ObstacleType;
 import mattonfire.dnd.classes.Progression.Progression;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.SkillChecks.Eligibility;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -131,8 +130,10 @@ public final class DreadWardType extends ObstacleType {
                     3, 0.3, 0.4, 0.3, 0.0);
             return;
         }
-        boolean fresh = !player.hasStatusEffect(ModEffects.FRIGHTENED);
-        player.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, EFFECT_TICKS, 0, true, true));
+        boolean fresh = !mattonfire.dnd.classes.Conditions.Conditions.has(player, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED);
+        mattonfire.dnd.classes.Conditions.Conditions.of(player, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED)
+                .sourceName(Text.translatable(translationKey())).key("dread_ward").ticks(EFFECT_TICKS).silent()
+                .apply();
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, EFFECT_TICKS, SLOWNESS_AMPLIFIER,
                 true, false));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, EFFECT_TICKS, WEAKNESS_AMPLIFIER,

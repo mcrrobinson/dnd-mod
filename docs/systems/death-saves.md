@@ -14,7 +14,7 @@ When a hit would kill you, these are checked in order:
 3. **Massive damage** (5e): if what's left of the hit after 0 HP is at least your max health, you die outright. A Rogue with 14 max HP at 14 HP dies outright from 28 damage, but goes Downed from 27.
 4. **`dndDeathSaves 0`**: you die as in vanilla.
 5. **A PvP blow** from a player outside your party kills outright if `dndPvpDowned` is false.
-6. **An ally nearby**: another party member who's online, alive, not spectating, not Downed themselves, in the same dimension and within 64 blocks (with `dndDeathSaves 2`, any other player there who didn't land the blow). Then you go Downed.
+6. **An ally nearby**: another party member who's online, alive, not spectating, not Downed themselves, in the same dimension and within 64 blocks (with `dndDeathSaves 2`, any other player there who didn't land the blow), or a conscious [hireling](hirelings.md#death-saves-no-more-lonely-last-stands) in Follow mode within 64 blocks (yours or a party member's). Then you go Downed.
 7. **Nobody nearby**: a [Last Stand](#last-stand).
 
 Going Downed sets you to 1 HP, removes Regeneration and Absorption and puts out fire (unless you're still standing in it). You're thrown off a mount and stop gliding. Your party gets a chat line ("Steve is Downed!").
@@ -158,7 +158,7 @@ Permission level 2.
 ## For developers
 - Package `classes/Downed/`:
   - `Downed`: the state API, `is(player)` / `isStable(player)` (both sides, from DataTracker bits on the player), `down(player, source)`, `stabilise(player[, ticks])`, `revive(player, hp)`, `bleedOut(player)` (dies with the stored source; a held totem still works), `tally(player)`. The tally is persistent NBT `dndDowned`, cleared on death and respawn.
-  - `DownedEvents`: `ALLOW_DEATH` (the order above), `ALLOW_DAMAGE` (hits become fails), the restriction callbacks (in an early phase, before attack rolls), the `RestEvents.ALLOW_REST` veto, join resume, logout death, the C2S `dndclasses:downed_give_up` hold packet, and `AFTER_DOWNED`.
+  - `DownedEvents`: `ALLOW_DEATH` (the order above), `EXTRA_ALLY` (other allies for `hasAlly`: hirelings register one), `ALLOW_DAMAGE` (hits become fails), the restriction callbacks (in an early phase, before attack rolls), the `RestEvents.ALLOW_REST` veto, join resume, logout death, the C2S `dndclasses:downed_give_up` hold packet, and `AFTER_DOWNED`.
   - `DeathSaves`: `roll(player, label, dc, Advantage)` builds a `RollKind.DEATH` roll through `D20.roll`; `lastStand(player)`.
   - `DownedCombat`: mob targeting (`DownedTargetMixin` on `LivingEntity.canTarget`, which `TargetPredicate`, `TrackTargetGoal.shouldContinue` and brain sensors check, plus a sweep every 10 ticks and on `AFTER_DOWNED` that clears `setTarget` and the `ATTACK_TARGET` memory), the boss party-wipe `DeathSaveModifier`, the rest veto (Downed party member within 32 blocks, `BossFight.inAnyFight`), and PvP finisher credit (`beforeFails`, called from `DownedEvents.allowDamage`).
   - `DeathSaveModifier.EVENT`: `bonus(player)` (summed, capped at +5) and `mode(player)` (advantage / disadvantage) for auras, racial traits, items and boss party wipes.

@@ -36,12 +36,12 @@ The ray phase lasts 8 seconds (10 when enraged). It shuts the central eye and ha
 | Slowing | Blue | 2 magic damage and Slowness III for 6 s | DEX | 2 damage, no Slowness |
 | Telekinetic | Violet | Levitation II for 2.5 s | STR | No Levitation |
 | Enervation | Red | 8 magic damage (10 when enraged) | CON | Half: 4 (5 when enraged) |
-| Fear | Yellow | **Frightened** for 8 s and Darkness for 4 s | WIS | Not Frightened, Darkness for 1 s |
+| Fear | Yellow | **Frightened** of the Beholder for 8 s (a WIS save every 3 s ends it early) and Darkness for 4 s | WIS | Not Frightened, Darkness for 1 s |
 
 ### Saving throws
 Every ray that hits you allows a [saving throw](../systems/saving-throws.md) against **DC 15**, or **DC 16** once it's enraged, shown on the save lane beside the crosshair. Each ray is one save, rolled when it hits. The Fear ray's save counts as a save against fear, so anything that gives advantage against fear applies. Pets and other creatures caught by a ray save silently with +1. Studying a Beholder (V) lists all four saves.
 
-**Frightened** halves your attack damage. While it lasts, the Beholder shoves you back every half second whenever you're within 7 blocks of it.
+**[Frightened](../systems/conditions.md)** halves your melee damage, puts your attack rolls and checks at disadvantage while the Beholder is in sight, and stops you walking toward it. While it lasts, the Beholder also shoves back every half second anyone frightened *of it* within 7 blocks.
 
 ### Eyestalks
 Each stalk has its own hit shape (F3+B shows them as green boxes). A hit of 3 or more damage shuts that eye for 10 seconds: an eyelid closes over it and it can't fire.
@@ -102,7 +102,7 @@ No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its
 - **Hit shapes:** `MultipartDragon` with a `DragonPartLayout` of 4 `pair(...)` eyestalk groups.
   - `MultipartDragon.damagePart(part, source, amount)` is the hook `DragonPart.damage` calls; by default it just damages the owner. The Beholder overrides it to shut the stalk that was hit.
 - **Saves:** `entity/BossSaves.java` holds the four ray entries (`MobSaveInfo`), `BOSS_DC` 15 / `LAST_PHASE_DC` 16 and `RAY_WINDOW` (10 ticks). `BeholderRays.applyRay` rolls one per ray with exposure tag `ray:<id>`; the Enervation ray skips the roll for a victim the damage can't hurt (`DragonSaves.isUnaffected`).
-- **Effects:** `classes/Effects/AntiMagicEffect.java` (`isSuppressed` / `blocks` helpers) and `FrightenedEffect.java`, registered in `ModEffects`.
+- **Effects:** `classes/Effects/AntiMagicEffect.java` (`isSuppressed` / `blocks` helpers) registered in `ModEffects`. The fear ray applies the Frightened condition (`Conditions.of(...).source(beholder).key("fear_ray").repeatSave(...)`, `BossSaves.FEAR_RAY_TICKS` 160, `FEAR_REPEAT_TICKS` 60); `driveBackFrightened` uses `ConditionEffects.hasFrom`.
   - The checks are in `PowerUpRequests.handle`, `Warlock.throwFireball` and `DoubleJumpMixin.canJump`.
 - **Client:** `client/model/BeholderModel.java` (body pitch, eyelids) and `client/renderer/BeholderRenderer.java` (a `DragonRenderer`).
   - Assets: `geo/beholder.geo.json`, `animations/beholder.animation.json` and `textures/entity/beholder/beholder.png`.

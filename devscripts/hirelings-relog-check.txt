@@ -1,0 +1,17 @@
+# Hirelings across a relog, part 2 (after hirelings-relog-set.txt): both are back, the follower beside the player,
+# the waiter at its spot, and exactly two hirelings exist.
+# Expect: "[Hireling] Brannoc rejoins Dev"; "/hireling list" shows both; Test passed for distance ..6 (follower),
+# for the waiter near 35.5 150 5.5, and "count: 2" for all hirelings (no duplicates).
+wait 40
+closescreen
+/tp @s 25.5 150 5.5 -90 10
+wait 60
+/hireling list
+/execute if entity @e[type=dndclasses:hireling,distance=..6]
+/execute positioned 35.5 150 5.5 if entity @e[type=dndclasses:hireling,distance=..3]
+/execute if entity @e[type=dndclasses:hireling]
+/hireling admin list
+screenshot hirelings-relog
+/hireling dismiss all
+wait 5
+quit

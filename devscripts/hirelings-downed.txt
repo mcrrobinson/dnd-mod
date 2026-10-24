@@ -1,0 +1,52 @@
+# Hirelings and death saves: a solo Wizard with a Tank hireling goes Downed (no Last Stand) and the hireling
+# stabilises them; a knocked-out hireling is woken with bread.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/hirelings-downed.txt
+# Expect: "[Hireling] Brannoc keeps Dev from a Last Stand", "[Downed] Dev downed", no "Last Stand" roll,
+# "[Hireling] Brannoc stabilises Dev" within 120 ticks; "[Hireling] Brannoc knocked out", screenshot
+# hirelings-knocked-out, then "[Hireling] Brannoc woken by Dev".
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule dndDeathSaves 1
+/gamerule dndLastStand true
+/time set noon
+/weather clear
+/party leave
+/hireling dismiss all
+/fill 0 149 0 10 149 10 minecraft:stone
+/fill 0 150 0 10 155 10 minecraft:air
+/tp @s 5.5 150 5.5 0 10
+wait 20
+/kill @e[type=dndclasses:hireling]
+/dndclass set @s wizard
+/clear @s
+/effect give @s minecraft:instant_health 1 5
+/hireling admin spawn @s tank human Brannoc
+/tp @e[type=dndclasses:hireling,limit=1,sort=nearest] 5.5 150 9.5
+wait 20
+/damage @s 15 minecraft:generic
+wait 5
+screenshot hirelings-downed
+wait 115
+/hireling list
+/dndclass revive @s
+wait 10
+/hireling admin knockout @e[type=dndclasses:hireling,limit=1,sort=nearest]
+/execute as @e[type=dndclasses:hireling,limit=1,sort=nearest] run data merge entity @s {NoAI:1b}
+/tp @e[type=dndclasses:hireling,limit=1,sort=nearest] 5.5 150 7.5
+/tp @s 5.5 150 5.5 0 30
+wait 10
+screenshot hirelings-knocked-out
+/item replace entity @s weapon.mainhand with minecraft:bread 4
+wait 5
+use
+wait 10
+/data get entity @e[type=dndclasses:hireling,limit=1,sort=nearest] Health
+/execute as @e[type=dndclasses:hireling,limit=1,sort=nearest] run data merge entity @s {NoAI:0b}
+screenshot hirelings-woken
+/hireling dismiss all
+wait 5
+quit

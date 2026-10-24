@@ -159,6 +159,8 @@ public class ModItemGroup {
             entries.add(ModItems.DWARVEN_WARAXE);
             entries.add(ModItems.ORCISH_GREATAXE);
             entries.add(ModItems.GROG);
+            entries.add(ModItems.BASILISK_EYE);
+            entries.add(ModItems.SALVE_OF_STONE_TO_FLESH);
             entries.add(ModItems.GOBLIN_WAR_TOKEN);
             entries.add(ModItems.HALFLING_SLING);
             entries.add(ModItems.GNOMISH_REPEATER);
@@ -194,6 +196,7 @@ public class ModItemGroup {
             entries.add(ModItems.MAGMAMUNCHER_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARRIOR_SPAWN_EGG);
             entries.add(ModItems.GELATINOUS_CUBE_SPAWN_EGG);
+            entries.add(ModItems.BASILISK_SPAWN_EGG);
         });
         // --- Racial banner patterns ---
         ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP).register(entries ->

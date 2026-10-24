@@ -240,6 +240,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // --- Basilisk (design 8, section 7) ---
+    public static final EntityType<BasiliskEntity> BASILISK = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "basilisk"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BasiliskEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.6f, 1.1f))
+                    .build()
+    );
+
     public static final EntityType<GelatinousCubeEntity> GELATINOUS_CUBE = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "gelatinous_cube"),
@@ -330,5 +339,6 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
         LichEntity.registerEvents();
         FabricDefaultAttributeRegistry.register(BEHOLDER, BeholderEntity.createBeholderAttributes());
+        FabricDefaultAttributeRegistry.register(BASILISK, BasiliskEntity.createBasiliskAttributes());
     }
 }

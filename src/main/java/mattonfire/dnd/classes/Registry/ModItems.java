@@ -798,6 +798,13 @@ public class ModItems {
         /** Dropped by goblin warriors (25%); the orc Quartermaster buys 3 for 2 emeralds. */
         public static final Item GOBLIN_WAR_TOKEN = registerItem("goblin_war_token", new Item(new FabricItemSettings()));
         /** Strength I for 60 s, Nausea for 5 s; sold by the orc Quartermaster. */
+        // --- Basilisk (design 8, section 7) ---
+        public static final Item BASILISK_SPAWN_EGG = registerItem("basilisk_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.BASILISK, 0x42543A, 0xFFD628, new FabricItemSettings()));
+        public static final Item BASILISK_EYE = registerItem("basilisk_eye", new Item(new FabricItemSettings()));
+        public static final Item SALVE_OF_STONE_TO_FLESH = registerItem("salve_of_stone_to_flesh",
+                        new mattonfire.dnd.classes.Items.SalveOfStoneToFleshItem(new FabricItemSettings()));
+
         public static final Item GROG = registerItem("grog",
                 new mattonfire.dnd.classes.Items.GrogItem(new FabricItemSettings()));
         public static final Item ORC_WARRIOR_SPAWN_EGG = registerItem("orc_warrior_spawn_egg",

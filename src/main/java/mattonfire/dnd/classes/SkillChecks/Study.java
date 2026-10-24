@@ -147,6 +147,7 @@ public final class Study {
         registerWeakness(ModEntityTypes.LICH, Text.translatable("study.dndclasses.weakness.phylactery"));
         registerWeakness(ModEntityTypes.LICH, Text.translatable("study.dndclasses.weakness.necromancer",
                 Math.round((LichEntity.NECROMANCER_DAMAGE_BONUS - 1.0F) * 100)));
+        registerWeakness(ModEntityTypes.BASILISK, Text.translatable("study.dndclasses.weakness.basilisk_shield"));
         registerWeakness(ModEntityTypes.OWLBEAR, Text.translatable("study.dndclasses.weakness.owlbear_hug",
                 (int) OwlbearEntity.HUG_BREAK_DAMAGE));
 

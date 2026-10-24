@@ -93,7 +93,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
 - [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
-- [Medusa](bosses/medusa.md): lair boss of the Gorgon's Temple (1 in 3 desert pyramids and jungle temples); meet her eyes and save (CON 14) or turn to stone, raise a shield to reflect it; poisonous snake bites, longbow volleys, statues of earlier visitors; drops the Gorgon's Gaze
+- [Medusa](bosses/medusa.md): lair boss of the Gorgon's Temple (1 in 3 desert pyramids and jungle temples); meet her eyes and save (CON 14) or turn to stone, raise a shield to reflect it; poisonous snake bites, longbow volleys, statues of earlier visitors; drops the Gorgon's Gaze (PR #281)
 
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits, dressed with fulgurite, storm glass, a woven dragon nest, coin piles and shed scales that drop dragon scales

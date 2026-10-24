@@ -25,6 +25,7 @@ Stunned, Petrified and Paralyzed also count as Incapacitated. More rules:
 - **Standing up.** A Prone player presses jump (at least half a second after falling) to stand, unless held. Mobs stand when it ends.
 - **Statues.** Mobs ignore a Petrified creature and drop it as a target within half a second. A mob Petrified for good is a statue: persistent and silent, untouched by any hit except a player's pickaxe, which shatters it (normal loot and kill credit).
 - **Charm breaks** when the charmer, or one of its thralls, hurts the charmed creature.
+- The [Mind Flayer](../mobs/mind-flayer.md) Stuns with its Mind Blast, grabs the incapacitated, and keeps Charmed thralls.
 - **Bosses** are immune to Petrified, Charmed and Frightened. Stunned, Paralyzed, Incapacitated, Restrained and Prone last at most 1 s on a boss, and then that condition can't land on it again for 10 s ("shrugs it off").
 - **Immunities:** creative and spectator players are immune to everything, undead and anything Petrified to Poisoned, and constructs (iron and snow golems, the Clockwork Sentinel) to Poisoned, Charmed, Frightened, Paralyzed and Petrified. The Gelatinous Cube and the Warden can't be Petrified.
 - **Death** ends everything; going **Downed** ends everything but Petrified; respawning starts clean. Conditions last through relogs and chunk unloads. A condition tied to its source ends 5 s after the source dies, leaves or is more than 64 blocks away.

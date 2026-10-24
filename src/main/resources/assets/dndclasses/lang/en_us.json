@@ -2197,5 +2197,15 @@
     "condition.dndclasses.immune.petrified": "stone",
     "condition.dndclasses.immune.nature": "its nature",
     "grapple.dndclasses.cube": "the gelatinous cube",
-    "save.dndclasses.auto_fail": "auto-fail (%s)"
+    "save.dndclasses.auto_fail": "auto-fail (%s)",
+    "entity.dndclasses.mind_flayer": "Mind Flayer",
+    "item.dndclasses.mind_flayer_spawn_egg": "Mind Flayer Spawn Egg",
+    "save.dndclasses.mind_blast": "Mind Blast",
+    "save.dndclasses.effect.mind_blast": "half damage, not stunned",
+    "save.dndclasses.effect.mind_blast.failure": "stunned",
+    "save.dndclasses.mind_flayer_dominate": "Dominate",
+    "save.dndclasses.effect.mind_flayer_dominate": "not enthralled",
+    "save.dndclasses.effect.mind_flayer_dominate.failure": "enthralled",
+    "grapple.dndclasses.mind_flayer": "the mind flayer's tentacles",
+    "study.dndclasses.weakness.mind_flayer": "its tentacles only take hold of a stunned mind, and its thralls go free when it dies"
 }

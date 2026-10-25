@@ -353,5 +353,19 @@
                 "name": "dndclasses:revived"
             }
         ]
+    },
+    "music.underdark": {
+        "sounds": [
+            {
+                "name": "dndclasses:underdark",
+                "stream": true,
+                "weight": 3
+            },
+            {
+                "name": "minecraft:music.overworld.deep_dark",
+                "type": "event",
+                "weight": 1
+            }
+        ]
     }
 }

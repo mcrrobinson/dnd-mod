@@ -1,0 +1,42 @@
+{
+  "type": "minecraft:disk",
+  "config": {
+    "state_provider": {
+      "fallback": {
+        "type": "minecraft:weighted_state_provider",
+        "entries": [
+          {
+            "weight": 3,
+            "data": {
+              "Name": "minecraft:clay"
+            }
+          },
+          {
+            "weight": 2,
+            "data": {
+              "Name": "minecraft:gravel"
+            }
+          }
+        ]
+      },
+      "rules": []
+    },
+    "target": {
+      "type": "minecraft:matching_blocks",
+      "blocks": [
+        "minecraft:gravel",
+        "minecraft:deepslate",
+        "minecraft:dirt",
+        "minecraft:tuff"
+      ]
+    },
+    "radius": {
+      "type": "minecraft:uniform",
+      "value": {
+        "min_inclusive": 2,
+        "max_inclusive": 4
+      }
+    },
+    "half_height": 1
+  }
+}

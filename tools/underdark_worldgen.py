@@ -284,20 +284,96 @@ def ore_config(target, state, size):
         {'target': {'predicate_type': 'minecraft:block_match', 'block': target}, 'state': state}]}}
 
 
-def huge_mushroom(kind, cap, stem, radius):
-    return {'type': f'minecraft:huge_{kind}_mushroom', 'config': {
-        'cap_provider': {'type': 'minecraft:simple_state_provider', 'state': block(cap, down='true', east='true',
-                                                                                   north='true', south='true',
-                                                                                   up='true', west='true')},
-        'stem_provider': {'type': 'minecraft:simple_state_provider', 'state': block(stem, axis='y')},
-        'foliage_radius': radius}}
+def near_water(reach=3):
+    """A filter: water within `reach` blocks across, at the floor's level or one below (a shore)."""
+    offsets = [[dx, dy, dz] for dx in range(-reach, reach + 1) for dz in range(-reach, reach + 1) for dy in (-1, -2)
+               if (dx or dz) and max(abs(dx), abs(dz)) == reach]
+    return {'type': 'minecraft:block_predicate_filter', 'predicate': {'type': 'minecraft:any_of', 'predicates': [
+        {'type': 'minecraft:matching_fluids', 'fluids': 'minecraft:water', 'offset': o} for o in offsets]}}
 
+
+def on_water(n):
+    """n tries per chunk on the Darklake's surface: dropped from up to 12 blocks above the waterline onto water."""
+    return count(n) + [
+        {'type': 'minecraft:height_range', 'height': {'type': 'minecraft:uniform', 'min_inclusive': {
+            'absolute': SEA_LEVEL}, 'max_inclusive': {'absolute': SEA_LEVEL + 12}}},
+        {'type': 'minecraft:environment_scan', 'direction_of_search': 'down', 'max_steps': 16,
+         'target_condition': {'type': 'minecraft:matching_fluids', 'fluids': 'minecraft:water'},
+         'allowed_search_condition': AIR},
+        {'type': 'minecraft:random_offset', 'xz_spread': 0, 'y_spread': 1},
+        {'type': 'minecraft:biome'}]
+
+
+def lake_bed(n, chance=None):
+    """n tries per chunk (in 1 chunk of `chance`) on the floor under the Darklake's water: the bed block itself."""
+    rarity = [{'type': 'minecraft:rarity_filter', 'chance': chance}] if chance else []
+    return rarity + count(n) + [
+        {'type': 'minecraft:height_range', 'height': {'type': 'minecraft:uniform', 'min_inclusive': {
+            'above_bottom': 6}, 'max_inclusive': {'absolute': SEA_LEVEL - 2}}},
+        {'type': 'minecraft:environment_scan', 'direction_of_search': 'down', 'max_steps': 16,
+         'target_condition': {'type': 'minecraft:solid'}, 'allowed_search_condition': {
+             'type': 'minecraft:matching_fluids', 'fluids': 'minecraft:water'}},
+        {'type': 'minecraft:block_predicate_filter', 'predicate': {
+            'type': 'minecraft:matching_fluids', 'fluids': 'minecraft:water', 'offset': [0, 1, 0]}},
+        {'type': 'minecraft:biome'}]
+
+
+def in_water(n):
+    """n tries per chunk just above the Darklake's bed, under water."""
+    return count(n) + [
+        {'type': 'minecraft:height_range', 'height': {'type': 'minecraft:uniform', 'min_inclusive': {
+            'above_bottom': 6}, 'max_inclusive': {'absolute': SEA_LEVEL - 2}}},
+        {'type': 'minecraft:environment_scan', 'direction_of_search': 'down', 'max_steps': 16,
+         'target_condition': {'type': 'minecraft:solid'}, 'allowed_search_condition': {
+             'type': 'minecraft:matching_fluids', 'fluids': 'minecraft:water'}},
+        {'type': 'minecraft:random_offset', 'xz_spread': 0, 'y_spread': 1},
+        {'type': 'minecraft:biome'}]
+
+
+def patch_where(state, predicate, tries=32, spread=6, y_spread=3):
+    """A random patch of `state` at the spots matching `predicate`."""
+    return {'type': 'minecraft:random_patch', 'config': {'tries': tries, 'xz_spread': spread, 'y_spread': y_spread,
+                                                         'feature': {
+        'feature': {'type': 'minecraft:simple_block', 'config': {
+            'to_place': {'type': 'minecraft:simple_state_provider', 'state': state}}},
+        'placement': [{'type': 'minecraft:block_predicate_filter', 'predicate': predicate}]}}}
+
+
+def survives(state):
+    return {'type': 'minecraft:would_survive', 'state': state}
+
+
+WATER = {'type': 'minecraft:matching_blocks', 'blocks': 'minecraft:water'}
+LICHEN_ROCK = ['minecraft:stone', 'minecraft:deepslate', 'minecraft:tuff', 'minecraft:granite', 'minecraft:diorite',
+               'minecraft:andesite', 'minecraft:calcite', 'minecraft:dripstone_block', ref('faerzress_stone'),
+               ref('fungal_loam')]
 
 # Our own configured features (written to worldgen/configured_feature/underdark/<name>.json).
 CONFIGURED = {
-    # T1 stand-ins for the giant fungi (T3 replaces them with custom features): flat zurkhwood caps, domed nightlights.
-    'zurkhwood': huge_mushroom('brown', ref('zurkhwood_cap'), ref('zurkhwood_stem'), 3),
-    'nightlight': huge_mushroom('red', ref('nightlight_cap'), ref('zurkhwood_stem'), 2),
+    # The giant fungi (T3; Java features in world/underdark/feature). The Spores and the Bluecap grow these too.
+    'giant_zurkhwood': {'type': ref('giant_zurkhwood'), 'config': {}},
+    'nightlight_tower': {'type': ref('nightlight_tower'), 'config': {'min_height': 10, 'max_height': 22}},
+    'small_nightlight_tower': {'type': ref('nightlight_tower'), 'config': {'min_height': 6, 'max_height': 9}},
+    'shelf_fungus': {'type': ref('shelf_fungus'), 'config': {}},
+    'barrelstalk_patch': patch(block(ref('barrelstalk'), filled='true', half='lower'), tries=4, spread=3),
+    'waterorb_patch': patch_where(block(ref('waterorb')), {'type': 'minecraft:all_of', 'predicates': [
+        AIR, survives(block(ref('waterorb')))]}, tries=6, spread=3, y_spread=1),
+    'seagrass_patch': patch_where(block('minecraft:seagrass'), {'type': 'minecraft:all_of', 'predicates': [
+        WATER, survives(block('minecraft:seagrass'))]}, tries=24, spread=4, y_spread=2),
+    'faerie_lichen': {'type': 'minecraft:multiface_growth', 'config': {
+        'block': ref('faerie_lichen'), 'search_range': 20, 'chance_of_spreading': 0.5, 'can_place_on_floor': False,
+        'can_place_on_ceiling': True, 'can_place_on_wall': True, 'can_be_placed_on': LICHEN_ROCK}},
+    'darklake_shore': {'type': 'minecraft:disk', 'config': {
+        'state_provider': {'fallback': {'type': 'minecraft:weighted_state_provider', 'entries': [
+            {'weight': 3, 'data': block('minecraft:clay')}, {'weight': 2, 'data': block('minecraft:gravel')}]},
+            'rules': []},
+        'target': {'type': 'minecraft:matching_blocks', 'blocks': ['minecraft:gravel', 'minecraft:deepslate',
+                                                                    'minecraft:dirt', 'minecraft:tuff']},
+        'radius': {'type': 'minecraft:uniform', 'value': {'min_inclusive': 2, 'max_inclusive': 4}},
+        'half_height': 1}},
+    'pearl_clam': {'type': 'minecraft:replace_single_block', 'config': {'targets': [
+        {'target': {'predicate_type': 'minecraft:block_match', 'block': b}, 'state': block(ref('pearl_clam'))}
+        for b in ('minecraft:clay', 'minecraft:gravel', 'minecraft:deepslate')]}},
     'bluecap_patch': patch(block(ref('bluecap'))),
     'trillimac_patch': patch(block(ref('trillimac')), tries=24, spread=5),
     'faerzress_veins': ore_config('minecraft:deepslate', block(ref('faerzress_stone')), 33),
@@ -321,14 +397,23 @@ FEATURES = [
     ('ore_diamond', 'underground_ores', 'minecraft:ore_diamond_small', ore(9, LOWER_HALF)),
     ('faerzress_veins', 'underground_ores', ref('underdark/faerzress_veins'), ore(8, UNIFORM)),
     ('magma_patches', 'underground_ores', ref('underdark/magma_patches'), ore(6, UNIFORM)),
+    ('darklake_shore', 'underground_ores', ref('underdark/darklake_shore'), on_floor(4) + [near_water()]),
+    ('pearl_clam', 'underground_ores', ref('underdark/pearl_clam'), lake_bed(2, chance=4)),
     ('spring_water', 'fluid_springs', 'minecraft:spring_water', anywhere(20)),
     ('spring_lava', 'fluid_springs', 'minecraft:spring_lava_overworld', anywhere(20)),
     ('large_dripstone', 'vegetal_decoration', 'minecraft:large_dripstone', anywhere(12)),
     ('dripstone_cluster', 'vegetal_decoration', 'minecraft:dripstone_cluster', anywhere(8)),
     ('moss_patch_ceiling', 'vegetal_decoration', 'minecraft:moss_patch_ceiling', on_ceiling(24)),
     ('clay_pool_with_dripleaves', 'vegetal_decoration', 'minecraft:clay_pool_with_dripleaves', on_floor(16)),
-    ('zurkhwood', 'vegetal_decoration', ref('underdark/zurkhwood'), on_floor(6)),
-    ('nightlight', 'vegetal_decoration', ref('underdark/nightlight'), on_floor(3)),
+    ('giant_zurkhwood', 'vegetal_decoration', ref('underdark/giant_zurkhwood'), on_floor(4)),
+    ('giant_zurkhwood_sparse', 'vegetal_decoration', ref('underdark/giant_zurkhwood'), on_floor(1)),
+    ('nightlight_tower', 'vegetal_decoration', ref('underdark/nightlight_tower'), on_floor(2)),
+    ('nightlight_tower_shore', 'vegetal_decoration', ref('underdark/nightlight_tower'), on_floor(3) + [near_water()]),
+    ('shelf_fungus', 'vegetal_decoration', ref('underdark/shelf_fungus'), anywhere(12)),
+    ('shelf_fungus_sparse', 'vegetal_decoration', ref('underdark/shelf_fungus'), anywhere(6)),
+    ('barrelstalk', 'vegetal_decoration', ref('underdark/barrelstalk_patch'), on_floor(1)),
+    ('seagrass', 'vegetal_decoration', ref('underdark/seagrass_patch'), in_water(6)),
+    ('waterorb', 'vegetal_decoration', ref('underdark/waterorb_patch'), on_water(3)),
     ('huge_red_mushroom', 'vegetal_decoration', 'minecraft:huge_red_mushroom', on_floor(3)),
     ('huge_brown_mushroom', 'vegetal_decoration', 'minecraft:huge_brown_mushroom', on_floor(3)),
     ('brown_mushrooms', 'vegetal_decoration', 'minecraft:patch_brown_mushroom', on_floor(3)),
@@ -341,6 +426,8 @@ FEATURES = [
     ('glow_lichen', 'vegetal_decoration', 'minecraft:glow_lichen', anywhere(40)),
     ('glow_lichen_dense', 'vegetal_decoration', 'minecraft:glow_lichen', anywhere(60)),
     ('glow_lichen_faerzress', 'vegetal_decoration', 'minecraft:glow_lichen', anywhere(120)),
+    ('faerie_lichen_sparse', 'vegetal_decoration', ref('underdark/faerie_lichen'), anywhere(10)),
+    ('faerie_lichen', 'vegetal_decoration', ref('underdark/faerie_lichen'), anywhere(60)),
 ]
 ORES = ['ore_gravel', 'ore_tuff', 'ore_iron', 'ore_gold', 'ore_redstone', 'ore_lapis', 'ore_diamond']
 
@@ -354,22 +441,24 @@ BIOMES = [
     {'id': 'fungal_forest', 'name': 'Fungal Forest',
      'fog': '#1F2D3D', 'water': '#3D57D6', 'water_fog': '#050533', 'particle': ('minecraft:spore_blossom_air', 0.008),
      'floor': ref('fungal_loam'), 'under': 'minecraft:deepslate', 'ceiling': None,
-     'features': ['zurkhwood', 'nightlight', 'bluecap_fungal', 'trillimac_fungal', 'glow_lichen']},
+     'features': ['giant_zurkhwood', 'nightlight_tower', 'shelf_fungus', 'barrelstalk', 'bluecap_fungal',
+                  'trillimac_fungal', 'glow_lichen', 'faerie_lichen_sparse']},
     {'id': 'mycelial_caverns', 'name': 'Mycelial Caverns',
      'fog': '#38212F', 'water': '#4C3A8F', 'water_fog': '#0A0520', 'particle': ('minecraft:mycelium', 0.02),
      'floor': 'minecraft:mycelium', 'under': 'minecraft:dirt', 'ceiling': None,
-     'features': ['huge_red_mushroom', 'huge_brown_mushroom', 'brown_mushrooms', 'red_mushrooms',
-                  'trillimac_mycelial', 'glow_lichen_sparse']},
+     'features': ['giant_zurkhwood_sparse', 'huge_red_mushroom', 'huge_brown_mushroom', 'brown_mushrooms',
+                  'red_mushrooms', 'trillimac_mycelial', 'glow_lichen_sparse']},
     {'id': 'darklake', 'name': 'Darklake',
      'fog': '#0B1626', 'water': '#1E2B5A', 'water_fog': '#020814', 'particle': ('minecraft:dripping_dripstone_water', 0.003),
      'floor': 'minecraft:gravel', 'floor_wet': 'minecraft:clay', 'under': 'minecraft:gravel', 'ceiling': None,
-     'features': ['darklake_pool', 'spring_water', 'moss_patch_ceiling', 'clay_pool_with_dripleaves',
-                  'glow_lichen_dense'],
+     'features': ['darklake_pool', 'darklake_shore', 'pearl_clam', 'spring_water', 'moss_patch_ceiling',
+                  'clay_pool_with_dripleaves', 'nightlight_tower_shore', 'shelf_fungus_sparse', 'barrelstalk',
+                  'seagrass', 'waterorb', 'glow_lichen_dense'],
      'water_mobs': True},
     {'id': 'faerzress_hollows', 'name': 'Faerzress Hollows',
      'fog': '#2B1745', 'water': '#5B3FBF', 'water_fog': '#14082A', 'particle': ('minecraft:portal', 0.006),
      'floor': 'minecraft:deepslate', 'floor_patch': (0.35, ref('faerzress_stone')), 'under': None, 'ceiling': None,
-     'features': ['amethyst_geode', 'faerzress_veins', 'bluecap_sparse', 'glow_lichen_faerzress']},
+     'features': ['amethyst_geode', 'faerzress_veins', 'bluecap_sparse', 'glow_lichen_faerzress', 'faerie_lichen']},
     {'id': 'grey_reaches', 'name': 'Grey Reaches',
      'fog': '#2E2A28', 'water': '#3F4A5A', 'water_fog': '#101317', 'particle': ('minecraft:white_ash', 0.025),
      'floor': 'minecraft:tuff', 'floor_patch': (0.30, 'minecraft:basalt'), 'under': 'minecraft:tuff',
@@ -411,6 +500,8 @@ def biome(b):
             'particle': {'options': {'type': b['particle'][0]}, 'probability': b['particle'][1]},
             'mood_sound': {'sound': 'minecraft:ambient.cave', 'tick_delay': 6000, 'block_search_extent': 8,
                            'offset': 2.0},
+            # Distant drips and rumbles now and then, wherever you are (T3).
+            'additions_sound': {'sound': 'minecraft:ambient.cave', 'tick_chance': 0.0111},
         },
         'spawners': {
             'monster': [spawner(*m) for m in MONSTERS],

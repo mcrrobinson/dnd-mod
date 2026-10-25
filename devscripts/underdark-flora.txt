@@ -1,0 +1,293 @@
+# Checks the Underdark's flora (design 9 T3; docs/items/underdark-blocks.md, docs/systems/underdark.md): the new
+# blocks and their drops, harvesting Ripplebark, a Barrelstalk's water, spores and a Bluecap growing giant fungi with
+# bone meal, Roasted Trillimac (smelting and eating), Glow Spores brewing Night Vision, the explorer maps, and in the
+# Underdark the giant fungi, the Darklake's lake life and mist, and the Underdark music event.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/underdark-flora.txt
+# The map check needs a test data pack in the run dir's world (not committed): run/saves/New World/datapacks/
+# flora-maptest with pack.mcmeta (pack_format 12) and data/dndclasses/tags/worldgen/structure/underdark_maps/
+# drow_outpost.json = {"replace":false,"values":["#minecraft:village"]}, so the drow outpost map leads to a village.
+# Expect in latest.log:
+# - screenshots underdark-flora-showcase, underdark-flora-grown, underdark-flora-forest-1/-2, underdark-flora-darklake
+# - /loot: grown Ripplebark 2-3, young 1; Glowing Spore Drip -> Glow Spores; Pearl-Clam -> Darklake Pearl (silk touch:
+#   the clam); Barrelstalk lower half 1, upper half none; Trillimac -> 1-2 Trillimac Slices; Faerie Lichen (shears) 1
+# - "Test passed" for: harvested Ripplebark back at age 0; the used Barrelstalk filled=false; stems over the
+#   zurkhwood spores, the nightlight spores and the Bluecap; a filled Barrelstalk giving a bucket
+# - `slots` after the Barrelstalk: a water bottle (minecraft:potion) and the second glass bottle unused; then a
+#   water bucket
+# - "Successfully filled" counts for the grown fungi's caps (zurkhwood caps, nightlight caps)
+# - the furnace's Items: dndclasses:roasted_trillimac; the brewing stand's: minecraft:night_vision
+# - foodLevel goes up by 6 after eating Roasted Trillimac
+# - [EventMusic] ... -> UNDERDARK on arriving in the Underdark
+# - [Underdark] flora ... counts with giant fungi in the Fungal Forest and lake life in the Darklake
+# - [Underdark] Darklake mist on, at the lake shore
+# - the maps: "No rift to map" and "No duergar_hold to map"; with the test pack, a map named "Map to a Drow Outpost"
+#   from the command and from the loot table
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doTileDrops true
+/gamerule randomTickSpeed 0
+/time set noon
+/execute in minecraft:overworld run tp @s 120.5 152 0.5 0 20
+/fill 106 149 -6 140 149 30 minecraft:smooth_stone
+/fill 106 150 -6 140 170 30 minecraft:air
+/fill 106 171 -6 140 190 30 minecraft:air
+waitserver 2
+# --- The showcase: ripplebark (ages 0-2) and faerie lichen on a deepslate wall, barrelstalks (filled, empty), a
+# waterorb, a spore drip under a nightlight cap, a pearl-clam, gills, both spores and a trillimac
+/fill 112 150 10 134 154 10 minecraft:deepslate
+/setblock 113 151 9 dndclasses:ripplebark[facing=south,age=0]
+/setblock 114 151 9 dndclasses:ripplebark[facing=south,age=1]
+/setblock 115 151 9 dndclasses:ripplebark[facing=south,age=2]
+/setblock 117 151 9 dndclasses:faerie_lichen[south=true]
+/setblock 118 152 9 dndclasses:faerie_lichen[south=true]
+/setblock 118 151 9 dndclasses:faerie_lichen[south=true,down=true]
+/fill 119 149 8 123 149 8 dndclasses:fungal_loam
+/setblock 120 150 8 dndclasses:barrelstalk[half=lower,filled=true]
+/setblock 120 151 8 dndclasses:barrelstalk[half=upper,filled=true]
+/setblock 122 150 8 dndclasses:barrelstalk[half=lower,filled=false]
+/setblock 122 151 8 dndclasses:barrelstalk[half=upper,filled=false]
+/setblock 124 149 8 minecraft:water
+/setblock 124 150 8 dndclasses:waterorb
+/setblock 126 153 8 dndclasses:nightlight_cap
+/setblock 126 152 8 dndclasses:spore_drip
+/setblock 128 150 8 dndclasses:pearl_clam
+/setblock 129 150 8 dndclasses:zurkhwood_gills
+/fill 131 149 8 133 149 8 dndclasses:fungal_loam
+/setblock 131 150 8 dndclasses:zurkhwood_spores
+/setblock 132 150 8 dndclasses:nightlight_spores
+/setblock 133 150 8 dndclasses:trillimac
+/tp @s 123.5 152.5 2.5 0 20
+wait 40
+hud off
+screenshot underdark-flora-showcase
+hud on
+# --- Drops (/loot simulates mining each block)
+/loot spawn 123 152 3 mine 115 151 9 minecraft:air
+/loot spawn 123 152 3 mine 113 151 9 minecraft:air
+/loot spawn 123 152 3 mine 126 152 8 minecraft:air
+/loot spawn 123 152 3 mine 128 150 8 minecraft:air
+/loot spawn 123 152 3 mine 128 150 8 minecraft:diamond_pickaxe{Enchantments:[{id:"minecraft:silk_touch",lvl:1s}]}
+/loot spawn 123 152 3 mine 120 150 8 minecraft:diamond_axe
+/loot spawn 123 152 3 mine 120 151 8 minecraft:diamond_axe
+/loot spawn 123 152 3 mine 133 150 8 minecraft:air
+/loot spawn 123 152 3 mine 118 152 9 minecraft:shears
+/loot spawn 123 152 3 mine 129 150 8 minecraft:diamond_axe{Enchantments:[{id:"minecraft:silk_touch",lvl:1s}]}
+/loot spawn 123 152 3 mine 126 153 8 minecraft:diamond_axe
+/kill @e[type=minecraft:item]
+# --- Harvest the grown Ripplebark with an empty hand: it drops 1-2 and goes back to age 0
+/clear @s
+/tp @s 115.5 150 7.8 0 5
+wait 10
+use
+wait 10
+/execute if block 115 151 9 dndclasses:ripplebark[age=0]
+# --- A Barrelstalk gives one water bottle, then it's empty (survival, so the bottles are used up)
+/gamemode survival
+/clear @s
+/give @s minecraft:glass_bottle 2
+/tp @s 120.5 150 6.4 0 30
+wait 10
+hotbar 0
+use
+wait 10
+use
+wait 10
+slots
+/execute if block 120 150 8 dndclasses:barrelstalk[filled=false]
+/execute if block 120 151 8 dndclasses:barrelstalk[filled=false]
+# A filled one gives a water bucket
+/clear @s
+/give @s minecraft:bucket
+/setblock 122 151 8 dndclasses:barrelstalk[half=upper,filled=true]
+/setblock 122 150 8 dndclasses:barrelstalk[half=lower,filled=true]
+/tp @s 122.5 150 6.4 0 30
+wait 10
+use
+wait 10
+slots
+/execute if block 122 150 8 dndclasses:barrelstalk[filled=false]
+/kill @e[type=minecraft:item]
+# --- Spores and a Bluecap grow with bone meal (45% / 40% a use, so a dozen uses each)
+/gamemode creative
+/clear @s
+/give @s minecraft:bone_meal 64
+/fill 115 149 21 117 149 23 dndclasses:fungal_loam
+/setblock 116 150 22 dndclasses:zurkhwood_spores
+/fill 125 149 21 127 149 23 dndclasses:fungal_loam
+/setblock 126 150 22 dndclasses:nightlight_spores
+/fill 131 149 21 133 149 23 dndclasses:fungal_loam
+/setblock 132 150 22 dndclasses:bluecap
+hotbar 0
+/tp @s 116.5 150 19.5 0 30
+wait 10
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+/tp @s 126.5 150 19.5 0 30
+wait 10
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+/tp @s 132.5 150 19.5 0 30
+wait 10
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+use
+wait 4
+/execute if block 116 151 22 dndclasses:zurkhwood_stem
+/execute if block 116 154 22 dndclasses:zurkhwood_stem
+/execute if block 126 151 22 dndclasses:zurkhwood_stem
+/execute if block 126 154 22 dndclasses:zurkhwood_stem
+/execute if block 132 151 22 dndclasses:zurkhwood_stem
+/execute if block 132 154 22 dndclasses:zurkhwood_stem
+/fill 112 150 9 134 154 10 minecraft:air
+/tp @s 124.5 150 -5.5 0 -15
+wait 40
+hud off
+screenshot underdark-flora-grown
+hud on
+/fill 106 150 12 140 190 30 minecraft:glass replace dndclasses:zurkhwood_cap
+/fill 106 150 12 140 190 30 minecraft:glass replace dndclasses:nightlight_cap
+/fill 106 150 12 140 190 30 minecraft:glass replace dndclasses:zurkhwood_gills
+# --- Roasted Trillimac in a furnace, Glow Spores in a brewing stand
+/setblock 110 150 2 minecraft:furnace{CookTimeTotal:200s,Items:[{Slot:0b,id:"dndclasses:trillimac_slice",Count:2b},{Slot:1b,id:"minecraft:coal",Count:1b}]}
+/setblock 108 150 2 minecraft:brewing_stand{Items:[{Slot:0b,id:"minecraft:potion",Count:1b,tag:{Potion:"minecraft:awkward"}},{Slot:3b,id:"dndclasses:glow_spores",Count:1b},{Slot:4b,id:"minecraft:blaze_powder",Count:1b}]}
+waitserver 460
+/data get block 110 150 2 Items
+/data get block 108 150 2 Items
+# --- Eating Roasted Trillimac restores 6 hunger
+/gamemode survival
+/clear @s
+/effect give @s minecraft:hunger 5 255
+waitserver 100
+/effect clear @s
+waitserver 5
+/data get entity @s foodLevel
+/give @s dndclasses:roasted_trillimac
+hotbar 0
+look 0 -90
+holduse on
+wait 45
+holduse off
+waitserver 5
+/data get entity @s foodLevel
+/gamemode creative
+/clear @s
+# --- Explorer maps: no rift or duergar hold exists yet, so those find nothing; the test pack points the drow
+# outpost tag at villages, so that one makes a map
+/datapack enable "file/flora-maptest"
+waitserver 40
+/underdark map rift
+/underdark map duergar_hold
+/underdark map drow_outpost
+waitserver 2
+/loot give @s loot dndclasses:underdark/map_to_drow_outpost
+waitserver 2
+slots
+/datapack disable "file/flora-maptest"
+waitserver 40
+/clear @s
+# --- The Underdark, far from anything generated before: giant fungi in the Fungal Forest
+/execute in dndclasses:underdark run tp @s 15000 -100 15000
+waitserver 2
+/underdark biome fungal_forest
+waitserver 2
+/effect give @s minecraft:night_vision 600 0 true
+wait 120
+hud off
+screenshot underdark-flora-forest-1
+look 120 -10
+wait 20
+screenshot underdark-flora-forest-2
+look 240 -10
+wait 20
+screenshot underdark-flora-forest-3
+hud on
+/underdark flora 48
+waitserver 2
+# --- The Darklake: lake life, and the mist over the water
+/underdark biome darklake
+waitserver 2
+wait 80
+/effect clear @s minecraft:night_vision
+/underdark lake 160
+waitserver 2
+wait 100
+/underdark flora 48
+waitserver 2
+hud off
+screenshot underdark-flora-darklake
+/effect give @s minecraft:night_vision 600 0 true
+wait 10
+screenshot underdark-flora-darklake-nightvision
+hud on
+/effect clear @s
+/underdark back
+waitserver 2
+/gamerule randomTickSpeed 3
+quit

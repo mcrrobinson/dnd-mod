@@ -86,6 +86,9 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/underdark go [player]` | Down into the [Underdark](underdark.md) at the same x and z (a found floor or a carved pocket), remembering where you were |
 | `/underdark back [player]` | Back to the remembered spot, or to the world spawn |
 | `/underdark biome <biome>` | To the nearest Underdark biome of that kind, on a safe floor |
+| `/underdark lake [radius]` | To the nearest dry lake shore at the Underdark's waterline, looking over the water |
+| `/underdark flora [radius]` | Counts the giant fungi, plants and lake life round you (`[Underdark] flora` lines) |
+| `/underdark map <drow_outpost\|duergar_hold\|rift>` | An Underdark explorer map to the nearest such place |
 | `/underdark survey [radius]` | Biome shares, floors, water, bedrock and generation cost round you (`[Underdark] survey` lines) |
 
 ### Magic items

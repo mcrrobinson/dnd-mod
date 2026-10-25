@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {"item": "dndclasses:basilisk_eye"},
+    {"item": "minecraft:honey_bottle"},
+    {"item": "minecraft:glow_berries"}
+  ],
+  "result": {"item": "dndclasses:salve_of_stone_to_flesh", "count": 2}
+}

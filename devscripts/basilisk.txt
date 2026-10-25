@@ -1,0 +1,246 @@
+# The Basilisk (docs/mobs/basilisk.md): petrifying gaze, shield reflection, statues, bite, Salve of Stone to Flesh.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/basilisk.txt
+# The basilisk at 4.5 150 8.5 faces north: hitbox z 6.9-10.1, snout z 5.1, eyes z 5.9 at y 151.6 (eye level).
+# The player is a Cleric (CON +2, no CON proficiency) on a y=150 platform. "/say <step>" lines mark each step in
+# run/logs/latest.log. Check:
+# 1. Gaze (forced 8 then 2): "[D20] Dev Petrifying gaze" FAILURE, "[Conditions] Dev +restrained (Basilisk ... save
+#    CON 12/40t -> petrified)", then "[Conditions] Dev restrained -> petrified"; screenshot basilisk-big-petrified-player;
+#    "[Conditions] Dev -petrified (expired)" about 200 ticks later.
+# 2. Looking at its feet (pitch 60): no gaze save between "/say feet" and "/say far".
+# 3. 10 blocks away looking at it: no gaze save between "/say far" and "/say failby5".
+# 4. Fail by 5 (forced 1): "+petrified (Basilisk" straight away, no "+restrained"; "use" with the salve is
+#    "[Conditions] Dev blocked"; then a fresh gaze (forced 8) and the salve on yourself:
+#    "[Salve] Dev applies Salve of Stone to Flesh to Dev: cured".
+# 5. Salve on a statue husk: "[Salve] Dev applies ... to Husk: statue restored", its list is empty and the
+#    "target" readout shows it targeting Dev.
+# 6. Creatures that face it: a husk forced to 2 becomes a statue ("[Conditions] Husk +petrified (Basilisk").
+# 7. Shield reflection (basilisk forced to 2): "[Basilisk] Dev reflects its gaze back with a shield: it turns to
+#    stone", "[Conditions] Basilisk +petrified"; screenshot basilisk-big-statue; a pickaxe shatters it (Test failed on
+#    "execute if entity") and leather drops (Test passed).
+# 8. Bite (forced 2): "[D20] Dev Basilisk bite" FAILURE and "[Conditions] Dev +poisoned (Basilisk".
+# 9. Recipe: the crafting grid shows 2 salves (slots), the glass bottle comes back, the recipe advancement is
+#    granted (Test passed x3).
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+respawn
+wait 10
+/dndclass set @s cleric
+wait 5
+closescreen
+/clear @s
+/fill -8 149 -8 14 149 22 minecraft:stone
+/fill -8 150 -8 14 156 22 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:health_boost 900 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 5
+
+# ---- Look ----
+# (creative while posing, so the gaze ignores the camera). It's 3.2 x 2.0 and drawn at 2.25x, about 7 blocks
+# long from snout (z 5.1) to tail tip (z 12.4).
+/gamemode creative
+/summon dndclasses:basilisk 4.5 150 8.5 {NoAI:1b,Rotation:[180f,0f],Tags:["bastest","bas"],PersistenceRequired:1b}
+/tp @s 9.0 152 3.5 42 21
+wait 10
+hud off
+screenshot basilisk-big-look
+hitboxes on
+wait 2
+screenshot basilisk-big-hitbox
+hitboxes off
+/tp @s 4.5 150.5 2.0 0 10
+wait 5
+screenshot basilisk-big-face
+# Scale: the player beside its flank, seen from the front-view camera
+/tp @s 2.0 150 4.0 90 10
+perspective front
+wait 10
+screenshot basilisk-big-scale
+perspective first
+hud on
+/tp @s 4.5 150 -2.5 180 0
+/gamemode survival
+wait 5
+
+# ---- 1. Gaze: Restrained, then Petrified on a failed repeat save, then it wears off ----
+/say gaze
+/dndclass forceroll @s 8 2
+/tp @s 4.5 150 3.5 0 2
+wait 25
+/dndcondition list @s
+wait 50
+/dndcondition list @s
+look 180 0
+perspective back
+clearchat
+wait 5
+screenshot basilisk-big-petrified-player
+perspective first
+wait 210
+/dndcondition list @s
+/dndclass forceroll @s clear
+
+# ---- 2. Looking at its feet: no gaze ----
+/tp @s 4.5 150 3.5 0 60
+wait 5
+/say feet
+wait 110
+# ---- 3. Out of range (10 blocks): no gaze ----
+/tp @s 4.5 150 -1.5 0 0
+wait 5
+/say far
+wait 110
+
+# ---- 4. Failed by 5: straight to Petrified; the salve can't be used while Petrified, but works on yourself
+#         while still turning to stone ----
+/say failby5
+/give @s dndclasses:salve_of_stone_to_flesh 4
+hotbar 0
+/dndclass forceroll @s 1
+/tp @s 4.5 150 3.5 0 2
+wait 25
+/dndcondition list @s
+use
+wait 5
+/dndcondition remove @s all
+look 180 0
+wait 120
+/say salve-self
+/dndclass forceroll @s 8 20
+look 0 2
+wait 25
+/dndcondition list @s
+use
+wait 5
+/dndcondition list @s
+look 180 0
+/dndclass forceroll @s clear
+wait 5
+
+# ---- 5. The salve on a statue: it comes back to life and turns on you ----
+/say salve-statue
+/kill @e[tag=bas]
+/summon minecraft:husk 4.5 150 6.5 {Tags:["bastest","salvez"],PersistenceRequired:1b,Rotation:[180f,0f]}
+wait 2
+/dndcondition apply @e[tag=salvez] petrified -1
+/tp @s 4.5 150 4.5 0 25
+wait 10
+/dndcondition list @e[tag=salvez,limit=1]
+use
+wait 5
+/dndcondition list @e[tag=salvez,limit=1]
+wait 20
+target @e[tag=salvez]
+/kill @e[tag=salvez]
+/clear @s
+wait 5
+
+# ---- 6. Creatures facing it become statues ----
+/say mob-gaze
+/summon dndclasses:basilisk 4.5 150 8.5 {NoAI:1b,Rotation:[180f,0f],Tags:["bastest","bas"],PersistenceRequired:1b}
+/summon minecraft:husk 4.5 150 4.5 {NoAI:1b,Rotation:[0f,10f],Tags:["bastest","gazed"],PersistenceRequired:1b}
+/tp @s 0.5 150 0.5 180 0
+wait 2
+/dndclass forceroll @e[tag=gazed,limit=1] 2
+wait 110
+/dndcondition list @e[tag=gazed,limit=1]
+/kill @e[tag=gazed]
+wait 5
+
+# ---- 7. Shield reflection makes the basilisk a statue; a pickaxe shatters it ----
+/say shield
+/effect give @s minecraft:instant_health 1 9 true
+/item replace entity @s weapon.offhand with minecraft:shield
+/dndclass forceroll @e[tag=bas,limit=1] 2
+/tp @s 4.5 150 2.5 180 10
+hotbar 1
+wait 2
+holdkey key.use on
+wait 10
+/tp @s 4.5 150 2.5 0 10
+wait 50
+holdkey key.use off
+/dndcondition list @e[tag=bas,limit=1]
+/dndcondition list @s
+/gamemode creative
+/tp @s 10.5 153 1.5 41 21
+wait 5
+hud off
+screenshot basilisk-big-statue
+hud on
+/gamemode survival
+/item replace entity @s weapon.offhand with minecraft:air
+# (the husks' rotten flesh may have landed in hotbar slot 0)
+/clear @s
+/kill @e[type=minecraft:item]
+/give @s minecraft:iron_pickaxe
+hotbar 0
+/tp @s 4.5 150 6.0 0 20
+wait 25
+attack
+wait 10
+/execute if entity @e[tag=bas]
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:leather"}}]
+/kill @e[type=minecraft:item]
+/clear @s
+wait 5
+
+# ---- 8. Bite: poisoned on a failed CON save ----
+/say bite
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s 2
+/tp @s 4.5 150 3.5 180 0
+/summon dndclasses:basilisk 4.5 150 6.5 {Rotation:[180f,0f],Tags:["bastest","biter"]}
+wait 100
+/dndcondition list @s
+/kill @e[tag=biter]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/effect clear @s minecraft:poison
+wait 5
+
+# ---- 9. Recipe: Basilisk Eye + Honey Bottle + Glow Berries -> 2 salves (the bottle comes back) ----
+/say recipe
+/clear @s
+/item replace entity @s hotbar.0 with dndclasses:basilisk_eye
+/item replace entity @s hotbar.1 with minecraft:honey_bottle
+/item replace entity @s hotbar.2 with minecraft:glow_berries
+wait 5
+/execute if entity @s[advancements={dndclasses:recipes/misc/salve_of_stone_to_flesh=true}]
+/setblock 4 150 1 minecraft:crafting_table
+/tp @s 4.5 150 3.5 180 30
+wait 5
+use
+wait 10
+slot 37
+slot 1
+slot 38
+slot 2
+slot 39
+slot 3
+wait 2
+slots
+screenshot basilisk-big-recipe
+slot 0 quick_move
+wait 2
+closescreen
+wait 2
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:salve_of_stone_to_flesh",Count:2b}]}]
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:glass_bottle"}]}]
+/setblock 4 150 1 minecraft:air
+/kill @e[tag=bastest]
+/clear @s
+wait 5
+quit

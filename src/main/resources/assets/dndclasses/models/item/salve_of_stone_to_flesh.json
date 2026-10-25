@@ -1,0 +1,6 @@
+{
+    "parent": "minecraft:item/generated",
+    "textures": {
+        "layer0": "dndclasses:item/salve_of_stone_to_flesh"
+    }
+}

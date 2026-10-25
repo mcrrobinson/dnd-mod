@@ -240,6 +240,15 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // --- Basilisk (design 8, section 7) ---
+    public static final EntityType<BasiliskEntity> BASILISK = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "basilisk"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BasiliskEntity::new)
+                    .dimensions(EntityDimensions.fixed(BasiliskEntity.WIDTH, BasiliskEntity.HEIGHT))
+                    .build()
+    );
+
     // Troll (feat/troll)
     public static final EntityType<TrollEntity> TROLL = Registry.register(
             Registries.ENTITY_TYPE,
@@ -368,6 +377,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
         LichEntity.registerEvents();
         FabricDefaultAttributeRegistry.register(BEHOLDER, BeholderEntity.createBeholderAttributes());
+        FabricDefaultAttributeRegistry.register(BASILISK, BasiliskEntity.createBasiliskAttributes());
         FabricDefaultAttributeRegistry.register(MEDUSA, MedusaEntity.createMedusaAttributes());
     }
 }

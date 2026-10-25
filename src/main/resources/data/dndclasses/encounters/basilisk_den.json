@@ -1,0 +1,8 @@
+{
+  "name": "Basilisk Den",
+  "difficulty": "hard",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:basilisk", "count": 1}
+  ]
+}

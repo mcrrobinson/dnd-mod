@@ -98,6 +98,11 @@
                 "nbt": "{Dormant:0b}"
             },
             {
+                "entity": "dndclasses:basilisk",
+                "weight": 1,
+                "threat": 4
+            },
+            {
                 "entity": "dndclasses:rust_monster",
                 "weight": 2
             },

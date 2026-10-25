@@ -86,6 +86,13 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.GELATINOUS_CUBE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.GelatinousCubeEntity::canSpawn);
 
+        // Basilisks lurk in the deep caves, below y=-16 in the dark, always alone. (The Underdark's own spawns
+        // read data/dndclasses/underdark_spawns/basilisk.json.)
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER, ModEntityTypes.BASILISK, 2, 1, 1);
+        SpawnRestriction.register(ModEntityTypes.BASILISK, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.BasiliskEntity::canSpawn);
+
         // Rust Monsters burrow through deep caves (below y=0) in the Overworld, alone or in pairs.
         BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER, ModEntityTypes.RUST_MONSTER, 4, 1, 2);

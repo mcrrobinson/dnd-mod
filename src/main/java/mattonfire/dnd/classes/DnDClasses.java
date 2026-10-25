@@ -116,6 +116,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.DragonSaves.register();
                 mattonfire.dnd.entity.BossSaves.register();
                 mattonfire.dnd.entity.GrabSaves.register();
+                mattonfire.dnd.entity.BasiliskSaves.register();
+                mattonfire.dnd.classes.Items.SalveOfStoneToFleshItem.register();
                 mattonfire.dnd.entity.RustMonsterEntity.register();
                 mattonfire.dnd.entity.MindFlayerSaves.register();
                 mattonfire.dnd.entity.MedusaSaves.register();

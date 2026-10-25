@@ -21,7 +21,7 @@
       "size": "Medium",
       "scale": 1.0,
       "stats": {"speed": 0.05},
-      "traits": ["**Darkvision**: caves are dim but readable", "**Keen Senses**: while sneaking, see hostile mobs within 12 blocks through walls", "**Trance**: never need sleep, so phantoms never come for you"]
+      "traits": ["**Darkvision**: caves are dim but readable", "**Keen Senses**: while sneaking, see hostile mobs within 12 blocks through walls", "**Trance**: never need sleep, so phantoms never come for you", "**Fey Ancestry**: advantage on saves against being charmed"]
     },
     {
       "id": "DWARF",

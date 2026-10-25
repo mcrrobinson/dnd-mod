@@ -49,8 +49,9 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Party synergies](systems/party-synergies.md): Bodyguard, Triage, Opportunist, Inspire and Scout between party roles, Balanced party XP and +2 assists on obstacle checks
 - [Ability scores](systems/ability-scores.md): six ability scores, proficiency, saves and skills per class; the sheet behind every d20 roll; the Character tab and ability points at levels 4 and 8
 - [Saving throws](systems/saving-throws.md): the `SavingThrow` API (exposures, half damage), the compact save lane beside the crosshair, STR/DEX saves against grabs with jump-to-struggle escapes, and `/dm save|check`
+- [Conditions](systems/conditions.md): Prone, Frightened, Restrained, Blinded, Stunned, Petrified, Poisoned, Charmed, Incapacitated and Paralyzed with sources, lengths and repeat saves; HUD icons above the save lane; grabs Restrain, the Lich and Beholder Frighten, an Owlbear charge knocks Prone; `/dndcondition` (PR #276)
 - [Data-driven saves](systems/data-driven-saves.md): datapack JSON saves against effects and damage types: CON vs mob poison and wither (Lich Wither Bolt DC 15), Warden sonic boom and Ender Dragon breath; half duration or damage
-- [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul
+- [Class save features](systems/class-save-features.md): Aura of Protection adds CHA to nearby saves, Evasion, Danger Sense, Rage advantage, Indomitable rerolls, Jack of All Trades, Diamond Soul; with conditions: Aura of Courage, Mindless Rage, Stillness of Mind, Stunning Strike stuns, Cure Wounds ends one, Countercharm, Fey Ancestry (PR #277)
 - [Stealth and Perception](systems/stealth-and-perception.md): sneaking range shrinks with passive Stealth (heavy armour hurts it), passive Perception spots breathing mimics, Search (V) reveals hidden things; the `Perceivable` API
 - [Creature study](systems/creature-study.md): V on a creature rolls Religion, Nature, Arcana or Insight (DC 10/13/15) for a card of its health, armour, save-calling attacks and immunities; a natural 20 adds its weakness; Insight reads villagers and dwarves
 - [D20 skill checks](systems/d20-skill-checks.md): lockpicking (chests and doors, with a lock glint for Rogues and Rangers), searching walls, persuasion, Arcana, crits and fumbles
@@ -84,15 +85,18 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Mimic](mobs/mimic.md): a chest that bites and grabs (STR save, jump to struggle free); hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs (STR saves, jump to struggle free); Druids can take its form
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
+- [Troll](mobs/troll.md): regenerating swamp and forest brute with a two-claw Rend; fire or acid stops the healing, and it only stays dead if you burn it once it falls (PR #273)
+- [Mind Flayer](mobs/mind-flayer.md): deep-cave illithid whose Mind Blast cone stuns (INT save), whose tentacles extract stunned brains, which blinks away and keeps charmed thralls (PR #280)
 - [Rust Monster](mobs/rust-monster.md): deep-cave beast whose antennae rust iron, chain and gold gear (DEX save), rusts metal weapons that hit it and stops to eat thrown iron; dwarves hate it (PR #272)
 
 ## Bosses
-- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, dragons)
+- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, dragons)
 - [Goblin Warlord](bosses/goblin-warlord.md): goblin boss that summons waves; guards Nether Fortresses, leads 30% of goblin camps and every raid's last wave, and rules the Goblin Warren
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
 - [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
+- [Medusa](bosses/medusa.md): lair boss of the Gorgon's Temple (1 in 3 desert pyramids and jungle temples); meet her eyes and save (CON 14) or turn to stone, raise a shield to reflect it; poisonous snake bites, longbow volleys, statues of earlier visitors; drops the Gorgon's Gaze (PR #281)
 
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits, dressed with fulgurite, storm glass, a woven dragon nest, coin piles and shed scales that drop dragon scales
@@ -130,7 +134,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
 - [Racial banner patterns](items/banner-patterns.md): eight loom patterns (Bloodtusk, Clan Anvil, Sylvan Leaf, Three Breaths, Infernal Pact, Gnome Cog, Green Dragon, Goblin Skull) hung in their homes' structures, sold by kin merchants, the goblin skull dropped by the Warlord
-- [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
+- [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant, Gorgon's Gaze
 - [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves
 - [Hobbit building blocks](items/hobbit-building-blocks.md): Thatch, Mossy Thatch, Wattle and Daub, Smial Turf Wall, Round Door Frame Stone, Hearth Stone, Pipe-weed Bundle; the Larder Shelf (9 slots) and Ale Cask (glass bottle for a Mug of Ale, 4 mugs, refills); hanging herbs and onions
 - [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons

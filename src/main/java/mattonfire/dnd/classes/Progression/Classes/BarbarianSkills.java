@@ -145,6 +145,8 @@ public class BarbarianSkills extends ClassSkills {
         int amplifier = RAGE.amplifier(player, "Strength");
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, ticks, amplifier));
         RAGES.put(player.getUuid(), new RageState(player.getWorld().getTime() + ticks, amplifier, 0));
+        // Mindless Rage: a Berserker shakes off fear and charm as the Rage starts
+        mattonfire.dnd.classes.Abilities.ClassConditionFeatures.onRage(player);
         // Rage gives advantage on STR saves and Athletics (ClassSaveFeatures): now, not at the next sheet refresh
         if (!player.getWorld().isClient) {
             mattonfire.dnd.classes.Abilities.AbilityScores.invalidate(player);

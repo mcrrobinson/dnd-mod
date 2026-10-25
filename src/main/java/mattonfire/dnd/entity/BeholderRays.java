@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
@@ -201,7 +200,13 @@ final class BeholderRays {
                         .tags("fear")
                         .onFailure(Text.translatable("save.dndclasses.effect.fear_ray.failure")).roll();
                 if (save.failed()) {
-                    victim.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, 160, 0), this.beholder);
+                    mattonfire.dnd.classes.Conditions.Conditions.of(victim, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED).source(this.beholder)
+                            .key("fear_ray").ticks(BossSaves.FEAR_RAY_TICKS)
+                            .saveLabel(BossSaves.FEAR_RAY.labelKey())
+                            .repeatSave(BossSaves.FEAR_RAY.ability(),
+                                    enraged ? BossSaves.LAST_PHASE_DC : BossSaves.FEAR_RAY.dc(),
+                                    BossSaves.FEAR_REPEAT_TICKS)
+                            .saveTags("fear").apply();
                     victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 80, 0), this.beholder);
                 } else {
                     victim.addStatusEffect(new StatusEffectInstance(StatusEffects.DARKNESS, 20, 0), this.beholder);

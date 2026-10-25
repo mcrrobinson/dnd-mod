@@ -40,7 +40,9 @@ Raise its rank at an Attunement Table (see [Class progression](../systems/class-
 | III | 6 | 7 | 3 | 4 |
 | IV | 9 | 10 | 5 | 4 |
 
-**Evasion (level 7) and Diamond Soul (level 10).** On a DEX save that halves damage, a success takes no damage and a failure takes half. At level 10 you're proficient in every saving throw. See [class save features](../systems/class-save-features.md).
+**Evasion (level 7) and Diamond Soul (level 10).** On a DEX save that halves damage, a success takes no damage and a failure takes half. At level 10 you're proficient in every saving throw, and the first failed repeat save against each [condition](../systems/conditions.md) is rolled again. See [class save features](../systems/class-save-features.md).
+
+**Stillness of Mind (level 7).** Frightened and Charmed last half as long on you, and your repeat saves against them have advantage. See [conditions](../systems/conditions.md#class-features).
 
 ### Tips
 Fight unarmored or in light armor, and lean on speed and the triple jump to avoid hits. A late triple jump is also a way to cancel a long fall: jump just before landing. Flurry Rush is a safe way into a crowd: you can't be hurt during it and you end where you started, so start it from somewhere out of reach. Fire Quivering Palm first to add its 20 damage to the rush's first hit.
@@ -54,7 +56,7 @@ Monks get 3 extra XP for each hostile mob killed with a fist or the Monk Staff.
 |-|-|-|-|-|-|
 | Flurry Rush | Root | Active | 0 | 9 | Blink-strike chain on the mob you're looking at and hostiles near it (see above) |
 | Flurry of Blows | Way of the Open Hand | Passive | 1 | | Every 3rd hit in a row on the same target deals 50% more. The combo breaks if you wait more than 3 s between hits |
-| Stunning Strike | Way of the Open Hand | Active | 1 | 3 | Hostile mobs within 4 blocks get Slowness IV and Weakness II for 4 s |
+| Stunning Strike | Way of the Open Hand | Active | 1 | 3 | Hostile mobs within 4 blocks make a CON save (DC 8 + proficiency + WIS modifier, 13 at level 5): a failure is [Stunned](../systems/conditions.md) for 2 s (bosses 1 s), a success gets Slowness IV and Weakness II for 4 s |
 | Deflect Missiles | Way of the Open Hand | Passive | 1 | | 50% chance to take no damage from a projectile |
 | Slow Fall | Way of the Drunken Master | Passive | 1 | | 75% less fall damage |
 | Step of the Wind | Way of the Drunken Master | Active | 1 | 3 | Dash about 8 blocks the way you're looking, with no fall damage from the dash |

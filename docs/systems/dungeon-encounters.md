@@ -49,6 +49,7 @@ The budget is filled with weighted picks from the theme's pool for the tier; eac
 | Wither skeleton, vindicator, Goblin Warrior, Mimic | 3 |
 | Gelatinous Cube | 4 |
 | Owlbear | 6 |
+| Mind Flayer | 8 |
 
 **Veterans**: each pick may become a "Veteran <name>" (if its 1.5x cost fits): +50% max health and +25% attack damage, and it glows for 2 seconds when it appears.
 
@@ -78,7 +79,7 @@ The Dwarven Ruin's pool (the Ruin is always tier II or higher). **Dwarven Revena
 |-|-|
 | II | Revenant 8 (1.5), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 2, Mimic 1, Rust Monster 3 (3) |
 | III | Revenant 8 (2), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 3, Mimic 2, Rust Monster 3 (3) |
-| IV | Revenant 8 (2.5), Bowman 5 (1.5), cave spider 5, Gelatinous Cube 4, Mimic 3, Rust Monster 2 (3) |
+| IV | Revenant 8 (2.5), Bowman 5 (1.5), cave spider 5, Gelatinous Cube 4, Mimic 3, Rust Monster 2 (3), [Mind Flayer](../mobs/mind-flayer.md) 1 (with 2 thralls) |
 
 Encounter monsters drop their normal loot and count for bounties and class XP like any other monster. Monsters a boss summons (the Lich's raised dead) still give nothing.
 

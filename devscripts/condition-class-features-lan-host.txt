@@ -1,0 +1,78 @@
+# Aura of Courage and Cure Wounds on another player (docs/systems/conditions.md, "Class features"). Host half; start
+# condition-class-features-lan-guest.txt once the log says "Started serving on":
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/condition-class-features-lan-host.txt
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/condition-class-features-lan-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25617
+# Host log: the guest Frightened 10 blocks away keeps it; teleported next to the Conquest Paladin,
+# "[Conditions] <guest> Aura of Courage (Dev) ends frightened" and "immune to frightened (aura_of_courage)".
+# Then the host turns Life Cleric, the guest is hurt and Petrified, and Cure Wounds logs
+# "<guest> Cure Wounds (Dev) ends petrified"; the guest's Health rises. Guest log: "actionbar: Cure Wounds: the
+# stone falls away"; screenshots ccf-lan-statue (the petrified guest's own view, grey screen edge) and
+# ccf-lan-cured.
+/time set noon
+/weather clear
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/gamerule dndRests false
+wait 40
+closescreen
+include _reset.txt
+/fill -6 149 -6 20 149 20 minecraft:stone
+/fill -6 150 -6 20 156 20 minecraft:air
+/gamemode survival
+/tp @s 4.5 150 3.5 0 0
+/dndclass set @s paladin
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 900
+/dndclass subclass @s paladin.conquest
+/dndclass unlock @s paladin.hellforged
+/dndclass unlock @s paladin.divine_shield
+/publish false survival 25617
+waitchat joined the game
+wait 60
+/gamemode survival @a[name=!Dev]
+/dndcondition remove @a[name=!Dev,limit=1] all
+/tp @a[name=!Dev,limit=1] 4.5 150 18.5 180 10
+/dndclass unlock @s paladin.aura_of_courage
+/say ready
+waitchat guest-ready
+
+# ---- Aura of Courage: out of range it stays, in range it ends ----
+/dndcondition apply @a[name=!Dev,limit=1] frightened 1200
+wait 30
+/dndcondition list @a[name=!Dev,limit=1]
+/tp @a[name=!Dev,limit=1] 4.5 150 7.5 180 10
+wait 30
+/dndcondition list @a[name=!Dev,limit=1]
+/dndcondition apply @a[name=!Dev,limit=1] frightened 200
+/dndcondition immune @a[name=!Dev,limit=1] frightened
+
+# ---- Cure Wounds ends Petrified on the guest, then heals them ----
+/dndclass set @s cleric
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 900
+/dndclass subclass @s cleric.life
+/dndclass unlock @s cleric.preserve_life
+/dndclass unlock @s cleric.cure_wounds
+/dndclass equip @s cleric.cure_wounds
+/effect give @a[name=!Dev,limit=1] minecraft:instant_health 1 5
+wait 5
+/damage @a[name=!Dev,limit=1] 10 minecraft:generic
+/dndcondition apply @a[name=!Dev,limit=1] petrified -1
+wait 10
+/say petrified
+waitchat guest-petrified-done
+/data get entity @a[name=!Dev,limit=1] Health
+press key.dnd-classes.power-up
+wait 10
+/dndcondition list @a[name=!Dev,limit=1]
+/data get entity @a[name=!Dev,limit=1] Health
+/say cured
+waitchat guest-cured-done
+wait 40
+quit

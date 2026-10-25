@@ -109,10 +109,11 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
         return newHealth;
     }
 
-    /** Downed players crawl, on every side (remote clients run updatePose too). */
+    /** Downed and Prone players crawl, on every side (remote clients run updatePose too). */
     @Inject(method = "updatePose", at = @At("HEAD"), cancellable = true)
     private void dnd$downedPose(CallbackInfo info) {
-        if (Downed.is((PlayerEntity) (Object) this)) {
+        if (Downed.is((PlayerEntity) (Object) this) || mattonfire.dnd.classes.Conditions.Conditions
+                .has((PlayerEntity) (Object) this, mattonfire.dnd.classes.Conditions.Condition.PRONE)) {
             this.setPose(EntityPose.SWIMMING);
             info.cancel();
         }
@@ -120,7 +121,10 @@ public abstract class PlayerEntityMixin extends Entity implements PlayerEntityEx
 
     @Inject(method = "jump", at = @At("HEAD"), cancellable = true)
     private void dnd$noDownedJump(CallbackInfo info) {
-        if (Downed.is((PlayerEntity) (Object) this)) {
+        PlayerEntity self = (PlayerEntity) (Object) this;
+        if (Downed.is(self) || !mattonfire.dnd.classes.Conditions.Conditions.canMove(self)
+                || mattonfire.dnd.classes.Conditions.Conditions.has(self,
+                        mattonfire.dnd.classes.Conditions.Condition.PRONE)) {
             info.cancel();
         }
     }

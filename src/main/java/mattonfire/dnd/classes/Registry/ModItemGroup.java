@@ -70,6 +70,7 @@ public class ModItemGroup {
             entries.add(ModItems.PHYLACTERY_LOCKET);
             entries.add(ModItems.BURGLARS_RING);
             entries.add(ModItems.EYE_OF_THE_TYRANT);
+            entries.add(ModItems.GORGONS_GAZE);
             entries.add(ModItems.SCROLL_OF_IDENTIFY);
             entries.add(ModItems.SCROLL_OF_REMOVE_CURSE);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);
@@ -185,7 +186,9 @@ public class ModItemGroup {
             entries.add(ModItems.EMBER_WYVERN_SPAWN_EGG);
             entries.add(ModItems.MIMIC_SPAWN_EGG);
             entries.add(ModItems.OWLBEAR_SPAWN_EGG);
+            entries.add(ModItems.TROLL_SPAWN_EGG);
             entries.add(ModItems.LICH_SPAWN_EGG);
+            entries.add(ModItems.MEDUSA_SPAWN_EGG);
             entries.add(ModItems.BEHOLDER_SPAWN_EGG);
             entries.add(ModItems.WYVERN_SPAWN_EGG);
             entries.add(ModItems.LIGHTNING_CHASER_SPAWN_EGG);
@@ -195,6 +198,7 @@ public class ModItemGroup {
             entries.add(ModItems.GOBLIN_WARRIOR_SPAWN_EGG);
             entries.add(ModItems.GELATINOUS_CUBE_SPAWN_EGG);
             entries.add(ModItems.RUST_MONSTER_SPAWN_EGG);
+            entries.add(ModItems.MIND_FLAYER_SPAWN_EGG);
         });
         // --- Racial banner patterns ---
         ItemGroupEvents.modifyEntriesEvent(BUILDING_BLOCKS_ITEMGROUP).register(entries ->

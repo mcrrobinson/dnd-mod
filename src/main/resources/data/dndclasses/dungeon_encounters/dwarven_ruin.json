@@ -100,6 +100,10 @@
             {
                 "entity": "dndclasses:rust_monster",
                 "weight": 2
+            },
+            {
+                "entity": "dndclasses:mind_flayer",
+                "weight": 1
             }
         ]
     }

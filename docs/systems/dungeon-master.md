@@ -41,12 +41,14 @@ The launch set:
 | `goblin_warband` | 5 Goblin Warriors and a Goblin Warlord | deadly |
 | `owlbear_ambush` | 1 Owlbear | medium |
 | `owlbear_den` | 2 Owlbears | hard |
+| `troll_bridge` | 1 Troll ("Troll under the Bridge") | hard |
 | `undead_crypt` | 4 zombies, 2 skeletons, 1 wither skeleton | hard |
 | `restless_dead` | 6 zombies | medium |
 | `mimic_hoard` | 1 Mimic and 2 treasury chests (`chests/dwarven_fortress_treasury`, un-rolled so a Rogue has to pick them) | medium |
 | `gelatinous_corridor` | 1 Gelatinous Cube | hard |
 | `wyvern_pair` | 2 Wyverns | deadly |
 | `lich_court` | the Lich (which places its phylactery) and 4 skeletons | deadly |
+| `illithid_thralls` | 1 [Mind Flayer](../mobs/mind-flayer.md), which brings 2 charmed thralls (not tagged with the encounter) | deadly |
 
 ### Calling for rolls
 `/dm save @a dex 14` makes every player roll a Dexterity save: it pops up on their [save lane](saving-throws.md) and each result comes back to you in chat (`Player: Dexterity Save 13 +4 = 17 vs DC 14 -> SUCCESS`). `/dm check @p stealth 15` does the same with a skill check on the big d20 panel. Add `adv` or `dis` for advantage or disadvantage, and `silent` to roll without showing the players. Mobs can be targets of `/dm save` too (flat +1, nothing shown). For command blocks: a roll nobody succeeds at makes the command fail, so `execute store success` gives 1 or 0, and `execute store result` gives the total (one target) or how many succeeded.

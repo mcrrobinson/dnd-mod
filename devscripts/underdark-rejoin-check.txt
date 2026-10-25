@@ -1,0 +1,15 @@
+# Second half of the rejoin check (after underdark-rejoin-set.txt; no reset header, it carries state on purpose):
+# the player logs back in where they left, in the Underdark, and /underdark back still knows the way home.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/underdark-rejoin-check.txt
+# Expect in latest.log: Dimension "dndclasses:underdark" and the same Pos as the set run, then after /underdark back
+# Dimension "minecraft:overworld".
+wait 40
+closescreen
+/data get entity @s Dimension
+/data get entity @s Pos
+wait 40
+screenshot underdark-rejoin
+/underdark back
+waitserver 2
+/data get entity @s Dimension
+quit

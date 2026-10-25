@@ -1,0 +1,13 @@
+# First half of the rejoin check: goes down into the Underdark and quits there. Then run underdark-rejoin-check.txt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/underdark-rejoin-set.txt
+# Expect in latest.log: Dimension "dndclasses:underdark" before quitting.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/underdark go
+waitserver 2
+/data get entity @s Dimension
+/data get entity @s Pos
+wait 20
+quit

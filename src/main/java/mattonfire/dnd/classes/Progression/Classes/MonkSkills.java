@@ -13,6 +13,11 @@ import java.util.UUID;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.MonkRules;
+import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Abilities.ClassConditionFeatures;
+import mattonfire.dnd.classes.Conditions.Condition;
+import mattonfire.dnd.classes.Conditions.Conditions;
+import mattonfire.dnd.classes.SkillChecks.SavingThrow;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import mattonfire.dnd.classes.Progression.ClassSkills;
 import mattonfire.dnd.classes.Progression.Progression;
@@ -57,6 +62,8 @@ public class MonkSkills extends ClassSkills {
 
     private static final double STUN_RADIUS = 4;
     private static final int STUN_TICKS = 80;
+    private static final String STUNNING_STRIKE_SAVE = "save.dndclasses.stunning_strike";
+    private static final String STUNNING_STRIKE_TAG = "stunning_strike";
 
     private static final float DEFLECT_CHANCE = 0.5F;
     private static final float FALL_DAMAGE_MULTIPLIER = 0.25F;
@@ -155,7 +162,7 @@ public class MonkSkills extends ClassSkills {
                         "Every 3rd hit in a row on the same target deals 50% more damage.", "minecraft:stick", 1, 2,
                         3, "monk.flurry_rush"),
                 active("monk.stunning_strike", "Stunning Strike",
-                        "Mobs within 4 blocks get Slowness IV and Weakness II for 4 seconds.", "minecraft:bell", 3, 1,
+                        "Mobs within 4 blocks make a CON save or are Stunned for 2 seconds; the rest get Slowness IV and Weakness II for 4 seconds.", "minecraft:bell", 3, 1,
                         2, 2, "monk.flurry_of_blows"),
                 passive("monk.deflect_missiles", "Deflect Missiles", "50% chance to ignore projectile damage.",
                         "minecraft:arrow", 1, 2, 1, "monk.stunning_strike"),
@@ -401,9 +408,16 @@ public class MonkSkills extends ClassSkills {
         ServerWorld world = (ServerWorld) player.getWorld();
         switch (node.id()) {
             case "monk.stunning_strike" -> {
+                int dc = ClassConditionFeatures.stunningStrikeDc(player);
                 for (LivingEntity mob : hostilesNear(player, STUN_RADIUS)) {
-                    mob.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, STUN_TICKS, 3), player);
-                    mob.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, STUN_TICKS, 1), player);
+                    // CON save: a failure is Stunned (bosses shrug it off after 20 ticks), a success the old daze
+                    boolean saved = SavingThrow.of(mob, Ability.CON, dc).label(STUNNING_STRIKE_SAVE).source(player)
+                            .tags(STUNNING_STRIKE_TAG).roll().succeeded();
+                    if (saved || Conditions.of(mob, Condition.STUNNED).source(player).key(STUNNING_STRIKE_TAG)
+                            .ticks(ClassConditionFeatures.STUNNING_STRIKE_STUN_TICKS).apply() == null) {
+                        mob.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, STUN_TICKS, 3), player);
+                        mob.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, STUN_TICKS, 1), player);
+                    }
                     world.spawnParticles(ParticleTypes.CRIT, mob.getX(), mob.getEyeY(), mob.getZ(), 10, 0.3, 0.3,
                             0.3, 0.1);
                 }

@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/zurkhwood_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/zurkhwood_planks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/zurkhwood_slab_top"
+    }
+  }
+}

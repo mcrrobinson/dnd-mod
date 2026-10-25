@@ -1,0 +1,167 @@
+# Checks the Underdark's natural blocks (docs/items/underdark-blocks.md): a showcase, drops, real breaking with the
+# right tools, the Zurkhwood Planks shapes and the stem -> planks recipe, Bluecap placement, and the Nightlight Cap's
+# light.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/underdark-blocks.txt
+# Expect in latest.log:
+# - each /loot line drops its own block ("Dropped 1 [...]"), the slab two when double and the door once
+# - after breaking stem, cap, loam, faerzress stone and a bluecap by hand/tool and picking them up, `slots` lists
+#   each one in the inventory
+# - the crafting table: one Zurkhwood Stem in the grid gives 4 Zurkhwood Planks in slot 0
+# - "Test passed" for the bluecap placed on Fungal Loam in full daylight (still there 200 ticks later), and
+#   "Test failed" for one used on sand (it can't stand there)
+# - screenshot underdark-blocks-showcase, and underdark-nightlight-light (F3: block light 12 one block from a cap
+#   in the Underdark, where there's no sky light)
+wait 40
+closescreen
+include _reset.txt
+/execute in minecraft:overworld run tp @s 46.5 152.5 0.5 0 22
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doTileDrops true
+/time set noon
+/fill 40 149 -2 56 149 10 minecraft:smooth_stone
+/fill 40 150 -2 56 156 10 minecraft:air
+# The showcase: naturals on the back row, the planks family in front
+/setblock 42 150 8 dndclasses:zurkhwood_stem
+/setblock 42 151 8 dndclasses:zurkhwood_stem
+/setblock 42 152 8 dndclasses:zurkhwood_cap
+/setblock 43 152 8 dndclasses:zurkhwood_cap
+/setblock 41 152 8 dndclasses:zurkhwood_cap
+/setblock 44 150 8 dndclasses:zurkhwood_stem[axis=x]
+/setblock 46 150 8 dndclasses:nightlight_cap
+/setblock 46 151 8 dndclasses:nightlight_cap
+/setblock 48 150 8 dndclasses:fungal_loam
+/setblock 48 151 8 dndclasses:bluecap
+/setblock 49 150 8 dndclasses:fungal_loam
+/setblock 49 151 8 dndclasses:trillimac
+/fill 50 150 8 51 151 8 dndclasses:faerzress_stone
+/setblock 42 150 6 dndclasses:zurkhwood_planks
+/setblock 43 150 6 dndclasses:zurkhwood_stairs[facing=south]
+/setblock 44 150 6 dndclasses:zurkhwood_slab
+/setblock 45 150 6 dndclasses:zurkhwood_fence
+/setblock 46 150 6 dndclasses:zurkhwood_fence
+/setblock 47 150 6 dndclasses:zurkhwood_fence_gate[facing=south]
+/setblock 48 150 6 dndclasses:zurkhwood_door[facing=south,half=lower]
+/setblock 48 151 6 dndclasses:zurkhwood_door[facing=south,half=upper]
+/setblock 49 150 6 dndclasses:zurkhwood_trapdoor[facing=south,half=bottom]
+/setblock 50 150 6 dndclasses:zurkhwood_slab[type=double]
+/tp @s 46.5 152.5 0.5 0 22
+wait 40
+hud off
+screenshot underdark-blocks-showcase
+hud on
+# Drops: /loot simulates mining each block
+/loot spawn 46 153 2 mine 42 150 8 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 42 152 8 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 46 150 8 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 48 150 8 minecraft:diamond_shovel
+/loot spawn 46 153 2 mine 50 150 8 minecraft:diamond_pickaxe
+/loot spawn 46 153 2 mine 48 151 8 minecraft:air
+/loot spawn 46 153 2 mine 49 151 8 minecraft:air
+/loot spawn 46 153 2 mine 42 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 43 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 44 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 50 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 45 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 47 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 48 150 6 minecraft:diamond_axe
+/loot spawn 46 153 2 mine 49 150 6 minecraft:diamond_axe
+/kill @e[type=minecraft:item]
+# Really breaking them in survival, each with its tool, then picking the drop up
+/gamemode survival
+/clear @s
+/give @s minecraft:diamond_axe
+/give @s minecraft:diamond_shovel
+/give @s minecraft:diamond_pickaxe
+/fill 40 150 2 56 152 4 minecraft:air
+/setblock 42 150 3 dndclasses:zurkhwood_stem
+/setblock 44 150 3 dndclasses:zurkhwood_cap
+/setblock 46 150 3 dndclasses:fungal_loam
+/setblock 48 150 3 dndclasses:faerzress_stone
+/setblock 50 149 3 dndclasses:fungal_loam
+/setblock 50 150 3 dndclasses:bluecap
+hotbar 0
+/tp @s 42.5 150 1.5 0 30
+wait 5
+mine on
+wait 40
+mine off
+/tp @s 42.5 150 3.5 0 30
+wait 30
+/tp @s 44.5 150 1.5 0 30
+wait 5
+mine on
+wait 40
+mine off
+/tp @s 44.5 150 3.5 0 30
+wait 30
+hotbar 1
+/tp @s 46.5 150 1.5 0 30
+wait 5
+mine on
+wait 40
+mine off
+/tp @s 46.5 150 3.5 0 30
+wait 30
+hotbar 2
+/tp @s 48.5 150 1.5 0 30
+wait 5
+mine on
+wait 60
+mine off
+/tp @s 48.5 150 3.5 0 30
+wait 30
+hotbar 5
+/tp @s 50.5 150 2.2 0 45
+wait 5
+attack
+wait 10
+/tp @s 50.5 150 3.5 0 30
+wait 30
+slots
+# The stem -> planks recipe in a crafting table (slots: 0 result, 1-9 grid, 10-36 inventory, 37-45 hotbar)
+/gamemode creative
+/clear @s
+/give @s dndclasses:zurkhwood_stem
+/setblock 46 150 0 minecraft:crafting_table
+/tp @s 46.5 150 -1.5 0 30
+wait 10
+hotbar 1
+use
+wait 10
+slot 37
+slot 1
+wait 5
+slots
+closescreen
+/setblock 46 150 0 minecraft:air
+# Bluecap stands on Fungal Loam in full daylight, but can't be placed on sand
+/clear @s
+/give @s dndclasses:bluecap 2
+/setblock 52 149 0 dndclasses:fungal_loam
+/setblock 54 149 0 minecraft:sand
+/tp @s 52.5 150 -1.5 0 45
+wait 5
+hotbar 0
+use
+wait 5
+/tp @s 54.5 150 -1.5 0 45
+wait 5
+use
+wait 5
+waitserver 200
+/execute if block 52 150 0 dndclasses:bluecap
+/execute if block 54 150 0 dndclasses:bluecap
+# Light: in the Underdark (no sky light) one block from a Nightlight Cap
+/underdark go
+waitserver 2
+/execute at @s run setblock ~1 ~ ~ dndclasses:nightlight_cap
+wait 20
+debug on
+wait 10
+screenshot underdark-nightlight-light
+debug off
+/execute at @s run setblock ~1 ~ ~ minecraft:air
+/underdark back
+waitserver 2
+quit

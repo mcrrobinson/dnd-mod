@@ -118,11 +118,15 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.GrabSaves.register();
                 mattonfire.dnd.entity.BasiliskSaves.register();
                 mattonfire.dnd.classes.Items.SalveOfStoneToFleshItem.register();
+                mattonfire.dnd.entity.RustMonsterEntity.register();
+                mattonfire.dnd.entity.MindFlayerSaves.register();
+                mattonfire.dnd.entity.MedusaSaves.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
                 mattonfire.dnd.world.gen.village.HobbitVillageStructures.register();
                 mattonfire.dnd.tavern.Tavern.register();
+                mattonfire.dnd.entity.hireling.Hirelings.register();
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
@@ -157,6 +161,8 @@ public class DnDClasses implements ModInitializer {
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.quest.QuestCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndHomeCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.UnderdarkCommand.register(dispatcher));
                 mattonfire.dnd.entity.boss.StructureBosses.register();
                 // Dungeon loot: the dungeon_tier loot condition, Veteran drops and the repopulation timer
                 mattonfire.dnd.dungeon.DungeonLoot.register();
@@ -190,6 +196,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Registry.OrcBuildingBlocks.register();
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.register();
                 mattonfire.dnd.classes.Registry.CogsdeepBlocks.register();
+                mattonfire.dnd.classes.Registry.UnderdarkBlocks.register();
                 // --- Dragon Temples ---
                 mattonfire.dnd.classes.Registry.ModTempleBlocks.register();
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();

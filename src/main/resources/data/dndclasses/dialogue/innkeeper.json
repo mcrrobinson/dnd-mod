@@ -9,6 +9,11 @@
   },
   "topics": [
     {
+      "id": "innkeeper/work",
+      "text": "dialogue.dndclasses.innkeeper.work",
+      "goto": "work"
+    },
+    {
       "id": "innkeeper/goblin_news",
       "text": "dialogue.dndclasses.innkeeper.goblins",
       "requires": {"quest": "dndclasses:goblin_menace/1", "state": "active"},
@@ -28,6 +33,10 @@
     }
   ],
   "nodes": {
+    "work": {
+      "lines": ["dialogue.dndclasses.innkeeper.work.lines"],
+      "options": [{"text": "dialogue.dndclasses.innkeeper.back", "goto": "hub"}]
+    },
     "goblin_news": {
       "lines": ["dialogue.dndclasses.innkeeper.goblins.lines"],
       "options": [{"text": "dialogue.dndclasses.innkeeper.back", "goto": "hub"}]

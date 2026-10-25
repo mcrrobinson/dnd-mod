@@ -68,6 +68,25 @@ public final class DownedEvents {
         void afterDowned(ServerPlayerEntity player, DamageSource source);
     }
 
+    /**
+     * Other allies who keep a dying player Downed rather than in a Last Stand (hirelings). Any listener returning
+     * true counts as an ally nearby.
+     */
+    public static final Event<ExtraAlly> EXTRA_ALLY = EventFactory.createArrayBacked(ExtraAlly.class,
+            listeners -> player -> {
+                for (ExtraAlly listener : listeners) {
+                    if (listener.isAllyNear(player)) {
+                        return true;
+                    }
+                }
+                return false;
+            });
+
+    @FunctionalInterface
+    public interface ExtraAlly {
+        boolean isAllyNear(ServerPlayerEntity player);
+    }
+
     private static final Identifier PHASE = new Identifier(DnDClasses.MOD_ID, "downed");
 
     private DownedEvents() {
@@ -185,8 +204,14 @@ public final class DownedEvents {
         return !DeathSaves.lastStand(player);
     }
 
-    /** Someone who could come and help: online, alive, not Downed, same dimension, within 64 blocks. */
+    /**
+     * Someone who could come and help: online, alive, not Downed, same dimension, within 64 blocks; or an
+     * {@link #EXTRA_ALLY} (a hireling following them).
+     */
     public static boolean hasAlly(ServerPlayerEntity player, int mode, Entity attacker) {
+        if (EXTRA_ALLY.invoker().isAllyNear(player)) {
+            return true;
+        }
         if (mode >= 2) {
             for (ServerPlayerEntity other : ((net.minecraft.server.world.ServerWorld) player.world).getPlayers()) {
                 if (other != player && other != attacker && other.isAlive() && !other.isSpectator()

@@ -249,11 +249,36 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // Troll (feat/troll)
+    public static final EntityType<TrollEntity> TROLL = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "troll"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, TrollEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.3f, 2.9f))
+                    .build()
+    );
+
     public static final EntityType<GelatinousCubeEntity> GELATINOUS_CUBE = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "gelatinous_cube"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, GelatinousCubeEntity::new)
                     .dimensions(EntityDimensions.fixed(2.0f, 2.0f))
+                    .build()
+    );
+
+    public static final EntityType<RustMonsterEntity> RUST_MONSTER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "rust_monster"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, RustMonsterEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.2f, 1.0f))
+                    .build()
+    );
+
+    public static final EntityType<MindFlayerEntity> MIND_FLAYER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "mind_flayer"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MindFlayerEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
                     .build()
     );
 
@@ -279,6 +304,16 @@ public class ModEntityTypes {
             new Identifier(DnDClasses.MOD_ID, "beholder"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BeholderEntity::new)
                     .dimensions(EntityDimensions.fixed(2.25f, 2.4f))
+                    .build()
+    );
+
+    // Medusa: the Gorgon's Temple lair boss (design 8, section 6)
+    public static final EntityType<MedusaEntity> MEDUSA = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "medusa"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MedusaEntity::new)
+                    // 1.95 high, not 2.1: she has to fit the jungle temple's two-block rooms
+                    .dimensions(EntityDimensions.fixed(0.8f, 1.95f))
                     .build()
     );
 
@@ -334,11 +369,15 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(ORC_CHAMPION, OrcChampionEntity.createOrcChampionAttributes());
         FabricDefaultAttributeRegistry.register(ORC_WAR_CHIEF, OrcWarChiefEntity.createOrcWarChiefAttributes());
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
+        FabricDefaultAttributeRegistry.register(TROLL, TrollEntity.createTrollAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
+        FabricDefaultAttributeRegistry.register(RUST_MONSTER, RustMonsterEntity.createRustMonsterAttributes());
+        FabricDefaultAttributeRegistry.register(MIND_FLAYER, MindFlayerEntity.createMindFlayerAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
         LichEntity.registerEvents();
         FabricDefaultAttributeRegistry.register(BEHOLDER, BeholderEntity.createBeholderAttributes());
         FabricDefaultAttributeRegistry.register(BASILISK, BasiliskEntity.createBasiliskAttributes());
+        FabricDefaultAttributeRegistry.register(MEDUSA, MedusaEntity.createMedusaAttributes());
     }
 }

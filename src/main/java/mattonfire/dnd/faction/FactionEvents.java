@@ -86,8 +86,9 @@ public final class FactionEvents {
                 change.add(faction, penalty);
                 continue;
             }
-            for (Map.Entry<Identifier, Integer> enemy : faction.enemyKills().entrySet()) {
-                Faction enemyFaction = Factions.get(enemy.getKey());
+            boolean enemy = false;
+            for (Map.Entry<Identifier, Integer> enemyKill : faction.enemyKills().entrySet()) {
+                Faction enemyFaction = Factions.get(enemyKill.getKey());
                 if (enemyFaction == null || !enemyFaction.isMember(killed)) {
                     continue;
                 }
@@ -95,9 +96,17 @@ public final class FactionEvents {
                 if (special != null) {
                     change.add(faction, special);
                 } else {
-                    change.add(faction, enemy.getValue(), Reputation.Cap.KILL, faction.killCap());
+                    change.add(faction, enemyKill.getValue(), Reputation.Cap.KILL, faction.killCap());
                 }
+                enemy = true;
                 break;
+            }
+            if (!enemy) {
+                // Monsters the faction hates without them being a faction (the dwarves and Rust Monsters).
+                Integer monster = Faction.lookup(faction.monsterKills(), killed);
+                if (monster != null) {
+                    change.add(faction, monster, Reputation.Cap.KILL, faction.killCap());
+                }
             }
         }
         change.apply();

@@ -1,0 +1,143 @@
+# The Mind Flayer (docs/mobs/mind-flayer.md).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/mind-flayer.txt
+# The player is a Fighter on a y=150 platform with extra health (no Resistance, so the damage shows).
+# Check run/logs/latest.log (and run/logs/debug.log for [MobAction]):
+# 1. Failed Mind Blast (forced 2s): "[D20] Dev Mind Blast (INT) 2 ...", "[MindFlayer] Mind Blast hits Dev: stunned",
+#    "[Conditions] Dev +stunned (Mind Flayer, 80t, save INT 14/40t)", "[Grapple] the mind flayer grabs Dev",
+#    "[MindFlayer] Extract Brain on Dev" (debug.log: "[MobAction] Mind Flayer Extract Brain -> Dev") and the
+#    Health readouts dropping. Screenshots mind-flayer-windup and mind-flayer-grab.
+# 2. Saved Mind Blast (forced 20): "Mind Blast hits Dev: half damage" and no second "+stunned".
+# 3. Thralls from the spawn egg: "/dndcondition list" on them shows "charmed (Mind Flayer"; after the flayer is
+#    killed, "-charmed (source gone)" about 100 ticks later. Dominate: "[MindFlayer] dominate Husk: ...".
+# 4. Blink: after 60 damage (below 30%), "[MindFlayer] blink (hurt): ... (N blocks)" with N >= 8.
+# 5. Gnome: the blast save rolls with advantage (two dice in the [D20] line).
+# Screenshots mind-flayer-look, -night (glowing eyes) and -side show the model.
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+respawn
+wait 10
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s
+/fill -20 149 -20 20 149 20 minecraft:stone
+/fill -20 150 -20 20 156 20 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:health_boost 900 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 10
+
+# ---- 0. Looks: front by day and by night (glowing eyes), side ----
+/summon dndclasses:mind_flayer 0.5 150 3.0 {NoAI:1b,Rotation:[180f,0f],Tags:["mflook"]}
+/tp @s 0.5 150 0.2 0 -8
+hud off
+wait 10
+screenshot mind-flayer-look
+/time set midnight
+wait 5
+screenshot mind-flayer-night
+/time set noon
+/tp @s 3.0 150 3.0 90 -5
+wait 5
+screenshot mind-flayer-side
+hud on
+/kill @e[tag=mflook]
+wait 5
+
+# ---- 1. Mind Blast, failed save: stunned, grabbed, brain extracted ----
+/tp @s 0.5 150 0.5 0 0
+/data get entity @s Health
+/dndclass forceroll @s 2 2 2 2
+/summon dndclasses:mind_flayer 0.5 150 6.5 {BlastCooldown:0,Rotation:[180f,0f],Tags:["mftest"]}
+wait 14
+screenshot mind-flayer-windup
+wait 26
+conditions
+/data get entity @s Health
+wait 40
+screenshot mind-flayer-grab
+/dndcondition list @s
+wait 80
+/data get entity @s Health
+conditions
+/kill @e[type=dndclasses:mind_flayer]
+/dndcondition remove @s all
+/dndclass forceroll @s clear
+/effect give @s minecraft:instant_health 1 9 true
+wait 20
+
+# ---- 2. Mind Blast, saved: half damage, not stunned ----
+/tp @s 0.5 150 0.5 0 0
+/dndclass forceroll @s 20 20
+/summon dndclasses:mind_flayer 0.5 150 8.5 {BlastCooldown:0,Rotation:[180f,0f],Tags:["mftest"]}
+wait 50
+conditions
+/kill @e[type=dndclasses:mind_flayer]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 10
+
+# ---- 3. Thralls from the spawn egg, freed when the flayer dies; Dominate ----
+/time set midnight
+/gamemode creative
+/tp @s 0.5 150 0.5 0 60
+/clear @s
+/give @s dndclasses:mind_flayer_spawn_egg
+hotbar 0
+wait 5
+use
+wait 20
+/execute as @e[type=#dndclasses:mind_flayer_thralls,distance=..12] run dndcondition list @s
+screenshot mind-flayer-thralls
+/kill @e[type=dndclasses:mind_flayer]
+wait 130
+/execute as @e[type=#dndclasses:mind_flayer_thralls,distance=..20] run dndcondition list @s
+/kill @e[type=!minecraft:player,distance=..80]
+/summon minecraft:husk 3.5 150 9.5 {NoAI:1b,PersistenceRequired:1b,Tags:["mftest"]}
+/summon dndclasses:mind_flayer 0.5 150 9.5 {Tags:["mftest"]}
+wait 60
+/execute as @e[type=minecraft:husk,tag=mftest] run dndcondition list @s
+/kill @e[tag=mftest]
+/time set noon
+wait 10
+
+# ---- 4. Blink when badly hurt ----
+/summon dndclasses:mind_flayer 0.5 150 6.5 {Tags:["mftest"],Rotation:[180f,0f]}
+wait 10
+/data get entity @e[type=dndclasses:mind_flayer,limit=1] Pos
+/damage @e[type=dndclasses:mind_flayer,limit=1] 60 minecraft:player_attack by @s
+wait 30
+/data get entity @e[type=dndclasses:mind_flayer,limit=1] Pos
+screenshot mind-flayer-blink
+/kill @e[type=dndclasses:mind_flayer]
+wait 10
+
+# ---- 5. Gnome Cunning: advantage on the blast's INT save ----
+/dndrace set @s gnome
+wait 5
+closescreen
+/gamemode survival
+/clear @s
+/tp @s 0.5 150 0.5 0 0
+/dndclass forceroll @s 3 17
+/summon dndclasses:mind_flayer 0.5 150 8.5 {BlastCooldown:0,Rotation:[180f,0f],Tags:["mftest"]}
+wait 50
+conditions
+/kill @e[type=dndclasses:mind_flayer]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/dndrace set @s none
+wait 5
+closescreen
+quit

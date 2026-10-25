@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "dndclasses:heartwood_trapdoor"
+    "dndclasses:heartwood_trapdoor",
+    "dndclasses:zurkhwood_trapdoor"
   ]
 }

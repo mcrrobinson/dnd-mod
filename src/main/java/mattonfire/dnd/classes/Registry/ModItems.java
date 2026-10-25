@@ -574,6 +574,9 @@ public class ModItems {
         public static final Item LICH_SPAWN_EGG = registerItem("lich_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.LICH, 0x2A1838, 0x7FE0FF, new FabricItemSettings()));
 
+        public static final Item MEDUSA_SPAWN_EGG = registerItem("medusa_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MEDUSA, 0x6E8A5A, 0xE2D8BC, new FabricItemSettings()));
+
         public static final Item BEHOLDER_SPAWN_EGG = registerItem("beholder_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, 0x7A4860, 0x5AC850, new FabricItemSettings()));
 
@@ -596,6 +599,9 @@ public class ModItems {
 
         public static final Item GELATINOUS_CUBE_SPAWN_EGG = registerItem("gelatinous_cube_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, 0x7FD46A, 0x3C8A2E, new FabricItemSettings()));
+
+        public static final Item MIND_FLAYER_SPAWN_EGG = registerItem("mind_flayer_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MIND_FLAYER, 0x6E4A7E, 0xC9A3D6, new FabricItemSettings()));
 
         /** Magic item (attunement): +1 armor and +1 toughness for its bonded wearer, anywhere in the inventory. */
         public static final Item CLOAK_OF_PROTECTION = registerItem("cloak_of_protection",
@@ -659,6 +665,9 @@ public class ModItems {
                         new mattonfire.dnd.magic.items.BurglarsRingItem(new FabricItemSettings().maxCount(1)));
         public static final Item EYE_OF_THE_TYRANT = registerItem("eye_of_the_tyrant",
                         new mattonfire.dnd.magic.items.EyeOfTheTyrantItem(new FabricItemSettings().maxCount(1)));
+        /** The Medusa's drop (design 8, section 6.5). */
+        public static final Item GORGONS_GAZE = registerItem("gorgons_gaze",
+                        new mattonfire.dnd.magic.items.GorgonsGazeItem(new FabricItemSettings().maxCount(1)));
 
 
         // ---- Racial gear (kin stock): classes/Items/racial, docs/items/armor.md and racial-weapons.md ----

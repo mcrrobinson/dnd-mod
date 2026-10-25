@@ -17,7 +17,9 @@ import net.minecraft.entity.LivingEntity;
 public abstract class DownedTargetMixin {
     @Inject(method = "canTarget(Lnet/minecraft/entity/LivingEntity;)Z", at = @At("HEAD"), cancellable = true)
     private void dnd$ignoreDowned(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
-        if (DownedCombat.untargetable((LivingEntity) (Object) this, target)) {
+        if (DownedCombat.untargetable((LivingEntity) (Object) this, target)
+                || mattonfire.dnd.classes.Conditions.ConditionEffects.blocksTarget((LivingEntity) (Object) this,
+                        target)) {
             cir.setReturnValue(false);
         }
     }

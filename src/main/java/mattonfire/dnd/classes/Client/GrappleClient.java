@@ -45,6 +45,9 @@ public final class GrappleClient {
         while (client.options.jumpKey.wasPressed()) {
             pressed = true;
         }
+        if (pressed) {
+            ConditionClient.onJumpPressed(client); // Prone: stand up
+        }
         if (pressed && held && client.player != null && client.currentScreen == null) {
             ClientPlayNetworking.send(Grapple.C2S_STRUGGLE, PacketByteBufs.empty());
         }

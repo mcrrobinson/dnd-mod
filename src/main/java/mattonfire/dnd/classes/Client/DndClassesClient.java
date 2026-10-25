@@ -185,6 +185,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARRIOR, mattonfire.dnd.client.renderer.GoblinWarriorRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GOBLIN_WARLORD, mattonfire.dnd.client.renderer.GoblinWarlordRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LICH, mattonfire.dnd.client.renderer.LichRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MEDUSA, mattonfire.dnd.client.renderer.MedusaRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.PHYLACTERY, mattonfire.dnd.client.renderer.PhylacteryRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.HOBBIT, mattonfire.dnd.client.renderer.HobbitRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.tavern.Tavern.INNKEEPER, mattonfire.dnd.client.renderer.HobbitRenderer::new);
@@ -209,6 +210,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.TROLL, mattonfire.dnd.client.renderer.TrollRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, mattonfire.dnd.client.renderer.GelatinousCubeRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIND_FLAYER, mattonfire.dnd.client.renderer.MindFlayerRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, mattonfire.dnd.client.renderer.BeholderRenderer::new);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
@@ -242,6 +244,8 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Hud.GogglesHud.register();
         SearchKeyClient.register();
         GrappleClient.register();
+        ConditionClient.register();
+        mattonfire.dnd.classes.Client.Hud.ConditionHud.register();
         mattonfire.dnd.classes.Client.Render.PerceivedMarks.register();
         // Arcane Seals are translucent glyph walls
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(

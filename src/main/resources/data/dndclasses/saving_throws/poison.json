@@ -9,5 +9,6 @@
     "on_success": "half_duration",
     "hostile_source_only": true,
     "label": "save.dndclasses.poison",
-    "tags": ["poison"]
+    "tags": ["poison"],
+    "condition": "poisoned"
 }

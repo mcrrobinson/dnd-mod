@@ -11,7 +11,7 @@ The creature's group decides the skill. The groups come from entity type tags, c
 |-|-|-|-|
 | Undead | `#dndclasses:lore/undead` | Religion (INT) | zombies, skeletons, phantoms, Wither, Lich, Bone Wyvern |
 | Humanoid | `#dndclasses:lore/humanoid` | Insight (WIS) | goblins, hobbits, dwarves, elves, villagers, illagers, witches, piglins |
-| Arcane | `#dndclasses:lore/arcane` | Arcana (INT) | Beholder, Mimic, Gelatinous Cube, wyverns and dragons, endermen, blazes, slimes, Warden |
+| Arcane | `#dndclasses:lore/arcane` | Arcana (INT) | Beholder, Mimic, Gelatinous Cube, Mind Flayer, wyverns and dragons, endermen, blazes, slimes, Warden |
 | Beast | `#dndclasses:lore/beasts` | Nature (INT) | Owlbear, River Pikehorn, Magmamunchers, spiders, wolves, hoglins |
 
 A creature in none of the tags falls back on its kind: the undead group goes to Religion, illagers and traders to Insight, other monsters to Arcana, and everything else (animals) to Nature.

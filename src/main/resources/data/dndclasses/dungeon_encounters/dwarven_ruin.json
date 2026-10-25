@@ -88,6 +88,10 @@
                 "entity": "dndclasses:mimic",
                 "weight": 3,
                 "nbt": "{Dormant:0b}"
+            },
+            {
+                "entity": "dndclasses:mind_flayer",
+                "weight": 1
             }
         ]
     }

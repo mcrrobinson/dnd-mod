@@ -13,7 +13,7 @@
       "roleBlurb": "Soak hits up front and smash through what blocks the way",
       "obstacles": ["**Heavy Boulders**: heave them aside while raging (only you)", "Collapsed Passages", "Portcullis Winches"],
       "subclasses": [
-        {"id": "barbarian.berserker", "name": "Path of the Berserker", "title": "Berserker Barbarian", "flavour": "Rage without end: every kill feeds the fury.", "feature": "**Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage)", "featureReady": true},
+        {"id": "barbarian.berserker", "name": "Path of the Berserker", "title": "Berserker Barbarian", "flavour": "Rage without end: every kill feeds the fury.", "feature": "**Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage). **Mindless Rage**: while raging you can't be Frightened or Charmed, and starting Rage ends both", "featureReady": true},
         {"id": "barbarian.totem_warrior", "name": "Path of the Totem Warrior", "title": "Totem Warrior Barbarian", "flavour": "A bear spirit stands with you, shrugging off blows.", "feature": "**Bear Totem Spirit**: while Rage is active you take 15% less damage (not from the void, /kill or starving)", "featureReady": true}
       ],
       "abilities": {"STR": 15, "DEX": 13, "CON": 14, "INT": 8, "WIS": 12, "CHA": 10},
@@ -104,7 +104,7 @@
     {
       "id": "MONK",
       "name": "Monk",
-      "pros": ["Triple jump", "Unrivaled attack speed", "**Evasion** (level 7): no damage from a passed DEX save against breath or traps, half from a failed one", "**Diamond Soul** (level 10): proficient in every saving throw"],
+      "pros": ["Triple jump", "Unrivaled attack speed", "**Evasion** (level 7): no damage from a passed DEX save against breath or traps, half from a failed one", "**Stillness of Mind** (level 7): Frightened and Charmed last half as long and their repeat saves have advantage", "**Diamond Soul** (level 10): proficient in every saving throw, and the first failed repeat save against each condition is rerolled"],
       "cons": ["Reduced damage: 75% unarmored, and less the more armor you wear", "Can only attack with a staff or bare fists"],
       "special": ["**Flurry Rush**: blink between the mob you're looking at and hostiles near it for a rapid chain of hits, then blink back. 3 hits on 1 target, up to 10 hits across 5 targets with ranks"],
       "specialOnKey": true,

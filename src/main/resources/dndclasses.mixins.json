@@ -48,6 +48,8 @@
         "NetherFortressStartMixin",
         "StrongholdLibraryMixin",
         "TempleTrapsMixin",
+        "DesertTempleGeneratorMixin",
+        "JungleTempleGeneratorMixin",
         "MineshaftCollapseMixin",
         "StrongholdHiddenClosetMixin",
         "StructureStartPlacingMixin",
@@ -88,7 +90,10 @@
         "DownedHealMixin",
         "DownedTargetMixin",
         "StealthMixin",
-        "SavingThrowMixin"
+        "SavingThrowMixin",
+        "ConditionsTrackerMixin",
+        "ConditionMobMixin",
+        "ConditionMilkMixin"
     ],
     "client": [
         "CrossbowRenderMixin",
@@ -123,7 +128,8 @@
         "DarkvisionLightmapMixin",
         "PerceivedTeamColorMixin",
         "BossBarHudAccessor",
-        "ChatHudAccessor"
+        "ChatHudAccessor",
+        "KeyboardInputMixin"
     ],
     "injectors": {
         "defaultRequire": 1

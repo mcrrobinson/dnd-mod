@@ -150,6 +150,7 @@ public final class Study {
         registerWeakness(ModEntityTypes.OWLBEAR, Text.translatable("study.dndclasses.weakness.owlbear_hug",
                 (int) OwlbearEntity.HUG_BREAK_DAMAGE));
         registerWeakness(ModEntityTypes.TROLL, Text.translatable("study.dndclasses.weakness.troll"));
+        registerWeakness(ModEntityTypes.MIND_FLAYER, Text.translatable("study.dndclasses.weakness.mind_flayer"));
 
         registerInsight((player, target) -> {
             if (!(target instanceof VillagerEntity villager)) {

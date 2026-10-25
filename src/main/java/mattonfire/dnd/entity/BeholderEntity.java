@@ -474,6 +474,10 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     public void onDeath(DamageSource source) {
         this.bossFight.onDeath();
         super.onDeath(source);
+        if (!this.getWorld().isClient) {
+            // A lair's eye tyrant was floating over a way down: its floor splits open into an Underdark rift.
+            mattonfire.dnd.world.underdark.UnderdarkRifts.onBeholderDeath(this);
+        }
     }
 
     @Override

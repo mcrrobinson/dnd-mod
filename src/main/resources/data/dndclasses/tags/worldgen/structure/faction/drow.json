@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "dndclasses:drow_outpost", "required": false},
+    {"id": "dndclasses:drow_spire", "required": false}
+  ]
+}

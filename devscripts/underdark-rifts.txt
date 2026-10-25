@@ -1,0 +1,131 @@
+# Checks the Underdark Rifts (docs/structures/underdark-rifts.md): rifts on 3 seeds, the sinkhole and chasm, the
+# ledge climb, the veil down to the landing, the anchor back up (and cancelling it), items vanishing in the veil,
+# a zombie keeping out of it, and a lair Beholder's death tearing a rift.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/underdark-rifts.txt
+# Expect in latest.log:
+# - "[RiftSeeds] seed ...: nearest rift at ...: PASS" for 3 seeds (within 1000 blocks of 0 0)
+# - "[RiftSurvey] rift at chunk ...: landing yes, veil 15/15, steps n/n clear: PASS"
+# - "Test passed" for the 2-high air checks on climbing steps 0, 30, 60, 90 and the last step's chat line
+# - "[Underdark] Dev descends at x y z (landing)" about 1 s (20 ticks) after "rift pool"
+# - "[Underdark] Dev starts an anchor pull", then "[Underdark] Dev ascends to x y z (rift)" 60 ticks later
+# - "[Underdark] Dev's anchor pull is cancelled (moved)" and "... (hurt)"
+# - the diamond check "Test failed" (gone), the zombie check "Test passed" (still up here) with no
+#   "[Underdark] Zombie falls through a rift" line
+# - "[Underdark] Beholder rift torn open at ...", "Test passed" for the veil at the pupil, then
+#   "[Underdark] Dev descends at ... (found|carved)"
+# Screenshots: rift-sinkhole-top, rift-mouth, rift-chasm-floor, rift-pool, rift-landing, rift-ledge, rift-lair
+wait 40
+closescreen
+include _reset.txt
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/weather clear
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 3 true
+/difficulty normal
+/dndhome riftseeds
+waitserver 2
+
+# The sinkhole from above and the chasm floor.
+/gamemode spectator
+/dndhome rift top
+wait 300
+waitserver 2
+hud off
+screenshot rift-sinkhole-top
+/dndhome rift mouth
+wait 40
+screenshot rift-mouth
+/dndhome rift floor
+wait 120
+screenshot rift-chasm-floor
+hud on
+
+# The climb: every step (survey) and a few by hand, two blocks of air over a solid ledge.
+/dndhome riftsurvey 1
+waitserver 2
+/dndhome rift step 0
+/execute if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air unless block ~ ~-1 ~ minecraft:air
+/dndhome rift step 30
+/execute if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air unless block ~ ~-1 ~ minecraft:air
+/dndhome rift step 60
+/execute if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air unless block ~ ~-1 ~ minecraft:air
+/dndhome rift step 90
+/execute if block ~ ~ ~ minecraft:air if block ~ ~1 ~ minecraft:air unless block ~ ~-1 ~ minecraft:air
+/dndhome rift step 9999
+waitserver 2
+
+# Down through the veil (survival: a second in it).
+/gamemode survival
+/dndhome rift pool
+wait 5
+screenshot rift-pool
+wait 60
+waitserver 2
+/data get entity @s Dimension
+/data get entity @s Pos
+
+# The anchor: cancelled by moving, cancelled by a hit, then all the way up (after the 5 s cooldown).
+wait 100
+/dndhome riftlanding
+wait 40
+hud off
+screenshot rift-landing
+hud on
+use
+wait 15
+/tp @s ~2 ~ ~
+wait 5
+/dndhome riftlanding
+wait 5
+use
+wait 15
+/damage @s 1 minecraft:generic
+wait 5
+/dndhome riftlanding
+wait 5
+use
+wait 75
+waitserver 2
+/data get entity @s Dimension
+/data get entity @s Pos
+wait 60
+hud off
+screenshot rift-ledge
+hud on
+
+# Things that fall in: a diamond vanishes. Then a zombie on the far side of the pool comes round it, not through.
+/execute positioned ^ ^ ^5 run summon item ~ ~ ~ {Item:{id:"minecraft:diamond",Count:1b},Tags:["riftitem"],PickupDelay:200}
+wait 40
+/execute if entity @e[type=item,tag=riftitem]
+/execute positioned ^ ^ ^8 run summon minecraft:zombie ~ ~-1 ~ {Tags:["riftz"],PersistenceRequired:1b}
+wait 200
+waitserver 2
+/execute if entity @e[type=zombie,tag=riftz]
+/execute as @e[type=zombie,tag=riftz] run data get entity @s Pos
+/kill @e[type=zombie,tag=riftz]
+
+# A lair Beholder's death opens its floor.
+/gamemode creative
+/dndhome riftlair
+wait 200
+waitserver 2
+/damage @e[type=dndclasses:beholder,distance=..48,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 10
+/damage @e[type=dndclasses:beholder,distance=..48,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 10
+/damage @e[type=dndclasses:beholder,distance=..48,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 40
+/execute if block ~-4 ~-1 ~ dndclasses:rift_veil
+hud off
+screenshot rift-lair
+hud on
+/gamemode survival
+/tp @s ~-4 ~ ~
+wait 60
+waitserver 2
+/data get entity @s Dimension
+/underdark back
+wait 20
+quit

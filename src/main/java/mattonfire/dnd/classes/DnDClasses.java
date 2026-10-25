@@ -121,6 +121,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.RustMonsterEntity.register();
                 mattonfire.dnd.entity.MindFlayerSaves.register();
                 mattonfire.dnd.entity.MedusaSaves.register();
+                mattonfire.dnd.entity.DuergarEntities.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
@@ -147,6 +148,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.SkillChecks.SaveRules.register();
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
+                mattonfire.dnd.world.underdark.rift.UnderdarkRiftStructures.register();
+                mattonfire.dnd.world.underdark.UnderdarkRifts.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();
@@ -186,6 +189,8 @@ public class DnDClasses implements ModInitializer {
                 ModItems.registerModItems();
                 ModEffects.registerEffects();
                 ModPotions.registerPotions();
+                // The drow and the Spider Houses (Underdark T4): their types, items, effects, spawns and events
+                mattonfire.dnd.entity.drow.Drow.register();
                 mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
@@ -197,6 +202,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.register();
                 mattonfire.dnd.classes.Registry.CogsdeepBlocks.register();
                 mattonfire.dnd.classes.Registry.UnderdarkBlocks.register();
+                mattonfire.dnd.classes.Registry.UnderdarkFlora.register();
+                mattonfire.dnd.classes.Registry.RiftBlocks.register();
                 // --- Dragon Temples ---
                 mattonfire.dnd.classes.Registry.ModTempleBlocks.register();
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();

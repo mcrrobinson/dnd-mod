@@ -61,7 +61,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses; the settlement's health, and losing the raid when it falls
-- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids, and higher tiers add perks (raid lookouts and loot, a free room, barrels, dwarf allies)
+- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves, goblins and the Grey Clans, data-driven factions, `/rep`; tiers change prices, hostility and raids, and higher tiers add perks (raid lookouts and loot, a free room, barrels, dwarf allies)
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
@@ -70,7 +70,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault
 - [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, party-shared spotting, Rogue and Artificer disarming and re-arming on reset
-- [The Underdark](systems/underdark.md): a dimension of huge caverns under the bedrock (y -256 to -65) with five regions (Fungal Forest, Mycelial Caverns, Darklake, Faerzress Hollows, Grey Reaches), always midnight; `/underdark go|back|biome|survey`
+- [The Underdark](systems/underdark.md): a dimension of huge caverns under the bedrock (y -256 to -65) with five regions (Fungal Forest, Mycelial Caverns, Darklake, Faerzress Hollows, Grey Reaches), always midnight; giant zurkhwood and nightlight towers, misty lakes, its own music, explorer maps; `/underdark go|back|biome|lake|flora|map|survey` (PR #286)
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn; DEX saves against breath and storms
@@ -91,6 +91,8 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Troll](mobs/troll.md): regenerating swamp and forest brute with a two-claw Rend; fire or acid stops the healing, and it only stays dead if you burn it once it falls
 - [Mind Flayer](mobs/mind-flayer.md): deep-cave illithid whose Mind Blast cone stuns (INT save), whose tentacles extract stunned brains, which blinks away and keeps charmed thralls
 - [Rust Monster](mobs/rust-monster.md): deep-cave beast whose antennae rust iron, chain and gold gear (DEX save), rusts metal weapons that hit it and stops to eat thrown iron; dwarves hate it
+- [Duergar](mobs/duergar.md): the Grey Clans of the Underdark's Grey Reaches: Soldiers, crossbow Arbalesters, the Factor merchant and the Taskmaster; they Enlarge mid-fight, vanish when hurt and hate sunlight; Unfriendly to most, Hostile to Dwarves (PR #283)
+- [Drow](mobs/drow.md): the Spider Houses of the Underdark: Warriors with poisoned hand crossbows (CON save; three failures and you fall asleep), Mages with Darkness, Faerie Fire and Magic Missile, spider-calling Priestesses and Spire Elites; hostile to everyone, allied with spiders, and every kill pleases the Sylvan Court (PR #285)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, dragons)
@@ -112,6 +114,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Brimstone Sanctums](structures/brimstone-sanctums.md): walled Nether platforms on pillars in crimson forests and soul sand valleys, never over the lava sea; Pact Hall, Brass Market, Alchemist's den and the Refuge's respawn anchors; the Tiefling home; built of Brimstone, Hellbrass and the sanctum's sigils, script panels, Contract Lectern, vents, sconces and censers
 - [Cogsdeep](structures/cogsdeep.md): gnome burrows under forests and meadows: a copper-domed observatory over a spiral stair down to y 11-30, workshops of unpowered contraptions, a clocktower, a gem room and a lush grotto; the Tinkers' law; the Gnome home; the stair pillar dressed in brass and clockwork
 - [Cogsdeep building blocks](structures/cogsdeep-blocks.md): Riveted Brass, Gnomish Bricks, animated Cogwork Panels and Gearwalls, Pipework, Glowcrystals, a Clockface that keeps the time, the Blueprint Table and Telescope Lens; swapped into the burrow, sold by Tinkers
+- [Underdark Rifts](structures/underdark-rifts.md): sinkholes with spiral ledges down to a deepslate chasm and a pool of Rift Veil that drops you into the Underdark onto a lit Rift Landing; a Rift Anchor's 3 s pull brings you back; a slain lair Beholder's floor opens into one (PR #284)
 - [Nether Fortress additions](structures/nether-fortresses.md): goblins, the Warlord and fortress music
 - [Goblin Camps](structures/goblin-camps.md): palisaded goblin war camps in forests and plains with hide and canvas tents (sloped roofs, ridge poles, guy ropes, door flaps); the goblin building blocks (Patchwork Hide, Stretched Hide, Tent Canvas, Tent Stakes, Scrap-lashed Planks, junk piles, glyph daubs, Rope-and-Bone Fence, War Order Board), also used in Goblin Warrens
 - [Desolate settlements](structures/desolate-settlements.md): abandoned copies of six settlements, 1 in 5 of each, at one of four levels (raided, abandoned, forsaken, overgrown): no one living there, looted, breached walls, holed floors, fallen doorways and rubble, roofs fallen in and huts in heaps where their walls are breached, fallen elven bridges, a caved-in Cogsdeep dome, Tattered Carpets, overgrowth
@@ -143,7 +146,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons
 - [Dwarven Ruin & Beholder lair blocks](items/ruin-blocks.md): Fallen Runic Bricks (cracked, mossy), Collapsed Rubble layers, Tarnished Gilding, Ray-glazed Stone, Petrified Remains and Eye-Stalk Growths, placed in the Ruin and the lair
 - [Adventuring blocks](items/adventuring-blocks.md): Bedrolls (a long rest like a bed, no spawn point), the Adventurer's Signpost naming a dungeon and its Challenge tier, Wanted Posters, Tavern Tables and Benches in oak, spruce, dark oak and Heartwood
-- [Underdark blocks](items/underdark-blocks.md): Zurkhwood Stem, Cap and Planks (non-flammable wood family), glowing Nightlight Caps, Fungal Loam, Faerzress Stone, Bluecaps and Trillimacs; the drow and duergar building blocks (Drowstone, Polished Faerzress, Spider Sigil Stone, Faerie Fire Lanterns, Spidersilk, Web Bridges, Greysteel, Basalt Forge Bricks, Duergar Braziers, lockable Chain Cages) (PR #282)
+- [Underdark blocks](items/underdark-blocks.md): Zurkhwood Stem, Cap and Planks (non-flammable wood family), glowing Nightlight Caps, Fungal Loam, Faerzress Stone, Bluecaps and Trillimacs; giant-fungus spores, Ripplebark and Roasted Trillimac to eat, Barrelstalk water, Waterorbs, Faerie Lichen, Glow Spores (Night Vision), Pearl-Clams; the drow and duergar building blocks (Drowstone, Polished Faerzress, Spider Sigil Stone, Faerie Fire Lanterns, Spidersilk, Web Bridges, Greysteel, Basalt Forge Bricks, Duergar Braziers, lockable Chain Cages) (PR #282)
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

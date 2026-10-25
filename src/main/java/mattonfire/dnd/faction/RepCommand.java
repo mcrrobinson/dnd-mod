@@ -41,6 +41,8 @@ public final class RepCommand {
                                         .then(CommandManager.argument("value",
                                                         IntegerArgumentType.integer(Reputation.MIN, Reputation.MAX))
                                                 .executes(context -> change(context, true))))
+                                .then(CommandManager.literal("reset")
+                                        .executes(RepCommand::reset))
                                 .then(CommandManager.literal("add")
                                         .then(CommandManager.argument("value",
                                                         IntegerArgumentType.integer(-2 * Reputation.MAX, 2 * Reputation.MAX))
@@ -70,6 +72,20 @@ public final class RepCommand {
                     .append(" as Neutral").formatted(Formatting.GOLD));
         }
         return line;
+    }
+
+    /** Forgets the stored standing, so it reads as the start again (for the player's race, if it has one). */
+    private static int reset(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        Identifier id = IdentifierArgumentType.getIdentifier(context, "faction");
+        Faction faction = Factions.get(id);
+        if (faction == null) {
+            throw UNKNOWN.create(id);
+        }
+        Reputation.reset(player, faction);
+        context.getSource().sendFeedback(Text.literal("Reset ").append(player.getDisplayName()).append("'s ")
+                .append(line(player, faction).copy()), true);
+        return Reputation.get(player, faction);
     }
 
     private static int change(CommandContext<ServerCommandSource> context, boolean set) throws CommandSyntaxException {

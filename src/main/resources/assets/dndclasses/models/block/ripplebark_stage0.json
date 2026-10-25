@@ -1,0 +1,68 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "particle": "dndclasses:block/ripplebark",
+    "shelf": "dndclasses:block/ripplebark"
+  },
+  "elements": [
+    {
+      "from": [
+        5,
+        7,
+        0
+      ],
+      "to": [
+        11,
+        9,
+        3
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            5,
+            0,
+            11,
+            3
+          ],
+          "texture": "#shelf"
+        },
+        "down": {
+          "uv": [
+            5,
+            13,
+            11,
+            16
+          ],
+          "texture": "#shelf"
+        },
+        "south": {
+          "uv": [
+            5,
+            7,
+            11,
+            9
+          ],
+          "texture": "#shelf"
+        },
+        "east": {
+          "uv": [
+            0,
+            7,
+            3,
+            9
+          ],
+          "texture": "#shelf"
+        },
+        "west": {
+          "uv": [
+            13,
+            7,
+            16,
+            9
+          ],
+          "texture": "#shelf"
+        }
+      }
+    }
+  ]
+}

@@ -80,7 +80,7 @@ Beholders only live in **Beholder lairs**, which are rare (spacing 40 chunks, se
 
 **The way in** is a shaft the Beholder bored with its rays: Ray-glazed Stone walls (a little smooth basalt) and floor round a polished deepslate pillar, with a spiral stair of Ray-glazed Stone stairs that comes up 20 blocks east of the cavern's centre, inside a mossy ring of wall with a soul lantern, and a ray-glazed tunnel from its foot to the cavern.
 
-No other monsters spawn in the lair, and Silent Footsteps plays inside. Once its Beholder is dead, the lair now and then sends a new one: a 1 in 20 roll on each natural spawn, out of sight of the sky, with no other Beholder within 64 blocks.
+No other monsters spawn in the lair, and Silent Footsteps plays inside. When a lair's Beholder dies, the pupil of the floor's eye splits open into a pool of Rift Veil: a way down into the [Underdark](../systems/underdark.md) (see [Underdark Rifts](../structures/underdark-rifts.md#a-beholders-rift)). Once its Beholder is dead, the lair now and then sends a new one: a 1 in 20 roll on each natural spawn, out of sight of the sky, with no other Beholder within 64 blocks.
 
 ## Commands
 - `/locate structure dndclasses:beholder_lair`

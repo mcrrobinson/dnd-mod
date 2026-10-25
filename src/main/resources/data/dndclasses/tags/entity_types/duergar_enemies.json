@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "dndclasses:drow_warrior", "required": false},
+    {"id": "dndclasses:drow_mage", "required": false},
+    {"id": "dndclasses:drow_priestess", "required": false},
+    {"id": "dndclasses:drow_elite", "required": false}
+  ]
+}

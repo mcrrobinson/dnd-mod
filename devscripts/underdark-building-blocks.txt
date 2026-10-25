@@ -9,8 +9,8 @@
 #   rigged 2 fails ("the lock holds"), a rigged 18 picks it ("Test passed" on open=true,locked=false); in creative
 #   use toggles even a locked cage
 # - curtain: `speed` on open floor about 0.21-0.22 blocks/tick, inside the curtains about 0.065 (30%)
-# - brazier: the zombie standing in it loses health (Health below 20 after 5 s); the stand-in duergar (a husk, only
-#   when the test datapack tagging husks as duergar is installed) and a blaze (fire-immune) keep 20
+# - brazier: the zombie standing in it loses health (Health below 20 after 5 s); a Duergar Soldier keeps its full (30)
+#   health, and so does a blaze (fire-immune, 20)
 # - screenshots underdark-building-showcase, underdark-building-closeup, underdark-building-cage
 wait 40
 closescreen
@@ -210,7 +210,7 @@ speed
 walk off
 /gamemode creative
 /fill 310 150 10 310 151 17 minecraft:air
-# Duergar Brazier: a zombie standing in it burns; a stand-in duergar (husk) and a blaze don't
+# Duergar Brazier: a zombie standing in it burns; a Duergar Soldier and a blaze don't
 /time set midnight
 # (Mobs need their AI: a NoAI mob never moves, so blocks never touch it. Glass cells keep them in the brazier.)
 /fill 293 149 13 295 153 15 minecraft:glass hollow
@@ -220,12 +220,12 @@ walk off
 /setblock 297 150 14 dndclasses:duergar_brazier
 /setblock 300 150 14 dndclasses:duergar_brazier
 /summon minecraft:zombie 294.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
-/summon minecraft:husk 297.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
+/summon dndclasses:duergar_soldier 297.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
 /summon minecraft:blaze 300.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
 /tp @s 297.5 151 9.5 0 20
 waitserver 100
 /data get entity @e[type=minecraft:zombie,tag=t6brazier,limit=1] Health
-/data get entity @e[type=minecraft:husk,tag=t6brazier,limit=1] Health
+/data get entity @e[type=dndclasses:duergar_soldier,tag=t6brazier,limit=1] Health
 /data get entity @e[type=minecraft:blaze,tag=t6brazier,limit=1] Health
 screenshot underdark-building-brazier
 /kill @e[tag=t6brazier]

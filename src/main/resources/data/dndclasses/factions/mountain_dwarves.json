@@ -10,7 +10,7 @@
   "hit_member": -15,
   "kill_member": -120,
   "kill_member_overrides": {"@dndclasses.role.dwarf_king": -500},
-  "enemy_kills": {"dndclasses:goblins": 1},
+  "enemy_kills": {"dndclasses:goblins": 1, "dndclasses:duergar_clans": 30},
   "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
   "kill_cap": 30,
   "monster_kills": {"dndclasses:rust_monster": 3},

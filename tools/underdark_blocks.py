@@ -12,8 +12,7 @@ It also writes the building blocks' one-offs (design 9 T6): Spider Sigil Stone, 
 Block / Carpet / Curtain, Web Bridge Planks, Duergar Brazier, Chain Cage and the Duergar Steel Ingot, with their
 recipes, the recipes the families can't express (Drowstone Bricks needs Spidersilk, Faerzress Stone stonecuts into
 Polished Faerzress, Greysteel Plate back into ingots) and the brazier / curtain entity tags. Spidersilk is the drow's
-drop (T4): every recipe using it carries a `fabric:registry_contains` load condition, so it loads once that item
-exists and is skipped quietly until then. Their textures come from tools/underdark_building_textures.py.
+drop (`Drow.SPIDERSILK`). Their textures come from tools/underdark_building_textures.py.
 """
 import json
 import os
@@ -288,32 +287,23 @@ def ingredient(value):
     return {'tag': value[1:]} if value.startswith('#') else {'item': value}
 
 
-def needs(recipe, items):
-    """Loads the recipe only once these items exist (Spidersilk comes with the drow, T4)."""
-    if items:
-        recipe['fabric:load_conditions'] = [{'condition': 'fabric:registry_contains', 'values': items}]
-    return recipe
-
-
 def recipe_file(name, obj):
     write(os.path.join(DATA, NS, 'recipes', name + '.json'), obj)
 
 
 def shaped(name, pattern, key, result, count=1, category='building'):
-    used = sorted({v for v in key.values() if v == SPIDERSILK})
     recipe = {'type': 'minecraft:crafting_shaped', 'category': category,
               'key': {k: ingredient(v) for k, v in key.items()}, 'pattern': pattern,
               'result': {'count': count, 'item': result} if count != 1 else {'item': result},
               'show_notification': True}
-    recipe_file(name, needs(recipe, used))
+    recipe_file(name, recipe)
 
 
 def shapeless(name, ingredients, result, count=1, category='building'):
-    used = sorted({v for v in ingredients if v == SPIDERSILK})
     recipe = {'type': 'minecraft:crafting_shapeless', 'category': category,
               'ingredients': [ingredient(v) for v in ingredients],
               'result': {'count': count, 'item': result} if count != 1 else {'item': result}}
-    recipe_file(name, needs(recipe, used))
+    recipe_file(name, recipe)
 
 
 def stonecut(name, source, result, count=1):
@@ -366,9 +356,9 @@ def building_blocks():
                                               ref('duergar_brazier'), ref('chain_cage')])
     add_to_tag('blocks', 'mineable/axe', [ref('web_bridge')])
     # The duergar and drow faction tags come with their tickets (T5, T4); optional until then.
-    entity_tag('brazier_immune', [{'id': '#dndclasses:faction/duergar_clans', 'required': False}])
+    entity_tag('brazier_immune', ['#dndclasses:faction/duergar_clans'])
     entity_tag('web_walkers', ['minecraft:spider', 'minecraft:cave_spider',
-                               {'id': '#dndclasses:faction/drow', 'required': False}])
+                               '#dndclasses:faction/drow'])
 
 
 def main():

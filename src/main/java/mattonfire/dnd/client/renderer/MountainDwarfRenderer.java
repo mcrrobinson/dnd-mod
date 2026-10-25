@@ -9,6 +9,7 @@ import net.minecraft.client.render.entity.feature.ArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.BipedEntityModel;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.PlayerEntityModel;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.util.Identifier;
 
 /**
@@ -16,7 +17,7 @@ import net.minecraft.util.Identifier;
  * body with thick arms and stubby legs, about 1.4 blocks tall, with one of several skins. Armour
  * copies each part's scale, so helmets and chestplates fit the new shape.
  */
-public class MountainDwarfRenderer extends BipedEntityRenderer<MountainDwarfEntity, PlayerEntityModel<MountainDwarfEntity>> {
+public class MountainDwarfRenderer extends BipedEntityRenderer<MountainDwarfEntity, MountainDwarfRenderer.DwarfModel<MountainDwarfEntity>> {
     private static final Identifier[] TEXTURES = new Identifier[MountainDwarfEntity.VARIANTS];
 
     static {
@@ -26,7 +27,7 @@ public class MountainDwarfRenderer extends BipedEntityRenderer<MountainDwarfEnti
     }
 
     public MountainDwarfRenderer(EntityRendererFactory.Context context) {
-        super(context, new DwarfModel(context.getPart(EntityModelLayers.PLAYER)), 0.45F);
+        super(context, new DwarfModel<>(context.getPart(EntityModelLayers.PLAYER)), 0.45F);
         this.addFeature(new ArmorFeatureRenderer<>(this,
                 new BipedEntityModel<>(context.getPart(EntityModelLayers.PLAYER_INNER_ARMOR)),
                 new BipedEntityModel<>(context.getPart(EntityModelLayers.PLAYER_OUTER_ARMOR)),
@@ -38,7 +39,8 @@ public class MountainDwarfRenderer extends BipedEntityRenderer<MountainDwarfEnti
         return TEXTURES[Math.floorMod(entity.getVariant(), TEXTURES.length)];
     }
 
-    private static class DwarfModel extends PlayerEntityModel<MountainDwarfEntity> {
+    /** The dwarf shape, shared with the duergar ({@link DuergarRenderer}). */
+    static class DwarfModel<T extends LivingEntity> extends PlayerEntityModel<T> {
         /** Broadness of body, arms and legs. */
         private static final float WIDE = 1.2F;
         private static final float BODY_HEIGHT = 0.85F;
@@ -53,7 +55,7 @@ public class MountainDwarfRenderer extends BipedEntityRenderer<MountainDwarfEnti
         }
 
         @Override
-        public void setAngles(MountainDwarfEntity entity, float limbAngle, float limbDistance, float animationProgress,
+        public void setAngles(T entity, float limbAngle, float limbDistance, float animationProgress,
                               float headYaw, float headPitch) {
             super.setAngles(entity, limbAngle, limbDistance, animationProgress, headYaw, headPitch);
             // The pivots below were all just reset by super, so scaling them is safe every frame.

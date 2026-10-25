@@ -885,6 +885,47 @@ def loop_dungeon_ruin(rng):
     return normalize(out, -1.0, -20.0)
 
 
+def loop_underdark(rng):
+    # The Underdark: a cold, sunless drone in D Phrygian (D - Eb - D - C under a low D pedal), glassy crystal
+    # chimes from somewhere far off in the caverns, a slow subterranean pulse and water dripping into black lakes.
+    loop = 48.0
+    xf = 4.0
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    pedal = svf(saw(sec, hz(26), detune=0.004, voices=3, rng=rng), 140, 1.2)
+    mix(out, pedal, 0, 0.22)
+    chords = [(50, 57, 62), (51, 58, 63), (50, 57, 65), (48, 55, 63)]  # Dm5, Eb5, Dm(add11), Cm
+    step = loop / len(chords)
+    for c, notes in enumerate(chords + chords[:1]):
+        at = c * step
+        if at >= sec:
+            break
+        length = step + 3.0
+        for m in notes:
+            pad = svf(saw(length, hz(m), detune=0.007, voices=3, vibrato=(0.2, 0.002), rng=rng), 900, 0.8)
+            mix(out, apply(pad, env_points(len(pad), [(0, 0), (3.5, 1), (length - 3.0, 0.8), (length, 0)])), at, 0.06)
+    # Far-off crystal chimes: a few notes of the mode, high and sparse, smeared by the cavern's echo
+    chime_notes = [74, 75, 77, 79, 81, 86]
+    for k in range(7):
+        at = 3.0 + k * 6.5 + rng.uniform(-0.8, 0.8)
+        m = rng.choice(chime_notes)
+        mix(out, bell(4.0, hz(m), decay=2.2, bright=0.7, ratios=(1, 2.76, 5.4, 8.9)), at, 0.05)
+    # A slow, deep pulse, like something breathing under the stone
+    for k in range(int(loop / 4.0) + 1):
+        at = k * 4.0
+        mix(out, drum(1.6, 55, 38, 0.15, 0.7, click=0.0, rng=rng), at, 0.18)
+    for _ in range(14):
+        at = rng.uniform(0, loop)
+        f = rng.uniform(1100, 2400)
+        drip = partials(0.3, f, [(1, 1.0, 0.05)], attack=0.0005, glide=(0.55, 0.012))
+        mix(out, drip, at, 0.05)
+    out = echo(out, 0.6, feedback=0.35, repeats=3, damp=1400)[:n]
+    out = reverb(out, wet=0.55, room=0.93, damp=0.45)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -21.0)
+
+
 def sting_room_cleared(rng):
     # A room's fight is over: a soft rising fourth on bells over a warm low chord, under 2 s
     out = buf(2.0)
@@ -1051,9 +1092,10 @@ SOUNDS = {
     "dungeon_ruin": loop_dungeon_ruin,
     "sting_room_cleared": sting_room_cleared,
     "sting_dungeon_cleared": sting_dungeon_cleared,
+    "underdark": loop_underdark,
 }
 
-LOOPS = ("low_health", "nether_fortress", "lich_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin")
+LOOPS = ("low_health", "nether_fortress", "lich_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin", "underdark")
 
 
 def main(argv):

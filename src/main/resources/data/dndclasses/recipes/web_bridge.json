@@ -17,13 +17,5 @@
     "count": 6,
     "item": "dndclasses:web_bridge"
   },
-  "show_notification": true,
-  "fabric:load_conditions": [
-    {
-      "condition": "fabric:registry_contains",
-      "values": [
-        "dndclasses:spidersilk"
-      ]
-    }
-  ]
+  "show_notification": true
 }

@@ -121,29 +121,7 @@ public class WandOfMagicMissilesItem extends Item {
 
     /** Three glowing darts that curve onto the target, then 2 magic damage each (dealt as one hit). */
     private static void fire(ServerWorld world, ServerPlayerEntity player, LivingEntity target) {
-        Vec3d from = player.getEyePos().add(player.getRotationVec(1.0F).multiply(0.6)).add(0, -0.2, 0);
-        Vec3d to = target.getBoundingBox().getCenter();
-        Vec3d dir = to.subtract(from);
-        Vec3d side = dir.crossProduct(new Vec3d(0, 1, 0));
-        side = side.lengthSquared() < 1.0E-4 ? new Vec3d(1, 0, 0) : side.normalize();
-        Vec3d up = side.crossProduct(dir).normalize();
-        double bow = Math.min(2.0, dir.length() * 0.2);
-        Vec3d[] bends = { side.multiply(bow), side.multiply(-bow), up.multiply(bow) };
-        int steps = Math.max(8, (int) (dir.length() * 3));
-        for (Vec3d bend : bends) {
-            for (int i = 0; i <= steps; i++) {
-                double t = (double) i / steps;
-                Vec3d p = from.add(dir.multiply(t)).add(bend.multiply(4 * t * (1 - t)));
-                world.spawnParticles(ParticleTypes.ENCHANTED_HIT, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-                if (i % 3 == 0)
-                    world.spawnParticles(ParticleTypes.END_ROD, p.x, p.y, p.z, 1, 0, 0, 0, 0);
-            }
-        }
-        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_EVOKER_CAST_SPELL, SoundCategory.PLAYERS,
-                0.8F, 1.6F);
-        world.playSound(null, target.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_HIT, SoundCategory.PLAYERS,
-                1.0F, 1.2F);
-        target.damage(world.getDamageSources().indirectMagic(player, player), DART_DAMAGE * DARTS);
+        mattonfire.dnd.magic.MagicMissiles.fire(world, player, target, DARTS, DART_DAMAGE);
     }
 
     /** Regains 1d6+1 charges (dawn, long rest), up to the max. */

@@ -1,0 +1,6 @@
+{
+  "replace": false,
+  "values": [
+    {"id": "dndclasses:duergar_hold", "required": false}
+  ]
+}

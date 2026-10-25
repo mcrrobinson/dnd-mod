@@ -1,0 +1,34 @@
+{
+  "type": "minecraft:replace_single_block",
+  "config": {
+    "targets": [
+      {
+        "target": {
+          "predicate_type": "minecraft:block_match",
+          "block": "minecraft:clay"
+        },
+        "state": {
+          "Name": "dndclasses:pearl_clam"
+        }
+      },
+      {
+        "target": {
+          "predicate_type": "minecraft:block_match",
+          "block": "minecraft:gravel"
+        },
+        "state": {
+          "Name": "dndclasses:pearl_clam"
+        }
+      },
+      {
+        "target": {
+          "predicate_type": "minecraft:block_match",
+          "block": "minecraft:deepslate"
+        },
+        "state": {
+          "Name": "dndclasses:pearl_clam"
+        }
+      }
+    ]
+  }
+}

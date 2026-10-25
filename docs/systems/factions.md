@@ -1,5 +1,5 @@
 # Factions and Reputation
-Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the dragon temples, the Brimstone Covenant of the Nether's sanctums, the Tinkers' Guild of Cogsdeep, the Bloodtusk Horde of the orc strongholds and goblins remember what you do. Each player has a standing from -1000 to +1000 with each faction, in six tiers from Hostile to Exalted. Killing goblins, defending a village, handing in bounties and trading raise it. Hitting or killing hobbits and dwarves, or being seen at the dwarven hoard, lowers it. Factions are data files, so new ones (the elves, orcs and others of the race settlements) need no code.
+Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the dragon temples, the Brimstone Covenant of the Nether's sanctums, the Tinkers' Guild of Cogsdeep, the Bloodtusk Horde of the orc strongholds, the drow of the Spider Houses, the duergar of the Grey Clans and goblins remember what you do. Each player has a standing from -1000 to +1000 with each faction, in six tiers from Hostile to Exalted. Killing goblins, defending a village, handing in bounties and trading raise it. Hitting or killing hobbits and dwarves, or being seen at the dwarven hoard, lowers it. Factions are data files, so new ones (the elves, orcs and others of the race settlements) need no code.
 
 ![The action bar shows "+5 Hobbits of the Shire" and chat shows the standing rising to Friendly, then Honored](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/faction-rep/faction-rep-actionbar.png)
 
@@ -27,6 +27,8 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | The Tinkers' Guild (`dndclasses:tinkers_guild`) | Gnome Tinkers, Clockwork Sentinels | Cogsdeep burrows | 150 (Friendly); Gnomes 450 (Honored) | goblins -0.5 |
 | The Bloodtusk Horde (`dndclasses:bloodtusk_horde`) | Orc Warriors, Archers, the Quartermaster and the War Chief (not the Trial's Champion) | orc strongholds | -600 (Hostile); Half-Orcs 0 (Neutral) | hobbits -0.25, dwarves -0.25, Sylvan Court -0.25 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5, Sylvan Court -0.5, Dragonsworn -0.5 |
+| The Grey Clans (`dndclasses:duergar_clans`) | [duergar](../mobs/duergar.md): Soldiers, Arbalesters, the Factor and the Taskmaster | Duergar Holds (not built yet) | -250 (Unfriendly); Gnomes -400 (Unfriendly), Dwarves -550 (Hostile) | dwarves -0.5, the drow -0.25, Tinkers' Guild -0.25 |
+| The Spider Houses (`dndclasses:drow`) | the [drow](../mobs/drow.md): Warriors, Mages, Priestesses and Elites (and later the Matron Mother) | Drow Outposts, the Drow Spire (later tickets) | -700 (Hostile); Elves -900 | Sylvan Court -0.5, Grey Clans -0.25 |
 
 - **Sources**:
 
@@ -43,9 +45,11 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | Hit a hobbit / dwarf (not the killing blow) | -10 | -15 | | none |
 | Kill a hobbit / innkeeper | -150 / -300 | | | none |
 | Kill a dwarf / the Dwarf King | | -120 / -500 | | none |
+| Kill a duergar (Grey Clans -60, the Taskmaster -150) | | +30 | | dwarves +30 a day from kills |
 | A dwarf sees you open a chest or barrel, or break the hoard | | -40 | | once per 10 s |
 
 - **Rivals** lose a share of *gains* from bounties, trades and (later) quests: a +20 bounty for the hobbits is also -10 for the goblins. Kills and raid wins already list every faction they touch, so rivals don't add to them, and rival losses never chain.
+- **Drow kills**: every [drow](../mobs/drow.md) killed gives the Sylvan Court +30, with no daily cap (an `enemy_kill_overrides` entry for `#dndclasses:faction/drow`), and the Grey Clans +15 (their `enemy_kills`, no daily cap).
 - Kills by your tamed pets count as yours.
 - **Daily caps** reset when the in-game day changes (`timeOfDay / 24000`).
 - **Grudge decay**: each new in-game day, a negative standing with the hobbits or dwarves recovers 5 points, never past 0. Goblin standing doesn't decay.
@@ -100,6 +104,7 @@ Anywhere: kill goblins, defend the hobbit village, trade at the Green Dragon. `/
 - `/rep`: your standing with every faction (anyone).
 - `/rep <player>`: someone else's (permission level 2).
 - `/rep <player> <faction> set <n>` / `add <n>`: change it (permission level 2). Faction ids tab-complete.
+- `/rep <player> <faction> reset`: forget the stored standing, so it reads as the start again (the race's start for a player with one).
 - For a player in [DM mode](dungeon-master.md), `/rep` lines that aren't Neutral end in "- DM mode: NPCs treat <player> as Neutral": the value is kept, but tier effects (prices, the innkeeper's Honored round and free room, refusals) wait for `/dm off`.
 
 ## Configuration

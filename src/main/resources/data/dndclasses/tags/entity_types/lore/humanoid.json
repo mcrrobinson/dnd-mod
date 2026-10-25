@@ -4,6 +4,10 @@
     "#dndclasses:goblins",
     "dndclasses:hobbit",
     "dndclasses:mountain_dwarf",
+    "dndclasses:duergar_soldier",
+    "dndclasses:duergar_arbalester",
+    "dndclasses:duergar_factor",
+    "dndclasses:duergar_taskmaster",
     "dndclasses:wood_elf",
     "dndclasses:elf_warden",
     "dndclasses:elf_speaker",
@@ -16,6 +20,7 @@
     "minecraft:evoker",
     "minecraft:illusioner",
     "minecraft:piglin",
-    "minecraft:piglin_brute"
+    "minecraft:piglin_brute",
+    "#dndclasses:faction/drow"
   ]
 }

@@ -85,6 +85,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Mimic](mobs/mimic.md): a chest that bites and grabs (STR save, jump to struggle free); hides in dungeons, dragon lairs and dwarven fortresses
 - [Owlbear](mobs/owlbear.md): forest predator that charges and bear-hugs (STR saves, jump to struggle free); Druids can take its form
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
+- [Troll](mobs/troll.md): regenerating swamp and forest brute with a two-claw Rend; fire or acid stops the healing, and it only stays dead if you burn it once it falls (PR #273)
 - [Mind Flayer](mobs/mind-flayer.md): deep-cave illithid whose Mind Blast cone stuns (INT save), whose tentacles extract stunned brains, which blinks away and keeps charmed thralls (PR #280)
 
 ## Bosses

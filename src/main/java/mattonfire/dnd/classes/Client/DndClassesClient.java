@@ -208,6 +208,7 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIMIC, mattonfire.dnd.client.renderer.MimicRenderer::new);
         mattonfire.dnd.client.MimicTexture.register();
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.OWLBEAR, mattonfire.dnd.client.renderer.OwlbearRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.TROLL, mattonfire.dnd.client.renderer.TrollRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, mattonfire.dnd.client.renderer.GelatinousCubeRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIND_FLAYER, mattonfire.dnd.client.renderer.MindFlayerRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, mattonfire.dnd.client.renderer.BeholderRenderer::new);

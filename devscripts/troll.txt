@@ -1,0 +1,126 @@
+# Troll check: looks, regeneration, the fire/acid bane window, felling, rising, burning, flint and steel, Rend.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/troll.txt
+# Screenshots: troll-front, troll-side, troll-hitbox, troll-felled, troll-fight-1..2.
+# Check run/logs/latest.log for "[Troll] felled", "[Troll] rises (20 HP)", "[Troll] burned" and the [CHAT] Health
+# lines, and run/logs/debug.log for "[MobAction] Troll rend".
+/time set 18000
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doFireTick false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/fill 10 149 -10 42 149 22 minecraft:grass_block
+/fill 10 150 -10 42 156 22 minecraft:air
+/kill @e[type=dndclasses:troll,distance=..60]
+/kill @e[type=item,distance=..60]
+/gamemode creative
+/time set 6000
+hud off
+
+# 1. Looks (frozen)
+/tp @s 26 150.5 -2 0 8
+/summon dndclasses:troll 26 150 4 {NoAI:1b,Rotation:[180f,0f],Tags:["trolltest"]}
+wait 40
+screenshot troll-front
+/tp @s 21 151 4 -90 8
+wait 20
+screenshot troll-side
+hitboxes on
+/tp @s 23 152 0 -35 20
+wait 20
+screenshot troll-hitbox
+hitboxes off
+/kill @e[tag=trolltest]
+
+# 2. Regeneration: 70 -> about 51 after 20 generic damage (armour 6), +3 every second, none after fire
+/summon dndclasses:troll 26 150 4 {NoAI:1b,Rotation:[180f,0f],Tags:["trolltest"]}
+wait 5
+/damage @e[tag=trolltest,limit=1] 20 minecraft:generic
+/data get entity @e[tag=trolltest,limit=1] Health
+waitserver 60
+/data get entity @e[tag=trolltest,limit=1] Health
+/damage @e[tag=trolltest,limit=1] 2 minecraft:in_fire
+/data get entity @e[tag=trolltest,limit=1] Health
+waitserver 60
+/data get entity @e[tag=trolltest,limit=1] Health
+/data merge entity @e[tag=trolltest,limit=1] {Fire:0s}
+
+# 3. Felled: a lethal blow leaves it at 1 HP; non-fire damage is ignored; it rises with 20 HP
+waitserver 100
+/damage @e[tag=trolltest,limit=1] 200 minecraft:player_attack by @s
+wait 10
+/execute if entity @e[tag=trolltest]
+/data get entity @e[tag=trolltest,limit=1] Health
+/tp @s 26 150.5 -2 0 8
+wait 20
+screenshot troll-felled
+/damage @e[tag=trolltest,limit=1] 50 minecraft:generic
+/data get entity @e[tag=trolltest,limit=1] Health
+waitserver 210
+/data get entity @e[tag=trolltest,limit=1] Felled
+/data get entity @e[tag=trolltest,limit=1] Health
+
+# 4. Burned: fell it again, then any fire damage kills it for good, with loot
+/damage @e[tag=trolltest,limit=1] 200 minecraft:player_attack by @s
+wait 5
+/damage @e[tag=trolltest,limit=1] 1 minecraft:in_fire
+wait 10
+/execute if entity @e[tag=trolltest]
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:leather"}},distance=..40]
+/kill @e[type=item,distance=..60]
+
+# 5. Flint and steel on a felled troll
+/summon dndclasses:troll 26 150 4 {NoAI:1b,Rotation:[180f,0f],Tags:["trolltest"]}
+wait 5
+/damage @e[tag=trolltest,limit=1] 200 minecraft:player_attack by @s
+wait 5
+/clear @s
+/item replace entity @s hotbar.0 with minecraft:flint_and_steel
+hotbar 0
+/tp @s 26 150 2 0 25
+wait 10
+use
+wait 10
+/execute if entity @e[tag=trolltest]
+/execute if entity @e[type=item,nbt={Item:{id:"minecraft:leather"}},distance=..40]
+/kill @e[type=item,distance=..60]
+/clear @s
+
+# 6. Study card with a natural 20: shows the fire/acid weakness
+/dndclass set @s bard
+/clear @s
+/dndclass lore @s forget dndclasses:troll
+hud on
+/summon dndclasses:troll 26 150 4 {NoAI:1b,Rotation:[180f,0f],Tags:["trolltest"]}
+/tp @s 26 150 1.5 0 0
+wait 10
+/dndclass forceroll @s 20
+press key.dnd-classes.study
+wait 20
+screenshot troll-study
+hud off
+/kill @e[tag=trolltest]
+/dndclass set @s none
+wait 5
+closescreen
+/clear @s
+
+# 7. Rend: a live troll against a survival player (Resistance keeps them up)
+/tp @s 26 150 0 0 0
+/gamemode survival
+/effect give @s minecraft:resistance 60 3
+/effect give @s minecraft:instant_health 1 10
+/summon dndclasses:troll 26 150 6 {Rotation:[180f,0f],Tags:["trolltest"]}
+wait 30
+screenshot troll-fight-1
+wait 15
+screenshot troll-fight-2
+wait 100
+/data get entity @s Health
+/gamemode creative
+/kill @e[tag=trolltest]
+/effect clear @s
+hud on
+quit

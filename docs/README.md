@@ -91,7 +91,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Troll](mobs/troll.md): regenerating swamp and forest brute with a two-claw Rend; fire or acid stops the healing, and it only stays dead if you burn it once it falls
 - [Mind Flayer](mobs/mind-flayer.md): deep-cave illithid whose Mind Blast cone stuns (INT save), whose tentacles extract stunned brains, which blinks away and keeps charmed thralls
 - [Rust Monster](mobs/rust-monster.md): deep-cave beast whose antennae rust iron, chain and gold gear (DEX save), rusts metal weapons that hit it and stops to eat thrown iron; dwarves hate it
-- [Drow](mobs/drow.md): the Spider Houses of the Underdark: Warriors with poisoned hand crossbows (CON save; three failures and you fall asleep), Mages with Darkness, Faerie Fire and Magic Missile, spider-calling Priestesses and Spire Elites; hostile to everyone, allied with spiders, and every kill pleases the Sylvan Court
+- [Drow](mobs/drow.md): the Spider Houses of the Underdark: Warriors with poisoned hand crossbows (CON save; three failures and you fall asleep), Mages with Darkness, Faerie Fire and Magic Missile, spider-calling Priestesses and Spire Elites; hostile to everyone, allied with spiders, and every kill pleases the Sylvan Court (PR #285)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, dragons)

@@ -76,6 +76,14 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome cogsdeepsurvey [grid] [spacing]` | Checks the nearest burrow from each point of a grid round you: biome, pieces, depth, the observatory on the ground, dry rooms and no other structure within 5 chunks (`[CogsdeepSurvey]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
+### The Underdark
+| Command | What it does |
+|-|-|
+| `/underdark go [player]` | Down into the [Underdark](underdark.md) at the same x and z (a found floor or a carved pocket), remembering where you were |
+| `/underdark back [player]` | Back to the remembered spot, or to the world spawn |
+| `/underdark biome <biome>` | To the nearest Underdark biome of that kind, on a safe floor |
+| `/underdark survey [radius]` | Biome shares, floors, water, bedrock and generation cost round you (`[Underdark] survey` lines) |
+
 ### Magic items
 See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
 
@@ -106,6 +114,7 @@ These need no op: `/party` ([Party](party.md#commands)), `/hireling` ([Hirelings
 `/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save`, `/dm condition`, `/dm roll|apply`, `/dm narrate|title|say|mood` and `/dm loot give|plant` let an op run a session: hide from the players, drop premade encounters, pause the scene, call for rolls on the players' d20 HUD, tell the story and hand out or plant treasure. `/dm grant <player>` opens them to a non-op. The DM Wand (`dndclasses:dm_wand`) puts encounters, freeze, inspect and blink on right-click. See [Dungeon Master](dungeon-master.md).
 
 ### Useful vanilla commands
+- `/execute in dndclasses:underdark run locate biome dndclasses:fungal_forest` (or any Underdark biome), `/execute in dndclasses:underdark run tp @s x y z`
 - `/locate structure dndclasses:dragon_lair`, `dndclasses:hobbit_village`, `dndclasses:dwarven_fortress`, `dndclasses:goblin_camp`, `dndclasses:beholder_lair`
 - `/summon dndclasses:<mob>`, for example `wyvern`, `lightning_chaser`, `goblin_warlord`, `magmamuncher_alpha`, `owlbear`, `mimic`
 - `/give @s dndclasses:attunement_table` to skip the recipe while testing skills

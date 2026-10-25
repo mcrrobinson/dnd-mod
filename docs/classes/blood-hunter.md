@@ -8,7 +8,7 @@ A sword fighter that is strongest at night and can take over any mob it looks at
 
 ![A Blood Hunter's sword hit setting a zombie on fire at night](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-screenshots/blood-hunter-burning-blade.png)
 
-**Night and day.** With a sword in your main hand you deal double damage at night (day time 13000 to 23000) and half damage during the day.
+**Night and day.** With a sword in your main hand you deal double damage at night (day time 13000 to 23000) and half damage during the day. In the [Underdark](../systems/underdark.md) it's always midnight, so you have your night strength the whole time you're down there.
 
 **Swords stay in hand.** You can't throw a sword away, with Q in the world or with Q or a click outside the window in your inventory ("Blood Hunters cannot drop their swords!"). Swords still drop when you die, and creative mode isn't affected.
 

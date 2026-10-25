@@ -10,6 +10,7 @@
     "#minecraft:redstone_ores",
     "#minecraft:lapis_ores",
     "#minecraft:diamond_ores",
-    "#minecraft:emerald_ores"
+    "#minecraft:emerald_ores",
+    "dndclasses:faerzress_stone"
   ]
 }

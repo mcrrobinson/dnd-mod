@@ -69,6 +69,16 @@
     "dndclasses:tent_canvas_slab",
     "dndclasses:tent_canvas_trapdoor",
     "dndclasses:tent_stake",
-    "dndclasses:hanging_rope_plank"
+    "dndclasses:hanging_rope_plank",
+    "dndclasses:zurkhwood_planks",
+    "dndclasses:zurkhwood_stairs",
+    "dndclasses:zurkhwood_slab",
+    "dndclasses:zurkhwood_fence",
+    "dndclasses:zurkhwood_fence_gate",
+    "dndclasses:zurkhwood_door",
+    "dndclasses:zurkhwood_trapdoor",
+    "dndclasses:zurkhwood_stem",
+    "dndclasses:zurkhwood_cap",
+    "dndclasses:nightlight_cap"
   ]
 }

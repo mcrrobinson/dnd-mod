@@ -1,0 +1,23 @@
+# Surveys the Underdark's generation at several spots (docs/systems/underdark.md, "Measured on the dev world"): each
+# biome's share, floors, water, bedrock, cost and the climate noises' spread. Rerun after changing
+# tools/underdark_worldgen.py (and delete run/saves/New World/dimensions/dndclasses first, so nothing old is reused).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/underdark-survey.txt
+# Expect in latest.log: six "[Underdark] survey at ..." lines; every biome 8-35% and water 8-25% at 0 0 radius 256,
+# each biome 15-25% at radius 1024, bedrockFloorTop <= -251 and bedrockRoofBottom >= -70.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/execute positioned 0 0 0 run underdark survey 256
+waitserver 2
+/execute positioned 2000 0 2000 run underdark survey 256
+waitserver 2
+/execute positioned -3000 0 1000 run underdark survey 256
+waitserver 2
+/execute positioned 5000 0 -4000 run underdark survey 256
+waitserver 2
+/execute positioned -6000 0 -6000 run underdark survey 256
+waitserver 2
+/execute positioned 0 0 0 run underdark survey 1024
+waitserver 2
+quit

@@ -159,6 +159,8 @@ public class DnDClasses implements ModInitializer {
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.quest.QuestCommand.register(dispatcher));
                 CommandRegistrationCallback.EVENT.register(
                                 (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.DndHomeCommand.register(dispatcher));
+                CommandRegistrationCallback.EVENT.register(
+                                (dispatcher, registryAccess, environment) -> mattonfire.dnd.classes.Commands.UnderdarkCommand.register(dispatcher));
                 mattonfire.dnd.entity.boss.StructureBosses.register();
                 // Dungeon loot: the dungeon_tier loot condition, Veteran drops and the repopulation timer
                 mattonfire.dnd.dungeon.DungeonLoot.register();
@@ -192,6 +194,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Registry.OrcBuildingBlocks.register();
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.register();
                 mattonfire.dnd.classes.Registry.CogsdeepBlocks.register();
+                mattonfire.dnd.classes.Registry.UnderdarkBlocks.register();
                 // --- Dragon Temples ---
                 mattonfire.dnd.classes.Registry.ModTempleBlocks.register();
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();

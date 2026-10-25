@@ -96,6 +96,7 @@
         "ConditionMilkMixin"
     ],
     "client": [
+        "IntegratedServerLoaderMixin",
         "CrossbowRenderMixin",
         "CrossbowArmPoseMixin",
         "DownedHudMixin",

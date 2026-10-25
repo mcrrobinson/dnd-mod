@@ -44,11 +44,12 @@ From class level 3, choose one of these two at an Attunement Table (see [Subclas
 
 | Subclass | Branch | Nodes | Feature (free, doesn't use a passive slot) |
 |-|-|-|-|
-| Path of the Berserker | Right | Bloodlust (first node, open to both), War Cry, Fuelled by Rage | **Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage) |
+| Path of the Berserker | Right | Bloodlust (first node, open to both), War Cry, Fuelled by Rage | **Frenzy**: while Rage is active, each melee kill adds 2 seconds to it (up to 6 seconds per Rage). **Mindless Rage**: while raging you can't be Frightened or Charmed, and starting Rage ends both |
 | Path of the Totem Warrior | Left | Bear Hide (first node, open to both), Ground Slam, Unstoppable | **Bear Totem Spirit**: while Rage is active you take 15% less damage (not the void, `/kill` or starving) |
 
 How the features work:
 - **Frenzy** (Berserker): a melee kill while Rage is on lengthens Rage's Strength by 2 s, up to +6 s per Rage. Kills by arrows or skills don't count. Rage ends early if the Strength is removed (milk).
+- **Mindless Rage** (Berserker): while Rage is on you can't be [Frightened or Charmed](../systems/conditions.md); starting Rage ends both.
 - **Bear Totem Spirit** (Totem Warrior): while Rage is on, damage you take is multiplied by 0.85. The void, `/kill` and starving aren't reduced.
 
 ## Where to find it

@@ -582,6 +582,8 @@
     "save.dndclasses.reroll": "rerolling",
     "feature.dndclasses.evasion": "Evasion",
     "feature.dndclasses.indomitable": "Indomitable",
+    "feature.dndclasses.diamond_soul": "Diamond Soul",
+    "save.dndclasses.stunning_strike": "Stunning Strike",
     "save.dndclasses.trap.dart": "Darts",
     "save.dndclasses.trap.dart.success": "no poison",
     "save.dndclasses.trap.dart.failure": "poisoned",
@@ -2196,6 +2198,11 @@
     "condition.dndclasses.immune.undead": "undead",
     "condition.dndclasses.immune.petrified": "stone",
     "condition.dndclasses.immune.nature": "its nature",
+    "condition.dndclasses.immune.aura_of_courage": "Aura of Courage",
+    "condition.dndclasses.immune.mindless_rage": "Mindless Rage",
+    "condition.dndclasses.immune.poison": "poison immunity",
+    "condition.dndclasses.cured": "Cure Wounds: you're no longer %s",
+    "condition.dndclasses.cured.petrified": "Cure Wounds: the stone falls away",
     "grapple.dndclasses.cube": "the gelatinous cube",
     "save.dndclasses.auto_fail": "auto-fail (%s)"
 }

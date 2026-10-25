@@ -49,6 +49,8 @@ Farm animals are just for fun: they follow you, but they can't fight, so they ne
 ### Song of Rest on short rests
 A [short rest](../systems/rests.md#short-rests-at-campfires) with a Bard in it (party members resting at campfires within 8 blocks, the Bard included) heals everyone an extra 1d6 HP when their rest finishes, or 2d6 if the Bard has unlocked the Song of Rest active.
 
+**Countercharm.** For 10 seconds after you play the lute (the item, the Doss Lute or your instrument slot), you and players within 8 blocks roll repeat saves against [Frightened and Charmed](../systems/conditions.md) with advantage.
+
 **Jack of All Trades (level 2).** Half your proficiency bonus on every check you aren't trained in. This is the class feature; the College of Lore passive of the same name is unchanged. See [class save features](../systems/class-save-features.md).
 
 ### Tips

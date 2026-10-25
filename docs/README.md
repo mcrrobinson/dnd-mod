@@ -91,7 +91,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Troll](mobs/troll.md): regenerating swamp and forest brute with a two-claw Rend; fire or acid stops the healing, and it only stays dead if you burn it once it falls
 - [Mind Flayer](mobs/mind-flayer.md): deep-cave illithid whose Mind Blast cone stuns (INT save), whose tentacles extract stunned brains, which blinks away and keeps charmed thralls
 - [Rust Monster](mobs/rust-monster.md): deep-cave beast whose antennae rust iron, chain and gold gear (DEX save), rusts metal weapons that hit it and stops to eat thrown iron; dwarves hate it
-- [Duergar](mobs/duergar.md): the Grey Clans of the Underdark's Grey Reaches: Soldiers, crossbow Arbalesters, the Factor merchant and the Taskmaster; they Enlarge mid-fight, vanish when hurt and hate sunlight; Unfriendly to most, Hostile to Dwarves
+- [Duergar](mobs/duergar.md): the Grey Clans of the Underdark's Grey Reaches: Soldiers, crossbow Arbalesters, the Factor merchant and the Taskmaster; they Enlarge mid-fight, vanish when hurt and hate sunlight; Unfriendly to most, Hostile to Dwarves (PR #283)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, dragons)

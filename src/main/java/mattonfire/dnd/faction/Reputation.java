@@ -200,6 +200,15 @@ public final class Reputation {
         }
     }
 
+    /** Drops the stored value, so the standing reads as the faction's start again (the /rep command). */
+    public static void reset(ServerPlayerEntity player, Faction faction) {
+        NbtCompound data = data(player);
+        NbtCompound stored = data.getCompound(KEY);
+        stored.remove(faction.id().toString());
+        data.put(KEY, stored);
+        sync(player);
+    }
+
     static void store(ServerPlayerEntity player, Faction faction, int value) {
         NbtCompound data = data(player);
         NbtCompound stored = data.getCompound(KEY);

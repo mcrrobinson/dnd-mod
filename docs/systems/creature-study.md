@@ -10,7 +10,7 @@ The creature's group decides the skill. The groups come from entity type tags, c
 | Group | Tag | Skill | Examples |
 |-|-|-|-|
 | Undead | `#dndclasses:lore/undead` | Religion (INT) | zombies, skeletons, phantoms, Wither, Lich, Bone Wyvern |
-| Humanoid | `#dndclasses:lore/humanoid` | Insight (WIS) | goblins, hobbits, dwarves, elves, villagers, illagers, witches, piglins |
+| Humanoid | `#dndclasses:lore/humanoid` | Insight (WIS) | goblins, hobbits, dwarves, elves, drow, villagers, illagers, witches, piglins |
 | Arcane | `#dndclasses:lore/arcane` | Arcana (INT) | Beholder, Mimic, Gelatinous Cube, Mind Flayer, wyverns and dragons, endermen, blazes, slimes, Warden |
 | Beast | `#dndclasses:lore/beasts` | Nature (INT) | Owlbear, River Pikehorn, Magmamunchers, spiders, wolves, hoglins |
 
@@ -37,6 +37,7 @@ Example: a level 1 Wizard has Arcana +4 (INT 15, proficient), so against a Frost
   - Lich: its soul hides in a phylactery (smash that first or it reforms); Necromancers deal +50% damage to it.
   - Owlbear: while it hugs you, 6 damage breaks its grip.
   - Troll: fire or acid stops it healing; burn it once it falls or it gets back up.
+  - Drow: sunlight weakens them; bright light ruins their aim. A Priestess: her spiders vanish when she dies.
   - Any undead: potions of Healing hurt it and Harming heals it.
   - Others: "No weakness worth knowing".
 - **Failure or natural 1:** you can't study that creature type again for **60 s** ("You can't recall more about the ... yet (Ns)"). Other types are unaffected.

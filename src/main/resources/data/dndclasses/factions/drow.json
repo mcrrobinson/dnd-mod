@@ -1,0 +1,15 @@
+{
+  "name": "faction.dndclasses.drow",
+  "color": "#6B3FA0",
+  "members": "#dndclasses:faction/drow",
+  "settlements": "#dndclasses:faction/drow",
+  "start": -700,
+  "start_by_race": {"dndclasses:elf": -900},
+  "rivals": {"dndclasses:sylvan_court": -0.5, "dndclasses:duergar_clans": -0.25},
+  "decay_per_day": 5,
+  "hit_member": -10,
+  "kill_member": -60,
+  "kill_member_overrides": {"dndclasses:drow_priestess": -120},
+  "trade": 0,
+  "theft_witnessed": -40
+}

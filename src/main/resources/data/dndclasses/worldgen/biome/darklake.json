@@ -18,6 +18,10 @@
       "tick_delay": 6000,
       "block_search_extent": 8,
       "offset": 2.0
+    },
+    "additions_sound": {
+      "sound": "minecraft:ambient.cave",
+      "tick_chance": 0.0111
     }
   },
   "spawners": {
@@ -112,7 +116,9 @@
       "dndclasses:underdark/ore_gold",
       "dndclasses:underdark/ore_redstone",
       "dndclasses:underdark/ore_lapis",
-      "dndclasses:underdark/ore_diamond"
+      "dndclasses:underdark/ore_diamond",
+      "dndclasses:underdark/darklake_shore",
+      "dndclasses:underdark/pearl_clam"
     ],
     [],
     [
@@ -121,6 +127,11 @@
     [
       "dndclasses:underdark/moss_patch_ceiling",
       "dndclasses:underdark/clay_pool_with_dripleaves",
+      "dndclasses:underdark/nightlight_tower_shore",
+      "dndclasses:underdark/shelf_fungus_sparse",
+      "dndclasses:underdark/barrelstalk",
+      "dndclasses:underdark/seagrass",
+      "dndclasses:underdark/waterorb",
       "dndclasses:underdark/glow_lichen_dense"
     ],
     []

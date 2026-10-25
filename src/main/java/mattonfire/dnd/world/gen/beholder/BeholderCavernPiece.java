@@ -98,6 +98,11 @@ public class BeholderCavernPiece extends StructurePiece {
         return this.center.up(HOVER);
     }
 
+    /** The middle of the floor (the eye's pupil), where a Beholder's death tears open an Underdark rift. */
+    public BlockPos getFloorCentre() {
+        return this.center;
+    }
+
     @Override
     protected void writeNbt(StructureContext context, NbtCompound nbt) {
         nbt.put("Center", NbtHelper.fromBlockPos(this.center));

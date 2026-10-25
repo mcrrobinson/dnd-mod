@@ -216,6 +216,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.RUST_MONSTER, mattonfire.dnd.client.renderer.RustMonsterRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.MIND_FLAYER, mattonfire.dnd.client.renderer.MindFlayerRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, mattonfire.dnd.client.renderer.BeholderRenderer::new);
+        // The drow (Underdark T4)
+        mattonfire.dnd.client.drow.DrowClient.register();
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();
@@ -311,6 +313,9 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.UnderdarkBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.UnderdarkFlora.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
         mattonfire.dnd.client.UnderdarkEffects.register();
         // Desolate settlements' Tattered Carpets have holes torn through
         for (net.minecraft.block.Block carpet : mattonfire.dnd.classes.Registry.DesolateBlocks.tatteredCarpets()) {

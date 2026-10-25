@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "filled=true,half=lower": {
+      "model": "dndclasses:block/barrelstalk_lower_filled"
+    },
+    "filled=false,half=lower": {
+      "model": "dndclasses:block/barrelstalk_lower_empty"
+    },
+    "filled=true,half=upper": {
+      "model": "dndclasses:block/barrelstalk_upper_filled"
+    },
+    "filled=false,half=upper": {
+      "model": "dndclasses:block/barrelstalk_upper_empty"
+    }
+  }
+}

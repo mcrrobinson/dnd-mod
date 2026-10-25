@@ -74,6 +74,10 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome sanctumsurvey [grid] [spacing]` | Checks the nearest sanctum from each point of a grid round you is in a sanctum biome with all its pieces, with no lava under it and no cut ceiling (`[SanctumSurvey]` lines; run it in the Nether) |
 | `/dndhome cogsdeep [door\|top\|observatory\|ladder\|telescope\|slit\|stair\|foot\|commons\|workshop\|westworkshop\|clocktower\|strongbox\|gems\|grotto]` | Teleports you to that spot of the nearest [Cogsdeep](../structures/cogsdeep.md), living or desolate, looking at it |
 | `/dndhome cogsdeepsurvey [grid] [spacing]` | Checks the nearest burrow from each point of a grid round you: biome, pieces, depth, the observatory on the ground, dry rooms and no other structure within 5 chunks (`[CogsdeepSurvey]` lines) |
+| `/dndhome rift [top\|mouth\|floor\|ledge\|pool\|step <k>]` | Teleports you to that spot of the nearest [Underdark Rift](../structures/underdark-rifts.md) |
+| `/dndhome riftlanding` / `riftlair` | Onto the nearest Rift Landing (in the Underdark), or the nearest Beholder lair's floor by the pupil |
+| `/dndhome riftsurvey [grid] [spacing]` | Checks the nearest rift from each point of a grid round you: pieces, the landing below, the veil pool and every climbing step (`[RiftSurvey]` lines) |
+| `/dndhome riftseeds [seeds...]` | The nearest rift to 0, 0 on each seed, without making a world (`[RiftSeeds]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
 ### The Underdark
@@ -82,6 +86,9 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/underdark go [player]` | Down into the [Underdark](underdark.md) at the same x and z (a found floor or a carved pocket), remembering where you were |
 | `/underdark back [player]` | Back to the remembered spot, or to the world spawn |
 | `/underdark biome <biome>` | To the nearest Underdark biome of that kind, on a safe floor |
+| `/underdark lake [radius]` | To the nearest dry lake shore at the Underdark's waterline, looking over the water |
+| `/underdark flora [radius]` | Counts the giant fungi, plants and lake life round you (`[Underdark] flora` lines) |
+| `/underdark map <drow_outpost\|duergar_hold\|rift>` | An Underdark explorer map to the nearest such place |
 | `/underdark survey [radius]` | Biome shares, floors, water, bedrock and generation cost round you (`[Underdark] survey` lines) |
 
 ### Magic items

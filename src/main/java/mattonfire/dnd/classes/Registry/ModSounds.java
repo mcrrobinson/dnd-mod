@@ -23,6 +23,8 @@ public class ModSounds {
     public static final SoundEvent MUSIC_NETHER_FORTRESS = registerSoundEvent("music.nether_fortress");
     public static final SoundEvent MUSIC_GOBLIN_RAID = registerSoundEvent("music.goblin_raid");
     public static final SoundEvent MUSIC_LICH_FIGHT = registerSoundEvent("music.lich_fight");
+    // Anywhere in the Underdark (tools/music-gen `underdark`, with vanilla's deep dark music mixed in)
+    public static final SoundEvent MUSIC_UNDERDARK = registerSoundEvent("music.underdark");
     // Dungeon theme loops (tools/music-gen), picked by the theme DungeonMusic sends
     public static final SoundEvent MUSIC_DUNGEON_CRYPT = registerSoundEvent("music.dungeon_crypt");
     public static final SoundEvent MUSIC_DUNGEON_WARREN = registerSoundEvent("music.dungeon_warren");

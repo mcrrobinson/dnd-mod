@@ -16,6 +16,8 @@
         "PlayerDimensionsMixin",
         "RestSeatDismountMixin",
         "SmiteDragonsMixin",
+        "SpiderTargetMixin",
+        "FaerieFireDamageMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
         "RacePassivesLivingMixin",
@@ -93,7 +95,8 @@
         "SavingThrowMixin",
         "ConditionsTrackerMixin",
         "ConditionMobMixin",
-        "ConditionMilkMixin"
+        "ConditionMilkMixin",
+        "NoiseChunkGeneratorFluidMixin"
     ],
     "client": [
         "IntegratedServerLoaderMixin",

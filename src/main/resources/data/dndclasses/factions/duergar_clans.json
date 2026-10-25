@@ -10,6 +10,7 @@
     "dndclasses:drow": -0.25,
     "dndclasses:tinkers_guild": -0.25
   },
+  "enemy_kills": {"dndclasses:drow": 15},
   "decay_per_day": 5,
   "hit_member": -10,
   "kill_member": -60,

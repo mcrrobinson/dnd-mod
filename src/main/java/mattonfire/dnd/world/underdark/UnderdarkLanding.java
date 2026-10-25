@@ -1,5 +1,7 @@
 package mattonfire.dnd.world.underdark;
 
+import mattonfire.dnd.classes.Blocks.underdark.RiftAnchorBlock;
+import mattonfire.dnd.classes.Registry.RiftBlocks;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.LanternBlock;
@@ -13,8 +15,8 @@ import net.minecraft.util.math.BlockPos;
  * {@link #LOWEST}. It prefers floors in an open cavern ({@link #HEADROOM} blocks of air), then those nearest
  * y {@link #PREFERRED}, trying the column itself, then rings of columns out to {@link #SEARCH_RADIUS} blocks; a
  * cramped floor in the column (or the nearest ring that has one) is the fallback. If none has a floor it carves a 5x5x3 pocket at y {@link #CARVE_Y} with a
- * deepslate floor and a lantern, sealing any fluid round it so the pocket stays dry. (The Rift Anchor that later
- * stands in carved pockets comes with the rifts ticket.)
+ * deepslate floor, a lantern and a three-block Rift Anchor (the way back up), sealing any fluid round it so the
+ * pocket stays dry.
  */
 public final class UnderdarkLanding {
     public static final int HIGHEST = -75;
@@ -166,6 +168,10 @@ public final class UnderdarkLanding {
         }
         world.setBlockState(new BlockPos(x + 2, CARVE_Y, z + 2), Blocks.LANTERN.getDefaultState()
                 .with(LanternBlock.HANGING, false));
+        for (int dy = 0; dy < 3; dy++) {
+            world.setBlockState(new BlockPos(x - 2, CARVE_Y + dy, z - 2), RiftBlocks.RIFT_ANCHOR.getDefaultState()
+                    .with(RiftAnchorBlock.TOP, dy == 2));
+        }
         return new BlockPos(x, CARVE_Y, z);
     }
 }

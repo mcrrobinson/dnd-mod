@@ -23,7 +23,7 @@ Duergar are the [mountain dwarf](mountain-dwarves.md) model (0.7 x 1.4 blocks) w
 Duergar are guards, not monsters:
 - Players **Hostile** with the Grey Clans, on sight. A Dwarf starts there (-550).
 - Anyone who strikes a duergar: it and every duergar within 16 blocks turn on them for 30-50 s. Hitting one costs 10 standing.
-- The clans' enemies in `#dndclasses:duergar_enemies`: the drow, once they exist.
+- The clans' enemies in `#dndclasses:duergar_enemies`: the [drow](drow.md). Every drow you kill gives +15 with the clans.
 - Never each other (no friendly fire), creative or spectator players, or anyone on Peaceful.
 
 Players at Unfriendly or better (most start at -250) are left alone unless they start something.

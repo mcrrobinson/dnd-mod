@@ -74,7 +74,7 @@ public final class HirelingGoals {
 
     /**
      * Walks to a Downed owner or party member within {@value #STABILISE_RANGE} blocks and stabilises them after
-     * {@link Stabilise#HOLD_TICKS} ticks beside them. A hit interrupts it: it fights for a while, then tries again.
+     * {@link Stabilise#HOLD_TICKS} ticks beside them (a Healer: {@link HirelingAbilities#REVIVIFY_HOLD_TICKS}). A hit interrupts it: it fights for a while, then tries again.
      */
     public static final class StabiliseGoal extends Goal {
         private final HirelingEntity mob;
@@ -152,11 +152,14 @@ public final class HirelingGoals {
             if (this.held == 0) {
                 this.mob.swingHand(Hand.MAIN_HAND);
             }
-            if (++this.held >= Stabilise.HOLD_TICKS) {
-                DnDClasses.LOGGER.info("[Hireling] {} stabilises {}", this.mob.firstName(), this.patient.getEntityName());
+            if (++this.held >= HirelingAbilities.stabiliseTicks(this.mob)) {
+                DnDClasses.LOGGER.info("[Hireling] {} stabilises {} ({} ticks)", this.mob.firstName(),
+                        this.patient.getEntityName(), this.held);
                 Downed.stabilise(this.patient);
                 this.patient.sendMessage(net.minecraft.text.Text.translatable("hireling.dndclasses.stabilised",
                         this.mob.firstName()).formatted(net.minecraft.util.Formatting.YELLOW), false);
+                // A Healer with Cure Wounds ready stands them straight up (Revivify).
+                HirelingAbilities.revivify(this.mob, this.patient);
                 this.patient = null;
             }
         }

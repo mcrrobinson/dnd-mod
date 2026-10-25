@@ -71,8 +71,8 @@ import org.jetbrains.annotations.Nullable;
  * Hirelings: the entity type, hiring and paying, friendly fire, loyalty events, Downed allies, persistence
  * across logouts and dimensions, and the HUD packet. See {@code docs/systems/hirelings.md}.
  *
- * <p>Hooks for the role abilities and party synergies ticket: {@link #hirelingsOf} (the loaded hirelings of a
- * player) and {@link HirelingEntity#role()}.
+ * <p>Role abilities live in {@link HirelingAbilities}; party synergies count hirelings through
+ * {@link HirelingAbilities#sideHirelings} ({@code PartySynergies.rolesNear}).
  */
 public final class Hirelings {
     public static final EntityType<HirelingEntity> HIRELING = Registry.register(Registries.ENTITY_TYPE,
@@ -151,6 +151,7 @@ public final class Hirelings {
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> onLeave(handler.getPlayer()));
         ServerEntityWorldChangeEvents.AFTER_PLAYER_CHANGE_WORLD.register(Hirelings::followThroughPortal);
         ServerTickEvents.END_SERVER_TICK.register(Hirelings::tick);
+        HirelingAbilities.register();
     }
 
     // ---- Queries ----

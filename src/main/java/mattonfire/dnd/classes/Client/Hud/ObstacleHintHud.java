@@ -140,10 +140,15 @@ public final class ObstacleHintHud {
     }
 
     /**
-     * Scout: in a party, and a Utility-primary party member (or you) within {@link PartySynergies#SCOUT_RADIUS}
-     * blocks. The party HUD's member list says who is in your party and their classes.
+     * Scout: your own Utility hireling within {@link PartySynergies#SCOUT_RADIUS} blocks, or in a party, a
+     * Utility-primary party member (or you) that close. The party HUD's member list says who is in your party and their classes.
      */
     public static boolean scouted(MinecraftClient client, PlayerEntity self) {
+        // Your own Guide hireling scouts for you, party or not.
+        if (HirelingHud.roleNear(client, self, mattonfire.dnd.entity.hireling.HirelingRole.UTILITY,
+                PartySynergies.SCOUT_RADIUS)) {
+            return true;
+        }
         if (!PartyHud.inParty()) {
             return false;
         }

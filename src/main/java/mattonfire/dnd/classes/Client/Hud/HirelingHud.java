@@ -58,9 +58,30 @@ public final class HirelingHud {
         HudRenderCallback.EVENT.register((matrices, tickDelta) -> render(matrices));
     }
 
-    /** The hirelings the server last sent (for the role-synergies follow-up's client checks). */
+    /** The hirelings the server last sent. */
     public static List<Row> rows() {
         return rows;
+    }
+
+    /**
+     * Scout: one of your own conscious Utility hirelings (a Guide) is loaded in your world within {@code radius}
+     * blocks of you. Read from the HUD packet's roles and entity ids.
+     */
+    public static boolean roleNear(MinecraftClient client, net.minecraft.entity.player.PlayerEntity self,
+                                   HirelingRole role, double radius) {
+        if (client.world == null) {
+            return false;
+        }
+        for (Row row : rows) {
+            if (row.role() != role || row.entityId() < 0 || row.has(Hirelings.HUD_KNOCKED_OUT)) {
+                continue;
+            }
+            net.minecraft.entity.Entity entity = client.world.getEntityById(row.entityId());
+            if (entity != null && entity.squaredDistanceTo(self) <= radius * radius) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void render(MatrixStack matrices) {

@@ -113,6 +113,8 @@ public final class ProgressionEvents {
             amount = mattonfire.dnd.classes.Items.racial.RacialGear.modifyDealtDamage(player, target, source, amount);
             amount = mattonfire.dnd.classes.Party.PartySynergies.opportunist(player, target, amount);
         }
+        // A Damage hireling's Hunter's Mark, and Opportunist for its hits
+        amount = mattonfire.dnd.entity.hireling.HirelingAbilities.modifyDamage(target, source, amount);
 
         if (target instanceof net.minecraft.server.network.ServerPlayerEntity victim && amount > 0
                 && source.getAttacker() instanceof net.minecraft.entity.mob.MobEntity mob) {

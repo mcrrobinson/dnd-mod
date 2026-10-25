@@ -1,0 +1,46 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "dndclasses:block/rift_veil",
+    "veil": "dndclasses:block/rift_veil"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        14,
+        16
+      ],
+      "faces": {
+        "down": {
+          "texture": "#veil",
+          "cullface": "down"
+        },
+        "up": {
+          "texture": "#veil"
+        },
+        "north": {
+          "texture": "#veil",
+          "cullface": "north"
+        },
+        "south": {
+          "texture": "#veil",
+          "cullface": "south"
+        },
+        "east": {
+          "texture": "#veil",
+          "cullface": "east"
+        },
+        "west": {
+          "texture": "#veil",
+          "cullface": "west"
+        }
+      }
+    }
+  ]
+}

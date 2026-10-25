@@ -1,0 +1,7 @@
+{
+  "type": "dndclasses:underdark_rift",
+  "biomes": "#dndclasses:has_structure/underdark_rift",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {}
+}

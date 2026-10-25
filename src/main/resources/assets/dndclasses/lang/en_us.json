@@ -2354,5 +2354,17 @@
     "item.dndclasses.gorgons_gaze.no_target": "No creature meets the Gorgon's Gaze.",
     "item.dndclasses.gorgons_gaze.boss": "It shrugs off the Gorgon's Gaze.",
     "item.dndclasses.gorgons_gaze.petrified": "%s turns to stone!",
-    "item.dndclasses.gorgons_gaze.resisted": "%s resists the Gorgon's Gaze."
+    "item.dndclasses.gorgons_gaze.resisted": "%s resists the Gorgon's Gaze.",
+    "block.dndclasses.rift_veil": "Rift Veil",
+    "block.dndclasses.rift_anchor": "Rift Anchor",
+    "underdark.dndclasses.arrive.title": "The Underdark",
+    "underdark.dndclasses.arrive.subtitle": "You fall through the bottom of the world",
+    "underdark.dndclasses.anchor.pull": "The anchor pulls you upward  [%s]",
+    "underdark.dndclasses.anchor.cancel.moved": "You stepped away from the anchor. Its pull fades.",
+    "underdark.dndclasses.anchor.cancel.hurt": "The pain breaks your hold on the anchor.",
+    "underdark.dndclasses.anchor.cooldown": "The anchor is still gathering itself.",
+    "underdark.dndclasses.anchor.still": "The anchor is still. It only pulls upward from below.",
+    "underdark.dndclasses.beholder_rift": "The floor where the eye floated splits open. Cold air rises from below.",
+    "structure.dndclasses.underdark_rift": "Underdark Rift",
+    "structure.dndclasses.rift_landing": "Rift Landing"
 }

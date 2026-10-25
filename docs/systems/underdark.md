@@ -1,5 +1,5 @@
 # The Underdark
-A sunless world of huge caverns under the Overworld's bedrock, from y -256 to -65, lit only by what grows there. It's its own dimension (`dndclasses:underdark`) at the same x and z as the Overworld above, with five regions: the Fungal Forest, the Mycelial Caverns, the Darklake, the Faerzress Hollows and the Grey Reaches. For now you get there with `/underdark go`; the Underdark Rifts that take players down without commands, the giant fungi, the drow and duergar and their settlements come with the later Underdark tickets.
+A sunless world of huge caverns under the Overworld's bedrock, from y -256 to -65, lit only by what grows there. It's its own dimension (`dndclasses:underdark`) at the same x and z as the Overworld above, with five regions: the Fungal Forest, the Mycelial Caverns, the Darklake, the Faerzress Hollows and the Grey Reaches. You get there through [Underdark Rifts](../structures/underdark-rifts.md): sinkholes in the Overworld down to a pool of Rift Veil that drops you in, and Rift Anchors that pull you back up. The giant fungi, the drow and duergar and their settlements come with the later Underdark tickets.
 
 ![The Fungal Forest with Night Vision: Fungal Loam, Trillimacs and a zurkhwood stalk](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/underdark-dimension/underdark-fungal_forest-nightvision.png)
 
@@ -46,13 +46,14 @@ Every biome spawns spiders (weight 100, 1-3), cave spiders (40), zombies (60), s
 The Underdark's clock is fixed at midnight. The mod's night checks (`GameTime.isNight`) read 18000 there whatever the Overworld's time, so a [Blood Hunter](../classes/blood-hunter.md) has night strength the whole time they're below. Vanilla's own day checks see a fixed-time dimension as neither day nor night, like the Nether.
 
 ### Getting there and back
-- `/underdark go` takes you down at your x and z. It looks for a dry, solid floor with two blocks of air above it between y -75 and -250, in your column and then in rings out to 8 blocks. It prefers a floor in an open cavern (6 blocks of air above), then the one nearest y -90; a cramped floor in your own column is the fallback. If there's no floor at all, it carves a 5×5×3 pocket at y -150 with a deepslate-tile floor and a lantern, sealing any water or lava round it.
+- Players find their own way down through [Underdark Rifts](../structures/underdark-rifts.md) (or a slain lair Beholder's floor), and back up with a Rift Anchor. The rest of this section is the admin command.
+- `/underdark go` takes you down at your x and z. It looks for a dry, solid floor with two blocks of air above it between y -75 and -250, in your column and then in rings out to 8 blocks. It prefers a floor in an open cavern (6 blocks of air above), then the one nearest y -90; a cramped floor in your own column is the fallback. If there's no floor at all, it carves a 5×5×3 pocket at y -150 with a deepslate-tile floor, a lantern and a three-block Rift Anchor, sealing any water or lava round it.
 - It remembers where you came from, and `/underdark back` returns you there (or to the world spawn if nothing is remembered).
 - Dying in the Underdark respawns you at your bed or the world spawn, as usual. Logging out there logs you back in there.
 - The Underdark is a separate world: you can't dig down into it from the Overworld. Pets stay behind, as with the Nether.
 
 ## Where to find it
-For now only through `/underdark go` and `/underdark biome` (ops), or `/execute in dndclasses:underdark run tp @s x y z`. The Underdark Rifts ticket adds sinkholes in the Overworld that drop players in.
+Through an [Underdark Rift](../structures/underdark-rifts.md) (about one per 450×450 blocks of Overworld land) or a slain lair Beholder's floor. Ops can also use `/underdark go` and `/underdark biome`, or `/execute in dndclasses:underdark run tp @s x y z`.
 
 ## Commands
 `/underdark` needs permission level 2.
@@ -66,7 +67,6 @@ For now only through `/underdark go` and `/underdark biome` (ops), or `/execute 
 
 ## Known limitations
 - The zurkhwood and nightlight are vanilla huge-mushroom shapes (4-7 tall) until the flora ticket brings the giant fungi.
-- No way in or out without commands until the Underdark Rifts ticket.
 - No Underdark music yet: the mod's event music only plays in the Overworld.
 
 ## For developers
@@ -82,7 +82,7 @@ For now only through `/underdark go` and `/underdark biome` (ops), or `/execute 
   | `habitat/basilisk` | Grey Reaches, Faerzress Hollows |
   | `habitat/mind_flayer` | Faerzress Hollows |
   | `habitat/rust_monster` | Grey Reaches, Mycelial Caverns |
-- `UnderdarkLanding.findOrMake(world, x, z)`: the floor search and carved pocket. `UnderdarkTravel`: `descend`, `sendTo`, `back` and `teleport`, with the return spot in the player's persistent data under `dndUnderdark.Return`. `UnderdarkTravel.AFTER_TRAVEL` (player, from, to) fires after every trip in or out, so followers such as hirelings can come along. Log lines: `[Underdark] <player> descends at x y z (found|carved)` and `[Underdark] <player> returns to ...`.
+- `UnderdarkLanding.findOrMake(world, x, z)`: the floor search and carved pocket. `UnderdarkTravel`: `descend`, `sendTo`, `back` and `teleport`, with the return spot in the player's persistent data under `dndUnderdark.Return`. `UnderdarkTravel.AFTER_TRAVEL` (player, from, to) fires after every trip in or out, so followers such as hirelings can come along. The rift trips are `riftDown`/`riftUp` (see [Underdark Rifts](../structures/underdark-rifts.md#for-developers)). Log lines: `[Underdark] <player> descends at x y z (landing|found|carved)` and `[Underdark] <player> returns to ...`.
 - `UnderdarkSurvey` backs `/underdark survey`.
 - Client: `client/UnderdarkEffects` (no sky or clouds, biome fog unchanged, darkened lightmap), registered for the dimension type's `effects` id `dndclasses:underdark`.
 - A world with a data-pack dimension counts as "experimental" in vanilla, which would show the Experimental Settings warning on every load (and stall the DevScript auto-join). `IntegratedServerLoaderMixin` skips the warning when every non-stable registry entry is the mod's own (`ExperimentalWarning.onlyOurs`); another pack's experimental content still warns.

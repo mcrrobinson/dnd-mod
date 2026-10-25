@@ -1,6 +1,7 @@
 # Standard reset header. Put `include _reset.txt` near the top of a script (after the opening wait 40 /
 # closescreen) so it doesn't depend on what the previous script in the same run dir left behind: a dead or
-# Downed player, a race with another eye height (a Dwarf's `use` at pitch 30 hits the floor), a class, effects.
+# Downed player, a race with another eye height (a Dwarf's `use` at pitch 30 hits the floor), a class, effects,
+# conditions (they last through relogs).
 # It leaves the player alive, with no race and no class (no Class Guidebook), and no effects. Set the race and
 # class the script needs after it. Gamerules, gamemode, inventory and the world are left alone.
 # With no class, a later /dndrace set reopens the class picker, which pauses a single-player game (wait and
@@ -12,5 +13,6 @@ wait 5
 /dndclass set @s none
 /clear @s dndclasses:class_guidebook
 /effect clear @s
+/dndcondition remove @s all
 wait 5
 closescreen

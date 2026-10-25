@@ -6,10 +6,10 @@ import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.PlayerEntityExt;
-import mattonfire.dnd.classes.Registry.ModEffects;
 import mattonfire.dnd.classes.Registry.ModSounds;
 import mattonfire.dnd.classes.SkillChecks.SaveResult;
 import mattonfire.dnd.entity.ai.goal.CasterMovementGoal;
+import mattonfire.dnd.entity.ai.Blink;
 import mattonfire.dnd.entity.boss.Boss;
 import mattonfire.dnd.entity.boss.BossFight;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -315,7 +315,13 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
                     .onFailure(Text.translatable("save.dndclasses.effect.dread_presence.failure"))
                     .roll();
             if (save.fresh() && save.failed()) {
-                player.addStatusEffect(new StatusEffectInstance(ModEffects.FRIGHTENED, BossSaves.DREAD_FRIGHTENED_TICKS, 0), this);
+                mattonfire.dnd.classes.Conditions.Conditions.of(player, mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED).source(this).key("dread")
+                        .ticks(BossSaves.DREAD_FRIGHTENED_TICKS)
+                        .saveLabel(BossSaves.DREAD_PRESENCE.labelKey())
+                        .repeatSave(BossSaves.DREAD_PRESENCE.ability(),
+                                lastPhase ? BossSaves.LAST_PHASE_DC : BossSaves.DREAD_PRESENCE.dc(),
+                                BossSaves.FEAR_REPEAT_TICKS)
+                        .saveTags("fear").apply();
             }
         }
     }
@@ -337,26 +343,7 @@ public class LichEntity extends HostileEntity implements GeoEntity, Boss {
 
     /** Teleports to a random spot {@code min}-{@code max} blocks around {@code center}. */
     private boolean blink(BlockPos center, double min, double max) {
-        Vec3d from = this.getPos();
-        for (int attempt = 0; attempt < 16; attempt++) {
-            float angle = this.random.nextFloat() * MathHelper.TAU;
-            double distance = min + this.random.nextDouble() * (max - min);
-            double x = center.getX() + 0.5D + MathHelper.cos(angle) * distance;
-            double z = center.getZ() + 0.5D + MathHelper.sin(angle) * distance;
-            double y = center.getY() + this.random.nextInt(5) - 2;
-            if (this.teleport(x, y, z, false)) {
-                ServerWorld world = (ServerWorld) this.world;
-                world.spawnParticles(ParticleTypes.SOUL, from.x, from.y + 1.2D, from.z, 25, 0.3D, 0.8D, 0.3D, 0.02D);
-                world.spawnParticles(ParticleTypes.SOUL, this.getX(), this.getY() + 1.2D, this.getZ(),
-                        25, 0.3D, 0.8D, 0.3D, 0.02D);
-                world.playSound(null, from.x, from.y, from.z, SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE,
-                        SoundCategory.HOSTILE, 1.5F, 0.8F);
-                this.playSound(SoundEvents.ENTITY_ILLUSIONER_MIRROR_MOVE, 1.5F, 0.8F);
-                this.getNavigation().stop();
-                return true;
-            }
-        }
-        return false;
+        return Blink.blink(this, center, min, max, null, ParticleTypes.SOUL);
     }
 
     // ---------------------------------------------------------------- phylactery

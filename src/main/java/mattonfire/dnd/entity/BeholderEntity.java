@@ -433,7 +433,8 @@ public class BeholderEntity extends HostileEntity implements GeoEntity, Multipar
     /** Frightened creatures can't bring themselves to come near it. */
     private void driveBackFrightened() {
         for (LivingEntity entity : this.world.getEntitiesByClass(LivingEntity.class, this.getBoundingBox().expand(FEAR_RADIUS),
-                e -> e != this && e.hasStatusEffect(ModEffects.FRIGHTENED))) {
+                e -> e != this && mattonfire.dnd.classes.Conditions.ConditionEffects.hasFrom(e,
+                        mattonfire.dnd.classes.Conditions.Condition.FRIGHTENED, this.getUuid()))) {
             Vec3d away = entity.getPos().subtract(this.getPos()).multiply(1.0, 0.0, 1.0);
             away = away.lengthSquared() < 1.0E-4 ? new Vec3d(1, 0, 0) : away.normalize();
             entity.addVelocity(away.x * 0.7, 0.25, away.z * 0.7);

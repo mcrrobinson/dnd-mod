@@ -1,0 +1,32 @@
+# The condition icons sit above the save lane without overlapping it, at GUI scale 2 and 4.
+# Run with a big window: timeout 300 ./gradlew runClient -PdevScript=devscripts/conditions-hud-scale.txt -PdevWidth=1920 -PdevHeight=1080
+# Screenshots: conditions-hud-scale2, conditions-hud-scale4 (icons for Stunned, Frightened and Poisoned, a
+# repeat save die on Stunned, and save-lane rows just below them).
+/time set noon
+/gamerule doMobSpawning false
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s wizard
+wait 5
+closescreen
+/clear @s dndclasses:class_guidebook
+/gamemode survival
+/tp @s 4.5 150 3.5 0 10
+/dndcondition remove @s all
+guiscale 2
+/dndcondition apply @s frightened 600
+/dndcondition apply @s poisoned 600
+/dndcondition apply @s stunned 600 save int 30 30
+wait 33
+clearchat
+screenshot conditions-hud-scale2
+guiscale 4
+wait 28
+clearchat
+screenshot conditions-hud-scale4
+conditions
+/dndcondition remove @s all
+guiscale 2
+wait 5
+quit

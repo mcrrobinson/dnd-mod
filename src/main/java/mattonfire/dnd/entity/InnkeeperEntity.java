@@ -105,6 +105,15 @@ public class InnkeeperEntity extends HobbitEntity implements SettlementMerchant 
         this.merchant.tick();
     }
 
+    @Override
+    public void tick() {
+        super.tick();
+        if (!this.world.isClient) {
+            // Today's adventurers for hire (runs with NoAI too, so a parked innkeeper still keeps them).
+            mattonfire.dnd.entity.hireling.HirelingRoster.tick(this);
+        }
+    }
+
     /**
      * Sets the inn whose beds this innkeeper's Room Keys open, and its name for the key ("<name> Room
      * Key"). Structures that place an innkeeper call this (the hobbit village's Green Dragon does).

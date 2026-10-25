@@ -53,6 +53,14 @@ Five sets made by and for one race each, sold as kin stock in that race's home s
 
 Kin prices (25% off) apply to these trades too. The racial weapons are on their own page: [Racial weapons](racial-weapons.md). The Gnomes' kin stock is a single helmet, [Tinker's Goggles](tinkers-goggles.md), which shows what's inside the container you look at.
 
+### Corrosion
+A [Rust Monster](../mobs/rust-monster.md)'s antennae (DEX save DC 12) and hitting one with a metal weapon rust gear in `#dndclasses:corrodible`: iron, chainmail and golden armour and tools, and of the mod's sets the **Knight, Warrior, Holy Armor, Golden Horns and Steampunk** class sets and the **Dwarven Plate** and **Orcish Warplate** (plus the Dwarven Waraxe and Orcish Greataxe). The other sets, diamond and netherite are safe.
+
+- Each step of rust takes a +N item's +N down by one first; after that it adds a corrosion level (up to 3/3) and costs 15% of the item's max durability. A step on a 3/3 item destroys it.
+- Each level is -1 armor in that piece's slot (-1 attack damage for a weapon or tool). The tooltip shows "Corroded (2/3): -2 armor" in orange.
+- Repairing the piece on an anvil (with its repair material, or by combining two) clears the rust. A grindstone doesn't.
+- An attuned item doesn't rust.
+
 ## Where to find it
 - The mod's creative tab. There are no crafting recipes yet.
 - The racial sets: see [Racial armor](#racial-armor), or `/give @s dndclasses:elven_chain_helmet` (also `dwarven_plate_*`, `orcish_warplate_*`, `draconic_scale_*`, `infernal_regalia_*`).

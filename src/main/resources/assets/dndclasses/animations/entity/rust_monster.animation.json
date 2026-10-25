@@ -1,0 +1,307 @@
+{
+	"format_version": "1.8.0",
+	"animations": {
+		"idle": {
+			"loop": true,
+			"animation_length": 4,
+			"bones": {
+				"antenna_left": {
+					"rotation": [
+						"math.sin(query.anim_time*90)*6",
+						0,
+						"math.sin(query.anim_time*180)*4"
+					]
+				},
+				"antenna_right": {
+					"rotation": [
+						"math.sin(query.anim_time*90+60)*6",
+						0,
+						"math.sin(query.anim_time*180+30)*-4"
+					]
+				},
+				"body": {
+					"scale": [
+						1,
+						"1+math.sin(query.anim_time*90)*0.02",
+						1
+					]
+				},
+				"tail": {
+					"rotation": [
+						0,
+						"math.sin(query.anim_time*90)*6",
+						0
+					]
+				},
+				"tail_fin": {
+					"rotation": [
+						0,
+						0,
+						"query.anim_time*90"
+					]
+				}
+			}
+		},
+		"walk": {
+			"loop": true,
+			"animation_length": 1,
+			"bones": {
+				"leg_front_left": {
+					"rotation": [
+						"math.sin(query.anim_time*360)*30",
+						0,
+						0
+					]
+				},
+				"leg_back_right": {
+					"rotation": [
+						"math.sin(query.anim_time*360)*30",
+						0,
+						0
+					]
+				},
+				"leg_front_right": {
+					"rotation": [
+						"math.sin(query.anim_time*360)*-30",
+						0,
+						0
+					]
+				},
+				"leg_back_left": {
+					"rotation": [
+						"math.sin(query.anim_time*360)*-30",
+						0,
+						0
+					]
+				},
+				"body": {
+					"rotation": [
+						0,
+						0,
+						"math.sin(query.anim_time*360)*3"
+					]
+				},
+				"head": {
+					"rotation": [
+						0,
+						"math.sin(query.anim_time*360)*5",
+						0
+					]
+				},
+				"antenna_left": {
+					"rotation": [
+						"math.sin(query.anim_time*720)*10",
+						0,
+						0
+					]
+				},
+				"antenna_right": {
+					"rotation": [
+						"math.sin(query.anim_time*720)*-10",
+						0,
+						0
+					]
+				},
+				"tail": {
+					"rotation": [
+						0,
+						"math.sin(query.anim_time*360)*-10",
+						0
+					]
+				},
+				"tail_fin": {
+					"rotation": [
+						0,
+						0,
+						"query.anim_time*360"
+					]
+				}
+			}
+		},
+		"antenna_touch": {
+			"animation_length": 0.75,
+			"bones": {
+				"head": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.25": [
+							15,
+							0,
+							0
+						],
+						"0.5": [
+							10,
+							0,
+							0
+						],
+						"0.75": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"antenna_left": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.25": [
+							-70,
+							0,
+							10
+						],
+						"0.4": [
+							-80,
+							0,
+							20
+						],
+						"0.75": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"antenna_right": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.25": [
+							-70,
+							0,
+							-10
+						],
+						"0.4": [
+							-80,
+							0,
+							-20
+						],
+						"0.75": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"body": {
+					"position": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.25": [
+							0,
+							0,
+							-1.5
+						],
+						"0.75": [
+							0,
+							0,
+							0
+						]
+					}
+				}
+			}
+		},
+		"eat": {
+			"animation_length": 1,
+			"bones": {
+				"head": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.15": [
+							35,
+							0,
+							0
+						],
+						"0.3": [
+							20,
+							0,
+							0
+						],
+						"0.45": [
+							38,
+							0,
+							0
+						],
+						"0.6": [
+							20,
+							0,
+							0
+						],
+						"0.75": [
+							35,
+							0,
+							0
+						],
+						"1.0": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"antenna_left": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.5": [
+							-20,
+							0,
+							15
+						],
+						"1.0": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"antenna_right": {
+					"rotation": {
+						"0.0": [
+							0,
+							0,
+							0
+						],
+						"0.5": [
+							-20,
+							0,
+							-15
+						],
+						"1.0": [
+							0,
+							0,
+							0
+						]
+					}
+				},
+				"tail_fin": {
+					"rotation": [
+						0,
+						0,
+						"query.anim_time*360"
+					]
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,8 @@
+{
+  "name": "Illithid and Thralls",
+  "difficulty": "deadly",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:mind_flayer", "count": 1}
+  ]
+}

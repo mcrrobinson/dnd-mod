@@ -51,6 +51,10 @@ public class RacialHumanoidRenderer<T extends MobEntity> extends BipedEntityRend
     }
 
     public static final Look ELF = new Look(true, DndRace.ELF, 1.0F);
+    /** Humans (the hirelings): classic arms, no head features. */
+    public static final Look HUMAN = new Look(false, DndRace.NONE, 1.0F);
+    /** Half-orcs (the hirelings): the orc skins and tusks at human size. */
+    public static final Look HALF_ORC = new Look(false, DndRace.HALFORC, 1.0F, 1.05F);
     /** Dragonborn: classic arms, snout and frill, 1.05x. */
     public static final Look DRAGONBORN = new Look(false, DndRace.DRAGONBORN, 1.05F);
 

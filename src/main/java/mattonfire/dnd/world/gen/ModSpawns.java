@@ -73,12 +73,31 @@ public class ModSpawns {
                         BiomeKeys.OLD_GROWTH_PINE_TAIGA, BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA),
                 SpawnGroup.MONSTER, ModEntityTypes.OWLBEAR, 12, 1, 1);
 
+        // Trolls lurk in swamps, taigas and dark forests (monsters: they need the dark too).
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(BiomeKeys.SWAMP, BiomeKeys.MANGROVE_SWAMP,
+                        BiomeKeys.TAIGA, BiomeKeys.SNOWY_TAIGA, BiomeKeys.OLD_GROWTH_PINE_TAIGA,
+                        BiomeKeys.OLD_GROWTH_SPRUCE_TAIGA, BiomeKeys.DARK_FOREST),
+                SpawnGroup.MONSTER, ModEntityTypes.TROLL, 6, 1, 1);
+
 
         // Gelatinous Cubes ooze through dark caves and dungeons anywhere in the Overworld, well below sea level.
         BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER, ModEntityTypes.GELATINOUS_CUBE, 5, 1, 1);
         SpawnRestriction.register(ModEntityTypes.GELATINOUS_CUBE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.GelatinousCubeEntity::canSpawn);
+
+        // Rust Monsters burrow through deep caves (below y=0) in the Overworld, alone or in pairs.
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER, ModEntityTypes.RUST_MONSTER, 4, 1, 2);
+        SpawnRestriction.register(ModEntityTypes.RUST_MONSTER, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.RustMonsterEntity::canSpawn);
+
+        // Mind Flayers haunt the deepest caves, below y=-32 in the dark, with two thralls each (a stand-in for
+        // the Underdark, which adds its own weight through data/dndclasses/underdark_spawns/mind_flayer.json).
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER, ModEntityTypes.MIND_FLAYER, 1, 1, 1);
+        SpawnRestriction.register(ModEntityTypes.MIND_FLAYER, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.MindFlayerEntity::canSpawn);
 
         // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
         // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.
@@ -106,6 +125,8 @@ public class ModSpawns {
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, ModSpawns::canMagmamuncherAlphaSpawn);
 
         SpawnRestriction.register(ModEntityTypes.OWLBEAR, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
+        SpawnRestriction.register(ModEntityTypes.TROLL, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, HostileEntity::canSpawnInDark);
 
         // Goblin Warriors join the Nether Fortress spawn pool (see SpawnHelperMixin)

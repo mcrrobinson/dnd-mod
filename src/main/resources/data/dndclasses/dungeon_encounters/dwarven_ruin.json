@@ -32,6 +32,10 @@
                 "entity": "dndclasses:mimic",
                 "weight": 1,
                 "nbt": "{Dormant:0b}"
+            },
+            {
+                "entity": "dndclasses:rust_monster",
+                "weight": 3
             }
         ],
         "3": [
@@ -60,6 +64,10 @@
                 "entity": "dndclasses:mimic",
                 "weight": 2,
                 "nbt": "{Dormant:0b}"
+            },
+            {
+                "entity": "dndclasses:rust_monster",
+                "weight": 3
             }
         ],
         "4": [
@@ -88,6 +96,14 @@
                 "entity": "dndclasses:mimic",
                 "weight": 3,
                 "nbt": "{Dormant:0b}"
+            },
+            {
+                "entity": "dndclasses:rust_monster",
+                "weight": 2
+            },
+            {
+                "entity": "dndclasses:mind_flayer",
+                "weight": 1
             }
         ]
     }

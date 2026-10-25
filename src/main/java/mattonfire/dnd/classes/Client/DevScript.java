@@ -136,6 +136,8 @@ import net.minecraft.util.Identifier;
  *     coordinates measured from its centre (default: the centre), e.g. the Character tab's skill list</li>
  * <li>{@code trade <index>} picks a trade (from 0, as {@code slots} lists them) on an open merchant screen, like
  *     clicking it on the left; the result slot (2) then holds it, so {@code slot 2 quick_move} buys it</li>
+ * <li>{@code conditions} logs the client's own conditions as the server last synced them, counted down, and the
+ *     synced mask: {@code [DevScript] conditions: stunned(57t, INT 14 in 17t) prone(-1) mask=17}</li>
  * <li>{@code target <selector>} logs each matching mob's attack target, as the integrated server sees it
  *     ({@code target <type> <name> at x y z -> <target>|none}), e.g. {@code target @e[type=dndclasses:orc_archer]}</li>
  * <li>{@code racepicker on|off}: while a script runs the race picker stays shut (the dev-world player has a class
@@ -642,6 +644,7 @@ public final class DevScript {
                 }
             }
             case "target" -> logTargets(client, argument, lineNumber);
+            case "conditions" -> DnDClasses.LOGGER.info("[DevScript] conditions: {}", ConditionClient.describe(client));
             case "racepicker" -> PickerFlow.setRacePickerAllowed(client, argument.equals("on"));
             case "racepick" -> racePick(argument.split("\\s+"), lineNumber);
             case "saverolls" -> SaveRollsMode.setOverride(SaveRollsMode.byId(argument)); // else: the config file

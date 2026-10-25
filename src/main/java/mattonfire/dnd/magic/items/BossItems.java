@@ -134,6 +134,8 @@ public final class BossItems {
                 .withAttunement().withCurse(Curse.RINGS_CALL));
         MagicItems.register(MagicItemDef.of(ModItems.EYE_OF_THE_TYRANT, MagicTier.LEGENDARY, MagicKind.WONDROUS,
                 "wondrous_item").withAttunement());
+        MagicItems.register(MagicItemDef.of(ModItems.GORGONS_GAZE, MagicTier.RARE, MagicKind.WONDROUS,
+                "wondrous_item").withAttunement());
     }
 
     private static boolean melee(PlayerEntity player, DamageSource source) {
@@ -228,6 +230,8 @@ public final class BossItems {
         });
         MagicEffects.register(ModItems.EYE_OF_THE_TYRANT, new MagicEffect() {
         });
+        MagicEffects.register(ModItems.GORGONS_GAZE, new MagicEffect() {
+        });
         MagicEffects.register(ModItems.BURGLARS_RING, new MagicEffect() {
             @Override
             public void secondTick(ServerPlayerEntity player, ItemStack stack) {
@@ -271,6 +275,8 @@ public final class BossItems {
                     EyeOfTheTyrantItem.recharge(stack);
                 else if (stack.isOf(ModItems.PHYLACTERY_LOCKET))
                     PhylacteryLocketItem.recharge(stack);
+                else if (stack.isOf(ModItems.GORGONS_GAZE))
+                    GorgonsGazeItem.recharge(stack);
             }
         });
 

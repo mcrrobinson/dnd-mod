@@ -18,6 +18,9 @@ Every hobbit village has the Green Dragon inn. Inside, an **innkeeper** sells fo
 - Right-clicking it with a finished bounty notice pays the bounty out.
 - **Reputation** ([Factions](../systems/factions.md)): each customer sees prices for their own standing with the hobbits: +50% at Unfriendly (rounded up, at least +1), -10% at Friendly, -25% at Honored, -40% at Exalted, never below 1. A cake costs 5 emeralds at Unfriendly and 2 at Exalted; the innkeeper wants 30 wheat at Unfriendly and 12 at Exalted. A player Hostile with the hobbits gets "<name> won't serve you.": no trades and no bounty payouts.
 
+### Hirelings
+Three adventurers stand about the inn each day looking for work: a different role each (Tank, Healer, Damage, Support or Utility), named, of any of six races. Right-click one with an empty hand for its card and a **[Hire]** button; they cost a fee and a daily wage in gold, follow and fight for you, and help you up when you're Downed. Yesterday's unhired ones leave at the new day. Ask the innkeeper "Anyone looking for work?" for a pointer. See [Hirelings](../systems/hirelings.md).
+
 ### Rooms for the night
 - **The loft:** a ladder up the east wall, just inside the door, leads to a sleeping loft under the thatch with **4 green beds**, two nightstands and a lantern.
 - **Room Key:** 3 emeralds from the innkeeper (reputation and kin prices apply as to the other trades). It's named "Green Dragon Room Key", doesn't stack, and is **good until the next dawn**; after that its tooltip says "Expired" and it does nothing.
@@ -83,7 +86,7 @@ What the spoils can contain:
 
 ## Where to find it
 - Run `/locate structure dndclasses:hobbit_village`. Every village generates its inn, unless the terrain has no room for it.
-- In the creative tab: Bounty Board, Mug of Ale, Innkeeper Spawn Egg, and one notice per bounty.
+- In the creative tab: Bounty Board, Mug of Ale, Innkeeper Spawn Egg, and one notice per bounty (and the Hireling Spawn Egg).
 - Room Keys come only from an innkeeper (a key that wasn't bought opens nothing).
 
 ## Commands
@@ -93,6 +96,7 @@ What the spoils can contain:
   - Optionally add `Progress:<n>`.
   - IDs: `goblin_trouble`, `goblin_warlord`, `wyvern_hunt`, `storm_dragon`, `frost_drake`, `spiders`, `barrow_wights`, `brigands`, `dwarf_fortress`, `dragon_lair`, `clear_barrow`, `smoke_warren`, `lost_hold`.
 - Restock boards and the innkeeper: `/time add 24000`.
+- New hireling candidates now: `/hireling admin roster @e[type=dndclasses:innkeeper,limit=1,sort=nearest] reroll` (see [Hirelings](../systems/hirelings.md#commands)).
 - A Room Key for a test room: `/give @s dndclasses:room_key{Inn:"Test",InnBox:[I;x1,y1,z1,x2,y2,z2],Day:<day>L}`, where `<day>` is `/time query day` (the in-game day the key is good for) and the box holds the beds.
 - `/dndclass rest @s allow` forgets today's long rest, to try a room again.
 
@@ -105,6 +109,7 @@ What the spoils can contain:
 - Beds aren't reserved: any key holder can use any of the inn's beds.
 
 ## For developers
+- Hirelings: `InnkeeperEntity.tick` calls `entity/hireling/HirelingRoster.tick` (the day's candidates inside `innBox()`, day kept in the innkeeper's persistent data `dndHirelingRosterDay`).
 - Code: package `mattonfire.dnd.tavern`.
   - `Tavern` registers everything. It's called from `DnDClasses`, and the renderer is registered in `DndClassesClient`.
   - `Bounty` is the bounty list (enum).

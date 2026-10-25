@@ -10,7 +10,11 @@ Some classes are better at [saving throws](saving-throws.md) than their scores a
 | Barbarian | Rage | while Rage is on | Advantage on STR saves and Athletics checks |
 | Fighter | Indomitable | level 9 | When you fail a save, roll it again; the second roll stands. Once every 5 minutes |
 | Bard | Jack of All Trades | level 2 | Half your proficiency bonus (rounded down) on every check you aren't trained in, including plain ability checks |
-| Monk | Diamond Soul | level 10 | Proficient in all six saving throws |
+| Monk | Diamond Soul | level 10 | Proficient in all six saving throws, and the first failed repeat save against each [condition](conditions.md) is rolled again |
+| Monk | Stillness of Mind | level 7 | Frightened and Charmed last half as long, and their repeat saves have advantage |
+| Bard | Countercharm | 10 s after playing the lute | Players within 8 blocks have advantage on repeat saves against Frightened and Charmed |
+
+Features that make you immune to conditions (Aura of Courage, Mindless Rage, poison immunity) are listed on the [conditions](conditions.md#class-features) page.
 
 - The Paladin's CHA 14 gives +2, so a Wizard standing next to them rolls DEX saves at +4 instead of +2. The aura is re-checked once a second, so it appears and drops within a second of walking into or out of range.
 - **Evasion** shows on the save lane as `no damage (Evasion)` or `half damage (Evasion)` in place of the attack's usual text. Effects that come with the damage still follow the save as before (a failed save against a Frost Drake still freezes you).
@@ -31,7 +35,7 @@ On any player of those classes at those levels. Class levels come from XP (`/dnd
 | `/dm save <targets> <ability> <dc>` | Call a save to test with |
 
 ## Configuration
-None. The numbers are constants in `ClassSaveFeatures` and `PaladinSkills`.
+None. The numbers are constants in `ClassSaveFeatures`, `ClassConditionFeatures` and `PaladinSkills`.
 
 ## Known limitations
 - Evasion only changes saves whose attack uses `SaveResult.damage` with `halvesDamage()`. A DEX save with its own success rule (a pit: you catch the edge) isn't affected.
@@ -49,4 +53,5 @@ None. The numbers are constants in `ClassSaveFeatures` and `PaladinSkills`.
   - `SaveResult.withDamageMultipliers(onSuccess, onFailure, note)` and `note()`: the lane's detail becomes `no damage (<note>)` / `half damage (<note>)` / `full damage (<note>)`.
   - `Contribution.feature(description, source)`: a breakdown line only (target `feature`).
   - `AbilityScores.peek(player)`: the last built sheet without a rebuild. A dynamic rebuild that changes the sheet now also re-sends it to the client.
-- Test script: `devscripts/class-save-features.txt` (single player). The Paladin-next-to-Wizard check needs two clients (see "Testing in the dev client" in `CLAUDE.md`).
+- `ClassConditionFeatures` (registered from `ClassSaveFeatures.register`) adds Stillness of Mind (advantage on saves tagged `condition` + `frightened`/`charmed`, and a `Conditions.ApplyHook` halving them), Diamond Soul's repeat-save reroll (a `SavingThrow.Reroll` that checks `ConditionTicker.rollingRepeatSave()`, logged as `Diamond Soul: rerolling save <n>`) and Countercharm (live contributor). See [conditions](conditions.md#class-features).
+- Test script: `devscripts/class-save-features.txt` (single player); the condition features in `devscripts/condition-class-features.txt`. The Paladin-next-to-Wizard check needs two clients (see "Testing in the dev client" in `CLAUDE.md`).

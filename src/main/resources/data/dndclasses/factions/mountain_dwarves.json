@@ -13,6 +13,7 @@
   "enemy_kills": {"dndclasses:goblins": 1},
   "enemy_kill_overrides": {"dndclasses:goblin_warlord": 25},
   "kill_cap": 30,
+  "monster_kills": {"dndclasses:rust_monster": 3},
   "raid_won": 60,
   "raid_lost": -40,
   "trade": 1,

@@ -62,8 +62,9 @@ public final class DungeonEncounterPools {
             Map.entry("minecraft:witch", 2.0),
             Map.entry("minecraft:wither_skeleton", 3.0), Map.entry("minecraft:vindicator", 3.0),
             Map.entry("dndclasses:goblin_warrior", 3.0), Map.entry("dndclasses:mimic", 3.0),
-            Map.entry("dndclasses:gelatinous_cube", 4.0),
-            Map.entry("dndclasses:owlbear", 6.0));
+            Map.entry("dndclasses:gelatinous_cube", 4.0), Map.entry("dndclasses:rust_monster", 3.0),
+            Map.entry("dndclasses:owlbear", 6.0),
+            Map.entry("dndclasses:mind_flayer", 8.0));
 
     /** One monster a room can pick: what to spawn, how likely, and what it costs. */
     public record Entry(Encounter.Spawn spawn, int weight, double threat) {

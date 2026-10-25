@@ -1,0 +1,16 @@
+# Surveys several Duergar Holds (docs/structures/duergar-holds.md): from a 3x3 grid of points 2000 blocks apart round
+# x -12000 z -12000 (far from the dev world's explored land, so they're freshly generated), the nearest hold to each,
+# its chunks generated and checked.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/duergar-hold-survey.txt
+# Expect in latest.log: "[DuergarHoldSurvey] hold at chunk ...: ... 0 stray, wet blocks 0 inside the wall (n outside), portcullis open 3/3, locked
+# pen gates 4/4, vault door shut 2/2, chests ok, stair 7/7 clear: PASS" for each, and "[DuergarHoldSurvey] n holds,
+# n pass, 0 fail".
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/execute in minecraft:overworld run tp @s -12000 200 -12000
+wait 40
+/dndhome duergarholdsurvey 3 2000
+waitserver 2
+quit

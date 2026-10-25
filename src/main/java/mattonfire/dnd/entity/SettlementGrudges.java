@@ -106,6 +106,8 @@ public final class SettlementGrudges {
     public static final Rules TINKERS_GUILD = add(new TinkersLaw());
     /** The goblins of a camp, who come for anyone opening their chief's chest, whatever their standing. */
     public static final Rules GOBLIN_CAMP = add(new GoblinCampLaw());
+    /** The duergar of a Hold guarding their forge, mine and strongbox, and their Greysteel. */
+    public static final Rules GREY_CLANS = add(new DuergarLaw());
 
     private SettlementGrudges() {
     }

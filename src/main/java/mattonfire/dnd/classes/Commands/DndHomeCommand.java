@@ -63,6 +63,8 @@ import net.minecraft.util.math.BlockPos;
  * the Underdark Rifts' teleports and checks ({@link RiftCommands}).
  * /dndhome drowoutpost [spot], drowoutpostsurvey [grid] [spacing], drowoutpostcensus, drowoutpostseeds [seeds]: the Drow Outposts'
  * teleports and checks ({@link DrowOutpostCommands}).
+ * /dndhome duergarhold [spot], duergarholdsurvey [grid] [spacing], duergarholdcensus, duergarholdseeds [seeds]: the Duergar
+ * Holds' teleports and checks ({@link DuergarHoldCommands}).
  */
 public final class DndHomeCommand {
     private DndHomeCommand() {
@@ -156,6 +158,23 @@ public final class DndHomeCommand {
                         .executes(context -> DrowOutpostCommands.seeds(context, java.util.List.of()))
                         .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
                                 .executes(context -> DrowOutpostCommands.seeds(context,
+                                        RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
+                .then(CommandManager.literal("duergarhold")
+                        .executes(context -> DuergarHoldCommands.teleport(context, "inside"))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> DuergarHoldCommands.teleport(context, StringArgumentType.getString(context, "spot")))))
+                .then(CommandManager.literal("duergarholdsurvey")
+                        .executes(context -> DuergarHoldCommands.survey(context, 3, 1000))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> DuergarHoldCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 1000))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> DuergarHoldCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("duergarholdcensus").executes(DuergarHoldCommands::census))
+                .then(CommandManager.literal("duergarholdseeds")
+                        .executes(context -> DuergarHoldCommands.seeds(context, java.util.List.of()))
+                        .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
+                                .executes(context -> DuergarHoldCommands.seeds(context,
                                         RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
                 .then(CommandManager.literal("bloodsworn")
                         .then(CommandManager.argument("players", EntityArgumentType.players())

@@ -1,0 +1,104 @@
+# Checks a Duergar Hold's folk and law (docs/structures/duergar-holds.md, design 9 T8): trading with the factor at
+# Unfriendly, picking the forge chest in view of the soldiers (a grudge, -40 Grey Clans) and again unseen (nothing),
+# freeing a captive gnome from the mine's pen (+40 Tinkers' Guild), and picking the vault's Locked Door.
+# It uses a fresh hold of its own (it kills the duergar near the forge and frees the gnome), far from duergar-hold.txt's.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/duergar-hold-law.txt
+# Expect in latest.log:
+# - /rep shows the Grey Clans at -250 (Unfriendly); the trade screen opens and "Found n matching item(s)" for emeralds
+#   after buying with gold
+# - "[Grudges] dndclasses:duergar_clans OPEN at ... by Dev: n witness(es), GRUDGE" and /rep at -290
+# - after the duergar are gone, opening the chest again: no Grudges line, /rep still -250
+# - "[Captive] ... freed by Dev (+40 dndclasses:tinkers_guild)" and /rep with the Tinkers' Guild 40 up
+# - the vault: a survey line with "vault door shut 0/2" after the pick
+# Screenshots: duergar-hold-trading, duergar-hold-pen-freed, duergar-hold-vault-open
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/difficulty normal
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/execute in minecraft:overworld run tp @s 12000 200 12000
+/gamemode spectator
+/dndhome duergarhold trade
+wait 400
+waitserver 2
+/rep @s dndclasses:duergar_clans reset
+/rep @s dndclasses:tinkers_guild reset
+/rep @s
+# Trading at Unfriendly: an empty hand on the factor, then sell gold for an emerald.
+/gamemode survival
+/clear @s
+/dndhome duergarhold trade
+wait 20
+use
+wait 20
+slots
+/give @s minecraft:gold_ingot 16
+wait 5
+trade 2
+wait 5
+slots
+slot 2 quick_move
+wait 5
+hud off
+screenshot duergar-hold-trading
+hud on
+closescreen
+/clear @s minecraft:emerald 0
+/clear @s
+
+# The forge chest, picked by a Rogue while the forge's soldiers watch.
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:regeneration 99999 4 true
+/dndclass forceroll @s clear
+/dndhome duergarhold forge
+wait 20
+/dndclass forceroll @s 18
+use
+wait 35
+closescreen
+/rep @s
+# Unseen: every duergar nearby is gone; opening it again goes unnoticed.
+/kill @e[type=dndclasses:duergar_soldier,distance=..40]
+/kill @e[type=dndclasses:duergar_arbalester,distance=..40]
+/kill @e[type=dndclasses:duergar_factor,distance=..40]
+/kill @e[type=dndclasses:duergar_taskmaster,distance=..40]
+/rep @s dndclasses:duergar_clans reset
+wait 10
+/dndhome duergarhold forge
+wait 10
+use
+wait 30
+closescreen
+/rep @s
+
+# The captive gnome in the mine's pen.
+/dndclass forceroll @s clear
+/dndhome duergarhold pen
+wait 20
+/dndclass forceroll @s 18
+use
+wait 40
+/rep @s
+wait 60
+hud off
+screenshot duergar-hold-pen-freed
+hud on
+
+# The vault's Locked Door.
+/dndclass forceroll @s clear
+/dndhome duergarhold vault
+wait 20
+/dndclass forceroll @s 18
+use
+wait 80
+/dndhome duergarholdsurvey 1
+waitserver 2
+hud off
+screenshot duergar-hold-vault-open
+hud on
+quit

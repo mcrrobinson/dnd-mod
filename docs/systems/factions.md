@@ -27,7 +27,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | The Tinkers' Guild (`dndclasses:tinkers_guild`) | Gnome Tinkers, Clockwork Sentinels | Cogsdeep burrows | 150 (Friendly); Gnomes 450 (Honored) | goblins -0.5 |
 | The Bloodtusk Horde (`dndclasses:bloodtusk_horde`) | Orc Warriors, Archers, the Quartermaster and the War Chief (not the Trial's Champion) | orc strongholds | -600 (Hostile); Half-Orcs 0 (Neutral) | hobbits -0.25, dwarves -0.25, Sylvan Court -0.25 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5, Sylvan Court -0.5, Dragonsworn -0.5 |
-| The Grey Clans (`dndclasses:duergar_clans`) | [duergar](../mobs/duergar.md): Soldiers, Arbalesters, the Factor and the Taskmaster | Duergar Holds (not built yet) | -250 (Unfriendly); Gnomes -400 (Unfriendly), Dwarves -550 (Hostile) | dwarves -0.5, the drow -0.25, Tinkers' Guild -0.25 |
+| The Grey Clans (`dndclasses:duergar_clans`) | [duergar](../mobs/duergar.md): Soldiers, Arbalesters, the Factor and the Taskmaster | [Duergar Holds](../structures/duergar-holds.md) | -250 (Unfriendly); Gnomes -400 (Unfriendly), Dwarves -550 (Hostile) | dwarves -0.5, the drow -0.25, Tinkers' Guild -0.25 |
 | The Spider Houses (`dndclasses:drow`) | the [drow](../mobs/drow.md): Warriors, Mages, Priestesses and Elites (and later the Matron Mother) | [Drow Outposts](../structures/drow-outposts.md), the Drow Spire (a later ticket) | -700 (Hostile); Elves -900 | Sylvan Court -0.5, Grey Clans -0.25 |
 
 - **Sources**:

@@ -37,7 +37,7 @@ Players at Unfriendly or better (most start at -250) are left alone unless they 
 | Hit a duergar | -10 |
 | Kill a duergar | -60; the Taskmaster -150 |
 | Trade with the Factor | +1 a trade, up to +15 a day |
-| A duergar sees a theft | -40 (once the Holds have a law) |
+| A duergar sees a theft in a [Hold](../structures/duergar-holds.md#the-law) | -40 |
 | Grudge decay | 5 a day |
 
 Killing a duergar gives **+30 Mountain Dwarves**, within the dwarves' daily cap of +30 from kills (shared with goblin kills), so the first duergar each day counts.
@@ -74,7 +74,7 @@ So a Human (Unfriendly) pays 5 emeralds for the planks and 6 gold ingots per eme
 
 ## Where to find it
 - Patrols of 2-3 Soldiers in the Underdark's **Grey Reaches** (biome tag `#dndclasses:habitat/duergar`), spawning like monsters in the dark (weight 8), at most 16 duergar within 48 blocks. Natural ones despawn like monsters.
-- The Duergar Holds (a later ticket) will house all four, and they'll stay.
+- [Duergar Holds](../structures/duergar-holds.md) house all four, persistent: 6-9 soldiers, 2-3 arbalesters, the factor and the Taskmaster.
 - Spawn eggs for all four are in the creative tab.
 
 ## Commands
@@ -82,7 +82,6 @@ So a Human (Unfriendly) pays 5 emeralds for the planks and 6 gold ingots per eme
 - `/rep <player> dndclasses:duergar_clans set <value>`
 
 ## Known limitations
-- No Duergar Holds yet, so the Factor, the Arbalester and the Taskmaster only appear from spawn eggs or `/summon`.
 - They don't glower or shake their heads at players yet; Unfriendly players are simply ignored.
 - Duergar Resilience halves poison status effects only; the Poisoned condition lasts its full time.
 - Stock from other Underdark tickets shows up only once its item exists (see For developers).

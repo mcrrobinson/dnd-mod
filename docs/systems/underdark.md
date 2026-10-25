@@ -98,7 +98,6 @@ Through an [Underdark Rift](../structures/underdark-rifts.md) (about one per 450
 | `/underdark survey [radius]` | Samples the noise every 4 blocks round you (radius 128 by default) and prints each biome's share, floors per column, the median floor y, the share of floors under water, the bedrock at the floor and the roof of the chunk you're over, the cost in ms per column, and the climate noises' mean and spread (logged as `[Underdark] survey ...`) |
 
 ## Known limitations
-- The explorer maps to drow outposts and duergar holds have nowhere to lead until those are in.
 - Chunks of the Underdark generated before the giant fungi came keep the old small stand-in mushrooms.
 
 ## For developers

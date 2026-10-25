@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "dndclasses:duergar_hold",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 24,
+    "separation": 10,
+    "salt": 482915003
+  }
+}

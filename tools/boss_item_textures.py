@@ -1,4 +1,5 @@
-"""Generates the textures of the boss and monster magic items (design 5, section 3.7, items 10-18 and 20).
+"""Generates the textures of the boss and monster magic items (design 5, section 3.7, items 10-18 and 20; design 9,
+9.4: the Matron's Scourge and the Piwafwi).
 
     python3 tools/boss_item_textures.py
 
@@ -247,6 +248,48 @@ ART = {
         '.......oooo.....',
         '................',
         '................',
+    ]),
+    'matrons_scourge': ({
+        'o': (16, 12, 20, 255), 'h': (60, 34, 70, 255), 'H': (110, 60, 130, 255),
+        's': (150, 156, 172, 255), 'S': (214, 220, 232, 255), 'r': (176, 30, 44, 255), 'g': (190, 150, 60, 255),
+    }, [
+        '..........s...S.',
+        '.........S...s..',
+        '....S...s...S..r',
+        '.....s..S..s....',
+        '..r...S..ss...S.',
+        '.......ss.S..s..',
+        '....S...sSs.S...',
+        '.....ss..sSs....',
+        '.......sSoo.....',
+        '........ogo.....',
+        '.......ohHo.....',
+        '......ohHo......',
+        '.....ohHo.......',
+        '....ohHo........',
+        '...orro.........',
+        '...oo...........',
+    ]),
+    'piwafwi': ({
+        'o': (12, 10, 16, 255), 'c': (30, 24, 40, 255), 'C': (48, 36, 64, 255), 'v': (86, 52, 120, 255),
+        's': (170, 176, 196, 255), 'k': (6, 4, 8, 255),
+    }, [
+        '................',
+        '......oooo......',
+        '.....oCCCCo.....',
+        '....oCckkcCo....',
+        '....oCkkkkCo....',
+        '....oCckkcCo....',
+        '...oCCCssCCCo...',
+        '...oCcCvvCcCo...',
+        '..oCcCCvvCCcCo..',
+        '..oCcCCvvCCcCo..',
+        '.oCcCCCvvCCCcCo.',
+        '.oCcCCCvvCCCcCo.',
+        '.oCcCCCvvCCCcCo.',
+        'oCcCCCCvvCCCCcCo',
+        'ovcvcvcvvcvcvcvo',
+        '.oooooooooooooo.',
     ]),
 }
 

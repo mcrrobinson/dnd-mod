@@ -32,6 +32,9 @@ public final class DrowClient {
     private static final Identifier[] MAGE_SKINS = new Identifier[2];
     private static final Identifier[] PRIESTESS_SKINS = new Identifier[2];
     private static final Identifier ELITE_SKIN = skin("elite");
+    private static final Identifier MATRON_SKIN = skin("matron");
+    /** The Matron Mother: as the drow, a head taller. */
+    public static final RacialHumanoidRenderer.Look MATRON = new RacialHumanoidRenderer.Look(true, DndRace.ELF, 1.13F);
     private static final Identifier BOLT = new Identifier("textures/entity/projectiles/arrow.png");
     private static final Identifier VIGNETTE = new Identifier("textures/misc/vignette.png");
 
@@ -53,7 +56,9 @@ public final class DrowClient {
         EntityRendererRegistry.register(Drow.DROW_MAGE, context -> drow(context, MAGE_SKINS));
         EntityRendererRegistry.register(Drow.DROW_PRIESTESS, context -> drow(context, PRIESTESS_SKINS));
         EntityRendererRegistry.register(Drow.DROW_ELITE, context -> new RacialHumanoidRenderer<>(context, DROW, drow -> ELITE_SKIN));
+        EntityRendererRegistry.register(Drow.DROW_MATRON, context -> new RacialHumanoidRenderer<>(context, MATRON, drow -> MATRON_SKIN));
         EntityRendererRegistry.register(Drow.DROW_BOLT, BoltRenderer::new);
+        PiwafwiRenderer.register();
         HudRenderCallback.EVENT.register(DrowClient::poisonVignette);
     }
 

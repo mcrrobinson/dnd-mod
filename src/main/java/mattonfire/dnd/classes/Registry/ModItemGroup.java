@@ -71,6 +71,8 @@ public class ModItemGroup {
             entries.add(ModItems.BURGLARS_RING);
             entries.add(ModItems.EYE_OF_THE_TYRANT);
             entries.add(ModItems.GORGONS_GAZE);
+            entries.add(ModItems.MATRONS_SCOURGE);
+            entries.add(ModItems.PIWAFWI);
             entries.add(ModItems.SCROLL_OF_IDENTIFY);
             entries.add(ModItems.SCROLL_OF_REMOVE_CURSE);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);

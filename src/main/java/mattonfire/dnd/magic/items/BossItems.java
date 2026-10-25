@@ -110,6 +110,7 @@ public final class BossItems {
         registerDefs();
         registerEffects();
         registerHooks();
+        DrowItems.register();
         BossItemDrops.register();
     }
 

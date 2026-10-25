@@ -1,0 +1,12 @@
+# Where the Drow Spires are (docs/structures/drow-spire.md, design 9 T9): the nearest spire to 0, 0 on this world's
+# seed and two others, without generating anything.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/drow-spire-seeds.txt
+# Expect in latest.log: "[DrowSpireSeeds] seed ...: nearest at x y z in dndclasses:faerzress_hollows, ...: PASS" for
+# each seed.
+wait 40
+closescreen
+/dndhome drowspireseeds
+waitserver 2
+/dndhome drowspireseeds 7 42 1234
+waitserver 2
+quit

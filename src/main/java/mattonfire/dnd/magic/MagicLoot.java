@@ -137,6 +137,13 @@ public final class MagicLoot {
         chest("cogsdeep_gems", 0.12F, tier(u, 80), tier(r, 20));
         chest("cogsdeep_vault", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
 
+        // The Underdark's drow: the outpost shrine's reliquary (its 20% Rare roll is in the JSON) and the Drow Spire
+        // (the treasure loft behind the Arcane Seal always rolls; the priestesses' cells now and then)
+        chest("drow_shrine", 0.03F, named(ModItems.PIWAFWI));
+        chest("drow_spire_cells", 0.10F, tier(u, 70), tier(r, 30));
+        chest("drow_spire_loft", 1.0F, tier(r, 60), tier(vr, 40));
+        chest("drow_spire_loft", 0.15F, named(ModItems.PIWAFWI));
+
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 
@@ -149,6 +156,7 @@ public final class MagicLoot {
         entity("lich", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         entity("beholder", 1.0F, tier(vr, 80), tier(l, 20));
         entity("beholder", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
+        entity("drow_matron", 0.15F, tier(l, 1));
         entity("river_pikehorn", 0.05F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 
         // Bounties: known goods, identified

@@ -40,6 +40,8 @@ public final class BossItemDrops {
                         new Drop(ModItems.PHYLACTERY_LOCKET, 0.20F, 0.0F) }),
                 Map.entry(table("beholder"), new Drop[] { new Drop(ModItems.EYE_OF_THE_TYRANT, 0.12F, 0.03F) }),
                 Map.entry(table("medusa"), new Drop[] { new Drop(ModItems.GORGONS_GAZE, 0.25F, 0.05F) }),
+                // The Matron Mother always drops her Scourge (design 9, 8.3)
+                Map.entry(table("drow_matron"), new Drop[] { new Drop(ModItems.MATRONS_SCOURGE, 1.0F, 0.0F) }),
                 // Troll: only on its true (burned) death, since its table only rolls then.
                 Map.entry(table("troll"), new Drop[] { new Drop(ModItems.PERIAPT_OF_WOUND_CLOSURE, 0.06F, 0.02F) }));
     }

@@ -84,7 +84,6 @@ Opening the third cell's gate lets its spider out.
 ## Known limitations
 - The design's pen lock was DC 15; the pens use the Chain Cage's own lock, DC 12.
 - The bridges' "sag" is only cobwebs hung under the middle: a deck that dipped a block would need a jump to climb out of.
-- The design's 3% Piwafwi in the shrine chest waits for the Drow Spire ticket, which adds the item.
 - Geodes and plant patches spreading from chunks two or more away can still reach an outpost's rim (in one of 17 surveyed outposts a plant sat on a tower's top step).
 
 ## For developers

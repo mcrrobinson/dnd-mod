@@ -151,6 +151,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.underdark.rift.UnderdarkRiftStructures.register();
                 mattonfire.dnd.world.underdark.UnderdarkRifts.register();
                 mattonfire.dnd.world.underdark.drow.DrowOutposts.register();
+                mattonfire.dnd.world.underdark.drow.DrowSpires.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();

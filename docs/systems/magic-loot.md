@@ -38,9 +38,13 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | Cogsdeep gem room (`chests/cogsdeep_gems`) | 12%: Uncommon (80) / Rare (20) | |
 | Cogsdeep clocktower strongbox (`chests/cogsdeep_vault`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | Gnomish Repeater 12%, Tinker's Goggles 12% (JSON) |
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
+| [Drow Outpost](../structures/drow-outposts.md) shrine reliquary (`chests/drow_shrine`) | 20%: Rare (in the JSON) | Piwafwi 3% |
+| [Drow Spire](../structures/drow-spire.md) cells (`chests/drow_spire_cells`) | 10%: Uncommon (70) / Rare (30) | |
+| Drow Spire treasure loft (`chests/drow_spire_loft`, behind a Hard Arcane Seal) | 1 roll: Rare (60) / Very Rare (40) | Piwafwi 15% |
 | [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md), [Orc War Chief](../bosses/orc-war-chief.md) (player kill) | 50%: Rare | their trophies (boss drops) |
 | [Lich](../bosses/lich.md) (final kill), [Beholder](../bosses/beholder.md) (player kill) | 1 roll: Very Rare (80) / Legendary (20) | Tome of Clear Thought 10% each, plus their trophies |
 | [Medusa](../bosses/medusa.md) (player kill) | 1 roll: Rare | Gorgon's Gaze 25% (+5% per Looting level) |
+| [Matron Mother](../bosses/matron-mother.md) (player kill) | 15%: Legendary | Matron's Scourge 100% |
 | [Mimic](../mobs/mimic.md) (player kill, on top of its chest's loot) | 25%: Uncommon | Bag of Holding 10% |
 | [River Pikehorn](../mobs/dragons.md) (player kill) | | Decanter of Endless Water 5% |
 | Minor bounty spoils (`gameplay/bounty_minor`) | 10%: Uncommon, **identified** | Wand of Magic Missiles 5% (identified) |

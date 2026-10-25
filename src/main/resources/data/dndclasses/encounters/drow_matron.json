@@ -1,0 +1,9 @@
+{
+  "name": "Matron Mother",
+  "difficulty": "deadly",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:drow_matron", "count": 1},
+    {"entity": "dndclasses:drow_elite", "count": 2}
+  ]
+}

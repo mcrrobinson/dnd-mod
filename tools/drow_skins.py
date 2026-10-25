@@ -7,7 +7,8 @@ Writes textures/entity/drow/:
   leathers with silver trim);
 - mage_0..1.png: a hooded robe in deep violet with silver runes;
 - priestess_0..1.png: a black robe with a red spider emblem on the chest and a silver circlet;
-- elite.png: the Spire guard, black leathers under a silver-trimmed mantle (the chain shirt is the armour layer).
+- elite.png: the Spire guard, black leathers under a silver-trimmed mantle (the chain shirt is the armour layer);
+- matron.png: the Matron Mother, a deep purple robe with the red spider and a silver circlet (drawn a head taller).
 The ears come from RaceFeatures, which textures them from the head's side pixels (dark skin), and the spare corner
 at (56, 0) is painted with skin too.
 """
@@ -139,6 +140,8 @@ def main():
                         make(skin, hair, eyes, cloth, (200, 200, 214), 'priestess'))
     pngio.write_png(os.path.join(OUT, 'elite.png'), N, N,
                     make((40, 36, 52), (240, 240, 248), (220, 40, 60), (24, 20, 30), TRIM, 'elite'))
+    pngio.write_png(os.path.join(OUT, 'matron.png'), N, N,
+                    make((34, 30, 44), (250, 248, 255), (230, 30, 50), (46, 16, 62), (214, 200, 150), 'priestess'))
     print('wrote', OUT)
 
 

@@ -11,7 +11,8 @@ import net.minecraft.entity.LivingEntity;
 /**
  * Mobs can't target Downed players. {@code canTarget} is what target goals ({@code TargetPredicate}),
  * {@code TrackTargetGoal.shouldContinue} and brain attack sensors check, so a mob picks the next player in
- * range, or drops a Downed one it was already chasing. See {@link DownedCombat}.
+ * range, or drops a Downed one it was already chasing. See {@link DownedCombat}. A player hidden by a
+ * {@code Stealth.Concealment} (the Piwafwi) is untargetable the same way.
  */
 @Mixin(LivingEntity.class)
 public abstract class DownedTargetMixin {
@@ -19,7 +20,8 @@ public abstract class DownedTargetMixin {
     private void dnd$ignoreDowned(LivingEntity target, CallbackInfoReturnable<Boolean> cir) {
         if (DownedCombat.untargetable((LivingEntity) (Object) this, target)
                 || mattonfire.dnd.classes.Conditions.ConditionEffects.blocksTarget((LivingEntity) (Object) this,
-                        target)) {
+                        target)
+                || mattonfire.dnd.classes.SkillChecks.Stealth.concealed((LivingEntity) (Object) this, target)) {
             cir.setReturnValue(false);
         }
     }

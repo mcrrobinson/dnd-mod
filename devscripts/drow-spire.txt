@@ -1,0 +1,83 @@
+# Checks the Drow Spire (docs/structures/drow-spire.md, design 9 T9): the nearest spire to this world's spawn, its
+# layout and survey, who lives there, and screenshots from outside and of every floor.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/drow-spire.txt
+# Expect in latest.log:
+# - "[Home] Drow Spire at chunk ...: centre ... in dndclasses:faerzress_hollows, ..."
+# - "[DrowSpireSurvey] spire at chunk ...: stairs 27/27 clear, loft stair 8/8, seal 3/3, sanctum n/n open, deck d/d,
+#   book true, spawner true, wet blocks 0: PASS"
+# - "[DrowSpireCensus] ...: drow n (warriors 5-6, mages 3-4, priestesses 2, elites 4, matron 1; persistent n), ..."
+# - "Test passed" for the Matron Mother, Drow Elites and a persistent warrior near the Spire.
+# Screenshots: drow-spire-overview, drow-spire-above, drow-spire-door, drow-spire-hall, drow-spire-cells,
+# drow-spire-library, drow-spire-sanctum, drow-spire-throne, drow-spire-loftstair, drow-spire-loft, drow-spire-pit,
+# drow-spire-bridge, drow-spire-tower
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/difficulty normal
+# This world's nearest spire (/dndhome drowspireseeds: 888 -218 -1288); the commands search below where you are.
+/execute in minecraft:overworld run tp @s 888 200 -1288
+/gamemode spectator
+/dndhome drowspire overview
+wait 400
+waitserver 2
+/dndhome drowspire overview
+wait 100
+hud off
+screenshot drow-spire-overview
+/dndhome drowspire above
+wait 60
+screenshot drow-spire-above
+hud on
+/dndhome drowspiresurvey 1
+waitserver 2
+/dndhome drowspirecensus
+/dndhome drowspire sanctum
+wait 20
+/execute if entity @e[type=dndclasses:drow_matron,distance=..40]
+/execute if entity @e[type=dndclasses:drow_elite,distance=..48]
+/execute if entity @e[type=dndclasses:drow_warrior,nbt={PersistenceRequired:1b},distance=..48]
+/data get entity @e[type=dndclasses:drow_matron,limit=1,sort=nearest] Home
+/gamemode creative
+/effect give @s minecraft:invisibility 99999 0 true
+hud off
+/dndhome drowspire door
+wait 30
+screenshot drow-spire-door
+/dndhome drowspire hall
+wait 30
+screenshot drow-spire-hall
+/dndhome drowspire cells
+wait 30
+screenshot drow-spire-cells
+/dndhome drowspire library
+wait 30
+screenshot drow-spire-library
+/dndhome drowspire sanctum
+wait 30
+screenshot drow-spire-sanctum
+/dndhome drowspire throne
+wait 30
+screenshot drow-spire-throne
+/dndhome drowspire loftstair
+wait 30
+screenshot drow-spire-loftstair
+/dndhome drowspire loft
+wait 30
+screenshot drow-spire-loft
+/dndhome drowspire pit
+wait 30
+screenshot drow-spire-pit
+/dndhome drowspire bridge
+wait 30
+screenshot drow-spire-bridge
+/dndhome drowspire tower
+wait 30
+screenshot drow-spire-tower
+hud on
+/gamemode spectator
+/dndhome drowspire overview
+wait 20
+quit

@@ -11,6 +11,7 @@ The mod picks the background music from what you're doing, in this order. The fi
 |-|-|-|
 | Boss fight | **Tooth and Claw** | While you can see the boss bar of a Wyvern, Lightning Chaser, Frost Drake, Magmamuncher Alpha or Beholder. It loops until the fight ends, then 20 seconds of quiet |
 | Lich fight | Lich theme | The same, during a fight with the [Lich](bosses/lich.md) |
+| Matron fight | Matron theme | The same, during a fight with the [Matron Mother](bosses/matron-mother.md): skittering plucked sixteenths, war drums in 3+3+2 and a low choir in E phrygian |
 | Goblin raid | **Steel on Steel** | Within 96 blocks of a goblin raid, until it's won or lost (see [Goblin raids](systems/goblin-raids.md)) |
 | Low health | Low health loop | Below 25% health while in combat, meaning you were hurt in the last 10 seconds or a monster is within 12 blocks. It stops above 40% health or after 30 seconds out of combat |
 | Dungeon (themed) | Crypt, Goblin Warren or Dwarven Ruin loop | Inside one of the mod's [dungeons](structures/dungeons.md): the theme's own loop (see below) |
@@ -65,7 +66,7 @@ Event music and stings follow the **Music** volume slider. Discs and instrument 
 
 ## Known limitations
 - Only Steel on Steel has a survival source.
-- The Lich theme has no disc.
+- The Lich and Matron themes have no disc.
 
 ## For developers
 - Event selection: `Client/Music/EventMusic`, hooked through `mixin/MinecraftClientMusicMixin`. Stings and ducking: `Client/Music/MusicStings` and `mixin/SoundSystemMusicDuckMixin`.

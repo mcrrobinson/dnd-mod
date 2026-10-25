@@ -1,0 +1,73 @@
+# The Piwafwi, the Cloak of the Drow (docs/items/magic-items.md, design 9 T9): sneaking in the dark, a zombie more than
+# 6 blocks off loses you; one within 6 blocks, or light, and you're seen. In a dark box in the Underdark.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/piwafwi.txt
+# Expect in latest.log ([DevScript] target readouts):
+# 1. standing, the far zombie (10 blocks) targets Dev
+# 2. sneaking with the cloak, the far zombie has no target
+# 3. sneaking, the near zombie (4 blocks) targets Dev; the far one still none
+# 4. a glowstone over the player (light 15): the far zombie targets Dev again
+# 5. no cloak (taken off), sneaking in the dark: the far zombie targets Dev
+# - "[CHAT] ... Stealth n" on the sheet, 2 more with the cloak worn than without
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+/dndmagic release @s all
+/gamerule doMobSpawning false
+/difficulty normal
+/gamemode survival
+/execute in dndclasses:underdark run forceload add 32 -16 64 16
+/execute in dndclasses:underdark run fill 36 -152 -12 60 -144 12 minecraft:deepslate_tiles hollow
+/execute in dndclasses:underdark run kill @e[type=!player,x=36,y=-152,z=-12,dx=24,dy=8,dz=24]
+/execute in dndclasses:underdark run tp @s 40 -151 0 -90 0
+wait 20
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:night_vision 99999 0 true
+/dndclass sheet @s
+hotbar 0
+/dndmagic give @s dndclasses:piwafwi
+/dndmagic attune @s
+/item replace entity @s armor.chest from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+wait 40
+/dndclass sheet @s
+/summon minecraft:zombie 50 -151 0 {Tags:["ptest","far"],PersistenceRequired:1b,Rotation:[90f,0f]}
+wait 2
+/attribute @e[tag=far,limit=1] minecraft:generic.movement_speed base set 0
+/tp @s 40 -151 0 -90 0
+# 1. Standing in the dark: seen.
+wait 60
+target @e[tag=far]
+# 2. Sneaking in the dark, 10 blocks off: lost.
+sneak on
+wait 40
+target @e[tag=far]
+# 3. A zombie within 6 blocks still sees you.
+/summon minecraft:zombie 44 -151 0 {Tags:["ptest","near"],PersistenceRequired:1b,Rotation:[90f,0f]}
+wait 2
+/attribute @e[tag=near,limit=1] minecraft:generic.movement_speed base set 0
+wait 60
+target @e[tag=near]
+target @e[tag=far]
+/kill @e[tag=near]
+# 4. Light: seen again.
+/setblock 40 -149 0 minecraft:glowstone
+wait 60
+target @e[tag=far]
+/setblock 40 -149 0 minecraft:air
+sneak off
+perspective front
+wait 10
+screenshot piwafwi-worn
+perspective first
+sneak on
+wait 10
+# 5. Without the cloak, sneaking in the dark: seen.
+/item replace entity @s armor.chest with minecraft:air
+wait 60
+target @e[tag=far]
+sneak off
+/kill @e[tag=ptest]
+/execute in dndclasses:underdark run forceload remove 32 -16 64 16
+quit

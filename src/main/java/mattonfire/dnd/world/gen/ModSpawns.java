@@ -279,14 +279,16 @@ public class ModSpawns {
     public static final int MAX_DROW_NEARBY = 12;
 
     /**
-     * The drow's spawn rule (design 9, 4.5 and 8.1): monsters in the dark, like any; inside a Drow Outpost (its
+     * The drow's spawn rule (design 9, 4.5, 8.1 and 8.3): monsters in the dark, like any; inside a Drow Outpost or the Drow Spire (its
      * spawn_overrides) whatever the light, while fewer than {@link #MAX_DROW_NEARBY} drow are within 48 blocks.
      */
     public static <T extends HostileEntity> boolean canDrowSpawn(EntityType<T> type, ServerWorldAccess world,
                                                                 SpawnReason reason, BlockPos pos, Random random) {
         if ((reason == SpawnReason.NATURAL || reason == SpawnReason.CHUNK_GENERATION)
-                && mattonfire.dnd.world.underdark.UnderdarkGarrisons.inside(world, pos,
-                mattonfire.dnd.world.underdark.drow.DrowOutposts.KEY)) {
+                && (mattonfire.dnd.world.underdark.UnderdarkGarrisons.inside(world, pos,
+                mattonfire.dnd.world.underdark.drow.DrowOutposts.KEY)
+                || mattonfire.dnd.world.underdark.UnderdarkGarrisons.inside(world, pos,
+                mattonfire.dnd.world.underdark.drow.DrowSpires.KEY))) {
             return HostileEntity.canSpawnIgnoreLightLevel(type, world, reason, pos, random)
                     && mattonfire.dnd.world.underdark.UnderdarkGarrisons.underCap(world, pos,
                     mattonfire.dnd.entity.drow.DrowEntity.class, MAX_DROW_NEARBY);

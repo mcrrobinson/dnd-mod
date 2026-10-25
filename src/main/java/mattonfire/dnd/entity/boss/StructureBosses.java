@@ -32,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Bosses that live in generated structures: the stronghold library's Lich, the Nether Fortress
- * Warlord and the Gorgon's Temple Medusa. A boss can't exist on Peaceful, so a structure generated on Peaceful gets an invisible
+ * Warlord, the Gorgon's Temple Medusa and the Drow Spire's Matron Mother. A boss can't exist on Peaceful, so a structure generated on Peaceful gets an invisible
  * marker where the boss would stand instead. Once the difficulty is above Peaceful, a loaded
  * marker raises its boss and goes away, so switching back from Peaceful doesn't leave the
  * structure empty for good.
@@ -45,6 +45,7 @@ public final class StructureBosses {
     private static final String LICH = "dndclasses.pending_boss.lich";
     private static final String WARLORD = "dndclasses.pending_boss.warlord";
     private static final String MEDUSA = "dndclasses.pending_boss.medusa";
+    private static final String MATRON = "dndclasses.pending_boss.matron";
     /** Followed by "x,y,z": where the Lich's phylactery goes. */
     private static final String PHYLACTERY = "dndclasses.phylactery=";
     private static final int CHECK_INTERVAL = 20;
@@ -90,6 +91,8 @@ public final class StructureBosses {
                 spawnWarlord(world, pos, marker.getYaw(), null);
             } else if (tags.contains(MEDUSA)) {
                 spawnMedusa(world, pos, marker.getYaw());
+            } else if (tags.contains(MATRON)) {
+                spawnMatron(world, pos, marker.getYaw());
             }
             DnDClasses.LOGGER.info("[StructureBosses] raised a boss held back by Peaceful at {}", pos.toShortString());
             marker.discard();
@@ -123,6 +126,31 @@ public final class StructureBosses {
         } else {
             spawnMedusa(world, pos, yaw);
         }
+    }
+
+    /** Places a Drow Spire's Matron Mother in her Sanctum, or a marker for her on Peaceful. */
+    public static void placeMatron(ServerWorldAccess world, BlockPos pos, float yaw) {
+        if (world.getDifficulty() == Difficulty.PEACEFUL) {
+            placeMarker(world, pos, yaw, MATRON, null);
+        } else {
+            spawnMatron(world, pos, yaw);
+        }
+    }
+
+    @Nullable
+    private static mattonfire.dnd.entity.drow.DrowMatronEntity spawnMatron(ServerWorldAccess world, BlockPos pos, float yaw) {
+        mattonfire.dnd.entity.drow.DrowMatronEntity matron = mattonfire.dnd.entity.drow.Drow.DROW_MATRON.create(world.toServerWorld());
+        if (matron == null) {
+            return null;
+        }
+        matron.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
+        matron.setHeadYaw(yaw);
+        matron.setBodyYaw(yaw);
+        matron.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+        matron.setHome(pos);
+        matron.setPersistent();
+        world.spawnEntityAndPassengers(matron);
+        return matron;
     }
 
     @Nullable

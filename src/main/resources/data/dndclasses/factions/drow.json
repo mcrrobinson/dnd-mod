@@ -9,7 +9,7 @@
   "decay_per_day": 5,
   "hit_member": -10,
   "kill_member": -60,
-  "kill_member_overrides": {"dndclasses:drow_priestess": -120},
+  "kill_member_overrides": {"dndclasses:drow_priestess": -120, "dndclasses:drow_matron": -400},
   "trade": 0,
   "theft_witnessed": -40
 }

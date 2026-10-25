@@ -1,0 +1,92 @@
+# Fights a frozen Matron Mother (docs/bosses/matron-mother.md, design 9 T9) in a dark box in the Underdark: /damage
+# takes her to each phase. Her speed is 0, so she stands still but still fights and casts.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/matron.txt
+# Expect:
+# - debug.log: "[MobAction] Matron Mother ... phase: web storm", "web storm", "storm missiles", "call the elites",
+#   "answer the call" (each Elite), "spider swarm"
+# - latest.log: "[DrowMatron] Web Storm: Dev failed the DEX save, webbed at x, y, z" (forced 1), then "Test passed"
+#   for a cobweb at the player's feet; "[DrowMatron] Web Storm: Dev saved, no web" (forced 20) and "Test failed" for one at the
+#   second spot; "[DrowMatron] ... calls the elites: 2 answer", then "Test passed" for no Elite more than 7 blocks from
+#   her and for an Elite with Strength; "[BossMusic] bar ... track dndclasses:music.matron_fight" and "[EventMusic]
+#   playing dndclasses:music.matron_fight"; on the kill "Test passed" for a Matron's Scourge on the floor and the
+#   "Mother of None" challenge in chat.
+# Screenshots: matron-bar (the purple boss bar and the Matron), matron-webs (pink bar, webbed after the storm),
+# matron-elites (red bar, the Elites by her side), matron-loot
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/difficulty normal
+/gamemode survival
+/execute in dndclasses:underdark run forceload add -16 -48 16 16
+/execute in dndclasses:underdark run fill -12 -152 -45 12 -140 12 minecraft:deepslate_tiles hollow
+/execute in dndclasses:underdark run fill -11 -151 -20 9 -141 -20 minecraft:deepslate_tiles
+/execute in dndclasses:underdark run kill @e[type=!player,x=-12,y=-152,z=-45,dx=24,dy=12,dz=57]
+/execute in dndclasses:underdark run tp @s 0 -151 0 0 0
+wait 20
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:regeneration 99999 2 true
+/effect give @s minecraft:night_vision 99999 0 true
+/summon dndclasses:drow_matron 0 -151 8
+/tag @e[type=dndclasses:drow_matron,distance=..12] add mtest
+/summon dndclasses:drow_elite 0 -151 -32
+/summon dndclasses:drow_elite 2 -151 -34
+wait 5
+/attribute @e[tag=mtest,limit=1] minecraft:generic.movement_speed base set 0
+/tp @e[tag=mtest,limit=1] 0 -151 8 180 0
+/tp @s 0 -151 0 0 0
+wait 40
+# The fight starts: she targets the player; the bar and her music come up.
+/damage @e[tag=mtest,limit=1] 2 minecraft:magic by @s
+wait 40
+screenshot matron-bar
+/data get entity @e[tag=mtest,limit=1] Health
+# Phase 1 below half: the Web Storm at once. A forced 1 fails the DEX save: a web at the player's feet.
+/dndclass forceroll @s 1
+/damage @e[tag=mtest,limit=1] 113 minecraft:magic by @s
+wait 5
+/execute at @s if block ~ ~ ~ minecraft:cobweb
+/data get entity @e[tag=mtest,limit=1] Health
+wait 30
+screenshot matron-webs
+/kill @e[type=minecraft:cave_spider,distance=..30]
+# The next storm, 12 s on, with a forced 20: saved, so no web at the new spot.
+/dndclass forceroll @s clear
+/tp @s 3 -151 0 0 0
+wait 180
+/kill @e[type=minecraft:cave_spider,distance=..30]
+/dndclass forceroll @s 20 20 20 20
+wait 80
+/execute at @s if block ~ ~ ~ minecraft:cobweb
+/dndclass forceroll @s clear
+/kill @e[type=minecraft:cave_spider,distance=..30]
+# Phase 2 below a quarter: Call the Elites. The two behind the wall run round it to her (and to the player, then at her side).
+/execute if entity @e[type=dndclasses:drow_elite,distance=..12]
+# (Not Frightened by her Lash: a frightened creature's hits on its fear's source are halved.)
+/dndcondition remove @s all
+/damage @e[tag=mtest,limit=1] 60 minecraft:magic by @s
+/data get entity @e[tag=mtest,limit=1] Health
+/tp @s 2 -151 5 20 0
+wait 300
+/execute positioned 0 -151 8 if entity @e[type=dndclasses:drow_elite,distance=..7]
+/execute positioned 0 -151 8 unless entity @e[type=dndclasses:drow_elite,distance=7..]
+/execute if entity @e[type=dndclasses:drow_elite,nbt={ActiveEffects:[{Id:5}]}]
+/dndcondition remove @s all
+/effect clear @s minecraft:darkness
+/effect clear @s minecraft:blindness
+/tp @s 2 -151 3 15 10
+wait 3
+screenshot matron-elites
+/kill @e[type=dndclasses:drow_elite]
+/kill @e[type=minecraft:cave_spider,distance=..30]
+# The kill: her Scourge drops.
+/damage @e[tag=mtest,limit=1] 1000 minecraft:magic by @s
+wait 20
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"dndclasses:matrons_scourge"}},distance=..20]
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:gold_block"}},distance=..20]
+screenshot matron-loot
+/execute in dndclasses:underdark run forceload remove -16 -48 16 16
+quit

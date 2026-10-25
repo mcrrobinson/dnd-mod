@@ -18,6 +18,10 @@ import net.minecraft.util.math.MathHelper;
  * {@code StealthMixin} multiplies that by {@link #factor}. Nothing is rolled.
  *
  * A chestplate in {@link #HEAVY_ARMOR} gives disadvantage on Stealth (-5 passive), through a sheet contributor.
+ * <p>
+ * {@link Concealment}s hide a player from a mob outright (the Piwafwi: sneaking in the dark, unseen beyond 6 blocks).
+ * {@code DownedTargetMixin} asks {@link #concealed} from {@code LivingEntity.canTarget}, which every target goal checks
+ * when it picks a target and every tick it keeps one, so a mob can't pick a concealed player and loses one it had.
  */
 public final class Stealth {
     public static final TagKey<Item> HEAVY_ARMOR = TagKey.of(RegistryKeys.ITEM,
@@ -28,7 +32,33 @@ public final class Stealth {
     /** The factor never goes below this (on top of vanilla's 0.8 for sneaking). */
     public static final double MIN_FACTOR = 0.35;
 
+    /** A rule that hides a player from a mob outright, whatever its senses (server side). */
+    @FunctionalInterface
+    public interface Concealment {
+        boolean conceals(PlayerEntity player, net.minecraft.entity.LivingEntity observer);
+    }
+
+    private static final java.util.List<Concealment> CONCEALMENTS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
     private Stealth() {
+    }
+
+    public static void registerConcealment(Concealment concealment) {
+        CONCEALMENTS.add(concealment);
+    }
+
+    /** Whether {@code target} is a player hidden from {@code observer} by a {@link Concealment}. */
+    public static boolean concealed(net.minecraft.entity.LivingEntity observer, net.minecraft.entity.LivingEntity target) {
+        if (!(target instanceof PlayerEntity player) || player.getWorld().isClient || observer == player
+                || CONCEALMENTS.isEmpty()) {
+            return false;
+        }
+        for (Concealment concealment : CONCEALMENTS) {
+            if (concealment.conceals(player, observer)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /** The detection-range factor for a passive Stealth score: clamp(1 - 0.04 x (passive - 10), 0.35, 1). */

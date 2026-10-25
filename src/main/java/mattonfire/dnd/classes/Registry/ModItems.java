@@ -670,6 +670,13 @@ public class ModItems {
         /** The Medusa's drop (design 8, section 6.5). */
         public static final Item GORGONS_GAZE = registerItem("gorgons_gaze",
                         new mattonfire.dnd.magic.items.GorgonsGazeItem(new FabricItemSettings().maxCount(1)));
+        /** The Matron Mother's drop (design 9, 9.4): 7 attack damage (1 + iron's 2 + 4), 1.6 attack speed, reach +1. */
+        public static final Item MATRONS_SCOURGE = registerItem("matrons_scourge",
+                        new mattonfire.dnd.magic.items.MatronsScourgeItem(new FabricItemSettings()));
+        /** Piwafwi, the Cloak of the Drow (design 9, 9.4): a chestplate-slot cloak, 2 armour. */
+        public static final Item PIWAFWI = registerItem("piwafwi",
+                        new mattonfire.dnd.magic.items.DescribedItem.Armor(mattonfire.dnd.magic.items.DrowItems.PIWAFWI_MATERIAL,
+                                        ArmorItem.Type.CHESTPLATE, new FabricItemSettings()));
 
 
         // ---- Racial gear (kin stock): classes/Items/racial, docs/items/armor.md and racial-weapons.md ----

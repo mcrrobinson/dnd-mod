@@ -70,7 +70,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Dungeon loot](systems/dungeon-loot.md): tier chests, Veteran drops, the per-player Hoard Coffer and dungeon repopulation
 - [Dungeon puzzles and gates](systems/dungeon-puzzles-and-gates.md): the rune-pillar puzzle room, class-check gates on the main path and the Wizard-only side vault
 - [Dungeon traps](systems/dungeon-traps.md): dart, flame, pit and poison-needle traps, party-shared spotting, Rogue and Artificer disarming and re-arming on reset
-- [The Underdark](systems/underdark.md): a dimension of huge caverns under the bedrock (y -256 to -65) with five regions (Fungal Forest, Mycelial Caverns, Darklake, Faerzress Hollows, Grey Reaches), always midnight; giant zurkhwood and nightlight towers, misty lakes, its own music, explorer maps; `/underdark go|back|biome|lake|flora|map|survey`
+- [The Underdark](systems/underdark.md): a dimension of huge caverns under the bedrock (y -256 to -65) with five regions (Fungal Forest, Mycelial Caverns, Darklake, Faerzress Hollows, Grey Reaches), always midnight; giant zurkhwood and nightlight towers, misty lakes, its own music, explorer maps; `/underdark go|back|biome|lake|flora|map|survey` (PR #286)
 
 ## Mobs
 - [Dragons](mobs/dragons.md): Wyvern, Ember Wyvern, Lightning Chaser, Frost Drake and the tameable River Pikehorn; DEX saves against breath and storms
@@ -143,7 +143,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons
 - [Dwarven Ruin & Beholder lair blocks](items/ruin-blocks.md): Fallen Runic Bricks (cracked, mossy), Collapsed Rubble layers, Tarnished Gilding, Ray-glazed Stone, Petrified Remains and Eye-Stalk Growths, placed in the Ruin and the lair
 - [Adventuring blocks](items/adventuring-blocks.md): Bedrolls (a long rest like a bed, no spawn point), the Adventurer's Signpost naming a dungeon and its Challenge tier, Wanted Posters, Tavern Tables and Benches in oak, spruce, dark oak and Heartwood
-- [Underdark blocks](items/underdark-blocks.md): Zurkhwood Stem, Cap and Planks (non-flammable wood family), glowing Nightlight Caps, Fungal Loam, Faerzress Stone, Bluecaps and Trillimacs; giant-fungus spores, Ripplebark and Roasted Trillimac to eat, Barrelstalk water, Waterorbs, Faerie Lichen, Glow Spores (Night Vision), Pearl-Clams
+- [Underdark blocks](items/underdark-blocks.md): Zurkhwood Stem, Cap and Planks (non-flammable wood family), glowing Nightlight Caps, Fungal Loam, Faerzress Stone, Bluecaps and Trillimacs; giant-fungus spores, Ripplebark and Roasted Trillimac to eat, Barrelstalk water, Waterorbs, Faerie Lichen, Glow Spores (Night Vision), Pearl-Clams (PR #286)
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

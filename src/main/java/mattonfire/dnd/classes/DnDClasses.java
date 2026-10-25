@@ -124,6 +124,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();
                 mattonfire.dnd.world.gen.village.HobbitVillageStructures.register();
                 mattonfire.dnd.tavern.Tavern.register();
+                mattonfire.dnd.entity.hireling.Hirelings.register();
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();

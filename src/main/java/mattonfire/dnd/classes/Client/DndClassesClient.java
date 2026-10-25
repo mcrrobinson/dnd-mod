@@ -241,6 +241,8 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Hud.GogglesHud.register();
         SearchKeyClient.register();
         GrappleClient.register();
+        ConditionClient.register();
+        mattonfire.dnd.classes.Client.Hud.ConditionHud.register();
         mattonfire.dnd.classes.Client.Render.PerceivedMarks.register();
         // Arcane Seals are translucent glyph walls
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(

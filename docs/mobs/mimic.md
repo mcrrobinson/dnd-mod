@@ -23,7 +23,7 @@ A chest that isn't. A sleeping mimic looks exactly like a normal chest until you
 - **Success:** you're bitten (6) but pull free of the jaws. It can't try to grab again for 3 seconds.
 - **Failure:** it holds you for 1.5 seconds. You're pulled to its mouth, slowed (Slowness IV) and can't jump out. Once it lets go it can't grab again for 3 seconds. The grab also ends if you get more than 4 blocks away, for example from knockback.
 
-**Struggling free.** While it holds you, the action bar says "You're held! Press jump to struggle free". Each jump press is an escape check: the better of your Athletics (STR) or Acrobatics (DEX) against DC 12, shown on the main d20 panel. A success breaks the grab at once. You can struggle at most once every half second (10 ticks). Mobs and pets it grabs save silently with +1 and can't struggle.
+**Struggling free.** While it holds you, you're **[Restrained](../systems/conditions.md)** (can't move; attacks against you have advantage; DEX saves at disadvantage). While it holds you, the action bar says "You're held! Press jump to struggle free". Each jump press is an escape check: the better of your Athletics (STR) or Acrobatics (DEX) against DC 12, shown on the main d20 panel. A success breaks the grab at once. You can struggle at most once every half second (10 ticks). Mobs and pets it grabs save silently with +1 and can't struggle.
 
 **Going back to sleep.** After 10 seconds with no target, it closes its lid, shuffles back to the middle of its block, squares up and is a chest again.
 

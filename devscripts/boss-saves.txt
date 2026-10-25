@@ -3,11 +3,13 @@
 # Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/boss-saves.txt
 # Check run/logs/latest.log:
 # - Beholder: one "[D20] <player> <Slowing|Telekinetic|Enervation|Fear> ray ..." line per ray that hits.
-#   Rigged nat 20s: no Levitation, Slowness or dndclasses:frightened in ActiveEffects (Darkness 20 ticks after a
-#   Fear ray). Rigged nat 1s: the full effects.
+#   Rigged nat 20s: no Levitation or Slowness in ActiveEffects and no Frightened condition ("list"; Darkness 20
+#   ticks after a Fear ray). Rigged nat 1s: the full effects, and "frightened (<beholder uuid>) ... from Beholder,
+#   save WIS 15 every 60t" from a Fear ray.
 # - Lich Frost Nova: one "[D20] ... Frost Nova" line per nova; Health loss about 4 on a 20, 8 on a 1.
 # - Lich at 59%: "A wave of dread rolls out" in [CHAT] and exactly one "[D20] ... Dread Presence" line,
-#   dndclasses:frightened in ActiveEffects after the nat 1, none after the nat 20 (30% threshold).
+#   "[Conditions] Dev +frightened (Lich, 160t, save WIS 15/60t)" after the nat 1 and "frightened (dread)" in the
+#   list; no new Frightened after the nat 20 (30% threshold).
 # Screenshots: run/screenshots/boss-save-*.png show the save lane.
 /time set day
 /weather clear
@@ -33,6 +35,7 @@ wait 300
 clearchat
 screenshot boss-save-rays-pass
 /data get entity @s ActiveEffects
+/dndcondition list @s
 /kill @e[type=dndclasses:beholder]
 /dndclass forceroll @s clear
 /effect clear @s
@@ -48,6 +51,8 @@ wait 300
 clearchat
 screenshot boss-save-rays-fail
 /data get entity @s ActiveEffects
+/dndcondition list @s
+/dndcondition remove @s all
 /kill @e[type=dndclasses:beholder]
 /dndclass forceroll @s clear
 /effect clear @s
@@ -81,13 +86,13 @@ wait 5
 wait 5
 clearchat
 screenshot boss-save-dread-fail
-/data get entity @s ActiveEffects
-/effect clear @s dndclasses:frightened
+/dndcondition list @s
+/dndcondition remove @s frightened
 /dndclass forceroll @s 20
 /data merge entity @e[type=dndclasses:lich,limit=1] {Health:88f}
 wait 5
 screenshot boss-save-dread-pass
-/data get entity @s ActiveEffects
+/dndcondition list @s
 /kill @e[type=!player]
 
 /dndclass forceroll @s clear

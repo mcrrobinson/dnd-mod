@@ -126,8 +126,9 @@ public final class Drow {
 
     @SuppressWarnings("unchecked")
     private static <T extends HostileEntity> void restrict(EntityType<T> type) {
+        // In the dark, or anywhere in a Drow Outpost up to its cap (ModSpawns.canDrowSpawn).
         SpawnRestriction.register(type, SpawnRestriction.Location.ON_GROUND, Heightmap.Type.MOTION_BLOCKING_NO_LEAVES,
-                HostileEntity::canSpawnInDark);
+                mattonfire.dnd.world.gen.ModSpawns::canDrowSpawn);
     }
 
     private static <T extends DrowEntity> EntityType<T> humanoid(String name, EntityType.EntityFactory<T> factory) {

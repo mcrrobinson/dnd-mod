@@ -17,6 +17,7 @@
         "RestSeatDismountMixin",
         "SmiteDragonsMixin",
         "SpiderTargetMixin",
+        "CaptiveMobMixin",
         "FaerieFireDamageMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
@@ -133,7 +134,8 @@
         "PerceivedTeamColorMixin",
         "BossBarHudAccessor",
         "ChatHudAccessor",
-        "KeyboardInputMixin"
+        "KeyboardInputMixin",
+        "CaptiveKneelMixin"
     ],
     "injectors": {
         "defaultRequire": 1

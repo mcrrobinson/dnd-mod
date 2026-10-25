@@ -1,0 +1,109 @@
+# Checks the drow outposts' captives and their dart trap (docs/structures/drow-outposts.md, design 9 T7) on a test
+# floor high over the Overworld: a captive hobbit behind a locked two-high Chain Cage gate, picked by a Rogue, and a
+# drow dart trap.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/drow-captives.txt
+# Expect in latest.log:
+# - the hobbit's NBT shows Captive: 1b and NoAI: 1b; the drow warrior's target readout never names the captive elf
+# - a rigged 18 picks the lock: both cages open and unlocked ("Test passed" x2), "[Captive] ... freed by Dev
+#   (+40 dndclasses:hobbits)", the thanks line in chat, and /rep shows the hobbits at 40
+# - 100 ticks later the hobbit has moved off ("Test passed" on the unless-entity check), NoAI 0b
+# - about 60 s after, "[Captive] ... has gone home" and the hobbit is gone ("Test failed")
+# - breaking the elf's cage frees it too ("[Captive] ... freed by Dev (+40 dndclasses:sylvan_court)")
+# - stepping on the drow trap's plate: a CON save against Drow Poison ([D20] line), and on a rigged 2 the Drow Poison
+#   effect; a drow warrior walking over a second plate doesn't set it off
+# Screenshots: drow-captive-kneeling, drow-captive-freed
+wait 40
+closescreen
+include _reset.txt
+/execute in minecraft:overworld run tp @s 300.5 152 -4.5 0 20
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/difficulty normal
+/effect give @s minecraft:resistance 99999 4 true
+/fill 290 149 -10 316 149 30 minecraft:smooth_stone
+/fill 290 150 -10 316 158 30 minecraft:air
+/kill @e[type=!minecraft:player,x=290,y=145,z=-10,dx=26,dy=20,dz=40]
+/rep @s dndclasses:hobbits reset
+/rep @s dndclasses:sylvan_court reset
+# A cell: walls of drowstone, a gate of two locked cages, a captive hobbit kneeling inside.
+/fill 298 150 1 302 152 6 dndclasses:drowstone_bricks hollow
+/fill 299 150 2 301 151 5 minecraft:air
+/setblock 300 150 1 dndclasses:chain_cage[facing=north,locked=true]
+/setblock 300 151 1 dndclasses:chain_cage[facing=north,locked=true]
+/fill 298 153 1 302 153 6 dndclasses:drowstone_bricks
+/summon dndclasses:hobbit 300.5 150 3.5 {Captive:1b,CustomName:'"Tilly Proudfoot"',Rotation:[180f,0f]}
+# A second cell to the east with a captive elf, and a drow warrior free outside it.
+/fill 304 150 1 308 152 6 dndclasses:drowstone_bricks hollow
+/fill 305 150 2 307 151 5 minecraft:air
+/setblock 306 150 1 dndclasses:chain_cage[facing=north,locked=true]
+/setblock 306 151 1 minecraft:iron_bars
+/summon dndclasses:wood_elf 306.5 150 3.5 {Captive:1b}
+/summon dndclasses:drow_warrior 306.5 150 -3.5
+wait 40
+waitserver 5
+/data get entity @e[type=dndclasses:hobbit,limit=1,sort=nearest] Captive
+/data get entity @e[type=dndclasses:hobbit,limit=1,sort=nearest] NoAI
+target @e[type=dndclasses:drow_warrior]
+hud off
+/tp @s 300.5 150.4 0.2 0 22
+/setblock 300 151 1 dndclasses:chain_cage[facing=north,locked=true,open=true]
+wait 20
+screenshot drow-captive-kneeling
+/setblock 300 151 1 dndclasses:chain_cage[facing=north,locked=true]
+hud on
+target @e[type=dndclasses:drow_warrior]
+# Pick the lock as a Rogue (empty hand).
+/clear @s
+/gamemode survival
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+/dndclass forceroll @s clear
+/tp @s 300.5 150 -1.0 0 25
+wait 10
+/dndclass forceroll @s 18
+use
+wait 30
+/execute if block 300 150 1 dndclasses:chain_cage[open=true,locked=false]
+/execute if block 300 151 1 dndclasses:chain_cage[open=true,locked=false]
+/rep @s
+target @e[type=dndclasses:drow_warrior]
+wait 100
+/execute positioned 300.5 150 3.5 unless entity @e[type=dndclasses:hobbit,distance=..1.5]
+/data get entity @e[type=dndclasses:hobbit,limit=1,sort=nearest] NoAI
+/execute as @e[type=dndclasses:hobbit] run data get entity @s Pos
+screenshot drow-captive-freed
+# Breaking the elf's cage frees it.
+/gamemode creative
+/tp @s 306.5 150 -0.5 0 30
+wait 10
+attack
+wait 20
+/rep @s
+# The drow dart trap: a plate at 296 149 12 and a launcher in a post at 293 150 12; a second plate for the drow.
+/kill @e[type=dndclasses:drow_warrior]
+/setblock 293 150 12 dndclasses:dart_launcher[facing=east]
+/setblock 296 149 12 dndclasses:trap_trigger{Kind:"dart",Tier:2,Armed:1b,DrowPoison:1b,Linked:[[I;293,150,12]]}
+/setblock 293 150 18 dndclasses:dart_launcher[facing=east]
+/setblock 296 149 18 dndclasses:trap_trigger{Kind:"dart",Tier:2,Armed:1b,DrowPoison:1b,Linked:[[I;293,150,18]]}
+/summon dndclasses:drow_warrior 296.5 150 18.5 {NoAI:1b}
+wait 20
+/execute if block 296 149 18 dndclasses:trap_trigger{Armed:1b}
+/effect clear @s
+/effect give @s minecraft:resistance 99999 4 true
+/gamemode survival
+/dndclass set @s none
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/dndclass forceroll @s clear
+/dndclass forceroll @s 2
+/tp @s 296.5 150 12.5 0 0
+wait 40
+/data get entity @s ActiveEffects
+/execute if block 296 149 12 dndclasses:trap_trigger{Armed:0b}
+/gamemode creative
+wait 1150
+/execute if entity @e[type=dndclasses:hobbit,x=280,y=140,z=-20,dx=50,dy=30,dz=60]
+quit

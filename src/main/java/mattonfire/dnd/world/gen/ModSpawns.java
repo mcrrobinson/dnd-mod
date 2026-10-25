@@ -275,6 +275,25 @@ public class ModSpawns {
                 && world.getEntitiesByClass(mattonfire.dnd.entity.OrcEntity.class, new Box(pos).expand(48.0D), e -> true).size() < MAX_ORCS_NEARBY;
     }
 
+    /** Drow living in or respawning into a Drow Outpost: at most this many within 48 blocks. */
+    public static final int MAX_DROW_NEARBY = 12;
+
+    /**
+     * The drow's spawn rule (design 9, 4.5 and 8.1): monsters in the dark, like any; inside a Drow Outpost (its
+     * spawn_overrides) whatever the light, while fewer than {@link #MAX_DROW_NEARBY} drow are within 48 blocks.
+     */
+    public static <T extends HostileEntity> boolean canDrowSpawn(EntityType<T> type, ServerWorldAccess world,
+                                                                SpawnReason reason, BlockPos pos, Random random) {
+        if ((reason == SpawnReason.NATURAL || reason == SpawnReason.CHUNK_GENERATION)
+                && mattonfire.dnd.world.underdark.UnderdarkGarrisons.inside(world, pos,
+                mattonfire.dnd.world.underdark.drow.DrowOutposts.KEY)) {
+            return HostileEntity.canSpawnIgnoreLightLevel(type, world, reason, pos, random)
+                    && mattonfire.dnd.world.underdark.UnderdarkGarrisons.underCap(world, pos,
+                    mattonfire.dnd.entity.drow.DrowEntity.class, MAX_DROW_NEARBY);
+        }
+        return HostileEntity.canSpawnInDark(type, world, reason, pos, random);
+    }
+
     public static final int MAX_GNOMES_NEARBY = 10;
 
     private static <T extends MobEntity> boolean canCogsdeepSpawn(EntityType<T> type, ServerWorldAccess world,

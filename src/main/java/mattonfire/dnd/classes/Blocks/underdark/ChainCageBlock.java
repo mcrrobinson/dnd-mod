@@ -1,6 +1,7 @@
 package mattonfire.dnd.classes.Blocks.underdark;
 
 import mattonfire.dnd.classes.SkillChecks.Lockpicking;
+import mattonfire.dnd.world.underdark.Captives;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.HorizontalFacingBlock;
@@ -8,6 +9,7 @@ import net.minecraft.block.ShapeContext;
 import net.minecraft.entity.ai.pathing.NavigationType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
@@ -32,6 +34,8 @@ import net.minecraft.world.World;
  * <li>{@code locked=true} (as the pens place it): only a lockpick success opens it, the same Thieves' Tools roll
  * as a locked chest or door ({@link Lockpicking#pickLock}, DC {@link #LOCK_DC}). A picked cage stays unlocked.</li>
  * <li>Creative: opens and shuts whatever its lock; sneak + use with an empty hand locks or unlocks it.</li>
+ * <li>Cages stacked one on another with the same facing are one gate: they open, shut and unlock together.</li>
+ * <li>Opening it or breaking it frees the {@link Captives} behind it.</li>
  * </ul>
  */
 public class ChainCageBlock extends HorizontalFacingBlock {
@@ -113,8 +117,9 @@ public class ChainCageBlock extends HorizontalFacingBlock {
                 return ActionResult.FAIL;
             }
             if (Lockpicking.pickLock(player, world, pos, LOCK_DC, "block.dndclasses.chain_cage.locked")) {
-                world.setBlockState(pos, state.with(LOCKED, false).with(OPEN, true), Block.NOTIFY_ALL);
+                setStack(world, pos, state, true, true);
                 playSound(world, pos, true);
+                freeCaptives(world, pos, player);
             }
             return ActionResult.CONSUME;
         }
@@ -127,8 +132,47 @@ public class ChainCageBlock extends HorizontalFacingBlock {
             return;
         }
         boolean open = !state.get(OPEN);
-        world.setBlockState(pos, state.with(OPEN, open), Block.NOTIFY_ALL);
+        setStack(world, pos, state, open, false);
         playSound(world, pos, open);
+        if (open) {
+            freeCaptives(world, pos, player);
+        }
+    }
+
+    /**
+     * Sets this cage and the cages stacked straight above and below it with the same facing (a gate two or three
+     * blocks high) open or shut, unlocking them all when {@code unlock}: they swing as one gate.
+     */
+    private static void setStack(World world, BlockPos pos, BlockState state, boolean open, boolean unlock) {
+        world.setBlockState(pos, gate(state, open, unlock), Block.NOTIFY_ALL);
+        for (Direction way : new Direction[] {Direction.UP, Direction.DOWN}) {
+            BlockPos at = pos.offset(way);
+            for (int i = 0; i < 2; i++, at = at.offset(way)) {
+                BlockState other = world.getBlockState(at);
+                if (!other.isOf(state.getBlock()) || other.get(FACING) != state.get(FACING)) {
+                    break;
+                }
+                world.setBlockState(at, gate(other, open, unlock), Block.NOTIFY_ALL);
+            }
+        }
+    }
+
+    private static BlockState gate(BlockState state, boolean open, boolean unlock) {
+        return unlock ? state.with(OPEN, open).with(LOCKED, false) : state.with(OPEN, open);
+    }
+
+    /** Breaking a cage frees its captives too (for whoever broke it). */
+    @Override
+    public void onBreak(World world, BlockPos pos, BlockState state, PlayerEntity player) {
+        super.onBreak(world, pos, state, player);
+        freeCaptives(world, pos, player);
+    }
+
+    /** Frees the captives kept behind this cage ({@link Captives}). */
+    private static void freeCaptives(World world, BlockPos pos, PlayerEntity player) {
+        if (world instanceof ServerWorld server) {
+            Captives.freeNear(server, pos, player);
+        }
     }
 
     private static void playSound(World world, BlockPos pos, boolean open) {

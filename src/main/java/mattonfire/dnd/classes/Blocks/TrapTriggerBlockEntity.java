@@ -102,6 +102,11 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
     private int dartsLeft;
     private long nextDart;
     private boolean poisonDarts;
+    /**
+     * A drow trap (Drow Outposts): its darts carry Drow Poison, a CON save ({@code DrowSaves.DROW_POISON}), and the
+     * drow and their spiders walk over it without setting it off.
+     */
+    private boolean drowPoison;
     @Nullable
     private UUID dartTarget;
     private long flameUntil = -1L;
@@ -133,6 +138,16 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         this.ladder = ladder;
         this.ladderFacing = ladderFacing;
         this.markDirty();
+    }
+
+    /** Makes this a drow dart trap: Drow Poison (CON DC 13) instead of the DEX save and ordinary poison. */
+    public void setDrowPoison(boolean drowPoison) {
+        this.drowPoison = drowPoison;
+        this.markDirty();
+    }
+
+    public boolean drowPoison() {
+        return this.drowPoison;
     }
 
     public TrapKind kind() {
@@ -241,7 +256,8 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
     private void checkPressure(ServerWorld world) {
         List<BlockPos> tiles = this.pressureTiles();
         Box box = above(tiles, 0.5);
-        for (Entity e : world.getEntitiesByClass(Entity.class, box, TrapTriggerBlockEntity::canSetOff)) {
+        for (Entity e : world.getEntitiesByClass(Entity.class, box, e -> canSetOff(e)
+                && !(this.drowPoison && mattonfire.dnd.entity.drow.DrowAllies.isAlly(e)))) {
             BlockPos under = BlockPos.ofFloored(e.getX(), e.getY() - 0.05, e.getZ());
             if (tiles.contains(under) && (e.isOnGround() || e.getY() - (under.getY() + 1) < 0.05)) {
                 this.trigger(world, e);
@@ -382,7 +398,11 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         }
         this.dartTarget = target == null ? null : target.getUuid();
         this.poisonDarts = true;
-        if (target != null) {
+        if (target != null && this.drowPoison) {
+            // The poison is on the darts: the save is the drow's CON save, and a failure poisons at once.
+            mattonfire.dnd.entity.drow.DrowPoison.afflict(target, null, mattonfire.dnd.entity.drow.DrowSaves.DROW_POISON);
+            this.poisonDarts = false;
+        } else if (target != null) {
             SaveResult save = SavingThrow.of(target, Ability.DEX, this.dc()).label("save.dndclasses.trap.dart")
                     .exposure(this.exposureKey(), "dart", 40).tags("trap")
                     .onSuccess(Text.translatable("save.dndclasses.trap.dart.success"))
@@ -623,6 +643,9 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         nbt.putInt("DartsLeft", this.dartsLeft);
         nbt.putLong("NextDart", this.nextDart);
         nbt.putBoolean("PoisonDarts", this.poisonDarts);
+        if (this.drowPoison) {
+            nbt.putBoolean("DrowPoison", true);
+        }
         if (this.dartTarget != null) {
             nbt.putUuid("DartTarget", this.dartTarget);
         }
@@ -648,6 +671,7 @@ public class TrapTriggerBlockEntity extends BlockEntity implements Perceivable {
         this.dartsLeft = nbt.getInt("DartsLeft");
         this.nextDart = nbt.getLong("NextDart");
         this.poisonDarts = nbt.getBoolean("PoisonDarts");
+        this.drowPoison = nbt.getBoolean("DrowPoison");
         this.dartTarget = nbt.containsUuid("DartTarget") ? nbt.getUuid("DartTarget") : null;
         this.flameUntil = nbt.contains("FlameUntil") ? nbt.getLong("FlameUntil") : -1L;
         this.crumbleAt = nbt.contains("CrumbleAt") ? nbt.getLong("CrumbleAt") : -1L;

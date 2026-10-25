@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:drow_outpost",
+    {"id": "dndclasses:duergar_hold", "required": false},
+    {"id": "dndclasses:drow_spire", "required": false}
+  ]
+}

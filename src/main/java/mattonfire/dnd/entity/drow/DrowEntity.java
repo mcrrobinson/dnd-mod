@@ -162,7 +162,8 @@ public abstract class DrowEntity extends HostileEntity {
     }
 
     protected boolean mayTarget(LivingEntity target) {
-        if (DrowAllies.isAlly(target)) {
+        // Their own captives are left alone in the pens.
+        if (DrowAllies.isAlly(target) || mattonfire.dnd.world.underdark.Captives.isCaptive(target)) {
             return false;
         }
         if (target instanceof PlayerEntity player) {

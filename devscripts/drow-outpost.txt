@@ -1,0 +1,82 @@
+# Checks the Drow Outposts (docs/structures/drow-outposts.md, design 9 T7): outposts on 3 seeds, the nearest one's
+# layout and survey, screenshots from above and inside, the drow living there.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/drow-outpost.txt
+# Expect in latest.log:
+# - "[DrowOutpostSeeds] seed ...: nearest at x y z in dndclasses:fungal_forest|faerzress_hollows ...: PASS" for 3 seeds
+# - "[Home] Drow Outpost at chunk ...: centre ... in dndclasses:fungal_forest|faerzress_hollows, n towers ..."
+# - "[DrowOutpostSurvey] outpost at chunk ...: ... shell s/s, deck d/d, stairs n/n clear, locked gates 6/6, wet blocks 0:
+#   PASS"
+# - "[DrowOutpostCensus] ...: drow n (warriors 4-7, mages 1-2, priestesses 1; persistent n), cave spiders 4-8, captives 1-2"
+# - "Test passed" for a priestess, warriors, cave spiders and a kneeling captive round the shrine, and "Test failed" for a
+#   non-persistent warrior. drow-outpost-rejoin-check.txt counts them again after a rejoin.
+# Screenshots: drow-outpost-overview, drow-outpost-above, drow-outpost-shrine, drow-outpost-pen, drow-outpost-tower,
+# drow-outpost-inside, drow-outpost-top, drow-outpost-bridge, drow-outpost-reliquary, drow-outpost-barracks
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/difficulty normal
+/dndhome drowoutpostseeds
+waitserver 2
+# Somewhere this world hasn't generated yet, so the outpost below is a fresh one.
+/execute in minecraft:overworld run tp @s 4000 200 4000
+
+/gamemode spectator
+/dndhome drowoutpost overview
+wait 400
+waitserver 2
+/dndhome drowoutpost overview
+wait 100
+hud off
+screenshot drow-outpost-overview
+/dndhome drowoutpost above
+wait 60
+screenshot drow-outpost-above
+hud on
+/dndhome drowoutpostsurvey 1
+waitserver 2
+
+# Who lives there.
+/dndhome drowoutpostcensus
+/dndhome drowoutpost shrine
+wait 20
+/execute if entity @e[type=dndclasses:drow_priestess,distance=..40]
+/execute if entity @e[type=dndclasses:drow_warrior,distance=..40]
+/execute if entity @e[type=minecraft:cave_spider,distance=..40]
+/execute if entity @e[nbt={Captive:1b},distance=..40]
+/execute if entity @e[type=dndclasses:drow_warrior,nbt={PersistenceRequired:1b},distance=..40]
+/execute if entity @e[type=dndclasses:drow_warrior,nbt={PersistenceRequired:0b},distance=..40]
+/gamemode creative
+/effect give @s minecraft:invisibility 99999 0 true
+hud off
+/dndhome drowoutpost shrine
+wait 30
+screenshot drow-outpost-shrine
+/dndhome drowoutpost pen
+wait 30
+screenshot drow-outpost-pen
+/dndhome drowoutpost tower
+wait 30
+screenshot drow-outpost-tower
+/dndhome drowoutpost inside
+wait 30
+screenshot drow-outpost-inside
+/dndhome drowoutpost top
+wait 30
+screenshot drow-outpost-top
+/dndhome drowoutpost bridge
+wait 30
+screenshot drow-outpost-bridge
+/dndhome drowoutpost reliquary
+wait 30
+screenshot drow-outpost-reliquary
+/dndhome drowoutpost barracks
+wait 30
+screenshot drow-outpost-barracks
+hud on
+/gamemode spectator
+/dndhome drowoutpost overview
+wait 20
+quit

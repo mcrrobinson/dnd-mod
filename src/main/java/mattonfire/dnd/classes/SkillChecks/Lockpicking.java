@@ -74,6 +74,7 @@ public final class Lockpicking {
             "dndclasses:chests/orc_stronghold_hoard",
             "dndclasses:chests/brimstone_sanctum_altar",
             "dndclasses:chests/cogsdeep_vault",
+            "dndclasses:chests/drow_shrine",
             "minecraft:chests/end_city_treasure",
             "minecraft:chests/bastion_treasure",
             "minecraft:chests/ancient_city",

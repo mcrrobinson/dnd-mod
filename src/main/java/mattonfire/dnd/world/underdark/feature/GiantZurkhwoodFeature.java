@@ -35,6 +35,10 @@ public class GiantZurkhwoodFeature extends Feature<DefaultFeatureConfig> {
         StructureWorldAccess world = context.getWorld();
         BlockPos origin = context.getOrigin();
         Random random = context.getRandom();
+        // Not through a drow outpost or other settlement (they're built after the fungi).
+        if (mattonfire.dnd.world.underdark.UnderdarkSite.inSettlement(world, origin)) {
+            return false;
+        }
         if (!FungusShapes.isSoil(world.getBlockState(origin.down()))) {
             return false;
         }

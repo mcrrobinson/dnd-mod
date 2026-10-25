@@ -61,6 +61,8 @@ import net.minecraft.util.math.BlockPos;
  * /dndhome rift [top|mouth|floor|ledge|pool|step &lt;k&gt;], riftlanding, riftlair, riftsurvey [grid] [spacing], riftseeds
  * [seeds]:
  * the Underdark Rifts' teleports and checks ({@link RiftCommands}).
+ * /dndhome drowoutpost [spot], drowoutpostsurvey [grid] [spacing], drowoutpostcensus, drowoutpostseeds [seeds]: the Drow Outposts'
+ * teleports and checks ({@link DrowOutpostCommands}).
  */
 public final class DndHomeCommand {
     private DndHomeCommand() {
@@ -137,6 +139,23 @@ public final class DndHomeCommand {
                         .executes(context -> RiftCommands.seeds(context, java.util.List.of()))
                         .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
                                 .executes(context -> RiftCommands.seeds(context,
+                                        RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
+                .then(CommandManager.literal("drowoutpost")
+                        .executes(context -> DrowOutpostCommands.teleport(context, "shrine"))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> DrowOutpostCommands.teleport(context, StringArgumentType.getString(context, "spot")))))
+                .then(CommandManager.literal("drowoutpostsurvey")
+                        .executes(context -> DrowOutpostCommands.survey(context, 3, 1000))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> DrowOutpostCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 1000))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> DrowOutpostCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("drowoutpostcensus").executes(DrowOutpostCommands::census))
+                .then(CommandManager.literal("drowoutpostseeds")
+                        .executes(context -> DrowOutpostCommands.seeds(context, java.util.List.of()))
+                        .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
+                                .executes(context -> DrowOutpostCommands.seeds(context,
                                         RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
                 .then(CommandManager.literal("bloodsworn")
                         .then(CommandManager.argument("players", EntityArgumentType.players())

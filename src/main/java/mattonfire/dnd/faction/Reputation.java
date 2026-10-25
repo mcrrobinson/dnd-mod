@@ -56,7 +56,9 @@ public final class Reputation {
 
     /** What caused a change. Rivals only react to gains from sources that allow it. */
     public enum Source {
-        KILL(false), HIT(false), RAID(false), BOUNTY(true), TRADE(true), THEFT(false), QUEST(true), COMMAND(false);
+        KILL(false), HIT(false), RAID(false), BOUNTY(true), TRADE(true), THEFT(false), QUEST(true), COMMAND(false),
+        /** Freeing one of the faction's folk from captivity (a drow pen, a duergar mine): {@code Captives}. */
+        RESCUE(true);
 
         public final boolean rivals;
 

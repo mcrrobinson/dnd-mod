@@ -78,6 +78,9 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome riftlanding` / `riftlair` | Onto the nearest Rift Landing (in the Underdark), or the nearest Beholder lair's floor by the pupil |
 | `/dndhome riftsurvey [grid] [spacing]` | Checks the nearest rift from each point of a grid round you: pieces, the landing below, the veil pool and every climbing step (`[RiftSurvey]` lines) |
 | `/dndhome riftseeds [seeds...]` | The nearest rift to 0, 0 on each seed, without making a world (`[RiftSeeds]` lines) |
+| `/dndhome drowoutpost [shrine\|above\|overview\|pen\|barracks\|tower\|inside\|top\|bridge\|reliquary\|trap]` | Teleports you into the nearest [Drow Outpost](../structures/drow-outposts.md) (from anywhere: it searches the Underdark below you) and prints its layout |
+| `/dndhome drowoutpostsurvey [grid] [spacing]` | Checks the nearest outpost from each point of a grid round you: biome, floor height, pieces, then every tower shell, bridge deck and stair step, the pen's locked gates and a dry floor (`[DrowOutpostSurvey]` lines) |
+| `/dndhome drowoutpostseeds [seeds...]` | The nearest outpost to 0, 0 on each seed and its biome, without making a world (`[DrowOutpostSeeds]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
 ### The Underdark

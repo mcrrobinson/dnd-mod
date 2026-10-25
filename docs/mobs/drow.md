@@ -58,7 +58,7 @@ The drow are the **Spider Houses** [faction](../systems/factions.md) (`dndclasse
 Their weapons and gear never drop.
 
 ## Where to find it
-- The Underdark's **Fungal Forest** and **Faerzress Hollows** (`#dndclasses:habitat/drow`), in the dark: Warriors (weight 20, groups of 2-4), Mages (5, alone) and Priestesses (2, alone). Natural spawns despawn like any monster; drow placed by a structure (the Drow Outposts and the Drow Spire, later tickets) stay.
+- The Underdark's **Fungal Forest** and **Faerzress Hollows** (`#dndclasses:habitat/drow`), in the dark: Warriors (weight 20, groups of 2-4), Mages (5, alone) and Priestesses (2, alone). Natural spawns despawn like any monster; drow placed by a structure stay (persistent). The [Drow Outposts](../structures/drow-outposts.md) house 4-7 Warriors, 1-2 Mages and a Priestess each, topped up inside the outpost up to 12 drow within 48 blocks; the Drow Spire comes in a later ticket.
 - Spawn eggs for all four are in the creative tab, with Spidersilk.
 
 ## Commands

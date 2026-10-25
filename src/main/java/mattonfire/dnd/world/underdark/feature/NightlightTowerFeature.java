@@ -33,6 +33,10 @@ public class NightlightTowerFeature extends Feature<NightlightTowerConfig> {
         BlockPos origin = context.getOrigin();
         Random random = context.getRandom();
         NightlightTowerConfig config = context.getConfig();
+        // Not through a drow outpost or other settlement (they're built after the fungi).
+        if (mattonfire.dnd.world.underdark.UnderdarkSite.inSettlement(world, origin)) {
+            return false;
+        }
         if (!FungusShapes.isSoil(world.getBlockState(origin.down()))) {
             return false;
         }

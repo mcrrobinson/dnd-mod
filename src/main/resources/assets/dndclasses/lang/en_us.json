@@ -2461,5 +2461,7 @@
     "underdark.dndclasses.anchor.still": "The anchor is still. It only pulls upward from below.",
     "underdark.dndclasses.beholder_rift": "The floor where the eye floated splits open. Cold air rises from below.",
     "structure.dndclasses.underdark_rift": "Underdark Rift",
-    "structure.dndclasses.rift_landing": "Rift Landing"
+    "structure.dndclasses.rift_landing": "Rift Landing",
+    "structure.dndclasses.drow_outpost": "Drow Outpost",
+    "message.dndclasses.captive.thanks": "%s: \"Thank you! I'll tell my kin what you did down here.\""
 }

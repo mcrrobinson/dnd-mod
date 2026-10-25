@@ -1,0 +1,15 @@
+# Surveys several Drow Outposts (docs/structures/drow-outposts.md): from a 3x3 grid of points 1500 blocks apart round
+# x 8000 z -8000 (far from the dev world's explored land, so they're freshly generated), the nearest outpost to each,
+# its chunks generated and checked.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/drow-outpost-survey.txt
+# Expect in latest.log: "[DrowOutpostSurvey] outpost at chunk ...: ... shell s/s, deck d/d, stairs n/n clear, locked
+# gates 6/6, wet blocks 0: PASS" for each, and "[DrowOutpostSurvey] n outposts, n pass, 0 fail".
+wait 40
+closescreen
+include _reset.txt
+/gamemode spectator
+/execute in minecraft:overworld run tp @s 8000 200 -8000
+wait 40
+/dndhome drowoutpostsurvey 3 1500
+waitserver 2
+quit

@@ -1,0 +1,18 @@
+# Run after drow-outpost.txt, in the same run dir (no reset: it carries the world over on purpose): the outpost's
+# drow are still there after leaving and rejoining the world (they're persistent).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/drow-outpost-rejoin-check.txt
+# Expect in latest.log: the same "[DrowOutpostCensus]" line as drow-outpost.txt's (the same drow, spiders and captives),
+# and "Test failed" for any non-persistent warrior.
+wait 40
+closescreen
+/gamemode spectator
+/dndhome drowoutpost shrine
+wait 200
+waitserver 2
+/dndhome drowoutpostcensus
+/execute if entity @e[type=dndclasses:drow_priestess,distance=..40]
+/execute if entity @e[type=dndclasses:drow_warrior,distance=..40]
+/execute if entity @e[type=minecraft:cave_spider,distance=..40]
+/execute if entity @e[nbt={Captive:1b},distance=..40]
+/execute if entity @e[type=dndclasses:drow_warrior,nbt={PersistenceRequired:0b},distance=..40]
+quit

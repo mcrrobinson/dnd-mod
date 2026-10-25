@@ -82,4 +82,67 @@ final class HomeCommandUtil {
         source.sendFeedback(Text.literal(summary), false);
         return pass;
     }
+
+    /**
+     * For each seed, finds the start of {@code structure} nearest 0, 0 (within {@code radius} blocks) that would
+     * generate in {@code world}'s dimension, without making a world: the structure set's grid slots, each asked for a
+     * valid position with that seed's noise. Logs and sends {@code "<tag> seed S: nearest at x y z in <biome>, d blocks
+     * from 0 0 (n slots tried): PASS|FAIL"}. Returns how many seeds had one. Shared by the Underdark checks.
+     */
+    static int seeds(ServerCommandSource source, ServerWorld world, RegistryKey<Structure> structureKey,
+                     net.minecraft.util.Identifier setId, java.util.List<Long> seeds, int radius, String tag) {
+        net.minecraft.world.gen.chunk.ChunkGenerator generator = world.getChunkManager().getChunkGenerator();
+        Structure structure = world.getRegistryManager().get(RegistryKeys.STRUCTURE).get(structureKey);
+        net.minecraft.structure.StructureSet set = world.getRegistryManager().get(RegistryKeys.STRUCTURE_SET).get(setId);
+        if (!(generator instanceof net.minecraft.world.gen.chunk.NoiseChunkGenerator noise) || structure == null || set == null
+                || !(set.placement() instanceof net.minecraft.world.gen.chunk.placement.RandomSpreadStructurePlacement spread)) {
+            source.sendError(Text.literal(tag + " No noise generator or structure set " + setId));
+            return 0;
+        }
+        if (seeds.isEmpty()) {
+            seeds = java.util.List.of(world.getSeed(), 1L, 20261025L);
+        }
+        int found = 0;
+        for (long seed : seeds) {
+            net.minecraft.world.gen.noise.NoiseConfig config = net.minecraft.world.gen.noise.NoiseConfig.create(
+                    noise.getSettings().value(), world.getRegistryManager().getWrapperOrThrow(RegistryKeys.NOISE_PARAMETERS), seed);
+            int slots = radius / 16 / spread.getSpacing() + 1;
+            BlockPos best = null;
+            double bestDistance = Double.MAX_VALUE;
+            int tried = 0;
+            for (int gx = -slots; gx <= slots; gx++) {
+                for (int gz = -slots; gz <= slots; gz++) {
+                    net.minecraft.util.math.ChunkPos chunk = spread.getStartChunk(seed, gx * spread.getSpacing(), gz * spread.getSpacing());
+                    double d = Math.sqrt(chunk.getCenterX() * (double) chunk.getCenterX() + chunk.getCenterZ() * (double) chunk.getCenterZ());
+                    if (d > radius || d >= bestDistance) {
+                        continue;
+                    }
+                    tried++;
+                    Structure.Context there = new Structure.Context(world.getRegistryManager(), generator, generator.getBiomeSource(),
+                            config, world.getStructureTemplateManager(), seed, chunk, world, structure.getValidBiomes()::contains);
+                    var position = structure.getValidStructurePosition(there);
+                    if (position.isPresent()) {
+                        best = position.get().position();
+                        bestDistance = d;
+                    }
+                }
+            }
+            String biome = "-";
+            if (best != null) {
+                var entry = generator.getBiomeSource().getBiome(net.minecraft.world.biome.source.BiomeCoords.fromBlock(best.getX()),
+                        net.minecraft.world.biome.source.BiomeCoords.fromBlock(best.getY()),
+                        net.minecraft.world.biome.source.BiomeCoords.fromBlock(best.getZ()), config.getMultiNoiseSampler());
+                biome = entry.getKey().map(key -> key.getValue().toString()).orElse("?");
+            }
+            String line = tag + " seed " + seed + ": " + (best == null ? "none within " + radius + " blocks"
+                    : "nearest at " + best.getX() + " " + best.getY() + " " + best.getZ() + " in " + biome + ", "
+                    + (int) bestDistance + " blocks from 0 0") + " (" + tried + " slots tried): " + (best == null ? "FAIL" : "PASS");
+            DnDClasses.LOGGER.info(line);
+            source.sendFeedback(Text.literal(line), false);
+            if (best != null) {
+                found++;
+            }
+        }
+        return found;
+    }
 }

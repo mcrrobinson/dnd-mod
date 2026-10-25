@@ -16,6 +16,8 @@
         "PlayerDimensionsMixin",
         "RestSeatDismountMixin",
         "SmiteDragonsMixin",
+        "SpiderTargetMixin",
+        "FaerieFireDamageMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
         "RacePassivesLivingMixin",

@@ -100,6 +100,7 @@ Event music for boss fights, goblin raids, low health, dungeons, Nether Fortress
 - [Gelatinous Cube](docs/mobs/gelatinous-cube.md): a slow jelly cube in dark caves and dungeons that engulfs whatever it touches and soaks up items.
 - [Basilisk](docs/mobs/basilisk.md): a slow, armoured lizard of the deep caves whose gaze turns you to stone. Its eye makes a Salve of Stone to Flesh.
 - [Mind Flayer](docs/mobs/mind-flayer.md): an illithid in the deepest caves that stuns with a Mind Blast, extracts stunned brains and keeps charmed thralls.
+- [Drow](docs/mobs/drow.md): the dark elves of the Underdark's Spider Houses, with poisoned hand crossbows, Darkness and spider-calling priestesses. Every drow you kill pleases the Sylvan Court.
 - Bosses with boss bars, fight music and phases: the [Goblin Warlord](docs/bosses/goblin-warlord.md), the [Magmamuncher Alpha](docs/bosses/magmamuncher-alpha.md), the [Lich](docs/bosses/lich.md) (reforms from its phylactery until that's smashed) and the [Beholder](docs/bosses/beholder.md) (its anti-magic cone blocks class specials). See [Boss fights](docs/bosses/boss-fights.md).
 
 ### Structures

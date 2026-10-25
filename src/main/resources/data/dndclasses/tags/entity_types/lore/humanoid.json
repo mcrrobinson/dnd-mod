@@ -16,6 +16,7 @@
     "minecraft:evoker",
     "minecraft:illusioner",
     "minecraft:piglin",
-    "minecraft:piglin_brute"
+    "minecraft:piglin_brute",
+    "#dndclasses:faction/drow"
   ]
 }

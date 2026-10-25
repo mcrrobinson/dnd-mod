@@ -186,6 +186,8 @@ public class DnDClasses implements ModInitializer {
                 ModItems.registerModItems();
                 ModEffects.registerEffects();
                 ModPotions.registerPotions();
+                // The drow and the Spider Houses (Underdark T4): their types, items, effects, spawns and events
+                mattonfire.dnd.entity.drow.Drow.register();
                 mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();

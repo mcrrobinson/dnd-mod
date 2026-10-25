@@ -1,0 +1,229 @@
+# The drow and the Spider Houses (docs/mobs/drow.md).
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/drow.txt
+# It resets the player's standing with the Spider Houses and the Sylvan Court first (/rep ... reset).
+# The player stands on a y=150 platform at night (no sunlight on the drow). "/say <step>" lines mark each step in
+# run/logs/latest.log; [MobAction] lines are in run/logs/debug.log. Check:
+# 1. Reputation (after a reset): as an Elf "/rep" shows The Spider Houses at -900, with no race -700.
+# 2. Warrior bolts (forced 2 2 2): three "[D20] <player> Drow poison" FAILURE lines, "[Drow] ... drow poison stack 1/3",
+#    "2/3", "3/3", "falls asleep", the Incapacitated condition (key drow_sleep) in the list; "/damage" wakes you
+#    ("hurt by generic ... while asleep", "wakes up"). A forced 20 is a success: Drow Poison for 60 ticks, no new stack.
+# 3. Mage: "[Drow] Darkness at", the player has Blinded (key drow_darkness) and Darkness, the drow beside the player
+#    has neither; then Faerie Fire on the player (dndclasses:faerie_fire + Glowing), then magic missiles.
+#    A husk under Faerie Fire takes 6 from a 4-damage hit (health 14), a plain one 4 (16).
+# 4. Priestess: the dread save (forced 1) on the save lane "[D20] ... Dread of the Spider Queen" and
+#    "[Conditions] ... +frightened (Drow Priestess"; summons: 2, then 4, then still 4 (Test passed, count); the
+#    cave spider hit by a drow doesn't target it (target readout); her spiders vanish when she dies (count 0).
+#    Fey Ancestry: "/dndcondition immune" on a drow prints the immunity.
+# 5. Killing a drow (player_attack): Sylvan Court +30 (0 -> 30), Spider Houses -60 (-700 -> -760).
+# 6. Overworld noon: a drow under open sky gets Weakness and Slowness.
+/time set midnight
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty hard
+wait 40
+closescreen
+include _reset.txt
+respawn
+wait 10
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s
+/fill -8 149 -30 14 149 22 minecraft:stone
+/fill -8 150 -30 14 156 22 minecraft:air
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode survival
+/effect clear @s
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:health_boost 900 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+wait 5
+
+# ---- 1. Reputation starts ----
+/say rep-start
+/rep @s dndclasses:drow reset
+/rep @s dndclasses:sylvan_court reset
+/dndrace set @s elf
+wait 5
+closescreen
+/rep @s
+/dndrace set @s none
+wait 5
+closescreen
+/rep @s
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s dndclasses:class_guidebook
+
+# ---- Look ----
+/gamemode creative
+/tp @s 4.5 150 4.0 0 8
+/summon dndclasses:drow_warrior 1.5 150 8.5
+/summon dndclasses:drow_mage 3.5 150 8.5
+/summon dndclasses:drow_priestess 5.5 150 8.5
+/summon dndclasses:drow_elite 7.5 150 8.5
+wait 2
+/data merge entity @e[type=dndclasses:drow_warrior,limit=1] {NoAI:1b,Rotation:[180f,0f],Tags:["look"]}
+/data merge entity @e[type=dndclasses:drow_mage,limit=1] {NoAI:1b,Rotation:[180f,0f],Tags:["look"]}
+/data merge entity @e[type=dndclasses:drow_priestess,limit=1] {NoAI:1b,Rotation:[180f,0f],Tags:["look"]}
+/data merge entity @e[type=dndclasses:drow_elite,limit=1] {NoAI:1b,Rotation:[180f,0f],Tags:["look"]}
+/setblock 4 152 5 minecraft:glowstone
+/tp @s 4.5 150 4.0 0 8
+wait 20
+hud off
+screenshot drow-lineup
+/tp @s 2.0 150.2 6.6 -40 15
+wait 5
+screenshot drow-close
+hud on
+/setblock 4 152 5 minecraft:air
+/data get entity @e[type=dndclasses:drow_warrior,limit=1] HandItems
+/data get entity @e[type=dndclasses:drow_elite,limit=1] ArmorItems
+/kill @e[tag=look]
+/gamemode survival
+wait 5
+
+# ---- 2. Warrior: poisoned bolts, three failures put you to sleep ----
+/say warrior
+/tp @s 4.5 150 3.5 0 0
+/dndclass forceroll @s 2 2 2
+/summon dndclasses:drow_warrior 4.5 150 12.5
+wait 2
+/tag @e[type=dndclasses:drow_warrior,limit=1] add w
+wait 140
+/dndcondition list @s
+actionbar
+look 0 5
+clearchat
+wait 2
+screenshot drow-asleep
+/effect clear @s dndclasses:drow_poison
+/effect give @s minecraft:resistance 900 4 true
+/say wake
+/damage @s 1 minecraft:generic
+wait 5
+/dndcondition list @s
+/kill @e[tag=w]
+/effect clear @s dndclasses:drow_poison
+/dndcondition remove @s all
+wait 40
+/say warrior-save
+/dndclass forceroll @s 20
+/summon dndclasses:drow_warrior 4.5 150 12.5
+wait 2
+/tag @e[type=dndclasses:drow_warrior,limit=1] add w
+wait 40
+/data get entity @s ActiveEffects
+/kill @e[tag=w]
+/dndclass forceroll @s clear
+/effect clear @s dndclasses:drow_poison
+/dndcondition remove @s all
+wait 20
+
+# ---- 3. Mage: Darkness, Faerie Fire, Magic Missile ----
+/say mage
+/tp @s 4.5 150 3.5 0 0
+/summon dndclasses:drow_warrior 5.5 150 4.5
+wait 2
+/data merge entity @e[type=dndclasses:drow_warrior,limit=1] {NoAI:1b,Rotation:[180f,0f],Tags:["dw"]}
+/summon dndclasses:drow_mage 4.5 150 14.5
+wait 2
+/tag @e[type=dndclasses:drow_mage,limit=1] add m
+wait 80
+/dndcondition list @s
+/data get entity @s ActiveEffects
+/dndcondition list @e[tag=dw,limit=1]
+/data get entity @e[tag=dw,limit=1] ActiveEffects
+look 0 0
+clearchat
+wait 2
+screenshot drow-darkness
+wait 40
+/data get entity @s ActiveEffects
+wait 80
+/kill @e[tag=m]
+/kill @e[tag=dw]
+/effect clear @s
+/effect give @s minecraft:resistance 900 4 true
+/dndcondition remove @s all
+wait 5
+/say faerie-damage
+/summon minecraft:husk 0.5 150 0.5 {NoAI:1b,Tags:["ffh"],PersistenceRequired:1b}
+/summon minecraft:husk -2.5 150 0.5 {NoAI:1b,Tags:["ffp"],PersistenceRequired:1b}
+wait 2
+/effect give @e[tag=ffh] dndclasses:faerie_fire 30 0
+/damage @e[tag=ffh,limit=1] 4 minecraft:player_attack by @s
+/damage @e[tag=ffp,limit=1] 4 minecraft:player_attack by @s
+wait 2
+/data get entity @e[tag=ffh,limit=1] Health
+/data get entity @e[tag=ffp,limit=1] Health
+/kill @e[tag=ffh]
+/kill @e[tag=ffp]
+
+# ---- 4. Priestess: dread, spiders that spare the drow and vanish with her ----
+/say priestess
+/tp @s 4.5 150 3.5 0 0
+/summon dndclasses:drow_warrior 9.5 150 12.5
+wait 2
+/data merge entity @e[type=dndclasses:drow_warrior,limit=1] {NoAI:1b,Tags:["dw"]}
+/dndcondition immune @e[tag=dw,limit=1] frightened
+/dndclass forceroll @s 1 1 1 1 1 1 1 1 1 1 1 1
+/summon dndclasses:drow_priestess 4.5 150 8.5
+wait 2
+/tag @e[type=dndclasses:drow_priestess,limit=1] add pr
+wait 70
+/dndcondition list @s
+/execute if entity @e[type=minecraft:cave_spider,tag=drow_summon]
+/damage @e[type=minecraft:cave_spider,tag=drow_summon,limit=1] 1 minecraft:mob_attack by @e[tag=dw,limit=1]
+wait 5
+target @e[type=minecraft:cave_spider]
+look 0 15
+clearchat
+wait 2
+screenshot drow-priestess
+look 0 0
+wait 300
+/execute if entity @e[type=minecraft:cave_spider,tag=drow_summon]
+wait 300
+/execute if entity @e[type=minecraft:cave_spider,tag=drow_summon]
+target @e[type=minecraft:cave_spider]
+/kill @e[tag=pr]
+wait 5
+/execute if entity @e[type=minecraft:cave_spider,tag=drow_summon]
+/kill @e[tag=dw]
+/kill @e[type=minecraft:cave_spider]
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/effect clear @s
+/effect give @s minecraft:resistance 900 4 true
+wait 5
+
+# ---- 5. A drow kill: the Sylvan Court is pleased ----
+/say kill
+/rep @s
+/summon dndclasses:drow_warrior 4.5 150 6.5
+wait 2
+/data merge entity @e[type=dndclasses:drow_warrior,limit=1] {NoAI:1b,Tags:["k"]}
+/damage @e[tag=k,limit=1] 1000 minecraft:player_attack by @s
+wait 5
+/rep @s
+
+# ---- 6. Sunlight Sensitivity ----
+/say sunlight
+/gamemode creative
+/time set noon
+/summon dndclasses:drow_warrior 4.5 150 10.5
+wait 2
+/tag @e[type=dndclasses:drow_warrior,limit=1] add sun
+wait 40
+/data get entity @e[tag=sun,limit=1] ActiveEffects
+/kill @e[tag=sun]
+/time set midnight
+/gamemode survival
+/say done
+quit

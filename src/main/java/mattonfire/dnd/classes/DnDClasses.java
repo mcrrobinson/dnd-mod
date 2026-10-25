@@ -147,6 +147,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.SkillChecks.SaveRules.register();
                 mattonfire.dnd.classes.Obstacles.ObstacleTypes.register();
                 mattonfire.dnd.world.gen.beholder.BeholderLairStructures.register();
+                mattonfire.dnd.world.underdark.rift.UnderdarkRiftStructures.register();
+                mattonfire.dnd.world.underdark.UnderdarkRifts.register();
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();
@@ -198,6 +200,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Registry.CogsdeepBlocks.register();
                 mattonfire.dnd.classes.Registry.UnderdarkBlocks.register();
                 mattonfire.dnd.classes.Registry.UnderdarkFlora.register();
+                mattonfire.dnd.classes.Registry.RiftBlocks.register();
                 // --- Dragon Temples ---
                 mattonfire.dnd.classes.Registry.ModTempleBlocks.register();
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();

@@ -1,5 +1,5 @@
 # The Underdark
-A sunless world of huge caverns under the Overworld's bedrock, from y -256 to -65, lit only by what grows there. It's its own dimension (`dndclasses:underdark`) at the same x and z as the Overworld above, with five regions: the Fungal Forest, the Mycelial Caverns, the Darklake, the Faerzress Hollows and the Grey Reaches. Its forests are giant zurkhwood and glowing nightlight towers, its lakes are misty and full of glowing Waterorbs and Pearl-Clams, and it has its own music. For now you get there with `/underdark go`; the Underdark Rifts that take players down without commands, the drow and duergar and their settlements come with the later Underdark tickets.
+A sunless world of huge caverns under the Overworld's bedrock, from y -256 to -65, lit only by what grows there. It's its own dimension (`dndclasses:underdark`) at the same x and z as the Overworld above, with five regions: the Fungal Forest, the Mycelial Caverns, the Darklake, the Faerzress Hollows and the Grey Reaches. Its forests are giant zurkhwood and glowing nightlight towers, its lakes are misty and full of glowing Waterorbs and Pearl-Clams, and it has its own music. You get there through [Underdark Rifts](../structures/underdark-rifts.md): sinkholes in the Overworld down to a pool of Rift Veil that drops you in, and Rift Anchors that pull you back up. The drow and duergar and their settlements come with the later Underdark tickets.
 
 ![The Fungal Forest with Night Vision: Fungal Loam, Trillimacs and a zurkhwood stalk](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/underdark-dimension/underdark-fungal_forest-nightvision.png)
 
@@ -75,13 +75,14 @@ The places they lead to come with later tickets (outposts, holds, rifts); the ta
 The Underdark's clock is fixed at midnight. The mod's night checks (`GameTime.isNight`) read 18000 there whatever the Overworld's time, so a [Blood Hunter](../classes/blood-hunter.md) has night strength the whole time they're below. Vanilla's own day checks see a fixed-time dimension as neither day nor night, like the Nether.
 
 ### Getting there and back
-- `/underdark go` takes you down at your x and z. It looks for a dry, solid floor with two blocks of air above it between y -75 and -250, in your column and then in rings out to 8 blocks. It prefers a floor in an open cavern (6 blocks of air above), then the one nearest y -90; a cramped floor in your own column is the fallback. If there's no floor at all, it carves a 5×5×3 pocket at y -150 with a deepslate-tile floor and a lantern, sealing any water or lava round it.
+- Players find their own way down through [Underdark Rifts](../structures/underdark-rifts.md) (or a slain lair Beholder's floor), and back up with a Rift Anchor. The rest of this section is the admin command.
+- `/underdark go` takes you down at your x and z. It looks for a dry, solid floor with two blocks of air above it between y -75 and -250, in your column and then in rings out to 8 blocks. It prefers a floor in an open cavern (6 blocks of air above), then the one nearest y -90; a cramped floor in your own column is the fallback. If there's no floor at all, it carves a 5×5×3 pocket at y -150 with a deepslate-tile floor, a lantern and a three-block Rift Anchor, sealing any water or lava round it.
 - It remembers where you came from, and `/underdark back` returns you there (or to the world spawn if nothing is remembered).
 - Dying in the Underdark respawns you at your bed or the world spawn, as usual. Logging out there logs you back in there.
 - The Underdark is a separate world: you can't dig down into it from the Overworld. Pets stay behind, as with the Nether.
 
 ## Where to find it
-For now only through `/underdark go` and `/underdark biome` (ops), or `/execute in dndclasses:underdark run tp @s x y z`. The Underdark Rifts ticket adds sinkholes in the Overworld that drop players in.
+Through an [Underdark Rift](../structures/underdark-rifts.md) (about one per 450×450 blocks of Overworld land) or a slain lair Beholder's floor. Ops can also use `/underdark go` and `/underdark biome`, or `/execute in dndclasses:underdark run tp @s x y z`.
 
 ## Commands
 `/underdark` needs permission level 2.
@@ -97,8 +98,7 @@ For now only through `/underdark go` and `/underdark biome` (ops), or `/execute 
 | `/underdark survey [radius]` | Samples the noise every 4 blocks round you (radius 128 by default) and prints each biome's share, floors per column, the median floor y, the share of floors under water, the bedrock at the floor and the roof of the chunk you're over, the cost in ms per column, and the climate noises' mean and spread (logged as `[Underdark] survey ...`) |
 
 ## Known limitations
-- No way in or out without commands until the Underdark Rifts ticket.
-- The explorer maps have nowhere to lead until the drow outposts, duergar holds and rifts are in.
+- The explorer maps to drow outposts and duergar holds have nowhere to lead until those are in.
 - Chunks of the Underdark generated before the giant fungi came keep the old small stand-in mushrooms.
 
 ## For developers
@@ -114,7 +114,7 @@ For now only through `/underdark go` and `/underdark biome` (ops), or `/execute 
   | `habitat/basilisk` | Grey Reaches, Faerzress Hollows |
   | `habitat/mind_flayer` | Faerzress Hollows |
   | `habitat/rust_monster` | Grey Reaches, Mycelial Caverns |
-- `UnderdarkLanding.findOrMake(world, x, z)`: the floor search and carved pocket. `UnderdarkTravel`: `descend`, `sendTo`, `back` and `teleport`, with the return spot in the player's persistent data under `dndUnderdark.Return`. `UnderdarkTravel.AFTER_TRAVEL` (player, from, to) fires after every trip in or out, so followers such as hirelings can come along. Log lines: `[Underdark] <player> descends at x y z (found|carved)` and `[Underdark] <player> returns to ...`.
+- `UnderdarkLanding.findOrMake(world, x, z)`: the floor search and carved pocket. `UnderdarkTravel`: `descend`, `sendTo`, `back` and `teleport`, with the return spot in the player's persistent data under `dndUnderdark.Return`. `UnderdarkTravel.AFTER_TRAVEL` (player, from, to) fires after every trip in or out, so followers such as hirelings can come along. The rift trips are `riftDown`/`riftUp` (see [Underdark Rifts](../structures/underdark-rifts.md#for-developers)). Log lines: `[Underdark] <player> descends at x y z (landing|found|carved)` and `[Underdark] <player> returns to ...`.
 - `UnderdarkSurvey` backs `/underdark survey`.
 - Client: `client/UnderdarkEffects` (no sky or clouds, biome fog unchanged, darkened lightmap, thick fog over the Darklake's water: `isMisty`, logging `[Underdark] Darklake mist on|off`), registered for the dimension type's `effects` id `dndclasses:underdark`.
 - Giant fungi: `world/underdark/feature/GiantZurkhwoodFeature`, `NightlightTowerFeature` (config `NightlightTowerConfig`: `min_height`, `max_height`), `ShelfFungusFeature` (Ripplebark clusters on walls), registered as `dndclasses:giant_zurkhwood`, `nightlight_tower` and `shelf_fungus` by `UnderdarkFeatures`; `FungusShapes` holds what they stand on and grow through, and dresses the cap blocks' faces. Their configured and placed features (with the lake life: `darklake_shore` discs, `pearl_clam`, `seagrass_patch`, `waterorb_patch`, `barrelstalk_patch`, `faerie_lichen`) are written by `tools/underdark_worldgen.py`, which also adds the biomes' `additions_sound`.

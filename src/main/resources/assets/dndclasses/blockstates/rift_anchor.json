@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "top=false": {
+      "model": "dndclasses:block/rift_anchor"
+    },
+    "top=true": {
+      "model": "dndclasses:block/rift_anchor_crystal"
+    }
+  }
+}

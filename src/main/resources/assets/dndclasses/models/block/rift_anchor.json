@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "dndclasses:block/rift_anchor_top",
+    "side": "dndclasses:block/rift_anchor"
+  }
+}

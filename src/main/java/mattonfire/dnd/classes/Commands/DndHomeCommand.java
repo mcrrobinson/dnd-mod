@@ -58,6 +58,9 @@ import net.minecraft.util.math.BlockPos;
  * /dndhome sanctumsurvey [grid] [spacing]: from a grid of points round you in the Nether, finds the nearest
  * sanctum to each and checks its biome, pieces, that no lava lies under it and that it doesn't clip the ceiling
  * (logged as {@code [SanctumSurvey]}).
+ * /dndhome rift [top|mouth|floor|ledge|pool|step &lt;k&gt;], riftlanding, riftlair, riftsurvey [grid] [spacing], riftseeds
+ * [seeds]:
+ * the Underdark Rifts' teleports and checks ({@link RiftCommands}).
  */
 public final class DndHomeCommand {
     private DndHomeCommand() {
@@ -113,6 +116,28 @@ public final class DndHomeCommand {
                                 .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
                                         .executes(context -> CogsdeepCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
                                                 IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("rift")
+                        .executes(context -> RiftCommands.teleport(context, "ledge", 0))
+                        .then(CommandManager.literal("step")
+                                .then(CommandManager.argument("k", IntegerArgumentType.integer(0))
+                                        .executes(context -> RiftCommands.teleport(context, "step",
+                                                IntegerArgumentType.getInteger(context, "k")))))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> RiftCommands.teleport(context, StringArgumentType.getString(context, "spot"), 0))))
+                .then(CommandManager.literal("riftlanding").executes(RiftCommands::landing))
+                .then(CommandManager.literal("riftlair").executes(RiftCommands::lair))
+                .then(CommandManager.literal("riftsurvey")
+                        .executes(context -> RiftCommands.survey(context, 3, 1000))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> RiftCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 1000))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> RiftCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("riftseeds")
+                        .executes(context -> RiftCommands.seeds(context, java.util.List.of()))
+                        .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
+                                .executes(context -> RiftCommands.seeds(context,
+                                        RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
                 .then(CommandManager.literal("bloodsworn")
                         .then(CommandManager.argument("players", EntityArgumentType.players())
                                 .then(CommandManager.argument("sworn", com.mojang.brigadier.arguments.BoolArgumentType.bool())

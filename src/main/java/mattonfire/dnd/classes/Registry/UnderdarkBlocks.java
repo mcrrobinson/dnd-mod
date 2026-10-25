@@ -44,9 +44,10 @@ public final class UnderdarkBlocks {
     /** Deepslate veined with glowing violet faerzress (light 5). */
     public static final FaerzressStoneBlock FAERZRESS_STONE = new FaerzressStoneBlock(
             FabricBlockSettings.copyOf(Blocks.DEEPSLATE).mapColor(MapColor.PURPLE).luminance(state -> 5));
-    /** A small glowing blue mushroom (light 6), happy in any light. */
-    public static final UnderdarkFungusBlock BLUECAP = new UnderdarkFungusBlock(fungus(MapColor.BLUE).luminance(state -> 6));
-    /** A small grey-tan mushroom (food in T3). */
+    /** A small glowing blue mushroom (light 6), happy in any light. Bone meal grows it into a small nightlight tower. */
+    public static final UnderdarkFungusBlock BLUECAP = new mattonfire.dnd.classes.Blocks.underdark.BluecapBlock(
+            fungus(MapColor.BLUE).luminance(state -> 6));
+    /** A small grey-tan mushroom. Breaking it gives Trillimac Slices (UnderdarkFlora). */
     public static final UnderdarkFungusBlock TRILLIMAC = new UnderdarkFungusBlock(fungus(MapColor.PALE_YELLOW));
 
     private UnderdarkBlocks() {

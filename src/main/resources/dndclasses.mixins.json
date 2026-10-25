@@ -95,7 +95,8 @@
         "SavingThrowMixin",
         "ConditionsTrackerMixin",
         "ConditionMobMixin",
-        "ConditionMilkMixin"
+        "ConditionMilkMixin",
+        "NoiseChunkGeneratorFluidMixin"
     ],
     "client": [
         "IntegratedServerLoaderMixin",

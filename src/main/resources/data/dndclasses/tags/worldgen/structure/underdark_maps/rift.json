@@ -1,0 +1,13 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "dndclasses:rift_landing",
+      "required": false
+    },
+    {
+      "id": "dndclasses:underdark_rift",
+      "required": false
+    }
+  ]
+}

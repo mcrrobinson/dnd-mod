@@ -24,10 +24,11 @@ import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import mattonfire.dnd.world.GameTime;
+import mattonfire.dnd.world.underdark.Underdark;
 
 /**
  * Picks the mod's music for game events, in priority order: boss fight, low health, dungeon,
- * Nether Fortress, travelling, night.
+ * Nether Fortress, the Underdark, travelling, night.
  * The boss fight slot also carries goblin raid music and the DM's mood track (/dm mood, BossMusic.MOOD_BAR).
  * A real fight (boss or raid) plays over the mood; between fights the first one the player got wins.
  * In one of the mod's dungeons the "Dungeon" slot plays the dungeon theme's loop (the server sends the
@@ -43,6 +44,8 @@ public class EventMusic {
         LOW_HEALTH(new MusicSound(entry(ModSounds.MUSIC_LOW_HEALTH), 0, 0, true)),
         DUNGEON(new MusicSound(entry(ModSounds.MUSIC_DUNGEON), 600, 2400, false)),
         NETHER_FORTRESS(new MusicSound(entry(ModSounds.MUSIC_NETHER_FORTRESS), 200, 1200, false)),
+        // Anywhere in the Underdark, which has no day, night or travel music of its own
+        UNDERDARK(new MusicSound(entry(ModSounds.MUSIC_UNDERDARK), 1200, 4800, false)),
         TRAVEL(new MusicSound(entry(ModSounds.MUSIC_TRAVEL), 1200, 6000, false)),
         NIGHT(new MusicSound(entry(ModSounds.MUSIC_NIGHT), 1200, 6000, false));
 
@@ -247,6 +250,9 @@ public class EventMusic {
         }
         if (nearFortress) {
             return Event.NETHER_FORTRESS;
+        }
+        if (Underdark.isUnderdark(player.world)) {
+            return Event.UNDERDARK;
         }
         if (player.world.getRegistryKey() != World.OVERWORLD) {
             return Event.NONE;

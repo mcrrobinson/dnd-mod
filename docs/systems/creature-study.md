@@ -11,7 +11,7 @@ The creature's group decides the skill. The groups come from entity type tags, c
 |-|-|-|-|
 | Undead | `#dndclasses:lore/undead` | Religion (INT) | zombies, skeletons, phantoms, Wither, Lich, Bone Wyvern |
 | Humanoid | `#dndclasses:lore/humanoid` | Insight (WIS) | goblins, hobbits, dwarves, elves, villagers, illagers, witches, piglins |
-| Arcane | `#dndclasses:lore/arcane` | Arcana (INT) | Beholder, Mimic, Gelatinous Cube, wyverns and dragons, endermen, blazes, slimes, Warden |
+| Arcane | `#dndclasses:lore/arcane` | Arcana (INT) | Beholder, Mimic, Gelatinous Cube, Mind Flayer, wyverns and dragons, endermen, blazes, slimes, Warden |
 | Beast | `#dndclasses:lore/beasts` | Nature (INT) | Owlbear, River Pikehorn, Magmamunchers, spiders, wolves, hoglins |
 
 A creature in none of the tags falls back on its kind: the undead group goes to Religion, illagers and traders to Insight, other monsters to Arcana, and everything else (animals) to Nature.
@@ -36,6 +36,7 @@ Example: a level 1 Wizard has Arcana +4 (INT 15, proficient), so against a Frost
   - Frost Drake: fire deals +50% damage.
   - Lich: its soul hides in a phylactery (smash that first or it reforms); Necromancers deal +50% damage to it.
   - Owlbear: while it hugs you, 6 damage breaks its grip.
+  - Troll: fire or acid stops it healing; burn it once it falls or it gets back up.
   - Any undead: potions of Healing hurt it and Harming heals it.
   - Others: "No weakness worth knowing".
 - **Failure or natural 1:** you can't study that creature type again for **60 s** ("You can't recall more about the ... yet (Ns)"). Other types are unaffected.

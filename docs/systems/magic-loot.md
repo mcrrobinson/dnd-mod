@@ -8,7 +8,7 @@ Where [magic items](magic-items.md) turn up in the world. Every source rolls on 
 | Table | +N gear (weight) | Named items (weight) | Chance of a named item |
 |-|-|-|-|
 | Uncommon | +1 iron gear (swords and axes 8, armor 5), +1 diamond gear (3/2), bow 6, crossbow 4, trident 2 | Cloak of Protection 6, Wand of Magic Missiles 2, Immovable Rod, Bag of Holding, Decanter of Endless Water, Periapt of Wound Closure 1 each | 12 in 74 (16%) |
-| Rare | +2 iron gear (4/3), +2 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Ring of Protection 6; Staff of Ice, Fire and Lightning 2 each; Amulet of Health, Doss Lute, Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption 1 each | 20 in 80 (25%) |
+| Rare | +2 iron gear (4/3), +2 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Ring of Protection 6; Staff of Ice, Fire and Lightning 2 each; Amulet of Health, Doss Lute, Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Gorgon's Gaze 1 each | 21 in 81 (26%) |
 | Very Rare | +3 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Frostbrand 2, Tome of Clear Thought 2, Phylactery Locket 1, The Burglar's Ring 1 | 6 in 46 (13%) |
 | Legendary | +3 netherite gear (6/4), bow 4, crossbow 3, trident 3 | Eye of the Tyrant 6 | 6 in 44 (14%) |
 
@@ -40,6 +40,7 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
 | [Goblin Warlord](../bosses/goblin-warlord.md), [Magmamuncher Alpha](../bosses/magmamuncher-alpha.md), [Orc War Chief](../bosses/orc-war-chief.md) (player kill) | 50%: Rare | their trophies (boss drops) |
 | [Lich](../bosses/lich.md) (final kill), [Beholder](../bosses/beholder.md) (player kill) | 1 roll: Very Rare (80) / Legendary (20) | Tome of Clear Thought 10% each, plus their trophies |
+| [Medusa](../bosses/medusa.md) (player kill) | 1 roll: Rare | Gorgon's Gaze 25% (+5% per Looting level) |
 | [Mimic](../mobs/mimic.md) (player kill, on top of its chest's loot) | 25%: Uncommon | Bag of Holding 10% |
 | [River Pikehorn](../mobs/dragons.md) (player kill) | | Decanter of Endless Water 5% |
 | Minor bounty spoils (`gameplay/bounty_minor`) | 10%: Uncommon, **identified** | Wand of Magic Missiles 5% (identified) |

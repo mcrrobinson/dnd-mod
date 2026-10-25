@@ -68,7 +68,7 @@ No config options. `doMobLoot` controls loot as usual. On Peaceful, Liches and p
 - The library spawn spots come from vanilla's library layout.
 
 ## For developers
-- `entity/LichEntity.java`: phases (`BossFight`), blinking, the phylactery link, the lair leash, rivalry, dialogue, and `registerEvents()` (no friendly fire, via `ALLOW_DAMAGE`).
+- `entity/LichEntity.java`: phases (`BossFight`), blinking (through the shared `entity/ai/Blink.java`, which skips spots more than 3 blocks below the try), the phylactery link, the lair leash, rivalry, dialogue, and `registerEvents()` (no friendly fire, via `ALLOW_DAMAGE`).
 - `entity/LichSpells.java`: the spells (choice, wind-up, cooldowns, Wither Bolt, Ray of Frost, Frost Nova, Raise Dead). `entity/LichBoltEntity.java`: the block-safe wither skull. `entity/ai/goal/CasterMovementGoal.java`: keeping a caster's distance.
 - `entity/BossSaves.java`: the Frost Nova and Dread Presence `MobSaveInfo` entries, `BOSS_DC` / `LAST_PHASE_DC`, `DREAD_RADIUS` (24) and `DREAD_FRIGHTENED_TICKS` (160); the Frightened condition has key `dread`, the `fear` save tag and a repeat save every `FEAR_REPEAT_TICKS` (60). `LichSpells.castFrostNova` rolls one save per nova (exposure tag `nova`); `LichEntity.dreadPresence()` runs from both phase callbacks and from `PhylacteryEntity.reformLich`, at most once per tick, with exposure tag `dread`, the `fear` tag and Necromancer advantage. `isLastPhase()` is phase 2 (below 30%).
 - `entity/PhylacteryEntity.java`: the reform timer, defending, and final-death rewards. Uses `BossFight.grantAdvancement`.

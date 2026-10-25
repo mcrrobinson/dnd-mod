@@ -1,0 +1,8 @@
+{
+  "name": "Rust Monster Nest",
+  "difficulty": "medium",
+  "spread": 3,
+  "spawns": [
+    {"entity": "dndclasses:rust_monster", "count": 2}
+  ]
+}

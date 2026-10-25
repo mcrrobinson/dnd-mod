@@ -132,7 +132,7 @@ public class ClericSkills extends ClassSkills {
                 passive("cleric.preserve_life", "Preserve Life",
                         "Below 30% health, gain Regeneration II for 5 seconds (once a minute).",
                         "minecraft:golden_apple", 1, 2, 3, "cleric.sanctuary"),
-                active("cleric.cure_wounds", "Cure Wounds", "Heal you and allies within 8 blocks by 4 hearts.",
+                active("cleric.cure_wounds", "Cure Wounds", "Heal you and allies within 8 blocks by 4 hearts, and end one condition on each (Petrified, Paralyzed, Blinded, Poisoned or Frightened).",
                         "minecraft:glistering_melon_slice", 4, 1, 2, 2, "cleric.preserve_life"),
                 passive("cleric.smite_undead", "Smite Undead", "Deal 50% more damage to undead.",
                         "minecraft:golden_sword", 1, 2, 1, "cleric.cure_wounds"),
@@ -191,6 +191,8 @@ public class ClericSkills extends ClassSkills {
         switch (node.id()) {
             case "cleric.cure_wounds" -> {
                 for (LivingEntity ally : alliesNear(player, 8)) {
+                    // Ends one condition first: a Petrified ally can't be healed until the stone falls away
+                    mattonfire.dnd.classes.Abilities.ClassConditionFeatures.cureOne(player, ally);
                     ally.heal(mattonfire.dnd.classes.Party.PartySynergies.triage(player, ally,
                             discipleOfLife(player, CURE_WOUNDS_HEAL)));
                     world.spawnParticles(ParticleTypes.HEART, ally.getX(), ally.getY() + 1.5, ally.getZ(), 4, 0.4,

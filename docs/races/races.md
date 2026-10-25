@@ -17,7 +17,7 @@ Every player picks a **race** along with their class: Human, Elf, Dwarf, Halflin
 | Race | Ability bonuses | Size | Stat modifiers | Traits |
 |-|-|-|-|-|
 | **Human** | +1 to all six | Medium (1.0) | none | **Ambitious**: +10% class XP from every source<br>**Diplomat**: +2 on Persuasion and other social checks |
-| **Elf** | DEX +2, WIS +1 | Medium (1.0) | Speed +5% | **Darkvision**: caves are dim but readable<br>**Keen Senses**: while sneaking, see hostile mobs within 12 blocks through walls<br>**Trance**: never need sleep, so phantoms never come for you |
+| **Elf** | DEX +2, WIS +1 | Medium (1.0) | Speed +5% | **Darkvision**: caves are dim but readable<br>**Keen Senses**: while sneaking, see hostile mobs within 12 blocks through walls<br>**Trance**: never need sleep, so phantoms never come for you<br>**Fey Ancestry**: advantage on saves against being charmed |
 | **Dwarf** | CON +2, STR +1 | Stocky (0.85) | Speed -8%<br>Max health +1 heart<br>Knockback resistance +20% | **Darkvision**: caves are dim but readable<br>**Dwarven Resilience**: poison lasts half as long and hurts half as much<br>**Stonecunning**: mine stone, deepslate and ores 20% faster |
 | **Halfling** | DEX +2, CHA +1 | Small (0.65) | Attack reach -0.5 blocks | **Lucky**: a natural 1 on a d20 is rerolled once<br>**Small**: sneak through one-block gaps<br>**Second Breakfast**: food restores one extra hunger point |
 | **Gnome** | INT +2, DEX +1 | Small (0.65) | Attack reach -0.5 blocks | **Darkvision**: caves are dim but readable<br>**Gnome Cunning**: 30% less damage from magic<br>**Tinker**: crafting a redstone component has a 25% chance to make one extra |

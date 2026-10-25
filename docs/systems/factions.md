@@ -143,7 +143,8 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
 | `betrayal` | Kill change used instead while you're Neutral or better with this faction |
 | `enemy_kills` | `{"<faction>": n}`: gain for killing a member of that faction (capped by `kill_cap`) |
 | `enemy_kill_overrides` | `{"<matcher>": n}`: uncapped gain for particular enemies (bosses) |
-| `kill_cap` | Daily cap on `enemy_kills` gains (0 = none) |
+| `kill_cap` | Daily cap on `enemy_kills` and `monster_kills` gains (0 = none) |
+| `monster_kills` | `{"<matcher>": n}`: gain for killing a creature that isn't in an enemy faction (capped by `kill_cap`). The Mountain Dwarves have `{"dndclasses:rust_monster": 3}` |
 | `raid_won` | Gain when a goblin raid on one of `settlements` is won, scaled by the settlement's health left (see [Goblin raids](goblin-raids.md)) |
 | `raid_lost` | Change when a goblin raid on one of `settlements` is lost: the settlement's health ran out |
 | `raid_defeated` | Change when a raid by this faction's members is beaten |

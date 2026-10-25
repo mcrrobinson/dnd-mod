@@ -143,7 +143,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons
 - [Dwarven Ruin & Beholder lair blocks](items/ruin-blocks.md): Fallen Runic Bricks (cracked, mossy), Collapsed Rubble layers, Tarnished Gilding, Ray-glazed Stone, Petrified Remains and Eye-Stalk Growths, placed in the Ruin and the lair
 - [Adventuring blocks](items/adventuring-blocks.md): Bedrolls (a long rest like a bed, no spawn point), the Adventurer's Signpost naming a dungeon and its Challenge tier, Wanted Posters, Tavern Tables and Benches in oak, spruce, dark oak and Heartwood
-- [Underdark blocks](items/underdark-blocks.md): Zurkhwood Stem, Cap and Planks (non-flammable wood family), glowing Nightlight Caps, Fungal Loam, Faerzress Stone, Bluecaps and Trillimacs; the drow and duergar building blocks (Drowstone, Polished Faerzress, Spider Sigil Stone, Faerie Fire Lanterns, Spidersilk, Web Bridges, Greysteel, Basalt Forge Bricks, Duergar Braziers, lockable Chain Cages)
+- [Underdark blocks](items/underdark-blocks.md): Zurkhwood Stem, Cap and Planks (non-flammable wood family), glowing Nightlight Caps, Fungal Loam, Faerzress Stone, Bluecaps and Trillimacs; the drow and duergar building blocks (Drowstone, Polished Faerzress, Spider Sigil Stone, Faerie Fire Lanterns, Spidersilk, Web Bridges, Greysteel, Basalt Forge Bricks, Duergar Braziers, lockable Chain Cages) (PR #282)
 
 ## Music
 - [Music](music.md): event music, dungeon theme loops and clear stings, class stings and music discs

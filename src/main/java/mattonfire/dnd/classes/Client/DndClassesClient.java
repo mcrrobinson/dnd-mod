@@ -310,6 +310,10 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
                 net.minecraft.client.render.RenderLayer.getCutout(),
                 mattonfire.dnd.classes.Registry.UnderdarkBlocks.cutoutBlocks().toArray(net.minecraft.block.Block[]::new));
+        // Underdark building blocks: the lantern, curtain, web bridge, brazier and cage have see-through gaps
+        net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE.putBlocks(
+                net.minecraft.client.render.RenderLayer.getCutout(),
+                mattonfire.dnd.classes.Registry.UnderdarkBlocks.buildingCutoutBlocks().toArray(net.minecraft.block.Block[]::new));
         mattonfire.dnd.client.UnderdarkEffects.register();
         // Desolate settlements' Tattered Carpets have holes torn through
         for (net.minecraft.block.Block carpet : mattonfire.dnd.classes.Registry.DesolateBlocks.tatteredCarpets()) {

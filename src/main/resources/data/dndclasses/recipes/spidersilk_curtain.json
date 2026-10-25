@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": {
+      "item": "dndclasses:spidersilk"
+    }
+  },
+  "pattern": [
+    "SS",
+    "SS",
+    "SS"
+  ],
+  "result": {
+    "count": 3,
+    "item": "dndclasses:spidersilk_curtain"
+  },
+  "show_notification": true,
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:registry_contains",
+      "values": [
+        "dndclasses:spidersilk"
+      ]
+    }
+  ]
+}

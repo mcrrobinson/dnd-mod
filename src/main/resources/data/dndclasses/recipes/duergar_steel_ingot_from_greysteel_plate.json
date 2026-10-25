@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "dndclasses:greysteel_plate"
+    }
+  ],
+  "result": {
+    "count": 9,
+    "item": "dndclasses:duergar_steel_ingot"
+  }
+}

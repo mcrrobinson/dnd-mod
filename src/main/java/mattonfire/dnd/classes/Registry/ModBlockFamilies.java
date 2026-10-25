@@ -196,6 +196,22 @@ public final class ModBlockFamilies {
     public static final BlockFamily ZURKHWOOD_PLANKS = BlockFamily.builder("zurkhwood_planks", Blocks.CRIMSON_PLANKS)
             .stem("zurkhwood").stairs().slab().fence().fenceGate(WoodType.CRIMSON).door(BlockSetType.CRIMSON)
             .trapdoor(BlockSetType.CRIMSON).build();
+    // --- Underdark building blocks (drow and duergar) ---
+    /** The drow's tower stone: black bricks with a faint violet sheen, and a fluted pillar. */
+    public static final BlockFamily DROWSTONE_BRICKS = BlockFamily.builder("drowstone_bricks",
+            FabricBlockSettings.copyOf(Blocks.POLISHED_BLACKSTONE_BRICKS).mapColor(MapColor.BLACK)).stoneShapes()
+            .pillar().build();
+    /** Faerzress Stone ground smooth, its violet veins still glowing (light 5). */
+    public static final BlockFamily POLISHED_FAERZRESS = BlockFamily.builder("polished_faerzress",
+            FabricBlockSettings.copyOf(Blocks.POLISHED_DEEPSLATE).mapColor(MapColor.PURPLE).luminance(state -> 5))
+            .stoneShapes().build();
+    /** Soot-dark duergar steel plates with red-hot rivets. Its trapdoor only opens to redstone, like iron's. */
+    public static final BlockFamily GREYSTEEL_PLATE = BlockFamily.builder("greysteel_plate",
+            FabricBlockSettings.copyOf(Blocks.IRON_BLOCK).mapColor(MapColor.DEEPSLATE_GRAY)).stem("greysteel")
+            .stairs().slab().trapdoor(BlockSetType.IRON).build();
+    /** The duergar forges' dark basalt bricks with ember-glow mortar (painted on: it gives no light). */
+    public static final BlockFamily BASALT_FORGE_BRICKS = BlockFamily
+            .builder("basalt_forge_bricks", Blocks.POLISHED_BASALT).axisBase().stoneShapes().build();
 
     private ModBlockFamilies() {
     }

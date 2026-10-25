@@ -17,6 +17,9 @@
     "dndclasses:ray_glazed_stone_wall",
     "dndclasses:ember_dragonstone_wall",
     "dndclasses:frost_dragonstone_wall",
-    "dndclasses:storm_dragonstone_wall"
+    "dndclasses:storm_dragonstone_wall",
+    "dndclasses:drowstone_brick_wall",
+    "dndclasses:polished_faerzress_wall",
+    "dndclasses:basalt_forge_brick_wall"
   ]
 }

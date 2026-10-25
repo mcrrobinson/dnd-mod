@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/drowstone_brick_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/drowstone_bricks"
+    },
+    "type=top": {
+      "model": "dndclasses:block/drowstone_brick_slab_top"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "dndclasses:block/basalt_forge_bricks_top",
+    "side": "dndclasses:block/basalt_forge_bricks"
+  }
+}

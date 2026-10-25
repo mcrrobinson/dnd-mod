@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:greysteel_plate"
+  },
+  "result": "dndclasses:greysteel_slab"
+}

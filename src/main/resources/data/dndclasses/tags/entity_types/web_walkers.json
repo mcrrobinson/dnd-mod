@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:spider",
+    "minecraft:cave_spider",
+    {
+      "id": "#dndclasses:faction/drow",
+      "required": false
+    }
+  ]
+}

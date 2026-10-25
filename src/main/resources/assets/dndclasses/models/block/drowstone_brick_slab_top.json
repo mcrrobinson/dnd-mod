@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "dndclasses:block/drowstone_bricks",
+    "side": "dndclasses:block/drowstone_bricks",
+    "top": "dndclasses:block/drowstone_bricks"
+  }
+}

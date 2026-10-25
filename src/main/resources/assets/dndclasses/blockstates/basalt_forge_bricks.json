@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "dndclasses:block/basalt_forge_bricks_horizontal",
+      "x": 90,
+      "y": 90
+    },
+    "axis=y": {
+      "model": "dndclasses:block/basalt_forge_bricks"
+    },
+    "axis=z": {
+      "model": "dndclasses:block/basalt_forge_bricks_horizontal",
+      "x": 90
+    }
+  }
+}

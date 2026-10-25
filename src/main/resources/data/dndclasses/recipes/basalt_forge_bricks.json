@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "#": {
+      "item": "minecraft:polished_basalt"
+    },
+    "M": {
+      "item": "minecraft:magma_cream"
+    }
+  },
+  "pattern": [
+    "###",
+    "#M#",
+    "###"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:basalt_forge_bricks"
+  },
+  "show_notification": true
+}

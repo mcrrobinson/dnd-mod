@@ -265,6 +265,42 @@ public final class Lockpicking {
         return ActionResult.FAIL;
     }
 
+    /**
+     * Picks a lock that isn't a chest's (e.g. a locked Chain Cage): the same Rogue-only Thieves' Tools roll, HUD,
+     * sounds and retry wait as a locked chest, against {@code dc}. Anyone else gets {@code lockedMessage} on the
+     * action bar. The caller unlocks the block on success. Server side only.
+     */
+    public static boolean pickLock(PlayerEntity player, World world, BlockPos pos, int dc, String lockedMessage) {
+        if (D20.classOf(player) != DndCharacter.ROGUE) {
+            player.sendMessage(Text.translatable(lockedMessage), true);
+            world.playSound(null, pos, SoundEvents.BLOCK_CHEST_LOCKED, SoundCategory.BLOCKS, 1.0f, 1.0f);
+            return false;
+        }
+        long now = world.getTime();
+        Long retryAt = RETRY_AT.get(player.getUuid());
+        if (retryAt != null && now < retryAt) {
+            player.sendMessage(Text.translatable("skill.dndclasses.lockpicking.steady"), true);
+            return false;
+        }
+        D20.Roll roll = SkillCheck.builder(player, Skill.THIEVES_TOOLS, dc, "lock").label(D20.LOCKPICKING).roll();
+        if (roll.outcome().succeeded()) {
+            RETRY_AT.remove(player.getUuid());
+            D20.show(player, roll, Text.translatable(roll.outcome() == D20.Outcome.CRITICAL
+                    ? "skill.dndclasses.lockpicking.critical"
+                    : "skill.dndclasses.lockpicking.success"));
+            world.playSound(null, pos, SoundEvents.BLOCK_IRON_TRAPDOOR_OPEN, SoundCategory.BLOCKS, 0.6f, 1.6f);
+            return true;
+        }
+        boolean fumble = roll.outcome() == D20.Outcome.FUMBLE;
+        RETRY_AT.put(player.getUuid(), now + (fumble ? FUMBLE_COOLDOWN_TICKS : FAIL_COOLDOWN_TICKS));
+        D20.show(player, roll, Text.translatable(fumble
+                ? "skill.dndclasses.lockpicking.fumble"
+                : "skill.dndclasses.lockpicking.failure"));
+        world.playSound(null, pos, fumble ? SoundEvents.ENTITY_ITEM_BREAK : SoundEvents.BLOCK_CHEST_LOCKED,
+                SoundCategory.BLOCKS, 0.8f, fumble ? 1.4f : 1.0f);
+        return false;
+    }
+
     private static void unlock(World world, BlockPos pos, PlayerEntity player) {
         if (world.getBlockEntity(pos) instanceof ChestBlockEntity chest) {
             chest.checkLootInteraction(player);

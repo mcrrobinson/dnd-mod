@@ -1,0 +1,233 @@
+# Checks the Underdark building blocks (docs/items/underdark-blocks.md, design 9 T6): a showcase, drops, the
+# stonecutter, a few recipes, the lockable Chain Cage, the Spidersilk Curtain's slow, and the Duergar Brazier.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/underdark-building-blocks.txt
+# Expect in latest.log:
+# - each /loot line drops its own block ("Dropped 1 [...]"), the slabs two when double
+# - stonecutter on Faerzress Stone: button 0 -> Polished Faerzress, button 1 -> 2 Polished Faerzress Slab (slot 1)
+# - crafting: 8 iron nuggets round a Faerzress Stone -> Faerie Fire Lantern; 9 Duergar Steel Ingots -> Greysteel Plate
+# - cage: a non-Rogue gets "Locked. A Rogue could pick it." and it stays shut ("Test failed" on open=true); a Rogue's
+#   rigged 2 fails ("the lock holds"), a rigged 18 picks it ("Test passed" on open=true,locked=false); in creative
+#   use toggles even a locked cage
+# - curtain: `speed` on open floor about 0.21-0.22 blocks/tick, inside the curtains about 0.065 (30%)
+# - brazier: the zombie standing in it loses health (Health below 20 after 5 s); the stand-in duergar (a husk, only
+#   when the test datapack tagging husks as duergar is installed) and a blaze (fire-immune) keep 20
+# - screenshots underdark-building-showcase, underdark-building-closeup, underdark-building-cage
+wait 40
+closescreen
+include _reset.txt
+/execute in minecraft:overworld run tp @s 300.5 152.5 0.5 0 22
+/gamemode creative
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule doTileDrops true
+/time set noon
+/fill 290 149 -4 316 149 30 minecraft:smooth_stone
+/fill 290 150 -4 316 158 30 minecraft:air
+/kill @e[type=!minecraft:player,x=290,y=145,z=-4,dx=26,dy=20,dz=34]
+# Showcase: drow row at the back, duergar row in front of it, silk on the right
+/setblock 292 150 8 dndclasses:drowstone_bricks
+/setblock 292 151 8 dndclasses:drowstone_bricks
+/setblock 293 150 8 dndclasses:drowstone_brick_stairs[facing=south]
+/setblock 294 150 8 dndclasses:drowstone_brick_slab
+/setblock 295 150 8 dndclasses:drowstone_brick_wall
+/setblock 296 150 8 dndclasses:drowstone_brick_pillar
+/setblock 296 151 8 dndclasses:drowstone_brick_pillar
+/setblock 297 150 8 dndclasses:spider_sigil_stone[facing=north]
+/setblock 297 151 8 dndclasses:spider_sigil_stone[facing=north]
+/setblock 298 150 8 dndclasses:polished_faerzress
+/setblock 299 150 8 dndclasses:polished_faerzress_stairs[facing=south]
+/setblock 300 150 8 dndclasses:polished_faerzress_slab
+/setblock 301 150 8 dndclasses:polished_faerzress_wall
+/setblock 302 150 8 dndclasses:faerie_lantern
+/setblock 303 152 8 dndclasses:drowstone_bricks
+/setblock 303 151 8 dndclasses:faerie_lantern[hanging=true]
+/setblock 304 150 8 dndclasses:spidersilk_block
+/setblock 305 150 8 dndclasses:spidersilk_carpet
+/fill 306 150 8 306 151 8 dndclasses:spidersilk_curtain
+/setblock 307 150 8 dndclasses:drowstone_bricks
+/setblock 307 151 8 dndclasses:web_bridge
+/setblock 308 151 8 dndclasses:web_bridge
+/setblock 309 150 8 dndclasses:drowstone_bricks
+/setblock 309 151 8 dndclasses:drowstone_bricks
+/setblock 292 150 5 dndclasses:greysteel_plate
+/setblock 293 150 5 dndclasses:greysteel_stairs[facing=south]
+/setblock 294 150 5 dndclasses:greysteel_slab
+/setblock 295 150 5 dndclasses:greysteel_trapdoor[facing=south,half=bottom]
+/setblock 296 150 5 dndclasses:basalt_forge_bricks
+/setblock 296 151 5 dndclasses:basalt_forge_bricks
+/setblock 297 150 5 dndclasses:basalt_forge_brick_stairs[facing=south]
+/setblock 298 150 5 dndclasses:basalt_forge_brick_slab
+/setblock 299 150 5 dndclasses:basalt_forge_brick_wall
+/setblock 300 150 5 dndclasses:basalt_forge_bricks[axis=x]
+/setblock 302 150 5 dndclasses:duergar_brazier
+/setblock 304 150 5 dndclasses:chain_cage[facing=south]
+/setblock 305 150 5 dndclasses:chain_cage[facing=south,open=true]
+/setblock 306 150 5 minecraft:iron_bars
+/tp @s 300.5 152.5 0.5 0 22
+wait 60
+hud off
+screenshot underdark-building-showcase
+/tp @s 302.5 151.2 2.6 20 25
+wait 30
+screenshot underdark-building-closeup
+hud on
+# Drops: /loot simulates mining each block
+/setblock 294 151 8 dndclasses:drowstone_brick_slab[type=double]
+/loot spawn 300 153 2 mine 292 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 293 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 294 151 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 295 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 296 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 297 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 298 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 301 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 302 150 8 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 304 150 8 minecraft:air
+/loot spawn 300 153 2 mine 305 150 8 minecraft:air
+/loot spawn 300 153 2 mine 306 150 8 minecraft:air
+/loot spawn 300 153 2 mine 307 151 8 minecraft:air
+/loot spawn 300 153 2 mine 292 150 5 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 293 150 5 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 295 150 5 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 296 150 5 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 299 150 5 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 302 150 5 minecraft:diamond_pickaxe
+/loot spawn 300 153 2 mine 304 150 5 minecraft:diamond_pickaxe
+/kill @e[type=minecraft:item]
+# Stonecutter (slots: 0 input, 1 output, 2-28 inventory, 29-37 hotbar)
+/clear @s
+/give @s dndclasses:faerzress_stone 4
+/setblock 300 150 0 minecraft:stonecutter
+/tp @s 300.5 150 -1.5 0 30
+wait 10
+hotbar 1
+use
+wait 10
+slot 29
+slot 0
+wait 3
+button 0
+wait 3
+slots
+button 1
+wait 3
+slots
+closescreen
+/setblock 300 150 0 minecraft:air
+# Crafting (slots: 0 result, 1-9 grid, 10-36 inventory, 37-45 hotbar)
+/clear @s
+/give @s minecraft:iron_nugget 8
+/give @s dndclasses:faerzress_stone
+/setblock 300 150 0 minecraft:crafting_table
+wait 5
+use
+wait 10
+slot 37
+slot 1 pickup 1
+slot 2 pickup 1
+slot 3 pickup 1
+slot 4 pickup 1
+slot 6 pickup 1
+slot 7 pickup 1
+slot 8 pickup 1
+slot 9 pickup 1
+slot 38
+slot 5
+wait 5
+slots
+closescreen
+/clear @s
+/give @s dndclasses:duergar_steel_ingot 9
+wait 5
+use
+wait 10
+slot 37
+slot 1 pickup 1
+slot 2 pickup 1
+slot 3 pickup 1
+slot 4 pickup 1
+slot 5 pickup 1
+slot 6 pickup 1
+slot 7 pickup 1
+slot 8 pickup 1
+slot 9 pickup 1
+wait 5
+slots
+closescreen
+/setblock 300 150 0 minecraft:air
+/clear @s
+# Chain Cage: locked, a non-Rogue can't open it; a Rogue picks it (rigged rolls)
+/setblock 300 150 2 dndclasses:chain_cage[facing=north,locked=true]
+/gamemode survival
+/tp @s 300.5 150 0.5 0 30
+wait 10
+use
+wait 10
+actionbar
+/execute if block 300 150 2 dndclasses:chain_cage[open=true]
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+/dndclass forceroll @s clear
+wait 5
+/dndclass forceroll @s 2
+use
+wait 20
+/execute if block 300 150 2 dndclasses:chain_cage[open=true]
+wait 40
+/dndclass forceroll @s 18
+use
+wait 20
+screenshot underdark-building-cage
+/execute if block 300 150 2 dndclasses:chain_cage[open=true,locked=false]
+# Creative: a locked cage opens anyway
+/gamemode creative
+/setblock 300 150 2 dndclasses:chain_cage[facing=north,locked=true]
+wait 5
+use
+wait 5
+/execute if block 300 150 2 dndclasses:chain_cage[open=true,locked=true]
+/setblock 300 150 2 minecraft:air
+/dndclass set @s none
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+# Spidersilk Curtain: walk on open floor, then through 8 blocks of curtain
+/gamemode survival
+/fill 310 150 10 310 151 17 dndclasses:spidersilk_curtain
+/tp @s 310.5 150 -2.5 0 0
+wait 10
+walk on
+wait 25
+speed
+wait 2
+speed
+wait 40
+speed
+wait 2
+speed
+wait 2
+speed
+walk off
+/gamemode creative
+/fill 310 150 10 310 151 17 minecraft:air
+# Duergar Brazier: a zombie standing in it burns; a stand-in duergar (husk) and a blaze don't
+/time set midnight
+# (Mobs need their AI: a NoAI mob never moves, so blocks never touch it. Glass cells keep them in the brazier.)
+/fill 293 149 13 295 153 15 minecraft:glass hollow
+/fill 296 149 13 298 153 15 minecraft:glass hollow
+/fill 299 149 13 301 153 15 minecraft:glass hollow
+/setblock 294 150 14 dndclasses:duergar_brazier
+/setblock 297 150 14 dndclasses:duergar_brazier
+/setblock 300 150 14 dndclasses:duergar_brazier
+/summon minecraft:zombie 294.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
+/summon minecraft:husk 297.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
+/summon minecraft:blaze 300.5 150.75 14.5 {Tags:["t6brazier"],PersistenceRequired:1b}
+/tp @s 297.5 151 9.5 0 20
+waitserver 100
+/data get entity @e[type=minecraft:zombie,tag=t6brazier,limit=1] Health
+/data get entity @e[type=minecraft:husk,tag=t6brazier,limit=1] Health
+/data get entity @e[type=minecraft:blaze,tag=t6brazier,limit=1] Health
+screenshot underdark-building-brazier
+/kill @e[tag=t6brazier]
+/time set noon
+quit

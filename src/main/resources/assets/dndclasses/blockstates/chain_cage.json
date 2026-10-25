@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=south,locked=false,open=false": {
+      "model": "dndclasses:block/chain_cage"
+    },
+    "facing=south,locked=true,open=false": {
+      "model": "dndclasses:block/chain_cage"
+    },
+    "facing=south,locked=false,open=true": {
+      "model": "dndclasses:block/chain_cage_open"
+    },
+    "facing=south,locked=true,open=true": {
+      "model": "dndclasses:block/chain_cage_open"
+    },
+    "facing=west,locked=false,open=false": {
+      "model": "dndclasses:block/chain_cage",
+      "y": 90
+    },
+    "facing=west,locked=true,open=false": {
+      "model": "dndclasses:block/chain_cage",
+      "y": 90
+    },
+    "facing=west,locked=false,open=true": {
+      "model": "dndclasses:block/chain_cage_open",
+      "y": 90
+    },
+    "facing=west,locked=true,open=true": {
+      "model": "dndclasses:block/chain_cage_open",
+      "y": 90
+    },
+    "facing=north,locked=false,open=false": {
+      "model": "dndclasses:block/chain_cage",
+      "y": 180
+    },
+    "facing=north,locked=true,open=false": {
+      "model": "dndclasses:block/chain_cage",
+      "y": 180
+    },
+    "facing=north,locked=false,open=true": {
+      "model": "dndclasses:block/chain_cage_open",
+      "y": 180
+    },
+    "facing=north,locked=true,open=true": {
+      "model": "dndclasses:block/chain_cage_open",
+      "y": 180
+    },
+    "facing=east,locked=false,open=false": {
+      "model": "dndclasses:block/chain_cage",
+      "y": 270
+    },
+    "facing=east,locked=true,open=false": {
+      "model": "dndclasses:block/chain_cage",
+      "y": 270
+    },
+    "facing=east,locked=false,open=true": {
+      "model": "dndclasses:block/chain_cage_open",
+      "y": 270
+    },
+    "facing=east,locked=true,open=true": {
+      "model": "dndclasses:block/chain_cage_open",
+      "y": 270
+    }
+  }
+}

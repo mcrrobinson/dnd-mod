@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:polished_faerzress"
+  },
+  "result": "dndclasses:polished_faerzress_stairs"
+}

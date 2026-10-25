@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "hanging=false": {
+      "model": "dndclasses:block/faerie_lantern"
+    },
+    "hanging=true": {
+      "model": "dndclasses:block/faerie_lantern_hanging"
+    }
+  }
+}

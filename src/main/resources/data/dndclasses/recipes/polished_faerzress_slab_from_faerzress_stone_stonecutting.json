@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:faerzress_stone"
+  },
+  "result": "dndclasses:polished_faerzress_slab"
+}

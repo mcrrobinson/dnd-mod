@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/polished_faerzress_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/polished_faerzress"
+    },
+    "type=top": {
+      "model": "dndclasses:block/polished_faerzress_slab_top"
+    }
+  }
+}

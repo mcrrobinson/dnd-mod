@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "F": {
+      "item": "dndclasses:faerzress_stone"
+    },
+    "B": {
+      "item": "minecraft:polished_blackstone"
+    },
+    "S": {
+      "item": "dndclasses:spidersilk"
+    }
+  },
+  "pattern": [
+    "FBF",
+    "BSB",
+    "FBF"
+  ],
+  "result": {
+    "count": 8,
+    "item": "dndclasses:drowstone_bricks"
+  },
+  "show_notification": true
+}

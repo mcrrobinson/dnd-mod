@@ -85,6 +85,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code sneak on|off} holds or releases the sneak key</li>
  * <li>{@code walk on|off} (or {@code forward on|off}) holds or releases the walk forward key, e.g. to crawl
  *     into a gap or to check movement is locked</li>
+ * <li>{@code speed} logs the player's horizontal speed over the last tick ({@code speed: 0.2159 blocks/tick at x y z}),
+ *     e.g. after a few ticks of {@code walk on} to compare open floor with a block that slows</li>
  * <li>{@code walkto <x> <z> [ticks]} holds the walk forward key and turns the player towards block x z (its
  *     centre, x.5 z.5) every tick, so it walks there over the real terrain (stairs, steps, collisions), until it's
  *     within 0.2 blocks or {@code ticks} (default 200) pass; logs {@code walkto x z: reached|timed out at x y z}.
@@ -468,6 +470,11 @@ public final class DevScript {
                 this.walkToTicks = args.length > 2 ? Integer.parseInt(args[2]) : 200;
             }
             case "walk", "forward" -> client.options.forwardKey.setPressed(argument.equals("on"));
+            case "speed" -> DnDClasses.LOGGER.info("[DevScript] speed: {} blocks/tick at {} {} {}",
+                    String.format("%.4f", Math.hypot(client.player.getX() - client.player.prevX,
+                            client.player.getZ() - client.player.prevZ)),
+                    String.format("%.2f", client.player.getX()), String.format("%.2f", client.player.getY()),
+                    String.format("%.2f", client.player.getZ()));
             case "sizes" -> logSizes(client);
             case "fov" -> client.options.getFov().setValue(Integer.parseInt(argument));
             case "holduse" -> client.options.useKey.setPressed(argument.equals("on"));

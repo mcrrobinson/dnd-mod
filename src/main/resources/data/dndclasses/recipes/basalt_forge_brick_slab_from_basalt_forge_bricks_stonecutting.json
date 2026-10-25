@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 2,
+  "ingredient": {
+    "item": "dndclasses:basalt_forge_bricks"
+  },
+  "result": "dndclasses:basalt_forge_brick_slab"
+}

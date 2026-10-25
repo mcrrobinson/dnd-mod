@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "N": {
+      "item": "minecraft:iron_nugget"
+    },
+    "F": {
+      "item": "dndclasses:faerzress_stone"
+    }
+  },
+  "pattern": [
+    "NNN",
+    "NFN",
+    "NNN"
+  ],
+  "result": {
+    "item": "dndclasses:faerie_lantern"
+  },
+  "show_notification": true
+}

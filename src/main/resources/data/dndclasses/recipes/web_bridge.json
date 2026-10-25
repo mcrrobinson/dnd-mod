@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "key": {
+    "S": {
+      "item": "dndclasses:spidersilk"
+    },
+    "P": {
+      "item": "dndclasses:zurkhwood_planks"
+    }
+  },
+  "pattern": [
+    "SSS",
+    "PPP"
+  ],
+  "result": {
+    "count": 6,
+    "item": "dndclasses:web_bridge"
+  },
+  "show_notification": true
+}

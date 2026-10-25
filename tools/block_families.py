@@ -244,6 +244,18 @@ FAMILIES = [
     Family('zurkhwood_planks', 'Zurkhwood Planks', ['stairs', 'slab', 'fence', 'fence_gate', 'door', 'trapdoor'],
            material='wood', stem='zurkhwood', stem_title='Zurkhwood',
            craft={'pattern': ['#'], 'key': {'#': 'dndclasses:zurkhwood_stem'}, 'count': 4}),
+    # --- Underdark building blocks (drow and duergar). Drowstone's recipe needs Spidersilk, so it's written by
+    # tools/underdark_blocks.py behind a load condition; so are the Faerzress Stone stonecutter recipes. ---
+    Family('drowstone_bricks', 'Drowstone Bricks', ['stairs', 'slab', 'wall', 'pillar']),
+    Family('polished_faerzress', 'Polished Faerzress', ['stairs', 'slab', 'wall'],
+           craft={'pattern': ['##', '##'], 'key': {'#': 'dndclasses:faerzress_stone'}, 'count': 4}),
+    Family('greysteel_plate', 'Greysteel Plate', ['stairs', 'slab', 'trapdoor'], stem='greysteel',
+           stem_title='Greysteel',
+           craft={'pattern': ['###', '###', '###'], 'key': {'#': 'dndclasses:duergar_steel_ingot'}, 'count': 1}),
+    Family('basalt_forge_bricks', 'Basalt Forge Bricks', ['stairs', 'slab', 'wall'], axis=True,
+           stem='basalt_forge_brick', stem_title='Basalt Forge Brick',
+           craft={'pattern': ['###', '#M#', '###'], 'key': {'#': 'minecraft:polished_basalt',
+                                                           'M': 'minecraft:magma_cream'}, 'count': 8}),
 ]
 
 

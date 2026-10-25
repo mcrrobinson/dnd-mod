@@ -49,6 +49,9 @@ The Factor trades with anyone who isn't Hostile with the Grey Clans; a Hostile c
 |-|-|
 | 16 Zurkhwood Planks | 3 emeralds |
 | 8 Faerzress Stone | 4 emeralds |
+| 16 [Basalt Forge Bricks](../items/underdark-blocks.md#building-blocks-drow-and-duergar) | 4 emeralds |
+| a Duergar Steel Ingot | 8 emeralds |
+| Friendly and up: 2 Greysteel Plate | 12 emeralds |
 | Friendly and up: a Potion of Invisibility | 18 emeralds |
 | Honored and up: the Duergar War Pick (iron pickaxe, Efficiency II, Sharpness I) | 20 emeralds |
 
@@ -56,13 +59,15 @@ The Factor trades with anyone who isn't Hostile with the Grey Clans; a Hostile c
 |-|-|
 | 4 gold ingots | 1 emerald |
 | 12 raw iron | 1 emerald |
+| 1 [Darklake Pearl](../items/underdark-blocks.md) | 8 emeralds |
+| 8 Spidersilk (from the [drow](drow.md)) | 2 emeralds |
 
 So a Human (Unfriendly) pays 5 emeralds for the planks and 6 gold ingots per emerald.
 
 ### Drops
 | Duergar | Drops |
 |-|-|
-| Soldier | 0-2 iron nuggets, 0-1 gold nugget; rarely its pick or helmet |
+| Soldier | 0-2 iron nuggets, 0-1 gold nugget; rarely its pick or helmet; 3% (killed by a player, +1% per Looting level) a Duergar Steel Ingot |
 | Arbalester | 0-3 arrows, 0-2 iron nuggets; 8% its crossbow, 5% its axe |
 | Factor | 1-3 gold nuggets, 0-2 emeralds |
 | Taskmaster | 2-4 iron nuggets, 1-3 gold nuggets, 0-1 gold ingot |
@@ -87,6 +92,6 @@ So a Human (Unfriendly) pays 5 emeralds for the planks and 6 gold ingots per eme
 - `entity/DuergarEntities` registers everything (types, attributes, spawn eggs, Study weakness, the Grey Reaches spawn and `canDuergarSpawn`) from one `register()` call in `DnDClasses`, so parallel Underdark tickets touch the shared registries as little as possible.
 - `client/renderer/DuergarRenderer` (scales by `DuergarEntity.renderScale`, crossbow arm poses) on `MountainDwarfRenderer.DwarfModel`, now generic. Skins: `tools/duergar_skins.py`.
 - Data: `factions/duergar_clans.json`, `tags/entity_types/faction/duergar_clans.json`, `tags/worldgen/structure/faction/duergar_clans.json` (an optional `dndclasses:duergar_hold` entry for T8), `tags/entity_types/duergar_enemies.json` (optional drow entries for T4), the `enemy_kills` entry in `factions/mountain_dwarves.json`, `loot_tables/entities/duergar_*.json`, `dialogue/duergar_factor.json` (greetings by tier, for quests later), `lore/humanoid` for Study.
-- **Hooks for other tickets**: `DuergarTrades.LATER_STOCK` offers Darklake Pearls (buys 1 for 8, T3), Spidersilk (buys 8 for 2, T4), Duergar Steel Ingots (sells for 8, T6) and 16 Basalt Forge Bricks (4, T6), and at Friendly 4 Greysteel Plate (6, T6), each only once `dndclasses:<id>` is registered; saved factors pick them up on load. The maps to the Rift and to a Drow Outpost, and the 3% Duergar Steel Ingot drop, wait for those items. A Hold's spawn override can use `DuergarEntities.canDuergarSpawn`.
+- **Hooks for other tickets**: `DuergarTrades.LATER_STOCK` offers Darklake Pearls (buys 1 for 8, T3) and Spidersilk (buys 8 for 2, T4), each only once `dndclasses:<id>` is registered; the building-block stock comes from `UnderdarkBuildingStock` (see [Underdark blocks](../items/underdark-blocks.md#for-developers)). Saved factors pick them up on load. The maps to the Rift and to a Drow Outpost wait for those items. A Hold's spawn override can use `DuergarEntities.canDuergarSpawn`.
 - `[MobAction] <name> enlarge|invisibility|drive xN -> <target>` at DEBUG level in `debug.log`.
 - Devscript: `devscripts/duergar.txt` (Enlarge and its hitbox, Invisibility, hostility by tier, the factor's prices and refusal, kill reputation, sunlight).

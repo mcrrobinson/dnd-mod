@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/stairs",
+  "textures": {
+    "bottom": "dndclasses:block/greysteel_plate",
+    "side": "dndclasses:block/greysteel_plate",
+    "top": "dndclasses:block/greysteel_plate"
+  }
+}

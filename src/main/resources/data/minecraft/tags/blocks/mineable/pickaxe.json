@@ -160,6 +160,27 @@
     "dndclasses:runic_column",
     "dndclasses:runic_corbel",
     "dndclasses:runic_deepslate_brick_vertical_slab",
-    "dndclasses:faerzress_stone"
+    "dndclasses:faerzress_stone",
+    "dndclasses:drowstone_bricks",
+    "dndclasses:drowstone_brick_stairs",
+    "dndclasses:drowstone_brick_slab",
+    "dndclasses:drowstone_brick_wall",
+    "dndclasses:drowstone_brick_pillar",
+    "dndclasses:polished_faerzress",
+    "dndclasses:polished_faerzress_stairs",
+    "dndclasses:polished_faerzress_slab",
+    "dndclasses:polished_faerzress_wall",
+    "dndclasses:greysteel_plate",
+    "dndclasses:greysteel_stairs",
+    "dndclasses:greysteel_slab",
+    "dndclasses:greysteel_trapdoor",
+    "dndclasses:basalt_forge_bricks",
+    "dndclasses:basalt_forge_brick_stairs",
+    "dndclasses:basalt_forge_brick_slab",
+    "dndclasses:basalt_forge_brick_wall",
+    "dndclasses:spider_sigil_stone",
+    "dndclasses:faerie_lantern",
+    "dndclasses:duergar_brazier",
+    "dndclasses:chain_cage"
   ]
 }

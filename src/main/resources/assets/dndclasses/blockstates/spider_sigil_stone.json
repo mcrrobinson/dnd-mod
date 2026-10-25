@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=south": {
+      "model": "dndclasses:block/spider_sigil_stone"
+    },
+    "facing=west": {
+      "model": "dndclasses:block/spider_sigil_stone",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "dndclasses:block/spider_sigil_stone",
+      "y": 180
+    },
+    "facing=east": {
+      "model": "dndclasses:block/spider_sigil_stone",
+      "y": 270
+    }
+  }
+}

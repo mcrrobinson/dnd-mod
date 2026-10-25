@@ -34,10 +34,11 @@ import net.minecraft.village.TradeOfferList;
  * <li>Friendly and up ({@link #FRIENDLY_STOCK}): a Potion of Invisibility (18).</li>
  * <li>Honored and up ({@link #HONORED_STOCK}): the Duergar War Pick (20).</li>
  * </ul>
- * <b>Stock from other Underdark tickets</b> is offered only once its item is registered ({@link #LATER_STOCK}, by
- * id, so this class needs none of them to compile): Darklake Pearls (T3), Spidersilk (T4), Duergar Steel Ingots and
- * Basalt Forge Bricks (T6), and Greysteel Plate at Friendly (T6). A factor saved before such an item existed gets
- * its trade on load ({@link #addMissing}). The maps to the Rift and to a Drow Outpost wait for T2/T3 and T7.
+ * <b>Stock from other Underdark tickets</b>: Darklake Pearls (T3) and Spidersilk (T4) are offered once their item is
+ * registered ({@link #LATER_STOCK}, by id); the building blocks' stock (T6: Duergar Steel Ingots, Basalt Forge
+ * Bricks, and Greysteel Plate at Friendly) comes from {@link UnderdarkBuildingStock}. A factor saved before any of
+ * them existed gets the trade on load ({@link #addMissing}). The maps to the Rift and to a Drow Outpost wait for
+ * T2/T3 and T7.
  */
 public final class DuergarTrades {
     /** Shown to Friendly and better customers. */
@@ -53,12 +54,6 @@ public final class DuergarTrades {
     private static final Later[] LATER_STOCK = {
             new Later("darklake_pearl", item -> buy(item, 1, 8)),
             new Later("spidersilk", item -> buy(item, 8, 2)),
-            new Later("duergar_steel_ingot", item -> sell(8, item)),
-            new Later("basalt_forge_bricks", item -> sell(4, item, 16)),
-    };
-    /** Friendly stock from other tickets (T6's Greysteel Plate). */
-    private static final Later[] LATER_FRIENDLY_STOCK = {
-            new Later("greysteel_plate", item -> sell(6, item, 4)),
     };
 
     private DuergarTrades() {
@@ -74,11 +69,11 @@ public final class DuergarTrades {
         return offers;
     }
 
-    /** Friendly stock: the Potion of Invisibility (and T6's Greysteel Plate once it exists). */
+    /** Friendly stock: the Potion of Invisibility and the Greysteel Plate (T6). */
     static TradeOfferList friendly() {
         TradeOfferList offers = new TradeOfferList();
         offers.add(sell(18, PotionUtil.setPotion(new ItemStack(Items.POTION), Potions.INVISIBILITY)));
-        addLater(offers, LATER_FRIENDLY_STOCK);
+        addMissingFriendly(offers);
         return offers;
     }
 
@@ -109,11 +104,22 @@ public final class DuergarTrades {
 
     /** Adds the optional trades whose items exist now and aren't offered yet (also for saved factors). */
     static void addMissing(TradeOfferList offers) {
+        addIfMissing(offers, UnderdarkBuildingStock.always());
         addLater(offers, LATER_STOCK);
     }
 
     static void addMissingFriendly(TradeOfferList offers) {
-        addLater(offers, LATER_FRIENDLY_STOCK);
+        addIfMissing(offers, UnderdarkBuildingStock.friendly());
+    }
+
+    /** Adds each offer whose item isn't sold yet. */
+    private static void addIfMissing(TradeOfferList offers, java.util.List<TradeOffer> stock) {
+        for (TradeOffer offer : stock) {
+            Item item = offer.getSellItem().getItem();
+            if (offers.stream().noneMatch(existing -> existing.getSellItem().isOf(item))) {
+                offers.add(offer);
+            }
+        }
     }
 
     private static void addLater(TradeOfferList offers, Later[] stock) {

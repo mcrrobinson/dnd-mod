@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "count": 1,
+  "ingredient": {
+    "item": "dndclasses:drowstone_bricks"
+  },
+  "result": "dndclasses:drowstone_brick_stairs"
+}

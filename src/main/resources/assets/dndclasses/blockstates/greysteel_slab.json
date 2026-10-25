@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "dndclasses:block/greysteel_slab"
+    },
+    "type=double": {
+      "model": "dndclasses:block/greysteel_plate"
+    },
+    "type=top": {
+      "model": "dndclasses:block/greysteel_slab_top"
+    }
+  }
+}

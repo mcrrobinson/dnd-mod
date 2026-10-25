@@ -248,6 +248,14 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<MindFlayerEntity> MIND_FLAYER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "mind_flayer"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MindFlayerEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.6f, 1.95f))
+                    .build()
+    );
+
     public static final EntityType<LichEntity> LICH = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "lich"),
@@ -336,6 +344,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(ORC_WAR_CHIEF, OrcWarChiefEntity.createOrcWarChiefAttributes());
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
+        FabricDefaultAttributeRegistry.register(MIND_FLAYER, MindFlayerEntity.createMindFlayerAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
         LichEntity.registerEvents();

@@ -18,6 +18,10 @@
       "tick_delay": 6000,
       "block_search_extent": 8,
       "offset": 2.0
+    },
+    "additions_sound": {
+      "sound": "minecraft:ambient.cave",
+      "tick_chance": 0.0111
     }
   },
   "spawners": {
@@ -101,11 +105,14 @@
     [],
     [],
     [
-      "dndclasses:underdark/zurkhwood",
-      "dndclasses:underdark/nightlight",
+      "dndclasses:underdark/giant_zurkhwood",
+      "dndclasses:underdark/nightlight_tower",
+      "dndclasses:underdark/shelf_fungus",
+      "dndclasses:underdark/barrelstalk",
       "dndclasses:underdark/bluecap_fungal",
       "dndclasses:underdark/trillimac_fungal",
-      "dndclasses:underdark/glow_lichen"
+      "dndclasses:underdark/glow_lichen",
+      "dndclasses:underdark/faerie_lichen_sparse"
     ],
     []
   ]

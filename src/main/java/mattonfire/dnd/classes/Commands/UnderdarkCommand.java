@@ -9,6 +9,7 @@ import com.mojang.datafixers.util.Pair;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.world.underdark.Underdark;
 import mattonfire.dnd.world.underdark.UnderdarkLanding;
+import mattonfire.dnd.world.underdark.UnderdarkMaps;
 import mattonfire.dnd.world.underdark.UnderdarkSurvey;
 import mattonfire.dnd.world.underdark.UnderdarkTravel;
 import net.minecraft.command.CommandSource;
@@ -31,6 +32,11 @@ import net.minecraft.world.biome.Biome;
  * <li>{@code biome <biome>}: to the nearest Underdark biome of that kind, on a safe floor.</li>
  * <li>{@code survey <radius>}: biome shares, floors, water, bedrock and cost round you (logged as
  * {@code [Underdark] survey ...}).</li>
+ * <li>{@code lake [radius]}: to the nearest dry shore of a Darklake lake (open water at the Underdark's waterline), looking out over it. For the mist and lake-life screenshots and tests.</li>
+ * <li>{@code flora [radius]}: counts the T3 flora (giant fungi, lake life, plants) in the loaded blocks round you
+ * (logged as {@code [Underdark] flora ...}).</li>
+ * <li>{@code map <drow_outpost|duergar_hold|rift>}: an Underdark explorer map to the nearest such place
+ * ({@link UnderdarkMaps}).</li>
  * </ul>
  */
 public final class UnderdarkCommand {
@@ -54,10 +60,130 @@ public final class UnderdarkCommand {
                                 .suggests((ctx, builder) -> CommandSource.suggestMatching(Underdark.BIOMES.stream()
                                         .map(key -> key.getValue().getPath()), builder))
                                 .executes(ctx -> biome(ctx, StringArgumentType.getString(ctx, "biome")))))
+                .then(CommandManager.literal("lake")
+                        .executes(ctx -> lake(ctx, 96))
+                        .then(CommandManager.argument("radius", IntegerArgumentType.integer(8, 256))
+                                .executes(ctx -> lake(ctx, IntegerArgumentType.getInteger(ctx, "radius")))))
+                .then(CommandManager.literal("flora")
+                        .executes(ctx -> flora(ctx, 48))
+                        .then(CommandManager.argument("radius", IntegerArgumentType.integer(4, 96))
+                                .executes(ctx -> flora(ctx, IntegerArgumentType.getInteger(ctx, "radius")))))
+                .then(CommandManager.literal("map")
+                        .then(CommandManager.argument("kind", StringArgumentType.word())
+                                .suggests((ctx, builder) -> CommandSource.suggestMatching(java.util.Arrays.stream(
+                                        UnderdarkMaps.Kind.values()).map(UnderdarkMaps.Kind::id), builder))
+                                .executes(ctx -> map(ctx, StringArgumentType.getString(ctx, "kind")))))
                 .then(CommandManager.literal("survey")
                         .executes(ctx -> survey(ctx, 128))
                         .then(CommandManager.argument("radius", IntegerArgumentType.integer(8, 1024))
                                 .executes(ctx -> survey(ctx, IntegerArgumentType.getInteger(ctx, "radius"))))));
+    }
+
+    private static int lake(CommandContext<ServerCommandSource> ctx, int radius) throws CommandSyntaxException {
+        if (missing(ctx)) {
+            return 0;
+        }
+        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+        if (!Underdark.isUnderdark(player.getWorld())) {
+            ctx.getSource().sendError(Text.literal("Go down first (/underdark biome darklake)"));
+            return 0;
+        }
+        ServerWorld world = player.getWorld();
+        int surface = world.getChunkManager().getChunkGenerator().getSeaLevel() - 1;
+        int x0 = player.getBlockX();
+        int z0 = player.getBlockZ();
+        for (int r = 0; r <= radius; r += 2) {
+            for (int dx = -r; dx <= r; dx += 2) {
+                for (int dz = -r; dz <= r; dz += 2) {
+                    if (Math.max(Math.abs(dx), Math.abs(dz)) != r) {
+                        continue;
+                    }
+                    BlockPos water = new BlockPos(x0 + dx, surface, z0 + dz);
+                    if (!world.getFluidState(water).isIn(net.minecraft.registry.tag.FluidTags.WATER)
+                            || !world.getFluidState(water).isStill() || !world.getBlockState(water.up()).isAir()
+                            || !world.getBiome(water).matchesKey(Underdark.DARKLAKE)) {
+                        continue;
+                    }
+                    for (net.minecraft.util.math.Direction side : net.minecraft.util.math.Direction.Type.HORIZONTAL) {
+                        for (int k = 1; k <= 3; k++) {
+                            BlockPos feet = water.up().offset(side, k);
+                            if (UnderdarkLanding.standable(world, feet)) {
+                                float yaw = side.getOpposite().asRotation();
+                                UnderdarkTravel.sendTo(player, feet, yaw, 20.0F);
+                                DnDClasses.LOGGER.info("[Underdark] lake shore at {} {} {} in {}", feet.getX(),
+                                        feet.getY(), feet.getZ(), world.getBiome(feet).getKey()
+                                                .map(key -> key.getValue().getPath()).orElse("?"));
+                                ctx.getSource().sendFeedback(Text.literal(String.format("Lake shore: %d %d %d",
+                                        feet.getX(), feet.getY(), feet.getZ())), true);
+                                return 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        ctx.getSource().sendError(Text.literal("No Darklake shore within " + radius + " blocks"));
+        return 0;
+    }
+
+    private static int flora(CommandContext<ServerCommandSource> ctx, int radius) throws CommandSyntaxException {
+        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+        ServerWorld world = player.getWorld();
+        java.util.Map<net.minecraft.block.Block, String> watched = new java.util.LinkedHashMap<>();
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkBlocks.ZURKHWOOD_STEM, "zurkhwood_stem");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkBlocks.ZURKHWOOD_CAP, "zurkhwood_cap");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.ZURKHWOOD_GILLS, "zurkhwood_gills");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkBlocks.NIGHTLIGHT_CAP, "nightlight_cap");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.SPORE_DRIP, "spore_drip");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.RIPPLEBARK, "ripplebark");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.BARRELSTALK, "barrelstalk");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.WATERORB, "waterorb");
+        watched.put(net.minecraft.block.Blocks.SEAGRASS, "seagrass");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.FAERIE_LICHEN, "faerie_lichen");
+        watched.put(mattonfire.dnd.classes.Registry.UnderdarkFlora.PEARL_CLAM, "pearl_clam");
+        watched.put(net.minecraft.block.Blocks.CLAY, "clay");
+        java.util.Map<String, Integer> counts = new java.util.LinkedHashMap<>();
+        watched.values().forEach(name -> counts.put(name, 0));
+        BlockPos centre = player.getBlockPos();
+        BlockPos.Mutable pos = new BlockPos.Mutable();
+        for (int x = centre.getX() - radius; x <= centre.getX() + radius; x++) {
+            for (int z = centre.getZ() - radius; z <= centre.getZ() + radius; z++) {
+                if (!world.isChunkLoaded(x >> 4, z >> 4)) {
+                    continue;
+                }
+                for (int y = world.getBottomY(); y < world.getTopY(); y++) {
+                    pos.set(x, y, z);
+                    String name = watched.get(world.getBlockState(pos).getBlock());
+                    if (name != null) {
+                        counts.merge(name, 1, Integer::sum);
+                    }
+                }
+            }
+        }
+        StringBuilder line = new StringBuilder(String.format("flora at %d %d radius %d:", centre.getX(),
+                centre.getZ(), radius));
+        counts.forEach((name, n) -> line.append(' ').append(name).append('=').append(n));
+        DnDClasses.LOGGER.info("[Underdark] {}", line);
+        ctx.getSource().sendFeedback(Text.literal(line.toString()), false);
+        return 1;
+    }
+
+    private static int map(CommandContext<ServerCommandSource> ctx, String id) throws CommandSyntaxException {
+        UnderdarkMaps.Kind kind = UnderdarkMaps.Kind.byId(id);
+        if (kind == null) {
+            ctx.getSource().sendError(Text.literal("Not an Underdark map: " + id));
+            return 0;
+        }
+        ServerPlayerEntity player = ctx.getSource().getPlayerOrThrow();
+        net.minecraft.item.ItemStack map = UnderdarkMaps.create(player.getWorld(), player.getBlockPos(), kind);
+        if (map == null) {
+            ctx.getSource().sendError(Text.literal("No " + kind.id() + " to map near here"));
+            return 0;
+        }
+        player.getInventory().offerOrDrop(map);
+        ctx.getSource().sendFeedback(Text.literal("Gave " + player.getName().getString() + " a map to the "
+                + kind.id()), true);
+        return 1;
     }
 
     private static boolean missing(CommandContext<ServerCommandSource> ctx) {

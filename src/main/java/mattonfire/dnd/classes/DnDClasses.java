@@ -197,6 +197,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.classes.Blocks.hobbit.HobbitBlocks.register();
                 mattonfire.dnd.classes.Registry.CogsdeepBlocks.register();
                 mattonfire.dnd.classes.Registry.UnderdarkBlocks.register();
+                mattonfire.dnd.classes.Registry.UnderdarkFlora.register();
                 // --- Dragon Temples ---
                 mattonfire.dnd.classes.Registry.ModTempleBlocks.register();
                 mattonfire.dnd.classes.Registry.CryptBlocks.register();

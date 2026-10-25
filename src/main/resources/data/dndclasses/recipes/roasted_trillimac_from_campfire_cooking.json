@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:campfire_cooking",
+  "category": "food",
+  "ingredient": {
+    "item": "dndclasses:trillimac_slice"
+  },
+  "result": "dndclasses:roasted_trillimac",
+  "experience": 0.35,
+  "cookingtime": 600
+}

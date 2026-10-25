@@ -18,6 +18,10 @@
       "tick_delay": 6000,
       "block_search_extent": 8,
       "offset": 2.0
+    },
+    "additions_sound": {
+      "sound": "minecraft:ambient.cave",
+      "tick_chance": 0.0111
     }
   },
   "spawners": {
@@ -101,6 +105,7 @@
     [],
     [],
     [
+      "dndclasses:underdark/giant_zurkhwood_sparse",
       "dndclasses:underdark/huge_red_mushroom",
       "dndclasses:underdark/huge_brown_mushroom",
       "dndclasses:underdark/brown_mushrooms",

@@ -245,7 +245,7 @@ public class ModEntityTypes {
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "basilisk"),
             FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, BasiliskEntity::new)
-                    .dimensions(EntityDimensions.fixed(1.6f, 1.1f))
+                    .dimensions(EntityDimensions.fixed(BasiliskEntity.WIDTH, BasiliskEntity.HEIGHT))
                     .build()
     );
 

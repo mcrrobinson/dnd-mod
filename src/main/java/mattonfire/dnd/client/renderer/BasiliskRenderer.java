@@ -24,7 +24,8 @@ public class BasiliskRenderer extends GeoEntityRenderer<BasiliskEntity> {
 
     public BasiliskRenderer(EntityRendererFactory.Context renderManager) {
         super(renderManager, new BasiliskModel());
-        this.shadowRadius = 0.8f;
+        this.withScale(BasiliskEntity.MODEL_SCALE);
+        this.shadowRadius = 1.8f;
         this.addRenderLayer(new AutoGlowingGeoLayer<>(this) {
             @Override
             public void render(MatrixStack poseStack, BasiliskEntity animatable, BakedGeoModel bakedModel,

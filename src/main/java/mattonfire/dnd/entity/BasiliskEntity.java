@@ -41,6 +41,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.random.Random;
@@ -83,9 +84,22 @@ public class BasiliskEntity extends HostileEntity implements GeoEntity {
     public static final double SHIELD_ANGLE = 60.0D;
     public static final int REFLECT_COOLDOWN = 200;
     public static final int MOB_GAZE_INTERVAL = 100;
-    /** How far in front of its centre the eyes are (the model is longer than the hitbox). */
-    private static final double HEAD_FORWARD = 0.85D;
-    private static final double EYE_HEIGHT = 0.7D;
+    /** The hitbox: {@value #WIDTH} wide and long, {@value #HEIGHT} tall (registered in {@link ModEntityTypes}). */
+    public static final float WIDTH = 3.2F;
+    public static final float HEIGHT = 2.0F;
+    /** How much bigger than basilisk.geo.json it's drawn (the renderer's withScale): the model is 1.97 tall. */
+    public static final float MODEL_SCALE = 2.25F;
+    /** How far in front of its centre the eyes are (the model is longer than the hitbox): 1.15 in the .geo.json. */
+    private static final double HEAD_FORWARD = 1.15D * MODEL_SCALE;
+    /** Eye height: 0.7 in the .geo.json. */
+    private static final double EYE_HEIGHT = 0.7D * MODEL_SCALE;
+    /**
+     * Bite reach from its centre to the target's: the snout is about 3.4 blocks ahead, so it bites from the head
+     * rather than from the vanilla reach (twice its width, 6.4 blocks).
+     */
+    public static final double BITE_REACH = 4.0D;
+    /** The head and tail stick out of the hitbox this far: rendering is culled by the hitbox grown by this. */
+    private static final double MODEL_OVERHANG = 2.6D;
 
     private static final RawAnimation IDLE = RawAnimation.begin().thenLoop("idle");
     private static final RawAnimation WALK = RawAnimation.begin().thenLoop("walk");
@@ -101,11 +115,13 @@ public class BasiliskEntity extends HostileEntity implements GeoEntity {
     public BasiliskEntity(EntityType<? extends HostileEntity> entityType, World world) {
         super(entityType, world);
         this.experiencePoints = 20;
+        // A two-block-tall lizard climbs full blocks like a horse instead of snagging on every ledge.
+        this.setStepHeight(1.0F);
     }
 
     public static DefaultAttributeContainer.Builder createBasiliskAttributes() {
         return HostileEntity.createHostileAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 60.0D)
+                .add(EntityAttributes.GENERIC_MAX_HEALTH, 75.0D)
                 .add(EntityAttributes.GENERIC_ARMOR, 10.0D)
                 .add(EntityAttributes.GENERIC_KNOCKBACK_RESISTANCE, 0.8D)
                 .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 0.18D)
@@ -127,7 +143,12 @@ public class BasiliskEntity extends HostileEntity implements GeoEntity {
     @Override
     protected void initGoals() {
         this.goalSelector.add(0, new SwimGoal(this));
-        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, false));
+        this.goalSelector.add(2, new MeleeAttackGoal(this, 1.0D, false) {
+            @Override
+            protected double getSquaredMaxAttackDistance(LivingEntity target) {
+                return BITE_REACH * BITE_REACH + target.getWidth();
+            }
+        });
         this.goalSelector.add(5, new WanderAroundFarGoal(this, 0.8D));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 10.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -135,6 +156,11 @@ public class BasiliskEntity extends HostileEntity implements GeoEntity {
         this.targetSelector.add(1, new RevengeGoal(this));
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, true));
         this.targetSelector.add(3, new ActiveTargetGoal<>(this, MerchantEntity.class, true));
+    }
+
+    @Override
+    public Box getVisibilityBoundingBox() {
+        return this.getBoundingBox().expand(MODEL_OVERHANG, 0.5D, MODEL_OVERHANG);
     }
 
     @Override

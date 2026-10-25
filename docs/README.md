@@ -61,7 +61,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Magic items](systems/magic-items.md): rarity tiers and coloured names, +1/+2/+3 weapons and armor, attunement (3 bonds, the table's Items tab), identification, curses and Remove Curse, and `/dndmagic`
 - [Magic loot](systems/magic-loot.md): where magic items turn up: the four rarity tables (+N gear and named items) and the extra magic pools in mod chests, bosses, Mimics, bounties, raids and vanilla structures
 - [Goblin raids](systems/goblin-raids.md): goblin raids on hobbit villages and dwarven fortresses; the settlement's health, and losing the raid when it falls
-- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves and goblins, data-driven factions, `/rep`; tiers change prices, hostility and raids, and higher tiers add perks (raid lookouts and loot, a free room, barrels, dwarf allies)
+- [Factions](systems/factions.md): per-player reputation with hobbits, dwarves, goblins and the Grey Clans, data-driven factions, `/rep`; tiers change prices, hostility and raids, and higher tiers add perks (raid lookouts and loot, a free room, barrels, dwarf allies)
 - [Quests](systems/quests.md): data-driven quest chains with party-shared progress and per-hero rewards, `/quest`; four launch chains (Goblin Warlord, Lich, Frost Drake and Lightning Chaser, Beholder) and Rumour notices on bounty boards
 - [Journal and quest tracker](systems/quest-journal.md): the Journal (J) with Quests and Factions tabs, the top-right quest tracker and quest toasts
 - [NPC dialogue](systems/dialogue.md): talk to the innkeeper, Dwarf King and hobbit Thain to take quests, hand in and get rewards; tier greetings and d20 checks; data-driven dialogue files
@@ -91,6 +91,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Troll](mobs/troll.md): regenerating swamp and forest brute with a two-claw Rend; fire or acid stops the healing, and it only stays dead if you burn it once it falls
 - [Mind Flayer](mobs/mind-flayer.md): deep-cave illithid whose Mind Blast cone stuns (INT save), whose tentacles extract stunned brains, which blinks away and keeps charmed thralls
 - [Rust Monster](mobs/rust-monster.md): deep-cave beast whose antennae rust iron, chain and gold gear (DEX save), rusts metal weapons that hit it and stops to eat thrown iron; dwarves hate it
+- [Duergar](mobs/duergar.md): the Grey Clans of the Underdark's Grey Reaches: Soldiers, crossbow Arbalesters, the Factor merchant and the Taskmaster; they Enlarge mid-fight, vanish when hurt and hate sunlight; Unfriendly to most, Hostile to Dwarves
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, dragons)

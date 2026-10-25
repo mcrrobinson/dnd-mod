@@ -37,6 +37,7 @@ Example: a level 1 Wizard has Arcana +4 (INT 15, proficient), so against a Frost
   - Lich: its soul hides in a phylactery (smash that first or it reforms); Necromancers deal +50% damage to it.
   - Owlbear: while it hugs you, 6 damage breaks its grip.
   - Troll: fire or acid stops it healing; burn it once it falls or it gets back up.
+  - Duergar: sunlight weakens them; once one has grown and vanished, it can't again until the fight is over.
   - Any undead: potions of Healing hurt it and Harming heals it.
   - Others: "No weakness worth knowing".
 - **Failure or natural 1:** you can't study that creature type again for **60 s** ("You can't recall more about the ... yet (Ns)"). Other types are unaffected.

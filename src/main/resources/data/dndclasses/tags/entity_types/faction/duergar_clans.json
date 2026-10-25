@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:duergar_soldier",
+    "dndclasses:duergar_arbalester",
+    "dndclasses:duergar_factor",
+    "dndclasses:duergar_taskmaster"
+  ]
+}

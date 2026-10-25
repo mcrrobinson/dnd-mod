@@ -27,6 +27,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | The Tinkers' Guild (`dndclasses:tinkers_guild`) | Gnome Tinkers, Clockwork Sentinels | Cogsdeep burrows | 150 (Friendly); Gnomes 450 (Honored) | goblins -0.5 |
 | The Bloodtusk Horde (`dndclasses:bloodtusk_horde`) | Orc Warriors, Archers, the Quartermaster and the War Chief (not the Trial's Champion) | orc strongholds | -600 (Hostile); Half-Orcs 0 (Neutral) | hobbits -0.25, dwarves -0.25, Sylvan Court -0.25 |
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5, Sylvan Court -0.5, Dragonsworn -0.5 |
+| The Grey Clans (`dndclasses:duergar_clans`) | [duergar](../mobs/duergar.md): Soldiers, Arbalesters, the Factor and the Taskmaster | Duergar Holds (not built yet) | -250 (Unfriendly); Gnomes -400 (Unfriendly), Dwarves -550 (Hostile) | dwarves -0.5, the drow -0.25, Tinkers' Guild -0.25 |
 
 - **Sources**:
 
@@ -43,6 +44,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | Hit a hobbit / dwarf (not the killing blow) | -10 | -15 | | none |
 | Kill a hobbit / innkeeper | -150 / -300 | | | none |
 | Kill a dwarf / the Dwarf King | | -120 / -500 | | none |
+| Kill a duergar (Grey Clans -60, the Taskmaster -150) | | +30 | | dwarves +30 a day from kills |
 | A dwarf sees you open a chest or barrel, or break the hoard | | -40 | | once per 10 s |
 
 - **Rivals** lose a share of *gains* from bounties, trades and (later) quests: a +20 bounty for the hobbits is also -10 for the goblins. Kills and raid wins already list every faction they touch, so rivals don't add to them, and rival losses never chain.

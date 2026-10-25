@@ -37,6 +37,8 @@ import net.minecraft.util.math.Direction;
  * warrior and a lantern up here.</li>
  * <li>A warrior on the ground floor; a mage on the first floor of one tower in two.</li>
  * </ul>
+ * The stair makes less than one turn of its 16-cell ring, so the platform can be at most {@value #MAX_PLATFORM} up; a
+ * taller tower (the Drow Spire's) raises its tip, not its platform.
  */
 public class DrowTowerPiece extends UnderdarkPiece {
     /** The stair's ring round the middle, from the door cell clockwise (as {@code ShaftPiece}'s). */
@@ -48,6 +50,8 @@ public class DrowTowerPiece extends UnderdarkPiece {
     static final int HALF = 6;
     /** Blocks out from the middle to just outside the door. */
     public static final int DOOR_OUT = 7;
+    /** The highest platform the stair can reach without its ring overlapping itself. */
+    public static final int MAX_PLATFORM = 14;
     /** Chance of cobwebs across each flight of stairs. */
     public static final float WEB_CHANCE = 0.2F;
 
@@ -58,6 +62,9 @@ public class DrowTowerPiece extends UnderdarkPiece {
 
     public DrowTowerPiece(BlockPos center, Direction door, long seed, int platform, int tip, boolean lookout, boolean mage) {
         super(DrowOutposts.TOWER, center, door, seed, -HALF, -8, -HALF, HALF, Math.max(tip, platform + 4), HALF);
+        if (platform > MAX_PLATFORM) {
+            throw new IllegalArgumentException("A drow tower's platform can be at most " + MAX_PLATFORM + " up: " + platform);
+        }
         this.platform = platform;
         this.tip = tip;
         this.lookout = lookout;

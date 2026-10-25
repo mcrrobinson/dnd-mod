@@ -25,6 +25,10 @@ public class ShelfFungusFeature extends Feature<DefaultFeatureConfig> {
         StructureWorldAccess world = context.getWorld();
         BlockPos origin = context.getOrigin();
         Random random = context.getRandom();
+        // Not on a drow outpost's (or other settlement's) walls: they're built before a neighbour's features run.
+        if (mattonfire.dnd.world.underdark.UnderdarkSite.inSettlement(world, origin)) {
+            return false;
+        }
         int wanted = 2 + random.nextInt(5);
         int placed = 0;
         BlockPos.Mutable pos = new BlockPos.Mutable();

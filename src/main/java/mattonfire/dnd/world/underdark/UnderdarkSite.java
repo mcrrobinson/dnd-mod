@@ -128,6 +128,9 @@ public final class UnderdarkSite {
             if (ys.size() >= rules.minMatches() && (best == null || ys.size() > best.matches())) {
                 Collections.sort(ys);
                 int median = ys.get(ys.size() / 2);
+                if (median < rules.minY() || median > rules.maxY()) {
+                    continue;
+                }
                 best = new Site(new BlockPos(x, median + 1, z), median, ys.size(), air);
             }
         }

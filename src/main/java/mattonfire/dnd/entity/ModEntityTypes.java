@@ -257,6 +257,14 @@ public class ModEntityTypes {
                     .build()
     );
 
+    public static final EntityType<RustMonsterEntity> RUST_MONSTER = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "rust_monster"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, RustMonsterEntity::new)
+                    .dimensions(EntityDimensions.fixed(1.2f, 1.0f))
+                    .build()
+    );
+
     public static final EntityType<MindFlayerEntity> MIND_FLAYER = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "mind_flayer"),
@@ -354,6 +362,7 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(OWLBEAR, OwlbearEntity.createOwlbearAttributes());
         FabricDefaultAttributeRegistry.register(TROLL, TrollEntity.createTrollAttributes());
         FabricDefaultAttributeRegistry.register(GELATINOUS_CUBE, GelatinousCubeEntity.createGelatinousCubeAttributes());
+        FabricDefaultAttributeRegistry.register(RUST_MONSTER, RustMonsterEntity.createRustMonsterAttributes());
         FabricDefaultAttributeRegistry.register(MIND_FLAYER, MindFlayerEntity.createMindFlayerAttributes());
         FabricDefaultAttributeRegistry.register(LICH, LichEntity.createLichAttributes());
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());

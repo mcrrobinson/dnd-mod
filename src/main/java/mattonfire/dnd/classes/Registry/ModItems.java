@@ -599,6 +599,8 @@ public class ModItems {
 
         public static final Item GELATINOUS_CUBE_SPAWN_EGG = registerItem("gelatinous_cube_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.GELATINOUS_CUBE, 0x7FD46A, 0x3C8A2E, new FabricItemSettings()));
+        public static final Item RUST_MONSTER_SPAWN_EGG = registerItem("rust_monster_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.RUST_MONSTER, 0xB25626, 0x707C8E, new FabricItemSettings()));
 
         public static final Item MIND_FLAYER_SPAWN_EGG = registerItem("mind_flayer_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.MIND_FLAYER, 0x6E4A7E, 0xC9A3D6, new FabricItemSettings()));

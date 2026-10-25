@@ -77,9 +77,9 @@ The Dwarven Ruin's pool (the Ruin is always tier II or higher). **Dwarven Revena
 
 | Tier | Pool (weight, threat) |
 |-|-|
-| II | Revenant 8 (1.5), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 2, Mimic 1 |
-| III | Revenant 8 (2), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 3, Mimic 2 |
-| IV | Revenant 8 (2.5), Bowman 5 (1.5), cave spider 5, Gelatinous Cube 4, Mimic 3, [Mind Flayer](../mobs/mind-flayer.md) 1 (with 2 thralls) |
+| II | Revenant 8 (1.5), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 2, Mimic 1, Rust Monster 3 (3) |
+| III | Revenant 8 (2), Bowman 5 (1.5), cave spider 6, Gelatinous Cube 3, Mimic 2, Rust Monster 3 (3) |
+| IV | Revenant 8 (2.5), Bowman 5 (1.5), cave spider 5, Gelatinous Cube 4, Mimic 3, Rust Monster 2 (3), [Mind Flayer](../mobs/mind-flayer.md) 1 (with 2 thralls) |
 
 Encounter monsters drop their normal loot and count for bounties and class XP like any other monster. Monsters a boss summons (the Lich's raised dead) still give nothing.
 

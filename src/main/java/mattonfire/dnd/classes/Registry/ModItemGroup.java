@@ -197,6 +197,7 @@ public class ModItemGroup {
             entries.add(ModItems.MAGMAMUNCHER_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARRIOR_SPAWN_EGG);
             entries.add(ModItems.GELATINOUS_CUBE_SPAWN_EGG);
+            entries.add(ModItems.RUST_MONSTER_SPAWN_EGG);
             entries.add(ModItems.MIND_FLAYER_SPAWN_EGG);
         });
         // --- Racial banner patterns ---

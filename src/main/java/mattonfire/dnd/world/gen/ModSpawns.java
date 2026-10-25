@@ -86,6 +86,12 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.GELATINOUS_CUBE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.GelatinousCubeEntity::canSpawn);
 
+        // Rust Monsters burrow through deep caves (below y=0) in the Overworld, alone or in pairs.
+        BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
+                SpawnGroup.MONSTER, ModEntityTypes.RUST_MONSTER, 4, 1, 2);
+        SpawnRestriction.register(ModEntityTypes.RUST_MONSTER, SpawnRestriction.Location.ON_GROUND,
+                Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.RustMonsterEntity::canSpawn);
+
         // Mind Flayers haunt the deepest caves, below y=-32 in the dark, with two thralls each (a stand-in for
         // the Underdark, which adds its own weight through data/dndclasses/underdark_spawns/mind_flayer.json).
         BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),

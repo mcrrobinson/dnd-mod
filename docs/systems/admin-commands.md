@@ -96,11 +96,14 @@ See [Magic items](magic-items.md#commands): `/dndmagic give|identify|info`.
 - `/dungeon info|clear|reset|tier|trigger|...` inspects and resets the [dungeon](../structures/dungeons.md#commands) you're in; the room, loot, gate and trap tools are on [Dungeon encounters](dungeon-encounters.md#commands), [Dungeon loot](dungeon-loot.md#commands), [Dungeon puzzles and gates](dungeon-puzzles-and-gates.md#commands) and [Dungeon traps](dungeon-traps.md#commands).
 - `/dndobstacle place|info|open|reset|settier|reseal|link|traps|list` places and manages [class-gated obstacles](obstacles.md#commands).
 
+### Conditions
+- `/dndcondition apply|remove|list|immune` applies and inspects [conditions](conditions.md#commands) (Prone, Stunned, Petrified, ...), with an optional source, repeat save and escalation. Also `/dm condition ...`.
+
 ### Player commands
 These need no op: `/party` ([Party](party.md#commands)), `/hireling` ([Hirelings](hirelings.md#commands), with op-only `admin` subcommands), `/quest` ([Quests](quests.md#commands), with op-only subcommands) and `/rep` ([Factions](factions.md#commands), with op-only subcommands).
 
 ### Dungeon Master
-`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save`, `/dm roll|apply`, `/dm narrate|title|say|mood` and `/dm loot give|plant` let an op run a session: hide from the players, drop premade encounters, pause the scene, call for rolls on the players' d20 HUD, tell the story and hand out or plant treasure. `/dm grant <player>` opens them to a non-op. The DM Wand (`dndclasses:dm_wand`) puts encounters, freeze, inspect and blink on right-click. See [Dungeon Master](dungeon-master.md).
+`/dm on|off`, `/dm veil`, `/dm encounter spawn|list|clear` and `/dm freeze|unfreeze`, `/dm check|save`, `/dm condition`, `/dm roll|apply`, `/dm narrate|title|say|mood` and `/dm loot give|plant` let an op run a session: hide from the players, drop premade encounters, pause the scene, call for rolls on the players' d20 HUD, tell the story and hand out or plant treasure. `/dm grant <player>` opens them to a non-op. The DM Wand (`dndclasses:dm_wand`) puts encounters, freeze, inspect and blink on right-click. See [Dungeon Master](dungeon-master.md).
 
 ### Useful vanilla commands
 - `/locate structure dndclasses:dragon_lair`, `dndclasses:hobbit_village`, `dndclasses:dwarven_fortress`, `dndclasses:goblin_camp`, `dndclasses:beholder_lair`

@@ -127,6 +127,7 @@ public final class ProgressionEvents {
             }
             amount = MagicEffects.modifyTakenDamage(player, source, amount);
         }
-        return amount;
+        // Conditions last: advantage against a Stunned target, Petrified halves, a Frightened attacker's blows
+        return mattonfire.dnd.classes.Conditions.ConditionEffects.modifyDamage(target, source, amount);
     }
 }

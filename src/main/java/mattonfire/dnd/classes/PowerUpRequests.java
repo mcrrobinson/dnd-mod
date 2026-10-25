@@ -40,6 +40,10 @@ public final class PowerUpRequests {
                         if (mattonfire.dnd.classes.Downed.Downed.is(player)) {
                                 return;
                         }
+                        // Stunned, Paralyzed, Petrified, Incapacitated: no specials.
+                        if (!mattonfire.dnd.classes.Conditions.Conditions.canAct(player)) {
+                                return;
+                        }
                         // Firing a power gets you up from a short rest.
                         mattonfire.dnd.classes.Rest.RestSession.cancel(player, "you used a power");
                         // The equipped active skill; classes without a tree yet use their power-up at full mana.

@@ -1,0 +1,17 @@
+# Second half of conditions-relog-set.txt (no reset header: it reads what the first half left).
+# Expect: "list @s" shows frightened with fewer than 2400 ticks left, the "conditions" step shows it on the
+# client, and the husk is still a statue (petrified indefinite, mask includes 32+256). Then it cleans up.
+wait 40
+closescreen
+wait 20
+conditions
+/dndcondition list @s
+/dndcondition list @e[tag=relog,limit=1]
+perspective back
+wait 5
+screenshot conditions-relog-statue
+perspective first
+/dndcondition remove @s all
+/kill @e[tag=relog]
+wait 5
+quit

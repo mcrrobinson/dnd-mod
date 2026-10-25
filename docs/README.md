@@ -87,12 +87,13 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Gelatinous Cube](mobs/gelatinous-cube.md): slow jelly cube that engulfs mobs, players and items (DEX save to slip out)
 
 ## Bosses
-- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, dragons)
+- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, dragons)
 - [Goblin Warlord](bosses/goblin-warlord.md): goblin boss that summons waves; guards Nether Fortresses, leads 30% of goblin camps and every raid's last wave, and rules the Goblin Warren
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
 - [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
+- [Medusa](bosses/medusa.md): lair boss of the Gorgon's Temple (1 in 3 desert pyramids and jungle temples); meet her eyes and save (CON 14) or turn to stone, raise a shield to reflect it; poisonous snake bites, longbow volleys, statues of earlier visitors; drops the Gorgon's Gaze (PR #281)
 
 ## Structures
 - [Dragon Lairs](structures/dragon-lairs.md): Lightning Chaser nests on mountain summits, dressed with fulgurite, storm glass, a woven dragon nest, coin piles and shed scales that drop dragon scales
@@ -130,7 +131,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Potions and brewing](items/potions-and-brewing.md): Fast Brewing Stand, Potion of Freezing, exploding stands
 - [Bard instruments](items/bard-instruments.md): lute, drum and flute
 - [Racial banner patterns](items/banner-patterns.md): eight loom patterns (Bloodtusk, Clan Anvil, Sylvan Leaf, Three Breaths, Infernal Pact, Gnome Cog, Green Dragon, Goblin Skull) hung in their homes' structures, sold by kin merchants, the goblin skull dropped by the Warlord
-- [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant
+- [Magic items](items/magic-items.md): Wand of Magic Missiles, Bag of Holding, Decanter of Endless Water, Immovable Rod, Cloak and Ring of Protection, Periapt of Wound Closure, Amulet of Health, Doss Lute, Tome of Clear Thought; the boss and monster drops: Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Frostbrand, Phylactery Locket, The Burglar's Ring, Eye of the Tyrant, Gorgon's Gaze
 - [Elven building blocks](items/elven-building-blocks.md): Heartwood, Moonstone, Living Wood, Silverleaf, Woven Rope Planks, Sylvan Glyph Stones, Glimmercaps, Moonpetals and Starglass, built into the Elven Enclaves
 - [Hobbit building blocks](items/hobbit-building-blocks.md): Thatch, Mossy Thatch, Wattle and Daub, Smial Turf Wall, Round Door Frame Stone, Hearth Stone, Pipe-weed Bundle; the Larder Shelf (9 slots) and Ale Cask (glass bottle for a Mug of Ale, 4 mugs, refills); hanging herbs and onions
 - [Crypt building blocks](items/crypt-blocks.md): Ossuary Bricks, Funerary Relief, Burial Niche Wall, Sarcophagus (some hide a zombie), Grave Candle Cluster, Grave Moss, Lich Sigil Floor and Phylactery Pedestal, built into Crypt dungeons

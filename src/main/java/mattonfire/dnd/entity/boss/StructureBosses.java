@@ -10,6 +10,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.LichEntity;
+import mattonfire.dnd.entity.MedusaEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
@@ -30,8 +31,8 @@ import net.minecraft.world.ServerWorldAccess;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Bosses that live in generated structures: the stronghold library's Lich and the Nether Fortress
- * Warlord. A boss can't exist on Peaceful, so a structure generated on Peaceful gets an invisible
+ * Bosses that live in generated structures: the stronghold library's Lich, the Nether Fortress
+ * Warlord and the Gorgon's Temple Medusa. A boss can't exist on Peaceful, so a structure generated on Peaceful gets an invisible
  * marker where the boss would stand instead. Once the difficulty is above Peaceful, a loaded
  * marker raises its boss and goes away, so switching back from Peaceful doesn't leave the
  * structure empty for good.
@@ -43,6 +44,7 @@ public final class StructureBosses {
     private static final String PENDING = "dndclasses.pending_boss";
     private static final String LICH = "dndclasses.pending_boss.lich";
     private static final String WARLORD = "dndclasses.pending_boss.warlord";
+    private static final String MEDUSA = "dndclasses.pending_boss.medusa";
     /** Followed by "x,y,z": where the Lich's phylactery goes. */
     private static final String PHYLACTERY = "dndclasses.phylactery=";
     private static final int CHECK_INTERVAL = 20;
@@ -86,6 +88,8 @@ public final class StructureBosses {
                 spawnLich(world, pos, marker.getYaw(), phylacterySpot(tags, pos), null);
             } else if (tags.contains(WARLORD)) {
                 spawnWarlord(world, pos, marker.getYaw(), null);
+            } else if (tags.contains(MEDUSA)) {
+                spawnMedusa(world, pos, marker.getYaw());
             }
             DnDClasses.LOGGER.info("[StructureBosses] raised a boss held back by Peaceful at {}", pos.toShortString());
             marker.discard();
@@ -110,6 +114,32 @@ public final class StructureBosses {
         } else {
             spawnWarlord(world, pos, yaw, null);
         }
+    }
+
+    /** Places a Gorgon's Temple's Medusa, or a marker for her on Peaceful. */
+    public static void placeMedusa(ServerWorldAccess world, BlockPos pos, float yaw) {
+        if (world.getDifficulty() == Difficulty.PEACEFUL) {
+            placeMarker(world, pos, yaw, MEDUSA, null);
+        } else {
+            spawnMedusa(world, pos, yaw);
+        }
+    }
+
+    @Nullable
+    private static MedusaEntity spawnMedusa(ServerWorldAccess world, BlockPos pos, float yaw) {
+        MedusaEntity medusa = ModEntityTypes.MEDUSA.create(world.toServerWorld());
+        if (medusa == null) {
+            return null;
+        }
+        medusa.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
+        medusa.setHeadYaw(yaw);
+        medusa.setBodyYaw(yaw);
+        medusa.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+        medusa.setHome(pos);
+        medusa.addCommandTag(MedusaEntity.LAIR_TAG);
+        medusa.setPersistent();
+        world.spawnEntityAndPassengers(medusa);
+        return medusa;
     }
 
     /** Bosses a structure (a dungeon's boss room) can call up on demand. */

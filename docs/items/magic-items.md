@@ -1,5 +1,5 @@
 # Magic Items
-The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring and a beholder's eye. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
+The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye and a gorgon's stone eye. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
 
 ## How it works
 Every item below works only while its magic is awake: it's identified, you're not in a Beholder's anti-magic cone, and, if it needs attunement, you're attuned to it (and of the right class). Otherwise using it puts the reason on the action bar ("Its magic sleeps. Identify it first.", "Attune to it at an Attunement Table to wake its magic."). Wondrous items, rings and amulets work from anywhere in your inventory: carried is worn.
@@ -26,6 +26,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 18 | The Burglar's Ring | Very Rare ring | yes, always cursed (The Ring's Call) | Sneak still for a second: invisible until you attack or stop sneaking; mobs lose you beyond 4 blocks |
 | 19 | Tome of Clear Thought | Very Rare consumable | no | Read near an Attunement Table: clears your current class's subclass and refunds its points |
 | 20 | Eye of the Tyrant | Legendary wondrous item | yes | Right-click a creature within 32 blocks: a random eye ray (Paralysis, Telekinesis or Disintegration). 3 charges. You're immune to the Beholder's anti-magic cone |
+| 21 | Gorgon's Gaze | Rare wondrous item | yes | Once per dawn, right-click a mob within 12 blocks (not a boss): CON save DC 14 or it's Petrified for good, a statue |
 
 ### Wand of Magic Missiles
 - Right-click fires three glowing darts that curve onto the nearest hostile mob (any monster, or any mob targeting you) within 24 blocks and 30 degrees of where you look, that you can see. Together they deal 6 magic damage, credited to you. No target: "No hostile creature in sight." and no charge is spent.
@@ -112,6 +113,10 @@ Every item below works only while its magic is awake: it's identified, you're no
 - 3 charges (tooltip and a green bar), 1 s between rays. One charge comes back at each dawn and on a long rest. Creative mode doesn't spend charges.
 - While it's active (identified, attuned, anywhere in your inventory) the Beholder's anti-magic cone can't touch you, so your class specials and other magic items keep working.
 
+### Gorgon's Gaze
+- Attuned, right-click a mob you're looking at within 12 blocks (not through walls, not a player or a boss). It makes a **CON save** against DC 14 (mobs add +1). On a failure it's **[Petrified](../systems/conditions.md) indefinitely**: a statue that doesn't move, act or make a sound, and only a pickaxe breaks it (for its normal loot). On a success nothing happens; the charge is spent either way.
+- 1 charge (tooltip and a green bar), back at each dawn and on a long rest. Creative mode doesn't spend it. A boss shrugs it off without spending it.
+
 ## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
 - The boss and monster items drop, unidentified, when a player kills their monster (Looting adds the bonus shown):
@@ -127,6 +132,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Frostbrand | [Frost Drake](../mobs/dragons.md) | 10% (+5%) |
 | Phylactery Locket | [Lich](../bosses/lich.md) (final death) | 20% |
 | Eye of the Tyrant | [Beholder](../bosses/beholder.md) | 12% (+3%) |
+| Gorgon's Gaze | [Medusa](../bosses/medusa.md) | 25% (+5%) |
 
 - Every item also turns up in its rarity's loot table (Cloak of Protection and Ring of Protection only come from there), which mod structures, bosses, Mimics, bounties, raids, dungeons and vanilla structures roll on. See [Magic loot](../systems/magic-loot.md) for the rates.
 - The named sources (per chest or per kill; chest and bounty items need no player kill, monsters do):
@@ -147,7 +153,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Tome of Clear Thought | [Lich](../bosses/lich.md) (final death), Beholder (player kill); vanilla stronghold library | 10% each; 2% |
 | Eye of the Tyrant | beholder lair chest | 2% |
 
-Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`.
+Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`.
 
 ## Commands
 - `/dndmagic give|identify|attune|bonds ...`: see [Magic items](../systems/magic-items.md).

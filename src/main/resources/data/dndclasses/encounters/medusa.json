@@ -1,0 +1,8 @@
+{
+  "name": "Gorgon",
+  "difficulty": "deadly",
+  "spread": 2,
+  "spawns": [
+    {"entity": "dndclasses:medusa", "count": 1}
+  ]
+}

@@ -36,10 +36,21 @@ public final class ConditionTicker {
     public static final int SYNC_EVERY = 20;
 
     private static final Set<LivingEntity> ACTIVE = new LinkedHashSet<>();
+    /** The instance whose repeat save is being rolled right now, or null. Server thread only. */
+    private static ConditionInstance rolling;
     /** "entity uuid|condition|source|key" to the world time its source went missing. */
     private static final Map<String, Long> GONE_SINCE = new HashMap<>();
 
     private ConditionTicker() {
+    }
+
+    /**
+     * The condition instance whose repeat save is being rolled right now (server thread), or null outside a repeat
+     * save. Lets a {@link SavingThrow.Reroll} or other hook claim only repeat saves (Monk Diamond Soul).
+     */
+    @org.jetbrains.annotations.Nullable
+    public static ConditionInstance rollingRepeatSave() {
+        return rolling;
     }
 
     static void track(LivingEntity entity) {
@@ -143,14 +154,21 @@ public final class ConditionTicker {
             return;
         }
         Entity source = Conditions.resolve(entity, inst.source());
-        SaveResult result = SavingThrow.of(entity, save.ability(), save.dc())
-                .label(save.labelKey())
-                .source(source)
-                .tags(save.tags().toArray(new String[0]))
-                .onSuccess(Text.translatable("condition.dndclasses.save.ends"))
-                .onFailure(Text.translatable(save.escalateTo() != null
-                        ? "condition.dndclasses.save.worsens" : "condition.dndclasses.save.lasts"))
-                .roll();
+        SaveResult result;
+        ConditionInstance outer = rolling;
+        rolling = inst;
+        try {
+            result = SavingThrow.of(entity, save.ability(), save.dc())
+                    .label(save.labelKey())
+                    .source(source)
+                    .tags(save.tags().toArray(new String[0]))
+                    .onSuccess(Text.translatable("condition.dndclasses.save.ends"))
+                    .onFailure(Text.translatable(save.escalateTo() != null
+                            ? "condition.dndclasses.save.worsens" : "condition.dndclasses.save.lasts"))
+                    .roll();
+        } finally {
+            rolling = outer;
+        }
         if (!holder.dnd$conditions().contains(inst)) {
             return; // a hook ended it while rolling
         }

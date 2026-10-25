@@ -100,7 +100,15 @@ public class InstrumentItem extends Item {
         if (user instanceof ServerPlayerEntity player) {
             BardSkills.combatInspiration(player, listeners, BUFF_TICKS);
             BardSkills.charmAnimals(player);
+            if (isLute()) {
+                mattonfire.dnd.classes.Abilities.ClassConditionFeatures.countercharm(player);
+            }
         }
+    }
+
+    /** The lute (and the Doss lute), whose song is the Bard's Countercharm. */
+    public boolean isLute() {
+        return song == mattonfire.dnd.classes.Registry.ModSounds.SONG_LUTE;
     }
 
     /** The song itself: the sound, music ducking and note particles. */

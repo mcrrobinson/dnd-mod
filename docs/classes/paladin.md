@@ -47,7 +47,7 @@ Paladins get 3 extra XP for killing undead, and 1 extra for a hostile kill while
 | Aura of Protection | Oath of Devotion | Passive | 1 | | You and players within 8 blocks take 15% less damage, add your CHA modifier (at least +1) to [saving throws](../systems/class-save-features.md) and get +2 on [death saves](../systems/death-saves.md). Several auras don't stack |
 | Hellforged | Oath of Conquest | Passive | 1 | | The Nether no longer weakens you |
 | Divine Shield | Oath of Conquest | Active | 1 | 5 | Absorption III and no knockback for 15 s |
-| Aura of Courage | Oath of Conquest | Passive | 1 | | Weakness and Slowness are removed from you and players within 8 blocks every second |
+| Aura of Courage | Oath of Conquest | Passive | 1 | | Weakness, Slowness and [Frightened](../systems/conditions.md) are removed from you and players within 8 blocks every second, and nobody in the aura can be Frightened |
 | Circle of Healing | Any oath | Active | 2 | 7 | Fully heals every player within 10 blocks. You and party members within 24 blocks are fully healed and get Absorption I for 30 s |
 | Avenging Angel | Capstone | Active | 2 | 9 | Strength II, Regeneration II and Resistance II for 20 s; undead within 10 blocks are set on fire every second for the whole time |
 

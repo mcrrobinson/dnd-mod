@@ -37,7 +37,8 @@ TABLES = {
         "named": [("ring_of_protection", 6), ("staff_of_ice", 2), ("staff_of_fire", 2),
                   ("staff_of_lightning", 2), ("amulet_of_health", 1), ("doss_lute", 1),
                   ("warlords_warhorn", 1), ("heart_of_the_furnace", 1), ("storm_chaser_boots", 1),
-                  ("wyvern_scale_cloak", 1), ("belt_of_owlbear_might", 1), ("mace_of_disruption", 1)],
+                  ("wyvern_scale_cloak", 1), ("belt_of_owlbear_might", 1), ("mace_of_disruption", 1),
+                  ("gorgons_gaze", 1)],
     },
     "very_rare": {
         "gear": gear(DIAMOND, 6, 4) + [("bow", 6), ("crossbow", 4), ("trident", 2)],

@@ -48,6 +48,8 @@
         "NetherFortressStartMixin",
         "StrongholdLibraryMixin",
         "TempleTrapsMixin",
+        "DesertTempleGeneratorMixin",
+        "JungleTempleGeneratorMixin",
         "MineshaftCollapseMixin",
         "StrongholdHiddenClosetMixin",
         "StructureStartPlacingMixin",

@@ -46,6 +46,27 @@ Default lengths when nothing says otherwise: Prone 3 s, Frightened 8 s, Restrain
 | Cave spider and witch poison ([data-driven saves](data-driven-saves.md)) | Poisoned for the poison's final length |
 | The old `dndclasses:frightened` effect (`/effect`, old saves) | Turned into a sourceless Frightened of the same length |
 
+## Class features
+Some class and race features protect against conditions or end them:
+
+| Class / race | Feature | Effect |
+|-|-|-|
+| Paladin (Conquest) | Aura of Courage (tree passive) | You and players within 8 blocks can't be Frightened, and a Frightened player who steps into the aura stops being Frightened within a second. A Downed Paladin's aura is down |
+| Paladin (Devotion) | Aura of Protection | Adds your CHA modifier to every save, repeat saves included |
+| Barbarian (Berserker) | **Mindless Rage** | While Rage is on you can't be Frightened or Charmed, and starting Rage ends both |
+| Barbarian | Rage | Advantage on STR saves, so STR repeat saves and struggling out of grabs are easier |
+| Monk | **Stillness of Mind** (level 7) | Frightened and Charmed last half as long on you, and your repeat saves against them have advantage |
+| Monk | Diamond Soul (level 10) | Also: the first failed repeat save against each condition is rolled again (`Diamond Soul` row on the save lane) |
+| Monk (Open Hand) | Stunning Strike (active) | Hostile mobs within 4 blocks make a CON save against 8 + proficiency + WIS modifier (13 for a level 5 Monk with WIS 14): a failure is **Stunned for 2 s** (bosses shrug it off after 1 s), a success gets the old Slowness IV and Weakness II for 4 s |
+| Cleric (Life) | Cure Wounds (active) | Also ends one condition on each creature it heals, the first found of Petrified, Paralyzed, Blinded, Poisoned, Frightened ("the stone falls away"). It ends the condition before healing, so a Petrified ally is healed too |
+| Bard | **Countercharm** | For 10 s after a Bard plays the lute (the item, the Doss Lute or the instrument slot), players within 8 blocks roll repeat saves against Frightened and Charmed with advantage |
+| Rogue, Devotion Paladin (Purity of Spirit), Alchemist (Iron Stomach), potion of poison immunity | Poison immunity | Immune to Poisoned too |
+| Elf | **Fey Ancestry** | Advantage on saves against being charmed (saves tagged `charm`, and Charmed repeat saves) |
+| Gnome | Gnome Cunning | Advantage on INT, WIS and CHA saves tagged `magic` |
+| Fighter | Indomitable | Rerolls any failed save on the save lane, repeat saves included |
+
+![Cure Wounds on a petrified wolf](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-condition-class-features/ccf-wolf-cured.png)
+
 ## Commands
 `/dndcondition` (op level 2), also as `/dm condition ...` for Dungeon Masters:
 
@@ -62,7 +83,7 @@ The result is the number of targets it landed on, so `execute store success` wor
 
 ## Known limitations
 - Petrified creatures can't be healed at all (not only natural regeneration), so a Petrified player waits it out or has it removed.
-- Class features that interact with conditions (Aura of Courage, Mindless Rage, Stillness of Mind, Cure Wounds, Countercharm, Fey Ancestry) are a follow-up card ("Conditions: class interactions").
+- Fey Ancestry's immunity to magical sleep has nothing to block yet: whatever puts players to sleep should check `RacePassives.immuneToMagicalSleep`.
 - Holds on non-player creatures restrain them but can't be struggled out of (only players struggle).
 
 ## For developers
@@ -76,4 +97,5 @@ Package `mattonfire.dnd.classes.Conditions`:
 - Saved under the persistent data key `dndConditions`; times are world time (`/time set` doesn't end them).
 - HUD: `Client/Hud/ConditionHud`, icons in `textures/gui/conditions.png` from `tools/condition_icons.py`; `Client/ConditionClient`.
 - Logs: `[Conditions] Dev +stunned (Mind Flayer, 60t, save INT 14/40t)`, `-stunned (saved)`, `restrained -> petrified`, `immune to petrified (boss)`, `blocked: attack (Stunned, ...)`.
-- Devscripts: `devscripts/conditions.txt` (all of the above), `conditions-relog-set.txt` / `conditions-relog-check.txt` (persistence); the DevScript `conditions` step logs the client's view.
+- Class features: `classes/Abilities/ClassConditionFeatures.java` (an `Immunity` for Aura of Courage, Mindless Rage and poison immunity via `SaveRules.immune`, an `ApplyHook` for Stillness of Mind, a `SavingThrow.Reroll` for Diamond Soul that claims only repeat saves through `ConditionTicker.rollingRepeatSave()`, sheet lines, and `cureOne`, `stunningStrikeDc`, `countercharm`, `onRage`, `auraOfCourageTick` called from the class skills). Fey Ancestry is in `RacePassives` (`CHARM_TAG`, `MAGICAL_SLEEP_TAG`). Logs: `[Conditions] Dev Aura of Courage (Steve) ends frightened`, `Mindless Rage ends fear and charm`, `Cure Wounds (Dev) ends petrified`, `Countercharm for 200t`, `immune to frightened (aura_of_courage)`.
+- Devscripts: `devscripts/conditions.txt` (all of the above), `condition-class-features.txt` (the class features), `conditions-relog-set.txt` / `conditions-relog-check.txt` (persistence); the DevScript `conditions` step logs the client's view.

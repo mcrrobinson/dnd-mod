@@ -281,6 +281,16 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // Medusa: the Gorgon's Temple lair boss (design 8, section 6)
+    public static final EntityType<MedusaEntity> MEDUSA = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "medusa"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, MedusaEntity::new)
+                    // 1.95 high, not 2.1: she has to fit the jungle temple's two-block rooms
+                    .dimensions(EntityDimensions.fixed(0.8f, 1.95f))
+                    .build()
+    );
+
     // The Halfling Sling's cobblestone (classes/Items/racial/HalflingSlingItem)
     public static final EntityType<SlingStoneEntity> SLING_STONE = Registry.register(
             Registries.ENTITY_TYPE,
@@ -339,5 +349,6 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(PHYLACTERY, PhylacteryEntity.createPhylacteryAttributes());
         LichEntity.registerEvents();
         FabricDefaultAttributeRegistry.register(BEHOLDER, BeholderEntity.createBeholderAttributes());
+        FabricDefaultAttributeRegistry.register(MEDUSA, MedusaEntity.createMedusaAttributes());
     }
 }

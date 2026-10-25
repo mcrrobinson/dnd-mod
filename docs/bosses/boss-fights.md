@@ -23,6 +23,7 @@ Bosses and the big dragons share one fight system: a boss bar, fight music, heal
 | [Lich](lich.md) | 300 | purple, notched | 48 | Lich theme | blue below 60%, red below 30% | 150 | Lichbane |
 | [Orc War Chief](orc-war-chief.md) | 90 | red, notched | 48 | Tooth and Claw | purple War Cry below 50% | 60 | none |
 | [Beholder](beholder.md) | 250 | purple, notched | 48 | Tooth and Claw | red enrage below 50% | 120 | An Eye for an Eye |
+| [Medusa](medusa.md) | 140 | green, notched | 32 | none | red enrage below 50% | 80 | none |
 | [Wyvern](../mobs/dragons.md) (wild) | 40 | red | 64 | Tooth and Claw | none | 20 | Dragon Slayer |
 | [Lightning Chaser](../mobs/dragons.md) (wild) | 200 | yellow | 64 | Tooth and Claw | none | 80 | Dragon Slayer |
 | [Frost Drake](../mobs/dragons.md) (wild) | 200 | blue | 64 | Tooth and Claw | none | 80 | Dragon Slayer |

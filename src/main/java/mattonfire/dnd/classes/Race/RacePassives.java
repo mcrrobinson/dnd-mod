@@ -9,6 +9,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
+import mattonfire.dnd.classes.Conditions.Condition;
 import mattonfire.dnd.classes.Abilities.Ability;
 import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.RollFilter;
@@ -112,6 +113,13 @@ public final class RacePassives {
     /** Save tag for spells and other magic; a Gnome has advantage on INT/WIS/CHA saves with it. */
     public static final String MAGIC_TAG = "magic";
     public static final String POISON_TAG = "poison";
+    /** Save tag for charm effects; an Elf (Fey Ancestry) has advantage on saves with it or the Charmed condition's. */
+    public static final String CHARM_TAG = "charm";
+    /**
+     * Save tag for magical sleep. Nothing puts players to sleep yet; whatever does (the Underdark's drow poison)
+     * should check {@link #immuneToMagicalSleep} first.
+     */
+    public static final String MAGICAL_SLEEP_TAG = "magical_sleep";
 
     public static final TagKey<DamageType> MAGIC_DAMAGE = TagKey.of(RegistryKeys.DAMAGE_TYPE,
             new Identifier(DnDClasses.MOD_ID, "magic_damage"));
@@ -143,6 +151,9 @@ public final class RacePassives {
                     c.advantage(RollFilter.tag(CampWatch.TAG_WATCH).and(RollFilter.tag(CampWatch.TAG_UNDERGROUND)),
                             "camp watches underground", "Dwarf (Stonecunning)");
                 }
+                case ELF -> c.advantage(RollFilter.allSaves().and(RollFilter.tag(CHARM_TAG)
+                        .or(RollFilter.tag(Condition.CHARMED.id()))), "saves against being charmed",
+                        "Elf (Fey Ancestry)");
                 case GNOME -> c.advantage(RollFilter.save(Ability.INT).or(RollFilter.save(Ability.WIS))
                         .or(RollFilter.save(Ability.CHA)).and(RollFilter.tag(MAGIC_TAG)),
                         "INT, WIS and CHA saves against magic", "Gnome (Gnome Cunning)");
@@ -151,6 +162,11 @@ public final class RacePassives {
             }
         });
         ServerTickEvents.END_SERVER_TICK.register(RacePassives::tick);
+    }
+
+    /** Fey Ancestry: an Elf can't be put to sleep by magic. A hook for the first magical sleep. */
+    public static boolean immuneToMagicalSleep(PlayerEntity player) {
+        return raceOf(player) == DndRace.ELF;
     }
 
     /** The race whose traits apply to this player, on either side. */

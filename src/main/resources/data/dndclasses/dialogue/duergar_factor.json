@@ -1,0 +1,10 @@
+{
+  "role": "duergar_factor",
+  "greeting": {
+    "default": "dialogue.dndclasses.duergar_factor.greeting.neutral",
+    "unfriendly": "dialogue.dndclasses.duergar_factor.greeting.unfriendly",
+    "friendly": "dialogue.dndclasses.duergar_factor.greeting.friendly",
+    "honored": "dialogue.dndclasses.duergar_factor.greeting.honored",
+    "exalted": "dialogue.dndclasses.duergar_factor.greeting.exalted"
+  }
+}

@@ -121,6 +121,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.RustMonsterEntity.register();
                 mattonfire.dnd.entity.MindFlayerSaves.register();
                 mattonfire.dnd.entity.MedusaSaves.register();
+                mattonfire.dnd.entity.DuergarEntities.register();
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
                 net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
                 mattonfire.dnd.world.gen.ModSpawns.addSpawns();

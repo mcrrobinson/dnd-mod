@@ -1,0 +1,168 @@
+# The Duergar and the Grey Clans (docs/mobs/duergar.md).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/duergar.txt
+# Expect in latest.log ([DevScript]/[CHAT]) and screenshots (duergar-*.png); [MobAction] lines are in debug.log:
+# - a soldier struck by the player Enlarges: `Enlarged` 0b before, 1b after, and duergar-enlarged shows the bigger
+#   hitbox; then at 13/30 HP it turns invisible ("Test passed" for the Invisibility effect, id 14)
+# - [MobAction] ... enlarge -> Dev and ... invisibility -> Dev in debug.log
+# - an AI soldier next to a Human (Unfriendly, -250) has no target after 3 s; next to a Hostile Dwarf (-550) it
+#   targets Dev
+# - the factor's trades open for a Human at Unfriendly prices: 16 Zurkhwood Planks for 5 emeralds (base 3),
+#   8 Faerzress Stone for 6 (4), 6 gold ingots for 1 emerald (4); at Friendly a Potion of Invisibility (18 -> 16)
+#   is added and at Honored the Duergar War Pick (20 -> 15); a Hostile Dwarf gets the refusal on the action bar
+#   and no screen
+# - killing a duergar: Grey Clans -60 and Mountain Dwarves +30 (the dwarves' daily kill cap is 30, so the second
+#   kill is on another day: the time is moved so both count)
+# - duergar-lineup(-hitboxes): the four kinds, the second soldier Enlarged (1b) with a 1.5x box: "Test passed" for its box reaching y 151.8, "Test failed" for the plain soldier's
+# - in Overworld daylight a soldier gets Weakness (id 18) and Slowness (id 2): "Test passed" twice
+wait 40
+closescreen
+include _reset.txt
+/execute in minecraft:overworld run tp @s 260.5 150 260.5 0 0
+/dndrace set @s human
+wait 5
+closescreen
+/dndclass set @s fighter
+/clear @s
+/difficulty normal
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+# Day 1, midnight: no sunlight on the duergar.
+/time set 42000
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:regeneration 900 4 true
+/kill @e[tag=dg]
+/fill 252 149 252 268 149 270 minecraft:stone
+/fill 252 150 252 268 156 270 minecraft:air
+/tp @s 260.5 150 260.5 0 15
+wait 20
+/rep @s dndclasses:duergar_clans set -250
+/rep @s dndclasses:mountain_dwarves set 0
+
+# ---- Enlarge and Invisibility ----
+/summon dndclasses:duergar_soldier 260.5 150 262.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg","dgs"]}
+wait 10
+/data get entity @e[tag=dgs,limit=1] Enlarged
+/data get entity @e[tag=dgs,limit=1] Health
+attack
+wait 10
+/data get entity @e[tag=dgs,limit=1] Enlarged
+/data get entity @e[tag=dgs,limit=1] Health
+hitboxes on
+perspective back
+wait 15
+screenshot duergar-enlarged
+perspective first
+hitboxes off
+/damage @e[tag=dgs,limit=1] 16 minecraft:player_attack by @s
+wait 5
+/data get entity @e[tag=dgs,limit=1] Health
+/execute if entity @e[tag=dgs,nbt={ActiveEffects:[{Id:14}]}]
+/data get entity @e[tag=dgs,limit=1] ActiveEffects
+wait 5
+screenshot duergar-invisible
+/kill @e[tag=dg]
+wait 5
+
+# ---- Who they attack: a Human (Unfriendly) no, a Hostile Dwarf yes ----
+/summon dndclasses:duergar_soldier 260.5 150 266.5 {Tags:["dg","dgh"]}
+wait 60
+target @e[tag=dgh]
+/dndrace set @s dwarf
+/rep @s dndclasses:duergar_clans set -550
+/rep @s
+wait 60
+target @e[tag=dgh]
+/kill @e[tag=dg]
+/dndrace set @s human
+/rep @s dndclasses:duergar_clans set -250
+/tp @s 260.5 150 260.5 0 15
+wait 10
+
+# ---- The factor ----
+/summon dndclasses:duergar_factor 260.5 150 262.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg","dgf"]}
+wait 10
+use
+wait 10
+slots
+screenshot duergar-factor-unfriendly
+closescreen
+wait 5
+/rep @s dndclasses:duergar_clans set 150
+use
+wait 10
+slots
+closescreen
+wait 5
+/rep @s dndclasses:duergar_clans set 450
+use
+wait 10
+slots
+screenshot duergar-factor-honored
+closescreen
+wait 5
+/dndrace set @s dwarf
+/rep @s dndclasses:duergar_clans set -550
+use
+wait 10
+actionbar
+slots
+screenshot duergar-factor-hostile
+closescreen
+/kill @e[tag=dg]
+/dndrace set @s human
+wait 5
+
+# ---- Killing duergar: -60 Grey Clans, +30 Mountain Dwarves ----
+/rep @s dndclasses:duergar_clans set -250
+/rep @s dndclasses:mountain_dwarves set 0
+/summon dndclasses:duergar_soldier 260.5 150 263.5 {NoAI:1b,Tags:["dg","dgk"]}
+wait 5
+/damage @e[tag=dgk,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/rep @s
+# The next day (day 2 at midnight): the dwarves' kill cap starts afresh.
+/time set 66000
+/summon dndclasses:duergar_taskmaster 260.5 150 263.5 {NoAI:1b,Tags:["dg","dgk"]}
+wait 5
+/damage @e[tag=dgk,limit=1] 1000 minecraft:player_attack by @s
+wait 10
+/rep @s
+/kill @e[tag=dg]
+wait 5
+
+# ---- Line-up: a soldier, an Enlarged soldier, an arbalester, the factor and the taskmaster ----
+/time set noon
+/tp @s 260.5 150 259.5 0 8
+/summon dndclasses:duergar_soldier 257.5 150 265.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg"],HandItems:[{id:"minecraft:iron_pickaxe",Count:1b},{}]}
+/summon dndclasses:duergar_soldier 259.5 150 265.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg","dgbig"],HandItems:[{id:"minecraft:iron_pickaxe",Count:1b},{}]}
+/summon dndclasses:duergar_arbalester 261.5 150 265.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg"],HandItems:[{id:"minecraft:crossbow",Count:1b},{id:"minecraft:iron_axe",Count:1b}]}
+/summon dndclasses:duergar_factor 263.5 150 265.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg"],HandItems:[{id:"minecraft:gold_ingot",Count:1b},{}]}
+/summon dndclasses:duergar_taskmaster 265.5 150 265.5 {NoAI:1b,Rotation:[180f,0f],Tags:["dg"],HandItems:[{id:"minecraft:lead",Count:1b},{}]}
+/damage @e[tag=dgbig,limit=1] 1 minecraft:player_attack by @s
+/data get entity @e[tag=dgbig,limit=1] Enlarged
+# The Enlarged box is 2.1 tall: it reaches y 151.8, a normal one (1.4) doesn't.
+/execute positioned 259.5 151.8 265.5 if entity @e[tag=dgbig,dx=0,dy=0,dz=0]
+/execute positioned 257.5 151.8 265.5 if entity @e[tag=dg,dx=0,dy=0,dz=0]
+hud off
+wait 30
+screenshot duergar-lineup
+hitboxes on
+wait 5
+screenshot duergar-lineup-hitboxes
+hitboxes off
+hud on
+/kill @e[tag=dg]
+wait 5
+
+# ---- Sunlight Sensitivity ----
+/time set noon
+/summon dndclasses:duergar_soldier 262.5 150 266.5 {Tags:["dg","dgsun"]}
+wait 50
+/execute if entity @e[tag=dgsun,nbt={ActiveEffects:[{Id:18}]}]
+/execute if entity @e[tag=dgsun,nbt={ActiveEffects:[{Id:2}]}]
+screenshot duergar-sunlight
+/kill @e[tag=dg]
+/time set 42000
+wait 5
+quit

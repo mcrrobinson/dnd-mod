@@ -46,7 +46,7 @@ Bolts and the Priestess's scourge carry Drow Poison: a **CON save, DC 13**, tagg
 The drow are the **Spider Houses** [faction](../systems/factions.md) (`dndclasses:drow`):
 - Everyone starts **Hostile** at -700, and Elves at -900 ("they remember"). Drow attack any player below Neutral on sight, so in practice everyone. Only grudge decay (5 a day) moves it up, so it takes about 120 days without a drow kill to reach Neutral.
 - Hitting a drow: -10. Killing one: -60, a Priestess -120.
-- **Every drow you kill gives +30 with the Sylvan Court** (no daily cap). The Grey Clans' share comes with the duergar.
+- **Every drow you kill gives +30 with the Sylvan Court** (no daily cap), and +15 with the [Grey Clans](duergar.md).
 - Rivals: Sylvan Court -0.5 and the Grey Clans -0.25 of any gain with the Spider Houses.
 
 ### Drops
@@ -80,6 +80,6 @@ Their weapons and gear never drop.
 - Client: `client/drow/DrowClient` (renderers with `RacialHumanoidRenderer` and the `DROW` look, the bolt as an arrow, the poison vignette at 40%).
 - Data: `factions/drow.json`, `tags/entity_types/faction/drow.json`, `tags/entity_types/underdark/thralls.json`, `tags/worldgen/structure/faction/drow.json` (optional `drow_outpost` and `drow_spire`), the drow in `condition_immune/frightened.json` and `lore/humanoid.json`, `enemy_kills` and an uncapped override for drow in `factions/sylvan_court.json`, `loot_tables/entities/drow_*.json`.
 - Textures: `tools/drow_skins.py` (skins), `tools/drow_icons.py` (Spidersilk, the effect icons).
-- Hooks for later tickets: the Grey Clans add `"dndclasses:drow": 15` to their `enemy_kills`; the Drow Outposts and the Spire tag their structures into `faction/drow` and spawn drow with `SpawnReason.STRUCTURE` (persistent); the Matron Mother (`dndclasses:drow_matron`) is already an optional member of `faction/drow`; her ticket adds her `kill_member_overrides` entry (-400) once the type exists (an unknown type there makes the whole faction fail to load).
+- Hooks for later tickets: the Drow Outposts and the Spire tag their structures into `faction/drow` and spawn drow with `SpawnReason.STRUCTURE` (persistent); the Matron Mother (`dndclasses:drow_matron`) is already an optional member of `faction/drow`; her ticket adds her `kill_member_overrides` entry (-400) once the type exists (an unknown type there makes the whole faction fail to load).
 - Logs: `[Drow] <name> drow poison stack n/3`, `falls asleep`, `hurt by <damage> (n) while asleep`, `wakes up`, `Darkness at x y z`, `summons spiders (n alive)`; `[MobAction]` (debug.log) for `hand crossbow`, `darkness`, `faerie fire`, `magic missile`, `summon spiders`, `healing word`, `dread`, `parry`, `levitate`.
 - Devscript: `devscripts/drow.txt`.

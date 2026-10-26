@@ -33,7 +33,8 @@ import net.minecraft.util.math.Direction;
  * <li>the <b>lava lake</b> at the back: a basin {@value #LAKE_W} x {@value #LAKE_D} of lava two deep, sunk a block
  * under the floor, walled and floored with basalt to {@code y = -5}, with a shore of magma blocks round it and a
  * basalt-brick railing along the yard side;</li>
- * <li>Duergar Braziers on posts along the road and at the lake's corners, and 1-2 soldiers on guard in the yard.</li>
+ * <li>Duergar Braziers on posts along the road and at the lake's corners, and 1-2 soldiers on guard in the yard;</li>
+ * <li>the cave's springs stopped over and round the hold ({@link #springs}).</li>
  * </ul>
  * Its box is the whole hold, so the structure's {@code spawn_overrides} cover all of it.
  */
@@ -49,6 +50,10 @@ public class DuergarGroundsPiece extends UnderdarkPiece {
     static final int LAKE_D = LAKE_B2 - LAKE_B1 + 1;
     /** The lava's surface, a block under the floor. */
     public static final int LAVA_TOP = -2;
+    /** Springs are stopped up to this high over the floor... */
+    public static final int SPRINGS = 40;
+    /** ...and this far out round the square. */
+    public static final int SPRING_RIM = 4;
     /** Where the braziers stand along the road (b), at a = +-3. */
     static final int[] BRAZIERS = {20, 12, 4, -4, -12};
 
@@ -56,7 +61,8 @@ public class DuergarGroundsPiece extends UnderdarkPiece {
     private final List<int[]> entrances;
 
     public DuergarGroundsPiece(BlockPos center, Direction front, long seed, List<int[]> entrances) {
-        super(DuergarHolds.GROUNDS, center, front, seed, -HALF - 1, -6, -HALF - 1, HALF + 1, CLEAR + 1, HALF + 1);
+        super(DuergarHolds.GROUNDS, center, front, seed, -HALF - SPRING_RIM, -6, -HALF - SPRING_RIM, HALF + SPRING_RIM, SPRINGS,
+                HALF + SPRING_RIM);
         this.entrances = new ArrayList<>(entrances);
     }
 
@@ -125,6 +131,7 @@ public class DuergarGroundsPiece extends UnderdarkPiece {
                 }
             }
         }
+        this.springs(b);
         this.lake(b);
         // The road from the gate to the lake, and the paths off it.
         for (int c = BACK; c <= FRONT; c++) {
@@ -154,6 +161,27 @@ public class DuergarGroundsPiece extends UnderdarkPiece {
         DuergarHolds.duergar(b, 4, 0, 18, DuergarEntities.DUERGAR_SOLDIER, 14);
         if (b.random.nextBoolean()) {
             DuergarHolds.duergar(b, -4, 0, -10, DuergarEntities.DUERGAR_SOLDIER, 14);
+        }
+    }
+
+    /**
+     * Stops the springs in the cave's walls and roof over the hold: any lava above the cleared air, up to
+     * {@value #SPRINGS} over the floor and {@value #SPRING_RIM} blocks round the square, turns to basalt, any water to
+     * cobbled deepslate, so nothing pours into the hold from the cavern's walls or roof.
+     */
+    private void springs(Builder b) {
+        BlockState basalt = Blocks.BASALT.getDefaultState();
+        BlockState stone = Blocks.COBBLED_DEEPSLATE.getDefaultState();
+        for (int a = -HALF - SPRING_RIM; a <= HALF + SPRING_RIM; a++) {
+            for (int c = -HALF - SPRING_RIM; c <= HALF + SPRING_RIM; c++) {
+                int d = Math.max(Math.abs(a), Math.abs(c));
+                for (int y = d <= HALF ? clearAt(d) + 1 : 0; y <= SPRINGS; y++) {
+                    BlockState state = b.get(a, y, c);
+                    if (state != null && !state.getFluidState().isEmpty()) {
+                        b.set(a, y, c, state.getFluidState().isIn(net.minecraft.registry.tag.FluidTags.LAVA) ? basalt : stone);
+                    }
+                }
+            }
         }
     }
 

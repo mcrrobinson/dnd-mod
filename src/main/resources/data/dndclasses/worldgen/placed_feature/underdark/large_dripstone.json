@@ -9,6 +9,9 @@
       "type": "minecraft:in_square"
     },
     {
+      "type": "dndclasses:away_from_duergar_holds"
+    },
+    {
       "type": "minecraft:height_range",
       "height": {
         "type": "minecraft:uniform",

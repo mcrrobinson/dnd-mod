@@ -23,7 +23,7 @@ include _reset.txt
 /dndhome duergarholdseeds
 waitserver 2
 # Somewhere this world hasn't generated yet, so the hold below is a fresh one.
-/execute in minecraft:overworld run tp @s 6000 200 -6000
+/execute in minecraft:overworld run tp @s 42000 200 -42000
 
 /gamemode spectator
 /dndhome duergarhold overview

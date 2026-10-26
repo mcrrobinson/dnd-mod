@@ -19,7 +19,7 @@ include _reset.txt
 /difficulty normal
 /effect give @s minecraft:night_vision 99999 0 true
 /effect give @s minecraft:resistance 99999 4 true
-/execute in minecraft:overworld run tp @s 12000 200 12000
+/execute in minecraft:overworld run tp @s 24000 200 24000
 /gamemode spectator
 /dndhome duergarhold trade
 wait 400

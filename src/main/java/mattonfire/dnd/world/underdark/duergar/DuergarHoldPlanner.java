@@ -22,8 +22,11 @@ import net.minecraft.util.math.random.Random;
  * <li>the {@link DuergarForgePiece Forge Hall} at the back on one side, the {@link DuergarTowerPiece Taskmaster's
  * tower} at the back on the other by the lake, the {@link DuergarMinePiece mine} in front of the tower, the
  * {@link DuergarTradePiece Trade Hall} by the gate on the tower's side and 1-2 {@link DuergarBarracksPiece barracks}
- * opposite it, all facing the road.</li>
+ * opposite it, all facing the road. A second barracks joins the first by a bridge between their turrets.</li>
  * </ul>
+ * The buildings share one {@link DuergarMasonry.Style} (roof material, ridge, trim) drawn per hold, and in a mirrored
+ * hold every building is mirrored too ({@link DuergarPiece}), so their wings and turrets keep to the same side of the
+ * road.
  */
 public final class DuergarHoldPlanner {
     /** The levelled square's half-size. */
@@ -51,12 +54,12 @@ public final class DuergarHoldPlanner {
         }
     }
 
-    static final Spot FORGE = new Spot(-15, -8, Direction.SOUTH, DuergarForgePiece.HALF_B + 2);
-    static final Spot TOWER = new Spot(15, -10, Direction.SOUTH, DuergarTowerPiece.HALF + 2);
-    static final Spot MINE = new Spot(14, -1, Direction.WEST, DuergarMinePiece.HEAD + 2);
-    static final Spot TRADE = new Spot(14, 13, Direction.WEST, DuergarTradePiece.HALF_B + 2);
-    static final Spot[] BARRACKS = {new Spot(-15, 8, Direction.EAST, DuergarBarracksPiece.HALF_B + 2),
-            new Spot(-15, 18, Direction.EAST, DuergarBarracksPiece.HALF_B + 2)};
+    static final Spot FORGE = new Spot(-15, -8, Direction.SOUTH, DuergarForgePiece.DOOR);
+    static final Spot TOWER = new Spot(15, -10, Direction.SOUTH, DuergarTowerPiece.DOOR);
+    static final Spot MINE = new Spot(14, 0, Direction.WEST, DuergarMinePiece.DOOR);
+    static final Spot TRADE = new Spot(14, 13, Direction.WEST, DuergarTradePiece.DOOR);
+    static final Spot[] BARRACKS = {new Spot(-15, 7, Direction.EAST, DuergarBarracksPiece.DOOR),
+            new Spot(-15, 18, Direction.EAST, DuergarBarracksPiece.DOOR)};
 
     private DuergarHoldPlanner() {
     }
@@ -65,7 +68,9 @@ public final class DuergarHoldPlanner {
         BlockPos center = site.center();
         Direction front = Direction.Type.HORIZONTAL.random(random);
         int m = random.nextBoolean() ? 1 : -1;
+        boolean mirror = m < 0;
         int barracks = 1 + random.nextInt(2);
+        int style = DuergarMasonry.Style.random(random);
 
         List<Spot> spots = new ArrayList<>(List.of(FORGE, TOWER, MINE, TRADE));
         for (int i = 0; i < barracks; i++) {
@@ -76,13 +81,22 @@ public final class DuergarHoldPlanner {
             entrances.add(spot.entrance(m));
         }
         collector.addPiece(new DuergarGroundsPiece(center, front, random.nextLong(), entrances));
-        collector.addPiece(new DuergarForgePiece(pos(center, front, FORGE, m), face(front, FORGE, m), random.nextLong()));
-        collector.addPiece(new DuergarTowerPiece(pos(center, front, TOWER, m), face(front, TOWER, m), random.nextLong()));
-        collector.addPiece(new DuergarMinePiece(pos(center, front, MINE, m), face(front, MINE, m), random.nextLong()));
-        collector.addPiece(new DuergarTradePiece(pos(center, front, TRADE, m), face(front, TRADE, m), random.nextLong()));
+        collector.addPiece(new DuergarForgePiece(pos(center, front, FORGE, m), face(front, FORGE, m), random.nextLong(),
+                mirror, style));
+        collector.addPiece(new DuergarTowerPiece(pos(center, front, TOWER, m), face(front, TOWER, m), random.nextLong(),
+                mirror, style));
+        collector.addPiece(new DuergarMinePiece(pos(center, front, MINE, m), face(front, MINE, m), random.nextLong(),
+                mirror, style));
+        collector.addPiece(new DuergarTradePiece(pos(center, front, TRADE, m), face(front, TRADE, m), random.nextLong(),
+                mirror, style));
+        // Two barracks put their turrets at the ends facing each other (towards +b for the first, -b for the
+        // second: local -a and +a) and the second builds the bridge between them; a lone one's turret is either end.
+        int lone = random.nextBoolean() ? 1 : -1;
         for (int i = 0; i < barracks; i++) {
+            int turret = barracks == 1 ? lone : i == 0 ? -1 : 1;
+            int bridge = barracks == 1 ? 0 : i == 0 ? 1 : 2;
             collector.addPiece(new DuergarBarracksPiece(pos(center, front, BARRACKS[i], m), face(front, BARRACKS[i], m),
-                    random.nextLong()));
+                    random.nextLong(), mirror, style, turret, bridge));
         }
         collector.addPiece(new DuergarWallPiece(center, front, random.nextLong()));
     }

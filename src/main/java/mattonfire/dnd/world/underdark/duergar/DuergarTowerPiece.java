@@ -3,9 +3,9 @@ package mattonfire.dnd.world.underdark.duergar;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
 import mattonfire.dnd.classes.Obstacles.Tier;
+import mattonfire.dnd.classes.Registry.UnderdarkBlocks;
 import mattonfire.dnd.entity.DuergarEntities;
 import mattonfire.dnd.world.gen.PieceBlocks;
-import mattonfire.dnd.world.underdark.UnderdarkPiece;
 import net.minecraft.block.BedBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -16,9 +16,12 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * A Duergar Hold's Taskmaster's tower, by the lava lake, its door towards local +b: 7 x 7, three floors and a roof,
- * Basalt Forge Brick walls with polished basalt corners, a ladder up one inside corner through every floor to a hatch
- * in the roof.
+ * A Duergar Hold's Taskmaster's tower, by the lava lake, its door towards local +b: 7 x 7 with its corners cut to
+ * polished basalt chamfers, three floors and a roof, Basalt Forge Brick walls on a blackstone base with Greysteel
+ * bands at each floor. Its foot is battered (a skirt of blackstone two high, stepped in), its top overhangs on
+ * corbels as a crown of battlements with pinnacles (braziers on some), and most towers have a balcony off the top
+ * floor towards the lake with a gibbet cage hanging under it. A ladder climbs one inside corner through every floor to
+ * a hatch in the roof; the door is recessed in a portal.
  * <ul>
  * <li>Ground floor: the guard room (barrels, a brazier).</li>
  * <li>First floor: the <b>strongbox</b> vault, a 2 x 2 closet in one corner. Its doorway is a <b>Locked Door</b>
@@ -29,7 +32,7 @@ import net.minecraft.util.math.Direction;
  * <li>Roof: Greysteel battlements, and half the time an arbalester.</li>
  * </ul>
  */
-public class DuergarTowerPiece extends UnderdarkPiece {
+public class DuergarTowerPiece extends DuergarPiece {
     /** The shell's half-size: a and b from -3 to 3. */
     public static final int HALF = 3;
     /** The floors' y (the floor blocks): ground, first, top; then the roof. */
@@ -37,8 +40,11 @@ public class DuergarTowerPiece extends UnderdarkPiece {
     public static final int TOP = 9;
     public static final int ROOF = 14;
 
-    public DuergarTowerPiece(BlockPos center, Direction front, long seed) {
-        super(DuergarHolds.TOWER, center, front, seed, -HALF, -1, -HALF, HALF, ROOF + 3, HALF);
+    /** Blocks from the centre to just outside the door. */
+    public static final int DOOR = HALF + 2;
+
+    public DuergarTowerPiece(BlockPos center, Direction front, long seed, boolean mirror, int style) {
+        super(DuergarHolds.TOWER, center, front, seed, mirror, style, -HALF - 2, -1, -HALF - 1, HALF + 1, ROOF + 3, HALF + 2);
     }
 
     public DuergarTowerPiece(NbtCompound nbt) {
@@ -70,43 +76,126 @@ public class DuergarTowerPiece extends UnderdarkPiece {
         return this.at(0, 0, 1);
     }
 
+    /** Whether local a/b is inside the tower's shell: 7 x 7 with the corner blocks cut. */
+    static boolean in(int a, int c) {
+        return Math.abs(a) <= HALF && Math.abs(c) <= HALF && !(Math.abs(a) == HALF && Math.abs(c) == HALF);
+    }
+
+    /** Whether local a/b is just outside the shell (beside or diagonal to it): the batter and the crown stand there. */
+    static boolean ring(int a, int c) {
+        if (in(a, c)) {
+            return false;
+        }
+        for (int da = -1; da <= 1; da++) {
+            for (int dc = -1; dc <= 1; dc++) {
+                if (in(a + da, c + dc)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /** The way from a ring cell in towards the shell. */
+    private static Direction inward(int a, int c) {
+        if (Math.abs(a) > Math.abs(c)) {
+            return a > 0 ? Direction.WEST : Direction.EAST;
+        }
+        return c > 0 ? Direction.NORTH : Direction.SOUTH;
+    }
+
     @Override
     protected void build(Builder b) {
         BlockState bricks = DuergarHolds.bricks();
         BlockState greysteel = DuergarHolds.greysteel();
-        BlockState pillar = PieceBlocks.pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y);
-        for (int a = -HALF; a <= HALF; a++) {
-            for (int c = -HALF; c <= HALF; c++) {
-                boolean wall = Math.abs(a) == HALF || Math.abs(c) == HALF;
-                boolean corner = Math.abs(a) == HALF && Math.abs(c) == HALF;
-                for (int y = -1; y <= ROOF; y++) {
-                    if (wall) {
-                        b.set(a, y, c, corner ? pillar : y == FIRST || y == TOP ? greysteel : bricks);
-                    } else if (y == -1 || y == FIRST || y == TOP) {
-                        b.set(a, y, c, y == -1 ? Blocks.DEEPSLATE_TILES.getDefaultState() : bricks);
-                    } else if (y == ROOF) {
-                        b.set(a, y, c, greysteel);
+        BlockState pillar = DuergarMasonry.pillar();
+        boolean balcony = b.random.nextInt(4) != 0;
+        boolean pinnacles = b.random.nextBoolean();
+        int span = HALF + 1;
+        for (int a = -span; a <= span; a++) {
+            for (int c = -span; c <= span; c++) {
+                if (in(a, c)) {
+                    boolean wall = Math.abs(a) == HALF || Math.abs(c) == HALF;
+                    boolean corner = Math.abs(a) >= HALF - 1 && Math.abs(c) >= HALF - 1 && wall;
+                    for (int y = -1; y <= ROOF; y++) {
+                        if (wall) {
+                            b.set(a, y, c, y <= 1 ? DuergarMasonry.base() : y == FIRST || y == TOP || y == ROOF ? greysteel
+                                    : corner ? pillar : bricks);
+                        } else if (y == -1 || y == FIRST || y == TOP) {
+                            b.set(a, y, c, y == -1 ? Blocks.DEEPSLATE_TILES.getDefaultState() : bricks);
+                        } else if (y == ROOF) {
+                            b.set(a, y, c, greysteel);
+                        } else {
+                            b.clear(a, y, c);
+                        }
+                    }
+                    DuergarMasonry.openAir(b, a, ROOF + 1, c);
+                } else if (ring(a, c)) {
+                    // The battered foot and the overhanging crown.
+                    Direction in = inward(a, c);
+                    b.set(a, -1, c, DuergarMasonry.base());
+                    b.set(a, 0, c, DuergarMasonry.base());
+                    b.set(a, 1, c, DuergarMasonry.baseStairs(in, false));
+                    b.set(a, ROOF - 2, c, DuergarMasonry.baseStairs(in, true));
+                    b.set(a, ROOF - 1, c, bricks);
+                    b.set(a, ROOF, c, greysteel);
+                    boolean notch = Math.abs(a) == HALF && Math.abs(c) == HALF;
+                    if (notch) {
+                        b.set(a, ROOF + 1, c, greysteel);
+                        b.set(a, ROOF + 2, c, pinnacles ? DuergarHolds.brazier() : DuergarMasonry.brickWall());
                     } else {
-                        b.clear(a, y, c);
+                        DuergarMasonry.merlon(b, a, ROOF + 1, c, Math.floorMod(a + c, 2) == 0, greysteel);
                     }
                 }
-                b.set(a, ROOF + 1, c, wall && Math.floorMod(a + c, 2) == 0 ? greysteel : Blocks.AIR.getDefaultState());
-                b.clear(a, ROOF + 2, c);
-                b.clear(a, ROOF + 3, c);
+                DuergarMasonry.openAir(b, a, ROOF + 2, c);
+                DuergarMasonry.openAir(b, a, ROOF + 3, c);
             }
         }
-        // The door and the windows.
-        b.clear(0, 0, HALF);
-        b.clear(0, 1, HALF);
-        for (int y : new int[] {FIRST + 2, TOP + 2}) {
+        // The door, recessed in a portal, and the windows: shuttered on the first floor, slits on the top floor.
+        DuergarMasonry.portal(b, 0, 0, 2, HALF);
+        b.set(0, FIRST + 2, -HALF, Blocks.IRON_BARS);
+        b.set(HALF, FIRST + 2, 0, Blocks.IRON_BARS);
+        b.set(HALF, FIRST + 3, 0, Blocks.IRON_BARS);
+        b.set(-HALF, FIRST + 2, 1, Blocks.IRON_BARS);
+        b.set(1, FIRST + 2, HALF, Blocks.IRON_BARS);
+        b.set(HALF + 1, FIRST + 2, -1, DuergarMasonry.shutter(Direction.EAST));
+        b.set(HALF + 1, FIRST + 3, -1, DuergarMasonry.shutter(Direction.EAST));
+        b.set(HALF + 1, FIRST + 2, 1, DuergarMasonry.shutter(Direction.EAST));
+        b.set(HALF + 1, FIRST + 3, 1, DuergarMasonry.shutter(Direction.EAST));
+        for (int y = TOP + 1; y <= TOP + 2; y++) {
             b.set(0, y, -HALF, Blocks.IRON_BARS);
-            b.set(-HALF, y, 1, Blocks.IRON_BARS);
             b.set(HALF, y, 0, Blocks.IRON_BARS);
             b.set(1, y, HALF, Blocks.IRON_BARS);
+            b.set(-1, y, HALF, Blocks.IRON_BARS);
         }
-        for (int a = -1; a <= 1; a++) {
-            b.set(a, TOP + 3, -HALF, Blocks.IRON_BARS);
+        b.set(-1, TOP + 2, -HALF, Blocks.IRON_BARS);
+        b.set(1, TOP + 2, -HALF, Blocks.IRON_BARS);
+        if (balcony) {
+            // A balcony off the Taskmaster's floor towards the lake, a gibbet cage hanging under it.
+            for (int c = -1; c <= 1; c++) {
+                for (int a = -HALF - 2; a <= -HALF - 1; a++) {
+                    b.set(a, TOP, c, DuergarMasonry.base());
+                    b.set(a, TOP - 1, c, DuergarMasonry.baseStairs(Direction.EAST, true));
+                    b.clear(a, TOP + 1, c);
+                    b.clear(a, TOP + 2, c);
+                }
+                b.set(-HALF - 2, TOP + 1, c, DuergarMasonry.brickWall());
+            }
+            for (int a = -HALF - 2; a <= -HALF - 1; a++) {
+                b.set(a, TOP + 1, -2, DuergarMasonry.brickWall());
+                b.set(a, TOP + 1, 2, DuergarMasonry.brickWall());
+            }
+            b.clear(-HALF, TOP + 1, 0);
+            b.clear(-HALF, TOP + 2, 0);
+            b.set(-HALF - 2, TOP - 2, 1, Blocks.CHAIN.getDefaultState());
+            b.set(-HALF - 2, TOP - 3, 1, UnderdarkBlocks.CHAIN_CAGE.getDefaultState());
+            b.set(-HALF - 2, TOP + 2, -1, Blocks.SOUL_LANTERN.getDefaultState());
+        } else {
+            b.set(-HALF, TOP + 1, 0, Blocks.IRON_BARS);
+            b.set(-HALF, TOP + 2, 0, Blocks.IRON_BARS);
         }
+        // A brazier on a post beside the door.
+        b.set(-2, 0, HALF + 2, DuergarHolds.brazier());
         // The ladder up the back corner, through every floor and the roof.
         BlockState ladder = Blocks.LADDER.getDefaultState().with(LadderBlock.FACING, Direction.SOUTH);
         for (int y = 0; y <= ROOF; y++) {

@@ -54,7 +54,9 @@ import org.jetbrains.annotations.Nullable;
  * {@code gate} (outside, looking in), {@code inside}, {@code above}, {@code overview}, {@code forge} (at the forge
  * chest), {@code trade} (at the factor's counter), {@code mine} (in the gallery), {@code pen} (at the first pen gate),
  * {@code tower}, {@code vault} (at the Locked Door), {@code top} (the Taskmaster's floor), {@code lever} (the
- * portcullis lever) and {@code lake} (the lava's shore).</li>
+ * portcullis lever) and {@code lake} (the lava's shore); and outside views of the buildings: {@code corner},
+ * {@code corner2}, {@code outside}, {@code gateview}, {@code forgeview}, {@code tradeview}, {@code mineview},
+ * {@code towerview}, {@code barracksview}.</li>
  * <li>{@code /dndhome duergarholdsurvey [grid] [spacing]}: from a grid of points round you, finds the nearest hold to
  * each and checks it ({@code [DuergarHoldSurvey]}): the biome, the floor's height, every piece, then (generating its
  * chunks) the lava (at least 90% of the 480 basin blocks there, none anywhere else), no water inside the wall, the open portcullis, the locked pen
@@ -67,7 +69,8 @@ import org.jetbrains.annotations.Nullable;
 final class DuergarHoldCommands {
     static final TagKey<Biome> BIOMES = TagKey.of(RegistryKeys.BIOME, new Identifier("dndclasses", "has_structure/duergar_hold"));
     static final int SEED_RADIUS = 2500;
-    private static final String SPOTS = "gate, inside, above, overview, forge, trade, mine, pen, tower, vault, top, lever or lake";
+    private static final String SPOTS = "gate, inside, above, overview, corner, corner2, outside, gateview, forge, forgeview, trade, tradeview, mine,"
+            + " mineview, pen, tower, towerview, vault, top, lever, lake or barracksview";
 
     private DuergarHoldCommands() {
     }
@@ -197,6 +200,43 @@ final class DuergarHoldCommands {
                 feet = Vec3d.ofBottomCenter(g.at(0, 0, DuergarHoldPlanner.BACK));
                 look = Vec3d.ofCenter(g.lava(0, -22));
             }
+            case "corner", "corner2" -> {
+                // High over one front corner of the yard, looking across to the far back corner.
+                int s = spot.equals("corner") ? 1 : -1;
+                feet = Vec3d.ofBottomCenter(g.at(s * (DuergarHoldPlanner.INNER - 3), 14, DuergarHoldPlanner.FRONT - 3));
+                look = Vec3d.ofCenter(g.at(-s * 10, 2, -6));
+            }
+            case "forgeview" -> {
+                feet = view(layout.forge(), 13, 7, 5);
+                look = Vec3d.ofCenter(layout.forge().at(0, 4, 0));
+            }
+            case "tradeview" -> {
+                feet = view(layout.trade(), 11, -6, 4);
+                look = Vec3d.ofCenter(layout.trade().at(0, 3, 0));
+            }
+            case "mineview" -> {
+                feet = view(layout.mine(), 9, 5, 4);
+                look = Vec3d.ofCenter(layout.mine().at(0, 3, 0));
+            }
+            case "towerview" -> {
+                feet = view(layout.tower(), 12, -6, 6);
+                look = Vec3d.ofCenter(layout.tower().at(0, 8, 0));
+            }
+            case "barracksview" -> {
+                DuergarBarracksPiece first = layout.barracks().get(0);
+                feet = view(first, 10, 6, 4);
+                look = Vec3d.ofCenter(first.at(0, 3, 0));
+            }
+            case "gateview" -> {
+                // From the yard, looking back at the gatehouse's inner face.
+                feet = Vec3d.ofBottomCenter(g.at(6, 6, DuergarWallPiece.GATE_IN - 12));
+                look = Vec3d.ofCenter(g.at(0, 4, DuergarWallPiece.GATE_B));
+            }
+            case "outside" -> {
+                // Well outside the gate, high, looking at the front wall and gatehouse.
+                feet = Vec3d.ofBottomCenter(g.at(-10, 8, DuergarWallPiece.GATE_OUT + 14));
+                look = Vec3d.ofCenter(g.at(0, 4, DuergarWallPiece.GATE_B));
+            }
             default -> {
                 context.getSource().sendError(Text.literal("[Home] Which spot? " + SPOTS));
                 return 0;
@@ -218,6 +258,11 @@ final class DuergarHoldCommands {
         return 1;
     }
 
+    /** A camera spot in front of a building: {@code out} blocks out from its centre past the door, {@code side} across, {@code up} high. */
+    private static Vec3d view(mattonfire.dnd.world.underdark.UnderdarkPiece piece, int out, int side, int up) {
+        return Vec3d.ofBottomCenter(piece.at(side, up, out));
+    }
+
     static int survey(CommandContext<ServerCommandSource> context, int grid, int spacing) {
         ServerWorld underdark = Underdark.world(context.getSource().getServer());
         if (underdark == null) {
@@ -235,7 +280,12 @@ final class DuergarHoldCommands {
             return new HomeCommandUtil.Check(false, at + ": pieces missing (barracks " + layout.barracks().size() + "): FAIL");
         }
         BlockPos center = layout.center();
-        RegistryEntry<Biome> biome = world.getBiome(center);
+        // The biome the structure was placed by: the generator's own, at the centre (world.getBiome blurs biome edges).
+        RegistryEntry<Biome> biome = world.getChunkManager().getChunkGenerator().getBiomeSource().getBiome(
+                net.minecraft.world.biome.source.BiomeCoords.fromBlock(center.getX()),
+                net.minecraft.world.biome.source.BiomeCoords.fromBlock(center.getY()),
+                net.minecraft.world.biome.source.BiomeCoords.fromBlock(center.getZ()),
+                world.getChunkManager().getNoiseConfig().getMultiNoiseSampler());
         boolean biomeOk = biome.isIn(BIOMES);
         int floor = center.getY() - 1;
         boolean floorOk = floor >= -220 && floor <= -110;

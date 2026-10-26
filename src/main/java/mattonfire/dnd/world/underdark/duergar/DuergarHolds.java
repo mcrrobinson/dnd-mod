@@ -68,8 +68,9 @@ public final class DuergarHolds {
         return Registry.register(Registries.STRUCTURE_PIECE, id(name), loader);
     }
 
-    /** Loads the class, registering everything above. */
+    /** Loads the class, registering everything above, and the dripstone's placement filter. */
     public static void register() {
+        AwayFromHoldsPlacement.TYPE.codec();
     }
 
     // ---- Blocks the pieces share ----

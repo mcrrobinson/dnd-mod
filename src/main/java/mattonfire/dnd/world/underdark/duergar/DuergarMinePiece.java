@@ -6,7 +6,6 @@ import mattonfire.dnd.classes.Registry.UnderdarkBlocks;
 import mattonfire.dnd.entity.DuergarEntities;
 import mattonfire.dnd.entity.ModEntityTypes;
 import mattonfire.dnd.world.gen.PieceBlocks;
-import mattonfire.dnd.world.underdark.UnderdarkPiece;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.StairsBlock;
@@ -17,7 +16,9 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 /**
- * A Duergar Hold's mine, its door towards local +b. A 7 x 7 mine head of Basalt Forge Bricks over a stairwell; the
+ * A Duergar Hold's mine, its door towards local +b. The mine head is 7 x 7 with its corners cut, walls 5 high on a
+ * battered plinth under a stepped roof, a recessed portal and shuttered windows; over the stairwell the winding house
+ * rises to 8-10 high under its own roof, the winch chain hanging down it. The
  * stair (three wide, a block down each step) runs back under the hold to a gallery {@value #GALLERY_FLOOR} blocks down:
  * 9 x 9, 4 high, cut from tuff and deepslate with ore showing in the walls, basalt props, soul lanterns, a rail line
  * with two chest minecarts ({@code chests/duergar_mine}), heaps of raw iron and raw gold blocks and the ore chest
@@ -32,10 +33,12 @@ import net.minecraft.util.math.Direction;
  * Rust Monsters by the mine (design 9, section 10) come with their own ticket; nothing spawns here yet beyond the
  * hold's own duergar.
  */
-public class DuergarMinePiece extends UnderdarkPiece {
-    /** The mine head's half-size. */
+public class DuergarMinePiece extends DuergarPiece {
+    /** The mine head's half-size, and its walls' top course. */
     public static final int HEAD = 3;
     public static final int HEAD_ROOF = 4;
+    /** Blocks from the centre to just outside the door. */
+    public static final int DOOR = HEAD + 2;
     /** The gallery's floor block (its people stand a block above). */
     public static final int GALLERY_FLOOR = -8;
     /** The gallery: a from -4 to 4, b from {@value #GALLERY_BACK} to {@value #GALLERY_FRONT}. */
@@ -46,8 +49,8 @@ public class DuergarMinePiece extends UnderdarkPiece {
     /** The pen gates' local b (both at a = 4). */
     static final int[] GATES = {-12, -9};
 
-    public DuergarMinePiece(BlockPos center, Direction front, long seed) {
-        super(DuergarHolds.MINE, center, front, seed, -6, GALLERY_FLOOR - 1, GALLERY_BACK - 1, 8, HEAD_ROOF + 1, HEAD);
+    public DuergarMinePiece(BlockPos center, Direction front, long seed, boolean mirror, int style) {
+        super(DuergarHolds.MINE, center, front, seed, mirror, style, -6, GALLERY_FLOOR - 1, GALLERY_BACK - 1, 8, 13, HEAD + 2);
     }
 
     public DuergarMinePiece(NbtCompound nbt) {
@@ -109,40 +112,40 @@ public class DuergarMinePiece extends UnderdarkPiece {
     }
 
     private void head(Builder b, BlockState bricks) {
-        for (int a = -HEAD; a <= HEAD; a++) {
-            for (int c = -HEAD; c <= HEAD; c++) {
-                boolean wall = Math.abs(a) == HEAD || Math.abs(c) == HEAD;
-                b.set(a, -1, c, wall ? bricks : Blocks.DEEPSLATE_TILES.getDefaultState());
-                for (int y = 0; y < HEAD_ROOF; y++) {
-                    if (wall) {
-                        boolean corner = Math.abs(a) == HEAD && Math.abs(c) == HEAD;
-                        b.set(a, y, c, corner ? PieceBlocks.pillar(Blocks.POLISHED_BASALT, Direction.Axis.Y) : bricks);
-                    } else {
-                        b.clear(a, y, c);
-                    }
-                }
-                b.set(a, HEAD_ROOF, c, DuergarHolds.greysteel());
-                b.clear(a, HEAD_ROOF + 1, c);
-            }
-        }
-        for (int a = -1; a <= 1; a++) {
-            for (int y = 0; y <= 2; y++) {
-                b.clear(a, y, HEAD);
-            }
-        }
-        // A railing round the stairwell, a winch chain over it.
+        DuergarMasonry.Style style = this.style();
+        int winding = 7 + b.random.nextInt(3);
+        // The mine head: 7 x 7, corners cut, walls 5 high; the winding house over the stairwell rises above it.
+        DuergarMasonry.Mass mass = new DuergarMasonry.Mass(-HEAD, HEAD, -HEAD, HEAD)
+                .box(-HEAD, HEAD, -HEAD, HEAD, 1, HEAD_ROOF)
+                .box(-1, 1, -2, 0, 0, winding);
+        DuergarMasonry.build(b, mass, style, 2, DuergarMasonry.Open.NONE);
+        DuergarMasonry.portal(b, 0, 1, 3, HEAD);
+        // A railing round the stairwell, the winch chain down the winding house.
         for (int c = -2; c <= 1; c++) {
-            b.set(-2, 0, c, ModBlockFamilies.BASALT_FORGE_BRICKS.wall().getDefaultState());
-            b.set(2, 0, c, ModBlockFamilies.BASALT_FORGE_BRICKS.wall().getDefaultState());
+            b.set(-2, 0, c, DuergarMasonry.brickWall());
+            b.set(2, 0, c, DuergarMasonry.brickWall());
         }
-        for (int y = 1; y < HEAD_ROOF; y++) {
-            b.set(0, y, -1, Blocks.CHAIN);
+        for (int y = 1; y < winding; y++) {
+            b.set(0, y, -1, Blocks.CHAIN.getDefaultState());
         }
-        b.hangingLantern(-1, HEAD_ROOF - 1, 1, 1, Blocks.SOUL_LANTERN);
-        b.hangingLantern(1, HEAD_ROOF - 1, 1, 1, Blocks.SOUL_LANTERN);
-        // Barrels by the door.
+        b.set(0, winding, -1, DuergarMasonry.greysteel());
+        // Slit windows in the winding house, shuttered ones in the head's sides.
+        for (int y = HEAD_ROOF + 2; y <= HEAD_ROOF + 3 && y < winding; y++) {
+            b.set(0, y, 0, Blocks.IRON_BARS.getDefaultState());
+            b.set(-1, y, -1, Blocks.IRON_BARS.getDefaultState());
+            b.set(1, y, -1, Blocks.IRON_BARS.getDefaultState());
+        }
+        DuergarMasonry.window(b, -HEAD, 1, 0, Direction.WEST, 2, true);
+        DuergarMasonry.window(b, HEAD, 1, 0, Direction.EAST, 2, true);
+        DuergarMasonry.buttress(b, -1, -HEAD - 1, Direction.NORTH, 4);
+        DuergarMasonry.buttress(b, 1, -HEAD - 1, Direction.NORTH, 4);
+        b.hangingLantern(-1, HEAD_ROOF, 1, 1, Blocks.SOUL_LANTERN);
+        b.hangingLantern(1, HEAD_ROOF, 1, 1, Blocks.SOUL_LANTERN);
+        // Barrels inside the door, braziers outside it.
         b.set(-2, 0, 2, PieceBlocks.facing(Blocks.BARREL, Direction.UP));
         b.set(2, 0, 2, PieceBlocks.facing(Blocks.BARREL, Direction.UP));
+        b.set(-3, 0, HEAD + 2, DuergarHolds.brazier());
+        b.set(3, 0, HEAD + 2, DuergarHolds.brazier());
     }
 
     /** The stair down: step i at b = 1 - i, its top at y = -i; air three high over the steps under the rock. */

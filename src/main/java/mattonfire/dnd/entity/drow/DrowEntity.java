@@ -132,8 +132,7 @@ public abstract class DrowEntity extends HostileEntity {
                                  @Nullable EntityData entityData, @Nullable NbtCompound entityNbt) {
         Random random = world.getRandom();
         this.setVariant(random.nextInt(VARIANTS));
-        this.setCustomName(Text.literal(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)] + " "
-                + HOUSES[random.nextInt(HOUSES.length)]));
+        this.setCustomName(this.drowName(random));
         this.equip(random);
         for (EquipmentSlot slot : EquipmentSlot.values()) {
             // Their gear comes from the loot table, not the hands.
@@ -143,6 +142,16 @@ public abstract class DrowEntity extends HostileEntity {
             this.setPersistent();
         }
         return super.initialize(world, difficulty, spawnReason, entityData, entityNbt);
+    }
+
+    /** The name it's given when it spawns ("Zesstra Do'Urden"). */
+    protected Text drowName(Random random) {
+        return Text.literal(FIRST_NAMES[random.nextInt(FIRST_NAMES.length)] + " " + house(random));
+    }
+
+    /** A random drow house ("Baenre"). */
+    protected static String house(Random random) {
+        return HOUSES[random.nextInt(HOUSES.length)];
     }
 
     /** A weapon with no attribute modifiers of its own, so the mob's attack damage is exactly its stat. */

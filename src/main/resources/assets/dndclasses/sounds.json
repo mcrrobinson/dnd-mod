@@ -139,6 +139,14 @@
             }
         ]
     },
+    "music.matron_fight": {
+        "sounds": [
+            {
+                "name": "dndclasses:matron_fight",
+                "stream": true
+            }
+        ]
+    },
     "music.nether_fortress": {
         "sounds": [
             {

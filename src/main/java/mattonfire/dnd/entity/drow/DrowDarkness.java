@@ -19,7 +19,7 @@ import net.minecraft.util.math.Vec3d;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * The Drow Mage's Darkness: a sphere of magical darkness, radius {@value #RADIUS}, for {@value #DURATION} ticks.
+ * The Drow Mage's Darkness: a sphere of magical darkness, radius {@value #RADIUS} (the Matron Mother's is bigger), for {@value #DURATION} ticks.
  * Every {@value #PULSE} ticks everything inside but drow and spiders is Blinded (the condition, so mobs lose
  * targets past 4 blocks and players get the blindness fog) and gets vanilla Darkness, for a little longer than a
  * pulse, so it wears off soon after you step out. Black smoke marks the edge.
@@ -31,7 +31,7 @@ public final class DrowDarkness {
     /** Condition key, so the Darkness refreshes its own Blinded and leaves others alone. */
     public static final String KEY = "drow_darkness";
 
-    private record Zone(ServerWorld world, Vec3d center, long endsAt, @Nullable LivingEntity caster) {
+    private record Zone(ServerWorld world, Vec3d center, double radius, long endsAt, @Nullable LivingEntity caster) {
     }
 
     private static final List<Zone> ZONES = new ArrayList<>();
@@ -46,14 +46,19 @@ public final class DrowDarkness {
 
     /** Casts the Darkness at {@code center}. */
     public static void cast(ServerWorld world, Vec3d center, @Nullable LivingEntity caster) {
-        ZONES.add(new Zone(world, center, world.getTime() + DURATION, caster));
+        cast(world, center, RADIUS, caster);
+    }
+
+    /** Casts a Darkness of {@code radius} at {@code center} (the Matron Mother's is bigger). */
+    public static void cast(ServerWorld world, Vec3d center, double radius, @Nullable LivingEntity caster) {
+        ZONES.add(new Zone(world, center, radius, world.getTime() + DURATION, caster));
         DnDClasses.LOGGER.info("[Drow] Darkness at {} {} {}", Math.round(center.x), Math.round(center.y), Math.round(center.z));
     }
 
     /** Whether {@code pos} is inside a Darkness in {@code world}. */
     public static boolean isInside(ServerWorld world, Vec3d pos) {
         for (Zone zone : ZONES) {
-            if (zone.world == world && zone.center.squaredDistanceTo(pos) <= RADIUS * RADIUS) {
+            if (zone.world == world && zone.center.squaredDistanceTo(pos) <= zone.radius * zone.radius) {
                 return true;
             }
         }
@@ -73,7 +78,7 @@ public final class DrowDarkness {
                 continue;
             }
             if (now % 4 == 0) {
-                edge(world, zone.center);
+                edge(world, zone.center, zone.radius);
             }
             if (now % PULSE == 0) {
                 pulse(world, zone);
@@ -82,9 +87,9 @@ public final class DrowDarkness {
     }
 
     private static void pulse(ServerWorld world, Zone zone) {
-        Box box = new Box(zone.center, zone.center).expand(RADIUS);
+        Box box = new Box(zone.center, zone.center).expand(zone.radius);
         for (LivingEntity entity : world.getEntitiesByClass(LivingEntity.class, box, e -> e.isAlive()
-                && !DrowAllies.isAlly(e) && e.getBoundingBox().getCenter().squaredDistanceTo(zone.center) <= RADIUS * RADIUS)) {
+                && !DrowAllies.isAlly(e) && e.getBoundingBox().getCenter().squaredDistanceTo(zone.center) <= zone.radius * zone.radius)) {
             if (entity instanceof PlayerEntity player && (player.isCreative() || player.isSpectator())) {
                 continue;
             }
@@ -96,17 +101,17 @@ public final class DrowDarkness {
     }
 
     /** Black smoke scattered over the sphere's surface. */
-    private static void edge(ServerWorld world, Vec3d center) {
-        for (int i = 0; i < 24; i++) {
+    private static void edge(ServerWorld world, Vec3d center, double radius) {
+        for (int i = 0; i < (int) (24 * radius / RADIUS); i++) {
             double u = world.random.nextDouble() * 2.0D - 1.0D;
             double theta = world.random.nextDouble() * Math.PI * 2.0D;
             double r = Math.sqrt(1.0D - u * u);
-            double x = center.x + RADIUS * r * Math.cos(theta);
-            double y = center.y + RADIUS * u;
-            double z = center.z + RADIUS * r * Math.sin(theta);
+            double x = center.x + radius * r * Math.cos(theta);
+            double y = center.y + radius * u;
+            double z = center.z + radius * r * Math.sin(theta);
             world.spawnParticles(ParticleTypes.LARGE_SMOKE, x, y, z, 1, 0.0D, 0.0D, 0.0D, 0.0D);
         }
-        world.spawnParticles(ParticleTypes.SQUID_INK, center.x, center.y, center.z, 6, RADIUS * 0.4D, RADIUS * 0.4D,
-                RADIUS * 0.4D, 0.0D);
+        world.spawnParticles(ParticleTypes.SQUID_INK, center.x, center.y, center.z, 6, radius * 0.4D, radius * 0.4D,
+                radius * 0.4D, 0.0D);
     }
 }

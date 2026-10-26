@@ -1,5 +1,5 @@
 # Magic Items
-The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye and a gorgon's stone eye. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
+The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye, a gorgon's stone eye, and from the Underdark a drow matron's scourge and the drow's own cloak. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
 
 ## How it works
 Every item below works only while its magic is awake: it's identified, you're not in a Beholder's anti-magic cone, and, if it needs attunement, you're attuned to it (and of the right class). Otherwise using it puts the reason on the action bar ("Its magic sleeps. Identify it first.", "Attune to it at an Attunement Table to wake its magic."). Wondrous items, rings and amulets work from anywhere in your inventory: carried is worn.
@@ -27,6 +27,8 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 19 | Tome of Clear Thought | Very Rare consumable | no | Read near an Attunement Table: clears your current class's subclass and refunds its points |
 | 20 | Eye of the Tyrant | Legendary wondrous item | yes | Right-click a creature within 32 blocks: a random eye ray (Paralysis, Telekinesis or Disintegration). 3 charges. You're immune to the Beholder's anti-magic cone |
 | 21 | Gorgon's Gaze | Rare wondrous item | yes | Once per dawn, right-click a mob within 12 blocks (not a boss): CON save DC 14 or it's Petrified for good, a statue |
+| 22 | Matron's Scourge | Very Rare weapon (whip) | yes | 7 damage, 1.6 speed, +1 reach. Hits carry Drow Poison (CON 14); once every 30 s a hit frightens the target (WIS 14, 4 s) |
+| 23 | Piwafwi (Cloak of the Drow) | Rare armor (chestplate slot) | yes | 2 armor, +2 Stealth. Sneaking where the light is 4 or less, mobs more than 6 blocks away can't see you |
 
 ### Wand of Magic Missiles
 - Right-click fires three glowing darts that curve onto the nearest hostile mob (any monster, or any mob targeting you) within 24 blocks and 30 degrees of where you look, that you can see. Together they deal 6 magic damage, credited to you. No target: "No hostile creature in sight." and no charge is spent.
@@ -117,6 +119,16 @@ Every item below works only while its magic is awake: it's identified, you're no
 - Attuned, right-click a mob you're looking at within 12 blocks (not through walls, not a player or a boss). It makes a **CON save** against DC 14 (mobs add +1). On a failure it's **[Petrified](../systems/conditions.md) indefinitely**: a statue that doesn't move, act or make a sound, and only a pickaxe breaks it (for its normal loot). On a success nothing happens; the charge is spent either way.
 - 1 charge (tooltip and a green bar), back at each dawn and on a long rest. Creative mode doesn't spend it. A boss shrugs it off without spending it.
 
+### Matron's Scourge
+- The [Matron Mother](../bosses/matron-mother.md)'s whip of barbed chains, held in the main hand: 7 attack damage and 1.6 attack speed (a sword's), and **1 block more reach**.
+- Every melee hit poisons: the target makes a **CON save DC 14** against [Drow Poison](../mobs/drow.md#drow-poison) (Poisoned and slowed; three failures in 10 s and it falls asleep). Drow, undead, constructs and anything else that can't be poisoned shrug it off.
+- At most once every 30 s, a hit also makes the target save (**WIS DC 14**, mobs add +1) or be **[Frightened](../systems/conditions.md)** of you for 4 s. Bosses and the drow can't be frightened.
+
+### Piwafwi
+- The Cloak of the Drow, worn in the chestplate slot (2 armor; it takes the place of a chestplate). It's drawn as a near-black hooded cloak with a violet lining and a silver clasp.
+- **+2 Stealth** on your [character sheet](../systems/ability-scores.md) while it's active (worn and attuned).
+- **Unseen in the dark**: while you sneak where the light (block light, or what's left of the sky light) is **4 or less**, mobs **more than 6 blocks away** can't target you, and any that were chasing you lose you at once. Within 6 blocks, or in the light, you're seen as usual (passive Stealth still shortens how far they notice you).
+
 ## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
 - The boss and monster items drop, unidentified, when a player kills their monster (Looting adds the bonus shown):
@@ -133,6 +145,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Phylactery Locket | [Lich](../bosses/lich.md) (final death) | 20% |
 | Eye of the Tyrant | [Beholder](../bosses/beholder.md) | 12% (+3%) |
 | Gorgon's Gaze | [Medusa](../bosses/medusa.md) | 25% (+5%) |
+| Matron's Scourge | [Matron Mother](../bosses/matron-mother.md) | 100% |
 
 - Every item also turns up in its rarity's loot table (Cloak of Protection and Ring of Protection only come from there), which mod structures, bosses, Mimics, bounties, raids, dungeons and vanilla structures roll on. See [Magic loot](../systems/magic-loot.md) for the rates.
 - The named sources (per chest or per kill; chest and bounty items need no player kill, monsters do):
@@ -152,8 +165,9 @@ Every item below works only while its magic is awake: it's identified, you're no
 | The Burglar's Ring | goblin camp chest ("stolen from a hobbit"); hobbit village [goblin raid](../systems/goblin-raids.md) reward | 1%; 2% |
 | Tome of Clear Thought | [Lich](../bosses/lich.md) (final death), Beholder (player kill); vanilla stronghold library | 10% each; 2% |
 | Eye of the Tyrant | beholder lair chest | 2% |
+| Piwafwi | [Drow Outpost](../structures/drow-outposts.md) shrine reliquary; [Drow Spire](../structures/drow-spire.md) treasure loft | 3%; 15% |
 
-Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`.
+Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`.
 
 ## Commands
 - `/dndmagic give|identify|attune|bonds ...`: see [Magic items](../systems/magic-items.md).

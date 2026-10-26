@@ -1,5 +1,5 @@
 # Drow
-The dark elves of the Spider Houses, who hunt the [Underdark](../systems/underdark.md)'s Fungal Forest and Faerzress Hollows: Warriors with poisoned hand crossbows, Mages who cast Darkness, Faerie Fire and Magic Missile, Priestesses of the Spider Queen who call spiders and dread, and the Elite guards of the Drow Spire. They're hostile to every player, spiders are their allies, and every drow you kill pleases the Sylvan Court.
+The dark elves of the Spider Houses, who hunt the [Underdark](../systems/underdark.md)'s Fungal Forest and Faerzress Hollows: Warriors with poisoned hand crossbows, Mages who cast Darkness, Faerie Fire and Magic Missile, Priestesses of the Spider Queen who call spiders and dread, and the Elite guards of the [Drow Spire](../structures/drow-spire.md), where the [Matron Mother](../bosses/matron-mother.md) rules. They're hostile to every player, spiders are their allies, and every drow you kill pleases the Sylvan Court.
 
 ![A Drow Warrior, Mage, Priestess and Elite](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-drow/drow-lineup.png)
 
@@ -34,6 +34,7 @@ Bolts and the Priestess's scourge carry Drow Poison: a **CON save, DC 13**, tagg
 ### The Elite
 - **Parry**: a quarter of the melee hits from the front glance off (a shield clang).
 - It levitates up to 4 blocks (Levitation for 1 s) to reach a target 2-4.5 blocks above it and within 6 blocks, once every 10 s.
+- **The Matron's call**: when the [Matron Mother](../bosses/matron-mother.md) drops below a quarter of her health, every Elite within 48 blocks gets Strength I for 2 minutes and 32 more blocks of follow range, and runs to her Sanctum before it fights anything else (then turns on her foe and keeps near her).
 
 ### Traits
 - **Sunlight Sensitivity**: in the Overworld by day, under sky light 12 or more, Weakness I and Slowness I (refreshed every second), and their bolts fly wide (+10 spread).
@@ -58,7 +59,7 @@ The drow are the **Spider Houses** [faction](../systems/factions.md) (`dndclasse
 Their weapons and gear never drop.
 
 ## Where to find it
-- The Underdark's **Fungal Forest** and **Faerzress Hollows** (`#dndclasses:habitat/drow`), in the dark: Warriors (weight 20, groups of 2-4), Mages (5, alone) and Priestesses (2, alone). Natural spawns despawn like any monster; drow placed by a structure stay (persistent). The [Drow Outposts](../structures/drow-outposts.md) house 4-7 Warriors, 1-2 Mages and a Priestess each, topped up inside the outpost up to 12 drow within 48 blocks; the Drow Spire comes in a later ticket.
+- The Underdark's **Fungal Forest** and **Faerzress Hollows** (`#dndclasses:habitat/drow`), in the dark: Warriors (weight 20, groups of 2-4), Mages (5, alone) and Priestesses (2, alone). Natural spawns despawn like any monster; drow placed by a structure stay (persistent). The [Drow Outposts](../structures/drow-outposts.md) house 4-7 Warriors, 1-2 Mages and a Priestess each, topped up inside the outpost up to 12 drow within 48 blocks; the [Drow Spire](../structures/drow-spire.md) houses 6 Warriors, 3 Mages, 2 Priestesses, 4 Elites and the [Matron Mother](../bosses/matron-mother.md), topped up the same way.
 - Spawn eggs for all four are in the creative tab, with Spidersilk.
 
 ## Commands
@@ -80,6 +81,6 @@ Their weapons and gear never drop.
 - Client: `client/drow/DrowClient` (renderers with `RacialHumanoidRenderer` and the `DROW` look, the bolt as an arrow, the poison vignette at 40%).
 - Data: `factions/drow.json`, `tags/entity_types/faction/drow.json`, `tags/entity_types/underdark/thralls.json`, `tags/worldgen/structure/faction/drow.json` (optional `drow_outpost` and `drow_spire`), the drow in `condition_immune/frightened.json` and `lore/humanoid.json`, `enemy_kills` and an uncapped override for drow in `factions/sylvan_court.json`, `loot_tables/entities/drow_*.json`.
 - Textures: `tools/drow_skins.py` (skins), `tools/drow_icons.py` (Spidersilk, the effect icons).
-- Hooks for later tickets: the Drow Outposts and the Spire tag their structures into `faction/drow` and spawn drow with `SpawnReason.STRUCTURE` (persistent); the Matron Mother (`dndclasses:drow_matron`) is already an optional member of `faction/drow`; her ticket adds her `kill_member_overrides` entry (-400) once the type exists (an unknown type there makes the whole faction fail to load).
+- Hooks for later tickets: the Drow Outposts and the Spire tag their structures into `faction/drow` and spawn drow with `SpawnReason.STRUCTURE` (persistent); the Matron Mother (`dndclasses:drow_matron`, [her page](../bosses/matron-mother.md)) is an optional member of `faction/drow`, with a `kill_member_overrides` entry of -400.
 - Logs: `[Drow] <name> drow poison stack n/3`, `falls asleep`, `hurt by <damage> (n) while asleep`, `wakes up`, `Darkness at x y z`, `summons spiders (n alive)`; `[MobAction]` (debug.log) for `hand crossbow`, `darkness`, `faerie fire`, `magic missile`, `summon spiders`, `healing word`, `dread`, `parry`, `levitate`.
 - Devscript: `devscripts/drow.txt`.

@@ -40,6 +40,12 @@ public final class Drow {
     public static final EntityType<DrowMageEntity> DROW_MAGE = humanoid("drow_mage", DrowMageEntity::new);
     public static final EntityType<DrowPriestessEntity> DROW_PRIESTESS = humanoid("drow_priestess", DrowPriestessEntity::new);
     public static final EntityType<DrowEliteEntity> DROW_ELITE = humanoid("drow_elite", DrowEliteEntity::new);
+    /** The Matron Mother, boss of the Drow Spire (design 9, 8.3): a little taller than her kin. */
+    public static final EntityType<DrowMatronEntity> DROW_MATRON = Registry.register(Registries.ENTITY_TYPE, id("drow_matron"),
+            FabricEntityTypeBuilder.<DrowMatronEntity>create(SpawnGroup.MONSTER, DrowMatronEntity::new)
+                    .dimensions(EntityDimensions.fixed(0.7F, 2.2F))
+                    .trackRangeBlocks(10)
+                    .build());
     public static final EntityType<DrowBoltEntity> DROW_BOLT = Registry.register(Registries.ENTITY_TYPE, id("drow_bolt"),
             FabricEntityTypeBuilder.<DrowBoltEntity>create(SpawnGroup.MISC, DrowBoltEntity::new)
                     .dimensions(EntityDimensions.fixed(0.5F, 0.5F))
@@ -66,6 +72,7 @@ public final class Drow {
     public static Item DROW_MAGE_SPAWN_EGG;
     public static Item DROW_PRIESTESS_SPAWN_EGG;
     public static Item DROW_ELITE_SPAWN_EGG;
+    public static Item DROW_MATRON_SPAWN_EGG;
 
     // ---- Spawns (design 9, section 4.5) ----
 
@@ -87,18 +94,21 @@ public final class Drow {
         DROW_MAGE_SPAWN_EGG = item("drow_mage_spawn_egg", new SpawnEggItem(DROW_MAGE, 0x2B2235, 0x8A4FD0, new FabricItemSettings()));
         DROW_PRIESTESS_SPAWN_EGG = item("drow_priestess_spawn_egg", new SpawnEggItem(DROW_PRIESTESS, 0x2B2235, 0xA02040, new FabricItemSettings()));
         DROW_ELITE_SPAWN_EGG = item("drow_elite_spawn_egg", new SpawnEggItem(DROW_ELITE, 0x17121D, 0xE8E8F4, new FabricItemSettings()));
+        DROW_MATRON_SPAWN_EGG = item("drow_matron_spawn_egg", new SpawnEggItem(DROW_MATRON, 0x1A1022, 0xB02A3A, new FabricItemSettings()));
         ItemGroupEvents.modifyEntriesEvent(ModItemGroup.DND_CLASSES_ITEMGROUP).register(entries -> {
             entries.add(SPIDERSILK);
             entries.add(DROW_WARRIOR_SPAWN_EGG);
             entries.add(DROW_MAGE_SPAWN_EGG);
             entries.add(DROW_PRIESTESS_SPAWN_EGG);
             entries.add(DROW_ELITE_SPAWN_EGG);
+            entries.add(DROW_MATRON_SPAWN_EGG);
         });
 
         FabricDefaultAttributeRegistry.register(DROW_WARRIOR, DrowWarriorEntity.createDrowWarriorAttributes());
         FabricDefaultAttributeRegistry.register(DROW_MAGE, DrowMageEntity.createDrowMageAttributes());
         FabricDefaultAttributeRegistry.register(DROW_PRIESTESS, DrowPriestessEntity.createDrowPriestessAttributes());
         FabricDefaultAttributeRegistry.register(DROW_ELITE, DrowEliteEntity.createDrowEliteAttributes());
+        FabricDefaultAttributeRegistry.register(DROW_MATRON, DrowMatronEntity.createDrowMatronAttributes());
 
         // Patrols in the Fungal Forest and the Faerzress Hollows (#dndclasses:habitat/drow), in the dark. Elites only
         // come with the Drow Spire.
@@ -122,6 +132,7 @@ public final class Drow {
         Study.registerWeakness(DROW_PRIESTESS, weakness);
         Study.registerWeakness(DROW_PRIESTESS, Text.translatable("study.dndclasses.weakness.drow_priestess"));
         Study.registerWeakness(DROW_ELITE, weakness);
+        Study.registerWeakness(DROW_MATRON, Text.translatable("study.dndclasses.weakness.drow_matron"));
     }
 
     @SuppressWarnings("unchecked")

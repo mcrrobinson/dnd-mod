@@ -754,6 +754,67 @@ def loop_lich_fight(rng):
     return normalize(out, -1.0, -16.0)
 
 
+def loop_matron_fight(rng):
+    # Matron Mother fight (Drow Spire): 132 bpm in E phrygian. A skittering spider ostinato of plucked
+    # sixteenths, war drums in a limping 3+3+2, a low female "oo" choir on Em - F - Dm - Em, glassy bells
+    # (faerie fire) on the off-beats and a hiss of chitter every fourth bar.
+    beat = 60.0 / 132
+    bar = beat * 4
+    loop = bar * 12
+    xf = 1.5
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    # Drums: 3+3+2 eighths, a deep hit on each group, a snare-ish crack on beat 4
+    t = 0.0
+    while t < sec:
+        for k, at in enumerate((0.0, 1.5, 3.0)):
+            mix(out, drum(0.5, 85, 38, 0.03, 0.16, click=0.2, rng=rng), t + at * beat, 0.95 if k == 0 else 0.7)
+        c = svf(noise(0.12, rng), 2200, 1.2, "band")
+        mix(out, apply(c, env_ar(len(c), 0.001, 0.08)), t + 3.0 * beat, 0.32)
+        t += bar
+    # Choir, three bars per chord
+    chords = [(40, 52, 55, 59), (41, 53, 57, 60), (38, 50, 53, 57), (40, 52, 55, 59)]
+    for ci, notes in enumerate(chords + chords[:1]):
+        at = ci * 3 * bar
+        if at >= sec:
+            break
+        length = 3 * bar + 0.4
+        for m in notes:
+            v = formant(saw(length, hz(m + 12), detune=0.005, voices=3, vibrato=(5.0, 0.005), rng=rng),
+                        freqs=(350, 900, 2400), gains=(1, 0.35, 0.1))
+            env = env_points(len(v), [(0, 0), (0.3, 1), (length - 0.5, 0.8), (length, 0)])
+            mix(out, apply(v, env), at, 0.12 if m > 45 else 0.2)
+    # Spider ostinato: sixteenths over each chord's root, phrygian half-step bites
+    pattern = [0, 1, 0, 7, 0, 1, 3, 1, 0, 1, 0, 7, 8, 7, 3, 1]
+    roots = [64, 65, 62, 64]
+    i = 0
+    t = 0.0
+    while t < sec - 0.05:
+        root = roots[int(t // (3 * bar)) % 4]
+        p = svf(pluck(0.22, hz(root + pattern[i % len(pattern)]), rng, decay=0.990, bright=0.9), 4200, 0.9)
+        mix(out, p, t, 0.2 if i % 4 == 0 else 0.13)
+        t += beat / 4
+        i += 1
+    # Faerie bells on the off-beats, high and glassy
+    t = beat / 2
+    bells = [76, 79, 77, 74, 76, 83, 81, 79]
+    j = 0
+    while t < sec:
+        mix(out, bell(1.6, hz(bells[j % len(bells)]), decay=0.9, bright=1.4), t, 0.07)
+        t += beat * 2
+        j += 1
+    # Chitter: bursts of clicks every fourth bar
+    for b in range(3, 12, 4):
+        for _ in range(16):
+            at = b * bar + rng.uniform(0.0, bar * 0.75)
+            c = svf(noise(0.02, rng), rng.uniform(2500, 5000), 8, "band")
+            mix(out, apply(c, env_ar(len(c), 0.0005, 0.004)), at, 0.3)
+    out = reverb(out, wet=0.28, room=0.85, damp=0.35)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -16.0)
+
+
 # ---------------------------------------------------------------- dungeon themes
 
 def echo(x, delay, feedback=0.4, repeats=4, damp=1200):
@@ -1079,6 +1140,7 @@ SOUNDS = {
     "song_drum": song_drum,
     "song_flute": song_flute,
     "lich_fight": loop_lich_fight,
+    "matron_fight": loop_matron_fight,
     "dice_roll": dice_roll,
     "dice_success": dice_success,
     "dice_failure": dice_failure,
@@ -1095,7 +1157,7 @@ SOUNDS = {
     "underdark": loop_underdark,
 }
 
-LOOPS = ("low_health", "nether_fortress", "lich_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin", "underdark")
+LOOPS = ("low_health", "nether_fortress", "lich_fight", "matron_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin", "underdark")
 
 
 def main(argv):

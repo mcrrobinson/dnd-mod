@@ -24,6 +24,7 @@ Bosses and the big dragons share one fight system: a boss bar, fight music, heal
 | [Orc War Chief](orc-war-chief.md) | 90 | red, notched | 48 | Tooth and Claw | purple War Cry below 50% | 60 | none |
 | [Beholder](beholder.md) | 250 | purple, notched | 48 | Tooth and Claw | red enrage below 50% | 120 | An Eye for an Eye |
 | [Medusa](medusa.md) | 140 | green, notched | 32 | none | red enrage below 50% | 80 | none |
+| [Matron Mother](matron-mother.md) | 220 | purple, notched | 48 | Matron theme | pink Web Storm below 50%, red Call the Elites below 25% | 80 | Mother of None |
 | [Wyvern](../mobs/dragons.md) (wild) | 40 | red | 64 | Tooth and Claw | none | 20 | Dragon Slayer |
 | [Lightning Chaser](../mobs/dragons.md) (wild) | 200 | yellow | 64 | Tooth and Claw | none | 80 | Dragon Slayer |
 | [Frost Drake](../mobs/dragons.md) (wild) | 200 | blue | 64 | Tooth and Claw | none | 80 | Dragon Slayer |
@@ -41,6 +42,7 @@ Tamed dragons never start a boss fight. The Ember Wyvern is a dragon too, but a 
 - Lich: stronghold libraries and the boss room of a [Crypt](../structures/dungeons.md) dungeon.
 - Orc War Chief: [Orc Strongholds](../structures/orc-strongholds.md).
 - Beholder: its deep underground lair, and the boss room of a Dwarven Ruins dungeon.
+- Matron Mother: the Sanctum of every [Drow Spire](../structures/drow-spire.md) in the Underdark's Faerzress Hollows.
 - Dragons: see [Dragons](../mobs/dragons.md) and the [lairs](../structures/dragon-lairs.md).
 
 ## Commands

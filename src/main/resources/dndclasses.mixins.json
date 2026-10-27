@@ -19,6 +19,7 @@
         "SpiderTargetMixin",
         "CaptiveMobMixin",
         "FaerieFireDamageMixin",
+        "FilledMapMixin",
         "LavaDamageMixin",
         "LivingEntityMixin",
         "RacePassivesLivingMixin",

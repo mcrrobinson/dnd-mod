@@ -1,0 +1,78 @@
+# Underdark maps draw the cave floor (docs/systems/underdark.md "Explorer maps"): an empty map used in the Underdark
+# fills in the floor round the holder as they explore, an explorer map to a drow outpost starts with the Darklake's
+# shores outlined, and Overworld and Nether maps still draw like vanilla.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/underdark-map-colors.txt
+# Screenshots: underdark-map-explore (the floor round the duergar hold), underdark-map-explorer (the outpost map,
+# outlines), overworld-map (vanilla terrain), overworld-rift-map (a
+# Map to the Rift from the surface: vanilla explorer outlines), nether-map (vanilla stone-and-dirt noise)
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/time set noon
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/execute in minecraft:overworld run tp @s 57000 200 -51000
+/gamemode spectator
+/dndhome duergarhold trade
+wait 400
+waitserver 2
+/gamemode survival
+/clear @s
+/dndhome duergarhold trade
+wait 20
+/give @s minecraft:map
+hotbar 0
+look 0 60
+wait 5
+use
+wait 20
+/tp @s ~10 ~ ~
+wait 40
+/tp @s ~-20 ~ ~
+wait 40
+/tp @s ~10 ~ ~
+# Long enough for the chat to fade off the map.
+wait 220
+screenshot underdark-map-explore
+/data get entity @s SelectedItem
+/clear @s
+/underdark map drow_outpost
+waitserver 2
+hotbar 0
+wait 220
+screenshot underdark-map-explorer
+/clear @s
+
+/execute in minecraft:overworld run tp @s 57000 120 -51000
+/gamemode spectator
+wait 100
+/gamemode survival
+/give @s minecraft:map
+hotbar 0
+look 0 60
+wait 5
+use
+wait 240
+screenshot overworld-map
+/clear @s
+/underdark map rift
+waitserver 2
+hotbar 0
+wait 220
+screenshot overworld-rift-map
+/clear @s
+
+/execute in minecraft:the_nether run tp @s 0 120 0
+wait 100
+/give @s minecraft:map
+hotbar 0
+look 0 60
+wait 5
+use
+wait 240
+screenshot nether-map
+/clear @s
+/execute in minecraft:overworld run tp @s 57000 200 -51000
+quit

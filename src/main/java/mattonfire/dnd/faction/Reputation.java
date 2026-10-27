@@ -28,8 +28,9 @@ import mattonfire.dnd.world.GameTime;
 
 /**
  * Per-player faction reputation, -1000 to 1000 per faction. Stored in the player's persistent data
- * ({@code DndReputation}: faction id to value, {@code DndRepCaps}: today's capped gains), which is
- * saved with the player and copied over on death like the class data.
+ * ({@code DndReputation}: faction id to value, {@code DndRepCaps}: today's capped gains,
+ * {@code DndRepRivalCarry}: rival losses still under one point), which is saved with the player and copied
+ * over on death like the class data.
  *
  * <p>Changes go through {@link #change}: a batch of deltas for one event, applied with daily caps,
  * rivals and clamping, shown as one action-bar line, with a chat line on a tier change and a sync
@@ -41,6 +42,8 @@ public final class Reputation {
     public static final Identifier SYNC_PACKET_ID = new Identifier(DnDClasses.MOD_ID, "reputation_sync");
     static final String KEY = "DndReputation";
     static final String CAPS_KEY = "DndRepCaps";
+    /** Per rival faction, the fraction of a point of rival loss not applied yet (-1 to 0). */
+    static final String RIVAL_CARRY_KEY = "DndRepRivalCarry";
 
     /**
      * The player's race id for {@code start_by_race} ({@code dndclasses:dwarf}), or null without a race
@@ -174,8 +177,11 @@ public final class Reputation {
                 if (delta > 0 && this.source.rivals) {
                     for (Map.Entry<Identifier, Double> rival : entry.faction.rivals().entrySet()) {
                         Faction other = Factions.get(rival.getKey());
-                        int loss = (int) Math.round(delta * rival.getValue());
-                        if (other != null && loss != 0) {
+                        if (other == null) {
+                            continue;
+                        }
+                        int loss = rivalLoss(this.player, other, delta * rival.getValue());
+                        if (loss != 0) {
                             deltas.merge(other, loss, Integer::sum);
                         }
                     }
@@ -202,12 +208,37 @@ public final class Reputation {
         }
     }
 
+    /**
+     * Whole points of a rival loss of {@code exact} (negative, e.g. -0.5 for a +1 gain at factor -0.5).
+     * The part under one point is carried per player and rival faction, so small gains add up: two +1
+     * trades cost a -0.5 rival one point instead of nothing.
+     */
+    static int rivalLoss(ServerPlayerEntity player, Faction rival, double exact) {
+        NbtCompound data = data(player);
+        NbtCompound carries = data.getCompound(RIVAL_CARRY_KEY);
+        String key = rival.id().toString();
+        double total = carries.getDouble(key) + exact;
+        // Whole points toward zero; the epsilon keeps 0.25 * 4 from landing at -0.9999.
+        int whole = (int) (Math.signum(total) * Math.floor(Math.abs(total) + 1.0E-9D));
+        double carry = total - whole;
+        if (Math.abs(carry) < 1.0E-9D) {
+            carries.remove(key);
+        } else {
+            carries.putDouble(key, carry);
+        }
+        data.put(RIVAL_CARRY_KEY, carries);
+        return whole;
+    }
+
     /** Drops the stored value, so the standing reads as the faction's start again (the /rep command). */
     public static void reset(ServerPlayerEntity player, Faction faction) {
         NbtCompound data = data(player);
         NbtCompound stored = data.getCompound(KEY);
         stored.remove(faction.id().toString());
         data.put(KEY, stored);
+        NbtCompound carries = data.getCompound(RIVAL_CARRY_KEY);
+        carries.remove(faction.id().toString());
+        data.put(RIVAL_CARRY_KEY, carries);
         sync(player);
     }
 

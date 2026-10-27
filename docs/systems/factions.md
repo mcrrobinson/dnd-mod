@@ -49,7 +49,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | A dwarf sees you open a chest or barrel, or break the hoard | | -40 | | once per 10 s |
 | Free a captive from a [Drow Outpost](../structures/drow-outposts.md) pen (hobbit / mountain dwarf; an elf gives the Sylvan Court +40) | +40 | +40 | | none |
 
-- **Rivals** lose a share of *gains* from bounties, trades and (later) quests: a +20 bounty for the hobbits is also -10 for the goblins. Kills and raid wins already list every faction they touch, so rivals don't add to them, and rival losses never chain.
+- **Rivals** lose a share of *gains* from bounties, trades and (later) quests: a +20 bounty for the hobbits is also -10 for the goblins. Losses under a point carry over per rival, so small gains add up: each +1 trade with the Grey Clans costs the dwarves 0.5, a whole point every second trade. Kills and raid wins already list every faction they touch, so rivals don't add to them, and rival losses never chain.
 - **Drow kills**: every [drow](../mobs/drow.md) killed gives the Sylvan Court +30, with no daily cap (an `enemy_kill_overrides` entry for `#dndclasses:faction/drow`), and the Grey Clans +15 (their `enemy_kills`, no daily cap).
 - Kills by your tamed pets count as yours.
 - **Daily caps** reset when the in-game day changes (`timeOfDay / 24000`).

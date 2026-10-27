@@ -1,0 +1,72 @@
+# Rival losses under one point carry over (docs/systems/factions.md "Rivals"): four +1 gold trades with the Duergar
+# Factor give the Grey Clans +4 and cost the Mountain Dwarves 2 (-0.5 each), the drow and the Tinkers' Guild 1 each
+# (-0.25 each). Before the fix, Math.round(-0.5) and Math.round(-0.25) were 0, so they lost nothing.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/rival-rounding.txt
+# Each step takes one result with a plain click (a shift-click would make every trade the gold pays for).
+# Expect in latest.log (the day skip lets grudges decay 5 first: Grey Clans -245, drow -695 at the first trade):
+# - action bar per trade: "+1 The Grey Clans" on trades 1 and 3, "+1 The Grey Clans, -1 Mountain Dwarves" on trade 2,
+#   "-1 Mountain Dwarves, and 3 others" on trade 4 (the drow and the Tinkers' Guild lose their first point)
+# - "/rep @s" after each trade: Grey Clans -244/-243/-242/-241, Mountain Dwarves 0/-1/-1/-2, drow -695 until -696
+#   and Tinkers 150 until 149 on trade 4
+# - the DndRepRivalCarry compound in the player data is empty again after four trades (every carry came to a whole point)
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/execute in minecraft:overworld run tp @s 57000 200 -51000
+/gamemode spectator
+/dndhome duergarhold trade
+wait 400
+waitserver 2
+# A new day, so the Grey Clans' daily trade cap (15) from earlier runs doesn't stop the gains.
+/time add 24000
+/rep @s dndclasses:duergar_clans reset
+/rep @s dndclasses:mountain_dwarves reset
+/rep @s dndclasses:drow reset
+/rep @s dndclasses:tinkers_guild reset
+/gamemode survival
+/clear @s
+/dndhome duergarhold trade
+wait 20
+# The gold trade has 12 uses; restock it so the script can run again on the same factor.
+/data modify entity @e[type=dndclasses:duergar_factor,limit=1,sort=nearest] Offers.Recipes[2].uses set value 0
+/rep @s
+wait 5
+use
+wait 20
+slots
+/give @s minecraft:gold_ingot 64
+wait 5
+trade 2
+wait 5
+slot 2 pickup
+wait 10
+/rep @s
+wait 5
+trade 2
+wait 5
+slot 2 pickup
+wait 10
+/rep @s
+wait 5
+trade 2
+wait 5
+slot 2 pickup
+wait 10
+/rep @s
+wait 5
+trade 2
+wait 5
+slot 2 pickup
+wait 10
+/rep @s
+wait 5
+closescreen
+/rep @s
+waitserver 2
+/data get entity @s
+waitserver 2
+quit

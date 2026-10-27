@@ -247,6 +247,10 @@ public final class QuestCommand {
                             .append(faction != null ? faction.displayName() : Text.literal(entry.getKey().toString()));
                     firstRep = false;
                 }
+                if (rep.race() != null) {
+                    part.append(" ").append(Text.translatable("quest.dndclasses.reward.race_only",
+                            Text.translatable("race.dndclasses." + rep.race().id())));
+                }
             }
             if (part != null) {
                 if (!first) {

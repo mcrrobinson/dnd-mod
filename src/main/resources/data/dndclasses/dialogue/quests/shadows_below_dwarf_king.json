@@ -1,0 +1,31 @@
+{
+  "role": "dwarf_king",
+  "topics": [
+    {
+      "id": "shadows_below/hold",
+      "text": "dialogue.dndclasses.shadows_below.hold",
+      "requires": {"quest": "dndclasses:shadows_below/1", "stage": 2},
+      "actions": [
+        {"type": "reveal", "structure": "dndclasses:duergar_hold", "dimension": "dndclasses:underdark", "radius": 150,
+         "fallback": "quest.dndclasses.shadows_below.1.no_hold"}
+      ],
+      "goto": "shadows_below_hold"
+    },
+    {
+      "id": "shadows_below/elves",
+      "text": "dialogue.dndclasses.shadows_below.elves",
+      "requires": {"quest": "dndclasses:shadows_below/3", "state": "available"},
+      "goto": "shadows_below_elves"
+    }
+  ],
+  "nodes": {
+    "shadows_below_hold": {
+      "lines": ["dialogue.dndclasses.shadows_below.hold.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_elves": {
+      "lines": ["dialogue.dndclasses.shadows_below.elves.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    }
+  }
+}

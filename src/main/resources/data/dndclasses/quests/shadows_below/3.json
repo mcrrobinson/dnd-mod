@@ -1,0 +1,46 @@
+{
+  "title": "quest.dndclasses.shadows_below.3.title",
+  "description": "quest.dndclasses.shadows_below.3.description",
+  "chain": "dndclasses:shadows_below",
+  "giver": "elf_speaker",
+  "requires": {"quests": ["dndclasses:shadows_below/2"]},
+  "stages": [
+    {
+      "title": "quest.dndclasses.shadows_below.3.stage.1.title",
+      "text": "quest.dndclasses.shadows_below.3.stage.1",
+      "objectives": [
+        {"type": "check", "skill": "insight", "dc": 14, "text": "quest.dndclasses.shadows_below.3.objective.plea"}
+      ],
+      "on_complete": [
+        {"type": "reveal", "structure": "dndclasses:drow_spire", "dimension": "dndclasses:underdark", "radius": 250,
+         "fallback": "quest.dndclasses.shadows_below.3.no_spire"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.shadows_below.3.stage.2.title",
+      "text": "quest.dndclasses.shadows_below.3.stage.2",
+      "objectives": [
+        {"type": "visit", "structure": "dndclasses:drow_spire", "text": "quest.dndclasses.shadows_below.3.objective.spire"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.shadows_below.3.stage.3.title",
+      "text": "quest.dndclasses.shadows_below.3.stage.3",
+      "objectives": [
+        {"type": "kill", "entity": "dndclasses:drow_matron", "count": 1, "text": "quest.dndclasses.shadows_below.3.objective.matron"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.shadows_below.3.narrate.letters"},
+        {"type": "advancement", "advancement": "dndclasses:underdark/matron_slain"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 64},
+    {"type": "xp", "amount": 300},
+    {"type": "class_xp", "amount": 800},
+    {"type": "rep", "factions": {"dndclasses:sylvan_court": 200, "dndclasses:mountain_dwarves": 100}},
+    {"type": "rep", "race": "elf", "factions": {"dndclasses:sylvan_court": 100}},
+    {"type": "magic_item", "rarity": "very_rare"}
+  ]
+}

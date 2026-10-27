@@ -36,6 +36,7 @@ She uses one spell at a time, with at least a second between them, and casts not
 
 ## Where to find it
 - **The Drow Spire**: one Matron Mother in every spire, in the Sanctum at its top. A spire generated on Peaceful gets an invisible marker instead, which raises her the first time it's loaded on a higher difficulty.
+- **Quest**: the last step of [Shadows Below](../systems/quests.md#launch-quest-chains) (The Matron's Web, from the Elf Speaker) sends you to the Spire to kill her.
 - **DM encounter**: `/dm encounter` "Matron Mother" (deadly: the Matron and 2 Drow Elites).
 - **Matron Mother Spawn Egg**: in the mod's creative tab.
 

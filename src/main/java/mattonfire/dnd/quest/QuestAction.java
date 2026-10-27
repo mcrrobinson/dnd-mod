@@ -9,12 +9,16 @@ import java.util.List;
 import java.util.Map;
 import mattonfire.dnd.dungeon.DungeonMaps;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.Progression.Progression;
+import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.entity.boss.BossFight;
 import mattonfire.dnd.faction.Faction;
 import mattonfire.dnd.faction.Factions;
 import mattonfire.dnd.faction.Reputation;
 import mattonfire.dnd.quest.QuestJson.StructureMatch;
+import mattonfire.dnd.world.underdark.Underdark;
+import mattonfire.dnd.world.underdark.UnderdarkMaps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.map.MapIcon;
@@ -26,6 +30,7 @@ import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.StringNbtReader;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
+import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.entry.RegistryEntry;
 import net.minecraft.registry.entry.RegistryEntryList;
@@ -38,6 +43,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.gen.structure.Structure;
 import org.jetbrains.annotations.Nullable;
 
@@ -119,10 +125,16 @@ public sealed interface QuestAction {
         }
     }
 
-    /** Faction deltas, applied as one change (rivals react to gains as usual). */
-    record Rep(Map<Identifier, Integer> deltas) implements QuestAction {
+    /**
+     * Faction deltas, applied as one change (rivals react to gains as usual). With {@code race} set
+     * ({@code "race": "elf"} in the file) only players of that race get it, e.g. a bonus for elves.
+     */
+    record Rep(Map<Identifier, Integer> deltas, @Nullable DndRace race) implements QuestAction {
         @Override
         public void run(Context context) {
+            if (this.race != null && ((PlayerEntityExt) context.player()).getDndRace() != this.race) {
+                return;
+            }
             Reputation.Change change = Reputation.change(context.player(), Reputation.Source.QUEST);
             for (Map.Entry<Identifier, Integer> entry : this.deltas.entrySet()) {
                 Faction faction = Factions.get(entry.getKey());
@@ -139,32 +151,68 @@ public sealed interface QuestAction {
     /**
      * An explorer map to the nearest matching structure (like a cartographer's), searching
      * {@code radius} chunks. If there's none, the player gets {@code fallback} (or a generic line).
+     *
+     * <p>With {@code dimension} set, it searches that dimension from the player's x/z instead. A player
+     * standing in it gets the usual map; anyone else is told where it lies "below you" and, for the
+     * Underdark, gets a Rift Map to the nearest Underdark Rift with the target's coordinates in its lore.
      */
-    record Reveal(StructureMatch structure, int radius, @Nullable Text fallback) implements QuestAction {
+    record Reveal(StructureMatch structure, int radius, @Nullable Text fallback, @Nullable RegistryKey<World> dimension)
+            implements QuestAction {
         @Override
         public void run(Context context) {
             ServerPlayerEntity player = context.player();
-            ServerWorld world = player.getWorld();
+            ServerWorld here = player.getWorld();
+            ServerWorld world = this.dimension == null ? here : context.server().getWorld(this.dimension);
+            if (world == null) {
+                DnDClasses.LOGGER.warn("[Quests] {}: reveal names unknown dimension {}", context.quest().id(), this.dimension);
+                this.none(context, player);
+                return;
+            }
+            BlockPos from = world == here ? player.getBlockPos()
+                    : new BlockPos(player.getBlockX(), (world.getBottomY() + world.getTopY()) / 2, player.getBlockZ());
             Registry<Structure> registry = world.getRegistryManager().get(RegistryKeys.STRUCTURE);
             RegistryEntryList<Structure> targets = this.structure.tag() != null
                     ? registry.getEntryList(this.structure.tag()).orElse(null)
                     : registry.getEntry(this.structure.key()).<RegistryEntryList<Structure>>map(RegistryEntryList::of).orElse(null);
             Pair<BlockPos, RegistryEntry<Structure>> found = targets == null ? null
-                    : world.getChunkManager().getChunkGenerator().locateStructure(world, targets, player.getBlockPos(),
-                    this.radius, false);
+                    : world.getChunkManager().getChunkGenerator().locateStructure(world, targets, from, this.radius, false);
             if (found == null) {
-                DnDClasses.LOGGER.info("[Quests] {}: no {} within {} chunks of {}", context.quest().id(), this.structure,
-                        this.radius, player.getEntityName());
-                player.sendMessage(this.fallback != null ? this.fallback
-                        : Text.translatable("quest.dndclasses.reveal.none", this.structure.name()).formatted(Formatting.GRAY), false);
+                this.none(context, player);
                 return;
             }
             BlockPos pos = found.getFirst();
+            if (world != here) {
+                this.below(context, player, world, pos);
+                return;
+            }
             ItemStack map = DungeonMaps.explorerMap(world, pos, "+", MapIcon.Type.TARGET_X,
                     Text.translatable("quest.dndclasses.reveal.map", this.structure.name()).styled(style -> style.withItalic(false)));
             DnDClasses.LOGGER.info("[Quests] {}: revealed {} at {} for {}", context.quest().id(), this.structure,
                     pos.toShortString(), player.getEntityName());
             player.getInventory().offerOrDrop(map);
+        }
+
+        private void none(Context context, ServerPlayerEntity player) {
+            DnDClasses.LOGGER.info("[Quests] {}: no {} within {} chunks of {}", context.quest().id(), this.structure,
+                    this.radius, player.getEntityName());
+            player.sendMessage(this.fallback != null ? this.fallback
+                    : Text.translatable("quest.dndclasses.reveal.none", this.structure.name()).formatted(Formatting.GRAY), false);
+        }
+
+        /** The target is in another dimension: say where, and hand over the way down if there is one. */
+        private void below(Context context, ServerPlayerEntity player, ServerWorld world, BlockPos pos) {
+            Text where = QuestObjective.dimensionName(world.getRegistryKey());
+            player.sendMessage(Text.translatable("quest.dndclasses.reveal.below", this.structure.name(), where,
+                    pos.getX(), pos.getZ()).formatted(Formatting.GRAY), false);
+            ItemStack map = Underdark.WORLD.equals(world.getRegistryKey())
+                    ? UnderdarkMaps.riftMap(player.getWorld(), player.getBlockPos(), this.structure.name(), pos)
+                    : null;
+            DnDClasses.LOGGER.info("[Quests] {}: revealed {} at {} in {} for {} ({})", context.quest().id(), this.structure,
+                    pos.toShortString(), world.getRegistryKey().getValue(), player.getEntityName(),
+                    map != null ? "rift map" : "no map");
+            if (map != null) {
+                player.getInventory().offerOrDrop(map);
+            }
         }
     }
 
@@ -291,10 +339,19 @@ public sealed interface QuestAction {
                     deltas.put(QuestJson.id(entry.getKey(), "rep faction"),
                             QuestJson.integer(wrapper, "v", 0, -2000, 2000));
                 }
-                yield new Rep(deltas);
+                DndRace race = null;
+                String raceName = QuestJson.optString(json, "race");
+                if (raceName != null) {
+                    race = DndRace.byId(raceName.substring(raceName.indexOf(':') + 1));
+                    if (race == null || race == DndRace.NONE) {
+                        throw new IllegalArgumentException("rep: unknown race \"" + raceName + "\"");
+                    }
+                }
+                yield new Rep(deltas, race);
             }
             case "reveal" -> new Reveal(StructureMatch.parse(QuestJson.string(json, "structure")),
-                    QuestJson.integer(json, "radius", 100, 1, 300), QuestJson.optText(json, "fallback"));
+                    QuestJson.integer(json, "radius", 100, 1, 300), QuestJson.optText(json, "fallback"),
+                    json.has("dimension") ? QuestObjective.dimension(json) : null);
             case "narrate" -> new Narrate(QuestJson.text(json.get("text"), "text"));
             case "start_quest" -> new StartQuest(QuestJson.id(json, "quest"));
             case "set_flag" -> new SetFlag(QuestJson.string(json, "flag"));

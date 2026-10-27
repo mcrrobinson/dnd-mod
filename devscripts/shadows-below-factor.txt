@@ -1,0 +1,109 @@
+# Shadows Below step 1.3 (docs/systems/quests.md, design 9 T10): the duergar factor's three dialogue topics, with a
+# frozen factor in a box by the Underdark landing under 0, 0.
+# Run: timeout 600 ./gradlew runClient --offline -PdevUser=ShadowDev -PdevScript=devscripts/shadows-below-factor.txt
+# Expect in latest.log:
+# - Part 1, forced 1s: "sees duergar_factor/hub" with the three checks, each failing in turn ("rebuffed"), then the
+#   hub offers "What will it take?"; picking it finishes shadows_below/1 ("stage 3/3 complete") and /rep shows The
+#   Grey Clans at -275 (-25)
+# - Part 2, a forced 20 on Intimidation: "stage 3/3 complete", Grey Clans -325 (-50 from -275), Mountain Dwarves +25
+# - Part 3, a Dwarf persuading with rigged dice 20 and 3: disadvantage keeps the 3, so the check fails ([D20] line) and
+#   The Grey Clans stay at -250
+# Screenshots: sbf-1-hub, sbf-2-price, sbf-3-cowed, sbf-4-dwarf
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+/dndrace set @s human
+wait 5
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:regeneration 99999 2 true
+/effect give @s minecraft:night_vision 99999 0 true
+/rep @s dndclasses:mountain_dwarves set 450
+/rep @s dndclasses:duergar_clans set -250
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 25
+/underdark go
+waitserver 2
+# A dark box by the landing, with a frozen factor to talk to
+/execute in dndclasses:underdark run forceload add -8 -8 8 8
+/execute in dndclasses:underdark run fill -6 -152 -6 6 -146 6 minecraft:deepslate_tiles hollow
+/execute in dndclasses:underdark run kill @e[type=!player,x=-6,y=-152,z=-6,dx=12,dy=6,dz=12]
+/execute in dndclasses:underdark run summon dndclasses:duergar_factor 0.5 -151 2.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["sbf","dndclasses.role.duergar_factor"]}
+/execute in dndclasses:underdark run tp @s 0.5 -151 0.5 0 25
+wait 40
+# Part 1: all three checks fail, then the factor's price
+/quest admin @s reset dndclasses:shadows_below/1
+/quest admin @s start dndclasses:shadows_below/1
+waitserver 2
+/quest admin @s stage dndclasses:shadows_below/1 3
+/dndclass forceroll @s 1 1 1
+/clear @s
+use
+wait 10
+screenshot sbf-1-hub
+button 0
+wait 10
+button 0
+wait 5
+button 0
+wait 10
+button 0
+wait 5
+button 0
+wait 10
+button 0
+wait 10
+screenshot sbf-2-price
+button 0
+waitserver 2
+wait 10
+closescreen
+/quest list
+/rep
+# Part 2: Intimidation with a forced 20
+/quest admin @s reset dndclasses:shadows_below/1
+/quest admin @s start dndclasses:shadows_below/1
+waitserver 2
+/quest admin @s stage dndclasses:shadows_below/1 3
+/dndclass forceroll @s 20
+/clear @s
+use
+wait 10
+button 1
+waitserver 2
+wait 10
+screenshot sbf-3-cowed
+closescreen
+/quest list
+/rep
+# Part 3: a Dwarf persuades (disadvantage)
+/quest admin @s reset dndclasses:shadows_below/1
+/quest admin @s start dndclasses:shadows_below/1
+waitserver 2
+/quest admin @s stage dndclasses:shadows_below/1 3
+/dndrace set @s dwarf
+wait 5
+closescreen
+/rep @s dndclasses:duergar_clans set -250
+/dndclass forceroll @s 20 3
+/clear @s
+use
+wait 10
+button 0
+waitserver 2
+wait 10
+screenshot sbf-4-dwarf
+closescreen
+/dndclass forceroll @s clear
+/quest list
+/rep
+/dndrace set @s human
+wait 5
+closescreen
+/underdark back
+waitserver 2
+quit

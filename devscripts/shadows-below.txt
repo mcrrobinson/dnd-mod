@@ -1,0 +1,251 @@
+# Chain "Shadows Below" (docs/quests/quests.md, design 9 T10): the Dwarf King -> the duergar factor -> the Elf Speaker.
+# Runs the chain with /quest admin and real steps where they're cheap: /underdark go for the visit, real Holds,
+# Outposts and the Spire from /dndhome, the factor's check with /quest admin ... pass persuasion, the Speaker's Insight
+# topic with a forced 20, a summoned Matron killed with /damage.
+# Run: timeout 900 ./gradlew runClient --offline -PdevUser=ShadowDev -PdevScript=devscripts/shadows-below.txt
+# Expect in latest.log:
+# - "[Quests] ... dndclasses:shadows_below/1: revealed dndclasses:underdark_rift" on accept, then "stage 1/3 complete"
+#   right after /underdark go and "revealed dndclasses:duergar_hold at ..." (a normal map: you're in the Underdark)
+# - "stage 2/3 complete" at the Hold's gate, "stage 3/3 complete" after the persuasion pass
+# - "Test failed" for an emerald after talking to the factor (quest 1 pays at the King), "Test failed" for a sigil
+#   after killing drow at an outpost before quest 2, then "Test passed" for exactly 3 sigils (and failed for 4)
+#   after 14 kills on quest 2, "Test passed" for 24 emeralds from the factor, then 24+32 after the King
+# - "[Quests] ... dndclasses:drow_spire at ... in dndclasses:underdark for ShadowDev (rift map)", "Test passed" for a
+#   map with dndclassesRiftTarget
+# - "stage 3/3 complete" for shadows_below/3 on the Matron kill, "Test passed" for the matron_slain advancement and 64
+#   emeralds at the Speaker; /rep shows Sylvan Court +300 (+200, +100 for an elf) over the value before
+# Screenshots: sb-1-offer, sb-2-hold, sb-3-factor-offer, sb-4-sigils, sb-5-king-elves, sb-6-speaker-offer,
+# sb-7-plea, sb-8-rift-map
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+/dndrace set @s elf
+wait 5
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/difficulty normal
+/time set noon
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:regeneration 99999 2 true
+/effect give @s minecraft:night_vision 99999 0 true
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 25
+/kill @e[tag=sb]
+wait 25
+/fill -6 149 -6 6 149 6 minecraft:glass
+/tp @s 0.5 150 0.5 0 25
+/quest admin @s reset dndclasses:shadows_below/1
+/quest admin @s reset dndclasses:shadows_below/2
+/quest admin @s reset dndclasses:shadows_below/3
+/quest admin @s reset dndclasses:eye_below/1
+/quest admin @s reset dndclasses:ice_and_storm/1
+/rep @s dndclasses:mountain_dwarves set 450
+/rep @s dndclasses:duergar_clans set -250
+/rep @s dndclasses:sylvan_court set 0
+/summon dndclasses:mountain_dwarf 0.5 150 2.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["sb","dndclasses.role.dwarf_king"]}
+wait 10
+# The Eye Below unlocks the chain; its rewards are paid at the King now, so they don't muddle the counts below.
+/quest admin @s start dndclasses:eye_below/1
+waitserver 2
+/quest admin @s complete dndclasses:eye_below/1
+# Ice and Storm too, so the King's only offer is the new chain
+/quest admin @s start dndclasses:ice_and_storm/1
+waitserver 2
+/quest admin @s complete dndclasses:ice_and_storm/1
+/quest admin @s talk dwarf_king
+/clear @s
+use
+wait 10
+screenshot sb-1-offer
+# The offer, then accept: the on-accept map to the nearest rift
+button 0
+wait 5
+button 0
+waitserver 2
+wait 10
+closescreen
+/quest list
+# Stage 1: go down
+/underdark go
+waitserver 2
+wait 60
+waitserver 2
+/quest list
+# Stage 2: a real Duergar Hold (searched below where you are)
+/dndhome duergarhold gate
+wait 300
+waitserver 2
+/dndhome duergarhold inside
+wait 60
+waitserver 2
+screenshot sb-2-hold
+/quest list
+# A dark box by the landing, with a frozen factor to talk to (the Hold's own stands behind a counter)
+/execute in dndclasses:underdark run forceload add -8 -8 8 8
+/execute in dndclasses:underdark run fill -6 -152 -6 6 -146 6 minecraft:deepslate_tiles hollow
+/execute in dndclasses:underdark run kill @e[type=!player,x=-6,y=-152,z=-6,dx=12,dy=6,dz=12]
+/execute in dndclasses:underdark run summon dndclasses:duergar_factor 0.5 -151 2.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["sb","dndclasses.role.duergar_factor"]}
+# Stage 3: the factor's check, passed with the admin command (the dialogue topics are in shadows-below-factor.txt)
+/quest admin @s pass persuasion
+waitserver 2
+wait 10
+/quest list
+/clear @s
+# Talking to the factor doesn't pay quest 1 (the King gives it): no emeralds
+/quest admin @s talk duergar_factor
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald"}]}]
+# Drow killed at an outpost before quest 2: no sigils
+/dndhome drowoutpost shrine
+wait 300
+waitserver 2
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+wait 5
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 40
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:drow_house_sigil"}]}]
+# Quest 2 from the factor
+/execute in dndclasses:underdark run tp @s 0.5 -151 0.5 0 25
+wait 40
+waitserver 2
+/clear @s
+hotbar 8
+use
+wait 10
+screenshot sb-3-factor-offer
+button 0
+wait 5
+button 0
+waitserver 2
+wait 10
+closescreen
+/quest list
+# 14 kills at an outpost: 8 count, sigils drop at 50% until there are 3
+/dndhome drowoutpost shrine
+wait 60
+waitserver 2
+# Drops left on the floor by an earlier run of this script
+/kill @e[type=item,distance=..24]
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+wait 5
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 20
+# Knockback can fling a drop into the outpost's walls: fetch them (drops still only go to the killer)
+/tp @e[type=item,distance=..24] @s
+wait 20
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+/summon dndclasses:drow_warrior ~ ~ ~ {NoAI:1b,Tags:["sb"]}
+wait 5
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+/damage @e[tag=sb,type=dndclasses:drow_warrior,limit=1,sort=nearest] 1000 minecraft:player_attack by @s
+wait 20
+/tp @e[type=item,distance=..24] @s
+wait 20
+/quest list
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:drow_house_sigil",Count:3b}]}]
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:drow_house_sigil",Count:4b}]}]
+slots
+screenshot sb-4-sigils
+# Hand them in: the factor pays quest 2 (24 emeralds)
+/execute in dndclasses:underdark run tp @s 0.5 -151 0.5 0 25
+wait 40
+waitserver 2
+/clear @s minecraft:filled_map
+hotbar 8
+use
+wait 20
+closescreen
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:24b}]}]
+/execute if entity @s[nbt={Inventory:[{id:"dndclasses:drow_house_sigil"}]}]
+# Back up: the King pays quest 1 (32 more) and points to the elves
+/underdark back
+waitserver 2
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 25
+wait 40
+/quest admin @s talk dwarf_king
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:56b}]}]
+/clear @s
+use
+wait 10
+button 0
+wait 10
+screenshot sb-5-king-elves
+closescreen
+# Quest 3 from the Speaker
+/kill @e[tag=sb,type=dndclasses:mountain_dwarf]
+wait 30
+/summon dndclasses:elf_speaker 0.5 150 2.5 {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f],Tags:["sb","dndclasses.role.elf_speaker"]}
+wait 10
+use
+wait 10
+screenshot sb-6-speaker-offer
+button 0
+wait 5
+button 0
+wait 10
+screenshot sb-7-plea
+# The Insight topic with a forced 20: truth (+25 Sylvan Court), then the spire's reveal from the Overworld
+/dndclass forceroll @s 20
+button 0
+waitserver 2
+wait 20
+/dndclass forceroll @s clear
+closescreen
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:filled_map",tag:{dndclassesRiftTarget:{}}}]}]
+slots
+hotbar 0
+wait 10
+screenshot sb-8-rift-map
+/quest list
+# Stage 2: this world's nearest spire (see drow-spire.txt)
+/execute in minecraft:overworld run tp @s 888 200 -1288
+/dndhome drowspire hall
+wait 300
+waitserver 2
+/dndhome drowspire hall
+wait 40
+waitserver 2
+/quest list
+# Stage 3: the Matron
+/summon dndclasses:drow_matron ~ ~ ~2 {NoAI:1b,Tags:["sb"]}
+wait 5
+/damage @e[tag=sb,type=dndclasses:drow_matron,limit=1,sort=nearest] 100000 minecraft:player_attack by @s
+wait 40
+/quest list
+/execute if entity @s[advancements={dndclasses:underdark/matron_slain=true}]
+/rep
+/clear @s
+/quest admin @s talk elf_speaker
+/execute if entity @s[nbt={Inventory:[{id:"minecraft:emerald",Count:64b}]}]
+/rep
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 25
+wait 20
+quit

@@ -19,6 +19,9 @@ public final class QuestItems {
     /** Chain B: a quest drop from the restless dead, handed in to the hobbit elder. */
     public static final Item CURSED_BONE = register("cursed_bone",
             new QuestItem(new FabricItemSettings().maxCount(16).rarity(Rarity.UNCOMMON)));
+    /** Shadows Below: a quest drop from drow at their outposts, delivered to the duergar factor. */
+    public static final Item DROW_HOUSE_SIGIL = register("drow_house_sigil",
+            new QuestItem(new FabricItemSettings().maxCount(16).rarity(Rarity.UNCOMMON)));
     /** A Rumour from a bounty board: right-click to start the quest in its {@code Quest} NBT. */
     public static final Item QUEST_LEAD = register("quest_lead", new QuestLeadItem(new FabricItemSettings().maxCount(1)));
 
@@ -33,6 +36,7 @@ public final class QuestItems {
         ItemGroupEvents.modifyEntriesEvent(ModItemGroup.DND_CLASSES_ITEMGROUP).register(entries -> {
             entries.add(GOBLIN_WAR_ORDERS);
             entries.add(CURSED_BONE);
+            entries.add(DROW_HOUSE_SIGIL);
             entries.add(QuestLeadItem.create(new Identifier(DnDClasses.MOD_ID, "whispering_library/1"), null));
         });
     }

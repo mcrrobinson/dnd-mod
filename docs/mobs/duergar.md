@@ -77,6 +77,7 @@ So a Human (Unfriendly) pays 5 emeralds for the planks and 6 gold ingots per eme
 ## Where to find it
 - Patrols of 2-3 Soldiers in the Underdark's **Grey Reaches** (biome tag `#dndclasses:habitat/duergar`), spawning like monsters in the dark (weight 8), at most 16 duergar within 48 blocks. Natural ones despawn like monsters.
 - [Duergar Holds](../structures/duergar-holds.md) house all four, persistent: 6-9 soldiers, 2-3 arbalesters, the factor and the Taskmaster.
+- The factor has the `duergar_factor` [dialogue](../systems/dialogue.md) role: the [Shadows Below](../systems/quests.md#launch-quest-chains) chain has you win him over and then hunt drow for him (Drow House Sigils).
 - Spawn eggs for all four are in the creative tab.
 
 ## Commands

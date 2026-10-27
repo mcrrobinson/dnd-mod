@@ -1,0 +1,30 @@
+{
+  "title": "quest.dndclasses.shadows_below.2.title",
+  "description": "quest.dndclasses.shadows_below.2.description",
+  "chain": "dndclasses:shadows_below",
+  "giver": "duergar_factor",
+  "requires": {"quests": ["dndclasses:shadows_below/1"]},
+  "on_accept": [
+    {"type": "reveal", "structure": "dndclasses:drow_outpost", "dimension": "dndclasses:underdark", "radius": 100,
+     "fallback": "quest.dndclasses.shadows_below.1.no_outpost"}
+  ],
+  "stages": [
+    {
+      "title": "quest.dndclasses.shadows_below.2.stage.1.title",
+      "text": "quest.dndclasses.shadows_below.2.stage.1",
+      "objectives": [
+        {"type": "kill", "entity": "#dndclasses:faction/drow", "count": 8, "within_structure": "dndclasses:drow_outpost",
+         "quest_drop": {"item": "dndclasses:drow_house_sigil", "chance": 0.5, "max": 3},
+         "text": "quest.dndclasses.shadows_below.2.objective.raid"},
+        {"type": "deliver", "item": "dndclasses:drow_house_sigil", "count": 3, "role": "duergar_factor",
+         "text": "quest.dndclasses.shadows_below.2.objective.sigils"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 24},
+    {"type": "class_xp", "amount": 500},
+    {"type": "rep", "factions": {"dndclasses:duergar_clans": 150, "dndclasses:sylvan_court": 100}},
+    {"type": "magic_item", "rarity": "rare"}
+  ]
+}

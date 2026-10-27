@@ -1,0 +1,50 @@
+{
+  "title": "quest.dndclasses.shadows_below.1.title",
+  "description": "quest.dndclasses.shadows_below.1.description",
+  "chain": "dndclasses:shadows_below",
+  "giver": "dwarf_king",
+  "rumour_weight": 1,
+  "requires": {"quests": ["dndclasses:eye_below/1"]},
+  "on_accept": [
+    {"type": "reveal", "structure": "dndclasses:underdark_rift", "radius": 100, "fallback": "quest.dndclasses.shadows_below.1.no_rift"}
+  ],
+  "stages": [
+    {
+      "title": "quest.dndclasses.shadows_below.1.stage.1.title",
+      "text": "quest.dndclasses.shadows_below.1.stage.1",
+      "objectives": [
+        {"type": "visit", "dimension": "dndclasses:underdark", "text": "quest.dndclasses.shadows_below.1.objective.descend"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.shadows_below.1.narrate.descend"},
+        {"type": "reveal", "structure": "dndclasses:duergar_hold", "dimension": "dndclasses:underdark", "radius": 150,
+         "fallback": "quest.dndclasses.shadows_below.1.no_hold"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.shadows_below.1.stage.2.title",
+      "text": "quest.dndclasses.shadows_below.1.stage.2",
+      "objectives": [
+        {"type": "visit", "structure": "dndclasses:duergar_hold", "text": "quest.dndclasses.shadows_below.1.objective.hold"}
+      ]
+    },
+    {
+      "title": "quest.dndclasses.shadows_below.1.stage.3.title",
+      "text": "quest.dndclasses.shadows_below.1.stage.3",
+      "objectives": [
+        {"type": "check", "skill": "persuasion", "dc": 15, "text": "quest.dndclasses.shadows_below.1.objective.factor"}
+      ],
+      "on_complete": [
+        {"type": "narrate", "text": "quest.dndclasses.shadows_below.1.narrate.factor"},
+        {"type": "reveal", "structure": "dndclasses:drow_outpost", "dimension": "dndclasses:underdark", "radius": 100,
+         "fallback": "quest.dndclasses.shadows_below.1.no_outpost"}
+      ]
+    }
+  ],
+  "rewards": [
+    {"type": "emeralds", "count": 32},
+    {"type": "xp", "amount": 200},
+    {"type": "class_xp", "amount": 400},
+    {"type": "rep", "factions": {"dndclasses:mountain_dwarves": 100}}
+  ]
+}

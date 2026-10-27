@@ -1,0 +1,48 @@
+# Shadows Below with a party over LAN (design 9 T10): a party member's progress counts for both. Two clients:
+#  1. timeout 600 ./gradlew runClient --offline -PdevUser=ShadowDev -PdevScript=devscripts/shadows-below-lan-host.txt
+#  2. once its log says "Started serving on": timeout 600 ./gradlew runClient --offline -PdevRunDir=run-2
+#     -PdevUser=ShadowGuest -PdevServer=localhost:25610 -PdevScript=devscripts/quest-engine-lan-guest.txt
+# The guest has no cheats, so the host runs its commands with /execute as. Expect in the host log: one instance of
+# shadows_below/1 with both players; the guest alone going down (/underdark go as the guest) finishes stage 1 for both
+# ("stage 1/3 complete", the host's /quest list on stage 2 "Find a Duergar Hold"); the guest's /quest list matches.
+wait 40
+closescreen
+/gamemode survival
+/gamerule doMobSpawning false
+/effect give @s minecraft:resistance 900 4 true
+/tag @s add sbhost
+/execute in minecraft:overworld run tp @s 0.5 150 0.5 0 0
+/fill -6 149 -6 6 149 6 minecraft:glass
+/party leave
+/quest admin @s reset dndclasses:shadows_below/1
+/publish false survival 25610
+wait 2400
+/list
+/party invite @a[tag=!sbhost,limit=1]
+wait 200
+/party invite @a[tag=!sbhost,limit=1]
+wait 100
+/party list
+/execute as @a[tag=!sbhost] in minecraft:overworld run tp @s 2.5 150 0.5 0 0
+/effect give @a[tag=!sbhost] minecraft:resistance 900 4 true
+/quest admin @a[tag=!sbhost] reset dndclasses:shadows_below/1
+# Shared start: one instance, 2 participants (the on-accept rift map search holds the server a moment)
+/quest admin @s start dndclasses:shadows_below/1
+waitserver 2
+wait 20
+/quest list
+/execute as @a[tag=!sbhost] run quest list
+# Only the guest goes down: the host stays on the surface
+/execute as @a[tag=!sbhost] run underdark go
+waitserver 2
+wait 60
+waitserver 2
+/quest list
+/execute as @a[tag=!sbhost] run quest list
+screenshot sb-lan-host
+/execute as @a[tag=!sbhost] run underdark back
+waitserver 2
+/quest admin @a reset dndclasses:shadows_below/1
+/party leave
+wait 40
+quit

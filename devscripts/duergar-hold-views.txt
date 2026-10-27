@@ -1,0 +1,51 @@
+# Screenshots of a Duergar Hold's buildings from outside (docs/structures/duergar-holds.md): overviews from the gate,
+# above and both front corners, then each building close up. No checks; for judging the architecture.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/duergar-hold-views.txt
+# To look at a fresh hold, change the /tp below to somewhere the world hasn't generated yet.
+# Screenshots: duergar-hold-view-{overview,above,corner,corner2,outside,gate,forge,trade,mine,tower,barracks}
+wait 40
+closescreen
+include _reset.txt
+/gamerule doDaylightCycle false
+/effect give @s minecraft:night_vision 99999 0 true
+/gamemode spectator
+/execute in minecraft:overworld run tp @s 30000 200 30000
+/dndhome duergarhold overview
+wait 400
+waitserver 2
+/dndhome duergarhold overview
+wait 100
+hud off
+screenshot duergar-hold-view-overview
+/dndhome duergarhold above
+wait 40
+screenshot duergar-hold-view-above
+/dndhome duergarhold corner
+wait 40
+screenshot duergar-hold-view-corner
+/dndhome duergarhold corner2
+wait 40
+screenshot duergar-hold-view-corner2
+/dndhome duergarhold outside
+wait 60
+screenshot duergar-hold-view-outside
+/dndhome duergarhold gateview
+wait 40
+screenshot duergar-hold-view-gate
+/dndhome duergarhold forgeview
+wait 40
+screenshot duergar-hold-view-forge
+/dndhome duergarhold tradeview
+wait 40
+screenshot duergar-hold-view-trade
+/dndhome duergarhold mineview
+wait 40
+screenshot duergar-hold-view-mine
+/dndhome duergarhold towerview
+wait 40
+screenshot duergar-hold-view-tower
+/dndhome duergarhold barracksview
+wait 40
+screenshot duergar-hold-view-barracks
+hud on
+quit

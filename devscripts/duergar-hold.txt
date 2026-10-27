@@ -1,0 +1,111 @@
+# Checks the Duergar Holds (docs/structures/duergar-holds.md, design 9 T8): holds on 3 seeds, the nearest one's layout,
+# survey and census, the lava staying in its basin, the portcullis lever, and screenshots of every part.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/duergar-hold.txt
+# Expect in latest.log:
+# - "[DuergarHoldSeeds] seed ...: nearest at x y z in dndclasses:grey_reaches ...: PASS" for 3 seeds
+# - "[Home] Duergar Hold at chunk ...: centre ... in dndclasses:grey_reaches, gate facing ..."
+# - "[DuergarHoldSurvey] hold at chunk ...: ... lava 432-480/480 in the basin, 0 stray, wet blocks 0 inside the wall (n outside), portcullis open 3/3,
+#   locked pen gates 4/4, vault door shut 2/2, chests ok, stair 7/7 clear: PASS", again after 200 more server ticks
+# - "[DuergarHoldCensus] ...: duergar n (soldiers 6-9, arbalesters 2-3, factors 1, taskmasters 1; persistent n),
+#   captives 1-2"
+# - the lake checks: "Test passed" x3 (lava in the basin, magma on the shore, no lava in the yard by "unless")
+# - after the lever: a survey line with "portcullis open 0/3", then after flipping it back "3/3"
+# Screenshots: duergar-hold-overview, -above, -gate, -inside, -forge, -trade, -mine, -pen, -tower, -vault, -top, -lever,
+# -lake, -portcullis-shut
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/difficulty normal
+/dndhome duergarholdseeds
+waitserver 2
+# Somewhere this world hasn't generated yet, so the hold below is a fresh one.
+/execute in minecraft:overworld run tp @s 45000 200 -45000
+
+/gamemode spectator
+/dndhome duergarhold overview
+wait 400
+waitserver 2
+/dndhome duergarhold overview
+wait 100
+hud off
+screenshot duergar-hold-overview
+/dndhome duergarhold above
+wait 60
+screenshot duergar-hold-above
+hud on
+/dndhome duergarholdsurvey 1
+waitserver 2
+/dndhome duergarholdcensus
+/execute if entity @e[type=dndclasses:duergar_soldier,nbt={PersistenceRequired:1b},distance=..60]
+/execute if entity @e[type=dndclasses:duergar_taskmaster,distance=..60]
+/execute if entity @e[type=dndclasses:duergar_factor,distance=..60]
+/execute if entity @e[type=dndclasses:gnome_tinker,nbt={Captive:1b},distance=..60]
+
+# Let the lava sit, then look again.
+waitserver 200
+/dndhome duergarholdsurvey 1
+waitserver 2
+/dndhome duergarhold lake
+wait 5
+/execute rotated ~ 0 if block ^ ^-2 ^3 minecraft:lava
+/execute rotated ~ 0 if block ^ ^-1 ^1 minecraft:magma_block
+/execute rotated ~ 0 unless block ^ ^-1 ^-1 minecraft:lava
+
+/gamemode creative
+/effect give @s minecraft:invisibility 99999 0 true
+hud off
+/dndhome duergarhold lake
+wait 30
+screenshot duergar-hold-lake
+/dndhome duergarhold gate
+wait 30
+screenshot duergar-hold-gate
+/dndhome duergarhold inside
+wait 30
+screenshot duergar-hold-inside
+/dndhome duergarhold forge
+wait 30
+screenshot duergar-hold-forge
+/dndhome duergarhold trade
+wait 30
+screenshot duergar-hold-trade
+/dndhome duergarhold mine
+wait 30
+screenshot duergar-hold-mine
+/dndhome duergarhold pen
+wait 30
+screenshot duergar-hold-pen
+/dndhome duergarhold tower
+wait 30
+screenshot duergar-hold-tower
+/dndhome duergarhold vault
+wait 30
+screenshot duergar-hold-vault
+/dndhome duergarhold top
+wait 30
+screenshot duergar-hold-top
+/dndhome duergarhold lever
+wait 30
+screenshot duergar-hold-lever
+hud on
+# Flip the lever: the portcullis shuts. Flip it back: it opens.
+use
+wait 10
+/dndhome duergarholdsurvey 1
+waitserver 2
+hud off
+/dndhome duergarhold gate
+wait 20
+screenshot duergar-hold-portcullis-shut
+hud on
+/dndhome duergarhold lever
+wait 10
+use
+wait 10
+/dndhome duergarholdsurvey 1
+waitserver 2
+quit

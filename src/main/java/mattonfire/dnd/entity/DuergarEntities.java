@@ -102,7 +102,7 @@ public final class DuergarEntities {
 
     /**
      * Natural and chunk spawns: not on Peaceful, in the dark (a monster's light rule), and at most {@link #MAX_NEARBY}
-     * duergar within {@link #CROWD_RANGE} blocks. Structure spawn overrides (T8's Holds) use this rule too.
+     * duergar within {@link #CROWD_RANGE} blocks. Structure spawn overrides (a Duergar Hold's) use this rule too, and inside a hold the light doesn't matter.
      */
     public static <T extends MobEntity> boolean canDuergarSpawn(EntityType<T> type, ServerWorldAccess world,
                                                                SpawnReason reason, BlockPos pos, Random random) {
@@ -112,7 +112,13 @@ public final class DuergarEntities {
         if (reason != SpawnReason.NATURAL && reason != SpawnReason.CHUNK_GENERATION) {
             return true;
         }
-        return world.getDifficulty() != Difficulty.PEACEFUL && HostileEntity.isSpawnDark(world, pos, random)
+        if (world.getDifficulty() == Difficulty.PEACEFUL) {
+            return false;
+        }
+        // A Duergar Hold's spawn_overrides top its garrison up whatever the light (its braziers light it all).
+        boolean inHold = mattonfire.dnd.world.underdark.UnderdarkGarrisons.inside(world, pos,
+                mattonfire.dnd.world.underdark.duergar.DuergarHolds.KEY);
+        return (inHold || HostileEntity.isSpawnDark(world, pos, random))
                 && world.getEntitiesByClass(DuergarEntity.class, new Box(pos).expand(CROWD_RANGE), e -> true).size() < MAX_NEARBY;
     }
 }

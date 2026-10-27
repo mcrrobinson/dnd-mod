@@ -43,7 +43,7 @@ Players at Unfriendly or better (most start at -250) are left alone unless they 
 Killing a duergar gives **+30 Mountain Dwarves**, within the dwarves' daily cap of +30 from kills (shared with goblin kills), so the first duergar each day counts.
 
 ### Trades
-The Factor trades with anyone who isn't Hostile with the Grey Clans; a Hostile customer gets "&lt;name&gt; spits at your feet. The Grey Clans don't deal with your kind." on the action bar. Each trade has 12 uses and restocks every morning. Prices follow your standing (Unfriendly +50%, Friendly -10%, Honored -25%, Exalted -40%). There are no kin prices: Dwarves get no discount here.
+The Factor trades with anyone who isn't Hostile with the Grey Clans; a Hostile customer gets "&lt;name&gt; spits at your feet. The Grey Clans don't deal with your kind." on the action bar. Each trade has 12 uses and restocks every morning. The maps lead from the factor to the nearest place within 100 chunks that no earlier map has led to (like vanilla's explorer maps, so two factors don't send you to the same outpost), found the first time someone opens his trades after he's loaded; a map with nothing in range isn't offered. Prices follow your standing (Unfriendly +50%, Friendly -10%, Honored -25%, Exalted -40%). There are no kin prices: Dwarves get no discount here.
 
 | Sells | Price |
 |-|-|
@@ -51,6 +51,8 @@ The Factor trades with anyone who isn't Hostile with the Grey Clans; a Hostile c
 | 8 Faerzress Stone | 4 emeralds |
 | 16 [Basalt Forge Bricks](../items/underdark-blocks.md#building-blocks-drow-and-duergar) | 4 emeralds |
 | a Duergar Steel Ingot | 8 emeralds |
+| a [Map to a Drow Outpost](../systems/underdark.md#explorer-maps) (the nearest one) | 12 emeralds |
+| a [Map to the Rift](../systems/underdark.md#explorer-maps) (the nearest rift landing) | 6 emeralds |
 | Friendly and up: 2 Greysteel Plate | 12 emeralds |
 | Friendly and up: a Potion of Invisibility | 18 emeralds |
 | Honored and up: the Duergar War Pick (iron pickaxe, Efficiency II, Sharpness I) | 20 emeralds |
@@ -91,6 +93,6 @@ So a Human (Unfriendly) pays 5 emeralds for the planks and 6 gold ingots per eme
 - `entity/DuergarEntities` registers everything (types, attributes, spawn eggs, Study weakness, the Grey Reaches spawn and `canDuergarSpawn`) from one `register()` call in `DnDClasses`, so parallel Underdark tickets touch the shared registries as little as possible.
 - `client/renderer/DuergarRenderer` (scales by `DuergarEntity.renderScale`, crossbow arm poses) on `MountainDwarfRenderer.DwarfModel`, now generic. Skins: `tools/duergar_skins.py`.
 - Data: `factions/duergar_clans.json`, `tags/entity_types/faction/duergar_clans.json`, `tags/worldgen/structure/faction/duergar_clans.json` (an optional `dndclasses:duergar_hold` entry for T8), `tags/entity_types/duergar_enemies.json` (optional drow entries for T4), the `enemy_kills` entry in `factions/mountain_dwarves.json`, `loot_tables/entities/duergar_*.json`, `dialogue/duergar_factor.json` (greetings by tier, for quests later), `lore/humanoid` for Study.
-- **Hooks for other tickets**: `DuergarTrades.LATER_STOCK` offers Darklake Pearls (buys 1 for 8, T3) and Spidersilk (buys 8 for 2, T4), each only once `dndclasses:<id>` is registered; the building-block stock comes from `UnderdarkBuildingStock` (see [Underdark blocks](../items/underdark-blocks.md#for-developers)). Saved factors pick them up on load. The maps to the Rift and to a Drow Outpost wait for those items. A Hold's spawn override can use `DuergarEntities.canDuergarSpawn`.
+- **Hooks for other tickets**: `DuergarTrades.LATER_STOCK` offers Darklake Pearls (buys 1 for 8, T3) and Spidersilk (buys 8 for 2, T4), each only once `dndclasses:<id>` is registered; the building-block stock comes from `UnderdarkBuildingStock` (see [Underdark blocks](../items/underdark-blocks.md#for-developers)). Saved factors pick them up on load. The map trades come from `DuergarTrades.addMissingMaps` (`MAPS`: kind and price), called once per load from `DuergarFactorEntity.interactMob` (for a customer who isn't Hostile), not from the NBT read, so the structure search never runs while a chunk loads; a saved factor gets them the same way. A Hold's spawn override can use `DuergarEntities.canDuergarSpawn`.
 - `[MobAction] <name> enlarge|invisibility|drive xN -> <target>` at DEBUG level in `debug.log`.
-- Devscript: `devscripts/duergar.txt` (Enlarge and its hitbox, Invisibility, hostility by tier, the factor's prices and refusal, kill reputation, sunlight).
+- Devscripts: `devscripts/duergar.txt` (Enlarge and its hitbox, Invisibility, hostility by tier, the factor's prices and refusal, kill reputation, sunlight), `devscripts/duergar-factor-maps.txt` (the map trades, where they lead, and a saved factor getting them).

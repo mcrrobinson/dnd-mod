@@ -1,0 +1,15 @@
+# Where the Underdark monster lairs are (docs/structures/underdark-lairs.md, design 9 T11): the nearest Basilisk Den,
+# Troll Bridge and Illithid Colony to 0, 0 on this world's seed and two others, without generating anything.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/underdark-lair-seeds.txt
+# Expect in latest.log: "[LairSeeds] <lair> seed ...: nearest at x y z in dndclasses:<its biome>, ...: PASS" for each
+# lair and seed (Basilisk Den: grey_reaches or faerzress_hollows; Troll Bridge: darklake; Illithid Colony:
+# faerzress_hollows).
+wait 40
+closescreen
+/dndhome underdarklairseeds basilisk
+waitserver 2
+/dndhome underdarklairseeds troll
+waitserver 2
+/dndhome underdarklairseeds illithid
+waitserver 2
+quit

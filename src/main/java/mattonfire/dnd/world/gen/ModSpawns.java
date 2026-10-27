@@ -86,8 +86,7 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.GELATINOUS_CUBE, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.GelatinousCubeEntity::canSpawn);
 
-        // Basilisks lurk in the deep caves, below y=-16 in the dark, always alone. (The Underdark's own spawns
-        // read data/dndclasses/underdark_spawns/basilisk.json.)
+        // Basilisks lurk in the deep caves, below y=-16 in the dark, always alone (and in the Underdark, below).
         BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER, ModEntityTypes.BASILISK, 2, 1, 1);
         SpawnRestriction.register(ModEntityTypes.BASILISK, SpawnRestriction.Location.ON_GROUND,
@@ -99,12 +98,23 @@ public class ModSpawns {
         SpawnRestriction.register(ModEntityTypes.RUST_MONSTER, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.RustMonsterEntity::canSpawn);
 
-        // Mind Flayers haunt the deepest caves, below y=-32 in the dark, with two thralls each (a stand-in for
-        // the Underdark, which adds its own weight through data/dndclasses/underdark_spawns/mind_flayer.json).
+        // Mind Flayers haunt the deepest caves, below y=-32 in the dark, with two thralls each (and the Underdark,
+        // below).
         BiomeModifications.addSpawn(BiomeSelectors.foundInOverworld(),
                 SpawnGroup.MONSTER, ModEntityTypes.MIND_FLAYER, 1, 1, 1);
         SpawnRestriction.register(ModEntityTypes.MIND_FLAYER, SpawnRestriction.Location.ON_GROUND,
                 Heightmap.Type.MOTION_BLOCKING_NO_LEAVES, mattonfire.dnd.entity.MindFlayerEntity::canSpawn);
+
+        // The Underdark's monsters, in their habitat biomes (design 9, section 10; the lairs are structures, see
+        // world/underdark/lair). The spawn rules above hold there too: dark, out of the sky.
+        BiomeModifications.addSpawn(BiomeSelectors.tag(mattonfire.dnd.world.underdark.Underdark.HABITAT_TROLL),
+                SpawnGroup.MONSTER, ModEntityTypes.TROLL, 6, 1, 1);
+        BiomeModifications.addSpawn(BiomeSelectors.tag(mattonfire.dnd.world.underdark.Underdark.HABITAT_BASILISK),
+                SpawnGroup.MONSTER, ModEntityTypes.BASILISK, 4, 1, 1);
+        BiomeModifications.addSpawn(BiomeSelectors.tag(mattonfire.dnd.world.underdark.Underdark.HABITAT_MIND_FLAYER),
+                SpawnGroup.MONSTER, ModEntityTypes.MIND_FLAYER, 3, 1, 1);
+        BiomeModifications.addSpawn(BiomeSelectors.tag(mattonfire.dnd.world.underdark.Underdark.HABITAT_RUST_MONSTER),
+                SpawnGroup.MONSTER, ModEntityTypes.RUST_MONSTER, 6, 1, 2);
 
         // Goat rules (grass, stone, snow, packed ice or gravel in daylight): the animal rule only allows
         // grass, so wyverns never turned up on the bare stony and jagged peaks they're listed for.

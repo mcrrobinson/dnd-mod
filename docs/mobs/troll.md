@@ -63,6 +63,9 @@ A Nature check, DC 13 (it's in `lore/beasts`). A natural 20 shows its weakness: 
 ## Where to find it
 - Spawns as a monster (weight 6, always alone) in **swamps, mangrove swamps, taigas, snowy taigas, old-growth pine and spruce taigas and dark forests**.
 - Like other monsters it needs darkness. Not in peaceful mode, and it despawns like other monsters (but never while felled).
+- In the [Underdark](../systems/underdark.md): weight 6, alone, in the Fungal Forest and the Darklake.
+- Drow Outposts sometimes keep one chained in their pen's beast cell.
+- A [Troll Bridge](../structures/underdark-lairs.md#troll-bridge) over a Darklake channel: one troll lives in the nook under the bridge, persistent, by its toll chest.
 - The DM encounter **Troll under the Bridge** (hard, 1 troll).
 - Spawn egg in the mod's creative tab.
 
@@ -73,7 +76,6 @@ A Nature check, DC 13 (it's in `lore/beasts`). A natural 20 shows its weakness: 
 ## Known limitations
 - Placeholder art and no sounds of its own: it uses ravager and hoglin sounds, pitched down.
 - The hitbox stays upright while it lies felled.
-- The Underdark doesn't exist yet. `data/dndclasses/underdark_spawns/troll.json` is ready for it, but nothing reads it.
 - Rend doesn't knock you Prone yet. Once the Conditions system has merged, "STR 13 or Prone" is a small follow-up.
 
 ## For developers
@@ -93,6 +95,6 @@ A Nature check, DC 13 (it's in `lore/beasts`). A natural 20 shows its weakness: 
 - Data:
   - `loot_tables/entities/troll.json`, and the Periapt drop in `magic/items/BossItemDrops.java`
   - `encounters/troll_bridge.json`
-  - `underdark_spawns/troll.json` (`{"entity", "weight", "min", "max", "zones"}`), for the Underdark ticket's loader
-  - the spawns and spawn restriction, in `world/gen/ModSpawns.java`
+  - the spawns (the Underdark's through `#dndclasses:habitat/troll`) and spawn restriction, in `world/gen/ModSpawns.java`
+  - `#dndclasses:underdark/pen_beasts`: Drow Outposts can keep a troll chained in a pen cell
 - Devscript `devscripts/troll.txt`: look and hitbox screenshots, regeneration and the bane window, felling, rising, burning, flint and steel, and a Rend fight against a survival player.

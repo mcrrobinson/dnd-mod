@@ -597,6 +597,18 @@ public final class ConditionEffects {
         }
     }
 
+    /** What the mob that has Charmed {@code mob} is fighting, or null (not charmed by a living mob, or no target). */
+    @org.jetbrains.annotations.Nullable
+    public static LivingEntity charmerTarget(MobEntity mob) {
+        for (ConditionInstance inst : Conditions.all(mob)) {
+            if (inst.condition() == Condition.CHARMED
+                    && Conditions.resolve(mob, inst.source()) instanceof MobEntity master && master.isAlive()) {
+                return master.getTarget();
+            }
+        }
+        return null;
+    }
+
     /** A charmed mob follows a mob charmer and fights what it fights. */
     private static void thrall(MobEntity mob) {
         for (ConditionInstance inst : Conditions.all(mob)) {

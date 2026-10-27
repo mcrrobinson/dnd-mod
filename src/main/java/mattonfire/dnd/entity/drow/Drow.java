@@ -54,7 +54,7 @@ public final class Drow {
 
     /** Every drow (the Spider Houses' members): {@code #dndclasses:faction/drow}. */
     public static final TagKey<EntityType<?>> FACTION_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, id("faction/drow"));
-    /** Underdark folk a Mind Flayer can enthral: {@code #dndclasses:underdark/thralls} (the drow; the duergar later). */
+    /** Underdark folk a Mind Flayer can enthral: {@code #dndclasses:underdark/thralls} (the drow, duergar soldiers and arbalesters). */
     public static final TagKey<EntityType<?>> THRALLS_TAG = TagKey.of(RegistryKeys.ENTITY_TYPE, id("underdark/thralls"));
 
     // ---- Effects and the potion ----

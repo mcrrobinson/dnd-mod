@@ -127,6 +127,13 @@ public class MindFlayerEntity extends HostileEntity implements GeoEntity, Grappl
     public static final int DOMINATE_INTERVAL = 600;
     public static final double DOMINATE_RANGE = 16.0D;
     private static final double THRALL_COUNT_RANGE = 32.0D;
+    /**
+     * Command tag on the thralls a structure places (the Underdark's Illithid Colony): a Mind Flayer within
+     * {@value #COLONY_THRALL_RANGE} blocks charms any of them not already Charmed, checked once a second. The tag stays,
+     * so another flayer of the colony takes them over if theirs dies.
+     */
+    public static final String COLONY_THRALL_TAG = "dndclasses.colony_thrall";
+    public static final double COLONY_THRALL_RANGE = 24.0D;
 
     private static final byte STATE_NONE = 0;
     private static final byte STATE_BLAST = 1;
@@ -252,6 +259,9 @@ public class MindFlayerEntity extends HostileEntity implements GeoEntity, Grappl
         if (this.pendingThralls > 0) {
             this.spawnThralls((ServerWorld) this.world, this.pendingThralls);
             this.pendingThralls = 0;
+        }
+        if (this.age % 20 == 7) {
+            this.claimColonyThralls();
         }
         if (this.held != null) {
             this.tickHold();
@@ -626,6 +636,24 @@ public class MindFlayerEntity extends HostileEntity implements GeoEntity, Grappl
             world.spawnEntityAndPassengers(thrall);
             this.enthrall(thrall);
         }
+    }
+
+    /** Thralls to call up on its first tick ({@value #SPAWN_THRALLS} after {@link #initialize}); 0 for none. */
+    public void setPendingThralls(int count) {
+        this.pendingThralls = Math.max(0, count);
+    }
+
+    /** Charms the {@link #COLONY_THRALL_TAG colony thralls} near it that nobody holds. Returns how many. */
+    public int claimColonyThralls() {
+        int claimed = 0;
+        for (MobEntity mob : this.world.getEntitiesByClass(MobEntity.class,
+                this.getBoundingBox().expand(COLONY_THRALL_RANGE), m -> m.isAlive()
+                        && m.getCommandTags().contains(COLONY_THRALL_TAG) && !Conditions.has(m, Condition.CHARMED))) {
+            if (this.enthrall(mob)) {
+                claimed++;
+            }
+        }
+        return claimed;
     }
 
     /** Makes {@code mob} this Mind Flayer's thrall: Charmed, indefinitely, until the flayer is gone. */

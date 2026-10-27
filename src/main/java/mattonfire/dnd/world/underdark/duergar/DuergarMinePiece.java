@@ -30,8 +30,7 @@ import net.minecraft.util.math.Direction;
  * ({@code Captives}).
  * <p>
  * Everything round the stair and the gallery is set solid first, so caves and liquids under the hold can't break in.
- * Rust Monsters by the mine (design 9, section 10) come with their own ticket; nothing spawns here yet beyond the
- * hold's own duergar.
+ * A Rust Monster (design 9, section 10) roams the gallery, persistent, kept within 6 blocks of the ore face.
  */
 public class DuergarMinePiece extends DuergarPiece {
     /** The mine head's half-size, and its walls' top course. */
@@ -109,6 +108,14 @@ public class DuergarMinePiece extends DuergarPiece {
         this.stair(b);
         this.gallery(b);
         this.pen(b);
+        // A Rust Monster has got into the gallery (design 9, section 10), drawn by the ore. Last, so the draws
+        // above stay as they were.
+        b.resident(2, GALLERY_FLOOR + 1, -13, ModEntityTypes.RUST_MONSTER, 6);
+    }
+
+    /** Where the gallery's Rust Monster starts, in the world. */
+    public BlockPos rustMonster() {
+        return this.at(2, GALLERY_FLOOR + 1, -13);
     }
 
     private void head(Builder b, BlockState bricks) {

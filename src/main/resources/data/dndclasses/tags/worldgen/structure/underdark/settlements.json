@@ -3,6 +3,9 @@
   "values": [
     "dndclasses:drow_outpost",
     {"id": "dndclasses:duergar_hold", "required": false},
-    {"id": "dndclasses:drow_spire", "required": false}
+    {"id": "dndclasses:drow_spire", "required": false},
+    "dndclasses:basilisk_den",
+    "dndclasses:troll_bridge",
+    "dndclasses:illithid_colony"
   ]
 }

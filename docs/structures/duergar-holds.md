@@ -51,6 +51,7 @@ All placed when the hold generates, persistent (they never despawn) and each kep
 | Duergar Factor | 1 | behind the Trade Hall counter (within 3) |
 | Duergar Taskmaster | 1 | the tower's top floor (within 3) |
 | Captive gnomes | 1-2 | kneeling in the mine's pen |
+| [Rust Monster](../mobs/rust-monster.md) | 1 | got into the mine gallery, by the ore face (within 6) |
 
 The structure's `spawn_overrides` top the garrison up anywhere in the hold, whatever the light: soldiers (weight 6, 1-2 at a time) and arbalesters (weight 1), while fewer than 16 duergar are within 48 blocks (`DuergarEntities.canDuergarSpawn`). Those natural spawns despawn like any monster.
 
@@ -104,7 +105,6 @@ The vault also holds a gold block on the floor.
 ## Known limitations
 - The Grey Reaches' large dripstone and dripstone clusters don't generate within a chunk of a hold (`dndclasses:away_from_duergar_holds`), and the hold stops the springs over it, so neither drops into the basin or pours into the yard. Other features from neighbouring chunks that generate after the hold can still leave a few blocks on the levelled ground, and water from a neighbouring biome can stand on the rim outside the wall.
 - Tall parts (the great stack, the tower's crown, the corner towers) can rise into a low cavern roof; they're built through the rock rather than cut free of it.
-- The Rust Monster by each hold's mine (design 9, section 10) comes with the monster-lairs ticket: the hold's `spawn_overrides` list only duergar for now.
 - The portcullis is one row of trapdoors at head height: closed it stops anyone walking through, but it's only redstone deep (break the lintel's dust and it shuts for good).
 - Opening a chest minecart isn't theft: the grudge rules only see blocks.
 

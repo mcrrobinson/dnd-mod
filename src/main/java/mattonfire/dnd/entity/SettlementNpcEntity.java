@@ -216,7 +216,9 @@ public abstract class SettlementNpcEntity extends PathAwareEntity {
     // The mod gives every mob a player-targeting goal; settlement folk only fight whom mayTarget allows.
     @Override
     public void setTarget(@Nullable LivingEntity target) {
-        if (target == null || this.mayTarget(target)) {
+        // A thrall (Charmed by a Mind Flayer, say) fights its charmer's target whatever its own rules.
+        if (target == null || this.mayTarget(target)
+                || target == mattonfire.dnd.classes.Conditions.ConditionEffects.charmerTarget(this)) {
             super.setTarget(target);
         }
     }

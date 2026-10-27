@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "#dndclasses:faction/drow"
+    "#dndclasses:faction/drow",
+    "dndclasses:duergar_soldier",
+    "dndclasses:duergar_arbalester"
   ]
 }

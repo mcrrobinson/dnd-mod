@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "dndclasses:basilisk_den",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 16,
+    "separation": 6,
+    "salt": 618204377
+  }
+}

@@ -42,7 +42,7 @@ The five biomes are placed by two climate noises, so each region is a patch roug
 
 Every biome also plays distant cave sounds now and then (vanilla's `ambient.cave` as an additions sound, chance 0.0111 a tick), on top of the usual cave mood sound.
 
-Every biome spawns spiders (weight 100, 1-3), cave spiders (40), zombies (60), skeletons (60), creepers (20), endermen (4) and witches (4), and bats. Mod mobs come with later tickets, through the habitat biome tags (see For developers).
+Every biome spawns spiders (weight 100, 1-3), cave spiders (40), zombies (60), skeletons (60), creepers (20), endermen (4) and witches (4), and bats. The mod's own mobs come through the habitat biome tags (see For developers): the [Drow](../mobs/drow.md) and [Duergar](../mobs/duergar.md), and the Troll (weight 6), Basilisk (4), Mind Flayer (3) and Rust Monster (6, 1-2), which also keep [lairs](../structures/underdark-lairs.md).
 
 ### Giant fungi
 The forests are made of two fungi the mod grows itself (the plants they come with are on the [Underdark blocks](../items/underdark-blocks.md) page):

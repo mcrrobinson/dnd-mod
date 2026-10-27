@@ -67,6 +67,8 @@ import net.minecraft.util.math.BlockPos;
  * Holds' teleports and checks ({@link DuergarHoldCommands}).
  * /dndhome drowspire [spot], drowspiresurvey [grid] [spacing], drowspirecensus, drowspireseeds [seeds]: the Drow Spire's
  * teleports and checks ({@link DrowSpireCommands}).
+ * /dndhome underdarklair &lt;lair&gt; [spot], underdarklairsurvey &lt;lair&gt; [grid] [spacing], underdarklaircensus &lt;lair&gt;,
+ * underdarklairseeds &lt;lair&gt; [seeds]: the Underdark monster lairs' teleports and checks ({@link LairCommands}).
  */
 public final class DndHomeCommand {
     private DndHomeCommand() {
@@ -195,6 +197,31 @@ public final class DndHomeCommand {
                         .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
                                 .executes(context -> DrowSpireCommands.seeds(context,
                                         RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
+                .then(CommandManager.literal("underdarklair")
+                        .then(CommandManager.argument("lair", StringArgumentType.word())
+                                .executes(context -> LairCommands.teleport(context, StringArgumentType.getString(context, "lair"), "inside"))
+                                .then(CommandManager.argument("spot", StringArgumentType.word())
+                                        .executes(context -> LairCommands.teleport(context, StringArgumentType.getString(context, "lair"),
+                                                StringArgumentType.getString(context, "spot"))))))
+                .then(CommandManager.literal("underdarklairsurvey")
+                        .then(CommandManager.argument("lair", StringArgumentType.word())
+                                .executes(context -> LairCommands.survey(context, StringArgumentType.getString(context, "lair"), 3, 1000))
+                                .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                        .executes(context -> LairCommands.survey(context, StringArgumentType.getString(context, "lair"),
+                                                IntegerArgumentType.getInteger(context, "grid"), 1000))
+                                        .then(CommandManager.argument("spacing", IntegerArgumentType.integer(64, 20000))
+                                                .executes(context -> LairCommands.survey(context, StringArgumentType.getString(context, "lair"),
+                                                        IntegerArgumentType.getInteger(context, "grid"),
+                                                        IntegerArgumentType.getInteger(context, "spacing")))))))
+                .then(CommandManager.literal("underdarklaircensus")
+                        .then(CommandManager.argument("lair", StringArgumentType.word())
+                                .executes(context -> LairCommands.census(context, StringArgumentType.getString(context, "lair")))))
+                .then(CommandManager.literal("underdarklairseeds")
+                        .then(CommandManager.argument("lair", StringArgumentType.word())
+                                .executes(context -> LairCommands.seeds(context, StringArgumentType.getString(context, "lair"), java.util.List.of()))
+                                .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
+                                        .executes(context -> LairCommands.seeds(context, StringArgumentType.getString(context, "lair"),
+                                                RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds")))))))
                 .then(CommandManager.literal("bloodsworn")
                         .then(CommandManager.argument("players", EntityArgumentType.players())
                                 .then(CommandManager.argument("sworn", com.mojang.brigadier.arguments.BoolArgumentType.bool())

@@ -64,6 +64,8 @@ It's in the arcane lore group (Arcana, DC 13). The card lists Mind Blast (INT 14
 
 ## Where to find it
 - Spawns as a monster (weight 1, alone, with its thralls) anywhere in the Overworld **below y=-32**, in the dark and out of the sky.
+- In the [Underdark](../systems/underdark.md): weight 3, alone with its thralls, in the Faerzress Hollows.
+- An [Illithid Colony](../structures/underdark-lairs.md#illithid-colony) in the Faerzress Hollows: 2 or 3 Mind Flayers, persistent, with 3-5 drow and duergar thralls and captives in the larder.
 - Dwarven Ruin dungeons, Challenge tier 4 rooms (weight 1, threat 8).
 - DM encounter **Illithid and Thralls** (deadly): one Mind Flayer and its thralls.
 - Not in peaceful mode, and it despawns like other monsters.
@@ -74,18 +76,18 @@ It's in the arcane lore group (Arcana, DC 13). The card lists Mind Blast (INT 14
 - `/dm encounter spawn illithid_thralls`
 
 ## Known limitations
-- It lives in deep caves until the Underdark exists. The Underdark ticket reads `data/dndclasses/underdark_spawns/mind_flayer.json` (weight 3, 2 thralls) and can add drow and duergar thralls through the `#dndclasses:underdark/thralls` tag.
+- Thralls it calls up come from `#dndclasses:mind_flayer_thralls`, which includes `#dndclasses:underdark/thralls`, so drow and duergar can turn up as its thralls in the Overworld too.
 - Thralls in a Dwarven Ruin are ordinary zombies and skeletons, not the ruin's revenants.
 - It uses warden, squid and elder guardian sounds.
 
 ## For developers
 - `entity/MindFlayerEntity.java`: stats, goals and every special, run from `mobTick` (which the Conditions mixin skips while it's incapacitated; `tick()` releases the hold if it's stunned). Tracked data `STATE` (blast/grab) and `LEVITATING` drive the animations; `lash`, `extract` and `blink` are triggered animations.
 - Saves: `entity/MindFlayerSaves.java` (`MIND_BLAST` INT 14 halves damage, `DOMINATE` WIS 14, `GRAPPLE_DC` 14), registered with `MobSaveInfo`. The stun is `Conditions.of(victim, STUNNED).source(flayer).ticks(80).repeatSave(MIND_BLAST, 40).saveTags("magic", "psychic")`; the hold is `Grapple.hold(victim, flayer, 14, "grapple.dndclasses.mind_flayer")`.
-- Thralls: `spawnThralls(world, count)` and `enthrall(mob)` are public, for structures (the Underdark's Illithid Colony) that want to give it more. `isThrall(entity)` checks the Charmed source.
+- Thralls: `spawnThralls(world, count)` and `enthrall(mob)` are public, for structures (the Underdark's Illithid Colony) that want to give it more. `isThrall(entity)` checks the Charmed source. `setPendingThralls(0)` stops a placed flayer calling up its own. Mobs with the command tag `dndclasses.colony_thrall` (`COLONY_THRALL_TAG`) are charmed by any flayer within 24 blocks that finds them uncharmed (checked once a second, `claimColonyThralls`); the tag stays, so another flayer takes over if theirs dies.
 - `entity/ai/Blink.java`: the shared short teleport (the Lich uses it too).
 - Constants: `BLAST_COOLDOWN` 160, `BLAST_WINDUP` 20, `STUN_TICKS` 80, `STUN_SAVE_EVERY` 40, `EXTRACT_TICKS` 40, `EXTRACT_DAMAGE` 16, `SQUEEZE_DAMAGE` 4, `RESCUE_DAMAGE` 10, `BLINK_COOLDOWN` 160, `BLINK_HEALTH` 0.3, `DOMINATE_INTERVAL` 600, `MAX_THRALLS` 3.
 - NBT `BlastCooldown` (ticks until it may blast; `0` fires at the next chance). A fresh one waits 60 ticks.
 - `MobActions` lines in `debug.log`: `mind blast wind-up`, `Mind Blast`, `tentacle grab`, `Extract Brain`, `blink`, `levitate`, `thrall`, `dominate`. INFO lines: `[MindFlayer] Mind Blast hits ...`, `[MindFlayer] Extract Brain on ...`, `[MindFlayer] blink (...)`, `[MindFlayer] dominate ...`, `[Grapple] the mind flayer grabs|lets go of ...`.
 - `client/model/MindFlayerModel.java`, `client/renderer/MindFlayerRenderer.java` (with `AutoGlowingGeoLayer` for the eyes). Assets (`geo/entity/mind_flayer.geo.json`, `animations/entity/mind_flayer.animation.json`, `textures/entity/mind_flayer.png` and `_glowmask.png`) come from `tools/mind_flayer_model.py`; edit the script and rerun it.
-- Data: `loot_tables/entities/mind_flayer.json`, the Tome drop in `magic/items/BossItemDrops.java`, `tags/entity_types/mind_flayer_thralls.json`, `tags/entity_types/lore/arcane.json`, `encounters/illithid_thralls.json`, `dungeon_encounters/dwarven_ruin.json` (tier 4), `underdark_spawns/mind_flayer.json`, and the spawn in `world/gen/ModSpawns.java`.
+- Data: `loot_tables/entities/mind_flayer.json`, the Tome drop in `magic/items/BossItemDrops.java`, `tags/entity_types/mind_flayer_thralls.json`, `tags/entity_types/lore/arcane.json`, `encounters/illithid_thralls.json`, `dungeon_encounters/dwarven_ruin.json` (tier 4), `#dndclasses:habitat/mind_flayer`, and the spawn in `world/gen/ModSpawns.java`.
 - Devscript: `devscripts/mind-flayer.txt` (failed and saved blasts with `forceroll`, the grab and Extract Brain, thralls from the spawn egg freed on death, Dominate, blink, a Gnome's advantage).

@@ -1,0 +1,12 @@
+{
+  "type": "dndclasses:illithid_colony",
+  "biomes": "#dndclasses:has_structure/illithid_colony",
+  "step": "top_layer_modification",
+  "terrain_adaptation": "none",
+  "spawn_overrides": {
+    "monster": {
+      "bounding_box": "piece",
+      "spawns": []
+    }
+  }
+}

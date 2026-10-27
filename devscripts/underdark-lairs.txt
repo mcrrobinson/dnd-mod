@@ -1,0 +1,95 @@
+# Checks the Underdark monster lairs (docs/structures/underdark-lairs.md, design 9 T11) nearest this world's spawn:
+# each one's layout, survey and census, and screenshots.
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/underdark-lairs.txt
+# Expect in latest.log:
+# - "[Home] basilisk_den at chunk ...: centre ... in dndclasses:grey_reaches|faerzress_hollows, ..."
+# - "[LairSurvey] basilisk_den at ... (...): floor n/n, remains r, chest true: PASS", for the nearest and up to 8 more
+# - "[LairCensus] basilisk_den ...: basilisks 1, ... (persistent monsters 1), ..., statues 5-7"
+# - "[Home] troll_bridge ... in dndclasses:darklake, length 12-22, ..."; "[LairSurvey] troll_bridge ...: PASS";
+#   "[LairCensus] troll_bridge ...: trolls 1 ... (persistent monsters 1)"
+# - "[Home] illithid_colony ... in dndclasses:faerzress_hollows ..."; "[LairSurvey] illithid_colony ...: PASS";
+#   "[LairCensus] illithid_colony ...: mind flayers 2-3 (persistent monsters 2-3), thralls 3-5 (held 3-5),
+#   captives 2-3"
+# - "Test passed" for each lair's persistent monster
+# Screenshots: lair-basilisk-inside, lair-basilisk-above, lair-basilisk-statues, lair-troll-deck, lair-troll-side,
+# lair-troll-nook, lair-illithid-entrance, lair-illithid-core, lair-illithid-above, lair-illithid-larder,
+# lair-illithid-chest
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/effect give @s minecraft:night_vision 99999 0 true
+/difficulty normal
+/gamemode spectator
+# The Basilisk Den nearest 0, 0 (/dndhome underdarklairseeds basilisk: -216 -219 -168).
+/execute in minecraft:overworld run tp @s -216 200 -168
+/dndhome underdarklair basilisk inside
+wait 300
+waitserver 2
+/dndhome underdarklair basilisk inside
+wait 60
+hud off
+screenshot lair-basilisk-inside
+/dndhome underdarklair basilisk above
+wait 30
+screenshot lair-basilisk-above
+/dndhome underdarklair basilisk chest
+wait 30
+screenshot lair-basilisk-statues
+hud on
+/dndhome underdarklairsurvey basilisk 1
+waitserver 2
+/dndhome underdarklaircensus basilisk
+/execute if entity @e[type=dndclasses:basilisk,nbt={PersistenceRequired:1b},distance=..24]
+# More dens round it, each checked (generates them).
+/dndhome underdarklairsurvey basilisk 3 600
+waitserver 2
+# The Troll Bridge nearest 0, 0 (/dndhome underdarklairseeds troll: 1200 -218 -1208).
+/execute in minecraft:overworld run tp @s 1200 200 -1208
+/dndhome underdarklair troll inside
+wait 300
+waitserver 2
+/dndhome underdarklair troll inside
+wait 60
+hud off
+screenshot lair-troll-deck
+/dndhome underdarklair troll side
+wait 30
+screenshot lair-troll-side
+/dndhome underdarklair troll nook
+wait 30
+screenshot lair-troll-nook
+hud on
+/dndhome underdarklairsurvey troll 1
+waitserver 2
+/dndhome underdarklaircensus troll
+/execute if entity @e[type=dndclasses:troll,nbt={PersistenceRequired:1b},distance=..24]
+# The Illithid Colony nearest 0, 0 (/dndhome underdarklairseeds illithid: 680 -142 -408).
+/execute in minecraft:overworld run tp @s 680 200 -408
+/dndhome underdarklair illithid inside
+wait 300
+waitserver 2
+/dndhome underdarklair illithid inside
+wait 60
+hud off
+screenshot lair-illithid-entrance
+/dndhome underdarklair illithid core
+wait 30
+screenshot lair-illithid-core
+/dndhome underdarklair illithid above
+wait 30
+screenshot lair-illithid-above
+/dndhome underdarklair illithid larder
+wait 30
+screenshot lair-illithid-larder
+/dndhome underdarklair illithid chest
+wait 30
+screenshot lair-illithid-chest
+hud on
+/dndhome underdarklairsurvey illithid 1
+waitserver 2
+/dndhome underdarklaircensus illithid
+/execute if entity @e[type=dndclasses:mind_flayer,nbt={PersistenceRequired:1b},distance=..30]
+target @e[tag=dndclasses.colony_thrall,distance=..40]
+quit

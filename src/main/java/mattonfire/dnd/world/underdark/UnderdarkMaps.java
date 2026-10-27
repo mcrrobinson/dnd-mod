@@ -28,6 +28,9 @@ public final class UnderdarkMaps {
     /** NBT on a Rift Map: the quest target below ({@code Name} as text JSON, {@code X}, {@code Z}). */
     public static final String RIFT_TARGET = "dndclassesRiftTarget";
 
+    /** The NBT key a map made by {@link #create} keeps its kind's id under, so merchants can tell which map it is. */
+    public static final String KIND_KEY = "UnderdarkMap";
+
     /** How far (in chunks) a map searches for its destination. */
     public static final int SEARCH_RADIUS = 100;
 
@@ -79,8 +82,16 @@ public final class UnderdarkMaps {
             return null;
         }
         DnDClasses.LOGGER.info("[Underdark] map to {} at {} {}", kind.id(), target.getX(), target.getZ());
-        return DungeonMaps.explorerMap(world, target, "+", kind.icon,
+        ItemStack map = DungeonMaps.explorerMap(world, target, "+", kind.icon,
                 kind.title().copy().styled(style -> style.withItalic(false)));
+        map.getOrCreateNbt().putString(KIND_KEY, kind.id());
+        return map;
+    }
+
+    /** The kind of a map {@link #create} made, or null for any other stack. */
+    public static Kind kindOf(ItemStack stack) {
+        NbtCompound nbt = stack.getNbt();
+        return nbt != null && nbt.contains(KIND_KEY) ? Kind.byId(nbt.getString(KIND_KEY)) : null;
     }
 
     /**

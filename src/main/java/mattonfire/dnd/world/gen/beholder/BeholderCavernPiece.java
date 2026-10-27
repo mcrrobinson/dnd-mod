@@ -1,6 +1,5 @@
 package mattonfire.dnd.world.gen.beholder;
 
-import mattonfire.dnd.classes.Blocks.PetrifiedRemainsBlock;
 import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Obstacles.ObstaclePlacer;
 import mattonfire.dnd.classes.Obstacles.ObstacleTypes;
@@ -10,6 +9,7 @@ import mattonfire.dnd.classes.Registry.RuinBlocks;
 import mattonfire.dnd.classes.Obstacles.Tier;
 import mattonfire.dnd.entity.BeholderEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.world.gen.PetrifiedStatues;
 import mattonfire.dnd.world.gen.PieceBlocks;
 import net.minecraft.block.AmethystClusterBlock;
 import net.minecraft.block.Block;
@@ -20,17 +20,9 @@ import net.minecraft.block.LanternBlock;
 import net.minecraft.block.PointedDripstoneBlock;
 import net.minecraft.block.entity.LootableContainerBlockEntity;
 import net.minecraft.block.enums.Thickness;
-import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.SpawnReason;
-import net.minecraft.entity.decoration.ArmorStandEntity;
-import net.minecraft.item.DyeableItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.nbt.NbtFloat;
 import net.minecraft.nbt.NbtHelper;
-import net.minecraft.nbt.NbtList;
 import net.minecraft.structure.StructureContext;
 import net.minecraft.structure.StructurePiece;
 import net.minecraft.util.Identifier;
@@ -38,7 +30,6 @@ import net.minecraft.util.math.BlockBox;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.StructureWorldAccess;
 import net.minecraft.world.gen.StructureAccessor;
@@ -184,7 +175,7 @@ public class BeholderCavernPiece extends StructurePiece {
             float lean = (random.nextFloat() - 0.5F) * 30.0F;
             BlockPos at = new BlockPos(sx, y0 + 1, sz);
             if (chunkBox.contains(at) && Math.abs(sx - hx) + Math.abs(sz - cz) > 5) {
-                this.statue(world, at, cx, cz, weapon, helmet, lean);
+                PetrifiedStatues.adventurer(world, at, cx, cz, weapon, helmet, lean);
             }
         }
 
@@ -279,12 +270,7 @@ public class BeholderCavernPiece extends StructurePiece {
                     || (x - cx >= RADIUS - 6 && Math.abs(z - cz) <= 3) || !world.getBlockState(at).isAir()) {
                 continue;
             }
-            int ddx = cx - x;
-            int ddz = cz - z;
-            Direction facing = Math.abs(ddx) > Math.abs(ddz) ? (ddx > 0 ? Direction.EAST : Direction.WEST)
-                    : (ddz > 0 ? Direction.SOUTH : Direction.NORTH);
-            world.setBlockState(at, RuinBlocks.PETRIFIED_REMAINS.getDefaultState().with(PetrifiedRemainsBlock.FACING, facing),
-                    PieceBlocks.UPDATE);
+            world.setBlockState(at, PetrifiedStatues.remainsFacing(at, cx, cz), PieceBlocks.UPDATE);
         }
     }
 
@@ -387,59 +373,6 @@ public class BeholderCavernPiece extends StructurePiece {
                     .with(PointedDripstoneBlock.VERTICAL_DIRECTION, Direction.DOWN)
                     .with(PointedDripstoneBlock.THICKNESS, thickness));
         }
-    }
-
-    /** A petrified adventurer: an armour stand in stone-grey leather, arms raised, facing the middle. */
-    private void statue(StructureWorldAccess world, BlockPos at, int cx, int cz, int weapon, boolean helmet, float lean) {
-        ArmorStandEntity stand = new ArmorStandEntity(world.toServerWorld(), at.getX() + 0.5, at.getY(), at.getZ() + 0.5);
-        float yaw = (float) (MathHelper.atan2(cz - at.getZ(), cx - at.getX()) * MathHelper.DEGREES_PER_RADIAN) - 90.0F;
-        stand.refreshPositionAndAngles(at.getX() + 0.5, at.getY(), at.getZ() + 0.5, yaw, 0.0F);
-        stand.setHeadYaw(yaw);
-        stand.setBodyYaw(yaw);
-
-        NbtCompound nbt = new NbtCompound();
-        nbt.putBoolean("ShowArms", true);
-        nbt.putBoolean("NoBasePlate", true);
-        NbtCompound pose = new NbtCompound();
-        pose.put("Head", rotation(-20.0F, lean, 0.0F));
-        pose.put("Body", rotation(0.0F, lean * 0.3F, 0.0F));
-        pose.put("RightArm", rotation(-100.0F, -10.0F, 0.0F));
-        pose.put("LeftArm", rotation(-110.0F, 25.0F, 0.0F));
-        pose.put("RightLeg", rotation(-12.0F, 0.0F, 0.0F));
-        pose.put("LeftLeg", rotation(10.0F, 0.0F, 0.0F));
-        nbt.put("Pose", pose);
-        stand.readCustomDataFromNbt(nbt);
-
-        stand.equipStack(EquipmentSlot.CHEST, stone(Items.LEATHER_CHESTPLATE));
-        stand.equipStack(EquipmentSlot.LEGS, stone(Items.LEATHER_LEGGINGS));
-        stand.equipStack(EquipmentSlot.FEET, stone(Items.LEATHER_BOOTS));
-        if (helmet) {
-            stand.equipStack(EquipmentSlot.HEAD, stone(Items.LEATHER_HELMET));
-        }
-        Item held = switch (weapon) {
-            case 0 -> Items.STONE_SWORD;
-            case 1 -> Items.STONE_AXE;
-            case 2 -> Items.BOW;
-            default -> Items.SHIELD;
-        };
-        stand.equipStack(weapon == 3 ? EquipmentSlot.OFFHAND : EquipmentSlot.MAINHAND, new ItemStack(held));
-        world.spawnEntity(stand);
-    }
-
-    private static ItemStack stone(Item item) {
-        ItemStack stack = new ItemStack(item);
-        if (item instanceof DyeableItem dyeable) {
-            dyeable.setColor(stack, 0x8A8A86);
-        }
-        return stack;
-    }
-
-    private static NbtList rotation(float x, float y, float z) {
-        NbtList list = new NbtList();
-        list.add(NbtFloat.of(x));
-        list.add(NbtFloat.of(y));
-        list.add(NbtFloat.of(z));
-        return list;
     }
 
     private static void set(StructureWorldAccess world, BlockBox chunkBox, BlockPos pos, BlockState state) {

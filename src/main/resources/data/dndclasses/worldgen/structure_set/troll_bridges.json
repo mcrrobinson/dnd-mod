@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "dndclasses:troll_bridge",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 14,
+    "separation": 5,
+    "salt": 907316451
+  }
+}

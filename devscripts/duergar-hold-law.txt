@@ -5,8 +5,10 @@
 # Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/duergar-hold-law.txt
 # Expect in latest.log:
 # - /rep shows the Grey Clans at -250 (Unfriendly); the trade screen opens and "Found n matching item(s)" for emeralds
-#   after buying with gold
-# - "[Grudges] dndclasses:duergar_clans OPEN at ... by Dev: n witness(es), GRUDGE" and /rep at -290
+#   after buying with gold; /rep then shows -248 (+1 per trade, "trade": 1; at Unfriendly an emerald costs 6 gold, so
+#   the 16 gold make 2 trades)
+# - "[Grudges] dndclasses:duergar_clans OPEN at ... by Dev: n witness(es), GRUDGE" and /rep at -290 (the standing is
+#   reset to -250 before the theft, so the trades' +2 doesn't show up as a -38)
 # - after the duergar are gone, opening the chest again: no Grudges line, /rep still -250
 # - "[Captive] ... freed by Dev (+40 dndclasses:tinkers_guild)" and /rep with the Tinkers' Guild 40 up
 # - the vault: a survey line with "vault door shut 0/2" after the pick
@@ -48,6 +50,7 @@ hud on
 closescreen
 /clear @s minecraft:emerald 0
 /clear @s
+/rep @s
 
 # The forge chest, picked by a Rogue while the forge's soldiers watch.
 /dndclass set @s rogue
@@ -55,6 +58,7 @@ closescreen
 /effect give @s minecraft:resistance 99999 4 true
 /effect give @s minecraft:regeneration 99999 4 true
 /dndclass forceroll @s clear
+/rep @s dndclasses:duergar_clans reset
 /dndhome duergarhold forge
 wait 20
 /dndclass forceroll @s 18

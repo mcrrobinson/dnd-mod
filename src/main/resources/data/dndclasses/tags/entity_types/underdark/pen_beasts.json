@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "minecraft:spider"
+    "minecraft:spider",
+    "dndclasses:troll"
   ]
 }

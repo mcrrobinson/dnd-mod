@@ -1,0 +1,52 @@
+# Colony thralls (docs/structures/underdark-lairs.md, design 9 T11) on a test floor high over the Overworld: a drow
+# warrior and a duergar soldier tagged dndclasses.colony_thrall are charmed by a Mind Flayer near them within a
+# second, and fight its target (you, in survival).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/colony-thralls.txt
+# Expect in latest.log:
+# - "[MobAction] ... thrall -> ..." twice in debug.log; /dndcondition list shows Charmed on both tagged mobs
+# - the target readouts name Dev for the Mind Flayer, the duergar and the drow, never the Mind Flayer
+# Screenshot: colony-thralls
+wait 40
+closescreen
+include _reset.txt
+/execute in minecraft:overworld run tp @s 400.5 152 -6.5 0 25
+# Let the change of dimension land before the next commands.
+wait 40
+waitserver 2
+/gamemode creative
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/time set midnight
+/difficulty normal
+/kill @e[type=!minecraft:player,distance=..40]
+/fill 392 149 -8 410 149 14 minecraft:stone
+/fill 392 150 -8 410 153 14 minecraft:air
+/summon dndclasses:mind_flayer 398.5 150 2.5 {Tags:["ct"]}
+/summon dndclasses:duergar_soldier 402.5 150 2.5
+/summon dndclasses:drow_warrior 396.5 150 4.5
+/tag @e[type=dndclasses:duergar_soldier,limit=1,sort=nearest] add dndclasses.colony_thrall
+/tag @e[type=dndclasses:duergar_soldier,limit=1,sort=nearest] add ct
+/tag @e[type=dndclasses:drow_warrior,limit=1,sort=nearest] add dndclasses.colony_thrall
+/tag @e[type=dndclasses:drow_warrior,limit=1,sort=nearest] add ct
+wait 40
+waitserver 2
+/dndcondition list @e[type=dndclasses:duergar_soldier,tag=dndclasses.colony_thrall,limit=1]
+/dndcondition list @e[type=dndclasses:drow_warrior,tag=dndclasses.colony_thrall,limit=1]
+# Now be its prey: in survival (with resistance), the flayer targets you, and its thralls with it. The duergar
+# alone would leave you be (the Grey Clans are only Unfriendly).
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:regeneration 99999 2 true
+/gamemode survival
+wait 20
+wait 60
+target @e[tag=ct,type=!minecraft:villager]
+wait 40
+target @e[tag=ct,type=!minecraft:villager]
+screenshot colony-thralls
+wait 60
+target @e[tag=ct,type=!minecraft:villager]
+/execute if entity @e[type=dndclasses:mind_flayer,tag=ct]
+/gamemode creative
+/effect clear @s
+/kill @e[tag=ct]
+quit

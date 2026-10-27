@@ -1,5 +1,6 @@
 package mattonfire.dnd.entity;
 
+import mattonfire.dnd.faction.TierEffects;
 import net.minecraft.entity.EntityData;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
@@ -12,6 +13,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
@@ -24,8 +26,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * The Duergar Factor, a Duergar Hold's merchant (dialogue role {@code duergar_factor}): trades gold for Underdark
  * goods with anyone not Hostile with the Grey Clans, at their tier's prices ({@link DuergarTrades}). Higher tiers
- * see more stock (Friendly: a Potion of Invisibility; Honored: the Duergar War Pick). 30 health, 4 armour, 3
- * damage; he never Enlarges, but does vanish when hurt.
+ * see more stock (Friendly: a Potion of Invisibility; Honored: the Duergar War Pick). He also sells explorer maps
+ * to the nearest Drow Outpost and Rift, looked for the first time someone who isn't Hostile right-clicks him after he's loaded
+ * ({@link DuergarTrades#addMissingMaps}), so a factor saved before the maps existed gets them too and the search
+ * never runs while his chunk loads. 30 health, 4 armour, 3 damage; he never Enlarges, but does vanish when hurt.
  */
 public class DuergarFactorEntity extends DuergarEntity implements SettlementMerchant {
     public static final String ROLE_TAG = "dndclasses.role.duergar_factor";
@@ -38,6 +42,9 @@ public class DuergarFactorEntity extends DuergarEntity implements SettlementMerc
                     new KinStock(DuergarTrades::honored, DuergarTrades::showsHonored, "HonoredOffers"))
             .sounds(SoundEvents.ENTITY_VINDICATOR_AMBIENT, 1.1F, SoundEvents.ENTITY_VINDICATOR_HURT,
                     SoundEvents.ENTITY_VILLAGER_NO);
+
+    /** Whether this loaded factor has looked for his maps' destinations yet (not saved: once per load). */
+    private boolean mapsChecked;
 
     public DuergarFactorEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);
@@ -83,6 +90,11 @@ public class DuergarFactorEntity extends DuergarEntity implements SettlementMerc
 
     @Override
     protected ActionResult interactMob(PlayerEntity player, Hand hand) {
+        if (hand == Hand.MAIN_HAND && !this.mapsChecked && this.getWorld() instanceof ServerWorld world
+                && !TierEffects.refusesService(TierEffects.tierWith(player, this))) {
+            this.mapsChecked = true;
+            DuergarTrades.addMissingMaps(world, this.getBlockPos(), this.merchant.baseOffers());
+        }
         return this.merchant.interact(player, hand, () -> super.interactMob(player, hand));
     }
 

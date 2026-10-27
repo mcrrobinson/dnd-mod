@@ -89,6 +89,10 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome drowspiresurvey [grid] [spacing]` | Checks the nearest spire from each point of a grid round you: biome, floor height, pieces, both stairs, the Arcane Seal, the Sanctum, bridge decks, the lectern's book, the pit spawner and a dry floor (`[DrowSpireSurvey]` lines) |
 | `/dndhome drowspirecensus` | Who lives in the nearest spire, by kind (`[DrowSpireCensus]`) |
 | `/dndhome drowspireseeds [seeds...]` | The nearest spire to 0, 0 on each seed and its biome, without making a world (`[DrowSpireSeeds]` lines) |
+| `/dndhome underdarklair <basilisk\|troll\|illithid> [spot]` | Teleports you to the nearest [Underdark monster lair](../structures/underdark-lairs.md) of that kind (searching the Underdark below you). Spots: `inside`, `above`, `chest`; the bridge also `side`, `nook`; the colony `core`, `larder` |
+| `/dndhome underdarklairsurvey <lair> [grid] [spacing]` | Checks the nearest lair from each point of a grid round you: biome and blocks (`[LairSurvey]` lines) |
+| `/dndhome underdarklaircensus <lair>` | Who lives in the nearest lair (`[LairCensus]`) |
+| `/dndhome underdarklairseeds <lair> [seeds...]` | The nearest lair to 0, 0 on each seed and its biome (`[LairSeeds]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
 
 ### The Underdark

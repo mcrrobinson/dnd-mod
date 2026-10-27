@@ -79,7 +79,7 @@ Trillimac Slices, Ripplebark and Zurkhwood Gills go in a composter.
 
 ## For developers
 - `classes/Registry/UnderdarkBlocks` (one-offs) and `ModBlockFamilies.ZURKHWOOD_PLANKS`. Block classes: `classes/Blocks/underdark/FaerzressStoneBlock`, `UnderdarkFungusBlock`.
-- Resources: `tools/underdark_blocks.py` (one-off blocks, their tags and the biome names) and `tools/block_families.py` (the planks family). Textures: `tools/underdark_block_textures.py`.
+- Resources: `tools/underdark_blocks.py` (one-off blocks, their tags and the biome names; the Trillimac and Nightlight Cap loot tables belong to `tools/underdark_flora.py`, so the two scripts can run in any order) and `tools/block_families.py` (the planks family). Textures: `tools/underdark_block_textures.py`.
 - Building blocks: the families `ModBlockFamilies.DROWSTONE_BRICKS`, `POLISHED_FAERZRESS`, `GREYSTEEL_PLATE` and `BASALT_FORGE_BRICKS`; the one-offs in `UnderdarkBlocks` (`buildingBlocks()`, `DUERGAR_STEEL_INGOT`). Block classes: `classes/Blocks/underdark/SpidersilkCurtainBlock` (`SLOW`), `WebBridgeBlock`, `DuergarBrazierBlock` (`burns`), `ChainCageBlock` (`LOCK_DC`, the `locked` state). Resources: `tools/underdark_blocks.py` (one-offs and the recipes the family generator can't write) and `tools/block_families.py`; textures `tools/underdark_building_textures.py`.
 - Hooks for the drow and duergar:
   - Entity tags `#dndclasses:brazier_immune` (holds `#dndclasses:faction/duergar_clans`) and `#dndclasses:web_walkers` (spiders, cave spiders and `#dndclasses:faction/drow`).

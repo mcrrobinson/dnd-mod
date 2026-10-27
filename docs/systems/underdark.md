@@ -67,7 +67,7 @@ Underdark explorer maps lead to the nearest place of their kind (searching 100 c
 |-|-|-|
 | Map to a Drow Outpost | `#dndclasses:underdark_maps/drow_outpost` | red X |
 | Map to a Duergar Hold | `#dndclasses:underdark_maps/duergar_hold` | red X |
-| Map to the Rift | `#dndclasses:underdark_maps/rift` (a rift landing in the Underdark, a rift in the Overworld) | white target |
+| Map to the Rift | `#dndclasses:underdark_maps/rift` (a rift landing in the Underdark, a rift in the Overworld) | red pin |
 
 The [Duergar Factor](../mobs/duergar.md#trades) sells a Map to a Drow Outpost (12 emeralds) and a Map to the Rift (6), each to the nearest one from his counter; there's no map to a hold, since he lives in one. Chests can hold them too (a hold's barracks and a drow outpost's tower have a 10% Map to the Rift), and `/underdark map` makes any of them.
 

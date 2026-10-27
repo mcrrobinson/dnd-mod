@@ -4,7 +4,8 @@
 
 Zurkhwood Planks and its shapes are a family in tools/block_families.py; this script covers the rest: Zurkhwood
 Stem, Zurkhwood Cap, Nightlight Cap, Fungal Loam, Faerzress Stone, Bluecap and Trillimac. For each it writes the
-blockstate, block and item models and loot table (drops itself), adds it to its tags (mineable, the vanilla
+blockstate, block and item models and loot table (drops itself; Trillimac's and the Nightlight Cap's come from
+tools/underdark_flora.py, see FLORA_LOOT), adds it to its tags (mineable, the vanilla
 mushroom soil tag, the Dwarf's stonecunning tag) and adds its lang name, plus the five biomes' names. Textures come
 from tools/underdark_block_textures.py. Safe to rerun.
 
@@ -49,6 +50,9 @@ MESSAGES = {
     'block.dndclasses.chain_cage.locked_now': 'Chain Cage locked',
     'block.dndclasses.chain_cage.unlocked_now': 'Chain Cage unlocked',
 }
+# Blocks whose loot table tools/underdark_flora.py owns (Trillimac drops slices, the Nightlight Cap now and then
+# Nightlight Spores); this script leaves those files alone so the two scripts can run in any order.
+FLORA_LOOT = ('nightlight_cap', 'trillimac')
 SPIDERSILK = 'dndclasses:spidersilk'
 BIOMES = {
     'fungal_forest': 'Fungal Forest',
@@ -370,7 +374,8 @@ def main():
     plant('bluecap')
     plant('trillimac')
     for name in NAMES:
-        loot(name)
+        if name not in FLORA_LOOT:
+            loot(name)
     add_to_tag('blocks', 'mineable/axe', [ref('zurkhwood_stem'), ref('zurkhwood_cap'), ref('nightlight_cap')])
     add_to_tag('blocks', 'mineable/shovel', [ref('fungal_loam')])
     add_to_tag('blocks', 'mineable/pickaxe', [ref('faerzress_stone')])

@@ -3,6 +3,7 @@ package mattonfire.dnd.entity;
 import static mattonfire.dnd.entity.NpcTrades.buy;
 import static mattonfire.dnd.entity.NpcTrades.sell;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import mattonfire.dnd.classes.DnDClasses;
@@ -10,6 +11,7 @@ import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.UnderdarkBlocks;
 import mattonfire.dnd.faction.ReputationTier;
 import mattonfire.dnd.faction.TierEffects;
+import mattonfire.dnd.world.underdark.UnderdarkMaps;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,9 +21,11 @@ import net.minecraft.item.Items;
 import net.minecraft.potion.PotionUtil;
 import net.minecraft.potion.Potions;
 import net.minecraft.registry.Registries;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.TradeOffer;
 import net.minecraft.village.TradeOfferList;
 
@@ -31,14 +35,15 @@ import net.minecraft.village.TradeOfferList;
  * <ul>
  * <li>Sells: 16 Zurkhwood Planks (3 emeralds), 8 Faerzress Stone (4).</li>
  * <li>Buys: 4 gold ingots or 12 raw iron for 1 emerald.</li>
+ * <li>Maps ({@link #MAPS}, {@link #addMissingMaps}): a Map to a Drow Outpost (12) and a Map to the Rift (6), to the
+ * nearest one from the factor; each is left out while there's none in range.</li>
  * <li>Friendly and up ({@link #FRIENDLY_STOCK}): a Potion of Invisibility (18).</li>
  * <li>Honored and up ({@link #HONORED_STOCK}): the Duergar War Pick (20).</li>
  * </ul>
  * <b>Stock from other Underdark tickets</b>: Darklake Pearls (T3) and Spidersilk (T4) are offered once their item is
  * registered ({@link #LATER_STOCK}, by id); the building blocks' stock (T6: Duergar Steel Ingots, Basalt Forge
  * Bricks, and Greysteel Plate at Friendly) comes from {@link UnderdarkBuildingStock}. A factor saved before any of
- * them existed gets the trade on load ({@link #addMissing}). The maps to the Rift and to a Drow Outpost wait for
- * T2/T3 and T7.
+ * them existed gets the trade on load ({@link #addMissing}).
  */
 public final class DuergarTrades {
     /** Shown to Friendly and better customers. */
@@ -55,6 +60,11 @@ public final class DuergarTrades {
             new Later("darklake_pearl", item -> buy(item, 1, 8)),
             new Later("spidersilk", item -> buy(item, 8, 2)),
     };
+
+    /** The explorer maps the factor sells and their prices (design 9, 5.3); no map to a hold, he lives in one. */
+    public static final Map<UnderdarkMaps.Kind, Integer> MAPS = Map.of(
+            UnderdarkMaps.Kind.DROW_OUTPOST, 12,
+            UnderdarkMaps.Kind.RIFT, 6);
 
     private DuergarTrades() {
     }
@@ -110,6 +120,23 @@ public final class DuergarTrades {
 
     static void addMissingFriendly(TradeOfferList offers) {
         addIfMissing(offers, UnderdarkBuildingStock.friendly());
+    }
+
+    /**
+     * Adds the map trades {@code offers} doesn't have yet, each to the nearest destination from {@code pos}, in a
+     * fixed order. A kind with no destination in range is skipped (and searched for again next time).
+     */
+    public static void addMissingMaps(ServerWorld world, BlockPos pos, TradeOfferList offers) {
+        for (UnderdarkMaps.Kind kind : UnderdarkMaps.Kind.values()) {
+            Integer price = MAPS.get(kind);
+            if (price == null || offers.stream().anyMatch(offer -> UnderdarkMaps.kindOf(offer.getSellItem()) == kind)) {
+                continue;
+            }
+            ItemStack map = UnderdarkMaps.create(world, pos, kind);
+            if (map != null) {
+                offers.add(sell(price, map));
+            }
+        }
     }
 
     /** Adds each offer whose item isn't sold yet. */

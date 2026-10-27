@@ -1,0 +1,87 @@
+# Checks the Duergar Factor's explorer maps (docs/systems/underdark.md "Explorer maps", design 9 5.3): a Map to a Drow
+# Outpost (12 emeralds) and a Map to the Rift (6), both at Unfriendly prices (18 and 9), each leading to the nearest
+# such place; and a factor saved before the maps existed gets them the first time someone trades with him.
+# It uses a fresh hold of its own (it swaps the hold's factor for a summoned one), far from the other hold scripts'.
+# Run: timeout 600 ./gradlew runClient -PdevScript=devscripts/duergar-factor-maps.txt
+# Expect in latest.log:
+# - "[Underdark] map to drow_outpost at X Z" and "[Underdark] map to rift at X Z" when the trades first open
+# - the slots readout: "trade 8: 18 emerald -> 1 filled_map {...UnderdarkMap:"drow_outpost"...}" and
+#   "trade 9: 9 emerald -> 1 filled_map {...UnderdarkMap:"rift"...}" (base 12 and 6), with Decorations at X Z
+# - after buying both, /data get shows both maps in the inventory
+# - "/locate structure #dndclasses:underdark_maps/drow_outpost" (and rift) from the same spot: the same X Z as the
+#   map lines (locate gives the structure's start chunk corner, the map its centre: within 16 blocks)
+# - the summoned "old" factor with one saved trade: the slots readout lists the missing stock and both maps again,
+#   each to the next nearest outpost and rift (a map's search skips places an earlier map already led to, like
+#   vanilla's explorer maps)
+# Screenshots: duergar-factor-maps-trades, -outpost-map, -rift-map, -old-factor
+wait 40
+closescreen
+include _reset.txt
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/difficulty normal
+/effect give @s minecraft:night_vision 99999 0 true
+/effect give @s minecraft:resistance 99999 4 true
+/execute in minecraft:overworld run tp @s 57000 200 -51000
+/gamemode spectator
+/dndhome duergarhold trade
+wait 400
+waitserver 2
+/rep @s dndclasses:duergar_clans reset
+/gamemode survival
+/clear @s
+/dndhome duergarhold trade
+wait 20
+use
+wait 20
+slots
+/give @s minecraft:emerald 64
+wait 5
+trade 8
+wait 5
+slots
+slot 2 quick_move
+wait 5
+trade 9
+wait 5
+slot 2 quick_move
+wait 5
+trade 8
+wait 5
+scroll -5 -100 0
+wait 5
+hud off
+screenshot duergar-factor-maps-trades
+hud on
+closescreen
+wait 5
+hotbar 8
+look 0 60
+# Long enough for the chat to fade off the map.
+wait 220
+screenshot duergar-factor-maps-outpost-map
+hotbar 7
+wait 20
+screenshot duergar-factor-maps-rift-map
+/data get entity @s Inventory
+/locate structure #dndclasses:underdark_maps/drow_outpost
+waitserver 2
+/locate structure #dndclasses:underdark_maps/rift
+waitserver 2
+/clear @s
+
+# A factor saved before the maps existed: only the gold trade in his saved offers.
+/execute at @e[type=dndclasses:duergar_factor,limit=1,sort=nearest] run summon dndclasses:duergar_factor ~ ~ ~ {NoAI:1b,PersistenceRequired:1b,Tags:["factormaps"],Offers:{Recipes:[{buy:{id:"minecraft:gold_ingot",Count:4b},sell:{id:"minecraft:emerald",Count:1b},maxUses:12,xp:2,priceMultiplier:0.05f}]}}
+/kill @e[type=dndclasses:duergar_factor,tag=!factormaps,distance=..12]
+wait 10
+/dndhome duergarhold trade
+wait 20
+use
+wait 20
+slots
+hud off
+screenshot duergar-factor-maps-old-factor
+hud on
+closescreen
+/kill @e[tag=factormaps]
+quit

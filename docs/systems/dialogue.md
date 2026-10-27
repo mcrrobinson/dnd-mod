@@ -6,6 +6,9 @@ Some NPCs have stories to tell. Right-click the innkeeper, the Dwarf King or a v
   - `innkeeper`: every innkeeper (older innkeepers get the tag when their chunk loads).
   - `dwarf_king`: the crowned dwarf of each Dwarven Fortress.
   - `hobbit_elder`: the Thain ("Thain Brandybuck"), a new hobbit placed by the party tree on each newly generated village green.
+  - `duergar_factor`: the factor in each [Duergar Hold](../structures/duergar-holds.md)'s Trade Hall (gives Silk and Poison and hears the Shadows Below checks).
+  - `elf_speaker`: the Speaker of each [Elven Enclave](../structures/elven-enclaves.md) (gives The Matron's Web).
+  - Other settlements' leaders have roles too (`dragonborn_elder`, `gnome_tinker`, `orc_quartermaster`, `orc_war_chief`, `tiefling_pactbroker`).
   - Any mob can be given a role with `/tag <entity> add dndclasses.role.<role>`, so a DM can make anyone a quest giver.
 - **When it opens.** Right-click with an empty hand (the innkeeper also talks while you hold anything other than a bounty notice, a name tag or a spawn egg). The dialogue opens only if the NPC has something to say to you:
   - a quest it gives that you could start now (requirements met, not on it, not finished or off cooldown),
@@ -57,8 +60,8 @@ Dialogue is data: `data/<ns>/dialogue/**.json`, one or more files per role. File
   - `goto`: next node (default: back to `hub`); `end: true` closes after the option.
   - `accept`: a quest id to start (the page reports why if it can't).
   - `actions`: quest actions (`give`, `rep`, `reveal`, `set_flag`, ...) run for the player in the context of `requires.quest`, which is required when there are actions.
-  - `check`: `skill` (any skill id: `persuasion`, `insight`, `arcana`, `deception`, ...), `dc`, `success` / `failure` nodes, `on_success` / `on_failure` actions.
-- Launch files: `innkeeper.json` (tier greetings, "Any word on the goblins?" and a Persuasion DC 14 "advance" of 3 emeralds while Trouble on the Road is active), `dwarf_king.json` and `hobbit_elder.json` (tier greetings). The launch quest chains add one file per chain and role under `dialogue/quests/` (map topics, the King's Persuasion and Insight checks, the Thain's Arcana reading), see [Quests](quests.md#launch-quest-chains).
+  - `check`: `skill` (any skill id: `persuasion`, `insight`, `arcana`, `deception`, ...), `dc`, `success` / `failure` nodes, `on_success` / `on_failure` actions, `disadvantage_races` (race ids, e.g. `["dwarf"]`: those players roll with disadvantage, like a Dwarf persuading the duergar factor).
+- Launch files: `innkeeper.json` (tier greetings, "Any word on the goblins?" and a Persuasion DC 14 "advance" of 3 emeralds while Trouble on the Road is active), `dwarf_king.json` and `hobbit_elder.json` (tier greetings). The launch quest chains add one file per chain and role under `dialogue/quests/` (map topics, the King's Persuasion and Insight checks, the Thain's Arcana reading, the duergar factor's Persuasion, Intimidation and Deception and the Elf Speaker's Insight for Shadows Below), see [Quests](quests.md#launch-quest-chains).
 - A quest is offered by NPCs whose role matches its `giver`.
 
 ## Known limitations

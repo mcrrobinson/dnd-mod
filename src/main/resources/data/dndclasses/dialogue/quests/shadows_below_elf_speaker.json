@@ -1,0 +1,45 @@
+{
+  "role": "elf_speaker",
+  "topics": [
+    {
+      "id": "shadows_below/plea",
+      "text": "dialogue.dndclasses.shadows_below.plea",
+      "requires": {"quest": "dndclasses:shadows_below/3", "stage": 1},
+      "check": {
+        "skill": "insight",
+        "dc": 14,
+        "success": "shadows_below_fear",
+        "failure": "shadows_below_plea",
+        "on_success": [
+          {"type": "set_flag", "flag": "truth"},
+          {"type": "rep", "factions": {"dndclasses:sylvan_court": 25}}
+        ],
+        "on_failure": [{"type": "complete_stage", "stage": 1}]
+      }
+    },
+    {
+      "id": "shadows_below/spire",
+      "text": "dialogue.dndclasses.shadows_below.spire",
+      "requires": {"quest": "dndclasses:shadows_below/3", "stage": 2},
+      "actions": [
+        {"type": "reveal", "structure": "dndclasses:drow_spire", "dimension": "dndclasses:underdark", "radius": 250,
+         "fallback": "quest.dndclasses.shadows_below.3.no_spire"}
+      ],
+      "goto": "shadows_below_spire"
+    }
+  ],
+  "nodes": {
+    "shadows_below_fear": {
+      "lines": ["dialogue.dndclasses.shadows_below.fear.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_plea": {
+      "lines": ["dialogue.dndclasses.shadows_below.plea.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_spire": {
+      "lines": ["dialogue.dndclasses.shadows_below.spire.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    }
+  }
+}

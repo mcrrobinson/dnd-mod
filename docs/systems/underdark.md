@@ -71,6 +71,8 @@ Underdark explorer maps lead to the nearest place of their kind (searching 100 c
 
 The places they lead to come with later tickets (outposts, holds, rifts); the tags already list them as optional entries, so each map starts working when its structure lands. Until then there's nothing to map. The duergar factor sells them and loot can hold them (see For developers).
 
+A **Rift Map** is a Map to the Rift that a quest hands you on the surface when its target lies in the Underdark (the [Shadows Below](quests.md#launch-quest-chains) chain): its lore names the target and its x/z below, where the rift's veil will drop you close by.
+
 ### Night all the time
 The Underdark's clock is fixed at midnight. The mod's night checks (`GameTime.isNight`) read 18000 there whatever the Overworld's time, so a [Blood Hunter](../classes/blood-hunter.md) has night strength the whole time they're below. Vanilla's own day checks see a fixed-time dimension as neither day nor night, like the Nether.
 

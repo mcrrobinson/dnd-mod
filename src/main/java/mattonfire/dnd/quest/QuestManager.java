@@ -488,13 +488,35 @@ public final class QuestManager extends PersistentState {
                     counted = i;
                 }
             }
-            if (drop != null && killer.getRandom().nextDouble() < drop.chance()) {
-                spawnDrop(world, killed, killer, drop);
+            if (drop != null) {
+                boolean enough = this.hasEnough(killer, instance, objectives, drop);
+                boolean dropped = !enough && killer.getRandom().nextDouble() < drop.chance();
+                if (dropped) {
+                    spawnDrop(world, killed, killer, drop);
+                }
+                DnDClasses.LOGGER.info("[Quests] #{} {}: quest drop {} for {}: {}", instance.id(), quest.id(), drop.item(),
+                        killer.getEntityName(), enough ? "has enough" : dropped ? "dropped" : "no luck");
             }
             if (counted >= 0) {
                 this.advance(killer.getServer(), instance, quest, counted, 1);
             }
         }
+    }
+
+    /** A {@code quest_drop} with a {@code max}: whether the killer has (or has handed in) enough already. */
+    private boolean hasEnough(ServerPlayerEntity killer, QuestInstance instance, List<QuestObjective> objectives,
+                              QuestDrop drop) {
+        if (drop.max() <= 0) {
+            return false;
+        }
+        QuestJson.ItemMatch match = new QuestJson.ItemMatch(drop.item(), null);
+        int have = count(killer, match);
+        for (int i = 0; i < objectives.size(); i++) {
+            if (objectives.get(i) instanceof QuestObjective.Deliver deliver && deliver.item().equals(match)) {
+                have += instance.progress(i);
+            }
+        }
+        return have >= drop.max();
     }
 
     private static void spawnDrop(ServerWorld world, LivingEntity killed, ServerPlayerEntity killer, QuestDrop drop) {
@@ -510,7 +532,7 @@ public final class QuestManager extends PersistentState {
         world.spawnEntity(item);
     }
 
-    /** Every second: participants standing in a structure their quest asks them to visit. */
+    /** Every second: participants standing in a structure (or dimension) their quest asks them to visit. */
     void tickVisits(MinecraftServer server) {
         for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
             if (QuestHooks.ignored.test(player) || player.isSpectator()) {
@@ -524,7 +546,7 @@ public final class QuestManager extends PersistentState {
                 List<QuestObjective> objectives = quest.stage(instance.stage()).objectives();
                 for (int i = 0; i < objectives.size(); i++) {
                     if (objectives.get(i) instanceof QuestObjective.Visit visit && instance.progress(i) < 1
-                            && visit.structure().contains(player.getWorld(), player.getBlockPos())) {
+                            && visit.reached(player)) {
                         this.advance(server, instance, quest, i, 1);
                         break;
                     }

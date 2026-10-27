@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.PlayerEntityExt;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.SkillChecks.D20;
 import mattonfire.dnd.classes.SkillChecks.Persuasion;
@@ -392,7 +393,9 @@ public final class DialogueManager {
         if (check != null) {
             markTried(player, manager, instance, option);
             int dc = Persuasion.dc(player, session.npc, check.dc());
-            D20.Roll roll = SkillCheck.builder(player, check.skill(), dc, "dialogue").roll();
+            D20.Roll roll = SkillCheck.builder(player, check.skill(), dc, "dialogue")
+                    .disadvantageIf(check.disadvantageRaces().contains(((PlayerEntityExt) player).getDndRace()))
+                    .roll();
             boolean passed = roll.outcome().succeeded();
             D20.show(player, roll, Text.translatable(passed ? "dialogue.dndclasses.check.success"
                     : "dialogue.dndclasses.check.failure", session.npc.getDisplayName()));

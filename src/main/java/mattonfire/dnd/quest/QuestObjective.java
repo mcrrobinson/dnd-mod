@@ -6,9 +6,13 @@ import mattonfire.dnd.quest.QuestJson.EntityMatch;
 import mattonfire.dnd.quest.QuestJson.ItemMatch;
 import mattonfire.dnd.quest.QuestJson.StructureMatch;
 import net.minecraft.registry.Registries;
+import net.minecraft.registry.RegistryKey;
+import net.minecraft.registry.RegistryKeys;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -42,8 +46,12 @@ public sealed interface QuestObjective {
         }
     }
 
-    /** Stand inside a structure. */
-    record Visit(StructureMatch structure, @Nullable Text text) implements QuestObjective {
+    /**
+     * Stand inside a structure, or ({@code "dimension"} in the file instead of {@code "structure"}) be
+     * anywhere in a dimension, e.g. {@code dndclasses:underdark}. Exactly one of the two is set.
+     */
+    record Visit(@Nullable StructureMatch structure, @Nullable RegistryKey<World> dimension, @Nullable Text text)
+            implements QuestObjective {
         @Override
         public int count() {
             return 1;
@@ -51,8 +59,29 @@ public sealed interface QuestObjective {
 
         @Override
         public Text describe() {
-            return Text.translatable("quest.dndclasses.objective.visit", this.structure.name());
+            return this.structure != null
+                    ? Text.translatable("quest.dndclasses.objective.visit", this.structure.name())
+                    : Text.translatable("quest.dndclasses.objective.visit_dimension", dimensionName(this.dimension));
         }
+
+        /** Whether {@code player} is where this asks them to be. */
+        boolean reached(ServerPlayerEntity player) {
+            if (this.dimension != null) {
+                return player.getWorld().getRegistryKey().equals(this.dimension);
+            }
+            return this.structure.contains(player.getWorld(), player.getBlockPos());
+        }
+    }
+
+    /** "the Underdark" for {@code dndclasses:underdark} (lang key {@code dimension.<ns>.<path>}). */
+    static MutableText dimensionName(RegistryKey<World> dimension) {
+        Identifier id = dimension.getValue();
+        return Text.translatableWithFallback("dimension." + id.getNamespace() + "." + id.getPath().replace('/', '.'),
+                QuestJson.shortName(id));
+    }
+
+    static RegistryKey<World> dimension(JsonObject json) {
+        return RegistryKey.of(RegistryKeys.WORLD, QuestJson.id(json, "dimension"));
     }
 
     /** Speak with any NPC that has the role (command tag {@code dndclasses.role.<role>}). */
@@ -119,16 +148,19 @@ public sealed interface QuestObjective {
     }
 
     /**
-     * An item that drops from matching kills, for quest participants only, with {@code chance}.
+     * An item that drops from matching kills, for quest participants only, with {@code chance}. With
+     * {@code max} above 0 it stops dropping once the killer has that many (counting any already handed in
+     * to a {@code deliver} objective for it in the same stage).
      */
-    record QuestDrop(Identifier item, double chance) {
+    record QuestDrop(Identifier item, double chance, int max) {
         static QuestDrop parse(JsonElement element) {
             JsonObject json = QuestJson.object(element, "quest_drop");
             Identifier item = QuestJson.id(json, "item");
             if (!Registries.ITEM.containsId(item)) {
                 throw new IllegalArgumentException("quest_drop: unknown item \"" + item + "\"");
             }
-            return new QuestDrop(item, QuestJson.number(json, "chance", 1.0D, 0.0D, 1.0D));
+            return new QuestDrop(item, QuestJson.number(json, "chance", 1.0D, 0.0D, 1.0D),
+                    QuestJson.integer(json, "max", 0, 0, 10000));
         }
     }
 
@@ -145,7 +177,13 @@ public sealed interface QuestObjective {
                     QuestJson.integer(json, "count", 1, 1, 10000),
                     json.has("within_structure") ? StructureMatch.parse(QuestJson.string(json, "within_structure")) : null,
                     json.has("quest_drop") ? QuestDrop.parse(json.get("quest_drop")) : null, text);
-            case "visit" -> new Visit(StructureMatch.parse(QuestJson.string(json, "structure")), text);
+            case "visit" -> {
+                if (json.has("structure") == json.has("dimension")) {
+                    throw new IllegalArgumentException("visit needs either \"structure\" or \"dimension\"");
+                }
+                yield json.has("dimension") ? new Visit(null, dimension(json), text)
+                        : new Visit(StructureMatch.parse(QuestJson.string(json, "structure")), null, text);
+            }
             case "talk" -> new Talk(role(json, "role"), text);
             case "collect" -> new Collect(ItemMatch.parse(QuestJson.string(json, "item")),
                     QuestJson.integer(json, "count", 1, 1, 10000), QuestJson.bool(json, "consume", true), text);

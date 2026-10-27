@@ -1,0 +1,23 @@
+{
+    "parent": "dndclasses:underdark/matron",
+    "display": {
+        "icon": {
+            "item": "dndclasses:drow_house_sigil"
+        },
+        "title": {
+            "translate": "advancements.dndclasses.matron_slain.title"
+        },
+        "description": {
+            "translate": "advancements.dndclasses.matron_slain.description"
+        },
+        "frame": "goal",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false
+    },
+    "criteria": {
+        "shadows_below": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

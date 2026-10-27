@@ -5,10 +5,14 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.dungeon.DungeonMaps;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.map.MapIcon;
+import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.NbtString;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Text;
+import net.minecraft.util.Formatting;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.gen.structure.Structure;
@@ -21,6 +25,9 @@ import net.minecraft.world.gen.structure.Structure;
  * ({@code loot_tables/underdark/map_to_<kind>.json}).
  */
 public final class UnderdarkMaps {
+    /** NBT on a Rift Map: the quest target below ({@code Name} as text JSON, {@code X}, {@code Z}). */
+    public static final String RIFT_TARGET = "dndclassesRiftTarget";
+
     /** How far (in chunks) a map searches for its destination. */
     public static final int SEARCH_RADIUS = 100;
 
@@ -74,5 +81,30 @@ public final class UnderdarkMaps {
         DnDClasses.LOGGER.info("[Underdark] map to {} at {} {}", kind.id(), target.getX(), target.getZ());
         return DungeonMaps.explorerMap(world, target, "+", kind.icon,
                 kind.title().copy().styled(style -> style.withItalic(false)));
+    }
+
+    /**
+     * A Rift Map (design 9, 9.1): for a quest target deep in the Underdark, a map from {@code from} (in the Overworld)
+     * to the nearest way down ({@link Kind#RIFT}), with the target's name and Underdark x/z in its lore and in
+     * {@value #RIFT_TARGET} NBT. Null if there's no rift within {@value #SEARCH_RADIUS} chunks.
+     */
+    public static ItemStack riftMap(ServerWorld world, BlockPos from, Text target, BlockPos below) {
+        ItemStack map = create(world, from, Kind.RIFT);
+        if (map == null) {
+            return null;
+        }
+        map.setCustomName(Text.translatable("item.dndclasses.underdark_map.rift_map").styled(style -> style.withItalic(false)));
+        NbtCompound nbt = new NbtCompound();
+        nbt.putString("Name", Text.Serializer.toJson(target));
+        nbt.putInt("X", below.getX());
+        nbt.putInt("Z", below.getZ());
+        map.getOrCreateNbt().put(RIFT_TARGET, nbt);
+        NbtList lore = new NbtList();
+        lore.add(NbtString.of(Text.Serializer.toJson(Text.translatable("item.dndclasses.underdark_map.rift_map.below",
+                target, below.getX(), below.getZ()).styled(style -> style.withItalic(true).withColor(Formatting.GRAY)))));
+        lore.add(NbtString.of(Text.Serializer.toJson(Text.translatable("item.dndclasses.underdark_map.rift_map.hint")
+                .styled(style -> style.withItalic(true).withColor(Formatting.DARK_GRAY)))));
+        map.getOrCreateSubNbt("display").put("Lore", lore);
+        return map;
     }
 }

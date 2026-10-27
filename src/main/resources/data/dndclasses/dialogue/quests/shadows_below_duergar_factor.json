@@ -1,0 +1,88 @@
+{
+  "role": "duergar_factor",
+  "topics": [
+    {
+      "id": "shadows_below/persuade",
+      "text": "dialogue.dndclasses.shadows_below.persuade",
+      "requires": {"quest": "dndclasses:shadows_below/1", "stage": 3},
+      "check": {
+        "skill": "persuasion",
+        "dc": 15,
+        "disadvantage_races": ["dwarf"],
+        "success": "shadows_below_persuaded",
+        "failure": "shadows_below_rebuffed",
+        "on_success": [
+          {"type": "set_flag", "flag": "persuaded"},
+          {"type": "rep", "factions": {"dndclasses:duergar_clans": 300}}
+        ],
+        "on_failure": [{"type": "set_flag", "flag": "failed_persuasion"}]
+      }
+    },
+    {
+      "id": "shadows_below/intimidate",
+      "text": "dialogue.dndclasses.shadows_below.intimidate",
+      "requires": {"quest": "dndclasses:shadows_below/1", "stage": 3},
+      "check": {
+        "skill": "intimidation",
+        "dc": 14,
+        "success": "shadows_below_cowed",
+        "failure": "shadows_below_rebuffed",
+        "on_success": [
+          {"type": "set_flag", "flag": "intimidated"},
+          {"type": "rep", "factions": {"dndclasses:duergar_clans": -50, "dndclasses:mountain_dwarves": 25}},
+          {"type": "complete_stage", "stage": 3}
+        ],
+        "on_failure": [{"type": "set_flag", "flag": "failed_intimidation"}]
+      }
+    },
+    {
+      "id": "shadows_below/deceive",
+      "text": "dialogue.dndclasses.shadows_below.deceive",
+      "requires": {"quest": "dndclasses:shadows_below/1", "stage": 3},
+      "check": {
+        "skill": "deception",
+        "dc": 16,
+        "success": "shadows_below_fooled",
+        "failure": "shadows_below_rebuffed",
+        "on_success": [
+          {"type": "set_flag", "flag": "deceived"},
+          {"type": "complete_stage", "stage": 3}
+        ],
+        "on_failure": [{"type": "set_flag", "flag": "failed_deception"}]
+      }
+    },
+    {
+      "id": "shadows_below/price",
+      "text": "dialogue.dndclasses.shadows_below.price",
+      "requires": {"quest": "dndclasses:shadows_below/1", "stage": 3,
+                   "flags": ["failed_persuasion", "failed_intimidation", "failed_deception"]},
+      "actions": [
+        {"type": "rep", "factions": {"dndclasses:duergar_clans": -25}},
+        {"type": "complete_stage", "stage": 3}
+      ],
+      "goto": "shadows_below_price"
+    }
+  ],
+  "nodes": {
+    "shadows_below_persuaded": {
+      "lines": ["dialogue.dndclasses.shadows_below.persuaded.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_cowed": {
+      "lines": ["dialogue.dndclasses.shadows_below.cowed.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_fooled": {
+      "lines": ["dialogue.dndclasses.shadows_below.fooled.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_rebuffed": {
+      "lines": ["dialogue.dndclasses.shadows_below.rebuffed.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    },
+    "shadows_below_price": {
+      "lines": ["dialogue.dndclasses.shadows_below.price.lines"],
+      "options": [{"text": "dialogue.dndclasses.quest.back", "goto": "hub"}]
+    }
+  }
+}

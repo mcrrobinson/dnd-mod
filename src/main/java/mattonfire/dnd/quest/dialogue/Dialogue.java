@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.Race.DndRace;
 import mattonfire.dnd.faction.ReputationTier;
 import mattonfire.dnd.quest.QuestAction;
 import mattonfire.dnd.quest.QuestJson;
@@ -31,7 +32,8 @@ import org.jetbrains.annotations.Nullable;
  * option: {"id": "...", "text": "...", "requires": {...}, "goto": "node" | "hub", "end": true,
  *          "accept": "quest id", "actions": [quest action, ...],
  *          "check": {"skill": "persuasion", "dc": 13, "success": "node", "failure": "node",
- *                    "on_success": [action, ...], "on_failure": [action, ...]}}
+ *                    "on_success": [action, ...], "on_failure": [action, ...],
+ *                    "disadvantage_races": ["dwarf", ...]}}
  * requires: {"quest": "id", "state": "active|finished|not_started|available", "stage": 2,
  *            "flags": ["..."], "not_flags": ["..."], "rep": {"faction": "tier"}, "class": "rogue"}
  * </pre>
@@ -97,7 +99,7 @@ public record Dialogue(String role, @Nullable Text speaker, Map<String, Text> gr
      * player (or quest instance, with {@code requires.quest}) gets one try.
      */
     public record Check(Skill skill, int dc, @Nullable String success, @Nullable String failure,
-                        List<QuestAction> onSuccess, List<QuestAction> onFailure) {
+                        List<QuestAction> onSuccess, List<QuestAction> onFailure, List<DndRace> disadvantageRaces) {
         boolean hasActions() {
             return !this.onSuccess.isEmpty() || !this.onFailure.isEmpty();
         }
@@ -112,7 +114,15 @@ public record Dialogue(String role, @Nullable Text speaker, Map<String, Text> gr
             return new Check(skill, QuestJson.integer(json, "dc", 10, 1, 40), QuestJson.optString(json, "success"),
                     QuestJson.optString(json, "failure"),
                     List.copyOf(QuestJson.list(json, "on_success", QuestAction::parse)),
-                    List.copyOf(QuestJson.list(json, "on_failure", QuestAction::parse)));
+                    List.copyOf(QuestJson.list(json, "on_failure", QuestAction::parse)),
+                    List.copyOf(QuestJson.list(json, "disadvantage_races", value -> {
+                        String raceName = value.getAsString();
+                        DndRace race = DndRace.byId(raceName.substring(raceName.indexOf(':') + 1));
+                        if (race == null || race == DndRace.NONE) {
+                            throw new IllegalArgumentException("check: unknown race \"" + raceName + "\"");
+                        }
+                        return race;
+                    })));
         }
     }
 

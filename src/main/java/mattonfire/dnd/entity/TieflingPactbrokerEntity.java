@@ -35,7 +35,9 @@ public class TieflingPactbrokerEntity extends TieflingEntity implements Settleme
             "entity.dndclasses.tiefling_pactbroker.refuses")
             .stocks(new KinStock(KinStockOffers::brimstoneSanctum),
                     new KinStock(() -> TieflingTrades.warlock(this.random), TieflingTrades::isWarlock, "WarlockOffers"),
-                    new KinStock(TieflingTrades::alchemist, TieflingTrades::isAlchemist, "AlchemistOffers"));
+                    new KinStock(TieflingTrades::alchemist, TieflingTrades::isAlchemist, "AlchemistOffers"))
+            .extraOffers(customer -> TieflingTrades.bargains(customer, this))
+            .onTraded(TieflingTrades::traded);
 
     public TieflingPactbrokerEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world);

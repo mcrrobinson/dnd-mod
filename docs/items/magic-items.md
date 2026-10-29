@@ -1,5 +1,5 @@
 # Magic Items
-The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye, a gorgon's stone eye, and from the Underdark a drow matron's scourge and the drow's own cloak. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
+The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye, a gorgon's stone eye, and from the Underdark a drow matron's scourge and the drow's own cloak. And two planar wonders: a cloth that unfolds into a hole in space, and a deck of cards that can make or end a life. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
 
 ## How it works
 Every item below works only while its magic is awake: it's identified, you're not in a Beholder's anti-magic cone, and, if it needs attunement, you're attuned to it (and of the right class). Otherwise using it puts the reason on the action bar ("Its magic sleeps. Identify it first.", "Attune to it at an Attunement Table to wake its magic."). Wondrous items, rings and amulets work from anywhere in your inventory: carried is worn.
@@ -29,6 +29,8 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 21 | Gorgon's Gaze | Rare wondrous item | yes | Once per dawn, right-click a mob within 12 blocks (not a boss): CON save DC 14 or it's Petrified for good, a statue |
 | 22 | Matron's Scourge | Very Rare weapon (whip) | yes | 7 damage, 1.6 speed, +1 reach. Hits carry Drow Poison (CON 14); once every 30 s a hit frightens the target (WIS 14, 4 s) |
 | 23 | Piwafwi (Cloak of the Drow) | Rare armor (chestplate slot) | yes | 2 armor, +2 Stealth. Sneaking where the light is 4 or less, mobs more than 6 blocks away can't see you |
+| 24 | Portable Hole | Rare wondrous item | no | Right-click: a 54-slot extradimensional space. Sneak + right-click a block: a passage up to 6 blocks deep for 15 s |
+| 25 | Deck of Many Things | Legendary wondrous item | no | Declare 1-4 cards, then draw: each of 13 (or 22) cards is a boon or a ruin. Then the deck vanishes |
 
 ### Wand of Magic Missiles
 - Right-click fires three glowing darts that curve onto the nearest hostile mob (any monster, or any mob targeting you) within 24 blocks and 30 degrees of where you look, that you can see. Together they deal 6 magic damage, credited to you. No target: "No hostile creature in sight." and no charge is spent.
@@ -129,6 +131,48 @@ Every item below works only while its magic is awake: it's identified, you're no
 - **+2 Stealth** on your [character sheet](../systems/ability-scores.md) while it's active (worn and attuned).
 - **Unseen in the dark**: while you sneak where the light (block light, or what's left of the sky light) is **4 or less**, mobs **more than 6 blocks away** can't target you, and any that were chasing you lose you at once. Within 6 blocks, or in the light, you're seen as usual (passive Stealth still shortens how far they notice you).
 
+### Portable Hole
+- A folded square of black cloth. **Right-click** opens a 9x6 chest screen: a 54-slot space between the planes. The contents aren't on the item but in the world's save (`dndclasses_portable_holes`, keyed by the hole's magic id), so they survive dropping the cloth, relogs and restarts, and two copies of the same hole (from `/give` with the same id) open the same space.
+- The cloth you opened is locked in its slot while open. A Portable Hole won't go into its own space ("The cloth won't fold into itself.").
+- **Sneak + right-click a block**: the cloth lies flat and opens a passage into it, up to **6 blocks deep**, away from you: 1 wide and 2 high on a wall (the clicked block and the one above it, or the one under it when you click higher up, so it's at your height), 1x1 on a floor or ceiling. Only solid blocks are opened; air, plants and liquids stay as they are. The passage goes on until it comes out the far side (a slice with nothing solid in it) or reaches a block it can't open, and the action bar says how deep it is ("The cloth lies flat: a hole 3 deep."). The blocks become a dark, swirling see-through passage you can walk or fall through, and come back exactly as they were (states included) after **15 s**, when anyone right-clicks the passage, or when you sneak-use the cloth again ("You fold the hole back up.").
+- It won't open ("The cloth won't lie flat here.") on unbreakable blocks (bedrock, the mod's boss arenas), blocks with a block entity (chests, furnaces, spawners), protected spawn or land you can't edit, or in Adventure mode. 2 s cooldown.
+- When a passage closes on someone, they're pushed out to the nearer end. Passages still open when the server stops are restored when it starts.
+- **Astral rift**: a Bag of Holding put into a Portable Hole, or a Portable Hole put into a Bag of Holding, tears a rift to the Astral Plane. Both items and everything in both are lost, every creature within 4 blocks (the user too) takes **8 magic damage** and is pulled 2 blocks in, and everyone within 16 blocks reads "A rift to the Astral Plane tears open and swallows both.". It grants the advancement **Astral Accident**.
+
+### Deck of Many Things
+- A deck of ivory cards in a velvet case. The first time it's held identified, it's dealt: the **13-card deck** 75% of the time, all **22 cards** otherwise (the tooltip says which).
+- **Sneak + right-click** before the first draw declares how many cards you'll draw, cycling 1 to 4. **Right-click** draws (1 s cooldown); a first draw with nothing declared declares 1. Each card shows as a title, subtitle and a chat line, with a chime for a good card and a dull boom for a bad one.
+- Once you've drawn the declared number, the deck **vanishes**. If cards are still owed **60 s after the first draw**, they fly out and draw themselves, one a second.
+- Every card goes back into the deck, except the Fool and the Jester, so a card can come up twice.
+
+| Card | Deck | Effect |
+|-|-|-|
+| The Sun | 13 | A level's worth of class XP (the gap to your next level) and a wondrous item: Ring of Protection, Amulet of Health, Doss Lute, Warlord's Warhorn, Heart of the Furnace, Wyvern-Scale Cloak, Belt of Owlbear Might, Gorgon's Gaze or Portable Hole (identified) |
+| The Moon | 13 | 1d3 wishes. A wish turns your next failed d20 roll (attack, check or save) into a natural 20, and a wish lifts any deck curse you carry at once (the Void, Euryale, Balance, the Idiot, the Flames) |
+| The Star | 13 | +2 to your highest ability score, past the usual cap of 20, up to 24. A second Star adds to the same score |
+| The Throne | 13 | +250 reputation with your best-liked faction, and expertise in Persuasion for good |
+| The Key | 13 | A weapon of power, identified: a +3 diamond sword, axe or bow, Frostbrand, Mace of Disruption, a +3 netherite sword or axe, or the Matron's Scourge |
+| The Knight | 13 | A Tank [hireling](../systems/hirelings.md) of a random race joins you, sworn for life: never asks a wage, loyalty at least Devoted. With no room in your party: a Rare item instead |
+| The Void | 13 | You're [Paralyzed](../systems/conditions.md) for a full day (20 min). Only someone else's Remove Curse (spell or scroll, on you), a Moon wish or death ends it |
+| The Flames | 13 | The Brimstone Covenant drops to -600 reputation (Hostile) if it was higher, and on each of the next 3 nights 3 blazes come hunting you (8-16 blocks away) |
+| The Skull | 13 | An Avatar of Death rises 3 blocks away (below) |
+| Ruin | 13 | Every piece of wealth in your inventory and ender chest is gone: gold, iron, copper, emeralds, diamonds, netherite, amethyst, lapis (ingots, nuggets, raw, ores, blocks; `#dndclasses:deck_ruin_wealth`). Magic items are spared |
+| Euryale | 13 | -2 to every saving throw (on the sheet as "Euryale (Deck of Many Things)") until Remove Curse (yours or anyone's) or a Moon wish |
+| The Rogue | 13 | -300 reputation with your best-liked faction |
+| The Jester | 13 | A level's worth of class XP. Leaves the deck |
+| The Vizier | 22 | Names the nearest boss lair within 2000 blocks (`#dndclasses:boss_lairs`: Beholder lair, Drow Spire, dragon and frost lairs, strongholds) with its coordinates, and advantage on ability checks for a day |
+| The Comet | 22 | The next boss to die in a fight you're part of gives you a level's worth of class XP |
+| The Fates | 22 | The next blow that would kill (or down) you leaves you on 1 HP with 2 s of Resistance V instead |
+| The Gem | 22 | 20 diamonds and 10 emeralds spill at your feet |
+| The Talons | 22 | Every magic item you carry or wear crumbles, except Legendary ones; their bonds end |
+| The Idiot | 22 | -1d4 Intelligence, never below 3, until a Moon wish |
+| The Donjon | 22 | You're sealed in a 3x3x3 polished blackstone cell 24 blocks below (walls 2 thick), with a soul lantern, 3 bread and a stone pickaxe. Your remaining draws are lost and the deck vanishes |
+| Balance | 22 | Your highest and lowest ability scores trade places. A second Balance swaps them back; a Moon wish ends it |
+| The Fool | 22 | You lose a level's worth of class XP, and must draw one more card (not counted). Leaves the deck |
+
+- **The Avatar of Death** (The Skull): a black-robed wither skeleton with a scythe, 1.3 times a wither skeleton's size, named "Avatar of Death (*you*)". 60 HP, 8 damage, walks at 0.3. It hunts only you and **takes harm only from you**; the first time anyone else strikes it, a second Avatar rises beside it. It fades when you die or leave, or after 5 min, and drops nothing.
+- The cards' lasting effects live in your persistent data (`dndDeck`) and carry over death. Ability changes (Star, Euryale, the Idiot, Balance, the Throne) show on your [character sheet](../systems/ability-scores.md).
+
 ## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
 - The boss and monster items drop, unidentified, when a player kills their monster (Looting adds the bonus shown):
@@ -166,14 +210,17 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Tome of Clear Thought | [Lich](../bosses/lich.md) (final death), Beholder (player kill); vanilla stronghold library | 10% each; 2% |
 | Eye of the Tyrant | beholder lair chest | 2% |
 | Piwafwi | [Drow Outpost](../structures/drow-outposts.md) shrine reliquary; [Drow Spire](../structures/drow-spire.md) treasure loft | 3%; 15% |
+| Portable Hole | [Cogsdeep](../structures/cogsdeep.md) clocktower strongbox; beholder lair chest; the Deck's Sun; the [Pactbroker](../mobs/tieflings.md#trades) (32 emeralds, Honored or better, once) | 6%; 4% |
+| Deck of Many Things | vanilla woodland mansion chests; the Ancient Red Dragon's hoard coffer (once that lair exists); the [Pactbroker](../mobs/tieflings.md#trades) (48 emeralds and a netherite ingot, Exalted, once) | 2%; 10% |
 
-Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`.
+Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`, `portable_hole`, `deck_of_many_things`.
 
 ## Commands
 - `/dndmagic give|identify|attune|bonds ...`: see [Magic items](../systems/magic-items.md).
 - Wand charges: `/data get entity @s SelectedItem.tag.dndclasses_magic.charges`; set them with `/item modify` or a give with NBT, e.g. `/give @s dndclasses:wand_of_magic_missiles{dndclasses_magic:{charges:1}}`.
 - `/dndclass forceroll <player> 1` rigs the wand's crumble roll.
 - Eye charges: the same `charges` key, e.g. `/give @s dndclasses:eye_of_the_tyrant{dndclasses_magic:{charges:1}}`. The Locket's recharge time is `dndclasses_magic.locketReadyAt` (world time); remove it to recharge.
+- `/dndmagic deck <player> next <card>` rigs the next card drawn from any deck (`sun`, `moon`, ..., `fool`); `/dndmagic deck <player> clear` lifts every deck effect and curse.
 - Drops: `/loot give @s kill @e[type=dndclasses:beholder,limit=1,sort=nearest]` rolls a table as a player kill.
 
 ## Configuration
@@ -188,6 +235,10 @@ Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water
 - The Burglar's Ring makes mobs that use the old target system forget you; brain-driven mobs (piglins, wardens) and the invisibility rules of vanilla still apply as usual.
 - The Ring's day count follows the world's time of day, so `/time set` backwards doesn't give health back until the curse is broken.
 - The Mace's "glow" is the enchantment glint, not real light.
+- The Portable Hole can't be laid through blocks with a block entity (chests, signs, beds...), because their contents can't be lifted out and put back safely.
+- The deck is dealt when it's first held, not when the loot is rolled, so a deck sitting in a chest has no size yet.
+- The Vizier only names lairs in its `boss_lairs` tag (not the Gorgon's temples, which are vanilla temples). Locating can take a moment on a fresh world.
+- The Avatar of Death is a scaled-up wither skeleton in dyed leather with a netherite hoe for a scythe, not its own model.
 
 ## For developers
 - `magic/items/`: one class per active item (`WandOfMagicMissilesItem`, `BagOfHoldingItem` with its `BagScreenHandler`, `DecanterOfEndlessWaterItem`, `ImmovableRodItem` + `ImmovableRodBlock`, `DossLuteItem`, `TomeOfClearThoughtItem`), `MagicItemUse.ready` (the shared "is the magic awake" check with its message) and `WondrousItems` (the tiers, the Ring/Amulet/Periapt effects, the long-rest and Downed hooks and the `magic/wondrous_items` ability contributor).
@@ -200,4 +251,8 @@ Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water
 - `BossItemDrops`: one `LootTableEvents.MODIFY` pool per mob table (`dndclasses:entities/<mob>`), with `MagicItemLootFunction.unidentified()`. The Lich's table isn't edited, only extended here.
 - `Curse.RINGS_CALL`: outside the random pool; the day clock is `dndRingsCallSince` in the player's persistent data, the health modifier `RINGS_CALL_UUID`.
 - Goblins: `Conditions/ai/ConditionFleeGoal`, added to every path mob on load.
-- Textures: `python3 tools/wondrous_item_textures.py` and `python3 tools/boss_item_textures.py`.
+- Textures: `python3 tools/wondrous_item_textures.py`, `python3 tools/boss_item_textures.py` and `python3 tools/planar_item_textures.py` (Portable Hole, Deck, passage).
+- `magic/items/PlanarItems` registers the Portable Hole and Deck (items, the `portable_hole_passage` block, the `deck_avatar` entity) and their tiers.
+- Portable Hole: `PortableHoleItem` (screen handler, passage use), `PortableHoleStorage` (Overworld `PersistentState`), `PortableHolePassages` (per-dimension `PersistentState` of open passages with the original block states, timer, push-out, restore on `SERVER_STARTED`), `PortableHolePassageBlock`, `AstralRift` (queued from the Bag and Hole screens, resolved at the end of the server tick). `BagOfHoldingItem` schedules the rift for a Hole put in a Bag.
+- Deck: `DeckOfManyThingsItem` (NBT `Cards`, `Declared`, `Drawn`, `FirstDrawAt`, `Next`), `DeckCards` (the `Card` enum and each card's effect; tables `magic/deck_sun`, `magic/deck_key` from `tools/magic_tier_tables.py`), `DeckCurses` (the `dndDeck` data: ability contributor, Moon wish `D20.Reroll`, Fates `ALLOW_DEATH`, Comet `BossFight.registerDeathListener`, Euryale/Void `RemoveCurse.registerLifter`, the Flames' nightly blazes), `DeckAvatarEntity`, `DonjonCell`.
+- Hooks for other items: `D20.wishNext` / `D20.wishedThisTick` (a natural 20 from a wish counts as rolled), `Contribution.shift` (an ability change applied after the natural cap), `HirelingEntity.setSworn`, `RemoveCurse.Lifter`, `BossFight.DeathListener`. New boss lairs join `#dndclasses:boss_lairs` and add a `deck.dndclasses.lair.<id>` name.

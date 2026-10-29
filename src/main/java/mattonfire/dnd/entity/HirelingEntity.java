@@ -117,6 +117,8 @@ public class HirelingEntity extends PathAwareEntity {
     private int loyalty = START_LOYALTY;
     private long paidThrough;
     private int unpaidStreak;
+    /** Sworn for life (the Deck of Many Things' Knight): no wage, and its loyalty never drops below devoted. */
+    private boolean sworn;
     @Nullable
     private BlockPos post;
     private int knockedOutTicks;
@@ -448,10 +450,24 @@ public class HirelingEntity extends PathAwareEntity {
 
     // ---- Loyalty and wages ----
 
+    public boolean isSworn() {
+        return this.sworn;
+    }
+
+    /** Sworn for life: devoted at once, and it never asks for a wage. */
+    public void setSworn(boolean sworn) {
+        this.sworn = sworn;
+        if (sworn) {
+            this.loyalty = Math.max(this.loyalty, 100);
+            this.unpaidStreak = 0;
+        }
+        Hirelings.refreshRecord(this);
+    }
+
     /** Changes loyalty; at 0 it leaves (once it's back on its feet). */
     public void changeLoyalty(int delta, String why) {
         int before = this.loyalty;
-        this.loyalty = MathHelper.clamp(this.loyalty + delta, 0, 100);
+        this.loyalty = MathHelper.clamp(this.loyalty + delta, this.sworn ? DEVOTED_LOYALTY : 0, 100);
         DnDClasses.LOGGER.info("[Hireling] {} loyalty {} -> {} ({})", this.firstName(), before, this.loyalty, why);
         if (this.loyalty <= 0 && this.isHired()) {
             if (this.isKnockedOut()) {
@@ -498,6 +514,10 @@ public class HirelingEntity extends PathAwareEntity {
 
     /** One wage day: paid from the purse (+5 loyalty), or unpaid (-25, and it leaves after two in a row). */
     public void payDay(ServerPlayerEntity player) {
+        if (this.sworn) {
+            this.unpaidStreak = 0;
+            return;
+        }
         int wage = HirelingWages.wage(this.role(), player);
         if (this.purse >= wage) {
             this.purse -= wage;
@@ -874,6 +894,7 @@ public class HirelingEntity extends PathAwareEntity {
         nbt.putInt("Loyalty", this.loyalty);
         nbt.putLong("PaidThrough", this.paidThrough);
         nbt.putInt("UnpaidStreak", this.unpaidStreak);
+        nbt.putBoolean("Sworn", this.sworn);
         if (this.post != null) {
             nbt.put("Post", NbtHelper.fromBlockPos(this.post));
         }
@@ -907,6 +928,7 @@ public class HirelingEntity extends PathAwareEntity {
         this.loyalty = nbt.contains("Loyalty") ? nbt.getInt("Loyalty") : START_LOYALTY;
         this.paidThrough = nbt.getLong("PaidThrough");
         this.unpaidStreak = nbt.getInt("UnpaidStreak");
+        this.sworn = nbt.getBoolean("Sworn");
         this.post = nbt.contains("Post") ? NbtHelper.toBlockPos(nbt.getCompound("Post")) : null;
         this.knockedOutTicks = nbt.getInt("KnockedOutTicks");
         this.ownerAwayAllKnockout = nbt.getBoolean("OwnerAwayAllKnockout");

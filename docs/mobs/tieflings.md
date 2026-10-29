@@ -43,7 +43,16 @@ Each trade has 12 uses (the netherite scrap 1) and restocks every morning. Price
 | 3 gold ingots | 1 |
 | 2 crying obsidian | 1 |
 
-The gated offers come after the others, and only the players they're for see them: a Tiefling Warlock sees 16 trades, a Human Alchemist 12. The brimstone offers come after the buys, and a Pactbroker from an older world gets them when he's next loaded.
+**Bargains**, once per player ever (bought once, never offered to that player again, from any Pactbroker; kept in the player's data as `dndPactBargains`):
+
+| Sells | Price | Standing |
+|-|-|-|
+| a [Portable Hole](../items/magic-items.md#portable-hole), identified | 32 emeralds | Honored or Exalted |
+| the [Deck of Many Things](../items/magic-items.md#deck-of-many-things), identified | 48 emeralds and a netherite ingot | Exalted |
+
+Buying the Deck seals it with a line in chat: a devil's bargain.
+
+The gated offers come after the others, and only the players they're for see them: a Tiefling Warlock sees 16 trades, a Human Alchemist 12. The bargains come last. The brimstone offers come after the buys, and a Pactbroker from an older world gets them when he's next loaded.
 
 ### Dialogue
 The Pactbroker has the quest-giver role `tiefling_pactbroker` (`dialogue/tiefling_pactbroker.json`, with a greeting for each standing tier). Quests whose `giver` is `tiefling_pactbroker` are offered by him; with nothing to say, right-clicking him opens his trades. See [NPC dialogue](../systems/dialogue.md).

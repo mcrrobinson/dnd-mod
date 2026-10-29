@@ -1,0 +1,75 @@
+# The Deck of Many Things' Void, lifted by another player (docs/items/magic-items.md#deck-of-many-things). Host half;
+# start deck-void-lan-guest.txt once the log says "Started serving on":
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/deck-void-lan-host.txt
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/deck-void-lan-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25631
+# Host log:
+#  1. the guest draws the Void (rigged): "[Deck] <guest> draws The Void (1/1)", /dndcondition list shows paralyzed;
+#     the host, a Life Cleric, casts Cure Wounds: "<guest> Cure Wounds (Dev) ends paralyzed", the list is empty
+#  2. the Void again; the host reads a Scroll of Remove Curse on the guest (use on them):
+#     "Remove Curse (Dev) frees <guest>'s soul", the list is empty
+/time set noon
+/weather clear
+/gamerule doMobSpawning false
+/gamerule dndRests false
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/tp @s 3200.5 152 3200.5 0 0
+wait 40
+/fill 3190 149 3190 3210 149 3210 minecraft:stone
+/fill 3190 150 3190 3210 156 3210 minecraft:air
+/gamemode survival
+/tp @s 3200.5 150 3200.5 0 0
+/dndclass set @s cleric
+wait 5
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass xp @s set 900
+/dndclass subclass @s cleric.life
+/dndclass unlock @s cleric.preserve_life
+/dndclass unlock @s cleric.cure_wounds
+/dndclass equip @s cleric.cure_wounds
+/publish false survival 25631
+waitchat joined the game
+wait 60
+/gamemode survival @a[name=!Dev]
+/dndcondition remove @a[name=!Dev,limit=1] all
+/dndmagic deck @a[name=!Dev,limit=1] clear
+/clear @a[name=!Dev,limit=1]
+/tp @a[name=!Dev,limit=1] 3200.5 150 3202.5 180 0
+/dndmagic give @a[name=!Dev,limit=1] dndclasses:deck_of_many_things
+wait 10
+/dndmagic deck @a[name=!Dev,limit=1] next void
+/say deck-step-1
+waitchat guest-drew-1
+wait 10
+/dndcondition list @a[name=!Dev,limit=1]
+screenshot deck-void-paralyzed
+/dndclass mana @s 9
+/dndclass charges @s 9
+wait 40
+press key.dnd-classes.power-up
+wait 20
+/dndcondition list @a[name=!Dev,limit=1]
+
+# ---- 2. The Void again, and a Scroll of Remove Curse read on the guest ----
+/dndmagic give @a[name=!Dev,limit=1] dndclasses:deck_of_many_things
+wait 10
+/dndmagic deck @a[name=!Dev,limit=1] next void
+/say deck-step-2
+waitchat guest-drew-2
+wait 10
+/dndcondition list @a[name=!Dev,limit=1]
+/clear @s
+/give @s dndclasses:scroll_of_remove_curse
+hotbar 0
+/tp @s 3200.5 150 3200.5 0 20
+wait 10
+use
+wait 10
+/dndcondition list @a[name=!Dev,limit=1]
+/say deck-done
+wait 40
+quit

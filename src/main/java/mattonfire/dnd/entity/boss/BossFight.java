@@ -284,12 +284,30 @@ public class BossFight {
         }
     }
 
+    /** Something that happens to each player in range when a boss dies (the Deck of Many Things' Comet). */
+    @FunctionalInterface
+    public interface DeathListener {
+        void onBossDeath(BossFight fight, List<ServerPlayerEntity> playersInRange);
+    }
+
+    private static final List<DeathListener> DEATH_LISTENERS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerDeathListener(DeathListener listener) {
+        DEATH_LISTENERS.add(listener);
+    }
+
     /** Call from the boss's onDeath(source); grants the kill advancement. */
     public void onDeath() {
         if (this.killed || this.boss.world.isClient) {
             return;
         }
         this.killed = true;
+        if (!DEATH_LISTENERS.isEmpty()) {
+            List<ServerPlayerEntity> near = ((ServerWorld) this.boss.world).getPlayers(this::inRange);
+            for (DeathListener listener : DEATH_LISTENERS) {
+                listener.onBossDeath(this, near);
+            }
+        }
         // Same player vanilla credits with the kill (player_killed_entity)
         LivingEntity killer = this.boss.getPrimeAdversary();
         if (this.advancement != null && killer instanceof ServerPlayerEntity player) {

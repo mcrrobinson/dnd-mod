@@ -1,0 +1,109 @@
+{
+  "type": "minecraft:gift",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:ring_of_protection",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:amulet_of_health",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:doss_lute",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:warlords_warhorn",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:heart_of_the_furnace",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:wyvern_scale_cloak",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:belt_of_owlbear_might",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:gorgons_gaze",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:portable_hole",
+          "weight": 1,
+          "functions": [
+            {
+              "function": "dndclasses:magic_item",
+              "identified": true
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

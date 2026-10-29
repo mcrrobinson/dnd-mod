@@ -1,0 +1,23 @@
+{
+    "parent": "minecraft:adventure/root",
+    "display": {
+        "icon": {
+            "item": "dndclasses:portable_hole"
+        },
+        "title": {
+            "translate": "advancements.dndclasses.astral_accident.title"
+        },
+        "description": {
+            "translate": "advancements.dndclasses.astral_accident.description"
+        },
+        "frame": "challenge",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": true
+    },
+    "criteria": {
+        "rift": {
+            "trigger": "minecraft:impossible"
+        }
+    }
+}

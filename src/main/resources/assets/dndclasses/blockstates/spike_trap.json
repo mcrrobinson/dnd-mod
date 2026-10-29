@@ -1,0 +1,22 @@
+{
+  "variants": {
+    "extended=false,floor=stone": {
+      "model": "dndclasses:block/spike_trap_stone"
+    },
+    "extended=true,floor=stone": {
+      "model": "dndclasses:block/spike_trap_stone_extended"
+    },
+    "extended=false,floor=coarse_dirt": {
+      "model": "dndclasses:block/spike_trap_coarse_dirt"
+    },
+    "extended=true,floor=coarse_dirt": {
+      "model": "dndclasses:block/spike_trap_coarse_dirt_extended"
+    },
+    "extended=false,floor=basalt": {
+      "model": "dndclasses:block/spike_trap_basalt"
+    },
+    "extended=true,floor=basalt": {
+      "model": "dndclasses:block/spike_trap_basalt_extended"
+    }
+  }
+}

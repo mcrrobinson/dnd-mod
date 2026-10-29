@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A kobold runs (at x{@value #SPEED}, cowering): from a player who hit it while it was craven, for
  * {@link KoboldEntity#SCARED_TICKS}; or, below 30% health, towards the nearest other kobold that's further from the
- * threat than it is (its pack), else just away, until it's {@value #SAFE_DISTANCE} blocks clear.
+ * threat than it is (its pack; in a warren, the nearest bolt-hole first), else just away, until it's {@value #SAFE_DISTANCE} blocks clear.
  */
 public class KoboldFleeGoal extends Goal {
     public static final double SPEED = 1.3D;
@@ -83,6 +83,10 @@ public class KoboldFleeGoal extends Goal {
         this.repath = 10;
         Vec3d goal = null;
         if (this.kobold.isLowHealth()) {
+            // In a warren: down the nearest bolt-hole, where the threat can't follow
+            goal = mattonfire.dnd.entity.kobold.KoboldCourage.refugeOf(this.kobold);
+        }
+        if (goal == null && this.kobold.isLowHealth()) {
             // Towards the pack: the nearest kobold further from the threat than this one.
             double own = this.kobold.squaredDistanceTo(this.threat);
             KoboldEntity pack = this.kobold.world.getClosestEntity(KoboldEntity.class,

@@ -197,6 +197,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.drow.Drow.register();
                 // The kobolds and the Kobold Tribes (design 10, K1): their types, items, blocks, spawns and hooks
                 mattonfire.dnd.entity.kobold.Kobolds.register();
+                // Kobold warrens (design 10, K2): the structure, its pieces, the egg clutch and the warren's hooks
+                mattonfire.dnd.world.gen.warren.KoboldWarrens.register();
                 mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();

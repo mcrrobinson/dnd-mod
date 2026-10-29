@@ -2,11 +2,13 @@ package mattonfire.dnd.entity.kobold;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import mattonfire.dnd.classes.Abilities.Advantage;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.LightType;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +40,7 @@ public final class KoboldCourage {
     public static final int SUNLIGHT_LEVEL = 12;
 
     private static final List<Predicate<KoboldEntity>> HOMES = new CopyOnWriteArrayList<>();
+    private static final List<Function<KoboldEntity, Vec3d>> REFUGES = new CopyOnWriteArrayList<>();
 
     private KoboldCourage() {
     }
@@ -48,6 +51,26 @@ public final class KoboldCourage {
      */
     public static void registerHome(Predicate<KoboldEntity> home) {
         HOMES.add(home);
+    }
+
+    /**
+     * Adds a bolt-hole rule: where a badly hurt kobold runs to (null if the rule has none for it). K2's warrens
+     * register their 1 x 1 bolt-holes, which kobolds fit through and players don't.
+     */
+    public static void registerRefuge(Function<KoboldEntity, Vec3d> refuge) {
+        REFUGES.add(refuge);
+    }
+
+    /** The first refuge a rule gives {@code kobold}, or null. */
+    @Nullable
+    public static Vec3d refugeOf(KoboldEntity kobold) {
+        for (Function<KoboldEntity, Vec3d> refuge : REFUGES) {
+            Vec3d spot = refuge.apply(kobold);
+            if (spot != null) {
+                return spot;
+            }
+        }
+        return null;
     }
 
     public static boolean atHome(KoboldEntity kobold) {

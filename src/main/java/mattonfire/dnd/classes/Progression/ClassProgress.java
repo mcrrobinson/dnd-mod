@@ -10,6 +10,8 @@ import java.util.Set;
 
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.Abilities.Ability;
+import mattonfire.dnd.classes.Feats.Feat;
+import mattonfire.dnd.classes.Feats.FeatChoice;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtList;
@@ -35,6 +37,10 @@ public class ClassProgress {
     public static final int[] ASI_LEVELS = { 4, 8 };
     /** Ability points each {@link #ASI_LEVELS} level grants. */
     public static final int ASI_POINTS_PER_LEVEL = 2;
+    /** Class level that grants one free feat (a feat slot that doesn't use ability points). */
+    public static final int FEAT_LEVEL = 6;
+    /** Ability points a feat costs when it isn't paid with a free slot (taken at 4 or 8 instead of +2). */
+    public static final int FEAT_COST = ASI_POINTS_PER_LEVEL;
 
     /** The local player's progress, kept up to date by the server. Unused on the server. */
     public static ClassProgress client = new ClassProgress(DndCharacter.NONE);
@@ -54,6 +60,8 @@ public class ClassProgress {
     public String subclass = "";
     /** Ability score improvements bought with ability points, by ability (+1 each). */
     public final Map<Ability, Integer> increases = new EnumMap<>(Ability.class);
+    /** Feats taken in this class, in the order they were taken. */
+    public final List<FeatChoice> feats = new ArrayList<>();
 
     /** What a subclass rule says about unlocking a node. */
     public enum SubclassLock {
@@ -126,7 +134,71 @@ public class ClassProgress {
         for (int n : increases.values()) {
             spent += n;
         }
+        for (FeatChoice choice : feats) {
+            if (choice.source() == FeatChoice.Source.ASI) {
+                spent += FEAT_COST;
+            }
+        }
         return spent;
+    }
+
+    /** Free feat slots earned: 1 from {@link #FEAT_LEVEL}. */
+    public int freeFeatSlots() {
+        return level() >= FEAT_LEVEL ? 1 : 0;
+    }
+
+    /** Free feat slots not used yet. Never below 0 (admin grants can go past the slots). */
+    public int freeFeatSlotsLeft() {
+        int used = 0;
+        for (FeatChoice choice : feats) {
+            if (choice.source() == FeatChoice.Source.FREE) {
+                used++;
+            }
+        }
+        return Math.max(0, freeFeatSlots() - used);
+    }
+
+    public int featsTaken() {
+        return feats.size();
+    }
+
+    /** Whether a feat could be paid for now: a free slot, or {@link #FEAT_COST} unspent ability points. */
+    public boolean canAffordFeat() {
+        return freeFeatSlotsLeft() > 0 || asiPoints() >= FEAT_COST;
+    }
+
+    /** What the next feat would be paid with, or null if it can't be. */
+    public FeatChoice.Source nextFeatSource() {
+        if (freeFeatSlotsLeft() > 0)
+            return FeatChoice.Source.FREE;
+        return asiPoints() >= FEAT_COST ? FeatChoice.Source.ASI : null;
+    }
+
+    /** Whether this feat (for Resilient: with this ability; null ability means any) has been taken. */
+    public boolean hasFeat(Feat feat, Ability ability) {
+        for (FeatChoice choice : feats) {
+            if (choice.matches(feat, ability)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasFeat(Feat feat) {
+        return hasFeat(feat, null);
+    }
+
+    /** Whether this feat can still be taken (Resilient: with at least one ability left, or this ability). */
+    public boolean featAvailable(Feat feat, Ability ability) {
+        if (!feat.perAbility())
+            return !hasFeat(feat);
+        if (ability != null)
+            return !hasFeat(feat, ability);
+        for (Ability a : Ability.values()) {
+            if (!hasFeat(feat, a))
+                return true;
+        }
+        return false;
     }
 
     /** Unspent ability points. Never below 0 (an admin can lower the level after they're spent). */
@@ -323,6 +395,13 @@ public class ClassProgress {
             increases.forEach((ability, n) -> asi.putInt(ability.shortKey(), n));
             nbt.put("asi", asi);
         }
+        if (!feats.isEmpty()) {
+            NbtList featList = new NbtList();
+            for (FeatChoice choice : feats) {
+                featList.add(choice.toNbt());
+            }
+            nbt.put("feats", featList);
+        }
         return nbt;
     }
 
@@ -345,6 +424,12 @@ public class ClassProgress {
             int n = asi.getInt(key);
             if (ability != null && n > 0) {
                 progress.increases.put(ability, n);
+            }
+        }
+        for (NbtElement element : nbt.getList("feats", NbtElement.COMPOUND_TYPE)) {
+            FeatChoice choice = FeatChoice.fromNbt((NbtCompound) element);
+            if (choice != null && !progress.hasFeat(choice.feat(), choice.ability())) {
+                progress.feats.add(choice);
             }
         }
         return progress;

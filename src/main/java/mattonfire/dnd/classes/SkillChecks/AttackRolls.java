@@ -42,6 +42,8 @@ public final class AttackRolls {
      * so the crit only counts for that target in that same tick.
      */
     private static final Map<UUID, Crit> CRITICAL = new HashMap<>();
+    /** Players whose current swing passed its attack roll at full strength (for Great Weapon Master's +5). */
+    private static final Map<UUID, Crit> FULL_STRENGTH = new HashMap<>();
 
     private record Crit(int targetId, int age) {
     }
@@ -91,6 +93,7 @@ public final class AttackRolls {
     /** Drops a crit roll that never got used; called on disconnect. */
     public static void forget(UUID player) {
         CRITICAL.remove(player);
+        FULL_STRENGTH.remove(player);
     }
 
     private AttackRolls() {
@@ -120,6 +123,7 @@ public final class AttackRolls {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical")
                         .append(" (" + autoCrit + ")"));
                 CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
+                FULL_STRENGTH.put(player.getUuid(), new Crit(entity.getId(), player.age));
                 return ActionResult.PASS;
             }
             if (roll.outcome() == D20.Outcome.FUMBLE) {
@@ -133,6 +137,7 @@ public final class AttackRolls {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical"));
                 CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
             }
+            FULL_STRENGTH.put(player.getUuid(), new Crit(entity.getId(), player.age));
             return ActionResult.PASS;
         });
     }
@@ -159,6 +164,18 @@ public final class AttackRolls {
         return target != null && crit.targetId() == target.getId();
     }
 
+    /** Whether this swing at the target is a full-strength one that passed its attack roll (this tick). */
+    public static boolean isFullStrength(PlayerEntity player, Entity target) {
+        Crit swing = FULL_STRENGTH.get(player.getUuid());
+        return swing != null && swing.age() == player.age && target != null && swing.targetId() == target.getId();
+    }
+
+    /** Whether this swing at the target is a critical hit (this tick). */
+    public static boolean isCriticalSwing(PlayerEntity player, Entity target) {
+        Crit crit = CRITICAL.get(player.getUuid());
+        return crit != null && crit.age() == player.age && target != null && crit.targetId() == target.getId();
+    }
+
     public static float criticalDamage(PlayerEntity player, Entity target, float amount) {
         return !player.getWorld().isClient && isCritical(player, target)
                 ? amount * mattonfire.dnd.classes.Race.RaceTraits.critMultiplier(player)
@@ -169,7 +186,11 @@ public final class AttackRolls {
         if (player.getWorld().isClient)
             return;
         boolean critical = isCritical(player, target);
+        boolean fullStrength = isFullStrength(player, target);
         CRITICAL.remove(player.getUuid());
+        FULL_STRENGTH.remove(player.getUuid());
+        // Great Weapon Master's Cleave: a crit or a kill readies the next swing
+        mattonfire.dnd.classes.Feats.FeatEffects.afterAttack(player, target, critical, fullStrength);
         if (critical) {
             player.addCritParticles(target);
             player.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(),

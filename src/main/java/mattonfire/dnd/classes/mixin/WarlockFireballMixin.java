@@ -35,7 +35,8 @@ public abstract class WarlockFireballMixin {
 
     @Inject(method = "doItemUse", at = @At("TAIL"))
     private void dndclasses$warlockFireball(CallbackInfo ci) {
-        if (player == null || !WarlockRules.isWarlock(player) || !player.getMainHandStack().isEmpty()
+        if (player == null || !WarlockRules.isWarlock(player)
+                || !mattonfire.dnd.classes.Feats.Feats.castingHandFree(player)
                 || player.isUsingItem()) {
             return;
         }

@@ -254,6 +254,7 @@ public class DndClassesClient implements ClientModInitializer {
         mattonfire.dnd.classes.Client.Hud.ObstacleHintHud.register();
         mattonfire.dnd.classes.Client.Hud.GogglesHud.register();
         SearchKeyClient.register();
+        FeatKeyClient.register();
         GrappleClient.register();
         ConditionClient.register();
         mattonfire.dnd.classes.Client.Hud.ConditionHud.register();

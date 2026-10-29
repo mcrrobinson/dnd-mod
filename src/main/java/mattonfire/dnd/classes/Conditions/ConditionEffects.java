@@ -1,5 +1,7 @@
 package mattonfire.dnd.classes.Conditions;
 
+import java.util.List;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -235,6 +237,37 @@ public final class ConditionEffects {
         return inst != null && inst.indefinite();
     }
 
+    /**
+     * A source of advantage or disadvantage on a mob's melee attack against a target, on top of the conditions
+     * (kobold Pack Tactics, the Mobile feat's hit-and-run, ...). Its result adds to the mob advantage and
+     * disadvantage count before {@link Advantage#resolve}.
+     */
+    @FunctionalInterface
+    public interface MobAttackMode {
+        Advantage mode(LivingEntity attacker, LivingEntity target);
+    }
+
+    private static final List<MobAttackMode> MOB_ATTACK_MODES = new java.util.concurrent.CopyOnWriteArrayList<>();
+    private static final List<java.util.function.Predicate<LivingEntity>> NO_BLIND_SPOTS =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerMobAttackMode(MobAttackMode mode) {
+        MOB_ATTACK_MODES.add(mode);
+    }
+
+    /** Targets for which being Blinded gives attackers no advantage (the Alert feat). */
+    public static void registerNoBlindSpots(java.util.function.Predicate<LivingEntity> test) {
+        NO_BLIND_SPOTS.add(test);
+    }
+
+    private static boolean noBlindSpots(LivingEntity target) {
+        for (java.util.function.Predicate<LivingEntity> test : NO_BLIND_SPOTS) {
+            if (test.test(target))
+                return true;
+        }
+        return false;
+    }
+
     /** Sources of advantage the target's conditions give an attacker at this distance (melee). */
     private static int advantagesAgainst(LivingEntity target, @Nullable Entity attacker) {
         int n = 0;
@@ -244,7 +277,7 @@ public final class ConditionEffects {
         }
         for (Condition c : new Condition[] { Condition.RESTRAINED, Condition.BLINDED, Condition.STUNNED,
                 Condition.PETRIFIED, Condition.PARALYZED }) {
-            if (Conditions.has(target, c)) {
+            if (Conditions.has(target, c) && !(c == Condition.BLINDED && noBlindSpots(target))) {
                 n++;
             }
         }
@@ -365,6 +398,14 @@ public final class ConditionEffects {
                 }
                 int adv = advantagesAgainst(target, living);
                 int dis = disadvantagesOf(living);
+                for (MobAttackMode hook : MOB_ATTACK_MODES) {
+                    switch (hook.mode(living, target)) {
+                        case ADVANTAGE -> adv++;
+                        case DISADVANTAGE -> dis++;
+                        case NORMAL -> {
+                        }
+                    }
+                }
                 Advantage mode = Advantage.resolve(adv, dis);
                 if (mode == Advantage.ADVANTAGE) {
                     amount *= MOB_ADVANTAGE;

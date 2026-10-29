@@ -13,24 +13,33 @@ import mattonfire.dnd.classes.Abilities.Contribution;
 import mattonfire.dnd.classes.Abilities.Proficiency;
 import mattonfire.dnd.classes.Abilities.RollQuery;
 import mattonfire.dnd.classes.Abilities.Skill;
+import mattonfire.dnd.classes.Feats.Feat;
+import mattonfire.dnd.classes.Feats.FeatChoice;
 import mattonfire.dnd.classes.Progression.ClassProgress;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketByteBufs;
+import com.mojang.blaze3d.systems.RenderSystem;
+
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawableHelper;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.text.MutableText;
 import net.minecraft.text.OrderedText;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.Identifier;
 
 /**
  * The Character tab of {@link SkillTreeScreen}: the synced {@link CharacterSheet#client} as six ability boxes
  * (score, modifier, a gold corner when the save is proficient), saving throws, a scrollable skill list
  * (● proficient, ◆ expertise, ½ half) and passive scores, with the sheet's breakdown in each tooltip. At an
  * Attunement Table with ability points left, "+" buttons on the boxes spend them (C2S
- * {@link AbilityIncreases#C2S_ABILITY_INCREASE}; the server checks everything again).
+ * {@link AbilityIncreases#C2S_ABILITY_INCREASE}; the server checks everything again). The Feats box under the
+ * ability boxes lists the class's feats, and at a table with a feat slot or 2 ability points a "Choose a feat"
+ * button opens the {@link FeatPickerScreen}. The passive scores sit under the skills.
  */
 final class CharacterSheetPanel {
     private static final int GOLD = 0xFFE0B040;
@@ -50,11 +59,18 @@ final class CharacterSheetPanel {
     private static final int SAVES_TOP = 44;
     private static final int ROW = 10;
     private static final int SKILLS_TOP = 104;
-    private static final int SKILL_ROWS = 10;
+    private static final int SKILL_ROWS = 7;
 
-    private static final int PASSIVES_TOP = 162;
+    /** Passive scores: three rows under the skills, in the right column. */
+    private static final int PASSIVES_TOP = SKILLS_TOP + SKILL_ROWS * ROW + 3;
     private static final Skill[] PASSIVES = { Skill.PERCEPTION, Skill.INSIGHT, Skill.STEALTH };
+    /** The Feats box, under the ability boxes. */
+    private static final int FEATS_TOP = 162;
+    private static final int FEAT_ROWS = 3;
     private static final int FEATURES_TOP = 204;
+    static final Identifier FEAT_ICONS = new Identifier(mattonfire.dnd.classes.DnDClasses.MOD_ID,
+            "textures/gui/feats.png");
+    static final int FEAT_CELL = 16;
 
     private int skillScroll;
 
@@ -191,22 +207,30 @@ final class CharacterSheetPanel {
             text.drawWithShadow(matrices, total, totalX, y, 0xFFFFFF);
         }
 
-        // Passive scores, under the ability boxes.
-        int px = left + BOXES_LEFT;
-        text.drawWithShadow(matrices, Text.literal("Passive").formatted(Formatting.GRAY), px, top + PASSIVES_TOP,
-                0xFFFFFF);
-        int passiveWidth = 2 * BOX_W + BOX_GAP;
+        // Passive scores, under the skills.
+        int passiveSep = top + PASSIVES_TOP - 2;
+        DrawableHelper.fill(matrices, rightX, passiveSep, rightX + RIGHT_WIDTH, passiveSep + 1, BORDER);
         for (int i = 0; i < PASSIVES.length; i++) {
             Skill s = PASSIVES[i];
-            int y = top + PASSIVES_TOP + 11 + i * ROW;
-            boolean hover = over(mouseX, mouseY, px, y - 1, passiveWidth, ROW);
+            int y = top + PASSIVES_TOP + 1 + i * ROW;
+            boolean hover = over(mouseX, mouseY, rightX, y - 1, RIGHT_WIDTH, ROW);
             if (hover) {
-                DrawableHelper.fill(matrices, px - 1, y - 1, px + passiveWidth, y + ROW - 1, BOX_HOVER);
+                DrawableHelper.fill(matrices, rightX - 1, y - 1, rightX + RIGHT_WIDTH, y + ROW - 1, BOX_HOVER);
                 tooltip = passiveTooltip(sheet, s);
             }
-            text.drawWithShadow(matrices, Text.translatable(s.translationKey()), px, y, 0xFFFFFF);
+            Text label = Text.literal("Passive ").formatted(Formatting.GRAY)
+                    .append(Text.translatable(s.translationKey()).formatted(Formatting.WHITE));
+            text.drawWithShadow(matrices, label, rightX + 8, y, 0xFFFFFF);
             String value = Integer.toString(sheet.passive(s));
-            text.drawWithShadow(matrices, value, px + passiveWidth - text.getWidth(value), y, 0xFFFFFF);
+            text.drawWithShadow(matrices, value, rightX + RIGHT_WIDTH - 2 - text.getWidth(value), y, 0xFFFFFF);
+        }
+
+        // Feats, under the ability boxes.
+        int px = left + BOXES_LEFT;
+        List<OrderedText> featTooltip = renderFeats(matrices, text, progress, px, top + FEATS_TOP, mouseX, mouseY,
+                attuning);
+        if (featTooltip != null) {
+            tooltip = featTooltip;
         }
 
         // Features that work outside the numbers (advantage, Evasion...), listed in a tooltip.
@@ -228,21 +252,116 @@ final class CharacterSheetPanel {
 
     private static Text pointsText(ClassProgress progress, boolean attuning) {
         int points = progress.asiPoints();
-        if (points > 0) {
-            return Text.literal(points + " ability point" + (points == 1 ? "" : "s")
-                    + (attuning ? " to spend" : " (spend at an Attunement Table)")).formatted(Formatting.YELLOW);
+        int slots = progress.freeFeatSlotsLeft();
+        if (points > 0 || slots > 0) {
+            return Text.literal("Ability points: " + points + " \u00b7 Feat slots: " + slots
+                    + (attuning ? "" : " (at an Attunement Table)")).formatted(Formatting.YELLOW);
         }
-        for (int level : ClassProgress.ASI_LEVELS) {
-            if (progress.level() < level) {
-                return Text.literal("Next ability points at level " + level).formatted(Formatting.GRAY);
+        int level = progress.level();
+        if (level < ClassProgress.ASI_LEVELS[0]) {
+            return Text.literal("Next: ability points or a feat at level " + ClassProgress.ASI_LEVELS[0])
+                    .formatted(Formatting.GRAY);
+        }
+        if (level < ClassProgress.FEAT_LEVEL) {
+            return Text.literal("Next: a free feat at level " + ClassProgress.FEAT_LEVEL).formatted(Formatting.GRAY);
+        }
+        for (int asiLevel : ClassProgress.ASI_LEVELS) {
+            if (level < asiLevel) {
+                return Text.literal("Next: ability points or a feat at level " + asiLevel).formatted(Formatting.GRAY);
             }
         }
-        return Text.literal("All ability points spent").formatted(Formatting.GRAY);
+        return Text.literal("All ability points and feats chosen").formatted(Formatting.GRAY);
+    }
+
+    /** Whether the "Choose a feat" button shows: at a table, with a free slot or enough ability points. */
+    static boolean canChooseFeat(boolean attuning) {
+        return attuning && ClassProgress.client.canAffordFeat();
+    }
+
+    private static final String CHOOSE_FEAT = "Choose a feat";
+
+    /** The Feats box; returns the hovered row's tooltip, or null. */
+    @Nullable
+    private static List<OrderedText> renderFeats(MatrixStack matrices, TextRenderer text, ClassProgress progress,
+            int x, int y, int mouseX, int mouseY, boolean attuning) {
+        List<OrderedText> tooltip = null;
+        int width = 2 * BOX_W + BOX_GAP;
+        if (!canChooseFeat(attuning)) {
+            text.drawWithShadow(matrices, Text.literal("Feats").formatted(Formatting.GRAY), x, y, 0xFFFFFF);
+        }
+        if (canChooseFeat(attuning)) {
+            // The gold button takes the header's place
+            boolean hover = over(mouseX, mouseY, x, y - 2, width, ROW + 1);
+            DrawableHelper.fill(matrices, x, y - 2, x + width, y + ROW - 1, hover ? 0xFFF0C860 : GOLD);
+            text.draw(matrices, CHOOSE_FEAT, x + (width - text.getWidth(CHOOSE_FEAT)) / 2, y, 0x2A1E08);
+            if (hover) {
+                tooltip = new ArrayList<>();
+                tooltip.add(title("Choose a feat"));
+                FeatChoice.Source source = progress.nextFeatSource();
+                tooltip.add(gray(source == FeatChoice.Source.FREE ? "Paid with your level " + ClassProgress.FEAT_LEVEL
+                        + " feat." : "Costs " + ClassProgress.FEAT_COST + " ability points."));
+            }
+        }
+        List<FeatChoice> feats = progress.feats;
+        if (feats.isEmpty()) {
+            text.drawWithShadow(matrices, Text.literal(progress.level() >= ClassProgress.ASI_LEVELS[0] ? "None yet"
+                    : "From level " + ClassProgress.ASI_LEVELS[0]).formatted(Formatting.DARK_GRAY), x, y + 11,
+                    0xFFFFFF);
+            return tooltip;
+        }
+        int shown = feats.size() > FEAT_ROWS ? FEAT_ROWS - 1 : feats.size();
+        for (int i = 0; i < shown; i++) {
+            FeatChoice choice = feats.get(i);
+            int ry = y + 11 + i * ROW;
+            boolean hover = over(mouseX, mouseY, x, ry - 1, width, ROW);
+            if (hover) {
+                DrawableHelper.fill(matrices, x - 1, ry - 1, x + width, ry + ROW - 1, BOX_HOVER);
+                tooltip = featTooltip(choice);
+            }
+            drawFeatIcon(matrices, choice.feat(), x, ry, 8);
+            text.drawWithShadow(matrices, text.trimToWidth(choice.label(), width - 11), x + 11, ry, 0xFFFFFF);
+        }
+        if (shown < feats.size()) {
+            int ry = y + 11 + shown * ROW;
+            int more = feats.size() - shown;
+            text.drawWithShadow(matrices, Text.literal("+" + more + " more").formatted(Formatting.AQUA), x + 11, ry,
+                    0xFFFFFF);
+            if (over(mouseX, mouseY, x, ry - 1, width, ROW)) {
+                tooltip = new ArrayList<>();
+                tooltip.add(title("Feats"));
+                for (FeatChoice choice : feats) {
+                    tooltip.add(gray(choice.label()));
+                }
+            }
+        }
+        return tooltip;
+    }
+
+    /** One feat icon from {@link #FEAT_ICONS}, at {@code size} pixels. */
+    static void drawFeatIcon(MatrixStack matrices, Feat feat, int x, int y, int size) {
+        RenderSystem.setShader(GameRenderer::getPositionTexProgram);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        RenderSystem.enableBlend();
+        RenderSystem.setShaderTexture(0, FEAT_ICONS);
+        DrawableHelper.drawTexture(matrices, x, y, size, size, feat.icon() * FEAT_CELL, 0, FEAT_CELL, FEAT_CELL,
+                FEAT_CELL * Feat.values().length, FEAT_CELL);
+    }
+
+    static List<OrderedText> featTooltip(FeatChoice choice) {
+        List<OrderedText> lines = new ArrayList<>();
+        lines.add(title(choice.label()));
+        lines.addAll(MinecraftClient.getInstance().textRenderer.wrapLines(
+                Text.literal(choice.feat().description()).formatted(Formatting.GRAY), 200));
+        lines.add(Text.literal("Paid with: " + choice.paidWith()).formatted(Formatting.DARK_AQUA).asOrderedText());
+        return lines;
     }
 
     private static String hint(ClassProgress progress, boolean attuning) {
+        if (canChooseFeat(attuning) && progress.freeFeatSlotsLeft() > 0) {
+            return "Choose your level " + ClassProgress.FEAT_LEVEL + " feat: click \"Choose a feat\".";
+        }
         if (progress.asiPoints() > 0) {
-            return attuning ? "Click + to raise a score by 1 (max " + Contribution.NATURAL_CAP + ")."
+            return attuning ? "Click + to raise a score (max " + Contribution.NATURAL_CAP + "), or take a feat."
                     : "Ability points are spent at an Attunement Table.";
         }
         return "Hover a number to see where it comes from.";
@@ -397,6 +516,15 @@ final class CharacterSheetPanel {
     boolean mouseClicked(double mouseX, double mouseY, int button, int left, int top, boolean attuning) {
         if (button != 0)
             return false;
+        if (canChooseFeat(attuning)) {
+            int x = left + BOXES_LEFT;
+            int y = top + FEATS_TOP;
+            if (over(mouseX, mouseY, x, y - 2, 2 * BOX_W + BOX_GAP, ROW + 1)) {
+                MinecraftClient client = MinecraftClient.getInstance();
+                client.setScreen(new FeatPickerScreen(client.currentScreen));
+                return true;
+            }
+        }
         CharacterSheet sheet = CharacterSheet.client;
         for (Ability a : Ability.values()) {
             int px = boxX(left, a) + BOX_W - PLUS - 1;

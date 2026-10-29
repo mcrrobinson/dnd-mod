@@ -46,6 +46,7 @@ import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.NbtHelper;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
@@ -147,6 +148,9 @@ public abstract class AncientDragonEntity extends LairDragonEntity implements Le
     private long lastDay = -1;
     private int wingbeatTimer;
     private boolean returningHome;
+    /** Where it rests between fights: its lair's perch (set by the lair), or null. */
+    @Nullable
+    private BlockPos perch;
 
     protected AncientDragonEntity(EntityType<? extends TameableEntity> entityType, World world, ChromaticColor color) {
         super(entityType, world, ANCIENT_LAYOUT, color.barColor());
@@ -258,6 +262,7 @@ public abstract class AncientDragonEntity extends LairDragonEntity implements Le
         this.goalSelector.add(1, new SwimGoal(this));
         this.goalSelector.add(2, new ReturnHomeGoal(this));
         this.goalSelector.add(3, new AncientDragonAttackGoal(this));
+        this.goalSelector.add(3, new PerchGoal(this));
         this.goalSelector.add(4, new DragonFlyRandomlyGoal(this));
         this.goalSelector.add(6, new LookAtEntityGoal(this, PlayerEntity.class, 16.0F));
         this.goalSelector.add(7, new LookAroundGoal(this));
@@ -266,6 +271,34 @@ public abstract class AncientDragonEntity extends LairDragonEntity implements Le
         // It wakes when a player comes within WAKE_RANGE and can be seen; the follow range keeps it after them
         this.targetSelector.add(2, new ActiveTargetGoal<>(this, PlayerEntity.class, 10, true, false,
                 player -> player.squaredDistanceTo(this) <= WAKE_RANGE * WAKE_RANGE));
+    }
+
+    /** Its perch, where it rests between fights (the top of its lair's pillar), or null. */
+    @Nullable
+    public BlockPos getPerch() {
+        return this.perch;
+    }
+
+    public void setPerch(@Nullable BlockPos perch) {
+        this.perch = perch;
+    }
+
+    /**
+     * Someone opened a chest in its hoard hall (the lair's hoard law): it turns on {@code thief} wherever they are,
+     * and its Frightful Presence goes off at once.
+     */
+    public void wakeForHoard(PlayerEntity thief) {
+        if (!this.isAlive() || thief.isCreative() || thief.isSpectator()) {
+            return;
+        }
+        boolean wasAfterThem = this.getTarget() == thief;
+        this.returningHome = false;
+        this.setTarget(thief);
+        MobActions.log(this, "hoard_wake", thief);
+        if (!wasAfterThem) {
+            this.playSound(ModSounds.ANCIENT_ROAR, 8.0F, 0.7F);
+            this.frightfulPresence();
+        }
     }
 
     /** Drawn more than {@value #LEASH} blocks from its lair: flies home, and the fight pauses. */
@@ -599,6 +632,9 @@ public abstract class AncientDragonEntity extends LairDragonEntity implements Le
         this.legendaryResistance.writeNbt(nbt);
         this.legendaryActions.writeNbt(nbt);
         nbt.putBoolean("BreathCharged", this.breathCharged);
+        if (this.perch != null) {
+            nbt.put("Perch", NbtHelper.fromBlockPos(this.perch));
+        }
     }
 
     @Override
@@ -609,9 +645,61 @@ public abstract class AncientDragonEntity extends LairDragonEntity implements Le
         if (nbt.contains("BreathCharged")) {
             this.breathCharged = nbt.getBoolean("BreathCharged");
         }
+        this.perch = nbt.contains("Perch") ? NbtHelper.toBlockPos(nbt.getCompound("Perch")) : null;
     }
 
     // ---------------------------------------------------------------- going home
+
+    /**
+     * Between fights it goes back to its perch and settles there: it flies over the perch, drops onto it and stays
+     * put (the wandering flight can't take over while this runs).
+     */
+    static final class PerchGoal extends Goal {
+        private final AncientDragonEntity dragon;
+
+        PerchGoal(AncientDragonEntity dragon) {
+            this.dragon = dragon;
+            this.setControls(java.util.EnumSet.of(Control.MOVE));
+        }
+
+        @Override
+        public boolean canStart() {
+            return this.dragon.perch != null && this.dragon.getTarget() == null && !this.dragon.returningHome;
+        }
+
+        @Override
+        public boolean shouldContinue() {
+            return this.canStart();
+        }
+
+        @Override
+        public void start() {
+            this.dragon.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            BlockPos perch = this.dragon.perch;
+            if (perch == null) {
+                return;
+            }
+            Vec3d spot = Vec3d.ofBottomCenter(perch);
+            Vec3d pos = this.dragon.getPos();
+            double flat = spot.subtract(pos).horizontalLength();
+            if (flat > 1.5D) {
+                // Over the perch first, high enough to clear the crater's rim and spires
+                double height = flat > 12.0D ? Math.max(spot.y + 8.0D, pos.y) : spot.y + 2.0D;
+                this.dragon.getMoveControl().moveTo(spot.x, height, spot.z, 1.0D);
+            } else if (!this.dragon.isOnGround()) {
+                this.dragon.getMoveControl().moveTo(spot.x, spot.y, spot.z, 0.6D);
+            }
+        }
+
+        @Override
+        public boolean shouldRunEveryTick() {
+            return true;
+        }
+    }
 
     /** Flies back over its lair when drawn too far away, then takes up the fight again. */
     static final class ReturnHomeGoal extends Goal {

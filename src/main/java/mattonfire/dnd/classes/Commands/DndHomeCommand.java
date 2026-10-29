@@ -69,6 +69,8 @@ import net.minecraft.util.math.BlockPos;
  * teleports and checks ({@link DrowSpireCommands}).
  * /dndhome underdarklair &lt;lair&gt; [spot], underdarklairsurvey &lt;lair&gt; [grid] [spacing], underdarklaircensus &lt;lair&gt;,
  * underdarklairseeds &lt;lair&gt; [seeds]: the Underdark monster lairs' teleports and checks ({@link LairCommands}).
+ * /dndhome ancientlair [spot], ancientlairsurvey [grid] [spacing], ancientlairseeds [seeds], ancientlairreset: the Ancient
+ * dragon lairs' teleports and checks ({@link AncientLairCommands}).
  * /dndhome koboldwarren [spot], koboldwarrensurvey [grid] [spacing], koboldwarrenseeds [seeds], koboldtrap &lt;kind&gt; [tier]:
  * the kobold warrens' teleports, checks and test traps ({@link KoboldWarrenCommands}).
  */
@@ -246,6 +248,23 @@ public final class DndHomeCommand {
                                 .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
                                         .executes(context -> LairCommands.seeds(context, StringArgumentType.getString(context, "lair"),
                                                 RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds")))))))
+                .then(CommandManager.literal("ancientlair")
+                        .executes(context -> AncientLairCommands.teleport(context, "mouth"))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> AncientLairCommands.teleport(context, StringArgumentType.getString(context, "spot")))))
+                .then(CommandManager.literal("ancientlairsurvey")
+                        .executes(context -> AncientLairCommands.survey(context, 1, 2000))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> AncientLairCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 2000))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> AncientLairCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("ancientlairseeds")
+                        .executes(context -> AncientLairCommands.seeds(context, java.util.List.of()))
+                        .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
+                                .executes(context -> AncientLairCommands.seeds(context,
+                                        RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
+                .then(CommandManager.literal("ancientlairreset").executes(AncientLairCommands::reset))
                 .then(CommandManager.literal("bloodsworn")
                         .then(CommandManager.argument("players", EntityArgumentType.players())
                                 .then(CommandManager.argument("sworn", com.mojang.brigadier.arguments.BoolArgumentType.bool())

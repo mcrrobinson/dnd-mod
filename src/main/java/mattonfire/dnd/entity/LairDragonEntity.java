@@ -119,6 +119,9 @@ public abstract class LairDragonEntity extends FlyingDragonEntity {
                 if (piece instanceof LairPiece lairPiece) {
                     return lairPiece.getCenter();
                 }
+                if (piece instanceof mattonfire.dnd.world.gen.ancient.CalderaPiece caldera) {
+                    return caldera.layout().lairCentre();
+                }
             }
         }
         return null;

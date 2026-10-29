@@ -2659,5 +2659,8 @@
     "subtitles.dndclasses.ancient_wingbeat": "Ancient dragon wings beat",
     "subtitles.dndclasses.ancient_breath_inhale": "Ancient dragon inhales",
     "advancements.dndclasses.wyrmslayer.title": "Wyrmslayer",
-    "advancements.dndclasses.wyrmslayer.description": "Slay an Ancient dragon"
+    "advancements.dndclasses.wyrmslayer.description": "Slay an Ancient dragon",
+    "block.dndclasses.red_scale_pile": "Shed Red Scales",
+    "container.dndclasses.hoard_coffer": "Hoard Coffer",
+    "message.dndclasses.ancient_lair.wake": "Somewhere far above, something vast opens one eye."
 }

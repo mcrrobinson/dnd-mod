@@ -1,0 +1,85 @@
+# The Ancient Red lair at play (docs/structures/ancient-lairs.md, design 10 D2), in the dev world's lair near
+# 1088 -2492 (ancient-lair.txt): the dragon on its perch next to the player for scale, the Red Dragon Scale Mail's
+# dragon sense, guard posts raised by a datapack, the hoard law, and the slain state. Run ancient-lair-rejoin.txt
+# next: it checks the slain lair stays empty after a rejoin, then puts the dragon back.
+# Needs devscripts/datapacks/lair-guards-test copied to run/saves/New World/datapacks/ (zombies take the warrior
+# posts; the script turns it off again at the end).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ancient-lair-hoard.txt
+# Expect in latest.log: "[Magic] Dev's dragon sense points to 1088, ...", "[LairGuards] a minecraft:zombie
+# (warrior) takes the guard post", the hoard chest's `target` line naming Dev, "[Lair] ... is slain"; in debug.log
+# "[MobAction] Vyrkelloth hoard_wake -> Dev" and its frightful presence.
+/time set day
+/weather clear
+wait 40
+closescreen
+include _reset.txt
+/difficulty normal
+/gamemode creative
+/datapack disable "file/lair-guards-test"
+/tp @s 1088 200 -2492
+wait 300
+/dndhome ancientlairreset
+waitserver 40
+# The dragon on its perch, the player beside it for scale
+/dndhome ancientlair crater
+/tp @s ~ ~ ~ ~ 5
+hud off
+perspective back
+wait 60
+screenshot ancient_lair-scale-crater
+perspective first
+hud on
+/data get entity @e[type=dndclasses:ancient_red_dragon,limit=1,sort=nearest] Pos
+# Guard posts: still markers without kobolds, then zombies once a datapack fills the warrior tag. The lair's own
+# warrior posts go the first time this runs, so it also leaves a fresh warrior post of its own (tagged anclairtest).
+/execute if entity @e[type=minecraft:marker,tag=dndclasses.lair_guard_post,distance=..120]
+/data get entity @e[type=minecraft:marker,tag=dndclasses.lair_guard_post,limit=1,sort=nearest] data
+/summon minecraft:marker 1084 105 -2482 {Tags:["dndclasses.lair_guard_post","anclairtest"],data:{Role:"warrior",Lair:{X:1088,Y:105,Z:-2492}}}
+waitserver 20
+/execute if entity @e[type=minecraft:marker,tag=anclairtest]
+/datapack enable "file/lair-guards-test"
+waitserver 220
+/execute if entity @e[type=minecraft:marker,tag=anclairtest]
+/execute if entity @e[tag=dndclasses.lair_guard,type=minecraft:zombie,distance=..120]
+/kill @e[tag=dndclasses.lair_guard,distance=..120]
+/kill @e[tag=anclairtest]
+/datapack disable "file/lair-guards-test"
+# Dragon sense, 600 blocks south of the lair: crouch still for 3 s in the scale mail
+/dndmagic release @s all
+/item replace entity @s weapon.mainhand with dndclasses:red_dragon_scale_mail
+/dndmagic attune @s
+/item replace entity @s armor.chest from entity @s weapon.mainhand
+/item replace entity @s weapon.mainhand with minecraft:air
+/tp @s 1088 160 -1892 0 0
+wait 120
+/execute positioned 1088 0 -1892 positioned over motion_blocking run tp @s ~ ~ ~ 0 0
+/gamemode survival
+wait 40
+sneak on
+wait 80
+sneak off
+actionbar
+/gamemode creative
+/item replace entity @s armor.chest with minecraft:air
+/dndmagic release @s all
+# The hoard law: open a hoard chest in survival. The chests are locked (Thieves' Tools DC 15, and a picked lock
+# counts as opening it); an unlocked loot table stands in for the picked lock here.
+/tp @s 1088 200 -2492
+wait 100
+/dndhome ancientlair chest
+/data merge block 1082 85 -2477 {LootTable:"minecraft:empty"}
+/gamemode survival
+wait 20
+use
+wait 20
+closescreen
+waitserver 5
+target @e[type=dndclasses:ancient_red_dragon,distance=..200]
+/gamemode creative
+/dndcondition list @s
+# Kill it: the lair is slain for good
+/kill @e[type=dndclasses:ancient_red_dragon,distance=..200]
+waitserver 40
+/dndhome ancientlairsurvey 1 256
+waitserver 2
+quit

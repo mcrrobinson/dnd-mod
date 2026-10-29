@@ -15,6 +15,8 @@ One-off blocks (textures and resources here, registered in LairBlocks.java):
 - hoarfrost_crystal: pale blue-white ice crystals, an amethyst-like cluster.
 - storm_scale_pile / frost_scale_pile (and their _side textures): layers like snow, yellow-and-blue or pale blue
   scales; they drop the items storm_dragon_scale / frost_dragon_scale (textures/item).
+- red_scale_pile: the Ancient Red's crimson and ember scales, on its caldera floor; it drops 0-1 Ancient Red Scale
+  (the boss's item, textures from tools/boss_item_textures.py), whatever its layers.
 
 With a preview_dir it also writes each texture upscaled to 256 px (and 3x3 tiled) there, for checking by eye.
 Safe to rerun.
@@ -360,6 +362,7 @@ def dragon_nest_top():
 
 STORM_SCALES = ((222, 188, 70), (78, 124, 200))
 FROST_SCALES = ((182, 216, 238), (216, 236, 250))
+RED_SCALES = ((164, 30, 26), (226, 104, 34))
 
 
 # The rim of one scale in its 8x4 cell: a U, open at the top where it tucks under the two scales above.
@@ -509,6 +512,15 @@ def resources():
     # Shed scales piles.
     layered('storm_scale_pile', 'storm_dragon_scale')
     layered('frost_scale_pile', 'frost_dragon_scale')
+    layered('red_scale_pile', 'ancient_red_scale')
+    # The Ancient Red's scales are a boss reward, so a pile only gives up one now and then, whatever its size.
+    bf.write(os.path.join(bf.DATA, bf.NS, 'loot_tables/blocks', 'red_scale_pile.json'), {
+        'type': 'minecraft:block',
+        'pools': [{'bonus_rolls': 0.0, 'rolls': 1.0, 'entries': [
+            {'type': 'minecraft:item', 'name': ref('ancient_red_scale'), 'functions': [
+                {'function': 'minecraft:set_count', 'add': False,
+                 'count': {'type': 'minecraft:uniform', 'min': 0.0, 'max': 1.0}},
+                {'function': 'minecraft:explosion_decay'}]}]}]})
     generated_item('storm_dragon_scale', 'item/storm_dragon_scale')
     generated_item('frost_dragon_scale', 'item/frost_dragon_scale')
 
@@ -528,7 +540,7 @@ def resources():
 
     # Tags.
     bf.add_to_tag('blocks', 'mineable/pickaxe', [ref(n) for n in ('fulgurite_spike', 'hoarfrost_crystal')])
-    bf.add_to_tag('blocks', 'mineable/shovel', [ref(n) for n in ('storm_scale_pile', 'frost_scale_pile')])
+    bf.add_to_tag('blocks', 'mineable/shovel', [ref(n) for n in ('storm_scale_pile', 'frost_scale_pile', 'red_scale_pile')])
     bf.add_to_tag('blocks', 'impermeable', [ref('storm_glass')])
 
     lang({
@@ -538,6 +550,7 @@ def resources():
         'block.dndclasses.hoarfrost_crystal': 'Hoarfrost Crystal',
         'block.dndclasses.storm_scale_pile': 'Shed Storm Scales',
         'block.dndclasses.frost_scale_pile': 'Shed Frost Scales',
+        'block.dndclasses.red_scale_pile': 'Shed Red Scales',
         'item.dndclasses.storm_dragon_scale': 'Storm Dragon Scale',
         'item.dndclasses.frost_dragon_scale': 'Frost Dragon Scale',
     })
@@ -581,6 +594,9 @@ def textures():
     save('storm_scale_pile_side', storm[2:] + storm[:2])
     save('frost_scale_pile', frost)
     save('frost_scale_pile_side', frost[2:] + frost[:2])
+    red = scales(RED_SCALES, 59, (58, 14, 12))
+    save('red_scale_pile', red)
+    save('red_scale_pile_side', red[2:] + red[:2])
     save('storm_dragon_scale', scale_item(STORM_SCALES, storm_rim), ITEM_TEX)
     save('frost_dragon_scale', scale_item(FROST_SCALES, frost_rim), ITEM_TEX)
 

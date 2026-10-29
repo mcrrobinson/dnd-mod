@@ -14,7 +14,14 @@ public enum TrapKind {
     /** A trigger tile in front of {@link CrumblingFloorBlock}s over a dripstone pit: a DEX save catches the edge. */
     PIT,
     /** Hidden under a locked chest: a failed lockpick or a smashed chest jabs you (CON save halves the poison). */
-    NEEDLE;
+    NEEDLE,
+    /**
+     * A kobold tripline ({@link KoboldTriplineBlock}) across a tunnel under a 3 x 3 of {@link LooseCeilingBlock}: a
+     * rumble, then rocks fall on everyone under it (DEX save: half, no Prone), leaving rubble on the floor.
+     */
+    ROCKFALL,
+    /** A strip of {@link SpikeTrapBlock}s that look like the floor: iron spikes shoot up (DEX save: half, no Slowness). */
+    SPIKES;
 
     public String id() {
         return this.name().toLowerCase(Locale.ROOT);

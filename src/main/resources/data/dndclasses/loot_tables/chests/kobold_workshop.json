@@ -2,91 +2,30 @@
   "type": "minecraft:chest",
   "pools": [
     {
-      "rolls": {
-        "type": "minecraft:uniform",
-        "min": 4,
-        "max": 7
-      },
+      "rolls": 1,
       "entries": [
         {
           "type": "minecraft:item",
           "name": "minecraft:string",
-          "weight": 20,
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
-                "max": 8
+                "max": 6
               }
             }
           ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:arrow",
-          "weight": 15,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 4,
-                "max": 12
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:cobblestone",
-          "weight": 15,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 8,
-                "max": 24
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:iron_nugget",
-          "weight": 12,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 3,
-                "max": 10
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:flint",
-          "weight": 10,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 5
-              }
-            }
-          ]
-        },
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
         {
           "type": "minecraft:item",
           "name": "minecraft:tripwire_hook",
-          "weight": 8,
           "functions": [
             {
               "function": "minecraft:set_count",
@@ -97,33 +36,75 @@
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:gold_nugget",
-          "weight": 10,
+          "name": "minecraft:iron_nugget",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 2,
-                "max": 9
+                "max": 5
               }
             }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
         {
           "type": "minecraft:item",
-          "name": "minecraft:pointed_dripstone",
-          "weight": 6,
+          "name": "dndclasses:kobold_snare",
           "functions": [
             {
               "function": "minecraft:set_count",
               "count": {
                 "type": "minecraft:uniform",
                 "min": 1,
-                "max": 4
+                "max": 3
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:kobold_sling"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:random_chance",
+          "chance": 0.2
+        }
+      ]
+    },
+    {
+      "rolls": 1,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "minecraft:cobblestone",
+          "functions": [
+            {
+              "function": "minecraft:set_count",
+              "count": {
+                "type": "minecraft:uniform",
+                "min": 0,
+                "max": 8
               }
             }
           ]

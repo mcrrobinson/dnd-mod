@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.entity.kobold.KoboldCourage;
+import mattonfire.dnd.entity.kobold.KoboldHostility;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -67,6 +69,8 @@ public final class AncientLairGuards {
             }
         });
         ServerTickEvents.END_SERVER_TICK.register(AncientLairGuards::tick);
+        // The Ancient's kobolds stand their ground: a lair guard is always at home.
+        KoboldCourage.registerHome(KoboldHostility::isLairGuard);
         ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
             POSTS.clear();
             NEW.clear();

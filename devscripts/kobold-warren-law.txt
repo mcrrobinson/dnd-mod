@@ -1,0 +1,35 @@
+# The kobold warren hoard law alone (docs/structures/kobold-warrens.md), at the warren devscripts/kobold-warren.txt
+# finds in run/ (round -21556 23052). Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/kobold-warren-law.txt
+# The hoard chest is locked, so a Rogue picks it (a forced 20). Check: "use -> block minecraft:chest", a "[Grudges]" line for the hoard chest, the watching kobold's target is Dev,
+# (stand on the coin pile in front of the hoard chest at -21556 91 23008 and look down at it), and /rep shows -315 (theft_witnessed, -15): "-15 The Kobold Tribes" on the action bar.
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/tp @s -21556 120 23040
+wait 60
+/dndhome koboldwarren chief
+waitserver 2
+wait 40
+/rep @s dndclasses:kobolds reset
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/gamemode survival
+/effect give @s minecraft:resistance 600 4 true
+/execute at @s run summon dndclasses:kobold ~ ~ ~ {Tags:["kwtest"],NoAI:1b}
+/tp @s -21555.5 91.6 23009.2 180 75
+wait 10
+/dndclass forceroll @s 20
+use
+wait 60
+/dndclass forceroll @s clear
+closescreen
+target @e[tag=kwtest]
+/rep @s
+/kill @e[tag=kwtest]
+/gamemode creative
+/effect clear @s
+/rep @s dndclasses:kobolds reset
+quit

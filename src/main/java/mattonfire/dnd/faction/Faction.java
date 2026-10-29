@@ -58,12 +58,14 @@ public record Faction(
         int trade,
         int tradeCap,
         int theftWitnessed,
-        Map<Matcher, Integer> monsterKills) {
+        Map<Matcher, Integer> monsterKills,
+        Map<Matcher, Integer> monsterKillOverrides) {
 
     private static final Set<String> FIELDS = Set.of("name", "color", "members", "settlements", "start",
             "start_by_race", "rivals", "decay_per_day", "hit_member", "kill_member", "kill_member_overrides",
             "betrayal", "enemy_kills", "enemy_kill_overrides", "kill_cap", "raid_won", "raid_defeated", "raid_lost",
-            "bounties", "trade", "trade_cap", "theft_witnessed", "monster_kills");
+            "bounties", "trade", "trade_cap", "theft_witnessed", "monster_kills",
+            "monster_kill_overrides");
 
     public Text displayName() {
         return Text.translatable(this.name).styled(style -> style.withColor(TextColor.fromRgb(this.color)));
@@ -160,7 +162,8 @@ public record Faction(
                 integer(json, "trade", 0),
                 nonNegative(json, "trade_cap", 0),
                 integer(json, "theft_witnessed", 0),
-                matcherMap(json, "monster_kills"));
+                matcherMap(json, "monster_kills"),
+                matcherMap(json, "monster_kill_overrides"));
     }
 
     @Nullable

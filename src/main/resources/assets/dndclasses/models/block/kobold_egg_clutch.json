@@ -1,0 +1,201 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "dndclasses:block/kobold_egg",
+    "egg": "dndclasses:block/kobold_egg",
+    "straw": "minecraft:block/hay_block_top"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        1,
+        15
+      ],
+      "faces": {
+        "up": {
+          "texture": "#straw",
+          "uv": [
+            1,
+            1,
+            15,
+            15
+          ]
+        },
+        "down": {
+          "texture": "#straw",
+          "cullface": "down"
+        },
+        "north": {
+          "texture": "#straw",
+          "uv": [
+            1,
+            15,
+            15,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#straw",
+          "uv": [
+            1,
+            15,
+            15,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#straw",
+          "uv": [
+            1,
+            15,
+            15,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#straw",
+          "uv": [
+            1,
+            15,
+            15,
+            16
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3,
+        1,
+        3
+      ],
+      "to": [
+        7,
+        6,
+        7
+      ],
+      "faces": {
+        "north": {
+          "texture": "#egg"
+        },
+        "south": {
+          "texture": "#egg"
+        },
+        "east": {
+          "texture": "#egg"
+        },
+        "west": {
+          "texture": "#egg"
+        },
+        "up": {
+          "texture": "#egg"
+        },
+        "down": {
+          "texture": "#egg"
+        }
+      }
+    },
+    {
+      "from": [
+        8,
+        1,
+        4
+      ],
+      "to": [
+        12,
+        7,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#egg"
+        },
+        "south": {
+          "texture": "#egg"
+        },
+        "east": {
+          "texture": "#egg"
+        },
+        "west": {
+          "texture": "#egg"
+        },
+        "up": {
+          "texture": "#egg"
+        },
+        "down": {
+          "texture": "#egg"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        1,
+        9
+      ],
+      "to": [
+        9,
+        5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#egg"
+        },
+        "south": {
+          "texture": "#egg"
+        },
+        "east": {
+          "texture": "#egg"
+        },
+        "west": {
+          "texture": "#egg"
+        },
+        "up": {
+          "texture": "#egg"
+        },
+        "down": {
+          "texture": "#egg"
+        }
+      }
+    },
+    {
+      "from": [
+        10,
+        1,
+        10
+      ],
+      "to": [
+        13,
+        4,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#egg"
+        },
+        "south": {
+          "texture": "#egg"
+        },
+        "east": {
+          "texture": "#egg"
+        },
+        "west": {
+          "texture": "#egg"
+        },
+        "up": {
+          "texture": "#egg"
+        },
+        "down": {
+          "texture": "#egg"
+        }
+      }
+    }
+  ]
+}

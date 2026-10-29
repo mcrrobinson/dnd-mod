@@ -83,6 +83,10 @@ public final class RepCommand {
             throw UNKNOWN.create(id);
         }
         Reputation.reset(player, faction);
+        if (FactionIds.KOBOLDS.equals(id)) {
+            // A clean slate with the tribes also forgets a recent dragon kill (their "wyrm-killer" dread).
+            mattonfire.dnd.entity.kobold.KoboldTribute.forgetDragonSlayer(player);
+        }
         context.getSource().sendFeedback(Text.literal("Reset ").append(player.getDisplayName()).append("'s ")
                 .append(line(player, faction).copy()), true);
         return Reputation.get(player, faction);

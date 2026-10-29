@@ -19,7 +19,7 @@ The home of an [Ancient Red Dragon](../bosses/ancient-red-dragon.md): a volcanic
 - A door in the perch's plinth opens on a stair, 3 wide and 3 high, that winds round a core under the perch and comes out into the hoard hall 20 blocks down. The dragon is too big to follow.
 - Two traps on the stair, tier 3 (DC 15, see [Dungeon traps](../systems/dungeon-traps.md)): a **dart trap** on the first landing, shooting out of the wall, and a covered **pit** (4 deep, with a ladder) on the far side.
 - **The barracks** (9x7x4), off the second landing: hay beds along the walls and a weapon rack.
-- **The trap workshop** (7x5x4), off the third landing: benches, barrels, cobwebs and a `chests/kobold_workshop` chest (4-7 rolls of string, arrows, cobblestone, iron and gold nuggets, flint, tripwire hooks and pointed dripstone; the Kobold Warrens' version of the table replaces this one).
+- **The trap workshop** (7x5x4), off the third landing: benches, barrels, cobwebs and a `chests/kobold_workshop` chest, the same table as the [Kobold Warrens](kobold-warrens.md)' workshops (string, tripwire hooks, iron nuggets, Kobold Snares, cobblestone and a 20% chance of a Kobold Sling).
 
 ![The kobold barracks](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-ancient-dragon-lair/ancient_lair-barracks.png)
 
@@ -36,7 +36,7 @@ The home of an [Ancient Red Dragon](../bosses/ancient-red-dragon.md): a volcanic
 Open a chest in the hoard hall (a picked lock counts) or break one while its dragon lives, and it wakes. Everyone within 96 blocks reads *"Somewhere far above, something vast opens one eye."*, the dragon (anywhere within 128 blocks) takes the thief as its target and its Frightful Presence goes off at once. There's no warning and no trust to lose first. Creative and spectator players don't count.
 
 ### Kobold guards
-The lair leaves 12 guard posts: six on the crater floor (warriors, slingers and a trapmaker), four in the barracks and two at the foot of the stair. Each is an invisible marker that raises a kobold once the Kobold Tribes exist (see For developers). Until then they wait, so lairs made before the kobolds arrive still get them later.
+The lair leaves 12 guard posts: six on the crater floor (warriors, slingers and a trapmaker), four in the barracks and two at the foot of the stair. Each is an invisible marker that raises a [kobold](../mobs/kobolds.md) of its role (a warrior Kobold, a Slinger, a Trapmaker, or a Dragonshield for a leader post) when it loads, outside Peaceful. Lair guards are Hostile to anyone below Exalted with the Kobold Tribes, and they never flee: the lair counts as their home.
 
 ### Slain for good
 When an Ancient with a lair dies, the lair is marked slain (logged `[Lair] <name> is slain`). A slain lair never raises its dragon again: its perch marker is dropped when the chunk loads, and the dragon's own drops are the only reward. The hoard stays where it was.
@@ -59,7 +59,6 @@ When the dragon's Tremor lair action goes off, dust shakes down from the hall's 
 
 ## Known limitations
 - Only the Red has a lair. The structure type takes a `color`, but the other colours have no dragon yet.
-- The guard posts stay empty until the Kobold Tribes fill `#dndclasses:lair_guards/<role>`.
 - A slain dragon's hoard is never refilled.
 - `#dndclasses:boss_lairs` only lists this lair here. The Deck of Many Things ticket creates that tag with the other boss lairs (`replace: false`, so the two lists merge); keep both entries if they meet in one file.
 
@@ -67,7 +66,7 @@ When the dragon's Tremor lair action goes off, dust shakes down from the hall's 
 - `world/gen/ancient/`: `AncientLairStructures` (registers the `ancient_lair` type and the `ancient_caldera` and `ancient_hoard_hall` pieces), `AncientLairStructure` (site choice; `REJECTS` counts why sites were turned down, for the seeds check), `AncientLairLayout` (sizes and the lair's frame: `at`, `stair`, `perchTop`, `hallCenter`), `CalderaPiece`, `HoardHallPiece`, `AncientLairs` (the slain state, `PersistentState` `dndclasses_ancient_lairs`, keyed by lair centre), `AncientHoardLaw` (a `SettlementGrudges.Rules`), `AncientLairGuards`.
 - The dragon: `StructureBosses.placeAncient` leaves a marker tagged `dndclasses.pending_boss.ancient.<color>` and `dndclasses.lair=x,y,z`, raised by `spawnAncient` unless `AncientLairs.isSlain`. `AncientDragonEntity` has a `Perch` (NBT) it flies back to, and `wakeForHoard(player)` (logs `[MobAction] <name> hoard_wake`).
 - Hooks it listens to: `AncientDragonEvents.SLAIN` (marks the lair slain) and `TREMOR` (the dust).
-- **Kobold guards (for the Kobold Tribes ticket)**: markers tagged `dndclasses.lair_guard_post` with `data:{Role:"warrior"|"slinger"|"trapmaker"|"leader", Lair:{X,Y,Z}}`. As a post loads, and every 200 ticks, if the entity type tag `#dndclasses:lair_guards/<role>` has anything in it and the difficulty isn't Peaceful, a random type from it takes the post: it's tagged `dndclasses.lair_guard`, made persistent, kept within 12 blocks, and the marker goes (`[LairGuards] a <type> (<role>) takes the guard post at ...`). Adding kobolds to those tags is all it takes.
+- **Kobold guards**: markers tagged `dndclasses.lair_guard_post` with `data:{Role:"warrior"|"slinger"|"trapmaker"|"leader", Lair:{X,Y,Z}}`. As a post loads, and every 200 ticks, if the entity type tag `#dndclasses:lair_guards/<role>` has anything in it and the difficulty isn't Peaceful, a random type from it takes the post: it's tagged `dndclasses.lair_guard`, made persistent, kept within 12 blocks, and the marker goes (`[LairGuards] a <type> (<role>) takes the guard post at ...`). The kobold tags `lair_guards/{warrior,slinger,trapmaker,leader}` hold the Kobold, Slinger, Trapmaker and Dragonshield, and `AncientLairGuards` registers `KoboldHostility::isLairGuard` as a `KoboldCourage` home.
 - Tags: `#dndclasses:ancient_dragon_lairs` (every colour's lair; the scale mail looks for it), `#dndclasses:boss_lairs`, biome tag `has_structure/ancient_red_lair`.
 - Data: `worldgen/structure/ancient_red_lair.json` (`"color": "red"`), `worldgen/structure_set/ancient_lairs.json`, loot tables `chests/ancient_red_hoard`, `chests/ancient_red_hoard_coffer`, `chests/kobold_workshop`.
 - The Shed Red Scales block (`LairBlocks.RED_SCALE_PILE`, `red_scale_pile`) is generated by `tools/lair_block_textures.py`; each layer drops 0-1 Ancient Red Scale.

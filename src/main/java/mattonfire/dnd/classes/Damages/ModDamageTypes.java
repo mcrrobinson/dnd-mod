@@ -41,6 +41,13 @@ public class ModDamageTypes {
     public static final RegistryKey<DamageType> TRAP = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
             new Identifier(DnDClasses.MOD_ID, "trap"));
 
+    /** An Ancient Red Dragon's fire breath (tagged minecraft:is_fire). */
+    public static final RegistryKey<DamageType> ANCIENT_FIRE_BREATH = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "ancient_fire_breath"));
+    /** An Ancient dragon's lair actions (magma vents, tremors), credited to the dragon. */
+    public static final RegistryKey<DamageType> LAIR_ACTION = RegistryKey.of(RegistryKeys.DAMAGE_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "lair_action"));
+
     public static DamageSource of(World world, RegistryKey<DamageType> key, Entity attacker) {
         return new DamageSource(world.getRegistryManager().get(RegistryKeys.DAMAGE_TYPE).entryOf(key), attacker);
     }

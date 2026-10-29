@@ -43,6 +43,7 @@ The Draconic Scale is kin stock: only Dragonborn players see those four offers (
 | 2 blue ice | 5 |
 | 2 copper blocks | 3 |
 | 1 netherite scrap | 8 |
+| 1 Ancient Red Scale ([Ancient Red Dragon](../bosses/ancient-red-dragon.md)) | 8 |
 
 ### Dialogue
 The Elder has the quest-giver role `dragonborn_elder` (`dialogue/dragonborn_elder.json`, with a greeting for each standing tier). Quests whose `giver` is `dragonborn_elder` are offered by him; with nothing to say, right-clicking him opens his trades. See [NPC dialogue](../systems/dialogue.md).

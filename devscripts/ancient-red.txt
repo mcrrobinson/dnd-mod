@@ -1,0 +1,97 @@
+# The Ancient Red Dragon's fight (design 10, 5.5-5.11), on a stone floor at y=150 around x=3000 z=3000, with the
+# dragon's lair set there by NBT so lair actions run. The player is in survival with Resistance V (no damage, but
+# every save is still rolled).
+# Run: timeout 300 ./gradlew runClient --offline -PdevScript=devscripts/ancient-red.txt
+# Check (run/logs/latest.log): [D20] WIS save vs DC 17 -> FAILURE then Frightened (dndcondition list);
+#   [LegendaryResistance] x3 then a FAILURE from the 4th /dm save; [CHAT] phase lines; /attribute speed 0.368;
+#   "Test passed" for the scale mail on the ground and Wyrmslayer.
+# Check (run/logs/debug.log): [MobAction] fight_start, frightful_presence, breath, breath_recharge, wing,
+#   lair_magma_vents, lair_tremor, lair_volcanic_gas, phase_1, phase_2, death.
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/time set day
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule mobGriefing false
+/gamemode creative
+/tp @s 3030 156 3000 90 8
+/forceload add 2960 2960 3040 3040
+waitserver 100
+/fill 2960 149 2960 3040 149 3040 minecraft:smooth_stone
+/fill 2960 150 2960 3040 153 3040 minecraft:air
+/fill 2960 154 2960 3040 157 3040 minecraft:air
+/fill 2960 158 2960 3040 161 3040 minecraft:air
+/kill @e[type=dndclasses:ancient_red_dragon]
+/kill @e[type=dndclasses:lightning_chaser]
+/kill @e[type=minecraft:armor_stand,tag=ancient_scale]
+wait 80
+/kill @e[type=minecraft:item,distance=..120]
+/effect give @s minecraft:resistance 1000 4 true
+/effect give @s minecraft:regeneration 1000 4 true
+/effect give @s minecraft:saturation 1000 4 true
+/advancement revoke @s only dndclasses:wyrmslayer
+/gamemode survival
+/tp @s 3016 150 3000 90 0
+
+# --- Frightful Presence: the player's WIS save is rigged to a 1, so it fails
+/dndclass forceroll @s 1
+/summon dndclasses:ancient_red_dragon 3000 150 3000 {Lair:{X:3000,Y:150,Z:3000},Rotation:[270f,0f]}
+wait 60
+/dndcondition list @s
+/data get entity @e[type=dndclasses:ancient_red_dragon,limit=1] CustomName
+
+# --- Legendary Resistance: four rigged 1s on CON saves; three are overruled, the fourth fails
+/dndclass forceroll @e[type=dndclasses:ancient_red_dragon,limit=1] 1 1 1 1
+/dm save @e[type=dndclasses:ancient_red_dragon,limit=1] con 15
+wait 5
+/dm save @e[type=dndclasses:ancient_red_dragon,limit=1] con 15
+wait 5
+/dm save @e[type=dndclasses:ancient_red_dragon,limit=1] con 15
+wait 5
+/dm save @e[type=dndclasses:ancient_red_dragon,limit=1] con 15
+/data get entity @e[type=dndclasses:ancient_red_dragon,limit=1] LegendaryResistance
+
+# --- Let it fight: breath, recharge rolls, wing buffets up close, lair actions
+screenshot ancient-red-fight-a
+/debug start
+wait 200
+screenshot ancient-red-fight-b
+/tp @s 3004 150 3000 90 0
+wait 100
+screenshot ancient-red-fight-close
+/tp @s 3014 150 3000 90 0
+wait 200
+/debug stop
+
+# --- Phases: below 60% (Health 410 of 700), then below 30% (Health 200)
+/data merge entity @e[type=dndclasses:ancient_red_dragon,limit=1] {Health:410f}
+wait 20
+/attribute @e[type=dndclasses:ancient_red_dragon,limit=1] minecraft:generic.movement_speed get
+wait 280
+/data merge entity @e[type=dndclasses:ancient_red_dragon,limit=1] {Health:200f}
+wait 20
+/attribute @e[type=dndclasses:ancient_red_dragon,limit=1] minecraft:generic.movement_speed get
+/attribute @e[type=dndclasses:ancient_red_dragon,limit=1] minecraft:generic.flying_speed get
+screenshot ancient-red-fury
+wait 300
+
+# --- The kill: drops and Wyrmslayer
+/damage @e[type=dndclasses:ancient_red_dragon,limit=1] 2000 minecraft:player_attack by @s
+wait 80
+/execute if entity @e[type=minecraft:item,distance=..80,nbt={Item:{id:"dndclasses:red_dragon_scale_mail"}}]
+/execute if entity @e[type=minecraft:item,distance=..80,nbt={Item:{id:"dndclasses:ancient_red_scale"}}]
+/execute if entity @s[advancements={dndclasses:wyrmslayer=true}]
+/execute unless entity @e[type=dndclasses:ancient_red_dragon]
+screenshot ancient-red-dead
+/gamemode creative
+/kill @e[type=minecraft:item,distance=..120]
+/effect clear @s
+/gamerule doDaylightCycle true
+/forceload remove 2960 2960 3040 3040
+/gamerule mobGriefing true
+quit

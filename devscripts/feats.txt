@@ -12,7 +12,7 @@
 #  step6 Tome of Clear Thought: "2 feats refunded", list 0, max_health back to base
 #  step7 resetprogress after an admin add: list 0, max_health back to base
 # Screenshots: feats-tab-l6 (Feats box + Choose a feat), feats-picker (GUI 2), feats-picker-hover,
-#   feats-confirm-alert, feats-resilient-ability, feats-picker-gui3, feats-tab-l8, feats-tab-hover, feats-guidebook-10/11
+#   feats-confirm-alert, feats-resilient-ability, feats-picker-gui3, feats-tab-l8, feats-tab-hover, feats-guidebook-11/12 (page indexes count from 0)
 wait 40
 closescreen
 include _reset.txt
@@ -142,12 +142,12 @@ wait 3
 look 0 -60
 use
 wait 10
-page 10
-wait 3
-screenshot feats-guidebook-10
 page 11
 wait 3
 screenshot feats-guidebook-11
+page 12
+wait 3
+screenshot feats-guidebook-12
 closescreen
 /clear @s
 # 6. Tome of Clear Thought refunds every feat

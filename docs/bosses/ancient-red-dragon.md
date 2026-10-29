@@ -1,7 +1,7 @@
 # Ancient Red Dragon
 The endgame boss: a named, centuries-old red wyrm with a 46-block wingspan. It breathes a 28-block cone of fire, terrifies everyone who sees it, shrugs off three failed saves a day, takes extra turns between its attacks (legendary actions) and turns its own lair against you with magma vents, tremors and volcanic gas. Kill it for **Red Dragon Scale Mail**, a hoard of scales and the **Wyrmslayer** challenge.
 
-![The Ancient Red Dragon next to a player wearing its scale mail (left) and a Lightning Chaser (right)](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-ancient-red-dragon/ancient-red-scale.png)
+![The Ancient Red Dragon next to an armour stand wearing its scale mail (left) and a Lightning Chaser (right)](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-ancient-red-dragon/ancient-red-scale.png)
 
 ## How it works
 **Stats**: 700 health, 14 armour, 8 toughness, full knockback resistance, walk speed 0.32, flying speed 0.65, follow range 96, 500 XP. Immune to fire. It never despawns. Its entity box is 4x4 blocks, but the model is drawn at 2.5x the Lightning Chaser's thickened skeleton (about 46 blocks wingtip to wingtip, its head about 9-10 blocks up while it flies) and has 23 hit shapes on its wings, neck, head, tail and legs, so you can hit it anywhere on its body (see [Multipart mobs](../dev/multipart-mobs.md)). It's named once, when it spawns: "Kharzanthrax", "Vyrmorrath" and so on, shown on its boss bar as "*Name*, Ancient Red Dragon".

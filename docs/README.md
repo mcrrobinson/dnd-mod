@@ -102,7 +102,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
 - [Matron Mother](bosses/matron-mother.md): the Underdark's first boss, atop the Drow Spire; a poisoned scourge (CON 14), spider swarms, Darkness and a frightening Lash (WIS 15); below half health a Web Storm (DEX 14 or webbed and Restrained) under a hail of Magic Missiles, below a quarter she calls her Elites; drops the Matron's Scourge
-- [Ancient Red Dragon](bosses/ancient-red-dragon.md): endgame boss, a 46-block-wingspan red wyrm with a 28-block fire breath (DEX 18), Frightful Presence (WIS 17), Legendary Resistance, legendary tail and wing attacks and lair actions (magma vents, tremors, volcanic gas); drops Red Dragon Scale Mail (PR #PRNUM)
+- [Ancient Red Dragon](bosses/ancient-red-dragon.md): endgame boss, a 46-block-wingspan red wyrm with a 28-block fire breath (DEX 18), Frightful Presence (WIS 17), Legendary Resistance, legendary tail and wing attacks and lair actions (magma vents, tremors, volcanic gas); drops Red Dragon Scale Mail (PR #295)
 - [Medusa](bosses/medusa.md): lair boss of the Gorgon's Temple (1 in 3 desert pyramids and jungle temples); meet her eyes and save (CON 14) or turn to stone, raise a shield to reflect it; poisonous snake bites, longbow volleys, statues of earlier visitors; drops the Gorgon's Gaze
 
 ## Structures

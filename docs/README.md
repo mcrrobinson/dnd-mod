@@ -93,7 +93,7 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Rust Monster](mobs/rust-monster.md): deep-cave beast whose antennae rust iron, chain and gold gear (DEX save), rusts metal weapons that hit it and stops to eat thrown iron; dwarves hate it
 - [Duergar](mobs/duergar.md): the Grey Clans of the Underdark's Grey Reaches: Soldiers, crossbow Arbalesters, the Factor merchant and the Taskmaster; they Enlarge mid-fight, vanish when hurt and hate sunlight; Unfriendly to most, Hostile to Dwarves
 - [Drow](mobs/drow.md): the Spider Houses of the Underdark: Warriors with poisoned hand crossbows (CON save; three failures and you fall asleep), Mages with Darkness, Faerie Fire and Magic Missile, spider-calling Priestesses and Spire Elites; hostile to everyone, allied with spiders, and every kill pleases the Sylvan Court
-- [Kobolds](mobs/kobolds.md): small cowardly dragon-worshippers of the hills and badlands: brave in packs with Pack Tactics (x1.25), weak in sunlight, slingers that volley, Trapmakers that hide snares (DEX 12 or Restrained) and a Dragonshield leader; the Kobold Tribes faction punishes dragon-slayers and takes gold tribute
+- [Kobolds](mobs/kobolds.md): small cowardly dragon-worshippers of the hills and badlands: brave in packs with Pack Tactics (x1.25), weak in sunlight, slingers that volley, Trapmakers that hide snares (DEX 12 or Restrained) and a Dragonshield leader; the Kobold Tribes faction punishes dragon-slayers and takes gold tribute (PR #294)
 
 ## Bosses
 - [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, Matron Mother, dragons)

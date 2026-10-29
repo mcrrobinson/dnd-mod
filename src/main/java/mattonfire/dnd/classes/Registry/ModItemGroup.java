@@ -73,6 +73,8 @@ public class ModItemGroup {
             entries.add(ModItems.GORGONS_GAZE);
             entries.add(ModItems.MATRONS_SCOURGE);
             entries.add(ModItems.PIWAFWI);
+            entries.add(ModItems.RED_DRAGON_SCALE_MAIL);
+            entries.add(ModItems.ANCIENT_RED_SCALE);
             entries.add(ModItems.SCROLL_OF_IDENTIFY);
             entries.add(ModItems.SCROLL_OF_REMOVE_CURSE);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);
@@ -197,6 +199,7 @@ public class ModItemGroup {
             entries.add(ModItems.WYVERN_SPAWN_EGG);
             entries.add(ModItems.LIGHTNING_CHASER_SPAWN_EGG);
             entries.add(ModItems.FROST_DRAKE_SPAWN_EGG);
+            entries.add(ModItems.ANCIENT_RED_DRAGON_SPAWN_EGG);
             entries.add(ModItems.RIVER_PIKEHORN_SPAWN_EGG);
             entries.add(ModItems.MAGMAMUNCHER_SPAWN_EGG);
             entries.add(ModItems.GOBLIN_WARRIOR_SPAWN_EGG);

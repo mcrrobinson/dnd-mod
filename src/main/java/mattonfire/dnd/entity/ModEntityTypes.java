@@ -36,6 +36,19 @@ public class ModEntityTypes {
                     .build()
     );
 
+    // The endgame boss (design 10, section 5): the Lightning Chaser's skeleton thickened and drawn 2.5x. The 4x4
+    // box keeps it out of 3-wide tunnels; its 23 parts cover the rest of the ~46-block wingspan.
+    public static final EntityType<mattonfire.dnd.entity.dragon.AncientRedDragonEntity> ANCIENT_RED_DRAGON = Registry.register(
+            Registries.ENTITY_TYPE,
+            new Identifier(DnDClasses.MOD_ID, "ancient_red_dragon"),
+            FabricEntityTypeBuilder.create(SpawnGroup.MONSTER, mattonfire.dnd.entity.dragon.AncientRedDragonEntity::new)
+                    .dimensions(EntityDimensions.fixed(4.0f, 4.0f))
+                    .fireImmune()
+                    .trackRangeChunks(12)
+                    .trackedUpdateRate(1)
+                    .build()
+    );
+
     public static final EntityType<EmberWyvernEntity> EMBER_WYVERN = Registry.register(
             Registries.ENTITY_TYPE,
             new Identifier(DnDClasses.MOD_ID, "ember_wyvern"),
@@ -343,6 +356,8 @@ public class ModEntityTypes {
         FabricDefaultAttributeRegistry.register(WYVERN, WyvernEntity.createWyvernAttributes());
         FabricDefaultAttributeRegistry.register(LIGHTNING_CHASER, LairDragonEntity.createLairDragonAttributes());
         FabricDefaultAttributeRegistry.register(FROST_DRAKE, LairDragonEntity.createLairDragonAttributes());
+        FabricDefaultAttributeRegistry.register(ANCIENT_RED_DRAGON,
+                mattonfire.dnd.entity.dragon.AncientDragonEntity.createAncientAttributes());
         FabricDefaultAttributeRegistry.register(EMBER_WYVERN, EmberWyvernEntity.createEmberWyvernAttributes());
         FabricDefaultAttributeRegistry.register(BONE_WYVERN, BoneWyvernEntity.createBoneWyvernAttributes());
         FabricDefaultAttributeRegistry.register(RIVER_PIKEHORN, RiverPikehornEntity.createRiverPikehornAttributes());

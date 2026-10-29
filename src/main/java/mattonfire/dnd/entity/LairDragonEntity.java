@@ -40,7 +40,14 @@ public abstract class LairDragonEntity extends FlyingDragonEntity {
     // The model's wingspan is ~18 blocks but the entity hitbox is only 1.5, so wings, neck, head and
     // tail get their own hittable parts, each wrapping a group of model bones. Root bone sits 4.25px
     // higher on the ground and 18.75px lower in flight (lightning_chaser.animation.json).
-    private static final DragonPartLayout PART_LAYOUT = new DragonPartLayout("lightning_chaser", 4.25 / 16.0, -18.75 / 16.0)
+    private static final DragonPartLayout PART_LAYOUT = partLayout("lightning_chaser");
+
+    /**
+     * The Lightning Chaser's hit-shape groups for a model with its skeleton ({@code lightning_chaser} or the
+     * Ancient dragons' thickened copy, {@code ancient_dragon}).
+     */
+    protected static DragonPartLayout partLayout(String model) {
+        return new DragonPartLayout(model, 4.25 / 16.0, -18.75 / 16.0)
             .part("body", "front", "back")
             .part("neck_base", "neck1")
             .part("neck_mid", "neck2")
@@ -59,6 +66,8 @@ public abstract class LairDragonEntity extends FlyingDragonEntity {
                     "feet_finger1_left", "feet_finger2_left", "feet_finger3_left", "feet_finger4_left")
             // Server-side parts follow these, in step with the client (see DragonFlightAnimation)
             .animations(DragonFlightAnimation.NAMES);
+    }
+
     /** DEX save DC against the breath (Lightning Chaser and Frost Drake). */
     public static final int BREATH_SAVE_DC = 14;
     /** How far the storm's extra strikes land from the target (1.5 blocks plus up to this). */
@@ -69,8 +78,14 @@ public abstract class LairDragonEntity extends FlyingDragonEntity {
     private BlockPos lair;
 
     protected LairDragonEntity(EntityType<? extends TameableEntity> entityType, World world, BossBar.Color bossBarColor) {
-        super(entityType, world, PART_LAYOUT, bossBarColor);
+        this(entityType, world, PART_LAYOUT, bossBarColor);
         this.getBossFight().xp(80);
+    }
+
+    /** A lair dragon with other hit shapes (the Ancient dragons' scaled-up layout). */
+    protected LairDragonEntity(EntityType<? extends TameableEntity> entityType, World world, DragonPartLayout layout,
+            BossBar.Color bossBarColor) {
+        super(entityType, world, layout, bossBarColor);
     }
 
     /** The structure this dragon's lair belongs to. */
@@ -145,9 +160,14 @@ public abstract class LairDragonEntity extends FlyingDragonEntity {
     public void onDeath(DamageSource source) {
         super.onDeath(source);
         // The lair waits a while before it sends a new one (see ModSpawns)
-        if (this.world instanceof ServerWorld serverWorld && this.lair != null && !this.isTamed()) {
+        if (this.world instanceof ServerWorld serverWorld && this.lair != null && !this.isTamed() && this.respawnsAtLair()) {
             LairRespawns.get(serverWorld).onChaserKilled(this.lair, serverWorld.getTime());
         }
+    }
+
+    /** Whether its lair sends a new one after it dies (an Ancient's never does). */
+    protected boolean respawnsAtLair() {
+        return true;
     }
 
     public static DefaultAttributeContainer.Builder createLairDragonAttributes() {

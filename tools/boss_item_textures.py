@@ -1,5 +1,6 @@
 """Generates the textures of the boss and monster magic items (design 5, section 3.7, items 10-18 and 20; design 9,
-9.4: the Matron's Scourge and the Piwafwi).
+9.4: the Matron's Scourge and the Piwafwi; design 10, 5.11: the Red Dragon Scale Mail, its armour layer and the
+Ancient Red Scale).
 
     python3 tools/boss_item_textures.py
 
@@ -291,6 +292,48 @@ ART = {
         'ovcvcvcvvcvcvcvo',
         '.oooooooooooooo.',
     ]),
+    'red_dragon_scale_mail': ({
+        'o': (30, 8, 6, 255), 'r': (150, 24, 18, 255), 'R': (205, 44, 30, 255), 'd': (96, 14, 12, 255),
+        'e': (240, 140, 50, 255), 'g': (220, 170, 60, 255),
+    }, [
+        '................',
+        '..ooo......ooo..',
+        '.oRRro....orRRo.',
+        '.oRrrdooooodrRo.',
+        '.ordrRrrrrrRdro.',
+        '..oRrdReeRdrRo..',
+        '...orRrddrRro...',
+        '...oRdReeRdRo...',
+        '...ordrRRrdro...',
+        '...oRrdeedrRo...',
+        '...ordRrrRdro...',
+        '...oRrdeedrRo...',
+        '...ordRrrRdro...',
+        '...ogggggggggo..',
+        '...oooooooooo...',
+        '................',
+    ]),
+    'ancient_red_scale': ({
+        'o': (40, 8, 6, 255), 'r': (160, 26, 18, 255), 'R': (214, 52, 34, 255), 'd': (100, 14, 10, 255),
+        'e': (245, 150, 60, 255),
+    }, [
+        '................',
+        '......oooo......',
+        '....ooRRRRoo....',
+        '...oRRRRRrrdo...',
+        '..oRRReRRrrrdo..',
+        '..oRRRRRRrrrdo..',
+        '.oRRRRRRrrrrrdo.',
+        '.oRRRRRrrrrrrdo.',
+        '.orRRRrrrrrrddo.',
+        '.orrrrrrrrrrddo.',
+        '..orrrrrrrrddo..',
+        '..odrrrrrrdddo..',
+        '...oddrrrdddo...',
+        '....oddddddo....',
+        '......oooo......',
+        '................',
+    ]),
 }
 
 
@@ -299,10 +342,35 @@ def render(palette, rows):
     return [[palette.get(ch, CLEAR) if ch != '.' else CLEAR for ch in row] for row in rows]
 
 
+def red_dragon_scale_layer():
+    """64x32 vanilla armour layout for the Red Dragon Scale Mail: overlapping crimson scales over body and arms."""
+    img = [[CLEAR] * 64 for _ in range(32)]
+    for y in range(16, 32):
+        for x in range(16, 56):
+            row = (y - 16) // 2
+            col = (x + (row % 2) * 2) // 4
+            u = (x + (row % 2) * 2) % 4
+            v = (y - 16) % 2
+            base = (150, 24, 18) if (row + col) % 3 else (120, 18, 14)
+            if v == 1 and u in (0, 3):
+                c = (40, 8, 6)          # the dark edge where one scale overlaps the next
+            elif u in (1, 2) and v == 0:
+                c = (214, 60, 36)       # highlight on each scale
+            else:
+                c = base
+            if x in range(20, 28) and y in range(26, 32):
+                c = (230, 130, 48) if (x + y) % 3 else (180, 80, 24)   # ember belly plates on the front
+            img[y][x] = c + (255,)
+    return img
+
+
 def main():
     for name, (palette, rows) in ART.items():
         pngio.write_png(os.path.join(TEX, 'item', name + '.png'), 16, 16, render(palette, rows))
-    print('wrote', len(ART), 'textures')
+    armor = os.path.join(TEX, 'models', 'armor', 'red_dragon_scale')
+    os.makedirs(armor, exist_ok=True)
+    pngio.write_png(os.path.join(armor, 'body.png'), 64, 32, red_dragon_scale_layer())
+    print('wrote', len(ART), 'textures and the scale mail layer')
 
 
 if __name__ == '__main__':

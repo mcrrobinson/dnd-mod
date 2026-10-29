@@ -115,6 +115,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.ModEntityTypes.registerEntityTypes();
                 mattonfire.dnd.entity.DragonSaves.register();
                 mattonfire.dnd.entity.BossSaves.register();
+                mattonfire.dnd.entity.dragon.AncientSaves.register();
+                mattonfire.dnd.entity.boss.LegendaryResistance.register();
                 mattonfire.dnd.entity.GrabSaves.register();
                 mattonfire.dnd.entity.BasiliskSaves.register();
                 mattonfire.dnd.classes.Items.SalveOfStoneToFleshItem.register();
@@ -227,6 +229,9 @@ public class DnDClasses implements ModInitializer {
 
                 FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Ingredient.ofItems(Items.ICE),
                                 ModPotions.FREEZE_POTION.value());
+                // An Ancient Red Scale brews straight into a long Fire Resistance (8:00)
+                FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD,
+                                Ingredient.ofItems(ModItems.ANCIENT_RED_SCALE), Potions.LONG_FIRE_RESISTANCE);
 
                 // Register doublejump registry.
                 // The double-jump packet is handled in MonkRules.register().

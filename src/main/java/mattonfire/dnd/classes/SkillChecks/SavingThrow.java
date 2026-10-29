@@ -355,7 +355,7 @@ public final class SavingThrow {
                         new Cached(result, now + exposureTicks));
             }
             if (target instanceof PlayerEntity player) {
-                D20.show(player, roll, detail(result));
+                D20.show(player, result.roll(), detail(result));
             }
             return result;
         }
@@ -439,6 +439,9 @@ public final class SavingThrow {
                 float part = result.damage(1.0F);
                 String key = part <= 0.0F ? "no_damage_note" : part < 1.0F ? "half_damage_note" : "full_damage_note";
                 return Text.translatable("save.dndclasses.effect." + key, result.note());
+            }
+            if (result.note() != null) {
+                return result.note();
             }
             if (result.succeeded()) {
                 return onSuccess != null ? onSuccess

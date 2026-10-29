@@ -157,6 +157,8 @@ public final class MagicLoot {
         entity("beholder", 1.0F, tier(vr, 80), tier(l, 20));
         entity("beholder", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         entity("drow_matron", 0.15F, tier(l, 1));
+        // The Ancient Red Dragon (design 10, 5.11): a Very Rare or Legendary roll on top of its Scale Mail
+        entity("ancient_red_dragon", 1.0F, tier(vr, 60), tier(l, 40));
         entity("river_pikehorn", 0.05F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 
         // Bounties: known goods, identified

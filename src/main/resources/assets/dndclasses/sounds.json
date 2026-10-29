@@ -375,5 +375,102 @@
                 "weight": 1
             }
         ]
+    },
+    "music.ancient_fight": {
+        "sounds": [
+            {
+                "name": "dndclasses:ancient_fight",
+                "stream": true
+            }
+        ]
+    },
+    "ancient_roar": {
+        "subtitle": "subtitles.dndclasses.ancient_roar",
+        "sounds": [
+            {
+                "name": "minecraft:mob/enderdragon/growl1",
+                "pitch": 0.55,
+                "volume": 1.0,
+                "attenuation_distance": 128
+            },
+            {
+                "name": "minecraft:mob/enderdragon/growl2",
+                "pitch": 0.55,
+                "volume": 1.0,
+                "attenuation_distance": 128
+            },
+            {
+                "name": "minecraft:mob/enderdragon/growl3",
+                "pitch": 0.55,
+                "volume": 1.0,
+                "attenuation_distance": 128
+            },
+            {
+                "name": "minecraft:mob/enderdragon/growl4",
+                "pitch": 0.55,
+                "volume": 1.0,
+                "attenuation_distance": 128
+            }
+        ]
+    },
+    "ancient_wingbeat": {
+        "subtitle": "subtitles.dndclasses.ancient_wingbeat",
+        "sounds": [
+            {
+                "name": "minecraft:mob/enderdragon/wings1",
+                "pitch": 0.6,
+                "attenuation_distance": 64
+            },
+            {
+                "name": "minecraft:mob/enderdragon/wings2",
+                "pitch": 0.6,
+                "attenuation_distance": 64
+            },
+            {
+                "name": "minecraft:mob/enderdragon/wings3",
+                "pitch": 0.6,
+                "attenuation_distance": 64
+            },
+            {
+                "name": "minecraft:mob/enderdragon/wings4",
+                "pitch": 0.6,
+                "attenuation_distance": 64
+            },
+            {
+                "name": "minecraft:mob/enderdragon/wings5",
+                "pitch": 0.6,
+                "attenuation_distance": 64
+            },
+            {
+                "name": "minecraft:mob/enderdragon/wings6",
+                "pitch": 0.6,
+                "attenuation_distance": 64
+            }
+        ]
+    },
+    "ancient_breath_inhale": {
+        "subtitle": "subtitles.dndclasses.ancient_breath_inhale",
+        "sounds": [
+            {
+                "name": "minecraft:mob/blaze/breathe1",
+                "pitch": 0.5,
+                "attenuation_distance": 48
+            },
+            {
+                "name": "minecraft:mob/blaze/breathe2",
+                "pitch": 0.5,
+                "attenuation_distance": 48
+            },
+            {
+                "name": "minecraft:mob/blaze/breathe3",
+                "pitch": 0.5,
+                "attenuation_distance": 48
+            },
+            {
+                "name": "minecraft:mob/blaze/breathe4",
+                "pitch": 0.5,
+                "attenuation_distance": 48
+            }
+        ]
     }
 }

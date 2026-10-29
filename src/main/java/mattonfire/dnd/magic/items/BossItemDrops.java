@@ -42,6 +42,8 @@ public final class BossItemDrops {
                 Map.entry(table("medusa"), new Drop[] { new Drop(ModItems.GORGONS_GAZE, 0.25F, 0.05F) }),
                 // The Matron Mother always drops her Scourge (design 9, 8.3)
                 Map.entry(table("drow_matron"), new Drop[] { new Drop(ModItems.MATRONS_SCOURGE, 1.0F, 0.0F) }),
+                // The Ancient Red Dragon always drops its Scale Mail (design 10, 5.11)
+                Map.entry(table("ancient_red_dragon"), new Drop[] { new Drop(ModItems.RED_DRAGON_SCALE_MAIL, 1.0F, 0.0F) }),
                 // Troll: only on its true (burned) death, since its table only rolls then.
                 Map.entry(table("troll"), new Drop[] { new Drop(ModItems.PERIAPT_OF_WOUND_CLOSURE, 0.06F, 0.02F) }));
     }

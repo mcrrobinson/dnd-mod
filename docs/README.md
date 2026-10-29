@@ -95,13 +95,14 @@ Reference pages (this index, [Admin commands](systems/admin-commands.md), the [e
 - [Drow](mobs/drow.md): the Spider Houses of the Underdark: Warriors with poisoned hand crossbows (CON save; three failures and you fall asleep), Mages with Darkness, Faerie Fire and Magic Missile, spider-calling Priestesses and Spire Elites; hostile to everyone, allied with spiders, and every kill pleases the Sylvan Court
 
 ## Bosses
-- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, Matron Mother, dragons)
+- [Boss fights](bosses/boss-fights.md): boss bars, fight music, phases, rewards and party wipes for every boss (Warlord, Alpha, Lich, War Chief, Beholder, Medusa, Matron Mother, Ancient Red Dragon, dragons)
 - [Goblin Warlord](bosses/goblin-warlord.md): goblin boss that summons waves; guards Nether Fortresses, leads 30% of goblin camps and every raid's last wave, and rules the Goblin Warren
 - [Magmamuncher Alpha](bosses/magmamuncher-alpha.md): rare Nether boss with burning bites and fireball volleys
 - [Lich](bosses/lich.md): undead caster in stronghold libraries that reforms from its phylactery; CON save vs Frost Nova, WIS save vs its Dread Presence
 - [Orc War Chief](bosses/orc-war-chief.md): stronghold boss with a 6-damage Ground Slam every 8 s and a War Cry that gives his orcs Strength at half health
 - [Beholder](bosses/beholder.md): floating eye tyrant in a deep lair; its anti-magic cone blocks class specials, and each eye ray allows a DEX/STR/CON/WIS save
 - [Matron Mother](bosses/matron-mother.md): the Underdark's first boss, atop the Drow Spire; a poisoned scourge (CON 14), spider swarms, Darkness and a frightening Lash (WIS 15); below half health a Web Storm (DEX 14 or webbed and Restrained) under a hail of Magic Missiles, below a quarter she calls her Elites; drops the Matron's Scourge
+- [Ancient Red Dragon](bosses/ancient-red-dragon.md): endgame boss, a 46-block-wingspan red wyrm with a 28-block fire breath (DEX 18), Frightful Presence (WIS 17), Legendary Resistance, legendary tail and wing attacks and lair actions (magma vents, tremors, volcanic gas); drops Red Dragon Scale Mail (PR #PRNUM)
 - [Medusa](bosses/medusa.md): lair boss of the Gorgon's Temple (1 in 3 desert pyramids and jungle temples); meet her eyes and save (CON 14) or turn to stone, raise a shield to reflect it; poisonous snake bites, longbow volleys, statues of earlier visitors; drops the Gorgon's Gaze
 
 ## Structures

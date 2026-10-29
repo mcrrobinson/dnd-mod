@@ -2,6 +2,7 @@
     "replace": false,
     "values": [
         "dndclasses:dragonborn_fire",
-        "dndclasses:hellish_rebuke"
+        "dndclasses:hellish_rebuke",
+        "dndclasses:ancient_fire_breath"
     ]
 }

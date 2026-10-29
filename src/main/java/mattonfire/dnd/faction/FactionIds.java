@@ -16,6 +16,7 @@ public final class FactionIds {
     public static final Identifier BRIMSTONE_COVENANT = id("brimstone_covenant");
     public static final Identifier TINKERS_GUILD = id("tinkers_guild");
     public static final Identifier GOBLINS = id("goblins");
+    public static final Identifier KOBOLDS = id("kobolds");
 
     private FactionIds() {
     }

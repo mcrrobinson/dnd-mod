@@ -195,6 +195,8 @@ public class DnDClasses implements ModInitializer {
                 ModPotions.registerPotions();
                 // The drow and the Spider Houses (Underdark T4): their types, items, effects, spawns and events
                 mattonfire.dnd.entity.drow.Drow.register();
+                // The kobolds and the Kobold Tribes (design 10, K1): their types, items, blocks, spawns and hooks
+                mattonfire.dnd.entity.kobold.Kobolds.register();
                 mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();

@@ -53,6 +53,11 @@
           "type": "minecraft:item",
           "name": "dndclasses:eye_of_the_tyrant",
           "weight": 6
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:vorpal_sword",
+          "weight": 2
         }
       ],
       "functions": [

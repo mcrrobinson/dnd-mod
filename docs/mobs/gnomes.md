@@ -37,6 +37,7 @@ Every Tinker keeps a shop. Each trade has 12 uses and restocks every morning. Pr
 | 4 [Cogwork Panels](../structures/cogsdeep-blocks.md) | 3 |
 | **Gnomes only:** the [Gnomish Repeater](../items/racial-weapons.md#gnomish-repeater), with Quick Charge III and Multishot | 14 |
 | **Gnomes only:** [Tinker's Goggles](../items/tinkers-goggles.md) | 10 |
+| **Friendly or better with the Tinkers' Guild:** a pair of [Sending Stones](../items/magic-items.md#sending-stones) (2 stones, one pair per restock) | 12 |
 
 | Buys | For |
 |-|-|
@@ -45,7 +46,7 @@ Every Tinker keeps a shop. Each trade has 12 uses and restocks every morning. Pr
 | 3 iron ingots | 1 |
 | 12 redstone dust | 1 |
 
-The Gnome-only offers come last: a Human sees 18 trades, a Gnome 20. (A Tinker saved before the building blocks were added gets those three offers added at the end of its list.)
+The Gnome-only offers come after the shop, then the Friendly stock: a Human sees 18 trades (19 once Friendly), a Gnome 20 (21). Each pair of Sending Stones bought gets its own pair id when it reaches your inventory. (A Tinker saved before the building blocks were added gets those three offers added at the end of its list.)
 
 ### Dialogue
 Tinkers have the quest-giver role `gnome_tinker` (`dialogue/gnome_tinker.json`, with a greeting for each standing tier). Quests whose `giver` is `gnome_tinker` are offered by any of them; with nothing to say, right-clicking one opens its trades. See [NPC dialogue](../systems/dialogue.md).

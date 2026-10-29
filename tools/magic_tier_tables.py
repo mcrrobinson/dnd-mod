@@ -24,12 +24,18 @@ def gear(names, weapon_weight, armor_weight):
 
 
 # (item, weight). Gear ids are minecraft:, named ids dndclasses:.
+# Extra loot functions for a named entry, applied before the pool's magic_item function.
+ENTRY_FUNCTIONS = {
+    # Sending Stones always come as a pair: a stack of 2 sharing one Pair id
+    "sending_stone": [{"function": "dndclasses:sending_stone_pair"}],
+}
 TABLES = {
     "uncommon": {
         "gear": gear(IRON, 8, 5) + gear(DIAMOND, 3, 2) + [("bow", 6), ("crossbow", 4), ("trident", 2)],
         # Cloak of Protection is the Uncommon pool's own item; the rest also have their own sources
         "named": [("cloak_of_protection", 6), ("wand_of_magic_missiles", 2), ("immovable_rod", 1),
-                  ("bag_of_holding", 1), ("decanter_of_endless_water", 1), ("periapt_of_wound_closure", 1)],
+                  ("bag_of_holding", 1), ("decanter_of_endless_water", 1), ("periapt_of_wound_closure", 1),
+                  ("sending_stone", 2)],
     },
     "rare": {
         "gear": gear(IRON, 4, 3) + gear(DIAMOND, 6, 4) + [("bow", 6), ("crossbow", 4), ("trident", 2)],
@@ -47,14 +53,18 @@ TABLES = {
     },
     "legendary": {
         "gear": gear(NETHERITE, 6, 4) + [("bow", 4), ("crossbow", 3), ("trident", 3)],
-        "named": [("eye_of_the_tyrant", 6)],
+        "named": [("eye_of_the_tyrant", 6), ("vorpal_sword", 2)],
     },
 }
 
 
 def table(tier, spec):
     entries = [{"type": "minecraft:item", "name": "minecraft:" + n, "weight": w} for n, w in spec["gear"]]
-    entries += [{"type": "minecraft:item", "name": "dndclasses:" + n, "weight": w} for n, w in spec["named"]]
+    for n, w in spec["named"]:
+        entry = {"type": "minecraft:item", "name": "dndclasses:" + n, "weight": w}
+        if n in ENTRY_FUNCTIONS:
+            entry["functions"] = ENTRY_FUNCTIONS[n]
+        entries.append(entry)
     return {
         "type": "minecraft:chest",
         "pools": [{

@@ -38,6 +38,8 @@ public class NamedWeaponItem extends SwordItem {
     public void appendTooltip(ItemStack stack, @Nullable World world, List<Text> tooltip, TooltipContext context) {
         if (!MagicData.isIdentified(stack))
             return;
-        tooltip.add(Text.translatable(tooltipKey).formatted(Formatting.GRAY));
+        // One tooltip line per newline in the translation, so long descriptions don't run off the screen
+        for (String line : Text.translatable(tooltipKey).getString().split("\n"))
+            tooltip.add(Text.literal(line).formatted(Formatting.GRAY));
     }
 }

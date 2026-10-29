@@ -51,7 +51,8 @@ public class GnomeTinkerEntity extends SettlementNpcEntity implements Settlement
 
     private final NpcMerchant merchant = new NpcMerchant(this, world -> TinkerTrades.tinker(),
             "entity.dndclasses.gnome_tinker.refuses")
-            .stocks(new KinStock(KinStockOffers::cogsdeep));
+            .stocks(new KinStock(KinStockOffers::cogsdeep),
+                    new KinStock(TinkerTrades::friendly, TinkerTrades::showsFriendly, "FriendlyOffers"));
 
     public GnomeTinkerEntity(EntityType<? extends PathAwareEntity> entityType, World world) {
         super(entityType, world, 8);

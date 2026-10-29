@@ -144,6 +144,11 @@ public final class MagicLoot {
         chest("drow_spire_loft", 1.0F, tier(r, 60), tier(vr, 40));
         chest("drow_spire_loft", 0.15F, named(ModItems.PIWAFWI));
 
+        // Design 10 hoards, placed by table id: no-ops until the Ancient Red's lair (hoard coffer) and the kobold
+        // warrens (chief's hoard) add their tables
+        chest("ancient_red_hoard_coffer", 0.15F, named(ModItems.VORPAL_SWORD));
+        chest("kobold_hoard", 0.02F, named(ModItems.SENDING_STONE)); // "a kobold's prized pebbles"
+
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
 
@@ -162,6 +167,7 @@ public final class MagicLoot {
         // Bounties: known goods, identified
         gameplay("bounty_minor", 0.10F, true, tier(u, 1));
         gameplay("bounty_minor", 0.05F, true, named(ModItems.WAND_OF_MAGIC_MISSILES));
+        gameplay("bounty_minor", 0.03F, true, named(ModItems.SENDING_STONE));
         gameplay("bounty_major", 0.35F, true, tier(u, 60), tier(r, 40));
         gameplay("bounty_major", 0.03F, true, named(ModItems.PERIAPT_OF_WOUND_CLOSURE));
         gameplay("bounty_major", 0.03F, true, named(ModItems.DOSS_LUTE));
@@ -207,6 +213,8 @@ public final class MagicLoot {
             var entry = ItemEntry.builder(e.item()).weight(e.weight());
             if (e.max() > 1)
                 entry.apply(SetCountLootFunction.builder(UniformLootNumberProvider.create(e.min(), e.max())));
+            if (e.item() == ModItems.SENDING_STONE) // always a pair: a stack of 2 sharing one Pair id
+                entry.apply(mattonfire.dnd.magic.items.SendingStonePairLootFunction.builder());
             if (!e.plain())
                 entry.apply(pool.identified() ? MagicItemLootFunction.identified() : MagicItemLootFunction.unidentified());
             builder.with(entry);

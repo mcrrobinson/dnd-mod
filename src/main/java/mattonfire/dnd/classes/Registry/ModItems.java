@@ -678,6 +678,14 @@ public class ModItems {
                         new mattonfire.dnd.magic.items.DescribedItem.Armor(mattonfire.dnd.magic.items.DrowItems.PIWAFWI_MATERIAL,
                                         ArmorItem.Type.CHESTPLATE, new FabricItemSettings()));
 
+        // Signature magic items (design 10, 8.1-8.2): defs and effects in magic/items/VorpalSwordItem and SendingStones
+        /** 8 attack damage (1 + netherite's 4 + 3), 1.6 attack speed, a built-in +3, unbreakable. */
+        public static final Item VORPAL_SWORD = registerItem("vorpal_sword",
+                        new mattonfire.dnd.magic.items.VorpalSwordItem(new FabricItemSettings().fireproof()));
+        /** A pair of Sending Stones is one stack of 2 sharing a Pair id. */
+        public static final Item SENDING_STONE = registerItem("sending_stone",
+                        new mattonfire.dnd.magic.items.SendingStoneItem(new FabricItemSettings().maxCount(2)));
+
 
         // ---- Racial gear (kin stock): classes/Items/racial, docs/items/armor.md and racial-weapons.md ----
         public static final Item ELVEN_CHAIN_HELMET = registerItem("elven_chain_helmet",

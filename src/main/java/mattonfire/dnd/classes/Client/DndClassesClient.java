@@ -162,6 +162,7 @@ public class DndClassesClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         mattonfire.dnd.classes.Items.ClassGuidebookItem.clientOpener = mattonfire.dnd.classes.Client.Hud.ClassGuidebookScreen::open;
+        mattonfire.dnd.magic.items.SendingStoneItem.clientOpener = mattonfire.dnd.classes.Client.Hud.SendingStoneScreen::open;
         mattonfire.dnd.classes.Client.Render.LayeredArmorRenderer.registerAll();
         mattonfire.dnd.faction.client.ClientReputation.register();
         mattonfire.dnd.quest.client.ClientQuests.register();

@@ -7,10 +7,10 @@ Where [magic items](magic-items.md) turn up in the world. Every source rolls on 
 
 | Table | +N gear (weight) | Named items (weight) | Chance of a named item |
 |-|-|-|-|
-| Uncommon | +1 iron gear (swords and axes 8, armor 5), +1 diamond gear (3/2), bow 6, crossbow 4, trident 2 | Cloak of Protection 6, Wand of Magic Missiles 2, Immovable Rod, Bag of Holding, Decanter of Endless Water, Periapt of Wound Closure 1 each | 12 in 74 (16%) |
+| Uncommon | +1 iron gear (swords and axes 8, armor 5), +1 diamond gear (3/2), bow 6, crossbow 4, trident 2 | Cloak of Protection 6, Wand of Magic Missiles 2, Sending Stones 2 (a pair), Immovable Rod, Bag of Holding, Decanter of Endless Water, Periapt of Wound Closure 1 each | 14 in 76 (18%) |
 | Rare | +2 iron gear (4/3), +2 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Ring of Protection 6; Staff of Ice, Fire and Lightning 2 each; Amulet of Health, Doss Lute, Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Gorgon's Gaze 1 each | 21 in 81 (26%) |
 | Very Rare | +3 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Frostbrand 2, Tome of Clear Thought 2, Phylactery Locket 1, The Burglar's Ring 1 | 6 in 46 (13%) |
-| Legendary | +3 netherite gear (6/4), bow 4, crossbow 3, trident 3 | Eye of the Tyrant 6 | 6 in 44 (14%) |
+| Legendary | +3 netherite gear (6/4), bow 4, crossbow 3, trident 3 | Eye of the Tyrant 6, Vorpal Sword 2 | 8 in 46 (17%) |
 
 Cloak of Protection and Ring of Protection only come from these tables. The other named items also have their own sources (below and in the [boss drops](../items/magic-items.md#where-to-find-it)).
 
@@ -47,12 +47,14 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Matron Mother](../bosses/matron-mother.md) (player kill) | 15%: Legendary | Matron's Scourge 100% |
 | [Mimic](../mobs/mimic.md) (player kill, on top of its chest's loot) | 25%: Uncommon | Bag of Holding 10% |
 | [River Pikehorn](../mobs/dragons.md) (player kill) | | Decanter of Endless Water 5% |
-| Minor bounty spoils (`gameplay/bounty_minor`) | 10%: Uncommon, **identified** | Wand of Magic Missiles 5% (identified) |
+| Minor bounty spoils (`gameplay/bounty_minor`) | 10%: Uncommon, **identified** | Wand of Magic Missiles 5%, Sending Stones 3% (identified) |
 | Major bounty spoils (`gameplay/bounty_major`) | 35%: Uncommon (60) / Rare (40), **identified** | Periapt of Wound Closure 3%, Doss Lute 3% (identified) |
 | [Goblin raid](goblin-raids.md) rewards (every kind) | 20%: Uncommon | hobbit village raids: The Burglar's Ring 2% |
 | Vanilla dungeon, mineshaft, desert pyramid, jungle temple chests | 8%: Uncommon | dungeon and mineshaft: Wand of Magic Missiles 2% |
 | Vanilla stronghold library, woodland mansion, bastion treasure, ancient city chests | 20%: Rare (70) / Very Rare (30) | Scroll of Identify (1-2) 25%; stronghold library: Scroll of Remove Curse 10%, Amulet of Health 4%, Mace of Disruption 3%, Tome of Clear Thought 2% |
 | Vanilla end city chests | 15%: Very Rare (85) / Legendary (15) | |
+| Ancient Red Dragon hoard coffer (`chests/ancient_red_hoard_coffer`; placed by id, a no-op until the lair adds the table) | | Vorpal Sword 15% |
+| Kobold warren hoard (`chests/kobold_hoard`; placed by id, a no-op until the warrens add the table) | | Sending Stones 2% ("a kobold's prized pebbles") |
 | [Dungeons](../structures/dungeons.md) | the [dungeon loot](dungeon-loot.md) tables pick the tier per room; the Hoard Coffer always gives one | |
 
 - Identified rewards keep their tier and +N but lose any random curse (known goods). A built-in curse stays and is shown.
@@ -82,5 +84,6 @@ Open the chests, kill the monsters and finish the bounties and raids above. In v
 - `MagicItemLootFunction.identified()` (JSON `{"function": "dndclasses:magic_item", "identified": true}` with no tier) identifies an already-rolled item: a stack that already has a tier keeps it and its +N, and a random curse is lifted. Bounty pools put it on the tier-table entry.
 - `MimicEntity.dropLoot` rolls `entities/mimic_magic` after the chest table it holds.
 - The boss trophies are still in `magic/items/BossItemDrops`.
+- A named Sending Stone entry always gets `dndclasses:sending_stone_pair` (a stack of 2 with one new `Pair` id): `MagicLoot.build` adds it, and `tools/magic_tier_tables.py` puts it on the Uncommon table's entry (`ENTRY_FUNCTIONS`).
 - The dungeon tables (`tools/dungeon_loot.py`) reference the rarity tables, so they get the named items without changes.
 - The old one-staff tables `chests/staff_of_{fire,ice,lightning}.json` are gone: the staffs are in the Rare table.

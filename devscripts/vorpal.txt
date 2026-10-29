@@ -1,0 +1,113 @@
+# Checks the Vorpal Sword (docs/items/magic-items.md). Run:
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/vorpal.txt
+# Expect in latest.log:
+#  1. forceroll 20 on a frozen zombie: "[Magic] Dev's Vorpal Sword beheads Zombie (drops its head)", the zombie is
+#     gone ("Test failed" on vtest1) and "/clear @s minecraft:zombie_head 0" finds 1 after picking it up
+#  2. a Fighter's forceroll 19 crits but doesn't behead: the 200 HP zombie is alive, no head
+#  3. forceroll 20 on a summoned Lich: "[Magic] Dev's Vorpal Sword bites Lich: +N (6d8)"; the Lich is alive
+#  4. forceroll 20 on a slime: "has no head to take"; the slime is alive
+#  5. not attuned (bond released): forceroll 20 on a zombie crits but doesn't behead
+# Screenshots: vorpal-beheaded, vorpal-tooltip
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/gamerule sendCommandFeedback true
+/difficulty normal
+/time set 18000
+/forceload add 196 196 236 214
+/tp @s 216.5 160 205.5 0 0
+/effect give @s minecraft:slow_falling 10 0 true
+wait 60
+/fill 196 149 196 236 149 214 minecraft:stone
+/fill 196 150 196 236 156 214 minecraft:air
+/kill @e[type=!player,x=196,y=148,z=196,dx=40,dy=10,dz=18]
+/effect give @s minecraft:resistance 99999 4 true
+/effect give @s minecraft:night_vision 99999 0 true
+/clear @s
+/dndmagic release @s all
+/dndmagic give @s dndclasses:vorpal_sword
+hotbar 0
+wait 5
+/dndmagic attune @s
+/dndmagic info @s
+/attribute @s minecraft:generic.attack_damage get
+tooltips 0
+wait 5
+screenshot vorpal-tooltip
+closescreen
+
+# 1. A natural 20 beheads a zombie
+/summon minecraft:zombie 200.5 150 202.5 {NoAI:1b,NoGravity:1b,Tags:["vtest","vtest1"],PersistenceRequired:1b,Rotation:[180f,0f]}
+/tp @s 200.5 150 200.5 0 15
+wait 30
+/dndclass forceroll @s 20
+attack
+wait 3
+actionbar
+wait 2
+screenshot vorpal-beheaded
+/execute if entity @e[tag=vtest1]
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:zombie_head"}},distance=..6]
+/tp @s 200.5 150 202.5 0 15
+wait 20
+/clear @s minecraft:zombie_head 0
+slots
+
+# 2. A Fighter's natural 19 crits but keeps the head on
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+hotbar 0
+/summon minecraft:zombie 206.5 150 202.5 {NoAI:1b,NoGravity:1b,Tags:["vtest","vtest2"],PersistenceRequired:1b,Rotation:[180f,0f],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+/tp @s 206.5 150 200.5 0 15
+wait 30
+/dndclass forceroll @s 19
+attack
+wait 5
+/execute if entity @e[tag=vtest2]
+/data get entity @e[tag=vtest2,limit=1] Health
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:zombie_head"}},distance=..6]
+
+# 3. A boss keeps its head and takes 6d8
+/summon dndclasses:lich 212.5 150 203.5 {NoAI:1b,Tags:["vtest","vtest3"],PersistenceRequired:1b,Rotation:[180f,0f]}
+/tp @s 212.5 150 201 0 10
+wait 30
+/data get entity @e[tag=vtest3,limit=1] Health
+/dndclass forceroll @s 20
+attack
+wait 5
+actionbar
+/execute if entity @e[tag=vtest3]
+/data get entity @e[tag=vtest3,limit=1] Health
+/kill @e[tag=vtest3]
+
+# 4. A slime has no head
+/summon minecraft:slime 218.5 150 203 {NoAI:1b,NoGravity:1b,Size:2,Tags:["vtest","vtest4"],PersistenceRequired:1b,Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+/tp @s 218.5 150 200.5 0 15
+wait 30
+/dndclass forceroll @s 20
+attack
+wait 5
+/execute if entity @e[tag=vtest4]
+/data get entity @e[tag=vtest4,limit=1] Health
+
+# 5. Not attuned: the sword is just a sword
+/dndmagic release @s all
+/summon minecraft:zombie 224.5 150 202.5 {NoAI:1b,NoGravity:1b,Tags:["vtest","vtest5"],PersistenceRequired:1b,Rotation:[180f,0f],Attributes:[{Name:"generic.max_health",Base:200d}],Health:200f}
+/tp @s 224.5 150 200.5 0 15
+wait 30
+/dndclass forceroll @s 20
+attack
+wait 5
+/execute if entity @e[tag=vtest5]
+/execute if entity @e[type=minecraft:item,nbt={Item:{id:"minecraft:zombie_head"}},distance=..6]
+
+/dndclass forceroll @s clear
+/kill @e[tag=vtest]
+/kill @e[type=minecraft:item,x=196,y=148,z=196,dx=40,dy=10,dz=18]
+/effect clear @s
+/forceload remove 196 196 236 214
+wait 10
+quit

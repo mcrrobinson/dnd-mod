@@ -5,6 +5,11 @@ import static mattonfire.dnd.entity.NpcTrades.buy;
 
 import mattonfire.dnd.classes.Registry.CogsdeepBlocks;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
+import mattonfire.dnd.classes.Registry.ModItems;
+import mattonfire.dnd.faction.ReputationTier;
+import mattonfire.dnd.faction.TierEffects;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.village.TradeOfferList;
@@ -18,11 +23,28 @@ import net.minecraft.village.TradeOfferList;
  * burrow's building blocks: 8 Riveted Brass (2), 16 Gnomish Bricks (2), 4 Cogwork Panels (3).</li>
  * <li>Buys, for 1 emerald: 10 copper ingots, 6 amethyst shards, 3 iron ingots, 12 redstone dust.</li>
  * <li>Kin stock, to Gnomes only: the Gnomish Repeater and Tinker's Goggles ({@link KinStockOffers#cogsdeep()}).</li>
+ * <li>Friendly or better ({@link #FRIENDLY_STOCK}): a pair of Sending Stones for {@value #SENDING_STONES_PRICE}
+ * emeralds, one pair per restock. Each pair bought gets its own Pair id when it reaches the buyer's inventory.</li>
  * </ul>
  */
 public final class TinkerTrades {
 
+    public static final ReputationTier FRIENDLY_STOCK = ReputationTier.FRIENDLY;
+    public static final int SENDING_STONES_PRICE = 12;
+
     private TinkerTrades() {
+    }
+
+    /** Friendly stock: a pair of Sending Stones (design 10, 8.3). */
+    static TradeOfferList friendly() {
+        TradeOfferList offers = new TradeOfferList();
+        offers.add(NpcTrades.offer(new ItemStack(Items.EMERALD, SENDING_STONES_PRICE),
+                new ItemStack(ModItems.SENDING_STONE, 2), 1, NpcTrades.MERCHANT_XP));
+        return offers;
+    }
+
+    static boolean showsFriendly(PlayerEntity player, Entity npc) {
+        return TierEffects.tierWith(player, npc).atLeast(FRIENDLY_STOCK);
     }
 
     static TradeOfferList tinker() {

@@ -46,6 +46,8 @@ public final class LairBlocks {
     public static final Block STORM_SCALE_PILE = scalePile(MapColor.YELLOW);
     /** Layers of the Frost Drake's shed scales, pale blue; drop Frost Dragon Scales. */
     public static final Block FROST_SCALE_PILE = scalePile(MapColor.LIGHT_BLUE);
+    /** Layers of the Ancient Red's shed scales, crimson and ember, on its caldera floor; each drops 0-1 Ancient Red Scale. */
+    public static final Block RED_SCALE_PILE = scalePile(MapColor.RED);
 
     /** Shed scales from the scale piles: a crafting material (Storm Glass, Hoarfrost Crystals, the piles). */
     public static final Item STORM_DRAGON_SCALE = new Item(new FabricItemSettings());
@@ -68,6 +70,7 @@ public final class LairBlocks {
         register("hoarfrost_crystal", HOARFROST_CRYSTAL);
         register("storm_scale_pile", STORM_SCALE_PILE);
         register("frost_scale_pile", FROST_SCALE_PILE);
+        register("red_scale_pile", RED_SCALE_PILE);
         Registry.register(Registries.ITEM, id("storm_dragon_scale"), STORM_DRAGON_SCALE);
         Registry.register(Registries.ITEM, id("frost_dragon_scale"), FROST_DRAGON_SCALE);
 

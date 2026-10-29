@@ -132,6 +132,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.hireling.Hirelings.register();
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
+                mattonfire.dnd.world.gen.ancient.AncientLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
                 mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures.register();
                 mattonfire.dnd.world.gen.enclave.EnclaveRegrowth.register();
@@ -159,6 +160,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();
+                mattonfire.dnd.world.gen.ancient.AncientLairStructures.registerHooks();
                 mattonfire.dnd.world.gen.HomeBonuses.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();

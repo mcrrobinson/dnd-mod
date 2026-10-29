@@ -52,14 +52,13 @@ It leaves players alone until one it can see comes within **40 blocks**, then hu
 ![A wing attack: the DEX save fails and the player is thrown back, Prone](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/feat-ancient-red-dragon/ancient-red-fight-b.png)
 
 ## Where to find it
-- In its lair, the volcanic caldera of the [Ancient dragon lair](../structures/dragon-lairs.md) (coming with that ticket).
+- In its lair, asleep on the perch of a volcanic caldera: see [Ancient dragon lairs](../structures/ancient-lairs.md). Red Dragon Scale Mail's dragon sense points to the nearest.
 - `/summon dndclasses:ancient_red_dragon` or its spawn egg (D&D Classes creative tab) for testing. Give it a lair with NBT: `{Lair:{X:0,Y:100,Z:0}}`.
 
 ## Commands
 None of its own. `/dndclass forceroll <dragon> 1 1 1` rigs its next saves, so you can watch Legendary Resistance; `/dm save <dragon> con 15` makes it roll one.
 
 ## Known limitations
-- The lair structure, its hoard and its markers come with the lair ticket; until then an Ancient only has a lair if you give it one by NBT, and `AncientDragonEvents.SLAIN` has no listener.
 - Kobolds only answer its call once the Kobold Tribes add mobs to `#dndclasses:faction/kobolds`.
 - Its flight is a steered circle, not pathfinding: in tight caves it can scrape along walls until it lands.
 - The fire-breath head pose and the wing-attack beat aren't followed by the server's hit shapes (as for every dragon); only the body animation is.
@@ -68,7 +67,7 @@ None of its own. `/dndclass forceroll <dragon> 1 1 1` rigs its next saves, so yo
 ## For developers
 - `entity/dragon/AncientDragonEntity` (shared by every chromatic colour: size, Frightful Presence, breath recharge, phases, lair actions, going home), `AncientRedDragonEntity`, `ChromaticColor` (bar colour, name syllables, lair actions, lair structure id), `AncientFireBreath`, `LegendaryActions`, `AncientLairActions` / `LairAction`, `AncientSaves`, `AncientDragonNames`, `AncientDragonAttackGoal`.
 - `entity/boss/LegendaryCreature` and `LegendaryResistance`: any mob can implement it; the hook turns a fresh failed save into a success through `SaveResult.overruled(...)` and logs `[LegendaryResistance]`.
-- `AncientDragonEvents.SLAIN` (lair, `null` without one) and `TREMOR` are the lair ticket's hooks.
+- `AncientDragonEvents.SLAIN` (lair, `null` without one) marks its [lair](../structures/ancient-lairs.md) slain, and `TREMOR` shakes dust in the hoard hall.
 - `FireBreath` gained `coneTan()`, `windupTicks()`, `flameTicks()`, `playWindupSound()` and `spawnWindupParticles()` for bigger breaths; `LairDragonEntity.respawnsAtLair()` lets the Ancients opt out of respawning.
 - Model and art are generated: `tools/ancient_dragon_model.py` (geo + animation from the Lightning Chaser), `tools/ancient_dragon_texture.py` (texture + glowmask), `tools/boss_item_textures.py` (scale mail and scale), `tools/music-gen/music_gen.py` (`ancient_fight`).
 - `devscripts/ancient-red-scale.txt` (size check next to a player and a Lightning Chaser, client vs server hit shapes) and `devscripts/ancient-red.txt` (the fight: Frightful Presence, Legendary Resistance, phases, the kill and its drops). Its special actions log `[MobAction]` to `debug.log`.

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import mattonfire.dnd.entity.NpcMerchant;
 import mattonfire.dnd.entity.SettlementMerchant;
+import mattonfire.dnd.entity.kobold.ai.KoboldRearmGoal;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
@@ -24,7 +25,8 @@ import net.minecraft.world.World;
  * A Kobold Trapmaker: 9 health, 2 armour, speed 0.30, a hook-knife (2). In a fight it hides a snare in the
  * target's path every {@value KoboldSnares#INTERVAL} ticks ({@link KoboldSnares}, at most
  * {@value KoboldSnares#MAX_ACTIVE} at once). At Friendly or better with the Kobold Tribes it trades
- * ({@link KoboldTrades}); worse, it hisses and won't. K2's trapmakers also re-arm warren traps.
+ * ({@link KoboldTrades}); worse, it hisses and won't. Out of a fight it re-arms its tribe's spent and disarmed traps
+ * ({@link KoboldRearmGoal}).
  */
 public class KoboldTrapmakerEntity extends KoboldEntity implements SettlementMerchant {
     private final NpcMerchant merchant = new NpcMerchant(this, world -> KoboldTrades.trapmaker(),
@@ -37,6 +39,13 @@ public class KoboldTrapmakerEntity extends KoboldEntity implements SettlementMer
 
     public KoboldTrapmakerEntity(EntityType<? extends HostileEntity> type, World world) {
         super(type, world);
+    }
+
+    @Override
+    protected void initGoals() {
+        super.initGoals();
+        // Out of a fight it fixes its tribe's spent and disarmed traps (K2, design 10, 4.2).
+        this.goalSelector.add(4, new KoboldRearmGoal(this));
     }
 
     public static DefaultAttributeContainer.Builder createAttributes() {

@@ -16,5 +16,7 @@ public final class KoboldClient {
         EntityRendererRegistry.register(Kobolds.KOBOLD_TRAPMAKER, KoboldRenderer::small);
         EntityRendererRegistry.register(Kobolds.KOBOLD_DRAGONSHIELD, KoboldRenderer::dragonshield);
         BlockRenderLayerMap.INSTANCE.putBlock(Kobolds.KOBOLD_SNARE_BLOCK, RenderLayer.getCutout());
+        // Kobold warrens (K2)
+        BlockRenderLayerMap.INSTANCE.putBlock(mattonfire.dnd.classes.Blocks.TrapBlocks.KOBOLD_TRIPLINE, RenderLayer.getCutout());
     }
 }

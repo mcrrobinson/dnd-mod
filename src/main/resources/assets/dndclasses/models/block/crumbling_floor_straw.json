@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "dndclasses:block/crumbling_floor_straw",
+    "side": "dndclasses:block/crumbling_floor_straw",
+    "bottom": "minecraft:block/hay_block_top"
+  }
+}

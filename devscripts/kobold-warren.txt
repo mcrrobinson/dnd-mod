@@ -1,0 +1,72 @@
+# Kobold warren placement survey and shots (docs/structures/kobold-warrens.md).
+# Run: timeout 900 ./gradlew runClient -PdevScript=devscripts/kobold-warren.txt (the area round -24000 24000 must be
+# unexplored so the chunks generate fresh).
+# Checks, in <run dir>/logs/latest.log:
+# - "[WarrenSeeds] seed N: nearest warren to 0 0 at ..." for 5 seeds, each within 1500 blocks
+# - the [CHAT] line of /locate structure dndclasses:kobold_warren
+# - "[WarrenSurvey] warren at chunk ...: ... PASS" lines from a 3 x 3 grid 1500 apart, then the summary line
+# - "[Home] Kobold warren at chunk ..." from each /dndhome koboldwarren spot; screenshots kw-overview, kw-mouth,
+#   kw-spikes, kw-rockfall, kw-den, kw-guard, kw-shrine, kw-nursery, kw-workshop, kw-larder, kw-pit, kw-chief, kw-hole
+# - "Test passed" for kobolds near the den and a Dragonshield near the chief
+wait 40
+closescreen
+include _reset.txt
+/dndhome koboldwarrenseeds 12345 -4242 777 2024 99
+waitserver 2
+/gamemode spectator
+/time set noon
+/gamerule doDaylightCycle false
+/tp @s -24000 160 24000
+wait 100
+/locate structure dndclasses:kobold_warren
+waitserver 2
+/dndhome koboldwarrensurvey 3 1500
+waitserver 2
+/dndhome koboldwarren overview
+waitserver 2
+wait 300
+hud off
+screenshot kw-overview
+/gamemode creative
+/dndhome koboldwarren mouth
+wait 80
+screenshot kw-mouth
+/dndhome koboldwarren spikes
+wait 40
+screenshot kw-spikes
+/gamemode spectator
+/dndhome koboldwarren rockfall
+wait 60
+screenshot kw-rockfall
+/dndhome koboldwarren den
+wait 60
+screenshot kw-den
+/execute if entity @e[type=dndclasses:kobold,distance=..20]
+/dndhome koboldwarren guard
+wait 60
+screenshot kw-guard
+/dndhome koboldwarren shrine
+wait 60
+screenshot kw-shrine
+/dndhome koboldwarren nursery
+wait 60
+screenshot kw-nursery
+/dndhome koboldwarren workshop
+wait 60
+screenshot kw-workshop
+/dndhome koboldwarren larder
+wait 60
+screenshot kw-larder
+/dndhome koboldwarren pit
+wait 60
+screenshot kw-pit
+/dndhome koboldwarren chief
+wait 60
+screenshot kw-chief
+/execute if entity @e[type=dndclasses:kobold_dragonshield,distance=..30]
+/dndhome koboldwarren hole
+wait 60
+screenshot kw-hole
+hud on
+# the hoard law is in devscripts/kobold-warren-law.txt (it aims at the hoard chest of the warren this script finds)
+quit

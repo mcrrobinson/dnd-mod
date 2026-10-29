@@ -69,6 +69,8 @@ import net.minecraft.util.math.BlockPos;
  * teleports and checks ({@link DrowSpireCommands}).
  * /dndhome underdarklair &lt;lair&gt; [spot], underdarklairsurvey &lt;lair&gt; [grid] [spacing], underdarklaircensus &lt;lair&gt;,
  * underdarklairseeds &lt;lair&gt; [seeds]: the Underdark monster lairs' teleports and checks ({@link LairCommands}).
+ * /dndhome koboldwarren [spot], koboldwarrensurvey [grid] [spacing], koboldwarrenseeds [seeds], koboldtrap &lt;kind&gt; [tier]:
+ * the kobold warrens' teleports, checks and test traps ({@link KoboldWarrenCommands}).
  */
 public final class DndHomeCommand {
     private DndHomeCommand() {
@@ -124,6 +126,28 @@ public final class DndHomeCommand {
                                 .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
                                         .executes(context -> CogsdeepCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
                                                 IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("koboldwarren")
+                        .executes(context -> KoboldWarrenCommands.teleport(context, "mouth"))
+                        .then(CommandManager.argument("spot", StringArgumentType.word())
+                                .executes(context -> KoboldWarrenCommands.teleport(context, StringArgumentType.getString(context, "spot")))))
+                .then(CommandManager.literal("koboldwarrensurvey")
+                        .executes(context -> KoboldWarrenCommands.survey(context, 3, 1500))
+                        .then(CommandManager.argument("grid", IntegerArgumentType.integer(1, 7))
+                                .executes(context -> KoboldWarrenCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"), 1500))
+                                .then(CommandManager.argument("spacing", IntegerArgumentType.integer(256, 20000))
+                                        .executes(context -> KoboldWarrenCommands.survey(context, IntegerArgumentType.getInteger(context, "grid"),
+                                                IntegerArgumentType.getInteger(context, "spacing"))))))
+                .then(CommandManager.literal("koboldwarrenseeds")
+                        .executes(context -> KoboldWarrenCommands.seeds(context, java.util.List.of()))
+                        .then(CommandManager.argument("seeds", StringArgumentType.greedyString())
+                                .executes(context -> KoboldWarrenCommands.seeds(context,
+                                        RiftCommands.parseSeeds(StringArgumentType.getString(context, "seeds"))))))
+                .then(CommandManager.literal("koboldtrap")
+                        .then(CommandManager.argument("kind", StringArgumentType.word())
+                                .executes(context -> KoboldWarrenCommands.trap(context, StringArgumentType.getString(context, "kind"), 1))
+                                .then(CommandManager.argument("tier", IntegerArgumentType.integer(1, 4))
+                                        .executes(context -> KoboldWarrenCommands.trap(context, StringArgumentType.getString(context, "kind"),
+                                                IntegerArgumentType.getInteger(context, "tier"))))))
                 .then(CommandManager.literal("rift")
                         .executes(context -> RiftCommands.teleport(context, "ledge", 0))
                         .then(CommandManager.literal("step")

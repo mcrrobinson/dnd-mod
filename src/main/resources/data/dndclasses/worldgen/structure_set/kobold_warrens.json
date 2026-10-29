@@ -1,0 +1,14 @@
+{
+  "structures": [
+    {
+      "structure": "dndclasses:kobold_warren",
+      "weight": 1
+    }
+  ],
+  "placement": {
+    "type": "minecraft:random_spread",
+    "spacing": 20,
+    "separation": 6,
+    "salt": 482113907
+  }
+}

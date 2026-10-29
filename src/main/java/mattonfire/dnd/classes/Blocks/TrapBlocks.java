@@ -29,6 +29,12 @@ public final class TrapBlocks {
     public static final FlameVentBlock FLAME_VENT = new FlameVentBlock(
             stone().luminance(state -> state.get(Properties.LIT) ? 13 : 0));
     public static final CrumblingFloorBlock CRUMBLING_FLOOR = new CrumblingFloorBlock(stone());
+    /** Kobold traps (design 10, 4.1): spike strips, triplines and the loose rock over a rockfall. */
+    public static final SpikeTrapBlock SPIKE_TRAP = new SpikeTrapBlock(stone().nonOpaque());
+    public static final LooseCeilingBlock LOOSE_CEILING = new LooseCeilingBlock(stone());
+    public static final KoboldTriplineBlock KOBOLD_TRIPLINE = new KoboldTriplineBlock(FabricBlockSettings
+            .of(Material.DECORATION).strength(-1.0F, 3600000.0F).dropsNothing().noCollision().nonOpaque()
+            .sounds(BlockSoundGroup.WOOL));
 
     private TrapBlocks() {
     }
@@ -44,5 +50,8 @@ public final class TrapBlocks {
         block("dart_launcher", DART_LAUNCHER);
         block("flame_vent", FLAME_VENT);
         block("crumbling_floor", CRUMBLING_FLOOR);
+        block("spike_trap", SPIKE_TRAP);
+        block("loose_ceiling", LOOSE_CEILING);
+        block("kobold_tripline", KOBOLD_TRIPLINE);
     }
 }

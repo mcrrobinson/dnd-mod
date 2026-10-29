@@ -23,9 +23,9 @@ Every kobold is 0.5 x 0.95 blocks (eyes at 0.8), so it fits a 1-block hole; its 
 A kobold is **brave** when any of these holds:
 1. a Dragonshield within 12 blocks is alive (or it is one);
 2. at least 2 other kobolds are within 8 blocks (a pack of 3);
-3. it's at home (a warren or a lair, when those exist).
+3. it's at home (in a [warren](../structures/kobold-warrens.md), or a lair once those exist).
 
-Otherwise it's **craven**: it won't close in to melee, keeps 10-14 blocks from its target (slingers still shoot from there), and runs (x1.3 speed, cowering) for 5 s from a player who hits it. Below 30% health any kobold runs for its pack: towards the nearest kobold further from the threat, or just away, until it's 12 blocks clear.
+Otherwise it's **craven**: it won't close in to melee, keeps 10-14 blocks from its target (slingers still shoot from there), and runs (x1.3 speed, cowering) for 5 s from a player who hits it. Below 30% health any kobold runs for its pack (a warren kobold first dives into the nearest bolt-hole within 20 blocks): towards the nearest kobold further from the threat, or just away, until it's 12 blocks clear.
 
 **Dragon-slayer dread**: for 3 in-game days (72000 ticks) after you kill a Lightning Chaser, a Frost Drake or an Ancient dragon (the `#dndclasses:kobold_dread` tag), kobolds need 4 others round them to be brave against you, and a kobold that sees you shrieks "The wyrm-killer!" (once per 30 s).
 
@@ -68,7 +68,7 @@ The Dragonsworn honour whoever slays a chromatic tyrant: killing an Ancient is +
 | Unfriendly | Only at home (a warren or lair), within 6 blocks (parley range), or once provoked. |
 | Neutral | They ignore you unless provoked. |
 | Friendly | Trapmakers trade. |
-| Honored | Warren traps don't go off under you (the warrens card). |
+| Honored | [Warren traps](../structures/kobold-warrens.md#the-traps) don't go off under you. |
 | Exalted | Kobolds within 16 blocks join your fights (any mob that hit you, that you hit in the last 5 s, or that has you as its target; never players, kobolds, your pets or creepers). The Ancient's lair guards let you pass. |
 
 "Provoked" means you hit that kobold or any kobold in the last 10 s, or hit a kobold within 16 blocks of it in the last 30 s (the pack holds a grudge). Lair guards (command tag `dndclasses.lair_guard`) treat everyone below Exalted as Hostile.
@@ -109,13 +109,13 @@ At Friendly or better (worse, it hisses and won't open). 12 uses each, restocked
 Kobolds are humanoids ([Insight](../systems/creature-study.md)). A natural 20 adds "alone, a kobold loses its nerve and runs; in bright sun it fights badly" (and for the Dragonshield, "while it lives the pack is brave; kill the leader and they scatter"). The Trapmaker's card lists the snare's DEX 12 save. Kobolds have darkvision (flavour only).
 
 ## Where to find it
-Packs roam the windswept hills, gravelly hills and forest, stony peaks, the three badlands and dripstone caves (`#dndclasses:habitat/kobold`), in the dark like other monsters (spawn weight 8). Each natural kobold brings 2-4 more round it (50% Kobold, 35% Slinger, 15% Trapmaker) and a 10% chance of a Dragonshield leading them. Natural kobolds despawn like other monsters. Spawn eggs for all four are in the DnD tab. Warrens (with their Tribute Bowls) come with the warrens card.
+Packs roam the windswept hills, gravelly hills and forest, stony peaks, the three badlands and dripstone caves (`#dndclasses:habitat/kobold`), in the dark like other monsters (spawn weight 8). Each natural kobold brings 2-4 more round it (50% Kobold, 35% Slinger, 15% Trapmaker) and a 10% chance of a Dragonshield leading them. Natural kobolds despawn like other monsters. Spawn eggs for all four are in the DnD tab. [Kobold Warrens](../structures/kobold-warrens.md) in hillsides of the same biomes hold a den, a shrine with a Tribute Bowl, a nursery, a trap workshop and the chief's hoard, guarded by kobold traps.
 
 ## Known limitations
 - Kobold sounds are a fox's, pitched up (the volley chirp is a fox screech); there are no kobold sound files yet.
 - Kobold weapons (spear, sling, hook-knife, shield) are part of the model, not held items.
 - Dragon-slayer dread is per player and doesn't spread to their party. `/rep <player> dndclasses:kobolds reset` clears it too.
-- Kobolds have no home yet: warrens and lairs (other cards) register theirs through `KoboldCourage.registerHome`.
+- Lairs (another card) register their home through `KoboldCourage.registerHome`; warrens already do.
 
 ## For developers
 - Package `mattonfire.dnd.entity.kobold`: `Kobolds` (registration, tags, items, blocks, spawns, hooks), `KoboldEntity` (base: variant, courage cache, grudges, scared state, animations), `KoboldWarriorEntity`, `KoboldSlingerEntity`, `KoboldTrapmakerEntity` (`SettlementMerchant`), `KoboldDragonshieldEntity`, `KoboldCourage` (bravery, Pack Tactics, Sunlight Sensitivity), `KoboldVolleys`, `KoboldSnares`, `KoboldHostility`, `KoboldTribute` (tribute, dread), `KoboldTrades`, `KoboldPacks`, `KoboldSaves`, `ai/` goals.

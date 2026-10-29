@@ -218,6 +218,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, mattonfire.dnd.client.renderer.BeholderRenderer::new);
         // The drow (Underdark T4)
         mattonfire.dnd.client.drow.DrowClient.register();
+        // The kobolds (design 10, K1)
+        mattonfire.dnd.client.kobold.KoboldClient.register();
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();

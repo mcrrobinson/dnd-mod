@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:lightning_chaser",
+    "dndclasses:frost_drake",
+    {"id": "#dndclasses:ancient_dragons", "required": false}
+  ]
+}

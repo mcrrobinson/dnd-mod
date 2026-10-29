@@ -21,6 +21,7 @@
     "minecraft:illusioner",
     "minecraft:piglin",
     "minecraft:piglin_brute",
-    "#dndclasses:faction/drow"
+    "#dndclasses:faction/drow",
+    "#dndclasses:faction/kobolds"
   ]
 }

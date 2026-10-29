@@ -158,6 +158,9 @@ public final class MagicLoot {
         entity("beholder", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         entity("drow_matron", 0.15F, tier(l, 1));
         entity("river_pikehorn", 0.05F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
+        entity("kobold_dragonshield", 0.15F, tier(u, 1));
+        // The Ancient Red's hoard (D2's table; a no-op until it exists): the kobolds' offerings
+        chest("ancient_red_hoard", 1.0F, plain(mattonfire.dnd.entity.kobold.Kobolds.KOBOLD_TRINKET, 1, 3));
 
         // Bounties: known goods, identified
         gameplay("bounty_minor", 0.10F, true, tier(u, 1));

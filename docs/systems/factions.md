@@ -29,6 +29,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | The Goblin Horde (`dndclasses:goblins`) | goblin warriors, the Warlord | goblin camps | -600 (Hostile) | hobbits -0.5, dwarves -0.5, Sylvan Court -0.5, Dragonsworn -0.5 |
 | The Grey Clans (`dndclasses:duergar_clans`) | [duergar](../mobs/duergar.md): Soldiers, Arbalesters, the Factor and the Taskmaster | [Duergar Holds](../structures/duergar-holds.md) | -250 (Unfriendly); Gnomes -400 (Unfriendly), Dwarves -550 (Hostile) | dwarves -0.5, the drow -0.25, Tinkers' Guild -0.25 |
 | The Spider Houses (`dndclasses:drow`) | the [drow](../mobs/drow.md): Warriors, Mages, Priestesses, Elites and the [Matron Mother](../bosses/matron-mother.md) | [Drow Outposts](../structures/drow-outposts.md), the [Drow Spire](../structures/drow-spire.md) | -700 (Hostile); Elves -900 | Sylvan Court -0.5, Grey Clans -0.25 |
+| The Kobold Tribes (`dndclasses:kobolds`) | the [kobolds](../mobs/kobolds.md): Kobolds, Slingers, Trapmakers and Dragonshields | kobold warrens (when they exist) | -300 (Unfriendly); Dragonborn 0 (Neutral), Gnomes -600 (Hostile) | Tinkers' Guild -0.25, Dragonsworn -0.25 |
 
 - **Sources**:
 
@@ -50,6 +51,7 @@ Hobbits, Mountain Dwarves, the elves of the Sylvan Court, the Dragonsworn of the
 | Free a captive from a [Drow Outpost](../structures/drow-outposts.md) pen (hobbit / mountain dwarf; an elf gives the Sylvan Court +40) | +40 | +40 | | none |
 
 - **Rivals** lose a share of *gains* from bounties, trades and (later) quests: a +20 bounty for the hobbits is also -10 for the goblins. Losses under a point carry over per rival, so small gains add up: each +1 trade with the Grey Clans costs the dwarves 0.5, a whole point every second trade. Kills and raid wins already list every faction they touch, so rivals don't add to them, and rival losses never chain.
+- **Dragon kills**: the Kobold Tribes lose 5 for a Wyvern or Ember Wyvern, 60 for a Lightning Chaser or Frost Drake and 400 for an Ancient dragon, uncapped (`monster_kill_overrides`); the Dragonsworn gain 100 for an Ancient. Gold left in a kobold Dragon Tribute Bowl is tribute: +2 an ingot, +18 a block, +1 a Kobold Trinket, 40 a day (see [Kobolds](../mobs/kobolds.md) for their tiers).
 - **Drow kills**: every [drow](../mobs/drow.md) killed gives the Sylvan Court +30, with no daily cap (an `enemy_kill_overrides` entry for `#dndclasses:faction/drow`), and the Grey Clans +15 (their `enemy_kills`, no daily cap).
 - Kills by your tamed pets count as yours.
 - **Daily caps** reset when the in-game day changes (`timeOfDay / 24000`).
@@ -151,6 +153,7 @@ Each faction is a data file, `data/<namespace>/factions/<id>.json`; a data pack 
 | `enemy_kill_overrides` | `{"<matcher>": n}`: uncapped gain for particular enemies (bosses) |
 | `kill_cap` | Daily cap on `enemy_kills` and `monster_kills` gains (0 = none) |
 | `monster_kills` | `{"<matcher>": n}`: gain for killing a creature that isn't in an enemy faction (capped by `kill_cap`). The Mountain Dwarves have `{"dndclasses:rust_monster": 3}` |
+| `monster_kill_overrides` | `{"<matcher>": n}`: uncapped change, which may be negative, for killing a creature that isn't in an enemy faction; checked before `monster_kills`. The Kobold Tribes have `{"dndclasses:lightning_chaser": -60, "#dndclasses:ancient_dragons": -400, ...}` |
 | `raid_won` | Gain when a goblin raid on one of `settlements` is won, scaled by the settlement's health left (see [Goblin raids](goblin-raids.md)) |
 | `raid_lost` | Change when a goblin raid on one of `settlements` is lost: the settlement's health ran out |
 | `raid_defeated` | Change when a raid by this faction's members is beaten |

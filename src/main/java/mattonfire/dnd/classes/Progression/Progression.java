@@ -11,6 +11,9 @@ import mattonfire.dnd.classes.Abilities.AbilityIncreases;
 import mattonfire.dnd.classes.Abilities.AbilityScores;
 import mattonfire.dnd.classes.Abilities.Contribution;
 import mattonfire.dnd.classes.DnDClasses;
+import mattonfire.dnd.classes.Feats.Feat;
+import mattonfire.dnd.classes.Feats.FeatChoice;
+import mattonfire.dnd.classes.Feats.Feats;
 import mattonfire.dnd.classes.DndCharacter;
 import mattonfire.dnd.classes.IEntityDataSaver;
 import mattonfire.dnd.classes.PlayerEntityExt;
@@ -128,6 +131,8 @@ public final class Progression {
                 });
 
         ProgressionEvents.register();
+        // After the class skills, so Lucky's reroll comes after Dark One's Own Luck
+        Feats.register();
     }
 
     public static DndCharacter classOf(PlayerEntity player) {
@@ -221,6 +226,8 @@ public final class Progression {
         AbilityScores.invalidate(player);
         // and the attunement slots (Artificer) and the Forge blessing (subclass)
         mattonfire.dnd.magic.Attunement.sync(player);
+        // Tough's health and Mobile's speed follow the feats and the level
+        Feats.refresh(player);
     }
 
     /** Gives XP in the player's current class, announcing any level-up. */
@@ -253,7 +260,14 @@ public final class Progression {
             if (reachedAsiLevel(oldLevel, newLevel) && progress.asiPoints() > 0) {
                 int asi = progress.asiPoints();
                 player.sendMessage(Text.literal("You have " + asi + " ability point" + (asi == 1 ? "" : "s")
-                        + ": spend them at an Attunement Table (Character tab).").formatted(Formatting.AQUA), false);
+                        + ": spend them at an Attunement Table (Character tab)"
+                        + (asi >= ClassProgress.FEAT_COST ? ", or take one feat instead." : "."))
+                        .formatted(Formatting.AQUA), false);
+            }
+            if (oldLevel < ClassProgress.FEAT_LEVEL && newLevel >= ClassProgress.FEAT_LEVEL
+                    && progress.freeFeatSlotsLeft() > 0) {
+                player.sendMessage(Text.literal("You can choose a feat at an Attunement Table (Character tab).")
+                        .formatted(Formatting.AQUA), false);
             }
         }
         sync(player);
@@ -308,6 +322,84 @@ public final class Progression {
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP,
                 SoundCategory.PLAYERS, 0.8F, 1.4F);
         return true;
+    }
+
+    /**
+     * Takes a feat in the player's current class, paid with a free feat slot if there is one, else
+     * {@link ClassProgress#FEAT_COST} ability points. Needs an Attunement Table.
+     *
+     * @param ability the ability for Resilient (ignored by the other feats)
+     * @param force skip the table and payment checks (admin command): paid as a free feat, which may go past the
+     *            slots
+     * @return whether it was taken
+     */
+    public static boolean chooseFeat(ServerPlayerEntity player, Feat feat, Ability ability, boolean force) {
+        ClassProgress progress = current(player);
+        if (progress.dndClass == DndCharacter.NONE || feat == null)
+            return false;
+        if (feat.perAbility() && ability == null) {
+            player.sendMessage(Text.literal(feat.displayName() + " needs an ability.").formatted(Formatting.RED),
+                    true);
+            return false;
+        }
+        Ability chosenAbility = feat.perAbility() ? ability : null;
+        if (progress.hasFeat(feat, chosenAbility)) {
+            player.sendMessage(Text.literal("You've already taken " + feat.displayName()
+                    + (chosenAbility == null ? "" : " (" + chosenAbility.shortKey() + ")") + ".")
+                    .formatted(Formatting.RED), true);
+            return false;
+        }
+        FeatChoice.Source source;
+        if (force) {
+            source = FeatChoice.Source.FREE;
+        } else {
+            if (!atAttunementTable(player)) {
+                player.sendMessage(Text.literal("Feats can only be chosen at an Attunement Table.")
+                        .formatted(Formatting.RED), true);
+                return false;
+            }
+            source = progress.nextFeatSource();
+            if (source == null) {
+                player.sendMessage(Text.literal("You need a feat slot (level " + ClassProgress.FEAT_LEVEL + ") or "
+                        + ClassProgress.FEAT_COST + " ability points to take a feat.").formatted(Formatting.RED), true);
+                return false;
+            }
+        }
+        progress.feats.add(new FeatChoice(feat, chosenAbility, source));
+        save(player, progress);
+        sync(player);
+        AbilityScores.invalidate(player);
+
+        FeatChoice choice = progress.feats.get(progress.feats.size() - 1);
+        DnDClasses.LOGGER.info("[Feats] {} took {} ({})", player.getEntityName(), choice.label(), source.id());
+        player.getServer().getPlayerManager().broadcast(Text.literal(title(player) + " has taken the feat "
+                + choice.label() + ".").formatted(Formatting.GOLD), false);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_LEVELUP,
+                SoundCategory.PLAYERS, 0.8F, 1.0F);
+        return true;
+    }
+
+    /**
+     * Removes feats from the player's current class (admin command, Tome of Clear Thought). Free slots and ability
+     * points come back, as they're worked out from what's left.
+     *
+     * @param feat the feat, or null for all of them
+     * @param ability Resilient's ability; null removes every Resilient
+     * @return how many were removed
+     */
+    public static int removeFeats(ServerPlayerEntity player, Feat feat, Ability ability) {
+        ClassProgress progress = current(player);
+        int before = progress.feats.size();
+        progress.feats.removeIf(choice -> feat == null || choice.matches(feat, ability));
+        int removed = before - progress.feats.size();
+        if (removed > 0) {
+            save(player, progress);
+            sync(player);
+            AbilityScores.invalidate(player);
+            DnDClasses.LOGGER.info("[Feats] {} lost {} feat(s) ({})", player.getEntityName(), removed,
+                    feat == null ? "all" : feat.id());
+        }
+        return removed;
     }
 
     public static void setXp(ServerPlayerEntity player, DndCharacter dndClass, int xp) {

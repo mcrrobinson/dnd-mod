@@ -24,7 +24,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 16 | Frostbrand | Very Rare weapon (sword) | yes | 9 damage, 1.6 speed. Hits give Slowness II for 3 s, 15% chance to Freeze for 2 s; in your hand, you can't be frozen and the Frost Drake's breath can't touch you |
 | 17 | Phylactery Locket | Very Rare wondrous item (amulet) | yes, Wizard, Necromancer or Warlock | A killing blow leaves you on 2 HP with Resistance V for 3 s and blinks you about 8 blocks away. Recharges on a long rest or after 20 min |
 | 18 | The Burglar's Ring | Very Rare ring | yes, always cursed (The Ring's Call) | Sneak still for a second: invisible until you attack or stop sneaking; mobs lose you beyond 4 blocks |
-| 19 | Tome of Clear Thought | Very Rare consumable | no | Read near an Attunement Table: clears your current class's subclass and refunds its points |
+| 19 | Tome of Clear Thought | Very Rare consumable | no | Read near an Attunement Table: clears your current class's subclass and refunds its points and every feat |
 | 20 | Eye of the Tyrant | Legendary wondrous item | yes | Right-click a creature within 32 blocks: a random eye ray (Paralysis, Telekinesis or Disintegration). 3 charges. You're immune to the Beholder's anti-magic cone |
 | 21 | Gorgon's Gaze | Rare wondrous item | yes | Once per dawn, right-click a mob within 12 blocks (not a boss): CON save DC 14 or it's Petrified for good, a statue |
 | 22 | Matron's Scourge | Very Rare weapon (whip) | yes | 7 damage, 1.6 speed, +1 reach. Hits carry Drow Poison (CON 14); once every 30 s a hit frightens the target (WIS 14, 4 s) |
@@ -67,7 +67,8 @@ Every item below works only while its magic is awake: it's identified, you're no
 
 ### Tome of Clear Thought
 - Read it (right-click) within 4 blocks of an [Attunement Table](../systems/class-progression.md) (or at the table you last opened). It clears the subclass of your current class and refunds every node only that subclass could have (and the capstone), with their ranks. Chat says how many points came back.
-- It's used up only if there was a subclass to clear ("You have no subclass to forget.").
+- It also refunds every [feat](../systems/feats.md) of your current class: free feat slots and ability points come back, and you can choose again.
+- It's used up only if there was a subclass or a feat to clear ("You have no subclass or feat to forget.").
 
 ### Warlord's Warhorn
 - Right-click to sound it (a raid horn, heard far away). You and every [party](../systems/party.md) member within 16 blocks get **Strength I** and **Speed I** for 15 s. Every goblin (Goblin Warriors, raid goblins, a Goblin Warlord) within 16 blocks gets **Frightened** for 6 s: it deals half damage, stops chasing you and runs from you (`ConditionFleeGoal`).

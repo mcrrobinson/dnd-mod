@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "#minecraft:axes",
+    "minecraft:trident",
+    "dndclasses:orcish_greataxe",
+    "dndclasses:dwarven_waraxe"
+  ]
+}

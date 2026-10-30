@@ -63,6 +63,7 @@ import net.minecraft.util.Identifier;
  * /dndclass rank <player> <skill> <n>        (ignores points, level and the attunement table)
  * /dndclass bestiary <player> learn|unlock <entity>
  * /dndclass subclass <player> <id|none>        (ignores level and the attunement table; none refunds)
+ * /dndclass feat <player> add <feat> [ability] | remove <feat|all> [ability] | list   (feats; add ignores the table)
  *
  * /dndclass rest <player> short|long         (applies the rest's benefits, ignoring its limits)
  * /dndclass charges <player> [n]
@@ -227,6 +228,7 @@ public class DndClassCommand {
                 .then(CommandManager.literal("downed")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::downedInfo)))
+                .then(FeatCommand.node())
                 .then(CommandManager.literal("resetprogress")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
                                 .executes(DndClassCommand::resetProgress)))

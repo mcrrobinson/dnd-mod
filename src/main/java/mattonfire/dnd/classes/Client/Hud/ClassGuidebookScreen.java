@@ -116,6 +116,7 @@ public final class ClassGuidebookScreen {
 
         if (yours) {
             abilitiesPage(pages, info);
+            featsPages(pages);
         }
 
         if (!info.subclasses().isEmpty()) {
@@ -174,6 +175,25 @@ public final class ClassGuidebookScreen {
         pages.section(Text.translatable("book.dndclasses.class_guidebook.ability_points",
                 ClassProgress.ASI_POINTS_PER_LEVEL, ClassProgress.ASI_LEVELS[0], ClassProgress.ASI_LEVELS[1],
                 Contribution.NATURAL_CAP));
+    }
+
+    /** "Feats": when you get them and every feat's rules, from the {@code Feat} enum. */
+    private static void featsPages(Pages pages) {
+        List<Text> lines = new ArrayList<>();
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.feats").formatted(Formatting.BOLD,
+                Formatting.DARK_AQUA));
+        lines.add(Text.translatable("book.dndclasses.class_guidebook.feats_intro", ClassProgress.FEAT_LEVEL,
+                ClassProgress.ASI_LEVELS[0], ClassProgress.ASI_LEVELS[1], ClassProgress.FEAT_COST));
+        for (mattonfire.dnd.classes.Feats.Feat feat : mattonfire.dnd.classes.Feats.Feat.values()) {
+            lines.add(Text.literal(""));
+            boolean taken = ClassProgress.client.hasFeat(feat);
+            lines.add(Text.literal(feat.displayName() + (taken ? " (taken)" : "")).formatted(Formatting.BOLD,
+                    taken ? Formatting.DARK_GREEN : Formatting.DARK_PURPLE));
+            for (String sentence : feat.description().split("(?<=\\.) ")) {
+                lines.add(Text.literal(sentence));
+            }
+        }
+        pages.section(lines.toArray(Text[]::new));
     }
 
     /** "Your heritage": the race's summary, ability bonuses, body modifiers and traits. */

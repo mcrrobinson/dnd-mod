@@ -1,0 +1,237 @@
+# Feat effects in combat (docs/systems/feats.md): Great Weapon Master, Mobile, Sentinel, Alert, War Caster, Lucky.
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/feats-combat.txt
+# Expect in latest.log:
+#  gwm-toggle: actionbar "Power Attack: on"
+#  gwm-fumble: "[D20] Dev Attack Roll 3 ... -> FUMBLE" (3 fumbles with Power Attack and an axe)
+#  gwm-power: "[Feats] Dev Power Attack +5.0 on Zombie (x -> x+5)"
+#  gwm-cleave: a 20 crits, "[Feats] Dev Cleave (critical) -> swing ready", and the swing 12 ticks later (an axe
+#              needs 25) is full strength, so it rolls again (the forced 3 fumbles); gwm-kill: "Cleave (kill)"
+#  gwm-sword: with a sword (not heavy) a 3 is no fumble and there's no +5 line
+#  mobile: movement_speed 0.1 -> 0.11; sprinting into cobwebs "speed: 0.2..." with Mobile, "speed: 0.0..." without;
+#          a husk that was hit logs "Mobile hit and run: Husk attacks with disadvantage"
+#  sentinel: the hit zombie has Slowness amplifier 2; "/damage" on the villager logs "Sentinel: Zombie hurt Villager,
+#            marked"; forceroll 1 12 then is no fumble (advantage) and logs "guardian strike: Zombie restrained"
+#  alert: "[Feats] Dev Alert: first to act (targeted)" and Speed + Haste in ActiveEffects
+#  warcaster: "[D20] Dev CON save 17 (3 adv)"; a fireball with a sword: Test failed without the feat, passed with it;
+#             "War Caster opportunity bolt -> Husk"
+#  lucky: lockpick "Lucky (2 left): rerolling 1 (FUMBLE)" then success; two more saves spend points 2 and 3; the
+#         4th failure has no reroll; feat list "luck points 0"; after a long rest "luck points 3"
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule keepInventory true
+/gamerule mobGriefing false
+/time set noon
+/kill @e[tag=feat]
+/fill -6 149 -6 6 149 16 minecraft:stone
+/fill -6 150 -6 6 155 16 minecraft:air
+/dndclass set @s fighter
+wait 10
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/dndclass feat @s toggle off
+/dndclass xp @s set 1000
+/dndclass forceroll @s clear
+/effect give @s minecraft:resistance 600 4 true
+/effect give @s minecraft:saturation 600 1 true
+# ---- Great Weapon Master ----
+/dndclass feat @s add great_weapon_master
+/give @s minecraft:iron_axe
+/give @s minecraft:iron_sword
+hotbar 0
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,Silent:1b,Tags:["feat","gwm"],Attributes:[{Name:"generic.max_health",Base:300d}],Health:300f}
+/tp @s 0.5 150 0.5 0 20
+wait 5
+/say gwm-toggle
+press key.dnd-classes.feat-toggle
+wait 5
+actionbar
+/say gwm-fumble
+/dndclass forceroll @s 3
+attack
+wait 30
+/say gwm-power
+/dndclass forceroll @s 10
+attack
+wait 30
+/say gwm-cleave
+/dndclass forceroll @s 20 3
+attack
+wait 12
+attack
+wait 30
+/say gwm-kill
+/dndclass forceroll @s clear
+/kill @e[tag=gwm]
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,Silent:1b,Tags:["feat","gwm2"],Health:1f}
+wait 3
+/dndclass forceroll @s 10
+attack
+wait 30
+/say gwm-sword
+/dndclass forceroll @s clear
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,Silent:1b,Tags:["feat","gwm3"],Attributes:[{Name:"generic.max_health",Base:300d}],Health:300f}
+hotbar 1
+wait 30
+/dndclass forceroll @s 3
+attack
+wait 30
+/kill @e[tag=feat]
+hotbar 0
+# ---- Mobile ----
+/say mobile
+/dndclass feat @s remove all
+/attribute @s minecraft:generic.movement_speed get
+/dndclass feat @s add mobile
+/attribute @s minecraft:generic.movement_speed get
+/fill 0 150 5 0 151 14 minecraft:cobweb
+/tp @s 0.5 150 2.5 0 0
+wait 5
+holdkey key.sprint on
+walk on
+wait 14
+speed
+wait 4
+speed
+walk off
+holdkey key.sprint off
+/say mobile-without
+/dndclass feat @s remove mobile
+/tp @s 0.5 150 2.5 0 0
+wait 5
+holdkey key.sprint on
+walk on
+wait 14
+speed
+wait 4
+speed
+walk off
+holdkey key.sprint off
+/fill 0 150 5 0 151 14 minecraft:air
+/say mobile-hit-and-run
+/dndclass forceroll @s clear
+/dndclass feat @s add mobile
+/tp @s 0.5 150 0.5 0 20
+/summon minecraft:husk 0.5 150 2.0 {Tags:["feat","mob"],Attributes:[{Name:"generic.max_health",Base:300d}],Health:300f}
+wait 5
+/dndclass forceroll @s 10
+attack
+wait 50
+/kill @e[tag=feat]
+/dndclass feat @s remove all
+# ---- Sentinel ----
+/say sentinel
+/dndclass forceroll @s clear
+/dndclass feat @s add sentinel
+/summon minecraft:zombie 0.5 150 2.5 {NoAI:1b,Silent:1b,Tags:["feat","sent"],Attributes:[{Name:"generic.max_health",Base:300d}],Health:300f}
+/summon minecraft:villager 2.5 150 2.5 {NoAI:1b,Silent:1b,Tags:["feat","vil"]}
+/tp @s 0.5 150 0.5 0 20
+wait 5
+/dndclass forceroll @s 10
+attack
+wait 3
+/data get entity @e[tag=sent,limit=1] ActiveEffects
+wait 30
+/say sentinel-guardian
+/dndclass forceroll @s clear
+/damage @e[tag=vil,limit=1] 1 minecraft:mob_attack by @e[tag=sent,limit=1]
+wait 10
+/dndclass forceroll @s 1 12
+attack
+wait 5
+/dndcondition list @e[tag=sent,limit=1]
+wait 30
+/kill @e[tag=feat]
+/dndclass feat @s remove all
+# ---- Alert ----
+/say alert
+/effect clear @s minecraft:speed
+/dndclass feat @s add alert
+/summon minecraft:husk 0.5 150 9.5 {Tags:["feat","alertz"]}
+wait 30
+target @e[tag=alertz]
+/data get entity @s ActiveEffects
+/kill @e[tag=feat]
+/dndclass feat @s remove all
+# ---- War Caster (Warlock) ----
+/say warcaster
+/dndclass forceroll @s clear
+/dndclass set @s warlock
+wait 10
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/dndclass xp @s set 1000
+/dndclass forceroll @s 3 17
+/dm save @s con 30
+wait 15
+/give @s minecraft:iron_sword
+hotbar 0
+look 0 -30
+wait 5
+/say warcaster-sword-without
+use
+wait 2
+/execute if entity @e[type=minecraft:small_fireball]
+/kill @e[type=minecraft:small_fireball]
+/dndclass feat @s add war_caster
+/dndclass forceroll @s 3 17
+/dm save @s con 30
+wait 15
+/say warcaster-sword-with
+wait 40
+use
+wait 2
+/execute if entity @e[type=minecraft:small_fireball]
+/kill @e[type=minecraft:small_fireball]
+/say warcaster-bolt
+/tp @s 0.5 150 0.5 0 0
+/summon minecraft:husk 0.5 150 6.5 {Tags:["feat","boltz"],Attributes:[{Name:"generic.max_health",Base:300d}],Health:300f}
+wait 60
+/kill @e[tag=feat]
+# ---- Lucky (Rogue) ----
+/say lucky
+/dndclass forceroll @s clear
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/dndclass xp @s set 1000
+/dndclass feat @s add lucky
+/dndclass rest @s long
+/setblock 3 150 5 minecraft:chest{LootTable:"minecraft:chests/simple_dungeon"}
+/tp @s 3.5 150 3.5 0 35
+wait 10
+/dndclass forceroll @s 1 15
+use
+wait 20
+closescreen
+/say lucky-saves
+/dndclass forceroll @s 1 1
+/dm save @s con 30
+wait 15
+/dndclass forceroll @s 1 1
+/dm save @s con 30
+wait 15
+/dndclass forceroll @s 1 1
+/dm save @s con 30
+wait 15
+/dndclass feat @s list
+/dndclass forceroll @s clear
+/dndclass rest @s long
+wait 5
+/say lucky-rest
+/dndclass feat @s list
+/setblock 3 150 5 minecraft:air
+/dndclass set @s fighter
+wait 10
+closescreen
+quit

@@ -34,7 +34,8 @@ import net.minecraft.world.World;
  * Bag of Holding (Uncommon wondrous item): right-click opens a private {@value #SIZE}-slot inventory kept in
  * the bag's own NBT ({@value #ITEMS_KEY}), so it travels with the item. A Bag can't go inside a Bag ("That
  * would tear a hole in space."), and the open bag's own slot is locked so it can't be moved while open.
- * The screen is the vanilla 9x3 chest screen, so the client needs nothing extra.
+ * The screen is the vanilla 9x3 chest screen, so the client needs nothing extra. A Portable Hole put inside
+ * tears an {@link AstralRift}: both are lost.
  */
 public class BagOfHoldingItem extends Item {
     public static final int SIZE = 27;
@@ -154,6 +155,15 @@ public class BagOfHoldingItem extends Item {
                 return;
             }
             super.onSlotClick(slotIndex, button, actionType, player);
+            // A Portable Hole inside the Bag: the screen took it, and an Astral rift tears open at the end of the tick
+            if (!player.getWorld().isClient) {
+                for (int i = 0; i < SIZE; i++) {
+                    if (PortableHoleItem.isHole(getInventory().getStack(i))) {
+                        AstralRift.scheduleBag(player, bag);
+                        break;
+                    }
+                }
+            }
         }
 
         @Override

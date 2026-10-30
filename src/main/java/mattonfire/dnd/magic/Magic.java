@@ -59,6 +59,7 @@ public final class Magic {
         registerEffects();
         WondrousItems.register();
         mattonfire.dnd.magic.items.BossItems.register();
+        mattonfire.dnd.magic.items.PlanarItems.register();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> MagicCommand
                 .register(dispatcher));
     }

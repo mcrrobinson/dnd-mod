@@ -114,10 +114,13 @@ public final class MagicLoot {
         chest("beholder_lair", 1.0F, tier(r, 40), tier(vr, 45), tier(l, 15));
         chest("beholder_lair", 0.04F, named(ModItems.IMMOVABLE_ROD));
         chest("beholder_lair", 0.02F, named(ModItems.EYE_OF_THE_TYRANT));
+        chest("beholder_lair", 0.04F, named(mattonfire.dnd.magic.items.PlanarItems.PORTABLE_HOLE));
+
         // The Ancient Red's hoard hall: four hoard chests and the Hoard Coffer behind its sleeping hollow
         chest("ancient_red_hoard", 1.0F, tier(r, 50), tier(vr, 40), tier(l, 10));
         chest("ancient_red_hoard_coffer", 1.0F, tier(vr, 50), tier(l, 50));
         chest("ancient_red_hoard_coffer", 0.25F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
+        chest("ancient_red_hoard_coffer", 0.10F, named(mattonfire.dnd.magic.items.PlanarItems.DECK_OF_MANY_THINGS));
 
         // Dragon Temples: a small chance in the monks' cells; the reliquary (locked at DC 15, guarded) always rolls,
         // mostly Rare. Its staff chances stay in the JSON.
@@ -140,6 +143,7 @@ public final class MagicLoot {
         chest("cogsdeep_workshop", 0.05F, tier(u, 1));
         chest("cogsdeep_gems", 0.12F, tier(u, 80), tier(r, 20));
         chest("cogsdeep_vault", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
+        chest("cogsdeep_vault", 0.06F, named(mattonfire.dnd.magic.items.PlanarItems.PORTABLE_HOLE));
 
         // The Underdark's drow: the outpost shrine's reliquary (its 20% Rare roll is in the JSON) and the Drow Spire
         // (the treasure loft behind the Arcane Seal always rolls; the priestesses' cells now and then)
@@ -199,6 +203,7 @@ public final class MagicLoot {
         vanilla("stronghold_library", 0.03F, named(ModItems.MACE_OF_DISRUPTION));
         vanilla("stronghold_library", 0.02F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         vanilla("end_city_treasure", 0.15F, tier(vr, 85), tier(l, 15));
+        vanilla("woodland_mansion", 0.02F, named(mattonfire.dnd.magic.items.PlanarItems.DECK_OF_MANY_THINGS));
     }
 
     static LootPool.Builder build(Pool pool) {

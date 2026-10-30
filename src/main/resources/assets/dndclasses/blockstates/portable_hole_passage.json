@@ -1,0 +1,5 @@
+{
+  "variants": {
+    "": { "model": "dndclasses:block/portable_hole_passage" }
+  }
+}

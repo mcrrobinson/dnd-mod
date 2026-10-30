@@ -48,6 +48,9 @@ import net.minecraft.util.Identifier;
  * /dndmagic curse &lt;player&gt; &lt;curse&gt; [known]   (curses the main-hand item; unknown unless "known")
  * /dndmagic uncurse &lt;player&gt;    (lifts the main-hand item's curse; its cursed bond becomes a normal one)
  *
+ * /dndmagic deck &lt;player&gt; next &lt;card&gt;   (rigs the next card of the Deck of Many Things in their main hand)
+ * /dndmagic deck &lt;player&gt; clear         (lifts every lasting Deck of Many Things effect from the player)
+ *
  * Given items are identified unless "unidentified" is added.
  */
 public final class MagicCommand {
@@ -108,7 +111,16 @@ public final class MagicCommand {
                                 .executes(MagicCommand::bonds)))
                 .then(CommandManager.literal("info")
                         .then(CommandManager.argument("player", EntityArgumentType.player())
-                                .executes(MagicCommand::info))));
+                                .executes(MagicCommand::info)))
+                .then(CommandManager.literal("deck")
+                        .then(CommandManager.argument("player", EntityArgumentType.player())
+                                .then(CommandManager.literal("next")
+                                        .then(CommandManager.argument("card", StringArgumentType.word())
+                                                .suggests((c, b) -> CommandSource.suggestMatching(Arrays.stream(
+                                                        mattonfire.dnd.magic.items.DeckCards.Card.values())
+                                                        .map(mattonfire.dnd.magic.items.DeckCards.Card::id), b))
+                                                .executes(MagicCommand::deckNext)))
+                                .then(CommandManager.literal("clear").executes(MagicCommand::deckClear)))));
     }
 
     private static int give(CommandContext<ServerCommandSource> context, boolean hasTier, boolean hasPlus,
@@ -133,6 +145,29 @@ public final class MagicCommand {
         player.getInventory().offerOrDrop(stack);
         context.getSource().sendFeedback(Text.literal("Gave ").append(name).append(" to ")
                 .append(player.getDisplayName()), true);
+        return 1;
+    }
+
+    private static int deckNext(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        String id = StringArgumentType.getString(context, "card");
+        var card = mattonfire.dnd.magic.items.DeckCards.Card.byId(id);
+        if (card == null)
+            throw new SimpleCommandExceptionType(Text.literal("Unknown card: " + id)).create();
+        ItemStack deck = player.getMainHandStack();
+        if (!mattonfire.dnd.magic.items.DeckOfManyThingsItem.isDeck(deck))
+            throw new SimpleCommandExceptionType(Text.literal("Hold a Deck of Many Things in your main hand.")).create();
+        mattonfire.dnd.magic.items.DeckOfManyThingsItem.rig(deck, card);
+        context.getSource().sendFeedback(Text.literal("The next card of ").append(player.getDisplayName())
+                .append("'s deck is ").append(card.title()), true);
+        return 1;
+    }
+
+    private static int deckClear(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+        ServerPlayerEntity player = EntityArgumentType.getPlayer(context, "player");
+        mattonfire.dnd.magic.items.DeckCurses.clear(player);
+        context.getSource().sendFeedback(Text.literal("Lifted the deck's effects from ").append(player.getDisplayName()),
+                true);
         return 1;
     }
 

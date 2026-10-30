@@ -359,6 +359,12 @@ public final class D20 {
             }
             Advantage mode = Advantage.resolve(advantages, disadvantages);
             int rerolled = 0;
+            if (consumeWish(player)) {
+                // A Moon wish (Deck of Many Things): this roll is a natural 20, whatever the dice say
+                return finish(new Roll(label, ability, kind, 20, 0, Advantage.NORMAL, 0, total(),
+                        List.copyOf(bonuses), dc, 20 <= fumbleRange(player) ? Outcome.FUMBLE : Outcome.CRITICAL,
+                        display, flags));
+            }
             int a = d20(player);
             if (rerollNaturalOnes && a == 1) {
                 a = d20(player);
@@ -454,6 +460,35 @@ public final class D20 {
         for (java.util.function.ToIntFunction<LivingEntity> source : FUMBLE_RANGES)
             range = Math.max(range, source.applyAsInt(roller));
         return range;
+    }
+
+    /** Players whose next roll is a wished natural 20 (set by a {@link Reroll} that grants a wish). */
+    private static final java.util.Set<UUID> WISH_NEXT = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    /** World time of each player's last wished roll, so effects keyed on a natural 20 can tell (Vorpal). */
+    private static final Map<UUID, Long> LAST_WISH = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
+     * Makes the player's next d20 roll a natural 20 (the Deck of Many Things' Moon). A {@link Reroll} calls it
+     * from {@code claim}, so the second roll is the wished one.
+     */
+    public static void wishNext(PlayerEntity player) {
+        WISH_NEXT.add(player.getUuid());
+    }
+
+    private static boolean consumeWish(LivingEntity roller) {
+        if (!WISH_NEXT.remove(roller.getUuid()))
+            return false;
+        LAST_WISH.put(roller.getUuid(), roller.getWorld().getTime());
+        return true;
+    }
+
+    /**
+     * Whether the roller's d20 roll this tick was a wish rather than a real die: effects that need the die itself
+     * (the Vorpal Sword's natural 20) check it.
+     */
+    public static boolean wishedThisTick(LivingEntity roller) {
+        Long at = LAST_WISH.get(roller.getUuid());
+        return at != null && at == roller.getWorld().getTime();
     }
 
     /** The highest natural that fumbles for this roller on this kind of roll. */

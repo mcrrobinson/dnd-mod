@@ -29,12 +29,18 @@ import net.minecraft.village.TradeOfferList;
  * <li>Kin stock, to Tieflings only: Infernal Regalia ({@link KinStockOffers#brimstoneSanctum()}).</li>
  * <li>Class stock: a Warlock may buy one piece of the Wither set (20 emeralds; which piece is rolled per
  * Pactbroker), an Alchemist a Fast Brewing Stand (12).</li>
+ * <li>Bargains, once per player ever: a Portable Hole at Honored or better ({@value #HOLE_PRICE} emeralds), and at
+ * Exalted the Deck of Many Things ({@value #DECK_PRICE} emeralds and a netherite ingot, "a devil's bargain").</li>
  * </ul>
  */
 public final class TieflingTrades {
     public static final int WITHER_PRICE = 20;
     public static final int BREWING_STAND_PRICE = 12;
     public static final int SCRAP_PRICE = 24;
+    public static final int HOLE_PRICE = 32;
+    public static final int DECK_PRICE = 48;
+    /** Persistent player data: the once-ever bargains the player has struck. */
+    public static final String BARGAINS_KEY = "dndPactBargains";
 
     private TieflingTrades() {
     }
@@ -87,6 +93,53 @@ public final class TieflingTrades {
         TradeOfferList offers = new TradeOfferList();
         offers.add(sell(BREWING_STAND_PRICE, new ItemStack(ModBlocks.FAST_BREWING_STAND_BLOCK)));
         return offers;
+    }
+
+    /**
+     * The once-ever bargains this customer may strike: a Portable Hole at Honored or better, the Deck of Many
+     * Things at Exalted. Each is offered until the player has bought it ({@link #traded}).
+     */
+    static java.util.List<TradeOffer> bargains(PlayerEntity customer, Entity npc) {
+        java.util.List<TradeOffer> offers = new java.util.ArrayList<>();
+        mattonfire.dnd.faction.ReputationTier tier = mattonfire.dnd.faction.TierEffects.tierWith(customer, npc);
+        net.minecraft.nbt.NbtCompound struck = bargains(customer);
+        if (tier.ordinal() >= mattonfire.dnd.faction.ReputationTier.HONORED.ordinal() && !struck.getBoolean("Hole")) {
+            offers.add(NpcTrades.offer(new ItemStack(Items.EMERALD, HOLE_PRICE),
+                    identified(mattonfire.dnd.magic.items.PlanarItems.PORTABLE_HOLE), 1, NpcTrades.MERCHANT_XP * 5));
+        }
+        if (tier == mattonfire.dnd.faction.ReputationTier.EXALTED && !struck.getBoolean("Deck")) {
+            ItemStack deck = identified(mattonfire.dnd.magic.items.PlanarItems.DECK_OF_MANY_THINGS);
+            offers.add(new TradeOffer(new ItemStack(Items.EMERALD, DECK_PRICE), new ItemStack(Items.NETHERITE_INGOT),
+                    deck, 0, 1, NpcTrades.MERCHANT_XP * 10, NpcTrades.PRICE_MULTIPLIER));
+        }
+        return offers;
+    }
+
+    private static ItemStack identified(Item item) {
+        return mattonfire.dnd.magic.MagicItemLootFunction.apply(new ItemStack(item), null, null, true);
+    }
+
+    private static net.minecraft.nbt.NbtCompound bargains(PlayerEntity player) {
+        net.minecraft.nbt.NbtCompound data = ((mattonfire.dnd.classes.IEntityDataSaver) player).getPersistentData();
+        if (!data.contains(BARGAINS_KEY))
+            data.put(BARGAINS_KEY, new net.minecraft.nbt.NbtCompound());
+        return data.getCompound(BARGAINS_KEY);
+    }
+
+    /** A bargain struck: never offered to this player again. */
+    static void traded(net.minecraft.server.network.ServerPlayerEntity player, TradeOffer offer) {
+        ItemStack sold = offer.getSellItem();
+        if (sold.isOf(mattonfire.dnd.magic.items.PlanarItems.PORTABLE_HOLE)) {
+            bargains(player).putBoolean("Hole", true);
+        } else if (sold.isOf(mattonfire.dnd.magic.items.PlanarItems.DECK_OF_MANY_THINGS)) {
+            bargains(player).putBoolean("Deck", true);
+            player.sendMessage(net.minecraft.text.Text.translatable("entity.dndclasses.tiefling_pactbroker.devils_bargain")
+                    .formatted(net.minecraft.util.Formatting.DARK_RED, net.minecraft.util.Formatting.ITALIC), false);
+        } else {
+            return;
+        }
+        mattonfire.dnd.classes.DnDClasses.LOGGER.info("[Magic] {} struck a Pactbroker bargain: {}",
+                player.getEntityName(), sold.getName().getString());
     }
 
     static boolean isWarlock(PlayerEntity player, Entity npc) {

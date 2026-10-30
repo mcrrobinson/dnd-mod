@@ -8,9 +8,9 @@ Where [magic items](magic-items.md) turn up in the world. Every source rolls on 
 | Table | +N gear (weight) | Named items (weight) | Chance of a named item |
 |-|-|-|-|
 | Uncommon | +1 iron gear (swords and axes 8, armor 5), +1 diamond gear (3/2), bow 6, crossbow 4, trident 2 | Cloak of Protection 6, Wand of Magic Missiles 2, Immovable Rod, Bag of Holding, Decanter of Endless Water, Periapt of Wound Closure 1 each | 12 in 74 (16%) |
-| Rare | +2 iron gear (4/3), +2 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Ring of Protection 6; Staff of Ice, Fire and Lightning 2 each; Amulet of Health, Doss Lute, Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Gorgon's Gaze 1 each | 21 in 81 (26%) |
+| Rare | +2 iron gear (4/3), +2 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Ring of Protection 6; Staff of Ice, Fire and Lightning 2 each; Amulet of Health, Doss Lute, Warlord's Warhorn, Heart of the Furnace, Storm-Chaser Boots, Wyvern-Scale Cloak, Belt of Owlbear Might, Mace of Disruption, Gorgon's Gaze 1 each; Portable Hole 2 | 23 in 83 (28%) |
 | Very Rare | +3 diamond gear (6/4), bow 6, crossbow 4, trident 2 | Frostbrand 2, Tome of Clear Thought 2, Phylactery Locket 1, The Burglar's Ring 1 | 6 in 46 (13%) |
-| Legendary | +3 netherite gear (6/4), bow 4, crossbow 3, trident 3 | Eye of the Tyrant 6 | 6 in 44 (14%) |
+| Legendary | +3 netherite gear (6/4), bow 4, crossbow 3, trident 3 | Eye of the Tyrant 6, Deck of Many Things 1 | 7 in 45 (16%) |
 
 Cloak of Protection and Ring of Protection only come from these tables. The other named items also have their own sources (below and in the [boss drops](../items/magic-items.md#where-to-find-it)).
 
@@ -25,9 +25,9 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | Dwarven fortress treasury | 60%: Uncommon (50) / Rare (45) / Very Rare (5) | Bag of Holding 3%, Amulet of Health 3% |
 | [Dragon lair](../structures/dragon-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Storm-Chaser Boots 6% |
 | [Frost lair](../structures/frost-lairs.md) hoard | 1 roll: Rare (70) / Very Rare (30) | Frostbrand 8% |
-| [Beholder](../bosses/beholder.md) lair chest | 1 roll: Rare (40) / Very Rare (45) / Legendary (15) | Immovable Rod 4%, Eye of the Tyrant 2% |
+| [Beholder](../bosses/beholder.md) lair chest | 1 roll: Rare (40) / Very Rare (45) / Legendary (15) | Immovable Rod 4%, Portable Hole 4%, Eye of the Tyrant 2% |
 | [Ancient Red's lair](../structures/ancient-lairs.md) hoard chests (`chests/ancient_red_hoard`, 4 per lair) | 1 roll: Rare (50) / Very Rare (40) / Legendary (10) | |
-| Ancient Red's Hoard Coffer (`chests/ancient_red_hoard_coffer`) | 1 roll: Very Rare (50) / Legendary (50) | Tome of Clear Thought 25% |
+| Ancient Red's Hoard Coffer (`chests/ancient_red_hoard_coffer`) | 1 roll: Very Rare (50) / Legendary (50) | Tome of Clear Thought 25%, Deck of Many Things 10% |
 | [Dragon Temple](../structures/dragon-temples.md) reliquary (`chests/dragon_temple_reliquary`) | 1 roll: Rare (90) / Very Rare (10) | its Staffs of Fire, Ice and Lightning stay at 4% each |
 | Dragon Temple cell chests and storeroom barrels (`chests/dragon_temple_cell`) | 8%: Uncommon | |
 | [Orc stronghold](../structures/orc-strongholds.md) yurt chests (`chests/orc_stronghold_yurt`) | 5%: Uncommon | |
@@ -38,7 +38,7 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | Brimstone sanctum offering chest (`chests/brimstone_sanctum_altar`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | |
 | [Cogsdeep](../structures/cogsdeep.md) Commons, observatory and workshops (`chests/cogsdeep_commons`, `_workshop`) | 5%: Uncommon | |
 | Cogsdeep gem room (`chests/cogsdeep_gems`) | 12%: Uncommon (80) / Rare (20) | |
-| Cogsdeep clocktower strongbox (`chests/cogsdeep_vault`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | Gnomish Repeater 12%, Tinker's Goggles 12% (JSON) |
+| Cogsdeep clocktower strongbox (`chests/cogsdeep_vault`) | 60%: Uncommon (40) / Rare (50) / Very Rare (10) | Gnomish Repeater 12%, Tinker's Goggles 12% (JSON), Portable Hole 6% |
 | [Hobbit village](../structures/hobbit-villages.md) harvest chests | | Decanter of Endless Water 2% |
 | [Drow Outpost](../structures/drow-outposts.md) shrine reliquary (`chests/drow_shrine`) | 20%: Rare (in the JSON) | Piwafwi 3% |
 | [Drow Spire](../structures/drow-spire.md) cells (`chests/drow_spire_cells`) | 10%: Uncommon (70) / Rare (30) | |
@@ -54,6 +54,8 @@ Each pool is one roll with the chance shown; "1 roll" means it always rolls. Whe
 | [Goblin raid](goblin-raids.md) rewards (every kind) | 20%: Uncommon | hobbit village raids: The Burglar's Ring 2% |
 | Vanilla dungeon, mineshaft, desert pyramid, jungle temple chests | 8%: Uncommon | dungeon and mineshaft: Wand of Magic Missiles 2% |
 | Vanilla stronghold library, woodland mansion, bastion treasure, ancient city chests | 20%: Rare (70) / Very Rare (30) | Scroll of Identify (1-2) 25%; stronghold library: Scroll of Remove Curse 10%, Amulet of Health 4%, Mace of Disruption 3%, Tome of Clear Thought 2% |
+| Vanilla woodland mansion chests (on top of the row above) | | Deck of Many Things 2% |
+| Ancient Red Dragon hoard coffer (`chests/ancient_red_hoard_coffer`, once the lair exists) | | Deck of Many Things 10% |
 | Vanilla end city chests | 15%: Very Rare (85) / Legendary (15) | |
 | [Dungeons](../structures/dungeons.md) | the [dungeon loot](dungeon-loot.md) tables pick the tier per room; the Hoard Coffer always gives one | |
 

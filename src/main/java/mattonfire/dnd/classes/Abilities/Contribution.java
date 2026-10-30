@@ -26,6 +26,9 @@ public final class Contribution {
     final int[] base = filled(ABILITIES, 10);
     final int[] adds = new int[ABILITIES];
     final int[] atLeast = new int[ABILITIES];
+    final int[] shifts = new int[ABILITIES];
+    final int[] shiftFloor = filled(ABILITIES, MIN_SCORE);
+    final int[] shiftCeiling = filled(ABILITIES, NATURAL_CAP);
     final int[] overrides = filled(ABILITIES, -1);
     final int[] saveFlat = new int[ABILITIES];
     final int[] checkFlat = new int[ABILITIES];
@@ -79,6 +82,20 @@ public final class Contribution {
     public Contribution setAtLeast(Ability ability, int score, String source) {
         atLeast[ability.ordinal()] = Math.max(atLeast[ability.ordinal()], score);
         line(source, ability.shortKey(), "at least " + score);
+        return this;
+    }
+
+    /**
+     * Shifts a score after the natural cap: a raise may pass {@link #NATURAL_CAP} up to {@code ceiling}, a drop
+     * stops at {@code floor} (the Deck of Many Things: the Star's +2 up to 24, the Idiot's -1d4 down to 3, the
+     * Balance swapping two scores). Shifts on one score add up; the highest floor and ceiling count.
+     */
+    public Contribution shift(Ability ability, int amount, int floor, int ceiling, String source) {
+        int i = ability.ordinal();
+        shifts[i] += amount;
+        shiftFloor[i] = Math.max(shiftFloor[i], floor);
+        shiftCeiling[i] = Math.max(shiftCeiling[i], Math.min(MAX_SCORE, ceiling));
+        line(source, ability.shortKey(), signed(amount));
         return this;
     }
 
@@ -178,6 +195,11 @@ public final class Contribution {
             int natural = base[i] + adds[i];
             if (natural > NATURAL_CAP) {
                 natural = Math.max(base[i], NATURAL_CAP);
+            }
+            if (shifts[i] > 0) {
+                natural = Math.max(natural, Math.min(natural + shifts[i], shiftCeiling[i]));
+            } else if (shifts[i] < 0) {
+                natural = Math.min(natural, Math.max(natural + shifts[i], shiftFloor[i]));
             }
             int score = Math.max(natural, atLeast[i]);
             if (overrides[i] >= 0) {

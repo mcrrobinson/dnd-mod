@@ -1,0 +1,19 @@
+# Sending Stones, LAN guest: see sending-stones-host.txt. Run after the host's log has "Started serving on":
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/sending-stones-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25637 -PdevUser=DevGuest
+# Expect in run-2/logs/latest.log: "[CHAT] [Sending] Dev: Meet me at the old mill at dusk", then this client's free
+# reply goes out (the host logs "[Sending] DevGuest -> Dev (3 words, free reply)").
+wait 40
+closescreen
+waitchat step-send
+waitchat [Sending] Dev:
+wait 20
+closescreen
+hotbar 0
+use
+wait 5
+type On my way
+key enter
+wait 10
+screenshot sending-received
+waitchat host-done
+quit

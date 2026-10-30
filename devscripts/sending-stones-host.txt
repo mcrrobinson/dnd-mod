@@ -1,0 +1,147 @@
+# Sending Stones, LAN host (docs/items/magic-items.md). Two clients:
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/sending-stones-host.txt
+#   (once its log has "Started serving on") with a copy of run/ in run-2/:
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/sending-stones-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25637 -PdevUser=DevGuest
+# Expect in the host's latest.log:
+#  1. alone with one stone: actionbar "The stone stays cold. No one holds its twin.", charges still unset (3)
+#  2. holding both: "The stones hum against each other."
+#  3. the guest (in the Nether) gets it: "[Sending] Dev -> DevGuest (8 words)", host charges 2; the guest's free reply
+#     arrives "[CHAT] [Sending] DevGuest: On my way" and the guest's stone keeps 3 charges
+#  4. the next send is a free reply to the guest (charges stay 2), two more (charges 0), the 5th: "The stone is silent
+#     until dawn."
+#  5. a new day: charges 3 again
+#  6. 26 words: the screen shows "26/25 words" in red, Enter sends nothing and the charges stay 3
+#  7. Vorpal Sword on the guest (a player): "[Magic] Dev's Vorpal Sword bites DevGuest: +N (6d8)", the guest lives
+# The guest's log has "[CHAT] [Sending] Dev: Meet me at the old mill at dusk".
+# Screenshots: sending-screen, sending-too-long
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule sendCommandFeedback true
+/time set 1000
+/forceload add 298 298 302 302
+/tp @s 300.5 160 300.5 0 0
+/effect give @s minecraft:slow_falling 10 0 true
+wait 60
+/fill 298 149 298 302 149 302 minecraft:stone
+/fill 298 150 298 302 153 302 minecraft:air
+/tp @s 300.5 150 300.5 0 0
+/effect give @s minecraft:resistance 99999 4 true
+
+# 1. One stone, nobody holds the twin
+/give @s dndclasses:sending_stone{Pair:[I;11,22,33,44]} 1
+hotbar 0
+wait 5
+use
+wait 5
+type Is anyone there
+wait 2
+screenshot sending-screen
+key enter
+wait 10
+/data get entity @s SelectedItem.tag
+
+# 2. Both stones
+/give @s dndclasses:sending_stone{Pair:[I;11,22,33,44]} 1
+wait 5
+use
+wait 5
+type Hello me
+key enter
+wait 10
+
+# 3. The guest joins and holds the twin, in the Nether
+/clear @s dndclasses:sending_stone
+/give @s dndclasses:sending_stone{Pair:[I;11,22,33,44]} 1
+/publish false survival 25637
+waitchat DevGuest joined
+wait 100
+/clear DevGuest
+/give DevGuest dndclasses:sending_stone{Pair:[I;11,22,33,44]} 1
+/execute in minecraft:the_nether run tp DevGuest 0 128 0
+wait 60
+/say step-send
+wait 20
+hotbar 0
+use
+wait 5
+type Meet me at the old mill at dusk
+key enter
+wait 10
+/data get entity @s SelectedItem.tag
+waitchat [Sending] DevGuest
+/data get entity DevGuest Inventory[{Slot:0b}]
+
+# 4. Two more sends, then the stone is empty
+use
+wait 5
+type Second message
+key enter
+wait 10
+use
+wait 5
+type Third message
+key enter
+wait 10
+use
+wait 5
+type Fourth message
+key enter
+wait 10
+/data get entity @s SelectedItem.tag
+use
+wait 5
+type Fifth message
+key enter
+wait 10
+
+# 5. Dawn brings the charges back
+/time add 24000
+wait 40
+/data get entity @s SelectedItem.tag
+
+# 6. Too many words
+use
+wait 5
+type a b c d e f g h i j k l m n o p q r s t u v w x y z
+wait 2
+screenshot sending-too-long
+key enter
+wait 10
+closescreen
+/data get entity @s SelectedItem.tag
+
+# 7. (Vorpal Sword) a player keeps their head: a natural 20 on the guest is +6d8, not a beheading
+/clear @s
+/dndmagic give @s dndclasses:vorpal_sword
+hotbar 0
+wait 5
+/dndmagic attune @s
+/gamemode survival DevGuest
+/execute in minecraft:overworld run tp DevGuest 300.5 150 302.5 180 0
+/effect clear DevGuest
+/effect give DevGuest minecraft:health_boost 60 9 true
+/effect give DevGuest minecraft:resistance 60 1 true
+/effect give DevGuest minecraft:instant_health 1 9 true
+/tp @s 300.5 150 300.5 0 10
+wait 80
+/data get entity DevGuest Health
+/dndclass forceroll @s 20
+attack
+wait 10
+/execute if entity @a[name=DevGuest]
+/data get entity DevGuest Health
+/data get entity DevGuest DeathTime
+/dndclass forceroll @s clear
+/dndmagic release @s all
+/clear @s
+
+/say host-done
+/forceload remove 298 298 302 302
+wait 60
+quit

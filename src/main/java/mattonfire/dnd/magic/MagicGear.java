@@ -31,6 +31,11 @@ public final class MagicGear {
     }
 
     public static final int MAX_PLUS = 3;
+
+    /** A named weapon with a built-in +N (the Vorpal Sword's +3), used when its stack stores none. */
+    public interface FixedPlus {
+        int fixedPlus();
+    }
     public static final double ARROW_DAMAGE_PER_PLUS = 0.10;
 
     private static final UUID DAMAGE_ID = UUID.fromString("5b7d1e0a-6c3f-4c1e-9a51-2f6d0d1a7e01");

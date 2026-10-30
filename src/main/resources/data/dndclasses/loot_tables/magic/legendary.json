@@ -56,6 +56,11 @@
         },
         {
           "type": "minecraft:item",
+          "name": "dndclasses:vorpal_sword",
+          "weight": 2
+        },
+        {
+          "type": "minecraft:item",
           "name": "dndclasses:deck_of_many_things",
           "weight": 1
         }

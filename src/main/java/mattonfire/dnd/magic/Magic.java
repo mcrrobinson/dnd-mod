@@ -60,6 +60,8 @@ public final class Magic {
         WondrousItems.register();
         mattonfire.dnd.magic.items.BossItems.register();
         mattonfire.dnd.magic.items.PlanarItems.register();
+        mattonfire.dnd.magic.items.VorpalSwordItem.register();
+        mattonfire.dnd.magic.items.SendingStones.register();
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> MagicCommand
                 .register(dispatcher));
     }

@@ -108,6 +108,16 @@
           "type": "minecraft:item",
           "name": "dndclasses:periapt_of_wound_closure",
           "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:sending_stone",
+          "weight": 2,
+          "functions": [
+            {
+              "function": "dndclasses:sending_stone_pair"
+            }
+          ]
         }
       ],
       "functions": [

@@ -75,6 +75,8 @@ public class ModItemGroup {
             entries.add(ModItems.PIWAFWI);
             entries.add(ModItems.RED_DRAGON_SCALE_MAIL);
             entries.add(ModItems.ANCIENT_RED_SCALE);
+            entries.add(ModItems.VORPAL_SWORD);
+            entries.add(ModItems.SENDING_STONE);
             entries.add(ModItems.SCROLL_OF_IDENTIFY);
             entries.add(ModItems.SCROLL_OF_REMOVE_CURSE);
             entries.add(ModItems.MUSIC_DISC_STEEL_ON_STEEL);

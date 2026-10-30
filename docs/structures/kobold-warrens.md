@@ -57,7 +57,7 @@ Bolt-holes are 1-block tunnels a 0.95-tall kobold fits through and a player does
 ### Loot
 | Chest | Contents |
 |-|-|
-| Hoard (`chests/kobold_hoard`) | 4-12 gold nuggets, 1-3 gold ingots, 0-4 copper ingots, 1-3 Kobold Trinkets, 0-2 Kobold Scales, 40% an emerald; plus 20% a magic item (85% Uncommon, 15% Rare) |
+| Hoard (`chests/kobold_hoard`) | 4-12 gold nuggets, 1-3 gold ingots, 0-4 copper ingots, 1-3 Kobold Trinkets, 0-2 Kobold Scales, 40% an emerald; plus 20% a magic item (85% Uncommon, 15% Rare) and 2% a pair of [Sending Stones](../items/magic-items.md#sending-stones) |
 | Workshop (`chests/kobold_workshop`) | 2-6 string, 1-3 tripwire hooks, 2-5 iron nuggets, 1-3 Kobold Snares, 0-8 cobblestone, 20% a Kobold Sling |
 | Larder (`chests/kobold_larder`) | 2-4 rolls of rotten flesh, mutton, eggs, potatoes and brown mushrooms, and a honey bottle |
 

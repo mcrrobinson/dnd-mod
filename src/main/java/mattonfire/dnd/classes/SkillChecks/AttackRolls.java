@@ -37,15 +37,17 @@ import net.minecraft.util.ActionResult;
  */
 public final class AttackRolls {
     /**
-     * Players whose current swing is a critical hit, set just before {@code PlayerEntity.attack} runs,
-     * with the target and the player's age then. Another attack callback can still cancel the swing,
-     * so the crit only counts for that target in that same tick.
+     * Each player's current swing, set just before {@code PlayerEntity.attack} runs, with the target and the
+     * player's age then: whether it's a critical hit, the natural on the die and the roll itself. Another attack
+     * callback can still cancel the swing, so it only counts for that target in that same tick.
      */
-    private static final Map<UUID, Crit> CRITICAL = new HashMap<>();
-    /** Players whose current swing passed its attack roll at full strength (for Great Weapon Master's +5). */
-    private static final Map<UUID, Crit> FULL_STRENGTH = new HashMap<>();
+    private static final Map<UUID, Swing> CRITICAL = new HashMap<>();
 
-    private record Crit(int targetId, int age) {
+    /**
+     * @param natural  the die's natural (the kept die with advantage), whatever the outcome
+     * @param critical whether the swing crits (a natural in the crit range, or an {@link AutoCrit})
+     */
+    private record Swing(int targetId, int age, int natural, boolean critical, D20.Roll roll) {
     }
 
     /**
@@ -93,7 +95,6 @@ public final class AttackRolls {
     /** Drops a crit roll that never got used; called on disconnect. */
     public static void forget(UUID player) {
         CRITICAL.remove(player);
-        FULL_STRENGTH.remove(player);
     }
 
     private AttackRolls() {
@@ -122,8 +123,7 @@ public final class AttackRolls {
                         autoCrit, roll.natural());
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical")
                         .append(" (" + autoCrit + ")"));
-                CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
-                FULL_STRENGTH.put(player.getUuid(), new Crit(entity.getId(), player.age));
+                CRITICAL.put(player.getUuid(), new Swing(entity.getId(), player.age, roll.natural(), true, roll));
                 return ActionResult.PASS;
             }
             if (roll.outcome() == D20.Outcome.FUMBLE) {
@@ -133,11 +133,11 @@ public final class AttackRolls {
                         SoundEvents.ENTITY_PLAYER_ATTACK_NODAMAGE, SoundCategory.PLAYERS, 1.0f, 0.8f);
                 return ActionResult.FAIL;
             }
-            if (roll.outcome() == D20.Outcome.CRITICAL) {
+            boolean critical = roll.outcome() == D20.Outcome.CRITICAL;
+            if (critical) {
                 D20.show(player, roll, Text.translatable("skill.dndclasses.attack.critical"));
-                CRITICAL.put(player.getUuid(), new Crit(entity.getId(), player.age));
             }
-            FULL_STRENGTH.put(player.getUuid(), new Crit(entity.getId(), player.age));
+            CRITICAL.put(player.getUuid(), new Swing(entity.getId(), player.age, roll.natural(), critical, roll));
             return ActionResult.PASS;
         });
     }
@@ -152,28 +152,55 @@ public final class AttackRolls {
         return AbilityScores.sheet(player).critRange();
     }
 
+    /** The swing at this target landing now, or null; drops a stale one. */
+    @Nullable
+    private static Swing swing(PlayerEntity player, Entity target) {
+        Swing swing = CRITICAL.get(player.getUuid());
+        if (swing == null)
+            return null;
+        if (swing.age() != player.age) {
+            CRITICAL.remove(player.getUuid()); // From a swing that was cancelled
+            return null;
+        }
+        return target != null && swing.targetId() == target.getId() ? swing : null;
+    }
+
     /** Whether this swing at the target is the one that rolled the crit; drops a stale mark. */
     private static boolean isCritical(PlayerEntity player, Entity target) {
-        Crit crit = CRITICAL.get(player.getUuid());
-        if (crit == null)
-            return false;
-        if (crit.age() != player.age) {
-            CRITICAL.remove(player.getUuid()); // From a swing that was cancelled
-            return false;
-        }
-        return target != null && crit.targetId() == target.getId();
+        Swing swing = swing(player, target);
+        return swing != null && swing.critical();
+    }
+
+    /**
+     * The natural d20 of the melee swing landing on {@code target} right now (during {@code PlayerEntity.attack}, so
+     * from damage hooks such as {@code MagicEffect.modifyDealtDamage}), or 0 if none: not a full-strength swing, a
+     * different target, or not a melee hit at all. The die itself, so a Champion's 19 is 19 and an {@link AutoCrit}
+     * keeps its real natural (the Vorpal Sword checks for exactly 20). Server side only.
+     */
+    public static int naturalOf(PlayerEntity player, Entity target) {
+        if (player.getWorld().isClient)
+            return 0;
+        Swing swing = swing(player, target);
+        return swing == null ? 0 : swing.natural();
+    }
+
+    /** The attack roll of the swing landing on {@code target} right now, or null (see {@link #naturalOf}). */
+    @Nullable
+    public static D20.Roll rollOf(PlayerEntity player, Entity target) {
+        if (player.getWorld().isClient)
+            return null;
+        Swing swing = swing(player, target);
+        return swing == null ? null : swing.roll();
     }
 
     /** Whether this swing at the target is a full-strength one that passed its attack roll (this tick). */
     public static boolean isFullStrength(PlayerEntity player, Entity target) {
-        Crit swing = FULL_STRENGTH.get(player.getUuid());
-        return swing != null && swing.age() == player.age && target != null && swing.targetId() == target.getId();
+        return swing(player, target) != null;
     }
 
     /** Whether this swing at the target is a critical hit (this tick). */
     public static boolean isCriticalSwing(PlayerEntity player, Entity target) {
-        Crit crit = CRITICAL.get(player.getUuid());
-        return crit != null && crit.age() == player.age && target != null && crit.targetId() == target.getId();
+        return isCritical(player, target);
     }
 
     public static float criticalDamage(PlayerEntity player, Entity target, float amount) {
@@ -188,7 +215,6 @@ public final class AttackRolls {
         boolean critical = isCritical(player, target);
         boolean fullStrength = isFullStrength(player, target);
         CRITICAL.remove(player.getUuid());
-        FULL_STRENGTH.remove(player.getUuid());
         // Great Weapon Master's Cleave: a crit or a kill readies the next swing
         mattonfire.dnd.classes.Feats.FeatEffects.afterAttack(player, target, critical, fullStrength);
         if (critical) {

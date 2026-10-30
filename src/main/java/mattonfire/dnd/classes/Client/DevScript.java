@@ -114,6 +114,8 @@ import net.minecraft.util.Identifier;
  *     (button 0 = left, 1 = right), e.g. the skill tree's tabs</li>
  * <li>{@code widget <label>} presses the open screen's button with that label (e.g. {@code Yes} in a confirm
  *     dialog)</li>
+ * <li>{@code type <text>} types {@code text} into the focused text box of the open screen, one character at a time
+ *     as the keyboard would (e.g. a Sending Stone's message, then {@code key enter}); spaces and case are kept</li>
  * <li>{@code field <n> <text>} types {@code text} into the open screen's n-th text box (from 0), replacing what's
  *     there</li>
  * <li>{@code cycle <label> <value>} presses the cycling button whose label starts with {@code label} until it shows
@@ -537,6 +539,15 @@ public final class DevScript {
                 }
                 if (!found) {
                     DnDClasses.LOGGER.warn("[DevScript] {}: no button '{}' on the open screen", lineNumber, argument);
+                }
+            }
+            case "type" -> {
+                if (client.currentScreen != null) {
+                    for (char c : argument.toCharArray()) {
+                        client.currentScreen.charTyped(c, 0);
+                    }
+                } else {
+                    DnDClasses.LOGGER.warn("[DevScript] {}: type needs an open screen", lineNumber);
                 }
             }
             case "field" -> {

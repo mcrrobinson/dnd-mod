@@ -154,9 +154,14 @@ public final class MagicData {
 
     // --- +N and charges ---
 
-    /** The stored +N, whether or not it's active. */
+    /**
+     * The stored +N, whether or not it's active. An item with a built-in +N ({@link MagicGear.FixedPlus}, the Vorpal
+     * Sword's +3) has it until its NBT says otherwise.
+     */
     public static int plus(ItemStack stack) {
         NbtCompound nbt = get(stack);
+        if (stack.getItem() instanceof MagicGear.FixedPlus fixed && (nbt == null || !nbt.contains("plus")))
+            return fixed.fixedPlus();
         return nbt == null ? 0 : nbt.getInt("plus");
     }
 

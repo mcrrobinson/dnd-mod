@@ -1,6 +1,7 @@
 {
     "replace": false,
     "values": [
-        "dndclasses:gelatinous_cube"
+        "dndclasses:gelatinous_cube",
+        "dndclasses:vorpal"
     ]
 }

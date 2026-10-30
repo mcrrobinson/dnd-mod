@@ -1,6 +1,7 @@
 {
     "replace": false,
     "values": [
-        "dndclasses:warlock_wet"
+        "dndclasses:warlock_wet",
+        "dndclasses:vorpal"
     ]
 }

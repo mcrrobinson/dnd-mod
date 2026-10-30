@@ -1,5 +1,5 @@
 # Magic Items
-The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye, a gorgon's stone eye, and from the Underdark a drow matron's scourge and the drow's own cloak. And two planar wonders: a cloth that unfolds into a hole in space, and a deck of cards that can make or end a life. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
+The named magic items. The wondrous and utility ones: a wand of darts, a bag bigger on the inside, a decanter that never runs dry, a rod that hangs in the air, protective rings and amulets, a Bard's master lute and a tome that lets you choose your subclass again. The boss and monster drops: a goblin warhorn, a fire elemental's heart, storm boots, a gliding cloak, an owlbear belt, a mace that unmakes undead, a frost sword, a locket that cheats death, a thief's cursed ring, a beholder's eye, a gorgon's stone eye, and from the Underdark a drow matron's scourge and the drow's own cloak. And two planar wonders: a cloth that unfolds into a hole in space, and a deck of cards that can make or end a life. The signature items: a sword that takes heads on a natural 20, and a pair of stones that carry a message to each other. They use the [magic item system](../systems/magic-items.md): rarity, identification, attunement and anti-magic all apply.
 
 ## How it works
 Every item below works only while its magic is awake: it's identified, you're not in a Beholder's anti-magic cone, and, if it needs attunement, you're attuned to it (and of the right class). Otherwise using it puts the reason on the action bar ("Its magic sleeps. Identify it first.", "Attune to it at an Attunement Table to wake its magic."). Wondrous items, rings and amulets work from anywhere in your inventory: carried is worn.
@@ -32,6 +32,8 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 24 | Red Dragon Scale Mail | Very Rare armor (chestplate) | yes | 8 armor, 3 toughness. Half damage from fire, advantage on saves against dragons; crouch still for 3 s to sense the nearest Ancient lair (once a day) |
 | 25 | Portable Hole | Rare wondrous item | no | Right-click: a 54-slot extradimensional space. Sneak + right-click a block: a passage up to 6 blocks deep for 15 s |
 | 26 | Deck of Many Things | Legendary wondrous item | no | Declare 1-4 cards, then draw: each of 13 (or 22) cards is a boon or a ruin. Then the deck vanishes |
+| 27 | Vorpal Sword | Legendary weapon (sword) | yes | 8 damage, 1.6 speed, a built-in +3, never wears out. On a natural 20 it beheads anything with a head; players and bosses take 6d8 extra instead |
+| 28 | Sending Stones | Uncommon wondrous item (a pair) | no | Right-click: send up to 25 words to whoever carries the twin, in any dimension. 3 charges a day; a reply within a minute is free |
 
 ### Wand of Magic Missiles
 - Right-click fires three glowing darts that curve onto the nearest hostile mob (any monster, or any mob targeting you) within 24 blocks and 30 degrees of where you look, that you can see. Together they deal 6 magic damage, credited to you. No target: "No hostile creature in sight." and no charge is spent.
@@ -179,6 +181,25 @@ Every item below works only while its magic is awake: it's identified, you're no
 - **Half damage from fire**: anything fire-typed (flames, lava, fire breath, magma vents).
 - **Advantage on saves against dragons**: every dragon's breath and storm, and every save the Ancient Red Dragon and its lair call for (shown on the [character sheet](../systems/ability-scores.md) as "saves against dragons").
 - **Dragon sense**: crouch without moving for 3 s and, once a day, the action bar points to the nearest Ancient dragon lair within 3000 blocks ("A pull to the north east, about 1200 blocks."). Until the Ancient lairs generate, it says no lair is near.
+### Vorpal Sword
+- A netherite sword (8 attack damage, 1.6 attack speed) with a built-in **+3** (+3 damage, +3 on the attack roll's modifier) once it's identified and you're attuned. It's **unbreakable** (it has no durability bar) and fireproof, and glints once identified.
+- **Vorpal**: when a full-strength melee swing's [attack roll](../systems/d20-skill-checks.md) shows a **natural 20** on the die, and the sword is attuned and in your main hand:
+  - Anything with a head **loses it**: the creature dies at once to `dndclasses:vorpal` damage (it ignores armor and invulnerability frames), credited to you, so its loot and XP drop as for any player kill. Undead die too. "Vorpal! Zombie loses its head!" shows on the d20 HUD and the action bar, with a wet chop and a crit sound.
+  - It **drops its head** where vanilla has one: zombie (Zombie Head), skeleton (Skeleton Skull), wither skeleton (Wither Skeleton Skull), creeper (Creeper Head), piglin (Piglin Head).
+  - **Players and bosses** keep their heads and take **6d8** extra damage on that hit instead ("Vorpal! +27"). Bosses are the mod's [bosses](../bosses/boss-fights.md) and the vanilla Wither, Ender Dragon, Warden and Elder Guardian (tag `#dndclasses:vorpal_resistant`).
+  - Creatures with **no head** (slimes, magma cubes, shulkers, [Gelatinous Cubes](../mobs/gelatinous-cube.md), [Mimics](../mobs/mimic.md); tag `#dndclasses:headless`) just take the hit (the crit still doubles it).
+- Only the die counts: a Fighter's or Champion's 19 crits but doesn't behead, and nor does an auto-crit (the Assassin's first hit out of Vanish) unless the die itself showed 20.
+
+### Sending Stones
+- They come as a **pair**: one stack of 2 stones sharing a pair id (the tooltip's "Pair mark: 3F2A"). Split the stack and give one away. A stone without a pair (a single stone from the creative tab) gets one as soon as it's in an inventory, so take a stack of 2 from the tab or use `/give ... 2`.
+- **Right-click** opens a message screen: one line, at most **25 words** (256 characters), with a live count ("17/25 words", red past 25). **Enter** or **Send** sends it.
+- The message goes to **every other online player carrying the twin**, in any dimension: in the main inventory, hotbar or offhand. A stone inside a Bag of Holding (it's extradimensional) or a chest doesn't count.
+  - They see `[Sending] Matt: <text>` in italic aqua in chat, with an amethyst chime. You see "The stone grows warm: your words are on their way."
+  - They may **reply once within 60 s for free** (it doesn't spend a charge).
+  - **Nobody carries the twin**: "The stone stays cold. No one holds its twin." No charge is spent.
+  - **You carry both**: "The stones hum against each other." No charge is spent.
+- **3 charges** (tooltip "Charges: 2/3" and an aqua bar), all back at each dawn while carried and on a [long rest](../systems/rests.md). With none left: "The stone is silent until dawn." Creative mode doesn't spend them.
+- The text goes through the server's chat filter, as signs do. The server log records who sent to whom and how many words (`[Sending] Matt -> Steve (12 words)`), never the text.
 
 ## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
@@ -220,13 +241,16 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Piwafwi | [Drow Outpost](../structures/drow-outposts.md) shrine reliquary; [Drow Spire](../structures/drow-spire.md) treasure loft | 3%; 15% |
 | Portable Hole | [Cogsdeep](../structures/cogsdeep.md) clocktower strongbox; beholder lair chest; the Deck's Sun; the [Pactbroker](../mobs/tieflings.md#trades) (32 emeralds, Honored or better, once) | 6%; 4% |
 | Deck of Many Things | vanilla woodland mansion chests; the Ancient Red Dragon's [Hoard Coffer](../structures/ancient-lairs.md); the [Pactbroker](../mobs/tieflings.md#trades) (48 emeralds and a netherite ingot, Exalted, once) | 2%; 10% |
+| Vorpal Sword | the Legendary table (weight 2 of 46), so also vanilla end city chests; the Ancient Red Dragon's hoard coffer (`chests/ancient_red_hoard_coffer`) | 15% (coffer) |
+| Sending Stones (pair) | the Uncommon table (weight 2 of 76); minor bounty spoils (identified); a [Gnome Tinker](../structures/cogsdeep.md), Friendly or better, 12 emeralds, one pair per restock; a kobold warren's hoard (`chests/kobold_hoard`, "a kobold's prized pebbles") | 3% (bounty); 2% (kobold hoard) |
 
-Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`, `red_dragon_scale_mail`, `portable_hole`, `deck_of_many_things`.
+Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`, `red_dragon_scale_mail`, `portable_hole`, `deck_of_many_things`, `vorpal_sword`, `sending_stone`.
 
 ## Commands
 - `/dndmagic give|identify|attune|bonds ...`: see [Magic items](../systems/magic-items.md).
 - Wand charges: `/data get entity @s SelectedItem.tag.dndclasses_magic.charges`; set them with `/item modify` or a give with NBT, e.g. `/give @s dndclasses:wand_of_magic_missiles{dndclasses_magic:{charges:1}}`.
-- `/dndclass forceroll <player> 1` rigs the wand's crumble roll.
+- `/dndclass forceroll <player> 1` rigs the wand's crumble roll; `/dndclass forceroll <player> 20` before a swing rigs a Vorpal Sword natural 20.
+- Sending Stones: `/give @s dndclasses:sending_stone{Pair:[I;1,2,3,4]} 2` gives a pair with a known id. Charges are `dndclasses_magic.charges`; the free-reply window is `ReplyUntil` (world time).
 - Eye charges: the same `charges` key, e.g. `/give @s dndclasses:eye_of_the_tyrant{dndclasses_magic:{charges:1}}`. The Locket's recharge time is `dndclasses_magic.locketReadyAt` (world time); remove it to recharge.
 - `/dndmagic deck <player> next <card>` rigs the next card drawn from any deck (`sun`, `moon`, ..., `fool`); `/dndmagic deck <player> clear` lifts every deck effect and curse.
 - Drops: `/loot give @s kill @e[type=dndclasses:beholder,limit=1,sort=nearest]` rolls a table as a player kill.
@@ -247,6 +271,8 @@ Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water
 - The deck is dealt when it's first held, not when the loot is rolled, so a deck sitting in a chest has no size yet.
 - The Vizier only names lairs in its `boss_lairs` tag (not the Gorgon's temples, which are vanilla temples). Locating can take a moment on a fresh world.
 - The Avatar of Death is a scaled-up wither skeleton in dyed leather with a netherite hoe for a scythe, not its own model.
+- The Vorpal Sword's beheading lands at the end of the tick of the hit (it can't kill inside the hit that rolled it). A creature that can't take damage at all (Resistance V) keeps its head.
+- Sending Stones only reach players who are online. The stones of a pair share charges only while they're one stack; once split, each keeps its own.
 
 ## For developers
 - `magic/items/`: one class per active item (`WandOfMagicMissilesItem`, `BagOfHoldingItem` with its `BagScreenHandler`, `DecanterOfEndlessWaterItem`, `ImmovableRodItem` + `ImmovableRodBlock`, `DossLuteItem`, `TomeOfClearThoughtItem`), `MagicItemUse.ready` (the shared "is the magic awake" check with its message) and `WondrousItems` (the tiers, the Ring/Amulet/Periapt effects, the long-rest and Downed hooks and the `magic/wondrous_items` ability contributor).
@@ -256,6 +282,8 @@ Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water
 - `InstrumentItem.playAsBard(user, amplifier, radius)` is the stronger song; `BardInstrumentSlot` and `BardSkills.animalFriends` call into `DossLuteItem`.
 - `magic/items/BossItems`: the boss items' tiers and `MagicEffect`s (Heart, Boots, Cloak, Belt, Mace, Frostbrand, Ring), the Locket's `ALLOW_DEATH` listener (its own phase, ordered before the Downed rules), lightning immunity (`ALLOW_DAMAGE`), the Belt's `magic/boss_items` ability contributor, long-rest recharges, the Cloak glide and Ring invisibility server tick. `BossItems.immune` is called from `DragonSaves.isUnaffected` (lightning storm, frost breath); `BossItems.blocksEffect` from `mixin/MagicItemEffectImmunityMixin` (Freeze, anti-magic).
 - `WarlordsWarhornItem`, `EyeOfTheTyrantItem`, `PhylacteryLocketItem`, `BurglarsRingItem` (puts the curse on every copy), `NamedWeaponItem` (Mace, Frostbrand), `DescribedItem` (passive items, with `DescribedItem.Armor` for the boots).
+- `VorpalSwordItem` (def, `MagicEffect.modifyDealtDamage` on `AttackRolls.naturalOf(player, target) == 20`, the end-of-tick beheading queue, `headOf`), its built-in +3 through `MagicGear.FixedPlus` (read by `MagicData.plus` when the stack stores none), damage type `dndclasses:vorpal` (in `bypasses_armor`, `bypasses_invulnerability`, `bypasses_cooldown`, `bypasses_shield`), tags `#dndclasses:headless` and `#dndclasses:vorpal_resistant`.
+- `SendingStoneItem` (NBT `Pair` and `ReplyUntil` at the stack root, charges in `MagicData`, the dawn recharge in `inventoryTick`), `SendingStones` (the def, the C2S packet `dndclasses:sending_stone_send {slot, text}`, delivery through `TextStream.filterText`, the long-rest recharge), `SendingStonePairLootFunction` (`dndclasses:sending_stone_pair`: a stack of 2 with a new `Pair`; `MagicLoot` applies it to every named Sending Stone entry and `tools/magic_tier_tables.py` to the Uncommon table's). The screen is `classes/Client/Hud/SendingStoneScreen`; the client opener is set in `DndClassesClient`. DevScript's `type <text>` step types into it.
 - `BossItemDrops`: one `LootTableEvents.MODIFY` pool per mob table (`dndclasses:entities/<mob>`), with `MagicItemLootFunction.unidentified()`. The Lich's table isn't edited, only extended here.
 - `Curse.RINGS_CALL`: outside the random pool; the day clock is `dndRingsCallSince` in the player's persistent data, the health modifier `RINGS_CALL_UUID`.
 - Goblins: `Conditions/ai/ConditionFleeGoal`, added to every path mob on load.

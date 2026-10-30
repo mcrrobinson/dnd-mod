@@ -1,0 +1,11 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:beholder_lair",
+    "dndclasses:drow_spire",
+    "dndclasses:dragon_lair",
+    "dndclasses:frost_lair",
+    "minecraft:stronghold",
+    "dndclasses:ancient_red_lair"
+  ]
+}

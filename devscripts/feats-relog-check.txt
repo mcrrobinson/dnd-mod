@@ -1,0 +1,13 @@
+# Feats survive a relog, part 2 of 2: run after feats-relog-set.txt (no reset header, on purpose).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/feats-relog-check.txt
+# Expect "relog-check" then the same feat list as feats-relog-set (luck points 2, toggle on), the same max health
+#   and "Resilient (WIS): WIS +1" / "save:WIS proficient" in the sheet
+wait 40
+closescreen
+wait 30
+/say relog-check
+/dndclass feat @s list
+/attribute @s minecraft:generic.max_health base get
+/attribute @s minecraft:generic.max_health get
+/dndclass sheet @s
+quit

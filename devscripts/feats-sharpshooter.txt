@@ -1,0 +1,77 @@
+# Sharpshooter (docs/systems/feats.md): Long Shot, Steady Aim on bows and crossbows.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/feats-sharpshooter.txt
+# Shields: see feats-shield-host.txt / feats-shield-guest.txt (two players).
+# Expect in latest.log:
+#  ss-far: "[Feats] Sharpshooter Long Shot on Giant at 29.x blocks: N -> N*1.25"
+#  ss-near: "[Feats] Sharpshooter arrow hit Giant at 1x.x blocks: N" (no scaling)
+#  ss-steady: actionbar "Steady Aim: on", "[Feats] Steady Aim: arrow damage 2.00 -> 2.80"
+#  ss-crossbow: "Steady Aim: arrow damage ..." for the crossbow bolt too
+#  ss-none: without the feat, no [Feats] line for the arrow
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/time set noon
+/kill @e[tag=feat]
+/fill -6 149 -4 6 149 40 minecraft:stone
+/fill -6 150 -4 6 168 40 minecraft:air
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/dndclass feat @s toggle off
+/dndclass xp @s set 1000
+/dndclass feat @s add sharpshooter
+/effect give @s minecraft:resistance 600 4 true
+/give @s minecraft:bow{Unbreakable:1b}
+/give @s minecraft:crossbow{Unbreakable:1b}
+/give @s minecraft:arrow 64
+hotbar 0
+/summon minecraft:giant 0.5 150 30.5 {NoAI:1b,Silent:1b,Tags:["feat","far"],Attributes:[{Name:"generic.max_health",Base:1000d}],Health:1000f}
+/tp @s 0.5 150 0.5 0 -6
+wait 10
+/say ss-far
+holduse on
+wait 25
+holduse off
+wait 40
+/data get entity @e[tag=far,limit=1] Health
+/say ss-near
+/tp @s 0.5 150 18.5 0 -12
+wait 10
+holduse on
+wait 25
+holduse off
+wait 30
+/say ss-steady
+press key.dnd-classes.feat-toggle
+wait 3
+holduse on
+wait 25
+holduse off
+wait 30
+/say ss-crossbow
+hotbar 1
+wait 5
+holduse on
+wait 35
+holduse off
+wait 5
+use
+wait 30
+/say ss-none
+hotbar 0
+/dndclass feat @s remove sharpshooter
+/tp @s 0.5 150 0.5 0 -6
+wait 10
+holduse on
+wait 25
+holduse off
+wait 40
+/kill @e[tag=feat]
+/kill @e[type=minecraft:arrow]
+quit

@@ -587,6 +587,8 @@ public class ModItems {
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, 0x2E3A5C, 0xF2E85A, new FabricItemSettings()));
         public static final Item FROST_DRAKE_SPAWN_EGG = registerItem("frost_drake_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.FROST_DRAKE, 0xDCEBFA, 0x2F5FC8, new FabricItemSettings()));
+        public static final Item ANCIENT_RED_DRAGON_SPAWN_EGG = registerItem("ancient_red_dragon_spawn_egg",
+                        new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.ANCIENT_RED_DRAGON, 0x8C1A12, 0xF2902A, new FabricItemSettings()));
 
         public static final Item RIVER_PIKEHORN_SPAWN_EGG = registerItem("river_pikehorn_spawn_egg",
                         new SpawnEggItem(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, 0x3C6E78, 0xC9D8A0, new FabricItemSettings()));
@@ -677,6 +679,12 @@ public class ModItems {
         public static final Item PIWAFWI = registerItem("piwafwi",
                         new mattonfire.dnd.magic.items.DescribedItem.Armor(mattonfire.dnd.magic.items.DrowItems.PIWAFWI_MATERIAL,
                                         ArmorItem.Type.CHESTPLATE, new FabricItemSettings()));
+        /** The Ancient Red Dragon's drop (design 10, 5.11): 8 armour, 3 toughness, fireproof. */
+        public static final Item RED_DRAGON_SCALE_MAIL = registerItem("red_dragon_scale_mail",
+                        new mattonfire.dnd.magic.items.RedDragonScaleMailItem(new FabricItemSettings().fireproof()));
+        /** Shed by an Ancient Red Dragon: sold to the Dragonborn Elder, brewed into Fire Resistance. */
+        public static final Item ANCIENT_RED_SCALE = registerItem("ancient_red_scale",
+                        new Item(new FabricItemSettings().fireproof()));
 
         // Signature magic items (design 10, 8.1-8.2): defs and effects in magic/items/VorpalSwordItem and SendingStones
         /** 8 attack damage (1 + netherite's 4 + 3), 1.6 attack speed, a built-in +3, unbreakable. */

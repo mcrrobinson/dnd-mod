@@ -28,7 +28,8 @@ import net.minecraft.world.World;
 /**
  * Tome of Clear Thought (Very Rare consumable): read it near an Attunement Table (within
  * {@value #TABLE_RANGE} blocks) to clear your current class's subclass, refunding its nodes and their ranks
- * ({@link Progression#clearSubclass}). Used up only when there was a subclass to clear.
+ * ({@link Progression#clearSubclass}), and to refund every feat of the class ({@link Progression#removeFeats}). Used
+ * up only when there was a subclass or a feat to clear.
  */
 public class TomeOfClearThoughtItem extends Item {
     public static final int TABLE_RANGE = 4;
@@ -55,7 +56,13 @@ public class TomeOfClearThoughtItem extends Item {
             return TypedActionResult.fail(stack);
         }
         int refunded = Progression.clearSubclass(server);
-        if (refunded < 0) {
+        // Every feat of the class comes back too (free slots and ability points)
+        int feats = Progression.removeFeats(server, null, null);
+        if (feats > 0) {
+            player.sendMessage(Text.literal(feats + " feat" + (feats == 1 ? "" : "s")
+                    + " refunded: choose again at an Attunement Table.").formatted(Formatting.GOLD), false);
+        }
+        if (refunded < 0 && feats == 0) {
             player.sendMessage(Text.translatable("item.dndclasses.tome_of_clear_thought.none")
                     .formatted(Formatting.GRAY), true);
             return TypedActionResult.fail(stack);
@@ -67,8 +74,8 @@ public class TomeOfClearThoughtItem extends Item {
                 0.8F);
         world.playSound(null, player.getBlockPos(), SoundEvents.BLOCK_ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS,
                 1.0F, 0.7F);
-        DnDClasses.LOGGER.info("[Magic] {} read a Tome of Clear Thought: subclass cleared, {} points refunded",
-                player.getEntityName(), refunded);
+        DnDClasses.LOGGER.info("[Magic] {} read a Tome of Clear Thought: subclass cleared, {} points refunded, {} feats"
+                + " refunded", player.getEntityName(), Math.max(0, refunded), feats);
         if (!player.getAbilities().creativeMode)
             stack.decrement(1);
         return TypedActionResult.success(stack, false);

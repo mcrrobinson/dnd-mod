@@ -22,7 +22,8 @@ A save or skill you're proficient in adds the bonus. Expertise (◆) adds it twi
 - At an Attunement Table, open the **Character** tab and click the green **+** on a score: 1 point gives +1 to that score.
 - The + only shows while you have points and the score's natural value (class + race + earlier improvements) is below 20. The server checks the table (within 8 blocks of the one you opened), the points and the cap again.
 - Points are kept per class, like skill points, so switching class and back keeps them. They survive death and relogging. `/dndclass resetprogress` refunds them with the rest of the class's progress.
-- Levelling into 4 or 8 says so in chat: "You have 2 ability points: spend them at an Attunement Table (Character tab)."
+- Levelling into 4 or 8 says so in chat: "You have 2 ability points: spend them at an Attunement Table (Character tab), or take one feat instead."
+- Instead of +2 to scores, the 2 points of level 4 or 8 can buy one [feat](feats.md). Level 6 also gives a free feat.
 - Example: a level 10 Rogue with a +2 DEX race reaches DEX 15 + 2 + 2 (level 4) + 1 (level 8) = 20, a +5 modifier.
 
 ### Check and save bonuses
@@ -71,9 +72,9 @@ Each class's physical feel is already hand-tuned (the Barbarian's 40 HP, the Wiz
 
 ## Where to find it
 The **Character** tab of the skill tree screen (O, or an Attunement Table) shows the sheet for every class:
-- Top: proficiency bonus, attack bonus, crit range, and your unspent ability points.
-- Left: six ability boxes (score, modifier below; a gold corner means you're proficient in that save), with a **+** at a table when you have points. Under them, passive Perception, Insight and Stealth, and a **Features** line listing advantages, Evasion-style features, rerolls and crit range.
-- Right: the six saving throws (● proficient, `A`/`D` when you always roll them with advantage or disadvantage), then a scrollable list of every skill and tool (● proficient, ◆ expertise, ½ half).
+- Top: proficiency bonus, attack bonus, crit range, and your unspent ability points and feat slots ("Ability points: 2 · Feat slots: 1").
+- Left: six ability boxes (score, modifier below; a gold corner means you're proficient in that save), with a **+** at a table when you have points. Under them, the **Feats** box (your [feats](feats.md), and at a table a gold **Choose a feat** button when you can take one), and a **Features** line listing advantages, Evasion-style features, rerolls and crit range.
+- Right: the six saving throws (● proficient, `A`/`D` when you always roll them with advantage or disadvantage), then a scrollable list of every skill and tool (● proficient, ◆ expertise, ½ half), then passive Perception, Insight and Stealth.
 - Hover any number for its breakdown: every source that changed it (class, race, improvements, items, auras, the admin override).
 
 The class guidebook has a **Your abilities** page with your class's starting scores, saves, skills and how ability points work.
@@ -95,7 +96,7 @@ Abilities are `STR`, `DEX`, `CON`, `INT`, `WIS`, `CHA` (any case).
 The class table lives in `data/dndclasses/class_info.json` (`abilities`, `saves`, `skills`, `expertise` on each class). The game refuses to start if a class's scores aren't a permutation of the standard array, it has more than two saves, a skill name is unknown or an expertise skill isn't also in its skills.
 
 ## Known limitations
-- Ability points can only go into scores; there are no feats.
+- Ability points go into scores, or two at a time into a [feat](feats.md).
 - The tab's `A`/`D` marks and passive scores cover plain saves and passive checks only. Advantage that depends on the situation ("vs poison") is listed under Features instead.
 - Most skills aren't used by anything yet. Thieves' Tools (lockpicking), Persuasion, passive Stealth and Perception ([Stealth and Perception](stealth-and-perception.md)) are.
 - Rigged rolls are kept in memory until used, cleared or the server restarts.

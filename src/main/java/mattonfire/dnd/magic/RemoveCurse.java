@@ -46,6 +46,29 @@ public final class RemoveCurse {
     /** Cleric UUID to the server tick they can try again after a failure. */
     private static final Map<UUID, Integer> RETRY_AT = new HashMap<>();
 
+    /**
+     * A curse that isn't an attunement bond, lifted by the same spell (the Deck of Many Things' Euryale and Void).
+     * Returns whether it lifted something on {@code target}; {@code caster} is who cast or read it.
+     */
+    @FunctionalInterface
+    public interface Lifter {
+        boolean lift(ServerPlayerEntity caster, ServerPlayerEntity target);
+    }
+
+    private static final java.util.List<Lifter> LIFTERS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerLifter(Lifter lifter) {
+        LIFTERS.add(lifter);
+    }
+
+    /** Runs every {@link Lifter} on the target; true if any lifted something. */
+    private static boolean liftOthers(ServerPlayerEntity caster, ServerPlayerEntity target) {
+        boolean lifted = false;
+        for (Lifter lifter : LIFTERS)
+            lifted |= lifter.lift(caster, target);
+        return lifted;
+    }
+
     private RemoveCurse() {
     }
 
@@ -91,7 +114,10 @@ public final class RemoveCurse {
     public static boolean cleric(ServerPlayerEntity cleric, ServerPlayerEntity target) {
         if (!isCleric(cleric))
             return false;
+        boolean lifted = liftOthers(cleric, target);
         AttunementSnapshot.Bond bond = Attunement.cursedBond(target);
+        if (bond == null && lifted)
+            return true;
         if (bond == null) {
             cleric.sendMessage(Text.translatable(cleric == target ? "magic.dndclasses.remove_curse.none_self"
                     : "magic.dndclasses.remove_curse.none", target.getDisplayName()).formatted(Formatting.GRAY), true);
@@ -142,7 +168,27 @@ public final class RemoveCurse {
      * @return whether the scroll was used (false: no curse to break, the scroll is kept)
      */
     public static boolean scroll(ServerPlayerEntity player) {
+        return scroll(player, player);
+    }
+
+    /**
+     * Reads a Scroll of Remove Curse on {@code target}: yourself, or another player you right-click. The spell's
+     * other curses ({@link Lifter}) are lifted first; an attunement curse is only broken on yourself.
+     *
+     * @return whether the scroll was used
+     */
+    public static boolean scroll(ServerPlayerEntity reader, ServerPlayerEntity target) {
+        boolean lifted = liftOthers(reader, target);
+        if (target != reader) {
+            if (!lifted)
+                reader.sendMessage(Text.translatable("magic.dndclasses.remove_curse.none", target.getDisplayName())
+                        .formatted(Formatting.GRAY), true);
+            return lifted;
+        }
+        ServerPlayerEntity player = reader;
         AttunementSnapshot.Bond bond = Attunement.cursedBond(player);
+        if (bond == null && lifted)
+            return true;
         if (bond == null) {
             player.sendMessage(Text.translatable("magic.dndclasses.remove_curse.none_self")
                     .formatted(Formatting.GRAY), true);

@@ -1,0 +1,149 @@
+# Deck of Many Things (docs/items/magic-items.md#deck-of-many-things), rigged with /dndmagic deck @s next <card>. Run:
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/deck.txt
+# Expect in latest.log:
+#  1. declare: actionbar "You will draw 3 cards."
+#  2. Sun: "[Deck] Dev draws The Sun (1/3)", /dndclass progress shows level 1 (40 XP), "The deck gives you" a Rare item
+#  3. Moon: "grants you N wish(es)"; a forced 1 on /dm save becomes "[D20] Dev spends a Moon wish: rerolling 1" and a
+#     natural 20 (CRITICAL)
+#  4. Euryale (3/3): the sheet shows "Euryale (Deck of Many Things)" -2 on saves, "[Deck] Dev's deck vanishes", no deck
+#     left; reading a Scroll of Remove Curse: "Euryale's curse lifts." and the sheet line is gone
+#  5. Skull: an Avatar rises; a wolf's blow is ignored ("ignores Wolf's blow", Health 60.0) and calls a second Avatar
+#     (count 2); the player's blow lands (Health 50.0)
+#  6. Talons (2/2): the Ring of Protection (Rare) crumbles, the Eye of the Tyrant (Legendary) stays
+#  7. Fool: a level's XP lost and "(1/1)" then a second draw "(2/2)"; Gem drops 20 diamonds and 10 emeralds at your feet
+#     (picked up: /clear ... 0 finds 20 and 10)
+wait 40
+closescreen
+include _reset.txt
+/difficulty easy
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule keepInventory true
+/time set noon
+/kill @e[tag=decktest]
+/kill @e[type=dndclasses:deck_avatar]
+/gamemode creative
+/tp @s 3100.5 152 3100.5 0 0
+wait 40
+/fill 3090 149 3090 3110 149 3110 minecraft:stone
+/fill 3090 150 3090 3110 156 3110 minecraft:air
+/gamemode survival
+/dndclass set @s fighter
+wait 5
+closescreen
+/clear @s
+/dndmagic deck @s clear
+/dndclass resetprogress @s
+/dndclass xp @s set 0
+/effect give @s minecraft:resistance 900 4 true
+/tp @s 3100.5 150 3100.5 0 0
+/clear @s
+hotbar 0
+/dndmagic give @s dndclasses:deck_of_many_things
+wait 10
+# 1. Declare 3
+sneak on
+wait 3
+use
+wait 5
+use
+wait 5
+use
+wait 5
+sneak off
+actionbar
+wait 5
+# 2. The Sun
+/dndmagic deck @s next sun
+use
+wait 25
+/dndclass progress @s
+# 3. The Moon, and a wish
+/dndmagic deck @s next moon
+use
+wait 25
+/dndclass forceroll @s 1
+/dm save @s dex 15
+wait 10
+/dndmagic deck @s clear
+# 4. Euryale, the last of 3 draws
+/dndmagic deck @s next euryale
+use
+wait 25
+/dndclass sheet @s
+/clear @s dndclasses:deck_of_many_things 0
+/clear @s
+/give @s dndclasses:scroll_of_remove_curse
+hotbar 0
+wait 5
+use
+wait 10
+/dndclass sheet @s
+/clear @s
+# 5. The Skull
+/dndmagic give @s dndclasses:deck_of_many_things
+hotbar 0
+wait 5
+sneak on
+wait 3
+use
+wait 5
+use
+wait 5
+sneak off
+/dndmagic deck @s next skull
+use
+wait 25
+/execute if entity @e[type=dndclasses:deck_avatar]
+screenshot deck-avatar
+/data merge entity @e[type=dndclasses:deck_avatar,limit=1] {NoAI:1b}
+/tp @e[type=dndclasses:deck_avatar,limit=1] 3102.0 150 3100.5 90 0
+/tp @s 3100.5 150 3100.5 180 0
+/title @s clear
+perspective front
+hitboxes on
+hud off
+wait 10
+screenshot deck-avatar-scale
+hud on
+hitboxes off
+perspective first
+/summon minecraft:wolf 3103.5 150 3100.5 {NoAI:1b,Tags:["decktest"],PersistenceRequired:1b}
+/damage @e[type=dndclasses:deck_avatar,limit=1,sort=nearest] 10 minecraft:mob_attack by @e[tag=decktest,limit=1]
+wait 5
+/data get entity @e[type=dndclasses:deck_avatar,limit=1,sort=nearest] Health
+/execute if entity @e[type=dndclasses:deck_avatar]
+/damage @e[type=dndclasses:deck_avatar,limit=1,sort=nearest] 10 minecraft:player_attack by @s
+wait 5
+/data get entity @e[type=dndclasses:deck_avatar,limit=1,sort=nearest] Health
+/kill @e[type=dndclasses:deck_avatar]
+# 6. The Talons
+/dndmagic give @s dndclasses:ring_of_protection
+/dndmagic give @s dndclasses:eye_of_the_tyrant
+wait 25
+/dndmagic deck @s next talons
+use
+wait 25
+/clear @s dndclasses:ring_of_protection 0
+/clear @s dndclasses:eye_of_the_tyrant 0
+/clear @s dndclasses:deck_of_many_things 0
+/clear @s
+# 7. The Fool (an extra draw), then the Gem
+/dndclass xp @s set 130
+/dndmagic give @s dndclasses:deck_of_many_things
+hotbar 0
+wait 5
+/dndmagic deck @s next fool
+use
+wait 25
+/dndclass progress @s
+/dndmagic deck @s next gem
+use
+wait 25
+/clear @s minecraft:diamond 0
+/clear @s minecraft:emerald 0
+/dndmagic deck @s clear
+/kill @e[tag=decktest]
+/effect clear @s
+wait 10
+quit

@@ -103,8 +103,9 @@ public class WarlockRules {
     }
 
     private static void throwFireball(MinecraftServer server, ServerPlayerEntity player) {
+        // An empty hand, or with War Caster's somatic hands a weapon or shield
         if (!isWarlock(player) || !player.isAlive() || player.isSpectator()
-                || !player.getMainHandStack().isEmpty()) {
+                || !mattonfire.dnd.classes.Feats.Feats.castingHandFree(player)) {
             return;
         }
         if (mattonfire.dnd.classes.Effects.AntiMagicEffect.blocks(player)

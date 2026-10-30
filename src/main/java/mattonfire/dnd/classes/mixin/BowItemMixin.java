@@ -53,6 +53,9 @@ public class BowItemMixin {
     private void dnd$arrowStormSpeed(PersistentProjectileEntity arrow, Entity shooter, float pitch, float yaw,
             float roll, float speed, float divergence, Operation<Void> original,
             @Local(argsOnly = true) LivingEntity user, @Local(argsOnly = true) ItemStack bow) {
+        // Sharpshooter: mark the arrow; Steady Aim (fully drawn: vanilla speed 3.0) spreads it wider
+        mattonfire.dnd.classes.Feats.FeatArrows.mark(arrow, user, speed >= 3.0F);
+        divergence = mattonfire.dnd.classes.Feats.FeatArrows.divergence(arrow, divergence);
         if (user instanceof PlayerEntity player && player.hasStatusEffect(ModEffects.ARROW_STORM)) {
             speed *= (float) RangerSkills.ARROW_STORM.fraction(player, "Arrow speed");
         }
@@ -69,6 +72,8 @@ public class BowItemMixin {
             // Elven Longbow: built-in Power I, before the +N multiplier
             mattonfire.dnd.classes.Items.racial.ElvenLongbowItem.applyBuiltInPower(bow, arrow);
             mattonfire.dnd.magic.MagicGear.applyArrowBonus(bow, arrow);
+            // Sharpshooter's Steady Aim: x1.4 on top of everything else
+            mattonfire.dnd.classes.Feats.FeatArrows.applySteadyDamage(arrow);
         }
         return original.call(world, entity);
     }

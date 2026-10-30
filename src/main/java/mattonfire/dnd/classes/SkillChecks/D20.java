@@ -359,6 +359,12 @@ public final class D20 {
             }
             Advantage mode = Advantage.resolve(advantages, disadvantages);
             int rerolled = 0;
+            if (consumeWish(player)) {
+                // A Moon wish (Deck of Many Things): this roll is a natural 20, whatever the dice say
+                return finish(new Roll(label, ability, kind, 20, 0, Advantage.NORMAL, 0, total(),
+                        List.copyOf(bonuses), dc, 20 <= fumbleRange(player) ? Outcome.FUMBLE : Outcome.CRITICAL,
+                        display, flags));
+            }
             int a = d20(player);
             if (rerollNaturalOnes && a == 1) {
                 a = d20(player);
@@ -377,7 +383,7 @@ public final class D20 {
             }
             int total = total();
             Outcome outcome;
-            if (natural <= fumbleRange(player)) {
+            if (natural <= fumbleRange(player, kind)) {
                 outcome = Outcome.FUMBLE;
             } else if (natural >= critRange) {
                 outcome = Outcome.CRITICAL;
@@ -436,11 +442,60 @@ public final class D20 {
         FUMBLE_RANGES.add(range);
     }
 
-    /** The highest natural that fumbles for this roller: 1 unless a source widens it. */
+    /**
+     * Sources of a wider fumble range that depend on the kind of roll (Great Weapon Master's Power Attack: attack
+     * rolls fumble on 1-4).
+     */
+    private static final List<java.util.function.ToIntBiFunction<LivingEntity, RollKind>> KIND_FUMBLE_RANGES =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /** Registers a source of a wider fumble range for some kinds of roll: it returns the highest natural that fumbles. */
+    public static void registerFumbleRange(java.util.function.ToIntBiFunction<LivingEntity, RollKind> range) {
+        KIND_FUMBLE_RANGES.add(range);
+    }
+
+    /** The highest natural that fumbles for this roller on any roll: 1 unless a source widens it. */
     public static int fumbleRange(LivingEntity roller) {
         int range = 1;
         for (java.util.function.ToIntFunction<LivingEntity> source : FUMBLE_RANGES)
             range = Math.max(range, source.applyAsInt(roller));
+        return range;
+    }
+
+    /** Players whose next roll is a wished natural 20 (set by a {@link Reroll} that grants a wish). */
+    private static final java.util.Set<UUID> WISH_NEXT = java.util.concurrent.ConcurrentHashMap.newKeySet();
+    /** World time of each player's last wished roll, so effects keyed on a natural 20 can tell (Vorpal). */
+    private static final Map<UUID, Long> LAST_WISH = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /**
+     * Makes the player's next d20 roll a natural 20 (the Deck of Many Things' Moon). A {@link Reroll} calls it
+     * from {@code claim}, so the second roll is the wished one.
+     */
+    public static void wishNext(PlayerEntity player) {
+        WISH_NEXT.add(player.getUuid());
+    }
+
+    private static boolean consumeWish(LivingEntity roller) {
+        if (!WISH_NEXT.remove(roller.getUuid()))
+            return false;
+        LAST_WISH.put(roller.getUuid(), roller.getWorld().getTime());
+        return true;
+    }
+
+    /**
+     * Whether the roller's d20 roll this tick was a wish rather than a real die: effects that need the die itself
+     * (the Vorpal Sword's natural 20) check it.
+     */
+    public static boolean wishedThisTick(LivingEntity roller) {
+        Long at = LAST_WISH.get(roller.getUuid());
+        return at != null && at == roller.getWorld().getTime();
+    }
+
+    /** The highest natural that fumbles for this roller on this kind of roll. */
+    public static int fumbleRange(LivingEntity roller, RollKind kind) {
+        int range = fumbleRange(roller);
+        for (java.util.function.ToIntBiFunction<LivingEntity, RollKind> source : KIND_FUMBLE_RANGES)
+            range = Math.max(range, source.applyAsInt(roller, kind));
         return range;
     }
 

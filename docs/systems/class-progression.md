@@ -154,7 +154,7 @@ Levels, the XP table and the tree's shape are in [Class selection](class-selecti
 - A Druid's old kill list is turned into learned creatures the first time their progress loads.
 
 ## Where to find it
-Right-click an Attunement Table (D&D Classes creative tab, recipe in [Class selection](class-selection.md#class-levels-and-the-skill-tree)). Press **O** to look at ranks and the bestiary anywhere. The screen has tabs along the top: **Tree** and, at a table only, **Items** (attunement and Blessing of the Forge, see [Magic items](magic-items.md)) on the left; **Character** (the character sheet, where ability points from levels 4 and 8 are spent at a table, see [Ability scores](ability-scores.md#where-to-find-it)) and, for the Bard and Druid, **Bestiary** on the right.
+Right-click an Attunement Table (D&D Classes creative tab, recipe in [Class selection](class-selection.md#class-levels-and-the-skill-tree)). Press **O** to look at ranks and the bestiary anywhere. The screen has tabs along the top: **Tree** and, at a table only, **Items** (attunement and Blessing of the Forge, see [Magic items](magic-items.md)) on the left; **Character** (the character sheet, where ability points from levels 4 and 8 are spent at a table, see [Ability scores](ability-scores.md#where-to-find-it), and where [feats](feats.md) are chosen: a free one at level 6, or one for 2 ability points) and, for the Bard and Druid, **Bestiary** on the right.
 
 ## Commands
 - `/dndclass progress <player>` prints level, XP, points, the subclass, unlocks, the loadout, ranks, learned and unlocked creatures.

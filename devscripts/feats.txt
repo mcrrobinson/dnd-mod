@@ -1,0 +1,174 @@
+# Feats: slots, payment, the picker, the Character tab, Tough, Resilient and respec (docs/systems/feats.md).
+# Run: timeout 400 ./gradlew runClient -PdevScript=devscripts/feats.txt -PdevWidth=1920 -PdevHeight=1080
+# Expect in latest.log:
+#  step1 level 5: /dndclass feat list "Free feat slots left 0, ability points 2"; skill feat tough at the table pays
+#        with 2 ability points ("[Feats] Dev took Tough (asi)")... then it's removed again (refund: points 2)
+#  step2 level 6: "You can choose a feat at an Attunement Table (Character tab)."; skill feat tough -> "(free)",
+#        max_health = base + 6; the list shows "Tough [free]" and "ability points 2"
+#  step3 level 8: picker -> Resilient -> CON -> Take it: "[Feats] Dev took Resilient (CON) (asi)"; the sheet shows
+#        "Resilient (CON): CON +1" and the CON save proficient; max_health = base + 8 (Tough follows the level)
+#  step4: a second Resilient CON is refused ("already taken"); with no slot or points, skill feat alert is refused
+#  step5 away from the table: refused
+#  step6 Tome of Clear Thought: "2 feats refunded", list 0, max_health back to base
+#  step7 resetprogress after an admin add: list 0, max_health back to base
+# Screenshots: feats-tab-l6 (Feats box + Choose a feat), feats-picker (GUI 2), feats-picker-hover,
+#   feats-confirm-alert, feats-resilient-ability, feats-picker-gui3, feats-tab-l8, feats-tab-hover, feats-guidebook-11/12 (page indexes count from 0)
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule keepInventory true
+/time set noon
+/fill 0 149 0 12 149 8 minecraft:stone
+/fill 0 150 0 12 154 8 minecraft:air
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/setblock 4 150 4 dndclasses:attunement_table
+/tp @s 4.5 150 1.5 0 30
+guiscale 2
+# 1. Level 5: no free slot, but 2 ability points pay for a feat
+/dndclass xp @s set 700
+wait 5
+use
+wait 10
+/say step1-level5
+/dndclass feat @s list
+skill feat tough
+wait 5
+/dndclass feat @s list
+/dndclass feat @s remove tough
+/dndclass feat @s list
+closescreen
+# 2. Level 6: the free feat
+/dndclass xp @s add 300
+wait 5
+/attribute @s minecraft:generic.max_health base get
+use
+wait 10
+click 97 -104
+wait 5
+screenshot feats-tab-l6
+# The Choose a feat button (left column, under the ability boxes)
+click -62 52
+wait 5
+screenshot feats-picker
+hover -140 7
+wait 3
+screenshot feats-picker-hover
+# Alert card: the confirm panel, then cancel
+click -140 55
+wait 5
+screenshot feats-confirm-alert
+widget Cancel
+wait 3
+widget Back
+wait 3
+closescreen
+/say step2-level6
+skill feat tough
+wait 5
+/dndclass feat @s list
+/attribute @s minecraft:generic.max_health get
+# 3. Level 8: 4 ability points; Resilient (CON) through the picker costs 2
+/dndclass xp @s set 1750
+wait 5
+use
+wait 10
+click 97 -104
+wait 5
+click -62 52
+wait 5
+click 140 55
+wait 5
+screenshot feats-resilient-ability
+widget CON
+wait 3
+widget Take it
+wait 10
+/say step3-level8
+/dndclass feat @s list
+/dndclass sheet @s
+/attribute @s minecraft:generic.max_health get
+click 97 -104
+wait 5
+screenshot feats-tab-l8
+hover -100 60
+wait 3
+screenshot feats-tab-hover
+hover 0 120
+# The picker at GUI scale 3
+click -62 52
+wait 5
+guiscale 3
+wait 5
+screenshot feats-picker-gui3
+guiscale 2
+wait 3
+closescreen
+# 4. Refusals: Resilient CON again; then spend the last 2 points and try another feat
+/say step4-refusals
+skill feat resilient:con
+wait 3
+skill asi str
+wait 2
+skill asi str
+wait 2
+skill feat alert
+wait 3
+/dndclass feat @s list
+closescreen
+# 5. Away from the table
+/tp @s 100 150 100
+wait 5
+/say step5-away
+/dndclass feat @s add sentinel
+/dndclass feat @s remove sentinel
+/dndclass xp @s set 1750
+skill feat alert
+wait 3
+/dndclass feat @s list
+/tp @s 4.5 150 1.5 0 30
+wait 5
+# Guidebook: the Feats chapter
+/give @s dndclasses:class_guidebook
+hotbar 0
+wait 3
+look 0 -60
+use
+wait 10
+page 11
+wait 3
+screenshot feats-guidebook-11
+page 12
+wait 3
+screenshot feats-guidebook-12
+closescreen
+/clear @s
+# 6. Tome of Clear Thought refunds every feat
+/dndmagic give @s dndclasses:tome_of_clear_thought
+hotbar 0
+look 0 -60
+wait 3
+use
+wait 10
+/say step6-tome
+/dndclass feat @s list
+/attribute @s minecraft:generic.max_health get
+/dndclass sheet @s
+/clear @s
+# 7. resetprogress
+/dndclass feat @s add tough
+/dndclass feat @s add resilient wis
+/attribute @s minecraft:generic.max_health get
+/dndclass resetprogress @s
+wait 3
+/say step7-reset
+/dndclass feat @s list
+/attribute @s minecraft:generic.max_health get
+quit

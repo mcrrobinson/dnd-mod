@@ -44,7 +44,7 @@ TABLES = {
                   ("staff_of_lightning", 2), ("amulet_of_health", 1), ("doss_lute", 1),
                   ("warlords_warhorn", 1), ("heart_of_the_furnace", 1), ("storm_chaser_boots", 1),
                   ("wyvern_scale_cloak", 1), ("belt_of_owlbear_might", 1), ("mace_of_disruption", 1),
-                  ("gorgons_gaze", 1)],
+                  ("gorgons_gaze", 1), ("portable_hole", 2)],
     },
     "very_rare": {
         "gear": gear(DIAMOND, 6, 4) + [("bow", 6), ("crossbow", 4), ("trident", 2)],
@@ -53,9 +53,37 @@ TABLES = {
     },
     "legendary": {
         "gear": gear(NETHERITE, 6, 4) + [("bow", 4), ("crossbow", 3), ("trident", 3)],
-        "named": [("eye_of_the_tyrant", 6), ("vorpal_sword", 2)],
+        "named": [("eye_of_the_tyrant", 6), ("vorpal_sword", 2), ("deck_of_many_things", 1)],
     },
 }
+
+
+# The Deck of Many Things' own tables (design 10, 8.5), rolled identified by the Key and the Sun.
+# (item, weight, tier or None for the item's own, +N or None)
+DECK_TABLES = {
+    # Key: a Very Rare (70) or Legendary (30) magic weapon
+    "deck_key": [("minecraft:diamond_sword", 15, "very_rare", 3), ("minecraft:diamond_axe", 15, "very_rare", 3),
+                 ("minecraft:bow", 15, "very_rare", 3), ("dndclasses:frostbrand", 15, None, None),
+                 ("dndclasses:mace_of_disruption", 10, None, None),
+                 ("minecraft:netherite_sword", 10, "legendary", 3), ("minecraft:netherite_axe", 10, "legendary", 3),
+                 ("dndclasses:matrons_scourge", 10, None, None)],
+    # Sun: a random Rare wondrous item
+    "deck_sun": [("dndclasses:" + n, 1, None, None) for n in (
+        "ring_of_protection", "amulet_of_health", "doss_lute", "warlords_warhorn", "heart_of_the_furnace",
+        "wyvern_scale_cloak", "belt_of_owlbear_might", "gorgons_gaze", "portable_hole")],
+}
+
+
+def deck_table(rows):
+    entries = []
+    for name, weight, tier, plus in rows:
+        function = {"function": "dndclasses:magic_item", "identified": True}
+        if tier:
+            function["tier"] = tier
+        if plus is not None:
+            function["plus"] = plus
+        entries.append({"type": "minecraft:item", "name": name, "weight": weight, "functions": [function]})
+    return {"type": "minecraft:gift", "pools": [{"rolls": 1, "entries": entries}]}
 
 
 def table(tier, spec):
@@ -85,6 +113,11 @@ def main():
             f.write("\n")
         print(f"{tier}: {len(spec['gear']) + len(spec['named'])} entries, named {named}/{total}"
               f" = {100 * named / total:.0f}%")
+    for name, rows in DECK_TABLES.items():
+        with open(os.path.join(OUT, name + ".json"), "w") as f:
+            json.dump(deck_table(rows), f, indent=2)
+            f.write("\n")
+        print(f"{name}: {len(rows)} entries")
 
 
 if __name__ == "__main__":

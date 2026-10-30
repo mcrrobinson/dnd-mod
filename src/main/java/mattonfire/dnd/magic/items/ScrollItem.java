@@ -66,6 +66,22 @@ public class ScrollItem extends Item {
         return TypedActionResult.success(scroll, false);
     }
 
+    /** A Scroll of Remove Curse read on another player (right-click them): lifts the curses it can on them. */
+    @Override
+    public net.minecraft.util.ActionResult useOnEntity(ItemStack scroll, PlayerEntity player,
+            net.minecraft.entity.LivingEntity entity, Hand hand) {
+        if (spell != Spell.REMOVE_CURSE || !(entity instanceof PlayerEntity))
+            return net.minecraft.util.ActionResult.PASS;
+        if (!(player instanceof ServerPlayerEntity reader) || !(entity instanceof ServerPlayerEntity target))
+            return net.minecraft.util.ActionResult.SUCCESS;
+        if (!RemoveCurse.scroll(reader, target))
+            return net.minecraft.util.ActionResult.FAIL;
+        if (!player.getAbilities().creativeMode)
+            player.getStackInHand(hand).decrement(1);
+        player.getItemCooldownManager().set(this, 20);
+        return net.minecraft.util.ActionResult.SUCCESS;
+    }
+
     private static boolean identify(ServerPlayerEntity player, Hand hand) {
         ItemStack target = player.getStackInHand(hand == Hand.MAIN_HAND ? Hand.OFF_HAND : Hand.MAIN_HAND);
         if (!Identify.isUnidentified(target)) {

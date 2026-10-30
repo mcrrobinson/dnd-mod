@@ -25,6 +25,7 @@ The biggest hit of any axe, for the slowest swing.
 ### Halfling Sling
 - The stone is a thrown projectile (`dndclasses:sling_stone`), shown as a flying cobblestone, which breaks into dust on whatever it hits.
 - It counts as a thrown hit from you, like a snowball, so it works on mobs and players and knocks them back a little.
+- The cruder **Kobold Sling** (no race, 3 damage, 1 s cooldown, 120 uses) shares its ammo and throw; it drops from Kobold Slingers and Trapmakers sell it. See [Kobolds](../mobs/kobolds.md).
 
 ### Gnomish Repeater
 - It's a crossbow in every way: it loads arrows and fireworks, takes crossbow enchantments (a new one from the table can roll Piercing instead of Multishot), and shows the crossbow's loading, loaded and aiming poses in first and third person.

@@ -17,5 +17,6 @@
   "raid_lost": -40,
   "trade": 1,
   "trade_cap": 15,
-  "theft_witnessed": -40
+  "theft_witnessed": -40,
+  "monster_kill_overrides": {"#dndclasses:ancient_dragons": 100}
 }

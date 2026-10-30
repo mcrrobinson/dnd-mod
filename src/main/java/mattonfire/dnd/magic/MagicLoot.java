@@ -114,6 +114,14 @@ public final class MagicLoot {
         chest("beholder_lair", 1.0F, tier(r, 40), tier(vr, 45), tier(l, 15));
         chest("beholder_lair", 0.04F, named(ModItems.IMMOVABLE_ROD));
         chest("beholder_lair", 0.02F, named(ModItems.EYE_OF_THE_TYRANT));
+        chest("beholder_lair", 0.04F, named(mattonfire.dnd.magic.items.PlanarItems.PORTABLE_HOLE));
+
+        // The Ancient Red's hoard hall: four hoard chests and the Hoard Coffer behind its sleeping hollow
+        chest("ancient_red_hoard", 1.0F, tier(r, 50), tier(vr, 40), tier(l, 10));
+        chest("ancient_red_hoard_coffer", 1.0F, tier(vr, 50), tier(l, 50));
+        chest("ancient_red_hoard_coffer", 0.25F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
+        chest("ancient_red_hoard_coffer", 0.10F, named(mattonfire.dnd.magic.items.PlanarItems.DECK_OF_MANY_THINGS));
+        chest("ancient_red_hoard_coffer", 0.15F, named(ModItems.VORPAL_SWORD));
 
         // Dragon Temples: a small chance in the monks' cells; the reliquary (locked at DC 15, guarded) always rolls,
         // mostly Rare. Its staff chances stay in the JSON.
@@ -136,6 +144,7 @@ public final class MagicLoot {
         chest("cogsdeep_workshop", 0.05F, tier(u, 1));
         chest("cogsdeep_gems", 0.12F, tier(u, 80), tier(r, 20));
         chest("cogsdeep_vault", 0.60F, tier(u, 40), tier(r, 50), tier(vr, 10));
+        chest("cogsdeep_vault", 0.06F, named(mattonfire.dnd.magic.items.PlanarItems.PORTABLE_HOLE));
 
         // The Underdark's drow: the outpost shrine's reliquary (its 20% Rare roll is in the JSON) and the Drow Spire
         // (the treasure loft behind the Arcane Seal always rolls; the priestesses' cells now and then)
@@ -143,11 +152,6 @@ public final class MagicLoot {
         chest("drow_spire_cells", 0.10F, tier(u, 70), tier(r, 30));
         chest("drow_spire_loft", 1.0F, tier(r, 60), tier(vr, 40));
         chest("drow_spire_loft", 0.15F, named(ModItems.PIWAFWI));
-
-        // Design 10 hoards, placed by table id: no-ops until the Ancient Red's lair (hoard coffer) and the kobold
-        // warrens (chief's hoard) add their tables
-        chest("ancient_red_hoard_coffer", 0.15F, named(ModItems.VORPAL_SWORD));
-        chest("kobold_hoard", 0.02F, named(ModItems.SENDING_STONE)); // "a kobold's prized pebbles"
 
         // Hobbit harvest chests
         chest("hobbit_harvest", 0.02F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
@@ -162,7 +166,15 @@ public final class MagicLoot {
         entity("beholder", 1.0F, tier(vr, 80), tier(l, 20));
         entity("beholder", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         entity("drow_matron", 0.15F, tier(l, 1));
+        // The Ancient Red Dragon (design 10, 5.11): a Very Rare or Legendary roll on top of its Scale Mail
+        entity("ancient_red_dragon", 1.0F, tier(vr, 60), tier(l, 40));
         entity("river_pikehorn", 0.05F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
+        entity("kobold_dragonshield", 0.15F, tier(u, 1));
+        // The Ancient Red's hoard (D2's table; a no-op until it exists): the kobolds' offerings
+        chest("ancient_red_hoard", 1.0F, plain(mattonfire.dnd.entity.kobold.Kobolds.KOBOLD_TRINKET, 1, 3));
+        // Kobold warrens (K2): the chief's hoard chest
+        chest("kobold_hoard", 0.20F, tier(u, 85), tier(r, 15));
+        chest("kobold_hoard", 0.02F, named(ModItems.SENDING_STONE)); // "a kobold's prized pebbles"
 
         // Bounties: known goods, identified
         gameplay("bounty_minor", 0.10F, true, tier(u, 1));
@@ -194,6 +206,7 @@ public final class MagicLoot {
         vanilla("stronghold_library", 0.03F, named(ModItems.MACE_OF_DISRUPTION));
         vanilla("stronghold_library", 0.02F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         vanilla("end_city_treasure", 0.15F, tier(vr, 85), tier(l, 15));
+        vanilla("woodland_mansion", 0.02F, named(mattonfire.dnd.magic.items.PlanarItems.DECK_OF_MANY_THINGS));
     }
 
     static LootPool.Builder build(Pool pool) {

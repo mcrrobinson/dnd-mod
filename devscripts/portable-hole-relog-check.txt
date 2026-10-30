@@ -1,0 +1,13 @@
+# After portable-hole-relog.txt: reopen the hole. Expect "slots" to list the 7 emeralds in slot 0.
+wait 40
+closescreen
+wait 20
+/tp @s 3000.5 150 3000.5 0 -40
+hotbar 0
+wait 10
+use
+wait 10
+slots
+closescreen
+wait 5
+quit

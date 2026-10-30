@@ -72,8 +72,8 @@ public final class DragonSaves {
 
     /**
      * The victim's DEX save against a dragon attack: one roll per exposure ({@code tag} + window), half damage on
-     * a success. Players see it on the save lane with {@code effectKey} as the success text; anything else rolls
-     * silently.
+     * a success. Tagged {@code tag} and "dragon" (the Red Dragon Scale Mail gives advantage on those). Players see
+     * it on the save lane with {@code effectKey} as the success text; anything else rolls silently.
      */
     public static SaveResult save(LivingEntity victim, Entity dragon, String labelKey, int dc, String effectKey,
             String tag, int window) {
@@ -81,6 +81,7 @@ public final class DragonSaves {
                 .label(labelKey)
                 .source(dragon)
                 .exposure(dragon, tag, window)
+                .tags(tag, "dragon")
                 .halvesDamage()
                 .onSuccess(Text.translatable(effectKey))
                 .roll();

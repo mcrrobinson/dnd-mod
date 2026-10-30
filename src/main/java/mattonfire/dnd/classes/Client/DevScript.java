@@ -129,7 +129,8 @@ import net.minecraft.util.Identifier;
  * <li>{@code skill unlock|equip|rankup|bestiary|subclass <id>} sends what clicking the skill tree screen would
  *     (left-click, left-click at a table, right-click at a table, a bestiary entry, confirming a subclass), so
  *     the server's checks apply; {@code skill asi <ability>} sends a Character tab "+" click (e.g. {@code skill asi
- *     dex})</li>
+ *     dex}); {@code skill feat <id>[:<ability>]} sends the feat picker's confirm (e.g. {@code skill feat tough},
+ *     {@code skill feat resilient:con})</li>
  * <li>{@code tooltips [hotbar slots...]} opens a screen showing the tooltips of the hotbar items (all, or the
  *     slots listed, e.g. {@code tooltips 0 1 4}) side by side and logs their lines; close it with {@code closescreen}</li>
  * <li>{@code escape} sends the open screen an Escape key press, e.g. to check a picker ignores it</li>
@@ -765,6 +766,15 @@ public final class DevScript {
     }
 
     private static void skill(String[] args, int lineNumber) {
+        if (args[0].equals("feat") && args.length >= 2) {
+            // skill feat <id>[:<ability>]: the feat picker's confirm
+            String[] parts = args[1].split(":", 2);
+            PacketByteBuf buf = PacketByteBufs.create();
+            buf.writeString(parts[0]);
+            buf.writeString(parts.length > 1 ? parts[1] : "");
+            ClientPlayNetworking.send(mattonfire.dnd.classes.Feats.FeatPackets.C2S_CHOOSE_FEAT, buf);
+            return;
+        }
         Identifier packet = switch (args[0]) {
             case "unlock" -> Progression.C2S_UNLOCK;
             case "equip" -> Progression.C2S_EQUIP;
@@ -775,7 +785,7 @@ public final class DevScript {
             default -> null;
         };
         if (packet == null || args.length < 2) {
-            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass|asi <id>",
+            DnDClasses.LOGGER.warn("[DevScript] {}: skill needs unlock|equip|rankup|bestiary|subclass|asi|feat <id>",
                     lineNumber);
             return;
         }

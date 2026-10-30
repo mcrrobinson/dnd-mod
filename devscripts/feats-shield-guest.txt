@@ -1,0 +1,16 @@
+# Sharpshooter's past cover, two players (guest): run with -PdevRunDir=run-2 -PdevServer=localhost:25607 while
+# feats-shield-host.txt is running. Raises the shield the host gives it (holds the use key) until "shield-done".
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/feats-shield-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25607
+wait 40
+closescreen
+/party leave
+hotbar 0
+waitchat shield-ready
+wait 5
+holduse on
+wait 20
+screenshot feats-shield-guest
+waitchat shield-done
+holduse off
+wait 20
+quit

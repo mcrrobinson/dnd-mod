@@ -1,0 +1,20 @@
+# Guest half of deck-void-lan-host.txt (start it once the host log says "Started serving on"):
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/deck-void-lan-guest.txt -PdevRunDir=run-2 -PdevServer=localhost:25631
+# Guest log: two "You draw The Void" chat lines and "Your soul returns to your body." after the scroll.
+wait 40
+closescreen
+waitchat deck-step-1
+hotbar 0
+wait 5
+use
+wait 20
+/me guest-drew-1
+waitchat deck-step-2
+hotbar 0
+wait 5
+use
+wait 20
+/me guest-drew-2
+waitchat deck-done
+wait 10
+quit

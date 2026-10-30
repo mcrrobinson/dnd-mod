@@ -143,6 +143,11 @@
           "type": "minecraft:item",
           "name": "dndclasses:gorgons_gaze",
           "weight": 1
+        },
+        {
+          "type": "minecraft:item",
+          "name": "dndclasses:portable_hole",
+          "weight": 2
         }
       ],
       "functions": [

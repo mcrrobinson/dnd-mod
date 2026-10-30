@@ -94,9 +94,9 @@ public class FireBreath {
         if (this.dragon.world.isClient || this.isBreathing() || this.isMouthUnderwater()) {
             return;
         }
-        this.dragon.getDataTracker().set(this.ticksKey, WINDUP + DURATION);
+        this.dragon.getDataTracker().set(this.ticksKey, this.windupTicks() + this.flameTicks());
         this.setAim(this.directionTo(target));
-        this.dragon.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 2.0F, 1.4F);
+        this.playWindupSound();
     }
 
     protected Vec3d getAim() {
@@ -130,17 +130,20 @@ public class FireBreath {
         if (ticks <= 0) {
             return;
         }
-        boolean flame = ticks <= DURATION && !this.isMouthUnderwater();
+        int duration = this.flameTicks();
+        boolean flame = ticks <= duration && !this.isMouthUnderwater();
         if (this.dragon.world.isClient) {
             if (flame) {
                 this.spawnParticles();
+            } else if (ticks > duration) {
+                this.spawnWindupParticles();
             }
             return;
         }
 
         LivingEntity target = this.dragon.getTarget();
         boolean hasTarget = target != null && target.isAlive();
-        if (!this.dragon.isAlive() || (ticks > DURATION && !hasTarget)) {
+        if (!this.dragon.isAlive() || (ticks > duration && !hasTarget)) {
             // Lost its target during the wind-up: don't breathe at nothing
             this.dragon.getDataTracker().set(this.ticksKey, 0);
             return;
@@ -148,11 +151,11 @@ public class FireBreath {
         if (hasTarget) {
             Vec3d desired = this.directionTo(target);
             // Snap on during the wind-up, then lag behind so the flame can be outrun
-            this.setAim(ticks > DURATION ? desired : this.getAim().lerp(desired, TRACKING).normalize());
+            this.setAim(ticks > duration ? desired : this.getAim().lerp(desired, TRACKING).normalize());
         }
 
         if (flame) {
-            if (ticks == DURATION) {
+            if (ticks == duration) {
                 this.playStartSound();
             }
             if (ticks % 4 == 0) {
@@ -161,6 +164,30 @@ public class FireBreath {
             this.burnCone();
         }
         this.dragon.getDataTracker().set(this.ticksKey, ticks - 1);
+    }
+
+    /** Tan of the flame's half-angle (10 degrees by default). */
+    protected double coneTan() {
+        return CONE_TAN;
+    }
+
+    /** Ticks of rearing back before the flame. */
+    protected int windupTicks() {
+        return WINDUP;
+    }
+
+    /** Ticks the flame pours out. */
+    protected int flameTicks() {
+        return DURATION;
+    }
+
+    /** Client particles while the dragon rears back (none by default). */
+    protected void spawnWindupParticles() {
+    }
+
+    /** Played as the dragon rears back. */
+    protected void playWindupSound() {
+        this.dragon.playSound(SoundEvents.ENTITY_ENDER_DRAGON_GROWL, 2.0F, 1.4F);
     }
 
     /** Played once as the flame starts. */
@@ -260,7 +287,7 @@ public class FireBreath {
         // Widen the cone by the entity's size so big mobs and near misses at the edge still count
         double along = to.dotProduct(aim);
         double sideways = to.subtract(aim.multiply(along)).length();
-        if (along <= 0 || sideways > along * CONE_TAN + entity.getWidth() / 2 + 0.3) {
+        if (along <= 0 || sideways > along * this.coneTan() + entity.getWidth() / 2 + 0.3) {
             return false;
         }
         return this.dragon.world.raycast(new RaycastContext(mouth, center, RaycastContext.ShapeType.COLLIDER,
@@ -296,12 +323,13 @@ public class FireBreath {
 
         // Puffs launched from the mouth fast enough to just reach the end of the jet before fading,
         // swelling as they slow down, so the jet starts thin and billows out like a flamethrower
+        double coneTan = this.coneTan();
         double reach = (1 - Math.pow(ModParticles.DRAGON_FLAME_DRAG, ModParticles.DRAGON_FLAME_AGE)) / (1 - ModParticles.DRAGON_FLAME_DRAG);
         for (int i = 0; i < 30; i++) {
             double along = random.nextDouble() * Math.min(1.5, length * 0.15);
             double speed = (length - along) / reach * (0.85 + random.nextDouble() * 0.25);
-            double a = random.nextGaussian() * CONE_TAN * 0.6;
-            double b = random.nextGaussian() * CONE_TAN * 0.6;
+            double a = random.nextGaussian() * coneTan * 0.6;
+            double b = random.nextGaussian() * coneTan * 0.6;
             Vec3d pos = mouth.add(aim.multiply(along));
             Vec3d velocity = aim.add(side.multiply(a)).add(up.multiply(b)).multiply(speed);
             this.dragon.world.addParticle(ModParticles.DRAGON_FLAME, pos.x, pos.y, pos.z, velocity.x, velocity.y, velocity.z);
@@ -309,7 +337,7 @@ public class FireBreath {
         // A few loose sparks around the jet
         for (int i = 0; i < 3; i++) {
             double along = length * random.nextDouble();
-            double radius = 0.3 + along * CONE_TAN;
+            double radius = 0.3 + along * coneTan;
             Vec3d pos = mouth.add(aim.multiply(along)).add(side.multiply(random.nextGaussian() * radius))
                     .add(up.multiply(random.nextGaussian() * radius));
             this.dragon.world.addParticle(ParticleTypes.FLAME, pos.x, pos.y, pos.z, aim.x * 0.1, aim.y * 0.1 + 0.03, aim.z * 0.1);

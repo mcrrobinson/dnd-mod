@@ -1,0 +1,181 @@
+# Kobolds and the Kobold Tribes (docs/mobs/kobolds.md). Run:
+#   timeout 400 ./gradlew runClient -PdevScript=devscripts/kobolds.txt
+# "/say <step>" lines mark each step in run/logs/latest.log. Check:
+# 1. alone: a lone kobold (rallied by a frozen Dragonshield 6 blocks off, so it's brave) hits the frozen iron golem
+#    and no "[Conditions] Kobold -> Iron Golem" line appears between "/say alone" and "/say pack".
+# 2. pack: two kobolds on the golem: "[Conditions] Kobold -> Iron Golem: pack tactics +adv => ADVANTAGE x1.25 (3.75
+#    damage)".
+# 3. sun: at noon a lone kobold's hit: "sunlight sensitivity +dis => DISADVANTAGE x0.75 (2.25 damage)".
+# 4. volley: three slingers, Kobold Tribes Hostile: "[Kobold] Kobold Slinger calls a volley at Dev (3 slingers, t=T)"
+#    and three "[Kobold] Kobold Slinger slings at Dev (t=...)" lines within 6 ticks of T.
+# 5. flee: a lone kobold hit by the player: "[Kobold] Kobold loses its nerve and runs from Dev", the "Test passed"
+#    for distance 8.. after 60 ticks (it started 3 blocks away). With 2 allies the pack closes in: "Test passed"
+#    for distance ..2.5 and "[Conditions] Kobold -> Dev: pack tactics".
+# 6. snare: "[Kobold] Kobold Trapmaker sets a snare at ..." (it hides one in the player's path); then a placed snare
+#    with a forced 2: "[D20] Dev Kobold snare" FAILURE, "[Conditions] Dev +restrained", and the conditions readout.
+# 7. tribute: a gold ingot in the bowl: "[Kobold] Dev pays tribute (gold_ingot): +2 Kobold Tribes".
+# 8. slayer: killing a Lightning Chaser: action bar "-60 The Kobold Tribes" and "[Kobold] Dev slew lightning_chaser".
+# 9. dragonborn: "/rep" after reset as a Dragonborn reads "[dndclasses:kobolds]: 0 (Neutral)".
+# 10. trade: at Friendly the Trapmaker's trade screen opens ("slots" lists Kobold Snare x4, Kobold Sling, ...).
+/time set midnight
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+wait 5
+closescreen
+/fill -16 149 -16 16 149 16 minecraft:smooth_stone
+/fill -16 150 -16 16 158 16 minecraft:air
+/kill @e[type=!minecraft:player,distance=..60]
+/gamemode creative
+/effect clear @s
+/rep @s dndclasses:kobolds reset
+/tp @s 0.5 150 -10.5 0 20
+wait 10
+
+# ---- 1. alone (brave thanks to a frozen Dragonshield, which is 6 blocks from the golem) ----
+/say alone
+/summon minecraft:iron_golem 0.5 150 0.5 {NoAI:1b,Tags:["ktest","kgolem"],Attributes:[{Name:"generic.max_health",Base:1000d}],Health:1000f}
+/summon dndclasses:kobold_dragonshield 6.5 150 0.5 {NoAI:1b,Tags:["ktest"]}
+/summon dndclasses:kobold 0.5 150 3.5 {Tags:["ktest","ka"]}
+wait 5
+/damage @e[tag=ka,limit=1] 1 minecraft:mob_attack by @e[tag=kgolem,limit=1]
+wait 80
+/data get entity @e[tag=kgolem,limit=1] Health
+
+# ---- 2. pack ----
+/say pack
+/summon dndclasses:kobold -1.5 150 2.5 {Tags:["ktest","kb"]}
+wait 5
+/damage @e[tag=kb,limit=1] 1 minecraft:mob_attack by @e[tag=kgolem,limit=1]
+wait 80
+/data get entity @e[tag=kgolem,limit=1] Health
+
+# ---- 3. sun: one kobold at noon ----
+/kill @e[tag=kb]
+/time set noon
+/say sun
+wait 80
+/data get entity @e[tag=kgolem,limit=1] Health
+/time set midnight
+/kill @e[tag=ktest]
+wait 5
+
+# ---- 4. volley: three slingers, Hostile ----
+/say volley
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/effect give @s minecraft:health_boost 900 9 true
+/effect give @s minecraft:instant_health 1 9 true
+/rep @s dndclasses:kobolds set -800
+/tp @s 0.5 150 -10.5 0 0
+/summon dndclasses:kobold_slinger -1.5 150 1.5 {Tags:["ktest","ksling"],Rotation:[180f,0f]}
+/summon dndclasses:kobold_slinger 0.5 150 1.5 {Tags:["ktest","ksling"],Rotation:[180f,0f]}
+/summon dndclasses:kobold_slinger 2.5 150 1.5 {Tags:["ktest","ksling"],Rotation:[180f,0f]}
+wait 20
+screenshot kobold-volley
+wait 60
+/kill @e[tag=ktest]
+/effect give @s minecraft:instant_health 1 9 true
+wait 5
+
+# ---- 5. flee: a lone kobold, hit by the player ----
+/say flee
+/tp @s 0.5 150 -10.5 0 0
+/summon dndclasses:kobold 0.5 150 -7.5 {Tags:["ktest","klone"],Rotation:[180f,0f]}
+wait 5
+/damage @e[tag=klone,limit=1] 1 minecraft:player_attack by @s
+wait 60
+target @e[tag=klone]
+/execute if entity @e[tag=klone,distance=8..]
+/kill @e[tag=ktest]
+/say pack-attack
+/summon dndclasses:kobold -0.5 150 -6.5 {Tags:["ktest","kpack"]}
+/summon dndclasses:kobold 0.5 150 -6.5 {Tags:["ktest","kpack"]}
+/summon dndclasses:kobold 1.5 150 -6.5 {Tags:["ktest","kpack"]}
+wait 60
+target @e[tag=kpack]
+/execute if entity @e[tag=kpack,distance=..2.5]
+screenshot kobold-pack
+/kill @e[tag=ktest]
+/effect give @s minecraft:instant_health 1 9 true
+wait 5
+
+# ---- 6. snare: a trapmaker hides one in the player's path; then stepping into one ----
+/say snare
+/tp @s 0.5 150 -10.5 0 0
+/summon dndclasses:kobold_trapmaker 0.5 150 -2.5 {Tags:["ktest","ktrap"],Rotation:[180f,0f]}
+wait 60
+screenshot kobold-snare
+/kill @e[tag=ktest]
+/fill -16 150 -16 16 151 16 minecraft:air replace dndclasses:kobold_snare
+/setblock 6 150 -10 dndclasses:kobold_snare
+/dndclass forceroll @s 2
+/tp @s 6.5 150 -9.5 0 0
+wait 10
+conditions
+wait 20
+/dndclass forceroll @s clear
+/dndcondition remove @s all
+/execute unless block 6 150 -10 dndclasses:kobold_snare
+wait 5
+
+# ---- 7. tribute ----
+/say tribute
+/rep @s dndclasses:kobolds reset
+/setblock 0 150 -8 dndclasses:dragon_tribute_bowl
+/tp @s 0.5 150 -9.5 0 40
+/item replace entity @s weapon.mainhand with minecraft:gold_ingot 3
+hotbar 0
+wait 5
+use
+wait 10
+/rep @s
+
+# ---- 8. slayer: a Lightning Chaser kill ----
+/say slayer
+/summon dndclasses:lightning_chaser 0.5 152 8.5 {NoAI:1b,Tags:["ktest","klc"]}
+wait 5
+/damage @e[tag=klc,limit=1] 10000 minecraft:player_attack by @s
+wait 20
+/rep @s
+/kill @e[tag=ktest]
+
+# ---- 9. dragonborn start ----
+/say dragonborn
+/dndrace set @s dragonborn ember
+wait 10
+closescreen
+/rep @s dndclasses:kobolds reset
+/rep @s
+/dndrace set @s none
+wait 10
+closescreen
+
+# ---- 10. trade at Friendly ----
+/say trade
+/clear @s
+/rep @s dndclasses:kobolds set 150
+/summon dndclasses:kobold_trapmaker 0.5 150 -8.5 {NoAI:1b,Tags:["ktest","kshop"],Rotation:[180f,0f]}
+/tp @s 0.5 150 -10.5 0 20
+wait 10
+use
+wait 10
+slots
+screenshot kobold-trades
+closescreen
+/rep @s dndclasses:kobolds set -300
+wait 5
+use
+wait 10
+/kill @e[tag=ktest]
+/rep @s dndclasses:kobolds reset
+/gamemode creative
+/say done
+quit

@@ -193,6 +193,16 @@ public final class AttackRolls {
         return swing == null ? null : swing.roll();
     }
 
+    /** Whether this swing at the target is a full-strength one that passed its attack roll (this tick). */
+    public static boolean isFullStrength(PlayerEntity player, Entity target) {
+        return swing(player, target) != null;
+    }
+
+    /** Whether this swing at the target is a critical hit (this tick). */
+    public static boolean isCriticalSwing(PlayerEntity player, Entity target) {
+        return isCritical(player, target);
+    }
+
     public static float criticalDamage(PlayerEntity player, Entity target, float amount) {
         return !player.getWorld().isClient && isCritical(player, target)
                 ? amount * mattonfire.dnd.classes.Race.RaceTraits.critMultiplier(player)
@@ -203,7 +213,10 @@ public final class AttackRolls {
         if (player.getWorld().isClient)
             return;
         boolean critical = isCritical(player, target);
+        boolean fullStrength = isFullStrength(player, target);
         CRITICAL.remove(player.getUuid());
+        // Great Weapon Master's Cleave: a crit or a kill readies the next swing
+        mattonfire.dnd.classes.Feats.FeatEffects.afterAttack(player, target, critical, fullStrength);
         if (critical) {
             player.addCritParticles(target);
             player.getWorld().playSound(null, target.getX(), target.getY(), target.getZ(),

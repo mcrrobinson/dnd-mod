@@ -1,0 +1,23 @@
+# Run right after portable-hole.txt: a fresh Portable Hole's contents survive a relog.
+# portable-hole.txt ends in a rift, so this one fills a new hole, quits, and portable-hole-relog-check.txt reopens it.
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/portable-hole-relog.txt
+#   timeout 300 ./gradlew runClient -PdevScript=devscripts/portable-hole-relog-check.txt
+# Expect: "slots" lists 7 emeralds in hole slot 0 before the quit
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/clear @s
+/dndmagic give @s dndclasses:portable_hole
+/item replace entity @s hotbar.1 with minecraft:emerald 7
+/tp @s 3000.5 150 3000.5 0 -40
+hotbar 0
+wait 10
+use
+wait 10
+slot 82 quick_move
+wait 5
+slots
+closescreen
+wait 10
+quit

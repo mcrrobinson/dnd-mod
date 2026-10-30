@@ -115,6 +115,8 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.ModEntityTypes.registerEntityTypes();
                 mattonfire.dnd.entity.DragonSaves.register();
                 mattonfire.dnd.entity.BossSaves.register();
+                mattonfire.dnd.entity.dragon.AncientSaves.register();
+                mattonfire.dnd.entity.boss.LegendaryResistance.register();
                 mattonfire.dnd.entity.GrabSaves.register();
                 mattonfire.dnd.entity.BasiliskSaves.register();
                 mattonfire.dnd.classes.Items.SalveOfStoneToFleshItem.register();
@@ -130,6 +132,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.entity.hireling.Hirelings.register();
                 mattonfire.dnd.world.gen.fortress.DwarvenFortressStructures.register();
                 mattonfire.dnd.world.gen.lair.DragonLairStructures.register();
+                mattonfire.dnd.world.gen.ancient.AncientLairStructures.register();
                 mattonfire.dnd.world.gen.camp.GoblinCampStructures.register();
                 mattonfire.dnd.world.gen.enclave.ElvenEnclaveStructures.register();
                 mattonfire.dnd.world.gen.enclave.EnclaveRegrowth.register();
@@ -157,6 +160,7 @@ public class DnDClasses implements ModInitializer {
                 mattonfire.dnd.world.gen.dungeon.DungeonStructures.register();
                 mattonfire.dnd.dungeon.DungeonCombat.register();
                 mattonfire.dnd.entity.SettlementGrudges.register();
+                mattonfire.dnd.world.gen.ancient.AncientLairStructures.registerHooks();
                 mattonfire.dnd.world.gen.HomeBonuses.register();
                 mattonfire.dnd.entity.raid.GoblinRaids.register();
                 mattonfire.dnd.entity.DwarfGrudges.register();
@@ -195,6 +199,10 @@ public class DnDClasses implements ModInitializer {
                 ModPotions.registerPotions();
                 // The drow and the Spider Houses (Underdark T4): their types, items, effects, spawns and events
                 mattonfire.dnd.entity.drow.Drow.register();
+                // The kobolds and the Kobold Tribes (design 10, K1): their types, items, blocks, spawns and hooks
+                mattonfire.dnd.entity.kobold.Kobolds.register();
+                // Kobold warrens (design 10, K2): the structure, its pieces, the egg clutch and the warren's hooks
+                mattonfire.dnd.world.gen.warren.KoboldWarrens.register();
                 mattonfire.dnd.magic.Magic.register();
                 ModEntities.registerBlockEntities();
                 ModBlocks.registerBlocks();
@@ -227,6 +235,9 @@ public class DnDClasses implements ModInitializer {
 
                 FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD, Ingredient.ofItems(Items.ICE),
                                 ModPotions.FREEZE_POTION.value());
+                // An Ancient Red Scale brews straight into a long Fire Resistance (8:00)
+                FabricBrewingRecipeRegistry.registerPotionRecipe(Potions.AWKWARD,
+                                Ingredient.ofItems(ModItems.ANCIENT_RED_SCALE), Potions.LONG_FIRE_RESISTANCE);
 
                 // Register doublejump registry.
                 // The double-jump packet is handled in MonkRules.register().

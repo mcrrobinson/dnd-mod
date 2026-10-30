@@ -72,6 +72,11 @@ public class BossFight {
     private Text namedCustomName;
     @Nullable
     private AbstractTeam namedTeam;
+    /** Builds the bar's name instead of the boss's display name ({@link #title}). */
+    @Nullable
+    private java.util.function.Supplier<Text> title;
+    @Nullable
+    private Text titled;
 
     public BossFight(MobEntity boss, BossBar.Color color, BossBar.Style style) {
         this.boss = boss;
@@ -103,6 +108,15 @@ public class BossFight {
      */
     public BossFight phase(float healthFraction, BossBar.Color color, Runnable onEnter) {
         this.phases.add(new Phase(healthFraction, color, onEnter));
+        return this;
+    }
+
+    /**
+     * Names the bar with {@code title} instead of the boss's display name, rebuilt every tick and sent when it
+     * changes (an Ancient dragon's name plus its Legendary Resistances left).
+     */
+    public BossFight title(java.util.function.Supplier<Text> title) {
+        this.title = title;
         return this;
     }
 
@@ -235,6 +249,14 @@ public class BossFight {
      * them (and the type), so it isn't rebuilt every tick.
      */
     private void updateName() {
+        if (this.title != null) {
+            Text text = this.title.get();
+            if (!text.equals(this.titled)) {
+                this.titled = text;
+                this.bar.setName(text);
+            }
+            return;
+        }
         Text customName = this.boss.getCustomName();
         AbstractTeam team = this.boss.getScoreboardTeam();
         if (this.named && customName == this.namedCustomName && team == this.namedTeam) {
@@ -284,12 +306,30 @@ public class BossFight {
         }
     }
 
+    /** Something that happens to each player in range when a boss dies (the Deck of Many Things' Comet). */
+    @FunctionalInterface
+    public interface DeathListener {
+        void onBossDeath(BossFight fight, List<ServerPlayerEntity> playersInRange);
+    }
+
+    private static final List<DeathListener> DEATH_LISTENERS = new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    public static void registerDeathListener(DeathListener listener) {
+        DEATH_LISTENERS.add(listener);
+    }
+
     /** Call from the boss's onDeath(source); grants the kill advancement. */
     public void onDeath() {
         if (this.killed || this.boss.world.isClient) {
             return;
         }
         this.killed = true;
+        if (!DEATH_LISTENERS.isEmpty()) {
+            List<ServerPlayerEntity> near = ((ServerWorld) this.boss.world).getPlayers(this::inRange);
+            for (DeathListener listener : DEATH_LISTENERS) {
+                listener.onBossDeath(this, near);
+            }
+        }
         // Same player vanilla credits with the kill (player_killed_entity)
         LivingEntity killer = this.boss.getPrimeAdversary();
         if (this.advancement != null && killer instanceof ServerPlayerEntity player) {

@@ -188,7 +188,7 @@ Every item below works only while its magic is awake: it's identified, you're no
   - It **drops its head** where vanilla has one: zombie (Zombie Head), skeleton (Skeleton Skull), wither skeleton (Wither Skeleton Skull), creeper (Creeper Head), piglin (Piglin Head).
   - **Players and bosses** keep their heads and take **6d8** extra damage on that hit instead ("Vorpal! +27"). Bosses are the mod's [bosses](../bosses/boss-fights.md) and the vanilla Wither, Ender Dragon, Warden and Elder Guardian (tag `#dndclasses:vorpal_resistant`).
   - Creatures with **no head** (slimes, magma cubes, shulkers, [Gelatinous Cubes](../mobs/gelatinous-cube.md), [Mimics](../mobs/mimic.md); tag `#dndclasses:headless`) just take the hit (the crit still doubles it).
-- Only the die counts: a Fighter's or Champion's 19 crits but doesn't behead, and nor does an auto-crit (the Assassin's first hit out of Vanish) unless the die itself showed 20.
+- Only the die counts: a Fighter's or Champion's 19 crits but doesn't behead, and nor does an auto-crit (the Assassin's first hit out of Vanish) unless the die itself showed 20. A [Deck of Many Things](#deck-of-many-things) Moon wish that turns a fumble into a 20 doesn't behead either.
 
 ### Sending Stones
 - They come as a **pair**: one stack of 2 stones sharing a pair id (the tooltip's "Pair mark: 3F2A"). Split the stack and give one away. A stone without a pair (a single stone from the creative tab) gets one as soon as it's in an inventory, so take a stack of 2 from the tab or use `/give ... 2`.

@@ -1,0 +1,184 @@
+# Kobold traps (docs/structures/kobold-warrens.md, docs/systems/dungeon-traps.md). Run:
+#   timeout 600 ./gradlew runClient -PdevScript=devscripts/kobold-traps.txt
+# Test rigs come from /dndhome koboldtrap <kind> (3 blocks ahead of the given position, a stone strip round it).
+# "/say <step>" lines mark each step in run/logs/latest.log. Check:
+# 1. rockfall: "[Trap] rockfall trap at 0 148 -8 set off by Dev", "[Trap] rockfall hits Dev for 6.0 (failed save, full +
+#    Prone)", the conditions readout lists Prone, and "Test passed" for rubble at 0 150 -9.
+# 2. spikes: "[Trap] spikes hit Dev for 4.0 (failed save, full + Slowness II)", Slowness (Id 2) in the effects, the
+#    spikes-out screenshot, then "[Trap] spikes trap at 10 148 -8 re-armed (the spikes reset)" ~200 ticks later.
+# 3. disarm: "[D20] Dev Disarm" SUCCESS and "[Trap] spikes trap at 10 148 -8 disarmed"; it stays disarmed past 200
+#    ticks ("Test passed" for armed=false).
+# 4. rockfall re-arms itself 2400 ticks after it went off with a kobold near: "[Trap] rockfall trap at 0, 148, -8
+#    re-armed (kobold rearm, kobolds nearby)", "Test passed" for armed=true and for air (the rubble cleared) at 0 150 -9.
+# 5. trapmaker: "[Trap] spikes trap at 10, 148, -8 re-armed (kobold rearm by Kobold Trapmaker)" and "Test passed" for
+#    armed=true.
+# 6. honored: at Honored the tripline doesn't go off ("Test passed" for armed=true after walking over it); a kobold
+#    walking over it doesn't either.
+# 7. pit: straw-lidded tiles ("Test passed" for covering=straw), a forced 2: "[Trap] Dev falls into the pit".
+# 8. eggs: breaking an egg clutch with a kobold watching: "[Grudges] Dev broke a kobold egg clutch at 30 150 -8: -30
+#    Kobold Tribes, 1 witness(es)", /rep reads -330, the kobold's target is Dev.
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/difficulty normal
+wait 40
+closescreen
+include _reset.txt
+/dndclass set @s fighter
+/clear @s
+wait 5
+closescreen
+/fill -8 140 -20 40 158 8 minecraft:air
+/fill -8 149 -20 40 149 8 minecraft:smooth_stone
+/kill @e[type=!minecraft:player,distance=..80]
+/gamemode creative
+/effect clear @s
+/rep @s dndclasses:kobolds reset
+/execute positioned 0.5 150 -10.5 rotated 0 0 run dndhome koboldtrap rockfall
+/execute positioned 10.5 150 -10.5 rotated 0 0 run dndhome koboldtrap spikes
+/execute positioned 20.5 150 -10.5 rotated 0 0 run dndhome koboldtrap pit
+wait 10
+/tp @s 0.5 152 -14.5 0 20
+hud off
+wait 10
+screenshot kobold-trap-rigs
+/tp @s 0.5 150 -11.5 0 25
+wait 10
+screenshot kobold-rockfall-armed
+hud on
+
+# ---- 1. rockfall: a failed DEX save ----
+/say rockfall
+/gamemode survival
+/effect give @s minecraft:resistance 900 4 true
+/dndclass forceroll @s 2
+/tp @s 0.5 150 -7.5 180 0
+wait 6
+hud off
+/tp @s 0.5 150 -7.5 0 -40
+wait 14
+screenshot kobold-rockfall
+hud on
+wait 4
+conditions
+/dndclass forceroll @s clear
+/execute if block 0 150 -9 dndclasses:collapsed_rubble
+/execute if block 0 148 -8 dndclasses:trap_trigger[armed=false]
+/gamemode creative
+/tp @s 0.5 152 -14.5 0 20
+wait 5
+screenshot kobold-rockfall-rubble
+/dndcondition remove @s all
+
+# ---- 2. spikes: a failed save, then the strip resets itself ----
+/say spikes
+/gamemode survival
+/dndclass forceroll @s 3
+/tp @s 10.5 150 -7.5 0 0
+wait 3
+/data get entity @s ActiveEffects
+/dndclass forceroll @s clear
+/gamemode creative
+hud off
+/tp @s 10.5 151 -11.5 0 25
+wait 2
+screenshot kobold-spikes-out
+hud on
+waitserver 220
+/execute if block 10 148 -8 dndclasses:trap_trigger[armed=true]
+/effect clear @s minecraft:slowness
+
+# ---- 3. disarm: a Rogue's Thieves' Tools ----
+/say disarm
+/dndclass set @s rogue
+/clear @s dndclasses:class_guidebook
+/clear @s
+wait 5
+closescreen
+/gamemode survival
+/tp @s 10.5 150 -10.5 0 23
+sneak on
+wait 5
+/dndclass forceroll @s 20
+use
+wait 10
+sneak off
+/dndclass forceroll @s clear
+/execute if block 10 148 -8 dndclasses:trap_trigger[armed=false]
+waitserver 240
+/execute if block 10 148 -8 dndclasses:trap_trigger[armed=false]
+
+# ---- 4. the rockfall re-arms itself with a kobold near (2400 ticks after it went off) ----
+/say rockfall-rearm
+/summon dndclasses:kobold 5.5 150 -12.5 {NoAI:1b,Tags:["kttest"]}
+waitserver 1950
+/execute if block 0 148 -8 dndclasses:trap_trigger[armed=true]
+/execute if block 0 150 -9 minecraft:air
+/kill @e[tag=kttest]
+
+# ---- 5. a Trapmaker re-arms the disarmed strip ----
+/say trapmaker
+/gamemode creative
+/tp @s 10.5 152 -16.5 0 20
+/summon dndclasses:kobold_trapmaker 14.5 150 -12.5 {Tags:["kttest"]}
+waitserver 400
+/execute if block 10 148 -8 dndclasses:trap_trigger[armed=true]
+/kill @e[tag=kttest]
+
+# ---- 6. Honored players and kobolds walk over it ----
+/say honored
+/dndclass set @s fighter
+/clear @s dndclasses:class_guidebook
+wait 5
+closescreen
+/rep @s dndclasses:kobolds set 500
+/gamemode survival
+/tp @s 0.5 150 -7.5 0 0
+wait 10
+/tp @s 0.5 150 -6.5 0 0
+wait 10
+/execute if block 0 148 -8 dndclasses:trap_trigger[armed=true]
+/gamemode creative
+/tp @s 0.5 152 -14.5 0 20
+/summon dndclasses:kobold 0.5 150 -7.5 {Tags:["kttest"]}
+wait 20
+/execute if block 0 148 -8 dndclasses:trap_trigger[armed=true]
+/kill @e[tag=kttest]
+/rep @s dndclasses:kobolds reset
+
+# ---- 7. the straw-covered pit ----
+/say pit
+/execute if block 20 149 -8 dndclasses:crumbling_floor[covering=straw]
+/gamemode survival
+/dndclass forceroll @s 2
+/tp @s 20.5 150 -7.5 0 0
+wait 30
+/dndclass forceroll @s clear
+/execute if block 20 149 -8 minecraft:air
+/gamemode creative
+/tp @s 20.5 152 -12.5 0 40
+wait 5
+screenshot kobold-pit-open
+
+# ---- 8. breaking an egg clutch, watched ----
+/say eggs
+/rep @s dndclasses:kobolds reset
+/setblock 30 150 -8 dndclasses:kobold_egg_clutch
+/summon dndclasses:kobold 30.5 150 -3.5 {NoAI:1b,Tags:["kttest","kegg"],Rotation:[180f,0f]}
+/gamemode survival
+/effect give @s minecraft:haste 60 100 true
+/tp @s 30.5 150 -10.5 0 30
+wait 10
+attack
+wait 10
+target @e[tag=kegg]
+/rep @s
+/execute unless block 30 150 -8 dndclasses:kobold_egg_clutch
+/kill @e[tag=kttest]
+/rep @s dndclasses:kobolds reset
+/effect clear @s
+/gamemode creative
+/say done
+quit

@@ -114,6 +114,10 @@ public final class MagicLoot {
         chest("beholder_lair", 1.0F, tier(r, 40), tier(vr, 45), tier(l, 15));
         chest("beholder_lair", 0.04F, named(ModItems.IMMOVABLE_ROD));
         chest("beholder_lair", 0.02F, named(ModItems.EYE_OF_THE_TYRANT));
+        // The Ancient Red's hoard hall: four hoard chests and the Hoard Coffer behind its sleeping hollow
+        chest("ancient_red_hoard", 1.0F, tier(r, 50), tier(vr, 40), tier(l, 10));
+        chest("ancient_red_hoard_coffer", 1.0F, tier(vr, 50), tier(l, 50));
+        chest("ancient_red_hoard_coffer", 0.25F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
 
         // Dragon Temples: a small chance in the monks' cells; the reliquary (locked at DC 15, guarded) always rolls,
         // mostly Rare. Its staff chances stay in the JSON.
@@ -157,7 +161,14 @@ public final class MagicLoot {
         entity("beholder", 1.0F, tier(vr, 80), tier(l, 20));
         entity("beholder", 0.10F, named(ModItems.TOME_OF_CLEAR_THOUGHT));
         entity("drow_matron", 0.15F, tier(l, 1));
+        // The Ancient Red Dragon (design 10, 5.11): a Very Rare or Legendary roll on top of its Scale Mail
+        entity("ancient_red_dragon", 1.0F, tier(vr, 60), tier(l, 40));
         entity("river_pikehorn", 0.05F, named(ModItems.DECANTER_OF_ENDLESS_WATER));
+        entity("kobold_dragonshield", 0.15F, tier(u, 1));
+        // The Ancient Red's hoard (D2's table; a no-op until it exists): the kobolds' offerings
+        chest("ancient_red_hoard", 1.0F, plain(mattonfire.dnd.entity.kobold.Kobolds.KOBOLD_TRINKET, 1, 3));
+        // Kobold warrens (K2): the chief's hoard chest
+        chest("kobold_hoard", 0.20F, tier(u, 85), tier(r, 15));
 
         // Bounties: known goods, identified
         gameplay("bounty_minor", 0.10F, true, tier(u, 1));

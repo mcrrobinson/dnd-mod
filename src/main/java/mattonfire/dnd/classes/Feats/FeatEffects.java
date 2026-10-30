@@ -195,7 +195,7 @@ public final class FeatEffects {
                 && guardianMarked(living, player) ? Advantage.ADVANTAGE : Advantage.NORMAL);
 
         // Mobile's hit and run: a mob you hit has disadvantage against you
-        ConditionEffects.registerMobAttackMode((attacker, target) -> {
+        ConditionEffects.registerMobAttackMode("mobile", (attacker, target) -> {
             Map<UUID, Integer> marks = HIT_AND_RUN.get(attacker);
             Integer until = marks == null ? null : marks.get(target.getUuid());
             if (until == null || until <= now() || !(target instanceof PlayerEntity player)

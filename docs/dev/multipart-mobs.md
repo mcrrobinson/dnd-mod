@@ -24,11 +24,13 @@ How big GeckoLib mobs (the dragons) get extra hittable parts beyond their small 
 3. Call `LAYOUT.update(this, parts, flying)` every tick.
 4. Render it with a `DragonRenderer` (or a subclass).
 5. Check it with `devscripts/dragon-hitboxes.txt` (`hitboxes on` draws the part shapes as green boxes). `devscripts/dragon-hitboxes-server.txt` adds the server's shapes in red and logs the gap (`[ServerPartDebug]`). The red shapes are a copy the server takes at the end of each of its ticks (it never reads server entities from the render thread), so they can trail the live server by up to a tick; `dragon-hitboxes-hold.txt` (with `-PdevHidden=false`) leaves two flapping dragons up for you to fly round.
-6. To have server parts follow the animations, add `.animations(...)` to the layout and drive the body animation with a `DragonAnimationController` (see `DragonFlightAnimation`).
+6. A dragon drawn bigger or smaller than its model (the renderer's `withScale`, e.g. the Ancient Red Dragon at 2.5x or the Bone Wyvern) takes `LAYOUT.scaled(scale)`, which scales the server's shapes; the client's follow the scaled bones anyway. `devscripts/ancient-red-scale.txt` checks both.
+7. To have server parts follow the animations, add `.animations(...)` to the layout and drive the body animation with a `DragonAnimationController` (see `DragonFlightAnimation`).
 
 ## Known limitations
 - A moving dragon's server shapes are where the server has it. The client draws it up to ~3 ticks behind (vanilla entity interpolation) and its body yaw can trail during turns. Measured on wandering dragons, that's 0.4-0.8 blocks on average, more in sharp turns. Vanilla mobs have the same lag.
 - The fire-breath head animation (a second controller) and any other overlays aren't followed on the server; only the body animation is.
+- `DragonRenderer` tracks bone matrices only on the main render pass: a render layer (glowmask) draws the model again with its reference matrix taken after `withScale`, which used to overwrite them with unscaled ones.
 - GeckoLib 4.2 adds an extra identity matrix in `GeoBone.getLocalSpaceMatrix()` / `getWorldSpaceMatrix()`; `DragonRenderer` subtracts it.
 
 ## For developers

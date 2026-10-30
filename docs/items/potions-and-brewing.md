@@ -8,6 +8,7 @@ The mod's potions, the Alchemist's Fast Brewing Stand, and the exploding brewing
 - **Fast Brewing Stand:** brews 10× faster than vanilla. Only Alchemists can open it; anyone else gets a message. Drops itself when broken (fastest with a pickaxe).
 - **Potion of Freezing** (`dndclasses:freeze`): Awkward Potion + Ice. Holds the drinker in place for 3 minutes. Wizards are immune. Frozen mobs and players are drawn with a blue tint; the server tells nearby players when Freeze starts and ends (`Effects/FreezeEffect`), so the tint shows even on a mob frozen while you watch.
 - **Glow Spores** (from the [Underdark](../systems/underdark.md)'s Glowing Spore Drips, see [Underdark blocks](underdark-blocks.md)) brew an Awkward Potion into a Potion of Night Vision, like a golden carrot.
+- **Ancient Red Scales** (from the [Ancient Red Dragon](../bosses/ancient-red-dragon.md)) brew an Awkward Potion straight into a long (8:00) Potion of Fire Resistance.
 - **Arrow Storm** and **Invulnerability** potions (3 minutes each) are registered but have no recipe (`/give @s minecraft:potion{Potion:"dndclasses:arrow_storm"}`).
 - Some classes ignore potions: [Paladin](../classes/paladin.md), [Artificer](../classes/artificer.md) and [Fighter](../classes/fighter.md) (buffs only).
 

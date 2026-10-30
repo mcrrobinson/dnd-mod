@@ -1,0 +1,60 @@
+# The Ancient Red Dragon must look HUGE (design 10, 5.2): a frozen Ancient on flat ground beside a frozen
+# Lightning Chaser and a player-sized armour stand (wearing the Red Dragon Scale Mail), shot from 30 blocks
+# away with the HUD off; then from above, and with hit shapes on (client green, server red) and measured.
+# Run: timeout 300 ./gradlew runClient --offline -PdevScript=devscripts/ancient-red-scale.txt
+# Output: run/screenshots/ancient-red-*.png, [ServerPartDebug] lines in run/logs/latest.log.
+# Everything is on a stone floor at y=150 around x=3000 z=3000.
+wait 40
+closescreen
+include _reset.txt
+/time set day
+/weather clear
+/gamerule doDaylightCycle false
+/gamemode creative
+/tp @s 3030 156 3000 90 8
+/forceload add 2960 2960 3040 3040
+waitserver 100
+/fill 2960 149 2960 3040 149 3040 minecraft:smooth_stone
+/fill 2960 150 2960 3040 170 3040 minecraft:air
+/kill @e[type=dndclasses:ancient_red_dragon]
+/kill @e[type=dndclasses:lightning_chaser]
+/kill @e[type=minecraft:armor_stand,tag=ancient_scale]
+/summon dndclasses:ancient_red_dragon 3000 150 3000 {NoAI:1b,Rotation:[0f,0f],CustomName:'"Kharzanthrax"'}
+/summon dndclasses:lightning_chaser 3000 150 2970 {NoAI:1b,Rotation:[0f,0f]}
+/summon minecraft:armor_stand 3008 150 3016 {Tags:["ancient_scale"],Rotation:[90f,0f],ShowArms:1b,ArmorItems:[{},{},{id:"dndclasses:red_dragon_scale_mail",Count:1b},{id:"minecraft:player_head",Count:1b}]}
+wait 60
+hud off
+# Side on, 30 blocks back: Ancient in the middle, the Lightning Chaser behind its tail, the armour stand in front
+/tp @s 3030 156 3000 90 8
+wait 40
+screenshot ancient-red-scale
+# Three-quarter view from the front
+/tp @s 3026 160 3030 135 12
+wait 40
+screenshot ancient-red-scale-front
+# From above: the wingspan against the Lightning Chaser's
+/tp @s 3000 200 2990 0 90
+wait 40
+screenshot ancient-red-scale-top
+# Hit shapes: client (green) and server (red), measured
+hitboxes on
+serverhitboxes on
+/tp @s 3030 156 3000 90 8
+wait 40
+serverhitboxes measure
+screenshot ancient-red-hitboxes
+wait 13
+serverhitboxes measure
+/tp @s 3000 200 2990 0 90
+wait 30
+serverhitboxes measure
+screenshot ancient-red-hitboxes-top
+serverhitboxes off
+hitboxes off
+hud on
+/kill @e[type=dndclasses:ancient_red_dragon]
+/kill @e[type=dndclasses:lightning_chaser]
+/kill @e[type=minecraft:armor_stand,tag=ancient_scale]
+/gamerule doDaylightCycle true
+/forceload remove 2960 2960 3040 3040
+quit

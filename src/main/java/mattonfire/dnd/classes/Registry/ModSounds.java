@@ -25,6 +25,12 @@ public class ModSounds {
     public static final SoundEvent MUSIC_LICH_FIGHT = registerSoundEvent("music.lich_fight");
     // The Matron Mother's fight in the Drow Spire (tools/music-gen `matron_fight`)
     public static final SoundEvent MUSIC_MATRON_FIGHT = registerSoundEvent("music.matron_fight");
+    // The Ancient Red Dragon's fight (tools/music-gen `ancient_fight`)
+    public static final SoundEvent MUSIC_ANCIENT_FIGHT = registerSoundEvent("music.ancient_fight");
+    // The Ancient dragons' voice: vanilla dragon sounds pitched down (sounds.json)
+    public static final SoundEvent ANCIENT_ROAR = registerSoundEvent("ancient_roar");
+    public static final SoundEvent ANCIENT_WINGBEAT = registerSoundEvent("ancient_wingbeat");
+    public static final SoundEvent ANCIENT_BREATH_INHALE = registerSoundEvent("ancient_breath_inhale");
     // Anywhere in the Underdark (tools/music-gen `underdark`, with vanilla's deep dark music mixed in)
     public static final SoundEvent MUSIC_UNDERDARK = registerSoundEvent("music.underdark");
     // Dungeon theme loops (tools/music-gen), picked by the theme DungeonMusic sends

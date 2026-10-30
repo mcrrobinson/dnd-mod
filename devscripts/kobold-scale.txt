@@ -1,0 +1,43 @@
+# Kobold size check (docs/mobs/kobolds.md): each kobold frozen beside the player. The model is 0.95 blocks to the top
+# of its horns (the hitbox is 0.5 x 0.95; the Dragonshield 0.6 x 1.1, drawn at 1.15x), so its head reaches the
+# player's hip (the player is 1.8). Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/kobold-scale.txt
+# Check screenshots kobold-scale.png (front view, left to right: Kobold, Slinger, player, Trapmaker, Dragonshield),
+# kobold-scale-hitboxes.png and kobold-scale-side.png, and the "sizes" log line.
+/time set noon
+/weather clear
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+wait 40
+closescreen
+include _reset.txt
+/gamemode creative
+/fill -6 149 -6 6 149 6 minecraft:smooth_stone
+/fill -6 150 -6 6 156 6 minecraft:air
+/kill @e[type=!minecraft:player,distance=..40]
+/tp @s 0.5 150 0.5 0 0
+/summon dndclasses:kobold -1.5 150 0.5 {NoAI:1b,Rotation:[0f,0f],Variant:0,Tags:["kscale"]}
+/summon dndclasses:kobold_slinger -0.5 150 0.5 {NoAI:1b,Rotation:[0f,0f],Variant:1,Tags:["kscale"]}
+/summon dndclasses:kobold_trapmaker 1.5 150 0.5 {NoAI:1b,Rotation:[0f,0f],Variant:3,Tags:["kscale"]}
+/summon dndclasses:kobold_dragonshield 2.6 150 0.5 {NoAI:1b,Rotation:[0f,0f],Variant:0,Tags:["kscale"]}
+wait 10
+hud off
+perspective front
+look 0 10
+wait 20
+screenshot kobold-scale
+hitboxes on
+wait 5
+screenshot kobold-scale-hitboxes
+hitboxes off
+perspective first
+/tp @s 0.5 150.5 5.5 180 5
+/summon minecraft:armor_stand 0.5 150 0.5 {NoGravity:1b,ShowArms:1b,Rotation:[0f,0f],Tags:["kscale"],CustomName:'"1.8"'}
+/tp @e[type=dndclasses:kobold,tag=kscale] -0.7 150 0.5 90 0
+wait 10
+look 180 5
+wait 10
+screenshot kobold-scale-side
+sizes
+hud on
+/kill @e[tag=kscale]
+quit

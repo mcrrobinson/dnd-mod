@@ -177,6 +177,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.WYVERN, mattonfire.dnd.client.renderer.WyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.LIGHTNING_CHASER, mattonfire.dnd.client.renderer.LightningChaserRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.FROST_DRAKE, mattonfire.dnd.client.renderer.FrostDrakeRenderer::new);
+        net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.ANCIENT_RED_DRAGON, mattonfire.dnd.client.renderer.AncientDragonRenderer::new);
+        mattonfire.dnd.client.renderer.RedDragonScaleMailRenderer.register();
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.EMBER_WYVERN, mattonfire.dnd.client.renderer.EmberWyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BONE_WYVERN, mattonfire.dnd.client.renderer.BoneWyvernRenderer::new);
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.RIVER_PIKEHORN, mattonfire.dnd.client.renderer.RiverPikehornRenderer::new);
@@ -218,6 +220,8 @@ public class DndClassesClient implements ClientModInitializer {
         net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry.register(mattonfire.dnd.entity.ModEntityTypes.BEHOLDER, mattonfire.dnd.client.renderer.BeholderRenderer::new);
         // The drow (Underdark T4)
         mattonfire.dnd.client.drow.DrowClient.register();
+        // The kobolds (design 10, K1)
+        mattonfire.dnd.client.kobold.KoboldClient.register();
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_LOAD.register(mattonfire.dnd.entity.DragonPartTracker::onLoad);
         net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientEntityEvents.ENTITY_UNLOAD.register(mattonfire.dnd.entity.DragonPartTracker::onUnload);
         DevScript.register();

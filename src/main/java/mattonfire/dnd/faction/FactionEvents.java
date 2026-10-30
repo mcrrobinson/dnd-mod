@@ -102,9 +102,14 @@ public final class FactionEvents {
                 break;
             }
             if (!enemy) {
-                // Monsters the faction hates without them being a faction (the dwarves and Rust Monsters).
+                // Creatures the faction cares about without them being a faction: monster_kill_overrides first
+                // (uncapped, may be negative: the kobolds and a dead dragon), then monster_kills (capped gains: the
+                // dwarves and Rust Monsters).
+                Integer override = Faction.lookup(faction.monsterKillOverrides(), killed);
                 Integer monster = Faction.lookup(faction.monsterKills(), killed);
-                if (monster != null) {
+                if (override != null) {
+                    change.add(faction, override);
+                } else if (monster != null) {
                     change.add(faction, monster, Reputation.Cap.KILL, faction.killCap());
                 }
             }

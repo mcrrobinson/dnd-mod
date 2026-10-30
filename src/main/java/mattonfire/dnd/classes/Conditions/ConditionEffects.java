@@ -237,23 +237,50 @@ public final class ConditionEffects {
         return inst != null && inst.indefinite();
     }
 
+    // ------------------------------------------------------------------ mob attack modes
+
     /**
-     * A source of advantage or disadvantage on a mob's melee attack against a target, on top of the conditions
-     * (kobold Pack Tactics, the Mobile feat's hit-and-run, ...). Its result adds to the mob advantage and
-     * disadvantage count before {@link Advantage#resolve}.
+     * Something besides conditions that gives a mob advantage or disadvantage on an attack: a kobold's Pack Tactics
+     * and Sunlight Sensitivity, a feat. Returns {@link Advantage#NORMAL} when it doesn't apply.
      */
     @FunctionalInterface
     public interface MobAttackMode {
         Advantage mode(LivingEntity attacker, LivingEntity target);
     }
 
-    private static final List<MobAttackMode> MOB_ATTACK_MODES = new java.util.concurrent.CopyOnWriteArrayList<>();
-    private static final List<java.util.function.Predicate<LivingEntity>> NO_BLIND_SPOTS =
+    /** The registered {@link MobAttackMode}s with a name for the log line. */
+    private static final java.util.List<Map.Entry<String, MobAttackMode>> MOB_ATTACK_MODES =
             new java.util.concurrent.CopyOnWriteArrayList<>();
 
-    public static void registerMobAttackMode(MobAttackMode mode) {
-        MOB_ATTACK_MODES.add(mode);
+    /**
+     * Adds a mob attack mode. Each one that answers ADVANTAGE or DISADVANTAGE counts as one more source on top of the
+     * conditions before {@link Advantage#resolve}, so they stack and cancel with conditions (a Prone target already
+     * gives advantage; Sunlight Sensitivity cancels Pack Tactics). It applies to a non-player attacker's melee hits
+     * and to its projectiles (where conditions don't count). {@code name} goes in the {@code [Conditions]} log line.
+     */
+    public static void registerMobAttackMode(String name, MobAttackMode mode) {
+        MOB_ATTACK_MODES.add(Map.entry(name, mode));
     }
+
+    /** The registered modes' advantages [0] and disadvantages [1] for this attack, and their names. */
+    private static int[] mobAttackModes(LivingEntity attacker, LivingEntity target, StringBuilder names) {
+        int[] counts = new int[2];
+        for (Map.Entry<String, MobAttackMode> entry : MOB_ATTACK_MODES) {
+            Advantage mode = entry.getValue().mode(attacker, target);
+            if (mode == Advantage.NORMAL) {
+                continue;
+            }
+            counts[mode == Advantage.ADVANTAGE ? 0 : 1]++;
+            if (names.length() > 0) {
+                names.append(", ");
+            }
+            names.append(entry.getKey()).append(mode == Advantage.ADVANTAGE ? " +adv" : " +dis");
+        }
+        return counts;
+    }
+
+    private static final List<java.util.function.Predicate<LivingEntity>> NO_BLIND_SPOTS =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
 
     /** Targets for which being Blinded gives attackers no advantage (the Alert feat). */
     public static void registerNoBlindSpots(java.util.function.Predicate<LivingEntity> test) {
@@ -398,24 +425,41 @@ public final class ConditionEffects {
                 }
                 int adv = advantagesAgainst(target, living);
                 int dis = disadvantagesOf(living);
-                for (MobAttackMode hook : MOB_ATTACK_MODES) {
-                    switch (hook.mode(living, target)) {
-                        case ADVANTAGE -> adv++;
-                        case DISADVANTAGE -> dis++;
-                        case NORMAL -> {
-                        }
-                    }
-                }
-                Advantage mode = Advantage.resolve(adv, dis);
+                StringBuilder names = new StringBuilder();
+                int[] extra = mobAttackModes(living, target, names);
+                Advantage mode = Advantage.resolve(adv + extra[0], dis + extra[1]);
                 if (mode == Advantage.ADVANTAGE) {
                     amount *= MOB_ADVANTAGE;
                 } else if (mode == Advantage.DISADVANTAGE) {
-                    boolean onlyPoison = dis == 1 && Conditions.has(living, Condition.POISONED);
+                    boolean onlyPoison = dis == 1 && extra[1] == 0 && Conditions.has(living, Condition.POISONED);
                     amount *= onlyPoison ? MOB_POISONED : MOB_DISADVANTAGE;
                 }
+                logMobAttackMode(living, target, names, mode, amount);
             }
+        } else if (attacker instanceof LivingEntity living && !(living instanceof PlayerEntity)
+                && source.getSource() != null && source.getSource() != attacker) {
+            // A mob's projectile (a kobold's sling stone): only the registered modes count, not conditions.
+            StringBuilder names = new StringBuilder();
+            int[] extra = mobAttackModes(living, target, names);
+            Advantage mode = Advantage.resolve(extra[0], extra[1]);
+            if (mode == Advantage.ADVANTAGE) {
+                amount *= MOB_ADVANTAGE;
+            } else if (mode == Advantage.DISADVANTAGE) {
+                amount *= MOB_DISADVANTAGE;
+            }
+            logMobAttackMode(living, target, names, mode, amount);
         }
         return amount;
+    }
+
+    private static void logMobAttackMode(LivingEntity attacker, LivingEntity target, StringBuilder names,
+            Advantage mode, float amount) {
+        if (names.length() > 0) {
+            DnDClasses.LOGGER.info("[Conditions] {} -> {}: {} => {} x{} ({} damage)", Conditions.name(attacker),
+                    Conditions.name(target), names, mode, mode == Advantage.ADVANTAGE ? MOB_ADVANTAGE
+                            : mode == Advantage.DISADVANTAGE ? MOB_DISADVANTAGE : 1.0F,
+                    String.format(java.util.Locale.ROOT, "%.2f", amount));
+        }
     }
 
     // ------------------------------------------------------------------ targeting

@@ -111,6 +111,7 @@ public final class BossItems {
         registerEffects();
         registerHooks();
         DrowItems.register();
+        RedDragonScaleMailItem.register();
         BossItemDrops.register();
     }
 

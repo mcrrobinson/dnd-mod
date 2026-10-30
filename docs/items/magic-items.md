@@ -29,6 +29,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 21 | Gorgon's Gaze | Rare wondrous item | yes | Once per dawn, right-click a mob within 12 blocks (not a boss): CON save DC 14 or it's Petrified for good, a statue |
 | 22 | Matron's Scourge | Very Rare weapon (whip) | yes | 7 damage, 1.6 speed, +1 reach. Hits carry Drow Poison (CON 14); once every 30 s a hit frightens the target (WIS 14, 4 s) |
 | 23 | Piwafwi (Cloak of the Drow) | Rare armor (chestplate slot) | yes | 2 armor, +2 Stealth. Sneaking where the light is 4 or less, mobs more than 6 blocks away can't see you |
+| 24 | Red Dragon Scale Mail | Very Rare armor (chestplate) | yes | 8 armor, 3 toughness. Half damage from fire, advantage on saves against dragons; crouch still for 3 s to sense the nearest Ancient lair (once a day) |
 
 ### Wand of Magic Missiles
 - Right-click fires three glowing darts that curve onto the nearest hostile mob (any monster, or any mob targeting you) within 24 blocks and 30 degrees of where you look, that you can see. Together they deal 6 magic damage, credited to you. No target: "No hostile creature in sight." and no charge is spent.
@@ -130,6 +131,12 @@ Every item below works only while its magic is awake: it's identified, you're no
 - **+2 Stealth** on your [character sheet](../systems/ability-scores.md) while it's active (worn and attuned).
 - **Unseen in the dark**: while you sneak where the light (block light, or what's left of the sky light) is **4 or less**, mobs **more than 6 blocks away** can't target you, and any that were chasing you lose you at once. Within 6 blocks, or in the light, you're seen as usual (passive Stealth still shortens how far they notice you).
 
+### Red Dragon Scale Mail
+- The [Ancient Red Dragon](../bosses/ancient-red-dragon.md)'s hide, worn as a chestplate: **8 armor, 3 toughness, +0.1 knockback resistance**, drawn as overlapping crimson scales with an ember-orange belly. Repaired with Ancient Red Scales.
+- **Half damage from fire**: anything fire-typed (flames, lava, fire breath, magma vents).
+- **Advantage on saves against dragons**: every dragon's breath and storm, and every save the Ancient Red Dragon and its lair call for (shown on the [character sheet](../systems/ability-scores.md) as "saves against dragons").
+- **Dragon sense**: crouch without moving for 3 s and, once a day, the action bar points to the nearest Ancient dragon lair within 3000 blocks ("A pull to the north east, about 1200 blocks."). Until the Ancient lairs generate, it says no lair is near.
+
 ## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
 - The boss and monster items drop, unidentified, when a player kills their monster (Looting adds the bonus shown):
@@ -147,6 +154,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Eye of the Tyrant | [Beholder](../bosses/beholder.md) | 12% (+3%) |
 | Gorgon's Gaze | [Medusa](../bosses/medusa.md) | 25% (+5%) |
 | Matron's Scourge | [Matron Mother](../bosses/matron-mother.md) | 100% |
+| Red Dragon Scale Mail | [Ancient Red Dragon](../bosses/ancient-red-dragon.md) | 100% |
 
 - Every item also turns up in its rarity's loot table (Cloak of Protection and Ring of Protection only come from there), which mod structures, bosses, Mimics, bounties, raids, dungeons and vanilla structures roll on. See [Magic loot](../systems/magic-loot.md) for the rates.
 - The named sources (per chest or per kill; chest and bounty items need no player kill, monsters do):
@@ -168,7 +176,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Eye of the Tyrant | beholder lair chest | 2% |
 | Piwafwi | [Drow Outpost](../structures/drow-outposts.md) shrine reliquary; [Drow Spire](../structures/drow-spire.md) treasure loft | 3%; 15% |
 
-Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`.
+Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`, `red_dragon_scale_mail`.
 
 ## Commands
 - `/dndmagic give|identify|attune|bonds ...`: see [Magic items](../systems/magic-items.md).

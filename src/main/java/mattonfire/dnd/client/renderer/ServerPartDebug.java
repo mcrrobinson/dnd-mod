@@ -121,6 +121,15 @@ public final class ServerPartDebug {
                     worst = clientParts[i].name;
                 }
             }
+            // How high the head sits, for checking a big dragon's size (the Ancient's must be 7+ blocks up)
+            for (int i = 0; i < Math.min(clientParts.length, serverParts.size()); i++) {
+                Box s = union(serverParts.get(i));
+                if ("head".equals(clientParts[i].name) && s != null) {
+                    DnDClasses.LOGGER.info("[ServerPartDebug] {} head part centre {} blocks above its feet (server), {} wide",
+                            entity.getType().getUntranslatedName(), String.format("%.2f", s.getCenter().y - server.pos().y),
+                            String.format("%.2f", Math.max(s.getXLength(), s.getZLength())));
+                }
+            }
             float clientYaw = entity instanceof LivingEntity living ? living.bodyYaw : entity.getYaw();
             DnDClasses.LOGGER.info("[ServerPartDebug] {} client time {} server time {}: part centres {} apart on average, worst {} ({} blocks);"
                             + " dragon {} blocks apart, body yaw {} vs {}",

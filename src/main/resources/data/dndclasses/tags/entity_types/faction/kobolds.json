@@ -1,0 +1,9 @@
+{
+  "replace": false,
+  "values": [
+    "dndclasses:kobold",
+    "dndclasses:kobold_slinger",
+    "dndclasses:kobold_trapmaker",
+    "dndclasses:kobold_dragonshield"
+  ]
+}

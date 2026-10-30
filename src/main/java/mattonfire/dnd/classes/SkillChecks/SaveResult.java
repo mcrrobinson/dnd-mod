@@ -99,7 +99,19 @@ public final class SaveResult {
         return new SaveResult(roll, halvesDamage, fresh, onSuccess, onFailure, note);
     }
 
-    /** The feature that changed this save's damage, or null. */
+    /**
+     * A failed save turned into a success by something outside the roll (an Ancient dragon's Legendary
+     * Resistance): outcome SUCCESS, the natural and modifier kept, and {@code note} naming what did it (shown on
+     * the save lane instead of the attack's own text).
+     */
+    public SaveResult overruled(Text note) {
+        D20.Roll r = roll;
+        D20.Roll success = new D20.Roll(r.label(), r.ability(), r.kind(), r.natural(), r.natural2(), r.mode(),
+                r.rerolled(), r.modifier(), r.bonuses(), r.dc(), D20.Outcome.SUCCESS, r.display(), r.flags());
+        return new SaveResult(success, halvesDamage, fresh, successDamage, failureDamage, note);
+    }
+
+    /** The feature that changed this save's damage (or overruled it), or null. */
     @Nullable
     public Text note() {
         return note;

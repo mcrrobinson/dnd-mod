@@ -8,6 +8,7 @@ import mattonfire.dnd.classes.DnDClasses;
 import mattonfire.dnd.classes.Registry.BlockFamily;
 import mattonfire.dnd.classes.Registry.ModBlockFamilies;
 import mattonfire.dnd.classes.Registry.ModEnchantments;
+import mattonfire.dnd.classes.Registry.ModItems;
 import net.minecraft.enchantment.EnchantmentLevelEntry;
 import net.minecraft.item.EnchantedBookItem;
 import net.minecraft.item.ItemStack;
@@ -33,7 +34,7 @@ import net.minecraft.world.gen.structure.Structure;
  * maps to the nearest dragon lair and frost lair (12 each).</li>
  * <li>Buys the wyvern and drake drops (from {@code loot_tables/entities/*wyvern*}, {@code frost_drake} and
  * {@code lightning_chaser}): phantom membrane, magma cream, blaze powder, blue ice, copper blocks and
- * netherite scrap, for 3-8 emeralds.</li>
+ * netherite scrap, for 3-8 emeralds, and Ancient Red Scales for {@value #ANCIENT_SCALE_PRICE} each.</li>
  * <li>Sells the temple's Dragonscale Tiles: 16 Ember, Frost or Storm for {@value #TILE_PRICE} emeralds each
  * ({@link #addMissing}).</li>
  * <li>Kin stock, to Dragonborn only: Draconic Scale ({@link KinStockOffers#dragonTemple()}, shown through
@@ -46,6 +47,8 @@ public final class DragonbornTrades {
     /** Emeralds for a stack of {@link #TILE_COUNT} Dragonscale Tiles, before kin prices. */
     public static final int TILE_PRICE = 3;
     public static final int TILE_COUNT = 16;
+    /** Emeralds the Elder pays for one Ancient Red Scale. */
+    public static final int ANCIENT_SCALE_PRICE = 8;
     public static final TagKey<Structure> DRAGON_LAIR_MAPS = TagKey.of(RegistryKeys.STRUCTURE,
             new Identifier(DnDClasses.MOD_ID, "dragon_temple_maps/dragon_lair"));
     public static final TagKey<Structure> FROST_LAIR_MAPS = TagKey.of(RegistryKeys.STRUCTURE,
@@ -77,8 +80,11 @@ public final class DragonbornTrades {
         return offers;
     }
 
-    /** Adds the trades a saved Elder from an older version doesn't have yet (the Dragonscale Tiles). */
+    /** Adds the trades a saved Elder from an older version doesn't have yet (Dragonscale Tiles, Ancient Red Scales). */
     static void addMissing(TradeOfferList offers) {
+        if (offers.stream().noneMatch(offer -> offer.getOriginalFirstBuyItem().isOf(ModItems.ANCIENT_RED_SCALE))) {
+            offers.add(buy(ModItems.ANCIENT_RED_SCALE, 1, ANCIENT_SCALE_PRICE));
+        }
         for (BlockFamily tiles : new BlockFamily[]{ModBlockFamilies.EMBER_DRAGONSCALE_TILES,
                 ModBlockFamilies.FROST_DRAGONSCALE_TILES, ModBlockFamilies.STORM_DRAGONSCALE_TILES}) {
             if (offers.stream().noneMatch(offer -> offer.getSellItem().isOf(tiles.base().asItem()))) {

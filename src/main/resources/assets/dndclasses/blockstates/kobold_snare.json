@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "waterlogged=false": {
+      "model": "dndclasses:block/kobold_snare"
+    },
+    "waterlogged=true": {
+      "model": "dndclasses:block/kobold_snare"
+    }
+  }
+}

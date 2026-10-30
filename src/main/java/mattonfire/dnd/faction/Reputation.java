@@ -61,7 +61,9 @@ public final class Reputation {
     public enum Source {
         KILL(false), HIT(false), RAID(false), BOUNTY(true), TRADE(true), THEFT(false), QUEST(true), COMMAND(false),
         /** Freeing one of the faction's folk from captivity (a drow pen, a duergar mine): {@code Captives}. */
-        RESCUE(true);
+        RESCUE(true),
+        /** Gold left in a kobold warren's Tribute Bowl ({@code KoboldTribute}). */
+        TRIBUTE(true);
 
         public final boolean rivals;
 
@@ -72,7 +74,9 @@ public final class Reputation {
 
     /** Daily caps on gains (reset each in-game day). */
     public enum Cap {
-        NONE, KILL, TRADE
+        NONE, KILL, TRADE,
+        /** The kobolds' Tribute Bowl (40 a day). */
+        TRIBUTE
     }
 
     private Reputation() {

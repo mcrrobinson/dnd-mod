@@ -1,0 +1,26 @@
+{
+    "parent": "dndclasses:dragon_slayer",
+    "display": {
+        "icon": {
+            "item": "dndclasses:red_dragon_scale_mail"
+        },
+        "title": {
+            "translate": "advancements.dndclasses.wyrmslayer.title"
+        },
+        "description": {
+            "translate": "advancements.dndclasses.wyrmslayer.description"
+        },
+        "frame": "challenge",
+        "show_toast": true,
+        "announce_to_chat": true,
+        "hidden": false
+    },
+    "criteria": {
+        "killed_ancient_dragon": {
+            "trigger": "minecraft:impossible"
+        }
+    },
+    "rewards": {
+        "experience": 500
+    }
+}

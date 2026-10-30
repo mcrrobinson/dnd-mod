@@ -98,6 +98,10 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome underdarklaircensus <lair>` | Who lives in the nearest lair (`[LairCensus]`) |
 | `/dndhome underdarklairseeds <lair> [seeds...]` | The nearest lair to 0, 0 on each seed and its biome (`[LairSeeds]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
+| `/dndhome ancientlair [mouth\|air\|crater\|perch\|door\|dart\|pit\|barracks\|workshop\|hall\|chest\|coffer]` | Teleports you to that spot of the nearest [Ancient dragon lair](../structures/ancient-lairs.md), looking at it, and prints its layout |
+| `/dndhome ancientlairsurvey [grid] [spacing]` | Checks the nearest Ancient lair from each point of a grid round you: heights, slain flag, lava kept in its pools, the stair, chests, dragon and guard posts (`[AncientLairSurvey]` lines) |
+| `/dndhome ancientlairseeds [seeds...]` | The nearest Ancient lair to 0, 0 within 3000 blocks on each seed (`[AncientLairSeeds]` lines) |
+| `/dndhome ancientlairreset` | Forgets that the nearest Ancient lair's dragon was slain and puts a new one on its perch |
 
 ### The Underdark
 | Command | What it does |

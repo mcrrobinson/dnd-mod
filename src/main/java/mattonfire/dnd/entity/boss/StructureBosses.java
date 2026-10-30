@@ -12,6 +12,10 @@ import mattonfire.dnd.entity.GoblinWarlordEntity;
 import mattonfire.dnd.entity.LichEntity;
 import mattonfire.dnd.entity.MedusaEntity;
 import mattonfire.dnd.entity.ModEntityTypes;
+import mattonfire.dnd.entity.dragon.AncientDragonEntity;
+import mattonfire.dnd.entity.dragon.ChromaticColor;
+import mattonfire.dnd.world.gen.ancient.AncientLairLayout;
+import mattonfire.dnd.world.gen.ancient.AncientLairs;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -32,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Bosses that live in generated structures: the stronghold library's Lich, the Nether Fortress
- * Warlord, the Gorgon's Temple Medusa and the Drow Spire's Matron Mother. A boss can't exist on Peaceful, so a structure generated on Peaceful gets an invisible
+ * Warlord, the Gorgon's Temple Medusa, the Drow Spire's Matron Mother and the Ancient dragons on their perches. A boss can't exist on Peaceful, so a structure generated on Peaceful gets an invisible
  * marker where the boss would stand instead. Once the difficulty is above Peaceful, a loaded
  * marker raises its boss and goes away, so switching back from Peaceful doesn't leave the
  * structure empty for good.
@@ -46,6 +50,10 @@ public final class StructureBosses {
     private static final String WARLORD = "dndclasses.pending_boss.warlord";
     private static final String MEDUSA = "dndclasses.pending_boss.medusa";
     private static final String MATRON = "dndclasses.pending_boss.matron";
+    /** An Ancient dragon on its perch; followed by its colour's id ("...ancient.red"). */
+    private static final String ANCIENT = "dndclasses.pending_boss.ancient.";
+    /** Followed by "x,y,z": the Ancient's lair centre. */
+    private static final String LAIR = "dndclasses.lair=";
     /** Followed by "x,y,z": where the Lich's phylactery goes. */
     private static final String PHYLACTERY = "dndclasses.phylactery=";
     private static final int CHECK_INTERVAL = 20;
@@ -80,12 +88,22 @@ public final class StructureBosses {
                 MARKERS.remove(marker);
                 continue;
             }
+            BlockPos pos = marker.getBlockPos();
+            Set<String> tags = marker.getCommandTags();
+            BlockPos ancientLair = spotTag(tags, LAIR, pos);
+            if (ancientColor(tags) != null && AncientLairs.get(world).isSlain(ancientLair)) {
+                // Its lair's dragon is dead: it never comes back.
+                DnDClasses.LOGGER.info("[StructureBosses] dropped the Ancient marker of slain lair {}", ancientLair.toShortString());
+                marker.discard();
+                MARKERS.remove(marker);
+                continue;
+            }
             if (world.getDifficulty() == Difficulty.PEACEFUL) {
                 continue;
             }
-            BlockPos pos = marker.getBlockPos();
-            Set<String> tags = marker.getCommandTags();
-            if (tags.contains(LICH)) {
+            if (ancientColor(tags) != null) {
+                spawnAncient(world, pos, marker.getYaw(), ancientColor(tags), ancientLair);
+            } else if (tags.contains(LICH)) {
                 spawnLich(world, pos, marker.getYaw(), phylacterySpot(tags, pos), null);
             } else if (tags.contains(WARLORD)) {
                 spawnWarlord(world, pos, marker.getYaw(), null);
@@ -94,7 +112,7 @@ public final class StructureBosses {
             } else if (tags.contains(MATRON)) {
                 spawnMatron(world, pos, marker.getYaw());
             }
-            DnDClasses.LOGGER.info("[StructureBosses] raised a boss held back by Peaceful at {}", pos.toShortString());
+            DnDClasses.LOGGER.info("[StructureBosses] raised a boss from its marker at {}", pos.toShortString());
             marker.discard();
             MARKERS.remove(marker);
         }
@@ -135,6 +153,47 @@ public final class StructureBosses {
         } else {
             spawnMatron(world, pos, yaw);
         }
+    }
+
+    /**
+     * Places an Ancient dragon on its lair's perch. Unlike the other bosses it always goes down as a marker first,
+     * raised on the server thread within a second of its chunk loading (when the difficulty isn't Peaceful): that
+     * way a lair whose dragon is already dead ({@link AncientLairs#isSlain}) never raises another, and the huge
+     * multipart dragon isn't made on a world generation thread.
+     */
+    public static void placeAncient(ServerWorldAccess world, BlockPos perch, float yaw, ChromaticColor color, BlockPos lair) {
+        placeMarker(world, perch, yaw, ANCIENT + color.id(), LAIR + lair.getX() + "," + lair.getY() + "," + lair.getZ());
+    }
+
+    @Nullable
+    private static ChromaticColor ancientColor(Set<String> tags) {
+        for (String tag : tags) {
+            if (tag.startsWith(ANCIENT)) {
+                return AncientLairLayout.colorOf(tag.substring(ANCIENT.length()));
+            }
+        }
+        return null;
+    }
+
+    /** Spawns an Ancient dragon resting on its perch at {@code pos}, with its lair. */
+    @Nullable
+    public static AncientDragonEntity spawnAncient(ServerWorld world, BlockPos pos, float yaw, ChromaticColor color,
+                                                   BlockPos lair) {
+        AncientDragonEntity dragon = color.entityType().create(world);
+        if (dragon == null) {
+            return null;
+        }
+        dragon.refreshPositionAndAngles(pos.getX() + 0.5D, pos.getY(), pos.getZ() + 0.5D, yaw, 0.0F);
+        dragon.setHeadYaw(yaw);
+        dragon.setBodyYaw(yaw);
+        dragon.setLair(lair);
+        dragon.setPerch(pos);
+        dragon.initialize(world, world.getLocalDifficulty(pos), SpawnReason.STRUCTURE, null, null);
+        dragon.setPersistent();
+        world.spawnEntityAndPassengers(dragon);
+        DnDClasses.LOGGER.info("[StructureBosses] {} takes its perch at {} (lair {})", dragon.getName().getString(),
+                pos.toShortString(), lair.toShortString());
+        return dragon;
     }
 
     @Nullable
@@ -302,11 +361,16 @@ public final class StructureBosses {
     }
 
     private static BlockPos phylacterySpot(Set<String> tags, BlockPos fallback) {
+        return spotTag(tags, PHYLACTERY, fallback);
+    }
+
+    /** The "x,y,z" after {@code prefix} in one of the tags, or {@code fallback}. */
+    private static BlockPos spotTag(Set<String> tags, String prefix, BlockPos fallback) {
         for (String tag : new ArrayList<>(tags)) {
-            if (!tag.startsWith(PHYLACTERY)) {
+            if (!tag.startsWith(prefix)) {
                 continue;
             }
-            String[] parts = tag.substring(PHYLACTERY.length()).split(",");
+            String[] parts = tag.substring(prefix.length()).split(",");
             try {
                 return new BlockPos(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2]));
             } catch (RuntimeException e) {

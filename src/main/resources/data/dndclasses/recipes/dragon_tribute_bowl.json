@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "G G",
+    "BBB"
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "B": {
+      "item": "minecraft:smooth_basalt"
+    }
+  },
+  "result": {
+    "item": "dndclasses:dragon_tribute_bowl"
+  }
+}

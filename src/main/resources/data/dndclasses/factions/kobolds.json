@@ -1,0 +1,24 @@
+{
+  "name": "faction.dndclasses.kobolds",
+  "color": "#B5482E",
+  "members": "#dndclasses:faction/kobolds",
+  "settlements": "#dndclasses:faction/kobolds",
+  "start": -300,
+  "start_by_race": {"dndclasses:dragonborn": 0, "dndclasses:gnome": -600},
+  "rivals": {"dndclasses:tinkers_guild": -0.25, "dndclasses:dragonsworn": -0.25},
+  "decay_per_day": 5,
+  "hit_member": -3,
+  "kill_member": -5,
+  "kill_member_overrides": {"dndclasses:kobold_dragonshield": -25},
+  "betrayal": -30,
+  "trade": 1,
+  "trade_cap": 15,
+  "theft_witnessed": -15,
+  "monster_kill_overrides": {
+    "dndclasses:wyvern": -5,
+    "dndclasses:ember_wyvern": -5,
+    "dndclasses:lightning_chaser": -60,
+    "dndclasses:frost_drake": -60,
+    "#dndclasses:ancient_dragons": -400
+  }
+}

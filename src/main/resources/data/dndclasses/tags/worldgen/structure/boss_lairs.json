@@ -5,6 +5,7 @@
     "dndclasses:drow_spire",
     "dndclasses:dragon_lair",
     "dndclasses:frost_lair",
-    "minecraft:stronghold"
+    "minecraft:stronghold",
+    "dndclasses:ancient_red_lair"
   ]
 }

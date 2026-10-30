@@ -1,0 +1,12 @@
+# Where the Ancient Red's lairs are (docs/structures/ancient-lairs.md, design 10 D2): the nearest lair to 0, 0 within
+# 3000 blocks on this world's seed and three others, without generating anything.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ancient-lair-seeds.txt
+# Expect in latest.log: "[AncientLairSeeds] seed ...: nearest at x y z in minecraft:<badlands|stony_peaks|...>, ...: PASS"
+# for each seed.
+wait 40
+closescreen
+/dndhome ancientlairseeds
+waitserver 2
+/dndhome ancientlairseeds 7 42 1234
+waitserver 2
+quit

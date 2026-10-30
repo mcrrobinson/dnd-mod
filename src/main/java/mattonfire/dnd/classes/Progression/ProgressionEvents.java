@@ -16,7 +16,8 @@ import net.minecraft.server.network.ServerPlayerEntity;
 
 /**
  * Hands out kill XP and passes game events to the player's class's
- * {@link ClassSkills}, then to their active magic items ({@link MagicEffects}).
+ * {@link ClassSkills}, then to their active magic items ({@link MagicEffects}), then to their feats
+ * ({@code FeatEffects}).
  */
 public final class ProgressionEvents {
     /** Every class gets this for killing a hostile mob. */
@@ -64,6 +65,7 @@ public final class ProgressionEvents {
             skills.onKill(player, Progression.current(player), entity, source);
         }
         MagicEffects.onKill(player, entity, source);
+        mattonfire.dnd.classes.Feats.FeatEffects.onKill(player, entity, source);
     }
 
     private static void secondTick(ServerPlayerEntity player) {
@@ -93,6 +95,7 @@ public final class ProgressionEvents {
             skills.secondTick(player, progress);
         }
         MagicEffects.secondTick(player);
+        mattonfire.dnd.classes.Feats.FeatEffects.secondTick(player);
     }
 
     /**
@@ -110,6 +113,7 @@ public final class ProgressionEvents {
                 amount = skills.modifyDealtDamage(player, progress, target, source, amount);
             }
             amount = MagicEffects.modifyDealtDamage(player, target, source, amount);
+            amount = mattonfire.dnd.classes.Feats.FeatEffects.modifyDealtDamage(player, target, source, amount);
             amount = mattonfire.dnd.classes.Items.racial.RacialGear.modifyDealtDamage(player, target, source, amount);
             amount = mattonfire.dnd.classes.Party.PartySynergies.opportunist(player, target, amount);
         }
@@ -128,7 +132,10 @@ public final class ProgressionEvents {
                 amount = skills.modifyTakenDamage(player, progress, source, amount);
             }
             amount = MagicEffects.modifyTakenDamage(player, source, amount);
+            amount = mattonfire.dnd.classes.Feats.FeatEffects.modifyTakenDamage(player, source, amount);
         }
+        // Sentinel's Guardian: a hostile mob hurting someone marks it for nearby Sentinels
+        mattonfire.dnd.classes.Feats.FeatEffects.onDamage(target, source, amount);
         // Conditions last: advantage against a Stunned target, Petrified halves, a Frightened attacker's blows
         return mattonfire.dnd.classes.Conditions.ConditionEffects.modifyDamage(target, source, amount);
     }

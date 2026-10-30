@@ -68,6 +68,8 @@ public final class Lockpicking {
     private static final Set<String> HARD_TABLES = Set.of(
             "dndclasses:chests/dragon_lair",
             "dndclasses:chests/frost_lair",
+            "dndclasses:chests/ancient_red_hoard",
+            "dndclasses:chests/ancient_red_hoard_coffer",
             "dndclasses:chests/dwarven_fortress_treasury",
             "dndclasses:chests/elven_enclave_heart",
             "dndclasses:chests/dragon_temple_reliquary",

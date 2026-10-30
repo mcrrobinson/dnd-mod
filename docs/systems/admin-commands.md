@@ -28,7 +28,11 @@ These all act on the player's current class. See [Class selection](class-selecti
 | `/dndclass bestiary <player> learn <entity>` | Adds a creature to the class's bestiary as if they'd killed it (Bard and Druid only) |
 | `/dndclass bestiary <player> unlock <entity>` | Learns and unlocks a creature without a table or the special's rank |
 | `/dndclass subclass <player> <id\|none>` | Sets the subclass of the player's current class (e.g. `barbarian.berserker`), skipping the level and the Attunement Table; replacing another subclass refunds it first. `none` clears it and refunds the subclass's upper nodes, the capstone and their ranks |
-| `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks, the subclass and the bestiary for the current class, refunding every point |
+| `/dndclass feat <player> add <feat> [ability]` | Grants a [feat](feats.md) in the current class without a table or points (paid as a free feat, which may go past the slots). Resilient needs an ability |
+| `/dndclass feat <player> remove <feat\|all> [ability]` | Removes feats and refunds their slot or ability points |
+| `/dndclass feat <player> list` | Prints the feats with what paid for each, slots and points left, Lucky's points and the N toggle. Returns the number of feats |
+| `/dndclass feat <player> toggle on\|off` | Sets Power Attack / Steady Aim (the N toggle) outright |
+| `/dndclass resetprogress <player>` | Wipes XP, unlocks, ranks, the subclass, the feats and the bestiary for the current class, refunding every point |
 | `/dndclass mana <player> <pips>` | Sets a player's mana (0-9 pips), for testing actives without waiting for it to regenerate |
 | `/dndclass rest <player> short\|long` | Gives the player a short or long rest's benefits, ignoring its limits (it still counts towards them). See [Rests and charges](rests.md) |
 | `/dndclass rest <player> allow` | Forgets the player's last long rest, so they can take another today (in a bed, say) |
@@ -94,6 +98,10 @@ Race names tab-complete: `human`, `elf`, `dwarf`, `halfling`, `gnome`, `halforc`
 | `/dndhome underdarklaircensus <lair>` | Who lives in the nearest lair (`[LairCensus]`) |
 | `/dndhome underdarklairseeds <lair> [seeds...]` | The nearest lair to 0, 0 on each seed and its biome (`[LairSeeds]` lines) |
 | `/dndhome templesurvey [grid] [spacing]` | Checks the nearest temple from each point of a grid round you has a dragon or frost lair within 10 chunks (`[TempleSurvey]` lines) |
+| `/dndhome ancientlair [mouth\|air\|crater\|perch\|door\|dart\|pit\|barracks\|workshop\|hall\|chest\|coffer]` | Teleports you to that spot of the nearest [Ancient dragon lair](../structures/ancient-lairs.md), looking at it, and prints its layout |
+| `/dndhome ancientlairsurvey [grid] [spacing]` | Checks the nearest Ancient lair from each point of a grid round you: heights, slain flag, lava kept in its pools, the stair, chests, dragon and guard posts (`[AncientLairSurvey]` lines) |
+| `/dndhome ancientlairseeds [seeds...]` | The nearest Ancient lair to 0, 0 within 3000 blocks on each seed (`[AncientLairSeeds]` lines) |
+| `/dndhome ancientlairreset` | Forgets that the nearest Ancient lair's dragon was slain and puts a new one on its perch |
 
 ### The Underdark
 | Command | What it does |

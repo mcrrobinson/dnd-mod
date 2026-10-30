@@ -1,5 +1,5 @@
 # Dragons
-Five dragons: the Wyvern, a rare sight on mountain meadows and peaks, the Ember Wyvern of the Nether, the Lightning Chaser that nests on mountain summits, its icy cousin the Frost Drake on Frozen Peaks, and the small River Pikehorn, which you can tame.
+Five dragons (and the [Ancient Red Dragon](../bosses/ancient-red-dragon.md), an endgame boss with its own page): the Wyvern, a rare sight on mountain meadows and peaks, the Ember Wyvern of the Nether, the Lightning Chaser that nests on mountain summits, its icy cousin the Frost Drake on Frozen Peaks, and the small River Pikehorn, which you can tame.
 
 ![A Wyvern](https://raw.githubusercontent.com/mcrrobinson/dnd-mod/pr-screenshots/docs-flesh-out/wyvern.png)
 
@@ -91,7 +91,7 @@ You can't tame a Wyvern, Ember Wyvern, Lightning Chaser or Frost Drake in surviv
 While a wild Wyvern, Lightning Chaser or Frost Drake is fighting a player, its boss bar shows to everyone within 64 blocks and **Tooth and Claw** plays for them until the fight ends. See [Boss fights](../bosses/boss-fights.md).
 
 ### Dragon Slayer
-Kill a Wyvern, Ember Wyvern, Lightning Chaser or Frost Drake to earn **Dragon Slayer**, a challenge advancement worth 100 XP. The Pikehorn doesn't count. All five dragons take extra damage from [Smite Dragons](../enchantments/smite-dragons.md).
+Kill a Wyvern, Ember Wyvern, Lightning Chaser or Frost Drake to earn **Dragon Slayer**, a challenge advancement worth 100 XP. The Pikehorn doesn't count. An Ancient dragon earns it too, and **Wyrmslayer** after it. All five dragons and the Ancients take extra damage from [Smite Dragons](../enchantments/smite-dragons.md).
 
 ### Tips
 - The 5 to 10 block band is where the flame reaches you. Inside 5 blocks the big dragons only bite.

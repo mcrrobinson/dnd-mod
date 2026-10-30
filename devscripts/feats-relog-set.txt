@@ -1,0 +1,33 @@
+# Feats survive a relog, part 1 of 2 (docs/systems/feats.md). Run this, then feats-relog-check.txt.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/feats-relog-set.txt
+# Expect: "relog-set" then the feat list "Tough [free] Lucky [free] Resilient (WIS) [free] Great Weapon Master
+#   [free] ... luck points 2, toggle on" and max health = base + 8 (Tough at level 8)
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/dndclass set @s barbarian
+wait 10
+closescreen
+/clear @s
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/dndclass feat @s toggle off
+/dndclass xp @s set 1750
+/dndclass feat @s add tough
+/dndclass feat @s add lucky
+/dndclass feat @s add resilient wis
+/dndclass feat @s add great_weapon_master
+/dndclass rest @s long
+press key.dnd-classes.feat-toggle
+wait 5
+/dndclass forceroll @s 1 1
+/dm save @s con 30
+wait 15
+/dndclass forceroll @s clear
+/say relog-set
+/dndclass feat @s list
+/attribute @s minecraft:generic.max_health base get
+/attribute @s minecraft:generic.max_health get
+/dndclass sheet @s
+quit

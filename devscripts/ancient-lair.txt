@@ -1,0 +1,61 @@
+# Looks over the dev world's Ancient Red lair (docs/structures/ancient-lairs.md, design 10 D2): the caldera from the
+# air with the dragon on its perch, the crater floor, the hoard hall and the kobold quarters, then checks it with the
+# survey before and after 200 server ticks (the lava has to stay in its kerbs).
+# The nearest lair to the dev world's spawn (ancient-lair-seeds.txt) is the savanna plateau one near 1088 -2492.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ancient-lair.txt
+# Output: run/screenshots/ancient_lair-*.png; latest.log has the [Home] layout line and two
+# "[AncientLairSurvey] ... caldera fluids ok" lines.
+/time set day
+/weather clear
+wait 40
+closescreen
+include _reset.txt
+/gamerule doDaylightCycle false
+/gamemode spectator
+hud off
+/tp @s 1088 200 -2492
+# Chunks the first visit didn't save still have to be generated
+wait 300
+/dndhome ancientlair air
+wait 200
+screenshot ancient_lair-air
+/dndhome ancientlairsurvey 1 256
+waitserver 2
+/execute if entity @e[type=dndclasses:ancient_red_dragon,distance=..200]
+/data get entity @e[type=dndclasses:ancient_red_dragon,limit=1,sort=nearest] Pos
+/data get entity @e[type=dndclasses:ancient_red_dragon,limit=1,sort=nearest] Lair
+/dndhome ancientlair mouth
+wait 60
+screenshot ancient_lair-mouth
+/dndhome ancientlair crater
+wait 60
+screenshot ancient_lair-crater
+/dndhome ancientlair perch
+wait 40
+screenshot ancient_lair-perch
+/dndhome ancientlair door
+wait 60
+screenshot ancient_lair-door
+/dndhome ancientlair hall
+wait 60
+screenshot ancient_lair-hall
+/dndhome ancientlair coffer
+wait 40
+screenshot ancient_lair-coffer
+/dndhome ancientlair barracks
+wait 40
+screenshot ancient_lair-barracks
+/dndhome ancientlair workshop
+wait 40
+screenshot ancient_lair-workshop
+/dndhome ancientlair pit
+wait 40
+screenshot ancient_lair-pit
+/data get entity @e[type=minecraft:marker,tag=dndclasses.lair_guard_post,limit=1,sort=nearest] data
+/dndhome ancientlair crater
+waitserver 200
+/dndhome ancientlairsurvey 1 256
+waitserver 2
+screenshot ancient_lair-crater-later
+hud on
+quit

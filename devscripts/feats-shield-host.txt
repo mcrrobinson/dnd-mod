@@ -1,0 +1,58 @@
+# Sharpshooter's past cover, two players (host). Start this, wait for "Started serving on" in run/logs/latest.log,
+# then start feats-shield-guest.txt in run-2 (-PdevRunDir=run-2 -PdevServer=localhost:25607).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/feats-shield-host.txt
+# Expect in latest.log: "shield-without": the guest's Health is unchanged (the shield blocked the arrow);
+#   "shield-with": the guest's Health drops (the Sharpshooter's arrow went past the shield) and
+#   "[Feats] Sharpshooter arrow hit DevGuest..." is logged.
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doDaylightCycle false
+/gamerule doMobSpawning false
+/gamerule naturalRegeneration false
+/time set noon
+/fill -6 149 -4 6 149 16 minecraft:stone
+/fill -6 150 -4 6 160 16 minecraft:air
+/dndclass set @s rogue
+wait 10
+closescreen
+/clear @s
+/party leave
+/dndclass resetprogress @s
+/dndclass feat @s remove all
+/dndclass feat @s toggle off
+/dndclass xp @s set 1000
+/give @s minecraft:bow{Unbreakable:1b}
+/give @s minecraft:arrow 64
+hotbar 0
+/tp @s 0.5 150 0.5 0 -2
+/publish false survival 25607
+waitchat joined the game
+wait 200
+/gamemode survival @p[name=!Dev]
+/effect give @p[name=!Dev] minecraft:resistance 600 1 true
+/item replace entity @p[name=!Dev] weapon.mainhand with minecraft:shield
+/tp @p[name=!Dev] 0.5 150 10.5 180 0
+/say shield-ready
+wait 40
+screenshot feats-shield-host
+/say shield-without
+/data get entity @p[name=!Dev] Health
+holduse on
+wait 25
+holduse off
+wait 30
+/data get entity @p[name=!Dev] Health
+/say shield-with
+/dndclass feat @s add sharpshooter
+/tp @p[name=!Dev] 0.5 150 10.5 180 0
+wait 30
+holduse on
+wait 25
+holduse off
+wait 30
+/data get entity @p[name=!Dev] Health
+/say shield-done
+wait 100
+quit

@@ -43,14 +43,14 @@ public class DragonRenderer<T extends MobEntity & GeoAnimatable & MultipartDrago
     public void preRender(MatrixStack poseStack, T animatable, BakedGeoModel model, VertexConsumerProvider bufferSource, VertexConsumer buffer, boolean isReRender,
                           float partialTick, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
         super.preRender(poseStack, animatable, model, bufferSource, buffer, isReRender, partialTick, packedLight, packedOverlay, red, green, blue, alpha);
-        if (isReRender) {
-            return;
-        }
-        // GeckoLib only records a bone's world matrix while it renders if asked to
+        // GeckoLib only records a bone's world matrix while it renders if asked to. Not while a render layer
+        // (a glowmask) draws the model again: GeckoLib takes that pass's reference matrix after the
+        // renderer's withScale, so it would overwrite the bone matrices with unscaled ones.
+        boolean track = !isReRender;
         DragonPartLayout layout = animatable.getPartLayout();
         for (int i = 0; i < layout.size(); i++) {
             for (String boneName : layout.bones(i)) {
-                model.getBone(boneName).ifPresent(bone -> bone.setTrackingMatrices(true));
+                model.getBone(boneName).ifPresent(bone -> bone.setTrackingMatrices(track));
             }
         }
     }

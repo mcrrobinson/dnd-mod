@@ -383,7 +383,7 @@ public final class D20 {
             }
             int total = total();
             Outcome outcome;
-            if (natural <= fumbleRange(player)) {
+            if (natural <= fumbleRange(player, kind)) {
                 outcome = Outcome.FUMBLE;
             } else if (natural >= critRange) {
                 outcome = Outcome.CRITICAL;
@@ -442,7 +442,19 @@ public final class D20 {
         FUMBLE_RANGES.add(range);
     }
 
-    /** The highest natural that fumbles for this roller: 1 unless a source widens it. */
+    /**
+     * Sources of a wider fumble range that depend on the kind of roll (Great Weapon Master's Power Attack: attack
+     * rolls fumble on 1-4).
+     */
+    private static final List<java.util.function.ToIntBiFunction<LivingEntity, RollKind>> KIND_FUMBLE_RANGES =
+            new java.util.concurrent.CopyOnWriteArrayList<>();
+
+    /** Registers a source of a wider fumble range for some kinds of roll: it returns the highest natural that fumbles. */
+    public static void registerFumbleRange(java.util.function.ToIntBiFunction<LivingEntity, RollKind> range) {
+        KIND_FUMBLE_RANGES.add(range);
+    }
+
+    /** The highest natural that fumbles for this roller on any roll: 1 unless a source widens it. */
     public static int fumbleRange(LivingEntity roller) {
         int range = 1;
         for (java.util.function.ToIntFunction<LivingEntity> source : FUMBLE_RANGES)
@@ -477,6 +489,14 @@ public final class D20 {
     public static boolean wishedThisTick(LivingEntity roller) {
         Long at = LAST_WISH.get(roller.getUuid());
         return at != null && at == roller.getWorld().getTime();
+    }
+
+    /** The highest natural that fumbles for this roller on this kind of roll. */
+    public static int fumbleRange(LivingEntity roller, RollKind kind) {
+        int range = fumbleRange(roller);
+        for (java.util.function.ToIntBiFunction<LivingEntity, RollKind> source : KIND_FUMBLE_RANGES)
+            range = Math.max(range, source.applyAsInt(roller, kind));
+        return range;
     }
 
     public static void registerReroll(Reroll reroll) {

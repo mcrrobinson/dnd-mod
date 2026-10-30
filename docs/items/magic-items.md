@@ -24,13 +24,14 @@ Every item below works only while its magic is awake: it's identified, you're no
 | 16 | Frostbrand | Very Rare weapon (sword) | yes | 9 damage, 1.6 speed. Hits give Slowness II for 3 s, 15% chance to Freeze for 2 s; in your hand, you can't be frozen and the Frost Drake's breath can't touch you |
 | 17 | Phylactery Locket | Very Rare wondrous item (amulet) | yes, Wizard, Necromancer or Warlock | A killing blow leaves you on 2 HP with Resistance V for 3 s and blinks you about 8 blocks away. Recharges on a long rest or after 20 min |
 | 18 | The Burglar's Ring | Very Rare ring | yes, always cursed (The Ring's Call) | Sneak still for a second: invisible until you attack or stop sneaking; mobs lose you beyond 4 blocks |
-| 19 | Tome of Clear Thought | Very Rare consumable | no | Read near an Attunement Table: clears your current class's subclass and refunds its points |
+| 19 | Tome of Clear Thought | Very Rare consumable | no | Read near an Attunement Table: clears your current class's subclass and refunds its points and every feat |
 | 20 | Eye of the Tyrant | Legendary wondrous item | yes | Right-click a creature within 32 blocks: a random eye ray (Paralysis, Telekinesis or Disintegration). 3 charges. You're immune to the Beholder's anti-magic cone |
 | 21 | Gorgon's Gaze | Rare wondrous item | yes | Once per dawn, right-click a mob within 12 blocks (not a boss): CON save DC 14 or it's Petrified for good, a statue |
 | 22 | Matron's Scourge | Very Rare weapon (whip) | yes | 7 damage, 1.6 speed, +1 reach. Hits carry Drow Poison (CON 14); once every 30 s a hit frightens the target (WIS 14, 4 s) |
 | 23 | Piwafwi (Cloak of the Drow) | Rare armor (chestplate slot) | yes | 2 armor, +2 Stealth. Sneaking where the light is 4 or less, mobs more than 6 blocks away can't see you |
-| 24 | Portable Hole | Rare wondrous item | no | Right-click: a 54-slot extradimensional space. Sneak + right-click a block: a passage up to 6 blocks deep for 15 s |
-| 25 | Deck of Many Things | Legendary wondrous item | no | Declare 1-4 cards, then draw: each of 13 (or 22) cards is a boon or a ruin. Then the deck vanishes |
+| 24 | Red Dragon Scale Mail | Very Rare armor (chestplate) | yes | 8 armor, 3 toughness. Half damage from fire, advantage on saves against dragons; crouch still for 3 s to sense the nearest Ancient lair (once a day) |
+| 25 | Portable Hole | Rare wondrous item | no | Right-click: a 54-slot extradimensional space. Sneak + right-click a block: a passage up to 6 blocks deep for 15 s |
+| 26 | Deck of Many Things | Legendary wondrous item | no | Declare 1-4 cards, then draw: each of 13 (or 22) cards is a boon or a ruin. Then the deck vanishes |
 
 ### Wand of Magic Missiles
 - Right-click fires three glowing darts that curve onto the nearest hostile mob (any monster, or any mob targeting you) within 24 blocks and 30 degrees of where you look, that you can see. Together they deal 6 magic damage, credited to you. No target: "No hostile creature in sight." and no charge is spent.
@@ -68,7 +69,8 @@ Every item below works only while its magic is awake: it's identified, you're no
 
 ### Tome of Clear Thought
 - Read it (right-click) within 4 blocks of an [Attunement Table](../systems/class-progression.md) (or at the table you last opened). It clears the subclass of your current class and refunds every node only that subclass could have (and the capstone), with their ranks. Chat says how many points came back.
-- It's used up only if there was a subclass to clear ("You have no subclass to forget.").
+- It also refunds every [feat](../systems/feats.md) of your current class: free feat slots and ability points come back, and you can choose again.
+- It's used up only if there was a subclass or a feat to clear ("You have no subclass or feat to forget.").
 
 ### Warlord's Warhorn
 - Right-click to sound it (a raid horn, heard far away). You and every [party](../systems/party.md) member within 16 blocks get **Strength I** and **Speed I** for 15 s. Every goblin (Goblin Warriors, raid goblins, a Goblin Warlord) within 16 blocks gets **Frightened** for 6 s: it deals half damage, stops chasing you and runs from you (`ConditionFleeGoal`).
@@ -160,7 +162,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Euryale | 13 | -2 to every saving throw (on the sheet as "Euryale (Deck of Many Things)") until Remove Curse (yours or anyone's) or a Moon wish |
 | The Rogue | 13 | -300 reputation with your best-liked faction |
 | The Jester | 13 | A level's worth of class XP. Leaves the deck |
-| The Vizier | 22 | Names the nearest boss lair within 2000 blocks (`#dndclasses:boss_lairs`: Beholder lair, Drow Spire, dragon and frost lairs, strongholds) with its coordinates, and advantage on ability checks for a day |
+| The Vizier | 22 | Names the nearest boss lair within 2000 blocks (`#dndclasses:boss_lairs`: Beholder lair, Drow Spire, dragon and frost lairs, Ancient lairs, strongholds) with its coordinates, and advantage on ability checks for a day |
 | The Comet | 22 | The next boss to die in a fight you're part of gives you a level's worth of class XP |
 | The Fates | 22 | The next blow that would kill (or down) you leaves you on 1 HP with 2 s of Resistance V instead |
 | The Gem | 22 | 20 diamonds and 10 emeralds spill at your feet |
@@ -172,6 +174,11 @@ Every item below works only while its magic is awake: it's identified, you're no
 
 - **The Avatar of Death** (The Skull): a black-robed wither skeleton with a scythe, 1.3 times a wither skeleton's size, named "Avatar of Death (*you*)". 60 HP, 8 damage, walks at 0.3. It hunts only you and **takes harm only from you**; the first time anyone else strikes it, a second Avatar rises beside it. It fades when you die or leave, or after 5 min, and drops nothing.
 - The cards' lasting effects live in your persistent data (`dndDeck`) and carry over death. Ability changes (Star, Euryale, the Idiot, Balance, the Throne) show on your [character sheet](../systems/ability-scores.md).
+### Red Dragon Scale Mail
+- The [Ancient Red Dragon](../bosses/ancient-red-dragon.md)'s hide, worn as a chestplate: **8 armor, 3 toughness, +0.1 knockback resistance**, drawn as overlapping crimson scales with an ember-orange belly. Repaired with Ancient Red Scales.
+- **Half damage from fire**: anything fire-typed (flames, lava, fire breath, magma vents).
+- **Advantage on saves against dragons**: every dragon's breath and storm, and every save the Ancient Red Dragon and its lair call for (shown on the [character sheet](../systems/ability-scores.md) as "saves against dragons").
+- **Dragon sense**: crouch without moving for 3 s and, once a day, the action bar points to the nearest Ancient dragon lair within 3000 blocks ("A pull to the north east, about 1200 blocks."). Until the Ancient lairs generate, it says no lair is near.
 
 ## Where to find it
 - From the D&D Classes creative tab, or `/dndmagic give <player> dndclasses:<item>` (add `unidentified` to test identification).
@@ -190,6 +197,7 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Eye of the Tyrant | [Beholder](../bosses/beholder.md) | 12% (+3%) |
 | Gorgon's Gaze | [Medusa](../bosses/medusa.md) | 25% (+5%) |
 | Matron's Scourge | [Matron Mother](../bosses/matron-mother.md) | 100% |
+| Red Dragon Scale Mail | [Ancient Red Dragon](../bosses/ancient-red-dragon.md) | 100% |
 
 - Every item also turns up in its rarity's loot table (Cloak of Protection and Ring of Protection only come from there), which mod structures, bosses, Mimics, bounties, raids, dungeons and vanilla structures roll on. See [Magic loot](../systems/magic-loot.md) for the rates.
 - The named sources (per chest or per kill; chest and bounty items need no player kill, monsters do):
@@ -211,9 +219,9 @@ Every item below works only while its magic is awake: it's identified, you're no
 | Eye of the Tyrant | beholder lair chest | 2% |
 | Piwafwi | [Drow Outpost](../structures/drow-outposts.md) shrine reliquary; [Drow Spire](../structures/drow-spire.md) treasure loft | 3%; 15% |
 | Portable Hole | [Cogsdeep](../structures/cogsdeep.md) clocktower strongbox; beholder lair chest; the Deck's Sun; the [Pactbroker](../mobs/tieflings.md#trades) (32 emeralds, Honored or better, once) | 6%; 4% |
-| Deck of Many Things | vanilla woodland mansion chests; the Ancient Red Dragon's hoard coffer (once that lair exists); the [Pactbroker](../mobs/tieflings.md#trades) (48 emeralds and a netherite ingot, Exalted, once) | 2%; 10% |
+| Deck of Many Things | vanilla woodland mansion chests; the Ancient Red Dragon's [Hoard Coffer](../structures/ancient-lairs.md); the [Pactbroker](../mobs/tieflings.md#trades) (48 emeralds and a netherite ingot, Exalted, once) | 2%; 10% |
 
-Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`, `portable_hole`, `deck_of_many_things`.
+Item ids: `wand_of_magic_missiles`, `bag_of_holding`, `decanter_of_endless_water`, `immovable_rod`, `cloak_of_protection`, `periapt_of_wound_closure`, `ring_of_protection`, `amulet_of_health`, `doss_lute`, `tome_of_clear_thought`, `warlords_warhorn`, `heart_of_the_furnace`, `storm_chaser_boots`, `wyvern_scale_cloak`, `belt_of_owlbear_might`, `mace_of_disruption`, `frostbrand`, `phylactery_locket`, `burglars_ring`, `eye_of_the_tyrant`, `gorgons_gaze`, `matrons_scourge`, `piwafwi`, `red_dragon_scale_mail`, `portable_hole`, `deck_of_many_things`.
 
 ## Commands
 - `/dndmagic give|identify|attune|bonds ...`: see [Magic items](../systems/magic-items.md).

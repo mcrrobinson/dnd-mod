@@ -754,6 +754,59 @@ def loop_lich_fight(rng):
     return normalize(out, -1.0, -16.0)
 
 
+def loop_ancient_fight(rng):
+    # Ancient Red Dragon fight: 96 bpm in C phrygian. Huge taiko-like drums in a driving 3+3+2, a low
+    # brass ostinato C - Db - C - Bb, a men's "ah" choir on Cm - Db - Ab - Bb, anvil hits on the
+    # off-beats and a rumbling, fiery noise swell into every fourth bar.
+    beat = 60.0 / 96
+    bar = beat * 4
+    loop = bar * 12  # 30 s
+    xf = 1.5
+    sec = loop + xf
+    out = buf(sec)
+    n = len(out)
+    t = 0.0
+    while t < sec:
+        for step, gain in ((0, 1.0), (1.5, 0.75), (3, 0.9)):
+            mix(out, drum(0.9, 70, 32, 0.04, 0.3, click=0.25, rng=rng), t + step * beat, gain)
+        mix(out, drum(0.5, 150, 80, 0.02, 0.14, click=0.1, rng=rng), t + 3.5 * beat, 0.4)
+        t += bar
+    chords = [(36, 48, 51, 55), (37, 49, 53, 56), (32, 48, 51, 56), (34, 50, 53, 58)]
+    for c, notes in enumerate(chords + chords[:1]):
+        at = c * 3 * bar
+        if at >= sec:
+            break
+        length = 3 * bar + 0.4
+        for m in notes:
+            v = formant(saw(length, hz(m), detune=0.007, voices=3, vibrato=(4.0, 0.004), rng=rng),
+                        freqs=(600, 1000, 2500), gains=(1, 0.5, 0.15))
+            env = env_points(len(v), [(0, 0), (0.3, 1), (length - 0.5, 0.85), (length, 0)])
+            mix(out, apply(v, env), at, 0.15 if m > 40 else 0.28)
+    # Brass ostinato, a stab on each beat over the chord root
+    roots = [48, 49, 44, 46]
+    pattern = [0, 0, 1, 0, -2, 0, 1, 0]
+    t = 0.0
+    i = 0
+    while t < sec - 0.05:
+        root = roots[int(t // (3 * bar)) % 4]
+        m = root + pattern[i % len(pattern)]
+        mix(out, brass(beat * 0.9, hz(m), rng, attack=0.02, bright=1800, base=400, release=0.15), t,
+            0.3 if i % 4 == 0 else 0.2)
+        t += beat
+        i += 1
+    # Anvils on the off-beats of every other bar
+    for b in range(1, 12, 2):
+        for k in (1.5, 3.5):
+            mix(out, bell(1.2, hz(84), decay=0.5, ratios=(1, 2.7, 4.1, 5.9)), b * bar + k * beat, 0.12)
+    # Fire swells into every fourth bar
+    for b in range(3, 12, 4):
+        r = svf(noise(bar, rng), 400, 0.9)
+        mix(out, apply(r, env_points(len(r), [(0, 0), (bar * 0.9, 1), (bar, 0)])), b * bar, 0.5)
+    out = reverb(out, wet=0.32, room=0.88, damp=0.35)[:n]
+    out = make_loop(out, loop, xf)
+    return normalize(out, -1.0, -16.0)
+
+
 def loop_matron_fight(rng):
     # Matron Mother fight (Drow Spire): 132 bpm in E phrygian. A skittering spider ostinato of plucked
     # sixteenths, war drums in a limping 3+3+2, a low female "oo" choir on Em - F - Dm - Em, glassy bells
@@ -1141,6 +1194,7 @@ SOUNDS = {
     "song_flute": song_flute,
     "lich_fight": loop_lich_fight,
     "matron_fight": loop_matron_fight,
+    "ancient_fight": loop_ancient_fight,
     "dice_roll": dice_roll,
     "dice_success": dice_success,
     "dice_failure": dice_failure,
@@ -1157,7 +1211,7 @@ SOUNDS = {
     "underdark": loop_underdark,
 }
 
-LOOPS = ("low_health", "nether_fortress", "lich_fight", "matron_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin", "underdark")
+LOOPS = ("low_health", "nether_fortress", "lich_fight", "matron_fight", "ancient_fight", "dungeon_crypt", "dungeon_warren", "dungeon_ruin", "underdark")
 
 
 def main(argv):

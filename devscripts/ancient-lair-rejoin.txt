@@ -1,0 +1,21 @@
+# After ancient-lair-hoard.txt: the slain Ancient Red's lair stays empty when you come back (docs/structures/
+# ancient-lairs.md). Then puts its dragon back so the dev world is as it was.
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/ancient-lair-rejoin.txt
+# Expect in latest.log: "Test failed" for the dragon check and "slain true" in the survey, then after the reset
+# "Test passed".
+/time set day
+wait 40
+closescreen
+/gamemode spectator
+/tp @s 1088 200 -2492
+wait 300
+waitserver 40
+/execute if entity @e[type=dndclasses:ancient_red_dragon,distance=..200]
+/execute if entity @e[type=minecraft:marker,tag=dndclasses.pending_boss.ancient.red,distance=..200]
+/dndhome ancientlairsurvey 1 256
+waitserver 2
+/dndhome ancientlairreset
+waitserver 40
+/execute if entity @e[type=dndclasses:ancient_red_dragon,distance=..200]
+/gamemode creative
+quit

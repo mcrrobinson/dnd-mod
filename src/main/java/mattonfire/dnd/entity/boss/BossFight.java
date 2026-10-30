@@ -72,6 +72,11 @@ public class BossFight {
     private Text namedCustomName;
     @Nullable
     private AbstractTeam namedTeam;
+    /** Builds the bar's name instead of the boss's display name ({@link #title}). */
+    @Nullable
+    private java.util.function.Supplier<Text> title;
+    @Nullable
+    private Text titled;
 
     public BossFight(MobEntity boss, BossBar.Color color, BossBar.Style style) {
         this.boss = boss;
@@ -103,6 +108,15 @@ public class BossFight {
      */
     public BossFight phase(float healthFraction, BossBar.Color color, Runnable onEnter) {
         this.phases.add(new Phase(healthFraction, color, onEnter));
+        return this;
+    }
+
+    /**
+     * Names the bar with {@code title} instead of the boss's display name, rebuilt every tick and sent when it
+     * changes (an Ancient dragon's name plus its Legendary Resistances left).
+     */
+    public BossFight title(java.util.function.Supplier<Text> title) {
+        this.title = title;
         return this;
     }
 
@@ -235,6 +249,14 @@ public class BossFight {
      * them (and the type), so it isn't rebuilt every tick.
      */
     private void updateName() {
+        if (this.title != null) {
+            Text text = this.title.get();
+            if (!text.equals(this.titled)) {
+                this.titled = text;
+                this.bar.setName(text);
+            }
+            return;
+        }
         Text customName = this.boss.getCustomName();
         AbstractTeam team = this.boss.getScoreboardTeam();
         if (this.named && customName == this.namedCustomName && team == this.namedTeam) {

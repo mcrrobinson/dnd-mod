@@ -1,0 +1,55 @@
+# A Moon wish that turns a Vorpal Sword fumble into a 20 doesn't behead (docs/items/magic-items.md#vorpal-sword).
+# Run: timeout 300 ./gradlew runClient -PdevScript=devscripts/vorpal-moon-wish.txt
+# Expect in latest.log: "Dev draws The Moon", "[D20] Dev spends a Moon wish: rerolling 1", no "beheads" line,
+# "Test passed" for the zombie still alive; then a real forced 20 logs "beheads Zombie" and "Test failed".
+wait 40
+closescreen
+include _reset.txt
+/gamemode survival
+/gamerule doMobSpawning false
+/gamerule doDaylightCycle false
+/difficulty normal
+/time set 18000
+/forceload add 196 196 236 214
+/tp @s 216.5 160 205.5 0 0
+/effect give @s minecraft:slow_falling 10 0 true
+wait 60
+/fill 196 149 196 236 149 214 minecraft:stone
+/fill 196 150 196 236 156 214 minecraft:air
+/kill @e[type=!player,x=196,y=148,z=196,dx=40,dy=10,dz=18]
+/effect give @s minecraft:resistance 99999 4 true
+/clear @s
+/dndmagic release @s all
+/dndmagic deck @s clear
+# Draw the Moon (one card declared by the first draw), looking at the floor
+/tp @s 216.5 150 205.5 0 0
+hotbar 0
+/dndmagic give @s dndclasses:deck_of_many_things
+wait 10
+/dndmagic deck @s next moon
+use
+wait 30
+/clear @s dndclasses:deck_of_many_things
+/dndmagic give @s dndclasses:vorpal_sword
+wait 5
+/dndmagic attune @s
+# 1. A fumble turned into a 20 by the wish: no beheading
+/summon minecraft:zombie 200.5 150 202.5 {NoAI:1b,NoGravity:1b,Tags:["vtest","vmoon1"],PersistenceRequired:1b,Rotation:[180f,0f],Attributes:[{Name:"generic.max_health",Base:300d}],Health:300f}
+/tp @s 200.5 150 200.5 0 15
+wait 30
+/dndclass forceroll @s 1
+attack
+wait 5
+/execute if entity @e[tag=vmoon1]
+# 2. Control: a real 20 still beheads
+/dndclass forceroll @s clear
+wait 20
+/dndclass forceroll @s 20
+attack
+wait 5
+/execute if entity @e[tag=vmoon1]
+/kill @e[tag=vtest]
+/kill @e[type=minecraft:item,x=196,y=148,z=196,dx=40,dy=10,dz=18]
+/dndmagic release @s all
+/dndmagic deck @s clear
+quit

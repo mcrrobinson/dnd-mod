@@ -122,7 +122,8 @@ public class VorpalSwordItem extends NamedWeaponItem implements MagicGear.FixedP
             public float modifyDealtDamage(PlayerEntity player, ItemStack stack, LivingEntity target,
                     DamageSource source, float amount) {
                 if (source.getSource() != player || !source.isOf(DamageTypes.PLAYER_ATTACK) || !target.isAlive()
-                        || AttackRolls.naturalOf(player, target) != 20) {
+                        || AttackRolls.naturalOf(player, target) != 20
+                        || mattonfire.dnd.classes.SkillChecks.D20.wishedThisTick(player)) { // a Moon wish isn't the die
                     return amount;
                 }
                 return vorpal(player, target, amount);
